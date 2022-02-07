@@ -1,0 +1,4 @@
+rules:
+  line-length:
+    max: 350
+  truthy: disable
