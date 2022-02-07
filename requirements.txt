@@ -1,0 +1,4 @@
+jsonrpclib-pelix
+PyYAML
+colorama
+prettytable

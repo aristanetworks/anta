@@ -1,0 +1,6 @@
+jsonrpclib-pelix
+PyYAML
+colorama
+prettytable
+lazydocs
+pytest

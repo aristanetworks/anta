@@ -1,0 +1,165 @@
+---
+##################################
+########### Software  ############
+##################################
+  '01.01':
+    name: verify_eos_version # Verifies if the device is running one of the allowed EOS version.
+    versions: # List of allowed EOS versions.
+      - 4.25.4M
+      - 4.26.1F
+  '01.02':
+    name: verify_terminattr_version # Verifies if the device is running one of the allowed TerminAttr version.
+    versions: # List of allowed TerminAttr versions.
+      - v1.13.6
+      - v1.8.0
+  '01.03': verify_eos_extensions # Verifies if all installed EOS extensions are enabled for boot persistence.
+  '01.04': verify_field_notice_44_resolution # Verifies if the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+
+##################################
+############# System #############
+##################################
+  '02.01':
+    name: verify_uptime # Verifies if the device uptime is higher than a value.
+    min: 86400 # Minimum uptime in seconds.
+  '02.02': verify_reload_cause # Verifies if the last reload was requested by a user.
+  '02.03': verify_coredump # Verifies there is no core file.
+  '02.04': verify_agent_logs # Verifies there is no agent crash reported.
+  '02.05': verify_syslog # Verifies if the device had syslog messages with a severity of warning (or more severe messages) during the last 7 days.
+  '02.06': verify_cpu_utilization # Verifies CPU utilization is less than 75%.
+  '02.07': verify_memory_utilization # Verifies memory utilization is less than 75%.
+  '02.08': verify_filesystem_utilization # Verifies each partition on the disk is used less than 75%.
+
+##################################
+############ Hardware ############
+##################################
+  '03.01':
+    name: verify_transceivers_manufacturers # Verifies if the device is only using transceivers from supported manufacturers.
+    manufacturers: # List of allowed transceivers manufacturers.
+      - Not Present
+      - Arista Networks
+      - Arastra, Inc.
+  '03.02': verify_system_temperature # Verifies if the device temperature is currently OK and if the device did not report any temperature alarm in the past.
+  '03.03': verify_transceiver_temperature # Verifies if the transceivers temperature is currently OK and if the device did not report any alarm in the past for its transceivers temperature.
+  '03.04': verify_environment_cooling # Verifies if the fans status is OK.
+  '03.05': verify_environment_power # Verifies if the power supplies are OK.
+
+##################################
+######### Configuration ##########
+##################################
+  '04.01': verify_zerotouch # Verifies if ZeroTouch is disabled.
+  '04.02': verify_running_config_diffs # Verifies if there is a difference between the running-config and the startup-config.
+
+##################################
+############ Profiles ############
+##################################
+  '05.01':
+    name: verify_unified_forwarding_table_mode # Verifies if the device is using the expected Unified Forwarding Table mode.
+    mode: 3 # Expected UFT mode.
+  '05.02':
+    name: verify_tcam_profile # Verifies if the configured TCAM profile is the expected one. Verifies also the status of the TCAM profile.
+    profile: vxlan-routing # Expected TCAM profile.
+
+##################################
+############# ASICS ##############
+##################################
+  '06.01': verify_adverse_drops # Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
+
+##################################
+########### Management ###########
+##################################
+  '07.01': verify_ntp # Verifies if NTP is synchronised.
+
+##################################
+########### Interfaces ###########
+##################################
+  '08.01': verify_interface_utilization # Verifies if interfaces utilization are below 75%.
+  '08.02': verify_interface_errors # Verifies interfaces error counters are equal to zero.
+  '08.03': verify_interface_discards # Verifies interfaces packet discard counters are equal to zero.
+  '08.04': verify_interface_errdisabled # Verifies there is no interface in error disable state.
+  '08.05':
+    name: verify_interfaces_status # Verifies if the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+    minimum: 4 # Expected minimum number of Ethernet interfaces up/up.
+
+##################################
+####### Links aggregation ########
+##################################
+  '09.01': verify_portchannels # Verifies there is no inactive port in port channels.
+  '09.02': verify_illegal_lacp # Verifies there is no illegal LACP packets received.
+  '09.03': verify_mlag_status # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
+  '09.04': verify_mlag_interfaces # Verifies there is no inactive or active-partial MLAG interfaces.
+
+##################################
+########### Loopbacks ############
+##################################
+  '10.01':
+    name: verify_loopback_count # Verifies if the number of loopback interfaces on the device is the one we expect. Verifies none of the loopback is down.
+    number: 3 # Number of loopback interfaces expected to be present.
+
+##################################
+############# VXLAN ##############
+##################################
+  '11.01': verify_vxlan # Verifies the interface vxlan 1 status is up/up.
+  '11.02': verify_vxlan_config_sanity # This function verifies there is no VXLAN config-sanity warnings.
+
+##################################
+############## SVI ###############
+##################################
+  '12.01': verify_svi # Verifies there is no interface vlan down.
+
+##################################
+############## STP ###############
+##################################
+  '13.01': verify_spanning_tree_blocked_ports # Verifies there is no spanning-tree blocked ports.
+
+##################################
+########### Routing  #############
+##################################
+  '14.01':
+    name: verify_routing_protocol_model # Verifies the configured routing protocol model is the one we expect. Verify there is no mismatch between the configured and operating routing protocol model.
+    model: multi-agent # Expected routing protocol model (multi-agent or ribd).
+  '14.02':
+     name: verify_routing_table_size # Verifies if the size of the IP routing table (default VRF) is between two thresholds.
+     min: 2 # Expected minimum number of IP routes in default VRF
+     max: 20 # Expected maximum number of IP routes in default VRF
+
+##################################
+############## BFD ###############
+##################################
+  '15.01': verify_bfd # Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
+
+##################################
+############## BGP ###############
+##################################
+  '16.01': verify_bgp_ipv4_unicast_state # Verifies all IPv4 unicast BGP sessions are established (for all VRF).
+  '16.02': verify_bgp_ipv6_unicast_state # Verifies all IPv6 unicast BGP sessions are established (for all VRF).
+  '16.03': verify_bgp_evpn_state # Verifies all EVPN BGP sessions are established.
+  '16.04': verify_bgp_rtc_state # Verifies all RTC BGP sessions are established.
+  '16.05':
+    name: verify_bgp_evpn_count # Verifies all EVPN BGP sessions are established. Verifies also if the actual number of BGP EVPN neighbors is the one we expect.
+    number: 2 # The expected number of BGP EVPN neighbors.
+  '16.06':
+    name: verify_bgp_rtc_count # Verifies all RTC BGP sessions are established. Verifies also if the actual number of BGP RTC neighbors is the one we expect.
+    number: 2 # The expected number of BGP RTC neighbors.
+  '16.07':
+    name: verify_bgp_ipv4_unicast_count # Verifies all IPv4 unicast BGP sessions are established. Verifies also if the actual number of BGP IPv4 unicast neighbors is the one we expect.
+    number: 2 # The expected number of BGP IPv4 unicast neighbors.
+
+##################################
+############## OSPF ##############
+##################################
+  '17.01':
+    name: verify_ospf # Validates the number of OSPF neighbors in FULL state.
+    number: 3 # expected number of OSPF neighbors in FULL state.
+
+##################################
+######## Multicast ###############
+##################################
+  '18.01':
+    name: verify_igmp_snooping_vlans # Verifies the IGMP snooping configuration for some VLANs.
+    configuration: disabled # Expected IGMP configuration (enabled or disabled) for these VLANs.
+    vlans: # List of VLANs.
+      - 10
+      - 12
+  '18.02':
+    name: verify_igmp_snooping_global # Verifies the IGMP snooping global configuration.
+    configuration: enabled # Expected global IGMP configuration (enabled or disabled).

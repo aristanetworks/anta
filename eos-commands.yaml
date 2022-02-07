@@ -1,0 +1,54 @@
+# list of EOS commands to collect in JSON format
+json_format:
+  - show version
+  - show bgp evpn summary
+  - show system environment temperature transceiver
+
+# list of EOS commands to collect in text format
+text_format:
+  - show version
+  - show version detail
+  - show extensions
+  - show boot-extensions
+  - show inventory
+  - show zerotouch
+  - show running-config diffs
+  - show agent logs crash
+  - show logging last 7 days threshold warnings
+  - show uptime
+  - show reload cause
+  - show system environment temperature
+  - show system environment temperature transceiver
+  - show system environment cooling
+  - show system environment power
+  - show processes top once
+  - bash timeout 10 df -h
+  - show ntp status
+  - show platform trident forwarding-table partition
+  - show hardware tcam profile
+  - show hardware counter drop
+  - show interfaces counters rates
+  - show interfaces counters errors
+  - show interfaces counters discards
+  - show interfaces status
+  - show port-channel
+  - show lacp counters all-ports
+  - show spanning-tree blockedports
+  - show ip interface brief
+  - show interfaces description
+  - show ip route summary
+  - show bfd peers
+  - show bgp ipv4 unicast summary vrf all
+  - show bgp ipv6 unicast summary vrf all
+  - show bgp evpn summary
+  - show bgp rt-membership summary
+  - show mlag
+  - show vxlan config-sanity detail
+  - show vlan dynamic
+  - show ip igmp snooping vlan 10
+  - show vrf
+  - show ip ospf neighbor
+  - show running-config
+  - show lldp neighbors
+
+
