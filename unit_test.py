@@ -1,7 +1,8 @@
-from unittest.mock import Mock
-import tests_eos.functions
 import ast
+from unittest.mock import Mock
 import pytest
+import tests_eos.functions
+
 
 def id_func(param):
     return str(param)
@@ -46,4 +47,4 @@ def test_verify_uptime(mock_device, uptime, expected):
 
 def test_verify_ntp(mock_device):
     check = tests_eos.functions.verify_ntp(device = mock_device, enable_password = 'enable_password')
-    assert check == True
+    assert check is True

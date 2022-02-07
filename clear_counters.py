@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+# standard imports
 from argparse import ArgumentParser
 from getpass import getpass
-from jsonrpclib import Server
 import ssl
-from sys import exit
-from yaml import safe_load
+import sys
 from socket import setdefaulttimeout
-
+# third-party libraries
+from jsonrpclib import Server
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -34,11 +34,11 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     try:
-        with open(args.file, 'r') as file:
+        with open(args.file, 'r', encoding="utf8") as file:
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)
-        exit(1)
+        sys.exit(1)
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()
@@ -48,7 +48,7 @@ def main():
         switch = Server(url)
         setdefaulttimeout(5)
         try:
-            result=switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters', 'clear hardware counter drop'])
+            switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters', 'clear hardware counter drop'])
             print('Cleared counters on ' + device)
         except:
             print("Can not connect to " + device)

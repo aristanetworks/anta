@@ -24,7 +24,7 @@
     - [generate_functions_documentation.py file](#generate_functions_documentationpy-file)
     - [documentation directory](#documentation-directory)
     - [check-devices-reachability.py file](#check-devices-reachabilitypy-file)
-    - [clear-counters.py file](#clear-counterspy-file)
+    - [clear_counters.py file](#clear_counterspy-file)
     - [collect-eos-commands.py file](#collect-eos-commandspy-file)
     - [check-devices.py file](#check-devicespy-file)
     - [unit_test.py file](#unit_testpy-file)
@@ -232,12 +232,12 @@ ls outdir
 ### To clear counters on EOS devices
 
 * Update the devices inventory [devices.txt](devices.txt) with your devices IP address or hostnames.
-* Run the python script [clear-counters.py](clear-counters.py).
+* Run the python script [clear_counters.py](clear_counters.py).
 
 ```shell
 vi devices-list.text
-./clear-counters.py --help
-./clear-counters.py -i devices.txt -u username
+./clear_counters.py --help
+./clear_counters.py -i devices.txt -u username
 ```
 
 ### Demo
@@ -391,9 +391,9 @@ The python script [check-devices-reachability.py](check-devices-reachability.py)
 
 The python script [check-devices-reachability.py](check-devices-reachability.py) takes as input a text file with the devices IP address or hostnames (when resolvable), and tests devices reachability with eAPI and prints the unreachable devices on the console.
 
-### [clear-counters.py](clear-counters.py) file
+### [clear_counters.py](clear_counters.py) file
 
-The python script [clear-counters.py](clear-counters.py) is used to clear counters on EOS devices.
+The python script [clear_counters.py](clear_counters.py) is used to clear counters on EOS devices.
 
 It takes as input a text file with the devices IP address or hostnames (when resolvable) and clears counters on these devices.
 
