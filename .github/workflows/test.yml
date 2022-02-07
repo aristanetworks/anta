@@ -1,11 +1,12 @@
+---
 name: repo-testing
-on: [push]
+on: [push, pull_request]
 jobs:
-  run-pytest:
+  run-various-tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -22,5 +23,12 @@ jobs:
     #  - name: run pylint
     #    run: |
     #      pylint --max-line-length=130 $(git ls-files '*.py')
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+          file_or_dir: .
       - name: run pytest
         run: py.test -vv
+      - name: report pytest code coverage
+        run: py.test --cov .

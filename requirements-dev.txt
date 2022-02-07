@@ -5,3 +5,5 @@ prettytable
 lazydocs
 pytest
 pylint
+pytest-cov
+yamllint

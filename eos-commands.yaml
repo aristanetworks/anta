@@ -1,3 +1,4 @@
+---
 # list of EOS commands to collect in JSON format
 json_format:
   - show version
@@ -50,5 +51,3 @@ text_format:
   - show ip ospf neighbor
   - show running-config
   - show lldp neighbors
-
-
