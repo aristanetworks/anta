@@ -1,3 +1,6 @@
+![GitHub](https://img.shields.io/github/license/arista-netdevops-community/network_tests_automation)
+![test workflow](https://github.com/arista-netdevops-community/network_tests_automation/actions/workflows/test.yml/badge.svg)
+
 # Network tests automation
 
 - [Network tests automation](#network-tests-automation)

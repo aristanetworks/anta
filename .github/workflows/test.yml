@@ -1,0 +1,37 @@
+name: test-the-repo
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+       - main
+jobs:
+  run-pytest:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Uses last Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 'pypy-3.9'
+      - name: install dev requirements
+        run: pip install -r requirements-dev.txt
+      - name: validate the syntax of python scripts
+        run: |
+          python -m py_compile generate_functions_documentation.py
+          python -m py_compile unit_test.py
+          python -m py_compile collect-eos-commands.py
+          python -m py_compile clear-counters.py
+          python -m py_compile check-devices.py
+          python -m py_compile check-devices-reachability.py
+      - name: run pylint
+        run: |
+          pylint generate_functions_documentation.py
+          pylint unit_test.py
+          pylint collect-eos-commands.py
+          pylint clear-counters.py
+          pylint check-devices.py
+          pylint check-devices-reachability.py
+      - name: run pytest
+        run: py.test -vv
