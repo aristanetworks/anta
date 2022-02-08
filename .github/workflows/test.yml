@@ -17,18 +17,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
+          python setup.py develop
       - name: validate the syntax of python scripts
         run: |
           python -m py_compile $(git ls-files '*.py')
-    #  - name: run pylint
-    #    run: |
-    #      pylint --max-line-length=130 $(git ls-files '*.py')
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .yamllint.yml
           file_or_dir: .
       - name: run pytest
-        run: py.test -vv
-      - name: report pytest code coverage
-        run: py.test --cov .
+        run: |
+          cd tests
+          pytest --cov-report term:skip-covered --html=report.html --self-contained-html --cov-report=html --color yes --cov=eos_testing .

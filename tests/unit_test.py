@@ -1,7 +1,7 @@
 import ast
 from unittest.mock import Mock
 import pytest
-import tests_eos.functions
+import eos_testing.functions
 
 
 def id_func(param):
@@ -34,7 +34,7 @@ def mock_device():
                                                )
 
 def test_verify_eos_version(mock_device, versions, expected):
-    check = tests_eos.functions.verify_eos_version(device = mock_device, enable_password = 'enable_password', versions = versions)
+    check = eos_testing.functions.verify_eos_version(device = mock_device, enable_password = 'enable_password', versions = versions)
     assert check == expected
 
 @pytest.mark.parametrize("uptime,expected", [(100, True),
@@ -42,9 +42,9 @@ def test_verify_eos_version(mock_device, versions, expected):
                                              (None, None)])
 
 def test_verify_uptime(mock_device, uptime, expected):
-    check = tests_eos.functions.verify_uptime(device = mock_device, enable_password = 'enable_password', min = uptime)
+    check = eos_testing.functions.verify_uptime(device = mock_device, enable_password = 'enable_password', min = uptime)
     assert check == expected
 
 def test_verify_ntp(mock_device):
-    check = tests_eos.functions.verify_ntp(device = mock_device, enable_password = 'enable_password')
+    check = eos_testing.functions.verify_ntp(device = mock_device, enable_password = 'enable_password')
     assert check is True
