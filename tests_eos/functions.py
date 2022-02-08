@@ -828,6 +828,33 @@ def verify_mlag_interfaces(device, enable_password):
     except:
         return None
 
+
+def verify_mlag_config_sanity(device):
+    """
+    Verifies on the device if there is no MLAG config-sanity warnings.
+
+    Args:
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
+        enable_password (str): Enable password.
+
+    Returns:
+        bool: `True` if there is no MLAG config-sanity warnings. `False` otherwise.
+    """
+    try:
+        response = device.runCmds(1, ['show mlag config-sanity'],'json')
+        if response[0]['response']['mlagActive'] == False:
+            # MLAG isn't running
+            return None
+        else:
+            if len(response[0]['response']['globalConfiguration']) > 0 or \
+                len(response[0]['response']['interfaceConfiguration']) > 0:
+                return False
+            else:
+                return True
+    except:
+        return None
+
+
 def verify_loopback_count(device, enable_password, number = None):
     """
     Verifies if the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
