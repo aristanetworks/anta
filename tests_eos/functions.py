@@ -796,8 +796,6 @@ def verify_mlag_status(device, enable_password):
             return False
         elif response[0]['peerLinkStatus'] != 'up':
             return False
-        elif response[0]['configSanity'] != 'consistent':
-            return False
         else:
             return True
     except:
