@@ -7,7 +7,7 @@ import ssl
 from sys import exit
 from yaml import safe_load
 from datetime import datetime
-import tests_eos.functions
+import eos_testing.functions
 from colorama import Fore
 from prettytable import PrettyTable
 from math import ceil
@@ -118,7 +118,7 @@ def main():
                 test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
             else:
                 func_name = test_def
-            test_summary[device][test] = getattr(tests_eos.functions, func_name)(connections[device]['connection'], args.enable_pass, **test_kwargs)
+            test_summary[device][test] = getattr(eos_testing.functions, func_name)(connections[device]['connection'], args.enable_pass, **test_kwargs)
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
     for device in sorted(test_summary):

@@ -5,6 +5,7 @@
 
 - [Network tests automation](#network-tests-automation)
   - [About this repository](#about-this-repository)
+  - [installation](#installation)
   - [Requirements](#requirements)
     - [Requirements on your laptop](#requirements-on-your-laptop)
     - [Requirements on the switches](#requirements-on-the-switches)
@@ -40,6 +41,12 @@ To run tests programatically on your EOS devices, once you are done with the req
 This repository has also content to collect commands output on devices, to clear counters on devices, and to test the devices reachability.
 
 This repository uses Python scripts and eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
+
+## installation
+
+```bash
+pip install git+https://github.com/arista-netdevops-community/network_tests_automation
+```
 
 ## Requirements
 
