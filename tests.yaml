@@ -79,6 +79,7 @@ versions:  # List of allowed TerminAttr versions.
 '09.02': verify_illegal_lacp  # Verifies there is no illegal LACP packets received.
 '09.03': verify_mlag_status  # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
 '09.04': verify_mlag_interfaces  # Verifies there is no inactive or active-partial MLAG interfaces.
+'09.05': verify_mlag_config_sanity # Verifies that there are no mlag config-sanity warnings
 ##################################
 ########### Loopbacks ############
 ##################################
