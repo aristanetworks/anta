@@ -435,4 +435,4 @@ The contribution guide is [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Credits
 
-Thank you to Paul Lavelle, [Colin MacGiollaEáin](https://github.com/colinmacgiolla), Matthieu Tache, Angélique Phillipps, Thomas Grimonet, Onur Gashi and Khelil Sator for their contributions and guidances.
+Thank you to [Paul Lavelle]https://github.com/paullavelle(), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Matthieu Tache](https://github.com/mtache), [Angélique Phillipps](https://github.com/aphillipps), [Thomas Grimonet](https://github.com/titom73), [Onur Gashi](https://github.com/onurgashi) and [Khelil Sator](https://github.com/ksator) for their contributions and guidances.
