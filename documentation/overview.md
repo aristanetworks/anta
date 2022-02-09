@@ -40,6 +40,7 @@
 - [`functions.verify_interfaces_status`](./tests_eos.functions.md#function-verify_interfaces_status): Verifies on the device if the number of Ethernet interfaces up/up on the device is higher or equal than a value.
 - [`functions.verify_loopback_count`](./tests_eos.functions.md#function-verify_loopback_count): Verifies if the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
 - [`functions.verify_memory_utilization`](./tests_eos.functions.md#function-verify_memory_utilization): Verifies if the device memory utilization is less than 75%.
+- [`functions.verify_mlag_config_sanity`](./tests_eos.functions.md#function-verify_mlag_config_sanity): Verifies on the device if there is no MLAG config-sanity warnings.
 - [`functions.verify_mlag_interfaces`](./tests_eos.functions.md#function-verify_mlag_interfaces): Verifies on the device there is no inactive or active-partial MLAG interfaces.
 - [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
 - [`functions.verify_ntp`](./tests_eos.functions.md#function-verify_ntp): Verifies on the device if NTP is synchronised.
