@@ -798,7 +798,7 @@ def verify_illegal_lacp(device, enable_password):
 def verify_mlag_status(device, enable_password):
 
     """
-    Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
+    Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).

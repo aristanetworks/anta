@@ -23,7 +23,6 @@ text_format:
   - show system environment cooling
   - show system environment power
   - show processes top once
-  - bash timeout 10 df -h
   - show ntp status
   - show platform trident forwarding-table partition
   - show hardware tcam profile
@@ -44,6 +43,7 @@ text_format:
   - show bgp evpn summary
   - show bgp rt-membership summary
   - show mlag
+  - show mlag config-sanity
   - show vxlan config-sanity detail
   - show vlan dynamic
   - show ip igmp snooping vlan 10

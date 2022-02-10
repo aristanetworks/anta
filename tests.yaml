@@ -103,11 +103,11 @@
 '09.02':
   name: verify_illegal_lacp  # Verifies there is no illegal LACP packets received.
 '09.03':
-  name: verify_mlag_status  # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
+  name: verify_mlag_status  # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
 '09.04':
   name: verify_mlag_interfaces  # Verifies there is no inactive or active-partial MLAG interfaces.
 '09.05':
-  name: verify_mlag_config_sanity # Verifies that there are no mlag config-sanity warnings
+  name: verify_mlag_config_sanity  # Verifies that there are no mlag config-sanity warnings
 ##################################
 ########### Loopbacks ############
 ##################################
