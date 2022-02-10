@@ -32,6 +32,7 @@
     - [unit_test.py file](#unit_testpy-file)
     - [mock_data directory](#mock_data-directory)
   - [Contribution guide](#contribution-guide)
+  - [Continuous Integration](#continuous-integration)
   - [Credits](#credits)
 ## About this repository
 
@@ -464,6 +465,11 @@ The [mock_data](mock_data) directory has data used by the python script [unit_te
 Contributions are welcome.
 The contribution guide is [CONTRIBUTING.md](CONTRIBUTING.md)
 
+## Continuous Integration
+
+GitHub actions is used to test pushes and pull requests.
+The workflows are defined in this [directory](.github/workflows).
+We can view the result [here](https://github.com/arista-netdevops-community/network_tests_automation/actions). 
 ## Credits
 
 Thank you to [Paul Lavelle](https://github.com/paullavelle), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Matthieu Tache](https://github.com/mtache), [Angélique Phillipps](https://github.com/aphillipps), [Thomas Grimonet](https://github.com/titom73), [Onur Gashi](https://github.com/onurgashi) and [Khelil Sator](https://github.com/ksator) for their contributions and guidances.
