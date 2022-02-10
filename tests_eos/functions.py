@@ -851,7 +851,7 @@ def verify_mlag_interfaces(device, enable_password):
         return None
 
 
-def verify_mlag_config_sanity(device):
+def verify_mlag_config_sanity(device, enable_password):
     """
     Verifies on the device if there is no MLAG config-sanity warnings.
 

@@ -254,9 +254,10 @@ vi devices-list.text
 ### Demo
 
 ```
-$ ./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
+./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
 Device password:
 Enable password (if any):
+Testing devices .... please be patient ...
 Can not connect to device 2.2.2.2
 Running tests on device 10.73.1.101 ...
 Running tests on device 10.73.1.102 ...
@@ -265,7 +266,7 @@ Test results are saved on output.txt
 ```
 ```
 $ cat output.txt
-Fri Jan 28 09:48:54 2022
+Thu Feb 10 21:01:59 2022
 devices inventory file was devices.txt
 devices username was ansible
 list of unreachable devices is
@@ -274,80 +275,90 @@ tests file was tests.yaml
 
 ***** Results *****
 
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |  02.08  |  03.01  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |
-|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |
-|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Skip  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |  07.01  |  08.01  |  08.02  |  08.03  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.102  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.106  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  08.04  |  08.05  |  09.01  |  09.02  |  09.03  |  09.04  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.102  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.106  |   Pass  |   Pass  |   Fail  |   Pass  |   Fail  |   Fail  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  15.01  |  16.01  |  16.02  |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  18.01  |  18.02  |
+|    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Fail  |   Pass  |   Fail  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Pass  |   Fail  |
-|  10.73.1.102  |   Pass  |   Fail  |   Pass  |   Fail  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.106  |   Pass  |   Fail  |   Pass  |   Pass  |   Skip  |   Pass  |   Skip  |   Fail  |   Fail  |   Skip  |   Fail  |
+|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |
+|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |
+|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  02.08  |  03.01  |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.106  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  07.01  |  08.01  |  08.02  |  08.03  |  08.04  |  08.05  |  08.06  |  09.01  |  09.02  |  09.03  |  09.04  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.102  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Fail  |   Pass  |   Pass  |   Fail  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  09.05  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |  15.01  |  16.01  |  16.02  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
+|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
+|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  18.01  |  18.02  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.106  |   Pass  |   Skip  |   Pass  |   Skip  |   Fail  |   Pass  |   Skip  |   Pass  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+
 
 ***** Tests *****
+
 01.01    {"name": "verify_eos_version", "versions": ["4.25.4M", "4.26.1F"]}
 01.02    {"name": "verify_terminattr_version", "versions": ["v1.13.6", "v1.8.0"]}
-01.03    "verify_eos_extensions"
-01.04    "verify_field_notice_44_resolution"
+01.03    {"name": "verify_eos_extensions"}
+01.04    {"name": "verify_field_notice_44_resolution"}
 02.01    {"name": "verify_uptime", "min": 86400}
-02.02    "verify_reload_cause"
-02.03    "verify_coredump"
-02.04    "verify_agent_logs"
-02.05    "verify_syslog"
-02.06    "verify_cpu_utilization"
-02.07    "verify_memory_utilization"
-02.08    "verify_filesystem_utilization"
+02.02    {"name": "verify_reload_cause"}
+02.03    {"name": "verify_coredump"}
+02.04    {"name": "verify_agent_logs"}
+02.05    {"name": "verify_syslog"}
+02.06    {"name": "verify_cpu_utilization"}
+02.07    {"name": "verify_memory_utilization"}
+02.08    {"name": "verify_filesystem_utilization"}
 03.01    {"name": "verify_transceivers_manufacturers", "manufacturers": ["Not Present", "Arista Networks", "Arastra, Inc."]}
-03.02    "verify_system_temperature"
-03.03    "verify_transceiver_temperature"
-03.04    "verify_environment_cooling"
-03.05    "verify_environment_power"
-04.01    "verify_zerotouch"
-04.02    "verify_running_config_diffs"
+03.02    {"name": "verify_system_temperature"}
+03.03    {"name": "verify_transceiver_temperature"}
+03.04    {"name": "verify_environment_cooling"}
+03.05    {"name": "verify_environment_power"}
+04.01    {"name": "verify_zerotouch"}
+04.02    {"name": "verify_running_config_diffs"}
 05.01    {"name": "verify_unified_forwarding_table_mode", "mode": 3}
 05.02    {"name": "verify_tcam_profile", "profile": "vxlan-routing"}
-06.01    "verify_adverse_drops"
-07.01    "verify_ntp"
-08.01    "verify_interface_utilization"
-08.02    "verify_interface_errors"
-08.03    "verify_interface_discards"
-08.04    "verify_interface_errdisabled"
+06.01    {"name": "verify_adverse_drops"}
+07.01    {"name": "verify_ntp"}
+08.01    {"name": "verify_interface_utilization"}
+08.02    {"name": "verify_interface_errors"}
+08.03    {"name": "verify_interface_discards"}
+08.04    {"name": "verify_interface_errdisabled"}
 08.05    {"name": "verify_interfaces_status", "minimum": 4}
-09.01    "verify_portchannels"
-09.02    "verify_illegal_lacp"
-09.03    "verify_mlag_status"
-09.04    "verify_mlag_interfaces"
+08.06    {"name": "verify_storm_control_drops"}
+09.01    {"name": "verify_portchannels"}
+09.02    {"name": "verify_illegal_lacp"}
+09.03    {"name": "verify_mlag_status"}
+09.04    {"name": "verify_mlag_interfaces"}
+09.05    {"name": "verify_mlag_config_sanity"}
 10.01    {"name": "verify_loopback_count", "number": 3}
-11.01    "verify_vxlan"
-11.02    "verify_vxlan_config_sanity"
-12.01    "verify_svi"
-13.01    "verify_spanning_tree_blocked_ports"
+11.01    {"name": "verify_vxlan"}
+11.02    {"name": "verify_vxlan_config_sanity"}
+12.01    {"name": "verify_svi"}
+13.01    {"name": "verify_spanning_tree_blocked_ports"}
 14.01    {"name": "verify_routing_protocol_model", "model": "multi-agent"}
 14.02    {"name": "verify_routing_table_size", "min": 2, "max": 20}
-15.01    "verify_bfd"
-16.01    "verify_bgp_ipv4_unicast_state"
-16.02    "verify_bgp_ipv6_unicast_state"
-16.03    "verify_bgp_evpn_state"
-16.04    "verify_bgp_rtc_state"
+15.01    {"name": "verify_bfd"}
+16.01    {"name": "verify_bgp_ipv4_unicast_state"}
+16.02    {"name": "verify_bgp_ipv6_unicast_state"}
+16.03    {"name": "verify_bgp_evpn_state"}
+16.04    {"name": "verify_bgp_rtc_state"}
 16.05    {"name": "verify_bgp_evpn_count", "number": 2}
 16.06    {"name": "verify_bgp_rtc_count", "number": 2}
 16.07    {"name": "verify_bgp_ipv4_unicast_count", "number": 2}
