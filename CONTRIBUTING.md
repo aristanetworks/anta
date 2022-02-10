@@ -11,9 +11,9 @@ The file [requirements-dev.txt](requirements-dev.txt) has the required packages 
 * The package `pylint` is a linter for python.
 * The package `yamllint` is a linter for YAML files.
 
-### To run yamllint
+### To use yamllint
 
-`yamllint -c .yamllint.yml .`
+Run the command `yamllint -c .yamllint.yml .`
 
 ### To run unit tests
 

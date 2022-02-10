@@ -379,7 +379,7 @@ The functions to test EOS devices are coded in the python module [functions.py](
 These functions have docstrings.
 The docstrings are used by the script [generate_functions_documentation.py](generate_functions_documentation.py) to generate the functions documentation in markdown format in the directory [documentation](documentation).
 
-Please refer to the [contribution guide](contributing.md) to get instructions.
+Please refer to the [contribution guide](CONTRIBUTING.md) to get instructions.
 
 ### [documentation](documentation) directory
 
