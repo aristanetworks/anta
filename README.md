@@ -15,6 +15,7 @@
     - [To run tests on devices](#to-run-tests-on-devices)
     - [To collect commands output from EOS devices](#to-collect-commands-output-from-eos-devices)
     - [To clear counters on EOS devices](#to-clear-counters-on-eos-devices)
+    - [To clear on devices the list of MAC addresses which are blacklisted in EVPN](#to-clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
     - [Demo](#demo)
   - [Repository structure](#repository-structure)
     - [devices.txt file](#devicestxt-file)
@@ -27,6 +28,7 @@
     - [clear_counters.py file](#clear_counterspy-file)
     - [collect-eos-commands.py file](#collect-eos-commandspy-file)
     - [check-devices.py file](#check-devicespy-file)
+    - [evpn-blacklist-recovery.py file](#evpn-blacklist-recoverypy-file)
     - [unit_test.py file](#unit_testpy-file)
     - [mock_data directory](#mock_data-directory)
   - [Contribution guide](#contribution-guide)
@@ -239,7 +241,16 @@ vi devices-list.text
 ./clear_counters.py --help
 ./clear_counters.py -i devices.txt -u username
 ```
+### To clear on devices the list of MAC addresses which are blacklisted in EVPN
 
+* Update the devices inventory [devices.txt](devices.txt) with your devices IP address or hostnames.
+* Run the python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py).
+
+```shell
+vi devices-list.text
+./evpn-blacklist-recovery.py --help
+./evpn-blacklist-recovery.py -i devices.txt -u username
+```
 ### Demo
 
 ```
@@ -421,6 +432,11 @@ The python script [check-devices.py](check-devices.py):
   * A YAML file with the list of the tests we would like to use and their parameters.
 * Runs the tests, and prints the result on the console and saves the result in a file.
 
+### [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) file
+
+The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) is used to clear on EOS devices the list of MAC addresses which are blacklisted in EVPN.
+
+The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) takes as input a text file with the devices IP address or hostnames (when resolvable) and run the command `clear bgp evpn host-flap` on the EOS devices.
 ### [unit_test.py](unit_test.py) file
 
 The python script [unit_test.py](unit_test.py) is used to test the functions defined in the directory [test_eos](test_eos) without using actual EOS devices.
