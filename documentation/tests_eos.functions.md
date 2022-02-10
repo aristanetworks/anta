@@ -743,7 +743,33 @@ Verifies on the device if the number of Ethernet interfaces up/up on the device 
 
 ---
 
-<a href="../tests_eos/functions.py#L722"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L723"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `verify_storm_control_drops`
+
+```python
+verify_storm_control_drops(device, enable_password)
+```
+
+Verifies if the device dropped packets due to storm-control configuration. 
+
+
+
+**Args:**
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
+ - <b>`enable_password`</b> (str):  Enable password. 
+
+
+
+**Returns:**
+ 
+ - <b>`bool`</b>:  `True` if the device did not drop packet due to its storm-control configuration. `False` otherwise. 
+
+
+---
+
+<a href="../tests_eos/functions.py#L746"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_portchannels`
 
@@ -769,7 +795,7 @@ Verifies on the device there is no inactive port in port channels.
 
 ---
 
-<a href="../tests_eos/functions.py#L747"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L771"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_illegal_lacp`
 
@@ -795,7 +821,7 @@ Verifies on the device there is no illegal LACP packets received.
 
 ---
 
-<a href="../tests_eos/functions.py#L774"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L798"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_status`
 
@@ -821,7 +847,7 @@ Verifies on the device the MLAG status: state is active, negotiation status is c
 
 ---
 
-<a href="../tests_eos/functions.py#L804"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L828"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_interfaces`
 
@@ -847,7 +873,7 @@ Verifies on the device there is no inactive or active-partial MLAG interfaces.
 
 ---
 
-<a href="../tests_eos/functions.py#L830"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L854"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_config_sanity`
 
@@ -873,7 +899,7 @@ Verifies on the device if there is no MLAG config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L856"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L880"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_loopback_count`
 
@@ -900,7 +926,7 @@ Verifies if the number of loopback interfaces on the device is the one we expect
 
 ---
 
-<a href="../tests_eos/functions.py#L880"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L904"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan`
 
@@ -926,7 +952,7 @@ Verifies on the device if the interface vxlan 1 status is up/up.
 
 ---
 
-<a href="../tests_eos/functions.py#L901"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L925"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan_config_sanity`
 
@@ -952,7 +978,7 @@ Verifies on the device if there is no VXLAN config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L925"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L949"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_svi`
 
@@ -978,7 +1004,7 @@ Verifies on the device if there is no interface vlan down.
 
 ---
 
-<a href="../tests_eos/functions.py#L945"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L969"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_spanning_tree_blocked_ports`
 
@@ -1004,7 +1030,7 @@ Verifies on the device if there is no spanning-tree blocked ports.
 
 ---
 
-<a href="../tests_eos/functions.py#L966"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L990"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_protocol_model`
 
@@ -1031,7 +1057,7 @@ Verifies on the device if the configured routing protocol model is the one we ex
 
 ---
 
-<a href="../tests_eos/functions.py#L990"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1014"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_table_size`
 
@@ -1059,7 +1085,7 @@ Verifies on the device if the size of the IP routing table (default VRF) is betw
 
 ---
 
-<a href="../tests_eos/functions.py#L1014"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1038"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bfd`
 
@@ -1085,7 +1111,7 @@ Verifies on the device there is no BFD peer in down state (default VRF, IPv4 nei
 
 ---
 
-<a href="../tests_eos/functions.py#L1036"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1060"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_state`
 
@@ -1111,7 +1137,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established (for all
 
 ---
 
-<a href="../tests_eos/functions.py#L1061"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1085"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
@@ -1138,7 +1164,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established and if t
 
 ---
 
-<a href="../tests_eos/functions.py#L1091"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1115"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1164,7 +1190,7 @@ Verifies on the device if all IPv6 unicast BGP sessions are established (for all
 
 ---
 
-<a href="../tests_eos/functions.py#L1116"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1140"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1190,7 +1216,7 @@ Verifies on the device if all EVPN BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1141"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1165"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1217,7 +1243,7 @@ Verifies on the device if all EVPN BGP sessions are established and if the actua
 
 ---
 
-<a href="../tests_eos/functions.py#L1171"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1195"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1243,7 +1269,7 @@ Verifies on the device if all RTC BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1196"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1220"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1270,7 +1296,7 @@ Verifies on the device if all RTC BGP sessions are established and if the actual
 
 ---
 
-<a href="../tests_eos/functions.py#L1226"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1250"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf`
 
@@ -1297,7 +1323,7 @@ Verifies on the device if the number of OSPF neighbors in FULL state.
 
 ---
 
-<a href="../tests_eos/functions.py#L1250"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1274"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1325,7 +1351,7 @@ Verifies on the device the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1275"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1299"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 

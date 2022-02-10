@@ -72,6 +72,7 @@ versions:  # List of allowed TerminAttr versions.
 '08.05':
   name: verify_interfaces_status  # Verifies if the number of Ethernet interfaces up/up on the device is higher or equal than a value.
   minimum: 4  # Expected minimum number of Ethernet interfaces up/up.
+'08.06': verify_storm_control_drops   # Verifies if the device dropped packets due to storm-control configuration.
 ##################################
 ####### Links aggregation ########
 ##################################

@@ -719,6 +719,30 @@ def verify_interfaces_status(device, enable_password, minimum = None):
     except:
         return None
 
+
+def verify_storm_control_drops(device, enable_password):
+    """
+    Verifies if the device dropped packets due to storm-control configuration.
+
+    Args:
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
+        enable_password (str): Enable password.
+
+    Returns:
+        bool: `True` if the device did not drop packet due to its storm-control configuration. `False` otherwise.
+
+    """
+    try:
+        response = device.runCmds(1, ['show storm-control'], 'json')
+        for interface in response[0]['interfaces']:
+            for trafficTypes in ['all', 'unknown-unicast', 'multicast', 'broadcast']:
+                if trafficTypes in response[0]['interfaces'][interface]["trafficTypes"]:
+                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][trafficTypes] and response[0]['interfaces'][interface]["trafficTypes"][trafficTypes]['drop'] != 0:
+                        return False
+        return True
+    except:
+        return None
+
 def verify_portchannels(device, enable_password):
 
     """

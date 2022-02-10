@@ -51,6 +51,7 @@
 - [`functions.verify_routing_table_size`](./tests_eos.functions.md#function-verify_routing_table_size): Verifies on the device if the size of the IP routing table (default VRF) is between two thresholds.
 - [`functions.verify_running_config_diffs`](./tests_eos.functions.md#function-verify_running_config_diffs): Verifies if there is no difference between the running-config and the startup-config.
 - [`functions.verify_spanning_tree_blocked_ports`](./tests_eos.functions.md#function-verify_spanning_tree_blocked_ports): Verifies on the device if there is no spanning-tree blocked ports.
+- [`functions.verify_storm_control_drops`](./tests_eos.functions.md#function-verify_storm_control_drops): Verifies if the device dropped packets due to storm-control configuration.
 - [`functions.verify_svi`](./tests_eos.functions.md#function-verify_svi): Verifies on the device if there is no interface vlan down.
 - [`functions.verify_syslog`](./tests_eos.functions.md#function-verify_syslog): Verifies if the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
 - [`functions.verify_system_temperature`](./tests_eos.functions.md#function-verify_system_temperature): Verifies if the device temperature is currently OK and if the device did not report any temperature alarm in the past.
