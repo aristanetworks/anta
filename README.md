@@ -37,9 +37,13 @@
 
 This repository has automation content to test Arista devices.
 
-To run tests programatically on your EOS devices, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and to indicate the tests you would like to run in a YAML file.
+To run these tests, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and to indicate the tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
-This repository has also content to collect commands output on devices, to clear counters on devices, and to test the devices reachability.
+This repository has also content to:
+* Collect commands output on devices.
+* Clear counters on devices.
+* Test the devices reachability.
+* Clear the list of MAC addresses which are blacklisted in EVPN
 
 This repository uses Python scripts and eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
@@ -180,9 +184,7 @@ The [documentation](documentation) directory has the tests documentation:
 * [overview.md](documentation/overview.md) file
 * [tests_eos.functions.md](documentation/tests_eos.functions.md) file
 
-We indicate the tests we would like to run in a YAML file.
-Some tests require an input. In that case we provide it using the same YAML file.
-Here's an example [tests.yaml](tests.yaml).
+We indicate the tests we would like to run in a YAML file. Some tests require an input. Here's an [example](tests.yaml).
 
 ## Repository usage
 
