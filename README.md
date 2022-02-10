@@ -1,5 +1,5 @@
-![GitHub](https://img.shields.io/github/license/arista-netdevops-community/network_tests_automation)
-![test workflow](https://github.com/arista-netdevops-community/network_tests_automation/actions/workflows/test.yml/badge.svg)
+[![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/network_tests_automation/blob/master/LICENSE)
+[![CI](https://github.com/arista-netdevops-community/network_tests_automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network_tests_automation/actions)
 
 # Network tests automation
 
