@@ -38,7 +38,7 @@
 
 This repository has automation content to test Arista devices.
 
-To run these tests, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and to indicate the tests you would like to run in a YAML file. Here's an [example](tests.yaml).
+To run these tests, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and the tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
 This repository has also content to:
 * Collect commands output on devices.
@@ -463,13 +463,13 @@ The [mock_data](mock_data) directory has data used by the python script [unit_te
 ## Contribution guide
 
 Contributions are welcome.
-The contribution guide is [CONTRIBUTING.md](CONTRIBUTING.md)
+Please refer to the [contribution guide](CONTRIBUTING.md)
 
 ## Continuous Integration
 
-GitHub actions is used to test pushes and pull requests.
+GitHub actions is used to test git pushes and pull requests.
 The workflows are defined in this [directory](.github/workflows).
-We can view the result [here](https://github.com/arista-netdevops-community/network_tests_automation/actions). 
+We can view the result [here](https://github.com/arista-netdevops-community/network_tests_automation/actions).
 ## Credits
 
 Thank you to [Paul Lavelle](https://github.com/paullavelle), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Matthieu Tache](https://github.com/mtache), [Angélique Phillipps](https://github.com/aphillipps), [Thomas Grimonet](https://github.com/titom73), [Onur Gashi](https://github.com/onurgashi) and [Khelil Sator](https://github.com/ksator) for their contributions and guidances.
