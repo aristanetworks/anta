@@ -37,6 +37,7 @@
 ## About this repository
 
 This repository has automation content to test Arista devices.
+It could be use for an NRFU (Network Ready For Use) testing or on a production network.  
 
 To run these tests, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and the tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
