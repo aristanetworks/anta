@@ -37,9 +37,11 @@
 ## About this repository
 
 This repository has automation content to test Arista devices.
-It could be use for an NRFU (Network Ready For Use) testing or on a production network.  
+It can be use for an NRFU (Network Ready For Use) testing or on a production network.  
 
-To run these tests, once you are done with the requirements described below, you simply need to indicate your devices name in a text file and the tests you would like to run in a YAML file. Here's an [example](tests.yaml).
+To run these tests, once you are done with the requirements described below, you simply need to indicate: 
+* Your devices name in a text file 
+* The tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
 This repository has also content to:
 * Collect commands output on devices.
@@ -179,7 +181,7 @@ print(result[0]['output'])
 ```
 ## List of available tests
 
-The tests are defined in the python module [functions.py](tests/functions.py) in the python package [tests_eos](tests_eos).
+The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).  
 Each function returns `True` or `False` (or `None` when it can not run properly).
 
 The [documentation](documentation) directory has the tests documentation:
