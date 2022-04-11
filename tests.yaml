@@ -145,7 +145,7 @@
 ############## BFD ###############
 ##################################
 '15.01':
-  name: verify_bfd  # Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
+  name: verify_bfd  # Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 ##################################
 ############## BGP ###############
 ##################################
