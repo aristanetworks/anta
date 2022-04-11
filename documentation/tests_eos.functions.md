@@ -1132,7 +1132,7 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues are empty (for all VRF). `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise. 
 
 
 ---
@@ -1160,7 +1160,7 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established and if the actual number of BGP IPv4 unicast neighbors is the one we expect. `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established and if all BGP messages queues for these sessions are empty and if the actual number of BGP IPv4 unicast neighbors is the one we expect. `False` otherwise. 
 
 
 ---
@@ -1186,7 +1186,7 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if all IPv6 unicast BGP sessions are established (for all VRF). `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all IPv6 unicast BGP sessions are established (for all VRF) all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise. 
 
 
 ---
