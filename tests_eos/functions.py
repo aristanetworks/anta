@@ -1065,7 +1065,7 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues are empty (for all VRF). `False` otherwise.
+        bool: `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise.
 
     """
     try:
@@ -1092,7 +1092,7 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
         vrf(str): VRF to verify.
 
     Returns:
-        bool: `True` if all IPv4 unicast BGP sessions are established and if the actual number of BGP IPv4 unicast neighbors is the one we expect. `False` otherwise.
+        bool: `True` if all IPv4 unicast BGP sessions are established and if all BGP messages queues for these sessions are empty and if the actual number of BGP IPv4 unicast neighbors is the one we expect. `False` otherwise.
 
     """
     if not number:
@@ -1124,7 +1124,7 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all IPv6 unicast BGP sessions are established (for all VRF). `False` otherwise.
+        bool: `True` if all IPv6 unicast BGP sessions are established (for all VRF) all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise.
 
     """
     try:
