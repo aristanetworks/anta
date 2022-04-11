@@ -829,7 +829,7 @@ Verifies on the device there is no illegal LACP packets received.
 verify_mlag_status(device, enable_password)
 ```
 
-Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent. 
+Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up. 
 
 
 
@@ -878,7 +878,7 @@ Verifies on the device there is no inactive or active-partial MLAG interfaces.
 ## <kbd>function</kbd> `verify_mlag_config_sanity`
 
 ```python
-verify_mlag_config_sanity(device)
+verify_mlag_config_sanity(device, enable_password)
 ```
 
 Verifies on the device if there is no MLAG config-sanity warnings. 
@@ -1358,6 +1358,8 @@ Verifies on the device the IGMP snooping configuration for some VLANs.
 ```python
 verify_igmp_snooping_global(device, enable_password, configuration)
 ```
+
+Verifies on the device the IGMP snooping global configuration. 
 
 
 

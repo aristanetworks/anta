@@ -1299,6 +1299,9 @@ def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):
 def verify_igmp_snooping_global(device, enable_password,  configuration):
 
     """
+
+    Verifies on the device the IGMP snooping global configuration.
+
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.

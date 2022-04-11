@@ -30,7 +30,7 @@
 - [`functions.verify_eos_version`](./tests_eos.functions.md#function-verify_eos_version): Verifies if the device is running one of the allowed EOS version.
 - [`functions.verify_field_notice_44_resolution`](./tests_eos.functions.md#function-verify_field_notice_44_resolution): Verifies if the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 - [`functions.verify_filesystem_utilization`](./tests_eos.functions.md#function-verify_filesystem_utilization): Verifies on the device if each partition on the disk is used less than 75%.
-- [`functions.verify_igmp_snooping_global`](./tests_eos.functions.md#function-verify_igmp_snooping_global): Args:
+- [`functions.verify_igmp_snooping_global`](./tests_eos.functions.md#function-verify_igmp_snooping_global): Verifies on the device the IGMP snooping global configuration.
 - [`functions.verify_igmp_snooping_vlans`](./tests_eos.functions.md#function-verify_igmp_snooping_vlans): Verifies on the device the IGMP snooping configuration for some VLANs.
 - [`functions.verify_illegal_lacp`](./tests_eos.functions.md#function-verify_illegal_lacp): Verifies on the device there is no illegal LACP packets received.
 - [`functions.verify_interface_discards`](./tests_eos.functions.md#function-verify_interface_discards): Verifies on the device if the interfaces packet discard counters are equal to zero.
@@ -42,7 +42,7 @@
 - [`functions.verify_memory_utilization`](./tests_eos.functions.md#function-verify_memory_utilization): Verifies if the device memory utilization is less than 75%.
 - [`functions.verify_mlag_config_sanity`](./tests_eos.functions.md#function-verify_mlag_config_sanity): Verifies on the device if there is no MLAG config-sanity warnings.
 - [`functions.verify_mlag_interfaces`](./tests_eos.functions.md#function-verify_mlag_interfaces): Verifies on the device there is no inactive or active-partial MLAG interfaces.
-- [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up, config sanity is consistent.
+- [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
 - [`functions.verify_ntp`](./tests_eos.functions.md#function-verify_ntp): Verifies on the device if NTP is synchronised.
 - [`functions.verify_ospf`](./tests_eos.functions.md#function-verify_ospf): Verifies on the device if the number of OSPF neighbors in FULL state.
 - [`functions.verify_portchannels`](./tests_eos.functions.md#function-verify_portchannels): Verifies on the device there is no inactive port in port channels.
