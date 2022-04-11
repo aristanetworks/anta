@@ -3,19 +3,19 @@
 ########### Software #############
 ##################################
 '01.01':
-  name: verify_eos_version  # Verifies if the device is running one of the allowed EOS version.
+  name: verify_eos_version  # Verifies the device is running one of the allowed EOS version.
   versions:  # List of allowed EOS versions.
   - 4.25.4M
   - 4.26.1F
 '01.02':
-  name: verify_terminattr_version  # Verifies if the device is running one of the allowed TerminAttr version.
+  name: verify_terminattr_version  # Verifies the device is running one of the allowed TerminAttr version.
   versions:  # List of allowed TerminAttr versions.
   - v1.13.6
   - v1.8.0
 '01.03':
-  name: verify_eos_extensions  # Verifies if all installed EOS extensions are enabled for boot persistence.
+  name: verify_eos_extensions  # Verifies all EOS extensions installed on the device are enabled for boot persistence.
 '01.04':
-  name: verify_field_notice_44_resolution  # Verifies if the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+  name: verify_field_notice_44_resolution  # Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 ##################################
 ############# System #############
 ##################################
@@ -150,9 +150,9 @@
 ############## BGP ###############
 ##################################
 '16.01':
-  name: verify_bgp_ipv4_unicast_state  # Verifies all IPv4 unicast BGP sessions are established (for all VRF).
+  name: verify_bgp_ipv4_unicast_state  # Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
 '16.02':
-  name: verify_bgp_ipv6_unicast_state  # Verifies all IPv6 unicast BGP sessions are established (for all VRF).
+  name: verify_bgp_ipv6_unicast_state  # Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
 '16.03':
   name: verify_bgp_evpn_state  # Verifies all EVPN BGP sessions are established.
 '16.04':
@@ -164,7 +164,7 @@
   name: verify_bgp_rtc_count  # Verifies all RTC BGP sessions are established. Verifies also if the actual number of BGP RTC neighbors is the one we expect.
   number: 2  # The expected number of BGP RTC neighbors.
 '16.07':
-  name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established. Verifies also if the actual number of BGP IPv4 unicast neighbors is the one we expect.
+  name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
   number: 2  # The expected number of BGP IPv4 unicast neighbors.
 ##################################
 ############## OSPF ##############

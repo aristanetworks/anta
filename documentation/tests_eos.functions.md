@@ -16,7 +16,7 @@ Module that defines various functions to test EOS devices.
 verify_eos_version(device, enable_password, versions=None)
 ```
 
-Verifies if the device is running one of the allowed EOS version. 
+Verifies the device is running one of the allowed EOS version. 
 
 
 
@@ -43,7 +43,7 @@ Verifies if the device is running one of the allowed EOS version.
 verify_terminattr_version(device, enable_password, versions=None)
 ```
 
-Verifies if the device is running one of the allowed TerminAttr version. 
+Verifies the device is running one of the allowed TerminAttr version. 
 
 
 
@@ -70,7 +70,7 @@ Verifies if the device is running one of the allowed TerminAttr version.
 verify_eos_extensions(device, enable_password)
 ```
 
-Verifies if all EOS extensions installed on the device are enabled for boot persistence. 
+Verifies all EOS extensions installed on the device are enabled for boot persistence. 
 
 
 
@@ -96,7 +96,7 @@ Verifies if all EOS extensions installed on the device are enabled for boot pers
 verify_field_notice_44_resolution(device, enable_password)
 ```
 
-Verifies if the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization). 
+Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization). 
 
 
 
@@ -122,7 +122,7 @@ Verifies if the device is using an Aboot version that fix the bug discussed in t
 verify_uptime(device, enable_password, min=None)
 ```
 
-Verifies if the device uptime is higher than a value. 
+Verifies the device uptime is higher than a value. 
 
 
 
@@ -149,7 +149,7 @@ Verifies if the device uptime is higher than a value.
 verify_reload_cause(device, enable_password)
 ```
 
-Verifies if the last reload of the device was requested by a user. 
+Verifies the last reload of the device was requested by a user. 
 
 
 
@@ -175,7 +175,7 @@ Verifies if the last reload of the device was requested by a user.
 verify_coredump(device, enable_password)
 ```
 
-Verifies there is no core file on the device. 
+Verifies there is no core file. 
 
 
 
@@ -227,7 +227,7 @@ Verifies there is no agent crash reported on the device.
 verify_syslog(device, enable_password)
 ```
 
-Verifies if the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days. 
+Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days. 
 
 
 
@@ -253,7 +253,7 @@ Verifies if the device had no syslog message with a severity of warning (or a mo
 verify_cpu_utilization(device, enable_password)
 ```
 
-Verifies if the device CPU utilization is less than 75%. 
+Verifies the device CPU utilization is less than 75%. 
 
 
 
@@ -279,7 +279,7 @@ Verifies if the device CPU utilization is less than 75%.
 verify_memory_utilization(device, enable_password)
 ```
 
-Verifies if the device memory utilization is less than 75%. 
+Verifies the device memory utilization is less than 75%. 
 
 
 
@@ -305,7 +305,7 @@ Verifies if the device memory utilization is less than 75%.
 verify_filesystem_utilization(device, enable_password)
 ```
 
-Verifies on the device if each partition on the disk is used less than 75%. 
+Verifies each partition on the disk is used less than 75%. 
 
 
 
@@ -331,7 +331,7 @@ Verifies on the device if each partition on the disk is used less than 75%.
 verify_transceivers_manufacturers(device, enable_password, manufacturers=None)
 ```
 
-Verifies if the device is only using transceivers from supported manufacturers. 
+Verifies the device is only using transceivers from supported manufacturers. 
 
 
 
@@ -358,7 +358,7 @@ Verifies if the device is only using transceivers from supported manufacturers.
 verify_system_temperature(device, enable_password)
 ```
 
-Verifies if the device temperature is currently OK and if the device did not report any temperature alarm in the past. 
+Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past. 
 
 
 
@@ -384,7 +384,7 @@ Verifies if the device temperature is currently OK and if the device did not rep
 verify_transceiver_temperature(device, enable_password)
 ```
 
-Verifies if the transceivers temperature is currently OK and if the device did not report any alarm in the past for its transceivers temperature. 
+Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature. 
 
 
 
@@ -410,7 +410,7 @@ Verifies if the transceivers temperature is currently OK and if the device did n
 verify_environment_cooling(device, enable_password)
 ```
 
-Verifies if the fans status is OK. 
+Verifies the fans status is OK. 
 
 
 
@@ -436,7 +436,7 @@ Verifies if the fans status is OK.
 verify_environment_power(device, enable_password)
 ```
 
-Verifies if the power supplies status is OK. 
+Verifies the power supplies status is OK. 
 
 
 
@@ -462,7 +462,7 @@ Verifies if the power supplies status is OK.
 verify_zerotouch(device, enable_password)
 ```
 
-Verifies if ZeroTouch is disabled. 
+Verifies ZeroTouch is disabled. 
 
 
 
@@ -488,7 +488,7 @@ Verifies if ZeroTouch is disabled.
 verify_running_config_diffs(device, enable_password)
 ```
 
-Verifies if there is no difference between the running-config and the startup-config. 
+Verifies there is no difference between the running-config and the startup-config. 
 
 
 
@@ -514,7 +514,7 @@ Verifies if there is no difference between the running-config and the startup-co
 verify_unified_forwarding_table_mode(device, enable_password, mode=None)
 ```
 
-Verifies if the device is using the expected Unified Forwarding Table mode. 
+Verifies the device is using the expected Unified Forwarding Table mode. 
 
 
 
@@ -541,7 +541,7 @@ Verifies if the device is using the expected Unified Forwarding Table mode.
 verify_tcam_profile(device, enable_password, profile)
 ```
 
-Verifies if the configured TCAM profile is the expected one. 
+Verifies the configured TCAM profile is the expected one. 
 
 
 
@@ -594,7 +594,7 @@ Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 verify_ntp(device, enable_password)
 ```
 
-Verifies on the device if NTP is synchronised. 
+Verifies NTP is synchronised. 
 
 
 
@@ -620,7 +620,7 @@ Verifies on the device if NTP is synchronised.
 verify_interface_utilization(device, enable_password)
 ```
 
-Verifies on the device if interfaces utilization is below 75%. 
+Verifies interfaces utilization is below 75%. 
 
 
 
@@ -646,7 +646,7 @@ Verifies on the device if interfaces utilization is below 75%.
 verify_interface_errors(device, enable_password)
 ```
 
-Verifies on the device if the interfaces error counters are equal to zero. 
+Verifies the interfaces error counters are equal to zero. 
 
 
 
@@ -672,7 +672,7 @@ Verifies on the device if the interfaces error counters are equal to zero.
 verify_interface_discards(device, enable_password)
 ```
 
-Verifies on the device if the interfaces packet discard counters are equal to zero. 
+Verifies the interfaces packet discard counters are equal to zero. 
 
 
 
@@ -698,7 +698,7 @@ Verifies on the device if the interfaces packet discard counters are equal to ze
 verify_interface_errdisabled(device, enable_password)
 ```
 
-Verifies on the device there is no interface in error disable state. 
+Verifies there is no interface in error disable state. 
 
 
 
@@ -724,7 +724,7 @@ Verifies on the device there is no interface in error disable state.
 verify_interfaces_status(device, enable_password, minimum=None)
 ```
 
-Verifies on the device if the number of Ethernet interfaces up/up on the device is higher or equal than a value. 
+Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value. 
 
 
 
@@ -751,7 +751,7 @@ Verifies on the device if the number of Ethernet interfaces up/up on the device 
 verify_storm_control_drops(device, enable_password)
 ```
 
-Verifies if the device dropped packets due to storm-control configuration. 
+Verifies the device did not drop packets due its to storm-control configuration. 
 
 
 
@@ -777,7 +777,7 @@ Verifies if the device dropped packets due to storm-control configuration.
 verify_portchannels(device, enable_password)
 ```
 
-Verifies on the device there is no inactive port in port channels. 
+Verifies there is no inactive port in port channels. 
 
 
 
@@ -803,7 +803,7 @@ Verifies on the device there is no inactive port in port channels.
 verify_illegal_lacp(device, enable_password)
 ```
 
-Verifies on the device there is no illegal LACP packets received. 
+Verifies there is no illegal LACP packets received. 
 
 
 
@@ -829,7 +829,7 @@ Verifies on the device there is no illegal LACP packets received.
 verify_mlag_status(device, enable_password)
 ```
 
-Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up. 
+Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up. 
 
 
 
@@ -855,7 +855,7 @@ Verifies on the device the MLAG status: state is active, negotiation status is c
 verify_mlag_interfaces(device, enable_password)
 ```
 
-Verifies on the device there is no inactive or active-partial MLAG interfaces. 
+Verifies there is no inactive or active-partial MLAG interfaces. 
 
 
 
@@ -881,7 +881,7 @@ Verifies on the device there is no inactive or active-partial MLAG interfaces.
 verify_mlag_config_sanity(device, enable_password)
 ```
 
-Verifies on the device if there is no MLAG config-sanity warnings. 
+Verifies there is no MLAG config-sanity warnings. 
 
 
 
@@ -907,7 +907,7 @@ Verifies on the device if there is no MLAG config-sanity warnings.
 verify_loopback_count(device, enable_password, number=None)
 ```
 
-Verifies if the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down. 
+Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down. 
 
 
 
@@ -934,7 +934,7 @@ Verifies if the number of loopback interfaces on the device is the one we expect
 verify_vxlan(device, enable_password)
 ```
 
-Verifies on the device if the interface vxlan 1 status is up/up. 
+Verifies the interface vxlan 1 status is up/up. 
 
 
 
@@ -960,7 +960,7 @@ Verifies on the device if the interface vxlan 1 status is up/up.
 verify_vxlan_config_sanity(device, enable_password)
 ```
 
-Verifies on the device if there is no VXLAN config-sanity warnings. 
+Verifies there is no VXLAN config-sanity warnings. 
 
 
 
@@ -986,7 +986,7 @@ Verifies on the device if there is no VXLAN config-sanity warnings.
 verify_svi(device, enable_password)
 ```
 
-Verifies on the device if there is no interface vlan down. 
+Verifies there is no interface vlan down. 
 
 
 
@@ -1012,7 +1012,7 @@ Verifies on the device if there is no interface vlan down.
 verify_spanning_tree_blocked_ports(device, enable_password)
 ```
 
-Verifies on the device if there is no spanning-tree blocked ports. 
+Verifies there is no spanning-tree blocked ports. 
 
 
 
@@ -1038,7 +1038,7 @@ Verifies on the device if there is no spanning-tree blocked ports.
 verify_routing_protocol_model(device, enable_password, model=None)
 ```
 
-Verifies on the device if the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model. 
+Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model. 
 
 
 
@@ -1065,7 +1065,7 @@ Verifies on the device if the configured routing protocol model is the one we ex
 verify_routing_table_size(device, enable_password, min=None, max=None)
 ```
 
-Verifies on the device if the size of the IP routing table (default VRF) is between two thresholds. 
+Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds). 
 
 
 
@@ -1093,7 +1093,7 @@ Verifies on the device if the size of the IP routing table (default VRF) is betw
 verify_bfd(device, enable_password)
 ```
 
-Verifies on the device there is no BFD peer in down state (default VRF, IPv4 neighbors). 
+Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors). 
 
 
 
@@ -1119,7 +1119,7 @@ Verifies on the device there is no BFD peer in down state (default VRF, IPv4 nei
 verify_bgp_ipv4_unicast_state(device, enable_password)
 ```
 
-Verifies on the device if all IPv4 unicast BGP sessions are established (for all VRF). 
+Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). 
 
 
 
@@ -1132,7 +1132,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established (for all
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established (for all VRF). `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues are empty (for all VRF). `False` otherwise. 
 
 
 ---
@@ -1142,10 +1142,10 @@ Verifies on the device if all IPv4 unicast BGP sessions are established (for all
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
 ```python
-verify_bgp_ipv4_unicast_count(device, enable_password, number)
+verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf='default')
 ```
 
-Verifies on the device if all IPv4 unicast BGP sessions are established and if the actual number of BGP IPv4 unicast neighbors is the one we expect. 
+Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect. 
 
 
 
@@ -1154,6 +1154,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established and if t
  - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  Expected number of BGP IPv4 unicast neighbors 
+ - <b>`vrf`</b> (str):  VRF to verify. 
 
 
 
@@ -1164,7 +1165,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established and if t
 
 ---
 
-<a href="../tests_eos/functions.py#L1115"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1119"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1172,7 +1173,7 @@ Verifies on the device if all IPv4 unicast BGP sessions are established and if t
 verify_bgp_ipv6_unicast_state(device, enable_password)
 ```
 
-Verifies on the device if all IPv6 unicast BGP sessions are established (for all VRF). 
+Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). 
 
 
 
@@ -1190,7 +1191,7 @@ Verifies on the device if all IPv6 unicast BGP sessions are established (for all
 
 ---
 
-<a href="../tests_eos/functions.py#L1140"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1144"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1198,7 +1199,7 @@ Verifies on the device if all IPv6 unicast BGP sessions are established (for all
 verify_bgp_evpn_state(device, enable_password)
 ```
 
-Verifies on the device if all EVPN BGP sessions are established. 
+Verifies all EVPN BGP sessions are established. 
 
 
 
@@ -1216,7 +1217,7 @@ Verifies on the device if all EVPN BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1165"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1169"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1224,7 +1225,7 @@ Verifies on the device if all EVPN BGP sessions are established.
 verify_bgp_evpn_count(device, enable_password, number)
 ```
 
-Verifies on the device if all EVPN BGP sessions are established and if the actual number of BGP EVPN neighbors is the one we expect. 
+Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN neighbors is the one we expect. 
 
 
 
@@ -1243,7 +1244,7 @@ Verifies on the device if all EVPN BGP sessions are established and if the actua
 
 ---
 
-<a href="../tests_eos/functions.py#L1195"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1199"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1269,7 +1270,7 @@ Verifies on the device if all RTC BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1220"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1224"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1277,7 +1278,7 @@ Verifies on the device if all RTC BGP sessions are established.
 verify_bgp_rtc_count(device, enable_password, number)
 ```
 
-Verifies on the device if all RTC BGP sessions are established and if the actual number of BGP RTC neighbors is the one we expect. 
+Verifies all RTC BGP sessions are established and the actual number of BGP RTC neighbors is the one we expect. 
 
 
 
@@ -1296,7 +1297,7 @@ Verifies on the device if all RTC BGP sessions are established and if the actual
 
 ---
 
-<a href="../tests_eos/functions.py#L1250"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1254"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_state`
 
@@ -1304,7 +1305,7 @@ Verifies on the device if all RTC BGP sessions are established and if the actual
 verify_ospf_state(device, enable_password)
 ```
 
-Verifies on the device if all OSPF neighbors are in FULL state. 
+Verifies all OSPF neighbors are in FULL state. 
 
 
 
@@ -1322,7 +1323,7 @@ Verifies on the device if all OSPF neighbors are in FULL state.
 
 ---
 
-<a href="../tests_eos/functions.py#L1271"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1275"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_count`
 
@@ -1330,7 +1331,7 @@ Verifies on the device if all OSPF neighbors are in FULL state.
 verify_ospf_count(device, enable_password, number=None)
 ```
 
-Verifies on the device if the number of OSPF neighbors in FULL state is the one we expect. 
+Verifies the number of OSPF neighbors in FULL state is the one we expect. 
 
 
 
@@ -1349,7 +1350,7 @@ Verifies on the device if the number of OSPF neighbors in FULL state is the one 
 
 ---
 
-<a href="../tests_eos/functions.py#L1295"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1299"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1357,7 +1358,7 @@ Verifies on the device if the number of OSPF neighbors in FULL state is the one 
 verify_igmp_snooping_vlans(device, enable_password, vlans, configuration)
 ```
 
-Verifies on the device the IGMP snooping configuration for some VLANs. 
+Verifies the IGMP snooping configuration for some VLANs. 
 
 
 
@@ -1377,7 +1378,7 @@ Verifies on the device the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1320"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1324"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 
@@ -1385,7 +1386,7 @@ Verifies on the device the IGMP snooping configuration for some VLANs.
 verify_igmp_snooping_global(device, enable_password, configuration)
 ```
 
-Verifies on the device the IGMP snooping global configuration. 
+Verifies the IGMP snooping global configuration. 
 
 
 
