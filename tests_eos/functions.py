@@ -1101,7 +1101,7 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
         return None
     try:
         count = 0
-        command = 'show bgp ipv4 unicast summary vrf' + vrf
+        command = 'show bgp ipv4 unicast summary vrf ' + vrf
         response = device.runCmds(1, [command], 'json')
         for peer in response[0]['vrfs'][vrf]['peers']:
             if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
