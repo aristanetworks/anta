@@ -37,10 +37,10 @@
 ## About this repository
 
 This repository has automation content to test Arista devices.
-It can be use for an NRFU (Network Ready For Use) testing or on a production network.  
+It can be use for an NRFU (Network Ready For Use) testing or on a production network.
 
-To run these tests, once you are done with the requirements described below, you simply need to indicate: 
-* Your devices name in a text file 
+To run these tests, once you are done with the requirements described below, you simply need to indicate:
+* Your devices name in a text file
 * The tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
 This repository has also content to:
@@ -181,7 +181,7 @@ print(result[0]['output'])
 ```
 ## List of available tests
 
-The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).  
+The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
 Each function returns `True` or `False` (or `None` when it can not run properly).
 
 The [documentation](documentation) directory has the tests documentation:
@@ -272,7 +272,7 @@ Test results are saved on output.txt
 ```
 ```
 $ cat output.txt
-Thu Feb 10 21:01:59 2022
+Mon Apr 11 19:12:58 2022
 devices inventory file was devices.txt
 devices username was ansible
 list of unreachable devices is
@@ -284,9 +284,9 @@ tests file was tests.yaml
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 |    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |
-|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |
+|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Fail  |   Pass  |   Pass  |
+|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
+|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 |    devices    |  02.08  |  03.01  |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |
@@ -305,17 +305,17 @@ tests file was tests.yaml
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 |    devices    |  09.05  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |  15.01  |  16.01  |  16.02  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
-|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
-|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Skip  |   Pass  |   Pass  |
+|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
+|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
+|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
 +---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  18.01  |  18.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.106  |   Pass  |   Skip  |   Pass  |   Skip  |   Fail  |   Pass  |   Skip  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  17.02  |  18.01  |  18.02  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.102  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
 
 ***** Tests *****
 
@@ -362,13 +362,14 @@ tests file was tests.yaml
 14.02    {"name": "verify_routing_table_size", "min": 2, "max": 20}
 15.01    {"name": "verify_bfd"}
 16.01    {"name": "verify_bgp_ipv4_unicast_state"}
-16.02    {"name": "verify_bgp_ipv6_unicast_state"}
-16.03    {"name": "verify_bgp_evpn_state"}
-16.04    {"name": "verify_bgp_rtc_state"}
+16.02    {"name": "verify_bgp_ipv4_unicast_count", "number": 2, "vrf": "default"}
+16.03    {"name": "verify_bgp_ipv6_unicast_state"}
+16.04    {"name": "verify_bgp_evpn_state"}
 16.05    {"name": "verify_bgp_evpn_count", "number": 2}
-16.06    {"name": "verify_bgp_rtc_count", "number": 2}
-16.07    {"name": "verify_bgp_ipv4_unicast_count", "number": 2}
-17.01    {"name": "verify_ospf", "number": 3}
+16.06    {"name": "verify_bgp_rtc_state"}
+16.07    {"name": "verify_bgp_rtc_count", "number": 2}
+17.01    {"name": "verify_ospf_state"}
+17.02    {"name": "verify_ospf_count", "number": 3}
 18.01    {"name": "verify_igmp_snooping_vlans", "configuration": "disabled", "vlans": [10, 12]}
 18.02    {"name": "verify_igmp_snooping_global", "configuration": "enabled"}
 ```
