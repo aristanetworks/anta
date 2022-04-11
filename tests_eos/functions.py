@@ -1247,17 +1247,38 @@ def verify_bgp_rtc_count(device, enable_password, number):
     except:
         return None
 
-def verify_ospf(device, enable_password, number = None):
+def verify_ospf_state(device, enable_password):
     """
-    Verifies on the device if the number of OSPF neighbors in FULL state.
+    Verifies on the device if all OSPF neighbors are in FULL state.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
-        number (int): The number of OSPF neighbors in FULL state.
 
     Returns:
-        bool: `True` if the number of OSPF neighbors in FULL state is the one we expected. `False` otherwise.
+        bool: `True` if all OSPF neighbors are in FULL state. `False` otherwise.
+
+    """
+    try:
+        response = device.runCmds(1, ['show ip ospf neighbor | exclude FULL|Address'], 'text')
+        if (response[0]['output'].count('\n') == 0) :
+            return True
+        else:
+            return False
+    except:
+        return None
+
+def verify_ospf_count(device, enable_password, number = None):
+    """
+    Verifies on the device if the number of OSPF neighbors in FULL state is the one we expect.
+
+    Args:
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
+        enable_password (str): Enable password.
+        number (int): The expected number of OSPF neighbors in FULL state.
+
+    Returns:
+        bool: `True` if the number of OSPF neighbors in FULL state is the one we expect. `False` otherwise.
 
     """
     if not number:

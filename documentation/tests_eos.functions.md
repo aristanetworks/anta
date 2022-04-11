@@ -1298,13 +1298,13 @@ Verifies on the device if all RTC BGP sessions are established and if the actual
 
 <a href="../tests_eos/functions.py#L1250"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>function</kbd> `verify_ospf`
+## <kbd>function</kbd> `verify_ospf_state`
 
 ```python
-verify_ospf(device, enable_password, number=None)
+verify_ospf_state(device, enable_password)
 ```
 
-Verifies on the device if the number of OSPF neighbors in FULL state. 
+Verifies on the device if all OSPF neighbors are in FULL state. 
 
 
 
@@ -1312,18 +1312,44 @@ Verifies on the device if the number of OSPF neighbors in FULL state.
  
  - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
- - <b>`number`</b> (int):  The number of OSPF neighbors in FULL state. 
 
 
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if the number of OSPF neighbors in FULL state is the one we expected. `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all OSPF neighbors are in FULL state. `False` otherwise. 
 
 
 ---
 
-<a href="../tests_eos/functions.py#L1274"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1271"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `verify_ospf_count`
+
+```python
+verify_ospf_count(device, enable_password, number=None)
+```
+
+Verifies on the device if the number of OSPF neighbors in FULL state is the one we expect. 
+
+
+
+**Args:**
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
+ - <b>`enable_password`</b> (str):  Enable password. 
+ - <b>`number`</b> (int):  The expected number of OSPF neighbors in FULL state. 
+
+
+
+**Returns:**
+ 
+ - <b>`bool`</b>:  `True` if the number of OSPF neighbors in FULL state is the one we expect. `False` otherwise. 
+
+
+---
+
+<a href="../tests_eos/functions.py#L1295"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1351,7 +1377,7 @@ Verifies on the device the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1299"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1320"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 

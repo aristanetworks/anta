@@ -44,7 +44,8 @@
 - [`functions.verify_mlag_interfaces`](./tests_eos.functions.md#function-verify_mlag_interfaces): Verifies on the device there is no inactive or active-partial MLAG interfaces.
 - [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies on the device the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
 - [`functions.verify_ntp`](./tests_eos.functions.md#function-verify_ntp): Verifies on the device if NTP is synchronised.
-- [`functions.verify_ospf`](./tests_eos.functions.md#function-verify_ospf): Verifies on the device if the number of OSPF neighbors in FULL state.
+- [`functions.verify_ospf_count`](./tests_eos.functions.md#function-verify_ospf_count): Verifies on the device if the number of OSPF neighbors in FULL state is the one we expect.
+- [`functions.verify_ospf_state`](./tests_eos.functions.md#function-verify_ospf_state): Verifies on the device if all OSPF neighbors are in FULL state.
 - [`functions.verify_portchannels`](./tests_eos.functions.md#function-verify_portchannels): Verifies on the device there is no inactive port in port channels.
 - [`functions.verify_reload_cause`](./tests_eos.functions.md#function-verify_reload_cause): Verifies if the last reload of the device was requested by a user.
 - [`functions.verify_routing_protocol_model`](./tests_eos.functions.md#function-verify_routing_protocol_model): Verifies on the device if the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.

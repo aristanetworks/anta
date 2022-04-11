@@ -170,8 +170,10 @@
 ############## OSPF ##############
 ##################################
 '17.01':
-  name: verify_ospf  # Validates the number of OSPF neighbors in FULL state.
-  number: 3  # expected number of OSPF neighbors in FULL state.
+  name: verify_ospf_state  # Verifies on the device if all OSPF neighbors are in FULL state.
+'17.02':
+  name: verify_ospf_count  # Verifies on the device if the number of OSPF neighbors in FULL state is the one we expect.
+  number: 3  # The expected number of OSPF neighbors in FULL state.
 ##################################
 ######## Multicast ###############
 ##################################
