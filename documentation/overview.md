@@ -15,15 +15,15 @@
 - [`functions.verify_adverse_drops`](./tests_eos.functions.md#function-verify_adverse_drops): Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 - [`functions.verify_agent_logs`](./tests_eos.functions.md#function-verify_agent_logs): Verifies there is no agent crash reported on the device.
 - [`functions.verify_bfd`](./tests_eos.functions.md#function-verify_bfd): Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
-- [`functions.verify_bgp_evpn_count`](./tests_eos.functions.md#function-verify_bgp_evpn_count): Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN neighbors is the one we expect.
-- [`functions.verify_bgp_evpn_state`](./tests_eos.functions.md#function-verify_bgp_evpn_state): Verifies all EVPN BGP sessions are established.
+- [`functions.verify_bgp_evpn_count`](./tests_eos.functions.md#function-verify_bgp_evpn_count): Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
+- [`functions.verify_bgp_evpn_state`](./tests_eos.functions.md#function-verify_bgp_evpn_state): Verifies all EVPN BGP sessions are established (default VRF).
 - [`functions.verify_bgp_ipv4_unicast_count`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_count): Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
 - [`functions.verify_bgp_ipv4_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_state): Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
 - [`functions.verify_bgp_ipv6_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv6_unicast_state): Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
-- [`functions.verify_bgp_rtc_count`](./tests_eos.functions.md#function-verify_bgp_rtc_count): Verifies all RTC BGP sessions are established and the actual number of BGP RTC neighbors is the one we expect.
-- [`functions.verify_bgp_rtc_state`](./tests_eos.functions.md#function-verify_bgp_rtc_state): Verifies on the device if all RTC BGP sessions are established.
+- [`functions.verify_bgp_rtc_count`](./tests_eos.functions.md#function-verify_bgp_rtc_count): Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).
+- [`functions.verify_bgp_rtc_state`](./tests_eos.functions.md#function-verify_bgp_rtc_state): Verifies all RTC BGP sessions are established (default VRF).
 - [`functions.verify_coredump`](./tests_eos.functions.md#function-verify_coredump): Verifies there is no core file.
-- [`functions.verify_cpu_utilization`](./tests_eos.functions.md#function-verify_cpu_utilization): Verifies the device CPU utilization is less than 75%.
+- [`functions.verify_cpu_utilization`](./tests_eos.functions.md#function-verify_cpu_utilization): Verifies the CPU utilization is less than 75%.
 - [`functions.verify_environment_cooling`](./tests_eos.functions.md#function-verify_environment_cooling): Verifies the fans status is OK.
 - [`functions.verify_environment_power`](./tests_eos.functions.md#function-verify_environment_power): Verifies the power supplies status is OK.
 - [`functions.verify_eos_extensions`](./tests_eos.functions.md#function-verify_eos_extensions): Verifies all EOS extensions installed on the device are enabled for boot persistence.
@@ -33,13 +33,13 @@
 - [`functions.verify_igmp_snooping_global`](./tests_eos.functions.md#function-verify_igmp_snooping_global): Verifies the IGMP snooping global configuration.
 - [`functions.verify_igmp_snooping_vlans`](./tests_eos.functions.md#function-verify_igmp_snooping_vlans): Verifies the IGMP snooping configuration for some VLANs.
 - [`functions.verify_illegal_lacp`](./tests_eos.functions.md#function-verify_illegal_lacp): Verifies there is no illegal LACP packets received.
-- [`functions.verify_interface_discards`](./tests_eos.functions.md#function-verify_interface_discards): Verifies the interfaces packet discard counters are equal to zero.
+- [`functions.verify_interface_discards`](./tests_eos.functions.md#function-verify_interface_discards): Verifies interfaces packet discard counters are equal to zero.
 - [`functions.verify_interface_errdisabled`](./tests_eos.functions.md#function-verify_interface_errdisabled): Verifies there is no interface in error disable state.
-- [`functions.verify_interface_errors`](./tests_eos.functions.md#function-verify_interface_errors): Verifies the interfaces error counters are equal to zero.
+- [`functions.verify_interface_errors`](./tests_eos.functions.md#function-verify_interface_errors): Verifies interfaces error counters are equal to zero.
 - [`functions.verify_interface_utilization`](./tests_eos.functions.md#function-verify_interface_utilization): Verifies interfaces utilization is below 75%.
 - [`functions.verify_interfaces_status`](./tests_eos.functions.md#function-verify_interfaces_status): Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
 - [`functions.verify_loopback_count`](./tests_eos.functions.md#function-verify_loopback_count): Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
-- [`functions.verify_memory_utilization`](./tests_eos.functions.md#function-verify_memory_utilization): Verifies the device memory utilization is less than 75%.
+- [`functions.verify_memory_utilization`](./tests_eos.functions.md#function-verify_memory_utilization): Verifies the memory utilization is less than 75%.
 - [`functions.verify_mlag_config_sanity`](./tests_eos.functions.md#function-verify_mlag_config_sanity): Verifies there is no MLAG config-sanity warnings.
 - [`functions.verify_mlag_interfaces`](./tests_eos.functions.md#function-verify_mlag_interfaces): Verifies there is no inactive or active-partial MLAG interfaces.
 - [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.

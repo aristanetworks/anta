@@ -279,7 +279,7 @@ def verify_syslog(device, enable_password):
 
 def verify_cpu_utilization(device, enable_password):
     """
-    Verifies the device CPU utilization is less than 75%.
+    Verifies the CPU utilization is less than 75%.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -300,7 +300,7 @@ def verify_cpu_utilization(device, enable_password):
 
 def verify_memory_utilization(device, enable_password):
     """
-    Verifies the device memory utilization is less than 75%.
+    Verifies the memory utilization is less than 75%.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -514,7 +514,6 @@ def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
         bool: `True` if the device is using the expected Unified Forwarding Table mode. `False` otherwise.
 
     """
-
     if not mode:
         return None
     try:
@@ -625,7 +624,7 @@ def verify_interface_utilization(device, enable_password):
 def verify_interface_errors(device, enable_password):
 
     """
-    Verifies the interfaces error counters are equal to zero.
+    Verifies interfaces error counters are equal to zero.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -648,7 +647,7 @@ def verify_interface_errors(device, enable_password):
 def verify_interface_discards(device, enable_password):
 
     """
-    Verifies the interfaces packet discard counters are equal to zero.
+    Verifies interfaces packet discard counters are equal to zero.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -1144,7 +1143,7 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
 def verify_bgp_evpn_state(device, enable_password):
 
     """
-    Verifies all EVPN BGP sessions are established.
+    Verifies all EVPN BGP sessions are established (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -1168,12 +1167,12 @@ def verify_bgp_evpn_state(device, enable_password):
 
 def verify_bgp_evpn_count(device, enable_password, number):
     """
-    Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN neighbors is the one we expect.
+    Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
-        number (int): The expected number of BGP EVPN neighbors
+        number (int): The expected number of BGP EVPN neighbors in the default VRF.
 
     Returns:
         bool: `True` if all EVPN BGP sessions are established and if the actual number of BGP EVPN neighbors is the one we expect. `False` otherwise.
@@ -1199,7 +1198,7 @@ def verify_bgp_evpn_count(device, enable_password, number):
 def verify_bgp_rtc_state(device, enable_password):
 
     """
-    Verifies on the device if all RTC BGP sessions are established.
+    Verifies all RTC BGP sessions are established (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
@@ -1223,12 +1222,12 @@ def verify_bgp_rtc_state(device, enable_password):
 
 def verify_bgp_rtc_count(device, enable_password, number):
     """
-    Verifies all RTC BGP sessions are established and the actual number of BGP RTC neighbors is the one we expect.
+    Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
-        number (int): The expected number of BGP RTC neighbors
+        number (int): The expected number of BGP RTC neighbors (default VRF).
 
     Returns:
         bool: `True` if all RTC BGP sessions are established and if the actual number of BGP RTC neighbors is the one we expect. `False` otherwise.
@@ -1289,7 +1288,7 @@ def verify_ospf_count(device, enable_password, number = None):
         return None
     try:
         response = device.runCmds(1, ['show ip ospf neighbor | exclude  Address'], 'text')
-        if (response[0]['output'].count('\n') == number) and (response[0]['output'].count('FULL') == number) :
+        if (response[0]['output'].count('FULL') == number) :
             return True
         else:
             return False

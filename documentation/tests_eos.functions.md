@@ -253,7 +253,7 @@ Verifies the device had no syslog message with a severity of warning (or a more 
 verify_cpu_utilization(device, enable_password)
 ```
 
-Verifies the device CPU utilization is less than 75%. 
+Verifies the CPU utilization is less than 75%. 
 
 
 
@@ -279,7 +279,7 @@ Verifies the device CPU utilization is less than 75%.
 verify_memory_utilization(device, enable_password)
 ```
 
-Verifies the device memory utilization is less than 75%. 
+Verifies the memory utilization is less than 75%. 
 
 
 
@@ -533,7 +533,7 @@ Verifies the device is using the expected Unified Forwarding Table mode.
 
 ---
 
-<a href="../tests_eos/functions.py#L529"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L528"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_tcam_profile`
 
@@ -560,7 +560,7 @@ Verifies the configured TCAM profile is the expected one.
 
 ---
 
-<a href="../tests_eos/functions.py#L552"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L551"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_adverse_drops`
 
@@ -586,7 +586,7 @@ Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
 ---
 
-<a href="../tests_eos/functions.py#L575"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L574"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ntp`
 
@@ -612,7 +612,7 @@ Verifies NTP is synchronised.
 
 ---
 
-<a href="../tests_eos/functions.py#L598"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L597"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_utilization`
 
@@ -638,7 +638,7 @@ Verifies interfaces utilization is below 75%.
 
 ---
 
-<a href="../tests_eos/functions.py#L625"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L624"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errors`
 
@@ -646,7 +646,7 @@ Verifies interfaces utilization is below 75%.
 verify_interface_errors(device, enable_password)
 ```
 
-Verifies the interfaces error counters are equal to zero. 
+Verifies interfaces error counters are equal to zero. 
 
 
 
@@ -664,7 +664,7 @@ Verifies the interfaces error counters are equal to zero.
 
 ---
 
-<a href="../tests_eos/functions.py#L648"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L647"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_discards`
 
@@ -672,7 +672,7 @@ Verifies the interfaces error counters are equal to zero.
 verify_interface_discards(device, enable_password)
 ```
 
-Verifies the interfaces packet discard counters are equal to zero. 
+Verifies interfaces packet discard counters are equal to zero. 
 
 
 
@@ -690,7 +690,7 @@ Verifies the interfaces packet discard counters are equal to zero.
 
 ---
 
-<a href="../tests_eos/functions.py#L671"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L670"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errdisabled`
 
@@ -716,7 +716,7 @@ Verifies there is no interface in error disable state.
 
 ---
 
-<a href="../tests_eos/functions.py#L694"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L693"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interfaces_status`
 
@@ -743,7 +743,7 @@ Verifies the number of Ethernet interfaces up/up on the device is higher or equa
 
 ---
 
-<a href="../tests_eos/functions.py#L723"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L722"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_storm_control_drops`
 
@@ -769,7 +769,7 @@ Verifies the device did not drop packets due its to storm-control configuration.
 
 ---
 
-<a href="../tests_eos/functions.py#L746"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L745"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_portchannels`
 
@@ -795,7 +795,7 @@ Verifies there is no inactive port in port channels.
 
 ---
 
-<a href="../tests_eos/functions.py#L771"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L770"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_illegal_lacp`
 
@@ -821,7 +821,7 @@ Verifies there is no illegal LACP packets received.
 
 ---
 
-<a href="../tests_eos/functions.py#L798"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L797"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_status`
 
@@ -847,7 +847,7 @@ Verifies the MLAG status: state is active, negotiation status is connected, loca
 
 ---
 
-<a href="../tests_eos/functions.py#L828"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L827"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_interfaces`
 
@@ -873,7 +873,7 @@ Verifies there is no inactive or active-partial MLAG interfaces.
 
 ---
 
-<a href="../tests_eos/functions.py#L854"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L853"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_config_sanity`
 
@@ -899,7 +899,7 @@ Verifies there is no MLAG config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L880"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L879"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_loopback_count`
 
@@ -926,7 +926,7 @@ Verifies the number of loopback interfaces on the device is the one we expect. A
 
 ---
 
-<a href="../tests_eos/functions.py#L904"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L903"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan`
 
@@ -952,7 +952,7 @@ Verifies the interface vxlan 1 status is up/up.
 
 ---
 
-<a href="../tests_eos/functions.py#L925"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L924"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan_config_sanity`
 
@@ -978,7 +978,7 @@ Verifies there is no VXLAN config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L949"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L948"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_svi`
 
@@ -1004,7 +1004,7 @@ Verifies there is no interface vlan down.
 
 ---
 
-<a href="../tests_eos/functions.py#L969"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L968"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_spanning_tree_blocked_ports`
 
@@ -1030,7 +1030,7 @@ Verifies there is no spanning-tree blocked ports.
 
 ---
 
-<a href="../tests_eos/functions.py#L990"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L989"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_protocol_model`
 
@@ -1057,7 +1057,7 @@ Verifies the configured routing protocol model is the one we expect. And if ther
 
 ---
 
-<a href="../tests_eos/functions.py#L1014"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1013"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_table_size`
 
@@ -1085,7 +1085,7 @@ Verifies the size of the IP routing table (default VRF) (should be between the t
 
 ---
 
-<a href="../tests_eos/functions.py#L1038"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1037"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bfd`
 
@@ -1111,7 +1111,7 @@ Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
 
 ---
 
-<a href="../tests_eos/functions.py#L1060"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1059"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_state`
 
@@ -1137,7 +1137,7 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../tests_eos/functions.py#L1085"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1084"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
@@ -1165,7 +1165,7 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 ---
 
-<a href="../tests_eos/functions.py#L1119"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1118"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1191,7 +1191,7 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../tests_eos/functions.py#L1144"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1143"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1199,7 +1199,7 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 verify_bgp_evpn_state(device, enable_password)
 ```
 
-Verifies all EVPN BGP sessions are established. 
+Verifies all EVPN BGP sessions are established (default VRF). 
 
 
 
@@ -1217,7 +1217,7 @@ Verifies all EVPN BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1169"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1168"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1225,7 +1225,7 @@ Verifies all EVPN BGP sessions are established.
 verify_bgp_evpn_count(device, enable_password, number)
 ```
 
-Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN neighbors is the one we expect. 
+Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF). 
 
 
 
@@ -1233,7 +1233,7 @@ Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN
  
  - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
- - <b>`number`</b> (int):  The expected number of BGP EVPN neighbors 
+ - <b>`number`</b> (int):  The expected number of BGP EVPN neighbors in the default VRF. 
 
 
 
@@ -1244,7 +1244,7 @@ Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN
 
 ---
 
-<a href="../tests_eos/functions.py#L1199"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1198"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1252,7 +1252,7 @@ Verifies all EVPN BGP sessions are established and the actual number of BGP EVPN
 verify_bgp_rtc_state(device, enable_password)
 ```
 
-Verifies on the device if all RTC BGP sessions are established. 
+Verifies all RTC BGP sessions are established (default VRF). 
 
 
 
@@ -1270,7 +1270,7 @@ Verifies on the device if all RTC BGP sessions are established.
 
 ---
 
-<a href="../tests_eos/functions.py#L1224"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1223"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1278,7 +1278,7 @@ Verifies on the device if all RTC BGP sessions are established.
 verify_bgp_rtc_count(device, enable_password, number)
 ```
 
-Verifies all RTC BGP sessions are established and the actual number of BGP RTC neighbors is the one we expect. 
+Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF). 
 
 
 
@@ -1286,7 +1286,7 @@ Verifies all RTC BGP sessions are established and the actual number of BGP RTC n
  
  - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
- - <b>`number`</b> (int):  The expected number of BGP RTC neighbors 
+ - <b>`number`</b> (int):  The expected number of BGP RTC neighbors (default VRF). 
 
 
 
@@ -1297,7 +1297,7 @@ Verifies all RTC BGP sessions are established and the actual number of BGP RTC n
 
 ---
 
-<a href="../tests_eos/functions.py#L1254"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1253"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_state`
 
@@ -1323,7 +1323,7 @@ Verifies all OSPF neighbors are in FULL state.
 
 ---
 
-<a href="../tests_eos/functions.py#L1275"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1274"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_count`
 
@@ -1350,7 +1350,7 @@ Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 ---
 
-<a href="../tests_eos/functions.py#L1299"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1298"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1378,7 +1378,7 @@ Verifies the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1324"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1323"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 
