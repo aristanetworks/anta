@@ -1093,7 +1093,7 @@ Verifies the size of the IP routing table (default VRF) (should be between the t
 verify_bfd(device, enable_password)
 ```
 
-Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors). 
+Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors). 
 
 
 
@@ -1106,12 +1106,12 @@ Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if there is no BFD peer in down state (default VRF, IPv4 neighbors, single-hop). `False` otherwise. 
+ - <b>`bool`</b>:  `True` if there is no BFD peer in down state (all VRF, IPv4 neighbors, single-hop). `False` otherwise. 
 
 
 ---
 
-<a href="../tests_eos/functions.py#L1059"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1060"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_state`
 
@@ -1137,7 +1137,7 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../tests_eos/functions.py#L1084"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1085"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
@@ -1165,7 +1165,7 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 ---
 
-<a href="../tests_eos/functions.py#L1118"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1119"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1191,7 +1191,7 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../tests_eos/functions.py#L1143"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1144"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1217,7 +1217,7 @@ Verifies all EVPN BGP sessions are established (default VRF).
 
 ---
 
-<a href="../tests_eos/functions.py#L1168"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1169"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1244,7 +1244,7 @@ Verifies all EVPN BGP sessions are established (default VRF) and the actual numb
 
 ---
 
-<a href="../tests_eos/functions.py#L1198"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1199"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1270,7 +1270,7 @@ Verifies all RTC BGP sessions are established (default VRF).
 
 ---
 
-<a href="../tests_eos/functions.py#L1223"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1224"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1297,7 +1297,7 @@ Verifies all RTC BGP sessions are established (default VRF) and the actual numbe
 
 ---
 
-<a href="../tests_eos/functions.py#L1253"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1254"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_state`
 
@@ -1323,7 +1323,7 @@ Verifies all OSPF neighbors are in FULL state.
 
 ---
 
-<a href="../tests_eos/functions.py#L1274"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1275"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_count`
 
@@ -1350,7 +1350,7 @@ Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 ---
 
-<a href="../tests_eos/functions.py#L1298"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1299"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1378,7 +1378,7 @@ Verifies the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1323"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1324"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 

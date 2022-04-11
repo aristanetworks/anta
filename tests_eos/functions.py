@@ -1036,23 +1036,24 @@ def verify_routing_table_size(device, enable_password, min = None, max = None):
 
 def verify_bfd(device, enable_password):
     """
-    Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
+    Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no BFD peer in down state (default VRF, IPv4 neighbors, single-hop). `False` otherwise.
+        bool: `True` if there is no BFD peer in down state (all VRF, IPv4 neighbors, single-hop). `False` otherwise.
 
     """
     try:
         response = device.runCmds(1, ['show bfd peers'], 'json')
-        for neighbor in response[0]['vrfs']['default']['ipv4Neighbors']:
-            for interface in response[0]['vrfs']['default']['ipv4Neighbors'][neighbor]['peerStats']:
-                if response[0]['vrfs']['default']['ipv4Neighbors'][neighbor]['peerStats'][interface]['status'] != 'up':
-                        return False
-        return True
+        for vrf in response[0]['vrfs']:
+            for neighbor in response[0]['vrfs'][vrf]['ipv4Neighbors']:
+                for interface in response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats']:
+                    if response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats'][interface]['status'] != 'up':
+                            return False
+            return True
     except:
         return None
 

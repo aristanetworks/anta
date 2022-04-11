@@ -14,7 +14,7 @@
 
 - [`functions.verify_adverse_drops`](./tests_eos.functions.md#function-verify_adverse_drops): Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 - [`functions.verify_agent_logs`](./tests_eos.functions.md#function-verify_agent_logs): Verifies there is no agent crash reported on the device.
-- [`functions.verify_bfd`](./tests_eos.functions.md#function-verify_bfd): Verifies there is no BFD peer in down state (default VRF, IPv4 neighbors).
+- [`functions.verify_bfd`](./tests_eos.functions.md#function-verify_bfd): Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 - [`functions.verify_bgp_evpn_count`](./tests_eos.functions.md#function-verify_bgp_evpn_count): Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
 - [`functions.verify_bgp_evpn_state`](./tests_eos.functions.md#function-verify_bgp_evpn_state): Verifies all EVPN BGP sessions are established (default VRF).
 - [`functions.verify_bgp_ipv4_unicast_count`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_count): Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
