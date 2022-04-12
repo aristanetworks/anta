@@ -13,10 +13,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install dev requirements
+      - name: install requirements
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+      - name: install dev requirements
+        run: |
+          pip install -r requirements-dev.txt  
       - name: validate the syntax of python scripts
         run: |
           python -m py_compile $(git ls-files '*.py')
