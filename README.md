@@ -43,7 +43,7 @@ To run these tests, once you are done with the requirements described below, you
 * Your devices name in a text file
 * The tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
-This repository has also content to:
+In addition to automation content to test devices, this repository has also content to:
 * Collect commands output on devices.
 * Clear counters on devices.
 * Test the devices reachability.
