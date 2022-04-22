@@ -113,7 +113,7 @@ def main():
             scp.get("/mnt/flash/schedule/all_files.zip",local_path = my_path)
             scp.close()
             # Delete the created zip file on the device
-            cmds=[bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
+            cmds=['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
             switch.runCmds(1,cmds, 'text')
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
