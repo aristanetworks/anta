@@ -81,11 +81,7 @@ pip install -r requirements.txt
 Verify
 
 ```shell
-pip list | grep 'jsonrpclib-pelix\|PyYAML\|colorama\|prettytable'
-colorama                   0.3.7
-jsonrpclib-pelix           0.4.2
-prettytable                2.5.0
-PyYAML                     5.4.1
+pip list
 ```
 
 ### Requirements on the switches

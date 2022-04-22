@@ -6,7 +6,7 @@ Please open an issue and submit a PR.
 
 The file [requirements-dev.txt](requirements-dev.txt) has the required packages to contribute:
 * `lazydocs` is used by the script [generate_functions_documentation.py](generate_functions_documentation.py) to generate the functions documentation in markdown format from the functions docstring.
-* pytest` is required to use the script [unit_test.py](unit_test.py) in order to test the functions defined in the directory [test_eos](test_eos).
+* `pytest` is required to use the script [unit_test.py](unit_test.py) in order to test the functions defined in the directory [test_eos](test_eos).
 * `pytest-cov` is used to produce code coverage reports.
 * `pylint` is a linter for python.
 * `yamllint` is a linter for YAML files.
