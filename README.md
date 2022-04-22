@@ -5,18 +5,18 @@
 
 - [Network tests automation](#network-tests-automation)
   - [About this repository](#about-this-repository)
+  - [List of available tests](#list-of-available-tests)
+  - [Devices testing demo](#devices-testing-demo)
   - [Requirements](#requirements)
     - [Requirements on your laptop](#requirements-on-your-laptop)
     - [Requirements on the switches](#requirements-on-the-switches)
     - [Quick test](#quick-test)
-  - [List of available tests](#list-of-available-tests)
   - [Repository usage](#repository-usage)
     - [To test devices reachability](#to-test-devices-reachability)
     - [To run tests on devices](#to-run-tests-on-devices)
     - [To collect commands output from EOS devices](#to-collect-commands-output-from-eos-devices)
     - [To clear counters on EOS devices](#to-clear-counters-on-eos-devices)
     - [To clear on devices the list of MAC addresses which are blacklisted in EVPN](#to-clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
-    - [Demo](#demo)
   - [Repository structure](#repository-structure)
     - [devices.txt file](#devicestxt-file)
     - [eos-commands.yaml file](#eos-commandsyaml-file)
@@ -40,16 +40,145 @@ This repository has automation content to test Arista devices.
 It can be use for an NRFU (Network Ready For Use) testing or on a production network.
 
 To run these tests, once you are done with the requirements described below, you simply need to indicate:
-* Your devices name in a text file
+* Your devices name or IP address in a text file. Here's an [example](devices.txt).
 * The tests you would like to run in a YAML file. Here's an [example](tests.yaml).
 
 In addition to automation content to test devices, this repository has also content to:
 * Collect commands output on devices.
 * Clear counters on devices.
 * Test the devices reachability.
-* Clear the list of MAC addresses which are blacklisted in EVPN
+* Clear the list of MAC addresses which are blacklisted in EVPN.
+* Collect scheduled show tech-support from devices.
 
 This repository uses Python scripts and eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
+
+## List of available tests
+
+The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
+Each function returns `True` or `False` (or `None` when it can not run properly).
+
+The [documentation](documentation) directory has the tests documentation:
+* [overview.md](documentation/overview.md) file
+* [tests_eos.functions.md](documentation/tests_eos.functions.md) file
+
+We indicate the tests we would like to run in a YAML file. Some tests require an input. Here's an [example](tests.yaml).
+
+## Devices testing demo
+
+```
+./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
+Device password:
+Enable password (if any):
+Testing devices .... please be patient ...
+Can not connect to device 2.2.2.2
+Running tests on device 10.73.1.101 ...
+Running tests on device 10.73.1.102 ...
+Running tests on device 10.73.1.106 ...
+Test results are saved on output.txt
+```
+```
+$ cat output.txt
+Mon Apr 11 19:12:58 2022
+devices inventory file was devices.txt
+devices username was ansible
+list of unreachable devices is
+2.2.2.2
+tests file was tests.yaml
+
+***** Results *****
+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Fail  |   Pass  |   Pass  |
+|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
+|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  02.08  |  03.01  |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.106  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  07.01  |  08.01  |  08.02  |  08.03  |  08.04  |  08.05  |  08.06  |  09.01  |  09.02  |  09.03  |  09.04  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.102  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
+|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Fail  |   Pass  |   Pass  |   Fail  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  09.05  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |  15.01  |  16.01  |  16.02  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
+|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
+|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  17.02  |  18.01  |  18.02  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|  10.73.1.101  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.102  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
+|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
++---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+
+***** Tests *****
+
+01.01    {"name": "verify_eos_version", "versions": ["4.25.4M", "4.26.1F"]}
+01.02    {"name": "verify_terminattr_version", "versions": ["v1.13.6", "v1.8.0"]}
+01.03    {"name": "verify_eos_extensions"}
+01.04    {"name": "verify_field_notice_44_resolution"}
+02.01    {"name": "verify_uptime", "min": 86400}
+02.02    {"name": "verify_reload_cause"}
+02.03    {"name": "verify_coredump"}
+02.04    {"name": "verify_agent_logs"}
+02.05    {"name": "verify_syslog"}
+02.06    {"name": "verify_cpu_utilization"}
+02.07    {"name": "verify_memory_utilization"}
+02.08    {"name": "verify_filesystem_utilization"}
+03.01    {"name": "verify_transceivers_manufacturers", "manufacturers": ["Not Present", "Arista Networks", "Arastra, Inc."]}
+03.02    {"name": "verify_system_temperature"}
+03.03    {"name": "verify_transceiver_temperature"}
+03.04    {"name": "verify_environment_cooling"}
+03.05    {"name": "verify_environment_power"}
+04.01    {"name": "verify_zerotouch"}
+04.02    {"name": "verify_running_config_diffs"}
+05.01    {"name": "verify_unified_forwarding_table_mode", "mode": 3}
+05.02    {"name": "verify_tcam_profile", "profile": "vxlan-routing"}
+06.01    {"name": "verify_adverse_drops"}
+07.01    {"name": "verify_ntp"}
+08.01    {"name": "verify_interface_utilization"}
+08.02    {"name": "verify_interface_errors"}
+08.03    {"name": "verify_interface_discards"}
+08.04    {"name": "verify_interface_errdisabled"}
+08.05    {"name": "verify_interfaces_status", "minimum": 4}
+08.06    {"name": "verify_storm_control_drops"}
+09.01    {"name": "verify_portchannels"}
+09.02    {"name": "verify_illegal_lacp"}
+09.03    {"name": "verify_mlag_status"}
+09.04    {"name": "verify_mlag_interfaces"}
+09.05    {"name": "verify_mlag_config_sanity"}
+10.01    {"name": "verify_loopback_count", "number": 3}
+11.01    {"name": "verify_vxlan"}
+11.02    {"name": "verify_vxlan_config_sanity"}
+12.01    {"name": "verify_svi"}
+13.01    {"name": "verify_spanning_tree_blocked_ports"}
+14.01    {"name": "verify_routing_protocol_model", "model": "multi-agent"}
+14.02    {"name": "verify_routing_table_size", "min": 2, "max": 20}
+15.01    {"name": "verify_bfd"}
+16.01    {"name": "verify_bgp_ipv4_unicast_state"}
+16.02    {"name": "verify_bgp_ipv4_unicast_count", "number": 2, "vrf": "default"}
+16.03    {"name": "verify_bgp_ipv6_unicast_state"}
+16.04    {"name": "verify_bgp_evpn_state"}
+16.05    {"name": "verify_bgp_evpn_count", "number": 2}
+16.06    {"name": "verify_bgp_rtc_state"}
+16.07    {"name": "verify_bgp_rtc_count", "number": 2}
+17.01    {"name": "verify_ospf_state"}
+17.02    {"name": "verify_ospf_count", "number": 3}
+18.01    {"name": "verify_igmp_snooping_vlans", "configuration": "disabled", "vlans": [10, 12]}
+18.02    {"name": "verify_igmp_snooping_global", "configuration": "enabled"}
+```
 
 ## Requirements
 
@@ -175,17 +304,6 @@ switch = Server(url)
 result=switch.runCmds(1,['show version'], 'text')
 print(result[0]['output'])
 ```
-## List of available tests
-
-The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
-Each function returns `True` or `False` (or `None` when it can not run properly).
-
-The [documentation](documentation) directory has the tests documentation:
-* [overview.md](documentation/overview.md) file
-* [tests_eos.functions.md](documentation/tests_eos.functions.md) file
-
-We indicate the tests we would like to run in a YAML file. Some tests require an input. Here's an [example](tests.yaml).
-
 ## Repository usage
 
 * Clone this repository.
@@ -253,123 +371,6 @@ vi devices-list.text
 ./evpn-blacklist-recovery.py --help
 ./evpn-blacklist-recovery.py -i devices.txt -u username
 ```
-### Demo
-
-```
-./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
-Device password:
-Enable password (if any):
-Testing devices .... please be patient ...
-Can not connect to device 2.2.2.2
-Running tests on device 10.73.1.101 ...
-Running tests on device 10.73.1.102 ...
-Running tests on device 10.73.1.106 ...
-Test results are saved on output.txt
-```
-```
-$ cat output.txt
-Mon Apr 11 19:12:58 2022
-devices inventory file was devices.txt
-devices username was ansible
-list of unreachable devices is
-2.2.2.2
-tests file was tests.yaml
-
-***** Results *****
-
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Fail  |   Pass  |   Pass  |
-|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
-|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  02.08  |  03.01  |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.106  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  07.01  |  08.01  |  08.02  |  08.03  |  08.04  |  08.05  |  08.06  |  09.01  |  09.02  |  09.03  |  09.04  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.102  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Fail  |   Pass  |   Pass  |   Fail  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  09.05  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |  15.01  |  16.01  |  16.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  17.02  |  18.01  |  18.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.102  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-
-***** Tests *****
-
-01.01    {"name": "verify_eos_version", "versions": ["4.25.4M", "4.26.1F"]}
-01.02    {"name": "verify_terminattr_version", "versions": ["v1.13.6", "v1.8.0"]}
-01.03    {"name": "verify_eos_extensions"}
-01.04    {"name": "verify_field_notice_44_resolution"}
-02.01    {"name": "verify_uptime", "min": 86400}
-02.02    {"name": "verify_reload_cause"}
-02.03    {"name": "verify_coredump"}
-02.04    {"name": "verify_agent_logs"}
-02.05    {"name": "verify_syslog"}
-02.06    {"name": "verify_cpu_utilization"}
-02.07    {"name": "verify_memory_utilization"}
-02.08    {"name": "verify_filesystem_utilization"}
-03.01    {"name": "verify_transceivers_manufacturers", "manufacturers": ["Not Present", "Arista Networks", "Arastra, Inc."]}
-03.02    {"name": "verify_system_temperature"}
-03.03    {"name": "verify_transceiver_temperature"}
-03.04    {"name": "verify_environment_cooling"}
-03.05    {"name": "verify_environment_power"}
-04.01    {"name": "verify_zerotouch"}
-04.02    {"name": "verify_running_config_diffs"}
-05.01    {"name": "verify_unified_forwarding_table_mode", "mode": 3}
-05.02    {"name": "verify_tcam_profile", "profile": "vxlan-routing"}
-06.01    {"name": "verify_adverse_drops"}
-07.01    {"name": "verify_ntp"}
-08.01    {"name": "verify_interface_utilization"}
-08.02    {"name": "verify_interface_errors"}
-08.03    {"name": "verify_interface_discards"}
-08.04    {"name": "verify_interface_errdisabled"}
-08.05    {"name": "verify_interfaces_status", "minimum": 4}
-08.06    {"name": "verify_storm_control_drops"}
-09.01    {"name": "verify_portchannels"}
-09.02    {"name": "verify_illegal_lacp"}
-09.03    {"name": "verify_mlag_status"}
-09.04    {"name": "verify_mlag_interfaces"}
-09.05    {"name": "verify_mlag_config_sanity"}
-10.01    {"name": "verify_loopback_count", "number": 3}
-11.01    {"name": "verify_vxlan"}
-11.02    {"name": "verify_vxlan_config_sanity"}
-12.01    {"name": "verify_svi"}
-13.01    {"name": "verify_spanning_tree_blocked_ports"}
-14.01    {"name": "verify_routing_protocol_model", "model": "multi-agent"}
-14.02    {"name": "verify_routing_table_size", "min": 2, "max": 20}
-15.01    {"name": "verify_bfd"}
-16.01    {"name": "verify_bgp_ipv4_unicast_state"}
-16.02    {"name": "verify_bgp_ipv4_unicast_count", "number": 2, "vrf": "default"}
-16.03    {"name": "verify_bgp_ipv6_unicast_state"}
-16.04    {"name": "verify_bgp_evpn_state"}
-16.05    {"name": "verify_bgp_evpn_count", "number": 2}
-16.06    {"name": "verify_bgp_rtc_state"}
-16.07    {"name": "verify_bgp_rtc_count", "number": 2}
-17.01    {"name": "verify_ospf_state"}
-17.02    {"name": "verify_ospf_count", "number": 3}
-18.01    {"name": "verify_igmp_snooping_vlans", "configuration": "disabled", "vlans": [10, 12]}
-18.02    {"name": "verify_igmp_snooping_global", "configuration": "enabled"}
-```
-
 
 ## Repository structure
 
