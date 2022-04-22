@@ -17,6 +17,7 @@
     - [To collect commands output from EOS devices](#to-collect-commands-output-from-eos-devices)
     - [To clear counters on EOS devices](#to-clear-counters-on-eos-devices)
     - [To clear on devices the list of MAC addresses which are blacklisted in EVPN](#to-clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+    - [To collect the scheduled show tech-support files from EOS devices](#to-collect-the-scheduled-show-tech-support-files-from-eos-devices)
   - [Repository structure](#repository-structure)
     - [devices.txt file](#devicestxt-file)
     - [eos-commands.yaml file](#eos-commandsyaml-file)
@@ -29,6 +30,7 @@
     - [collect-eos-commands.py file](#collect-eos-commandspy-file)
     - [check-devices.py file](#check-devicespy-file)
     - [evpn-blacklist-recovery.py file](#evpn-blacklist-recoverypy-file)
+    - [collect_sheduled_show_tech.py file](#collect_sheduled_show_techpy-file)
     - [unit_test.py file](#unit_testpy-file)
     - [mock_data directory](#mock_data-directory)
   - [Contribution guide](#contribution-guide)
@@ -48,7 +50,7 @@ In addition to automation content to test devices, this repository has also cont
 * Clear counters on devices.
 * Test the devices reachability.
 * Clear the list of MAC addresses which are blacklisted in EVPN.
-* Collect scheduled show tech-support from devices.
+* Collect the scheduled show tech-support files from devices.
 
 This repository uses Python scripts and eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
@@ -384,7 +386,18 @@ vi devices-list.text
 ./evpn-blacklist-recovery.py --help
 ./evpn-blacklist-recovery.py -i devices.txt -u username
 ```
+### To collect the scheduled show tech-support files from EOS devices
 
+* Update the devices inventory [devices.txt](devices.txt) with your devices IP address or hostname.
+* Run the python script [collect_sheduled_show_tech.py](collect_sheduled_show_tech.py).
+* Check the output in the output directory.
+
+```shell
+vi devices-list.text
+./collect_sheduled_show_tech.py --help
+./collect_sheduled_show_tech.py -i devices.txt -u username -o outdir
+ls outdir
+```
 ## Repository structure
 
 ### [devices.txt](devices.txt) file
@@ -465,6 +478,12 @@ The python script [check-devices.py](check-devices.py):
 The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) is used to clear on EOS devices the list of MAC addresses which are blacklisted in EVPN.
 
 The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) takes as input a text file with the devices IP address or hostnames (when resolvable) and run the command `clear bgp evpn host-flap` on the EOS devices.
+
+### [collect_sheduled_show_tech.py](collect_sheduled_show_tech.py) file
+
+The python script [collect_sheduled_show_tech.py](collect_sheduled_show_tech.py) is used to collect the scheduled show tech-support files from EOS devices.
+
+It takes as input a text file with the devices IP address or hostname and collects the show tech-support files from these devices and save the files locally.
 ### [unit_test.py](unit_test.py) file
 
 The python script [unit_test.py](unit_test.py) is used to test the functions defined in the directory [test_eos](test_eos) without using actual EOS devices.
