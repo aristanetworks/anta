@@ -14,6 +14,7 @@ from getpass import getpass
 import os
 from sys import exit
 from socket import setdefaulttimeout
+from tqdm import tqdm
 
 port = 22
 
@@ -70,7 +71,7 @@ def main():
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()
-
+    
     # Remove unreachable devices from devices list
 
     unreachable = []
@@ -89,6 +90,11 @@ def main():
     for item in unreachable:
         devices.remove(item)
         print("Can not connect to device " + item)
+
+    number_of_unreachable_devices = len(unreachable)
+    number_of_reachable_devices = len(devices)
+    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices)
+    pbar.update(number_of_unreachable_devices)
 
     # Collect all the tech-support files stored on Arista switches flash and copy them locally
 
@@ -115,8 +121,12 @@ def main():
             # Delete the created zip file on the device
             cmds=['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
             switch.runCmds(1,cmds, 'text')
+            pbar.update(1)
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
+    
+    pbar.close()
+    print('Done. Files are in the directory ' + output_dir[0])
 
 if __name__ == '__main__':
     main()
