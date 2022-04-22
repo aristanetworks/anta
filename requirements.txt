@@ -2,3 +2,5 @@ jsonrpclib-pelix
 PyYAML
 colorama
 prettytable
+paramiko
+scp
