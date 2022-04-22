@@ -99,22 +99,21 @@ def main():
             switch = Server(url)
             cmds=['bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*']
             switch.runCmds(1,cmds, 'text')
-            # Connect to the device using SSH
-            ssh = createSSHClient(device, port, args.username, args.password)
             # Get device hostname
             cmds=['show hostname']
             result = switch.runCmds(1,cmds, 'json')
             hostname = result[0]['hostname']
             # Create directories
             output_dir = device_directories (hostname, args.output_directory)
+            # Connect to the device using SSH
+            ssh = createSSHClient(device, port, args.username, args.password)
             # Get the zipped file all_files.zip using SCP and save it locally
             my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
-            ssh = createSSHClient(device, port, args.username, args.password)
             scp = SCPClient(ssh.get_transport())
             scp.get("/mnt/flash/schedule/all_files.zip",local_path = my_path)
             scp.close()
             # Delete the created zip file on the device
-            cmds=['enable','bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
+            cmds=[bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
             switch.runCmds(1,cmds, 'text')
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
