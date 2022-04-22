@@ -70,7 +70,7 @@ def main():
     parser.add_argument(
         '-i',
         help='Text file containing a list of switches, one per line',
-        dest='file',
+        dest='inventory_file',
         required=True
         )
     parser.add_argument(
@@ -96,7 +96,7 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     # Create connections dict
-    connections = create_connections_dict(args.file, args.username, args.password, args.output_file)
+    connections = create_connections_dict(args.inventory_file, args.username, args.password, args.output_file)
 
     try:
         with open(args.test_catalog, 'r') as file:
