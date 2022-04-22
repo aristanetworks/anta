@@ -66,6 +66,19 @@ We indicate the tests we would like to run in a YAML file. Some tests require an
 ## Devices testing demo
 
 ```
+./check-devices.py --help
+usage: check-devices.py [-h] -i INVENTORY_FILE -u USERNAME -t TEST_CATALOG -o OUTPUT_FILE
+
+EOS devices health checks
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -i INVENTORY_FILE  Text file containing a list of switches, one per line
+  -u USERNAME        Devices username
+  -t TEST_CATALOG    Text file containing the tests
+  -o OUTPUT_FILE     Output file
+```
+```
 ./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
 Device password:
 Enable password (if any):
