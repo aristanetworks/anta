@@ -95,7 +95,7 @@ def main():
     
     number_of_unreachable_devices = len(unreachable)
     number_of_reachable_devices = len(devices)
-    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devicess, desc = 'Collecting files from devices ... please be patient ...')
+    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices, desc = 'Collecting files from devices ... please be patient ...')
     pbar.update(number_of_unreachable_device)
 
     # Collect all the tech-support files stored on Arista switches flash and copy them locally
