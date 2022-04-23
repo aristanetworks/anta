@@ -91,6 +91,8 @@ def main():
         devices.remove(item)
         print("Can not connect to device " + item)
 
+    # Progress bar 
+    
     number_of_unreachable_devices = len(unreachable)
     number_of_reachable_devices = len(devices)
     pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devicess, desc = 'Collecting files from devices ... please be patient ...')
