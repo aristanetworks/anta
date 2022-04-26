@@ -126,6 +126,7 @@ def main():
             pbar.update(1)
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
+            bar.update(1)
     
     pbar.close()
     print('Done. Files are in the directory ' + output_dir[0])
