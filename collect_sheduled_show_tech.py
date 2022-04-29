@@ -21,7 +21,7 @@ port = 22
 ssl._create_default_https_context = ssl._create_unverified_context
 date = strftime("%d %b %Y %H:%M:%S", gmtime())
 
-def device_directories (device, root_dir):
+def device_directories (device, root_dir)
     cwd = os.getcwd()
     show_tech_directory = cwd + '/' + root_dir
     device_directory = show_tech_directory + '/' + device
