@@ -11,7 +11,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 def main():
     parser = ArgumentParser(
-        description='Verify devices eAPI connectivity'
+        description='Clear the list of MAC addresses which are blacklisted in EVPN'
         )
     parser.add_argument(
         '-i',

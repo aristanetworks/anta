@@ -1,0 +1,89 @@
+---
+##################################
+########### Software #############
+##################################
+'01.01':
+  name: verify_eos_version # Verifies the device is running one of the allowed EOS version.
+  versions: # List of allowed EOS versions.
+  - 4.27.2F-26069621.4272F (engineering build)
+'01.02':
+  name: verify_terminattr_version # Verifies the device is running one of the allowed TerminAttr version.
+  versions: # List of allowed TerminAttr versions.
+  - v1.19.0
+'01.03':
+  name: verify_eos_extensions  # Verifies all EOS extensions installed on the device are enabled for boot persistence.
+'01.04':
+  name: verify_field_notice_44_resolution  # Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+##################################
+############# System #############
+##################################
+'02.01':
+  name: verify_uptime  # Verifies the device uptime is higher than a value.
+  min: 1000  # Minimum uptime in seconds.
+'02.03':
+  name: verify_coredump  # Verifies there is no core file.
+'02.04':
+  name: verify_agent_logs  # Verifies there is no agent crash reported on the device.
+'02.05':
+  name: verify_syslog  # Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
+'02.06':
+  name: verify_cpu_utilization  #  Verifies the CPU utilization is less than 75%.
+'02.07':
+  name: verify_memory_utilization  # Verifies the memory utilization is less than 75%.
+'02.08':
+  name: verify_filesystem_utilization  # Verifies each partition on the disk is used less than 75%.
+##################################
+######### Configuration ##########
+##################################
+'04.01':
+  name: verify_zerotouch  # Verifies ZeroTouch is disabled.
+'04.02':
+  name: verify_running_config_diffs  #  Verifies there is no difference between the running-config and the startup-config.
+##################################
+########### Management ###########
+##################################
+'07.01':
+  name: verify_ntp  # Verifies NTP is synchronised.
+##################################
+########### Interfaces ###########
+##################################
+'08.01':
+  name: verify_interface_utilization  # Verifies interfaces utilization are below 75%.
+'08.02':
+  name: verify_interface_errors  # Verifies interfaces error counters are equal to zero.
+'08.03':
+  name: verify_interface_discards  # Verifies interfaces packet discard counters are equal to zero.
+'08.04':
+  name: verify_interface_errdisabled  # Verifies there is no interface in error disable state.
+##################################
+########### Loopbacks ############
+##################################
+'10.01':
+  name: verify_loopback_count  #  Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+  number: 1  # Number of loopback interfaces expected to be present.
+##################################
+############## STP ###############
+##################################
+'13.01':
+  name: verify_spanning_tree_blocked_ports  # Verifies there is no spanning-tree blocked ports.
+##################################
+########### Routing  #############
+##################################
+'14.01':
+  name: verify_routing_protocol_model  # Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.
+  model: multi-agent  # Expected routing protocol model (multi-agent or ribd).
+'14.02':
+    name: verify_routing_table_size  #  Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds).
+    min: 1  # Expected minimum number of IP routes in default VRF
+    max: 100  # Expected maximum number of IP routes in default VRF
+##################################
+############## BGP ###############
+##################################
+'16.01':
+  name: verify_bgp_ipv4_unicast_state  # Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
+##################################
+######## Multicast ###############
+##################################
+'18.02':
+  name: verify_igmp_snooping_global  # Verifies the IGMP snooping global configuration.
+  configuration: enabled  # Expected global IGMP configuration (enabled or disabled).

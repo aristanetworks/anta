@@ -1,0 +1,14 @@
+---
+##################################
+########### Interfaces ###########
+##################################
+'08.05':
+  name: verify_interfaces_status  # Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+  minimum: 4  # Expected minimum number of Ethernet interfaces up/up.
+##################################
+############## BGP ###############
+##################################
+'16.02':
+  name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
+  number: 4  # The expected number of BGP IPv4 unicast neighbors.
+  vrf: default # VRF to verify.

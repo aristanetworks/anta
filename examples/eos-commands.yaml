@@ -1,0 +1,11 @@
+---
+json_format:
+  - show version
+  - show ip bgp summary
+text_format:
+  - show version
+  - show uptime
+  - show ntp status
+  - show interfaces status
+  - show running-config
+  - show lldp neighbors

@@ -1,0 +1,42 @@
+---
+##################################
+########### Interfaces ###########
+##################################
+'08.05':
+  name: verify_interfaces_status  # Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+  minimum: 4  # Expected minimum number of Ethernet interfaces up/up.
+##################################
+####### Links aggregation ########
+##################################
+'09.01':
+  name: verify_portchannels  # Verifies there is no inactive port in port channels.
+'09.02':
+  name: verify_illegal_lacp  # Verifies there is no illegal LACP packets received.
+'09.03':
+  name: verify_mlag_status  # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
+'09.04':
+  name: verify_mlag_interfaces  # Verifies there is no inactive or active-partial MLAG interfaces.
+'09.05':
+  name: verify_mlag_config_sanity  # Verifies there are no mlag config-sanity warnings
+##################################
+############## SVI ###############
+##################################
+'12.01':
+  name: verify_svi  # Verifies there is no interface vlan down.
+##################################
+############## BGP ###############
+##################################
+'16.02':
+  name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
+  number: 4  # The expected number of BGP IPv4 unicast neighbors.
+  vrf: default # VRF to verify.
+##################################
+######## Multicast ###############
+##################################
+'18.01':
+  name: verify_igmp_snooping_vlans  # Verifies the IGMP snooping configuration for some VLANs.
+  configuration: enabled  # Expected IGMP configuration (enabled or disabled) for these VLANs.
+  vlans:  # List of VLANs.
+    - 12
+    - 34
+    - 4094

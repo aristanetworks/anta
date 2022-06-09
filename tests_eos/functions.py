@@ -1333,7 +1333,7 @@ def verify_igmp_snooping_global(device, enable_password,  configuration):
         configuration (str): Expected global IGMP snooping configuration (enabled or disabled) for these VLANs.
 
     Returns:
-        bool: `True` if the IGMP snooping configuration for the VLANs is the one we expect. `False` otherwise.
+        bool: `True` if the IGMP snooping global configuration is the one we expect. `False` otherwise.
 
     """
     if not configuration:
