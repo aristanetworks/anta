@@ -6,8 +6,8 @@
 - No overlay configuration.
 - 1 loopback per device.
 - Default VRF only.
-- MLAG on leaves
-- No BFD, ISIS, OSPF
+- MLAG on leaves.
+- No BFD, ISIS, OSPF.
 
 ## Clone the repository
 
@@ -16,18 +16,20 @@ git clone https://github.com/arista-netdevops-community/network_tests_automation
 cd network_tests_automation
 ```
 
-## Inventory files
+## Check the inventory files
 
 ```
-more ls examples/pod.txt
-more ls examples/spines.txt
-more ls examples/leaves.txt
+more examples/pod.txt
+more examples/spines.txt
+more examples/leaves.txt
 ```
 ## Install the requirements
 
 ```
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
+```
+```
 pip list
 ```
 
