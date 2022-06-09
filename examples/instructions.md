@@ -7,7 +7,7 @@
 - 1 loopback per device.
 - Default VRF only.
 - MLAG on leaves
-
+- No BFD, ISIS, OSPF
 
 ## Clone the repository
 
