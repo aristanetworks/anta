@@ -14,9 +14,15 @@
 ```
 git clone https://github.com/arista-netdevops-community/network_tests_automation.git
 cd network_tests_automation
-ls examples
 ```
 
+## Inventory files
+
+```
+more ls examples/pod.txt
+more ls examples/spines.txt
+more ls examples/leaves.txt
+```
 ## Install the requirements
 
 ```
@@ -58,7 +64,6 @@ print(result[0]['output'])
 
 ```
 python ./check-devices-reachability.py --help
-more examples/pod.txt
 python ./check-devices-reachability.py -i examples/pod.txt -u arista
 ```
 
