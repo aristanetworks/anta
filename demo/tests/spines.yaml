@@ -6,9 +6,18 @@
   name: verify_interfaces_status  # Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
   minimum: 4  # Expected minimum number of Ethernet interfaces up/up.
 ##################################
+########### Loopbacks ############
+##################################
+'10.01':
+  name: verify_loopback_count  #  Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+  number: 1  # Number of loopback interfaces expected to be present.
+##################################
 ############## BGP ###############
 ##################################
 '16.02':
   name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
   number: 4  # The expected number of BGP IPv4 unicast neighbors.
   vrf: default # VRF to verify.
+'16.05':
+  name: verify_bgp_evpn_count  # Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
+  number: 2  # The expected number of BGP EVPN neighbors in the default VRF.

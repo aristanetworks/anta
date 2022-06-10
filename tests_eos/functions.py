@@ -206,7 +206,7 @@ def verify_reload_cause(device, enable_password):
 
     """
     try:
-        response = device.runCmds(1, ['show reload cause'], 'json')
+        response = device.runCmds(1, ['show version','show reload cause'], 'json')
         if response[0]['resetCauses'][0]['description'] == 'Reload requested by the user.':
             return True
         else:

@@ -139,7 +139,6 @@ Run these commands on devbox:
 python ./clear_counters.py --help
 python ./clear_counters.py -i demo/inventory/all.txt -u arista
 ```
-Note: The script includes also the EOS command `clear hardware counter drop` which is not implemented on vEOS/cEOS.
 ```
 spine1#sh interfaces counters
 ```
@@ -161,7 +160,7 @@ spine1#show bgp evpn host-flap
 ## Collect the scheduled show tech-support files from EOS devices
 
 ```
-spine1#sh running-config all | grep tech
+spine1# sh running-config all | grep tech
 spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 Run these commands on devbox:
@@ -194,7 +193,7 @@ more demo/inventory/leaves.txt
 ATD uses cEOS or vEOS so we will skip the hardware tests.
 This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.
 
-Some tests can be used for all devices, some tests can be used only for the spines, and some tests can be used only for the leaves.
+Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.
 
 ```
 ls demo/tests
