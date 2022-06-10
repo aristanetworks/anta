@@ -213,7 +213,7 @@ cat demo/tests_result_spines.txt
 python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_leaves.txt
 ```
-
+Some tests failed, because leaf3 is not yet configured.  
 Lets fix the lab, configuring leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
