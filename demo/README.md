@@ -122,10 +122,11 @@ Run these commands on devbox:
 ```
 python ./collect-eos-commands.py --help
 more demo/eos-commands.yaml
-python ./collect-eos-commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/outdir -u arista
-tree demo/outdir/
-more demo/outdir/192.168.0.10/text/show\ version
-more demo/outdir/192.168.0.10/json/show\ version
+python ./collect-eos-commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
+ls demo/show_commands
+tree demo/show_commands
+more demo/show_commands/192.168.0.10/text/show\ version
+more demo/show_commands/192.168.0.10/json/show\ version
 ```
 
 ## Clear counters on EOS devices
@@ -166,10 +167,12 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 Run these commands on devbox:
 ```
 python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/outdir
-ls demo/outdir
-unzip demo/outdir/xxxx.zip -d demo/outdir/
-ls demo/outdir/mnt/flash/schedule/tech-support/
+python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
+ls demo/show_tech
+ls demo/show_tech/spine1
+unzip demo/show_tech/spine1/xxxx.zip -d demo/show_tech
+ls demo/show_tech/mnt/flash/schedule/tech-support/
+ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
 ```
 ```
 spine1# bash ls /mnt/flash/schedule/tech-support/
@@ -200,14 +203,14 @@ more demo/tests/spines.yaml
 more demo/tests/leaves.yaml
 ```
 ```
-python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/all_results.txt -u arista
-cat demo/all_results.txt
+python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
+cat demo/tests_result_all.txt
 ```
 ```
-python ./check-devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/spines_results.txt -u arista
-cat demo/spines_results.txt
+python ./check-devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
+cat demo/tests_result_spines.txt
 ```
 ```
-python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/leaves_results.txt -u arista
-cat demo/leaves_results.txt
+python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
+cat demo/tests_result_leaves.txt
 ```
