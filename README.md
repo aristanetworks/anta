@@ -493,6 +493,9 @@ It requires the installation of the package `pytest` that is indicated in the fi
 
 The [mock_data](mock_data) directory has data used by the python script [unit_test.py](unit_test.py) to test the functions defined in the directory [test_eos](test_eos) without using actual EOS devices.
 
+### [demo](demo) directory
+
+The [demo](demo) directory shows a demo of this repository with an ATD (Arista Test Drive) instance.
 ## Contribution guide
 
 Contributions are welcome.

@@ -1,4 +1,5 @@
-Lets use this repository with an ATD (Arista Test Drive) lab.
+Lets use this repository with an ATD (Arista Test Drive) lab.  
+ATD uses cEOS or vEOS so we will skip the hardware tests.
 
 ## Set up an ATD instance
 
@@ -31,7 +32,7 @@ The script configured the lab with the exception of leaf3:
 - 2 loopback interfaces are configured per leaf.
 - 1 loopback interface is configured per spine.
 - Default VRF only.
-- No MLAG, ISIS, OSPF.
+- No MLAG, ISIS, OSPF, IPv6, RTC, L3 multicast ...
 
 Check the state of spine1:
 
