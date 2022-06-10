@@ -18,6 +18,7 @@ This lab uses 2 spines and 2 leaves:
 
 Leaf2 and leaf4 are not used.
 
+Here's the EVPN lab topology:
 ![atd_evpn_lab_topology.png](atd_evpn_lab_topology.png)
 
 The script configured the lab with the exception of leaf3:
