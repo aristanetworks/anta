@@ -213,3 +213,18 @@ cat demo/tests_result_spines.txt
 python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_leaves.txt
 ```
+
+Lets fix the lab, configuring leaf3.
+```
+python demo/configure_leaf3.py
+```
+
+Lets verify, re running all the tests.
+```
+python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
+python ./check-devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
+python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
+cat demo/tests_result_all.txt
+cat demo/tests_result_spines.txt
+cat demo/tests_result_leaves.txt
+```
