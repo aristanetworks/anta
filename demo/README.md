@@ -6,11 +6,11 @@ Login to the Arista Test Drive portal, create and start an instance.
 
 Here's the ATD topology:
 
-![atd_topology.png](atd_topology.png)
+![images/atd_topology.png](images/atd_topology.png)
 
 Load the EVPN lab from ATD:
 
-![atd_configuration.png](atd_configuration.png)
+![images/atd_configuration.png](images/atd_configuration.png)
 
 This lab uses 2 spines and 2 leaves:
 - Spine1 and spine2
@@ -19,7 +19,7 @@ This lab uses 2 spines and 2 leaves:
 Leaf2 and leaf4 are not used.
 
 Here's the EVPN lab topology:
-![atd_evpn_lab_topology.png](atd_evpn_lab_topology.png)
+![images/atd_evpn_lab_topology.png](images/atd_evpn_lab_topology.png)
 
 The script configured the lab with the exception of leaf3:
 - eBGP is configured between spines and leaves (underlay, IPv4 address family).
@@ -35,7 +35,7 @@ The script configured the lab with the exception of leaf3:
 
 Check the state of spine1:
 
-![atd_spine1.png](atd_spine1.png)
+![images/atd_spine1.png](images/atd_spine1.png)
 
 ```
 spine1#show ip bgp summary
@@ -46,7 +46,7 @@ Some BGP sessions are not established because Leaf3 is not yet configured.
 ## Clone the repository
 
 Use the devbox shell and clone the repository:
-![atd_devbox_shell.png](atd_devbox_shell.png)
+![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
 
 ```
 git clone https://github.com/arista-netdevops-community/network_tests_automation.git
@@ -57,9 +57,10 @@ cd network_tests_automation
 
 Run these commands using the devbox shell:
 ```
-more demo/all.txt
-more demo/spines.txt
-more demo/leaves.txt
+ls demo/inventory
+more demo/inventory/all.txt
+more demo/inventory/spines.txt
+more demo/inventory/leaves.txt
 ```
 ## Install the requirements
 
@@ -113,7 +114,7 @@ exit()
 Run these commands on devbox:
 ```
 python ./check-devices-reachability.py --help
-python ./check-devices-reachability.py -i demo/all.txt -u arista
+python ./check-devices-reachability.py -i demo/inventory/all.txt -u arista
 ```
 
 ## Collect commands output from EOS devices
@@ -122,7 +123,7 @@ Run these commands on devbox:
 ```
 python ./collect-eos-commands.py --help
 more demo/eos-commands.yaml
-python ./collect-eos-commands.py -i demo/all.txt -c demo/eos-commands.yaml -o demo/outdir -u arista
+python ./collect-eos-commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/outdir -u arista
 tree demo/outdir/
 more demo/outdir/192.168.0.10/text/show\ version
 more demo/outdir/192.168.0.10/json/show\ version
@@ -136,7 +137,7 @@ spine1#sh interfaces counters
 Run these commands on devbox:
 ```
 python ./clear_counters.py --help
-python ./clear_counters.py -i demo/all.txt -u arista
+python ./clear_counters.py -i demo/inventory/all.txt -u arista
 ```
 Note: The script includes also the EOS command `clear hardware counter drop` which is not implemented on vEOS/cEOS.
 ```
@@ -166,7 +167,7 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 Run these commands on devbox:
 ```
 python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i demo/all.txt -u arista -o demo/outdir
+python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/outdir
 ls demo/outdir
 unzip demo/outdir/xxxx.zip -d demo/outdir/
 ls demo/outdir/mnt/flash/schedule/tech-support/
@@ -182,24 +183,26 @@ Run these commands on devbox:
 python ./check-devices.py --help
 ```
 ```
-more all.txt
-more spines.txt
-more leaves.txt
+ls inventory
+more inventory/all.txt
+more inventory/spines.txt
+more inventory/leaves.txt
 ```
 ```
-more all_tests.yaml
-more spines_tests.yaml
-more leaves_tests.yaml
+ls tests
+more tests/all.yaml
+more tests/spines.yaml
+more tests/leaves.yaml
 ```
 ```
-python ./check-devices.py -i demo/all.txt -t demo/all_tests.yaml -o demo/all_results.txt -u arista
+python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/all_results.txt -u arista
 cat demo/all_results.txt
 ```
 ```
-python ./check-devices.py -i demo/spines.txt -t demo/spines_tests.yaml -o demo/spines_results.txt -u arista
+python ./check-devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/spines_results.txt -u arista
 cat demo/spines_results.txt
 ```
 ```
-python ./check-devices.py -i demo/leaves.txt -t demo/leaves_tests.yaml -o demo/leaves_results.txt -u arista
+python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/leaves_results.txt -u arista
 cat demo/leaves_results.txt
 ```
