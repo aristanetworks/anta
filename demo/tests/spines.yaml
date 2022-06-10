@@ -16,7 +16,7 @@
 ##################################
 '16.02':
   name: verify_bgp_ipv4_unicast_count  # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
-  number: 4  # The expected number of BGP IPv4 unicast neighbors.
+  number: 2  # The expected number of BGP IPv4 unicast neighbors.
   vrf: default # VRF to verify.
 '16.05':
   name: verify_bgp_evpn_count  # Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
