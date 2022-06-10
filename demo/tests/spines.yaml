@@ -4,7 +4,7 @@
 ##################################
 '08.05':
   name: verify_interfaces_status  # Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
-  minimum: 4  # Expected minimum number of Ethernet interfaces up/up.
+  minimum: 2  # Expected minimum number of Ethernet interfaces up/up.
 ##################################
 ########### Loopbacks ############
 ##################################
