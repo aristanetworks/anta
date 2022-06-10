@@ -31,7 +31,6 @@ The script configured the lab with the exception of leaf3:
 - 2 loopback interfaces are configured per leaf.
 - 1 loopback interface is configured per spine.
 - Default VRF only.
-- No MLAG, ISIS, OSPF, IPv6, RTC, L3 multicast ...
 
 Check the state of spine1:
 
@@ -183,10 +182,10 @@ Run these commands on devbox:
 python ./check-devices.py --help
 ```
 ```
-ls inventory
-more inventory/all.txt
-more inventory/spines.txt
-more inventory/leaves.txt
+ls demo/inventory
+more demo/inventory/all.txt
+more demo/inventory/spines.txt
+more demo/inventory/leaves.txt
 ```
 
 ATD uses cEOS or vEOS so we will skip the hardware tests.
@@ -195,10 +194,10 @@ This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as wel
 Some tests can be used for all devices, some tests can be used only for the spines, and some tests can be used only for the leaves.
 
 ```
-ls tests
-more tests/all.yaml
-more tests/spines.yaml
-more tests/leaves.yaml
+ls demo/tests
+more demo/tests/all.yaml
+more demo/tests/spines.yaml
+more demo/tests/leaves.yaml
 ```
 ```
 python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/all_results.txt -u arista
