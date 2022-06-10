@@ -1,14 +1,32 @@
-## Network description
+Lets use this repository with an ATD (Arista Test Drive) lab.
 
-- 1 POD with 2 spines and 4 leaves running EOS.
-- eBGP is configured between spines and leaves.
+## ATD
+
+Load the EVPN lab from ATD
+
+![atd_configuration.png](atd_configuration.png)
+
+This lab has 2 spines and 2 leaves running EOS:
+- spine1 and spine2
+- leaf1 and leaf3
+
+![atd_topology.png](atd_topology.png)
+
+The script configured the lab with the exception of leaf3
+
+- eBGP is configured between spines and leaves (underlay).
 - Leaves <-> spines interfaces are configured with an IPv4 address.
-- No overlay configuration.
-- 1 loopback per device.
+- EVPN is configured.
+- eBGP is configured between spines and leaves (overlay).
+- VXLAN is configured on the leaves.
+- 2 loopback interfaces are configured per leaf.
+- 1 loopback interfaces are configured per spine.
 - Default VRF only.
-- MLAG on leaves.
-- No BFD, ISIS, OSPF.
+- No MLAG, ISIS, OSPF.
 
+Check the state of spine1:
+
+![atd_spine1_state.png](atd_spine1_state.png)
 ## Clone the repository
 
 ```
@@ -19,7 +37,7 @@ cd network_tests_automation
 ## Check the inventory files
 
 ```
-more examples/pod.txt
+more examples/all.txt
 more examples/spines.txt
 more examples/leaves.txt
 ```
@@ -66,7 +84,7 @@ print(result[0]['output'])
 
 ```
 python ./check-devices-reachability.py --help
-python ./check-devices-reachability.py -i examples/pod.txt -u arista
+python ./check-devices-reachability.py -i examples/all.txt -u arista
 ```
 
 ## Collect commands output from EOS devices
@@ -74,7 +92,7 @@ python ./check-devices-reachability.py -i examples/pod.txt -u arista
 ```
 python ./collect-eos-commands.py --help
 more examples/eos-commands.yaml
-python ./collect-eos-commands.py -i examples/pod.txt -c examples/eos-commands.yaml -o examples/outdir -u arista
+python ./collect-eos-commands.py -i examples/all.txt -c examples/eos-commands.yaml -o examples/outdir -u arista
 tree examples/outdir/
 more examples/outdir/192.168.0.10/text/show\ version
 more examples/outdir/192.168.0.10/json/show\ version
@@ -87,7 +105,7 @@ spine1#sh interfaces counters
 ```
 ```
 python ./clear_counters.py --help
-python ./clear_counters.py -i examples/pod.txt -u arista
+python ./clear_counters.py -i examples/all.txt -u arista
 ```
 Note: The script includes also the EOS command `clear hardware counter drop` which is not implemented on vEOS/cEOS.
 ```
@@ -115,7 +133,7 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 ```
 python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i examples/pod.txt -u arista -o examples/outdir
+python ./collect_sheduled_show_tech.py -i examples/all.txt -u arista -o examples/outdir
 ls examples/outdir
 unzip examples/outdir/xxxx.zip -d examples/outdir/
 ls examples/outdir/mnt/flash/schedule/tech-support/
@@ -130,18 +148,18 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 python ./check-devices.py --help
 ```
 ```
-more pod.txt
+more all.txt
 more spines.txt
 more leaves.txt
 ```
 ```
-more pod_tests.yaml
+more all_tests.yaml
 more spines_tests.yaml
 more leaves_tests.yaml
 ```
 ```
-python ./check-devices.py -i examples/pod.txt -t examples/pod_tests.yaml -o examples/pod_results.txt -u arista
-cat examples/pod_results.txt
+python ./check-devices.py -i examples/all.txt -t examples/all_tests.yaml -o examples/all_results.txt -u arista
+cat examples/all_results.txt
 ```
 ```
 python ./check-devices.py -i examples/spines.txt -t examples/spines_tests.yaml -o examples/spines_results.txt -u arista
