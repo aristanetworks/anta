@@ -42,7 +42,7 @@ spine1#show ip bgp summary
 spine1#show bgp evpn summary
 spine1#sh lldp neighbors
 ```
-Some BGP sessions are not established because Leaf3 is not yet configured.  
+Some BGP sessions are not established because Leaf3 is not yet configured.
 ## Clone the repository
 
 Use the devbox shell and clone the repository:
@@ -57,9 +57,9 @@ cd network_tests_automation
 
 Run these commands using the devbox shell:
 ```
-more examples/all.txt
-more examples/spines.txt
-more examples/leaves.txt
+more demo/all.txt
+more demo/spines.txt
+more demo/leaves.txt
 ```
 ## Install the requirements
 
@@ -113,7 +113,7 @@ exit()
 Run these commands on devbox:
 ```
 python ./check-devices-reachability.py --help
-python ./check-devices-reachability.py -i examples/all.txt -u arista
+python ./check-devices-reachability.py -i demo/all.txt -u arista
 ```
 
 ## Collect commands output from EOS devices
@@ -121,11 +121,11 @@ python ./check-devices-reachability.py -i examples/all.txt -u arista
 Run these commands on devbox:
 ```
 python ./collect-eos-commands.py --help
-more examples/eos-commands.yaml
-python ./collect-eos-commands.py -i examples/all.txt -c examples/eos-commands.yaml -o examples/outdir -u arista
-tree examples/outdir/
-more examples/outdir/192.168.0.10/text/show\ version
-more examples/outdir/192.168.0.10/json/show\ version
+more demo/eos-commands.yaml
+python ./collect-eos-commands.py -i demo/all.txt -c demo/eos-commands.yaml -o demo/outdir -u arista
+tree demo/outdir/
+more demo/outdir/192.168.0.10/text/show\ version
+more demo/outdir/192.168.0.10/json/show\ version
 ```
 
 ## Clear counters on EOS devices
@@ -136,7 +136,7 @@ spine1#sh interfaces counters
 Run these commands on devbox:
 ```
 python ./clear_counters.py --help
-python ./clear_counters.py -i examples/all.txt -u arista
+python ./clear_counters.py -i demo/all.txt -u arista
 ```
 Note: The script includes also the EOS command `clear hardware counter drop` which is not implemented on vEOS/cEOS.
 ```
@@ -166,10 +166,10 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 Run these commands on devbox:
 ```
 python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i examples/all.txt -u arista -o examples/outdir
-ls examples/outdir
-unzip examples/outdir/xxxx.zip -d examples/outdir/
-ls examples/outdir/mnt/flash/schedule/tech-support/
+python ./collect_sheduled_show_tech.py -i demo/all.txt -u arista -o demo/outdir
+ls demo/outdir
+unzip demo/outdir/xxxx.zip -d demo/outdir/
+ls demo/outdir/mnt/flash/schedule/tech-support/
 ```
 ```
 spine1# bash ls /mnt/flash/schedule/tech-support/
@@ -192,14 +192,14 @@ more spines_tests.yaml
 more leaves_tests.yaml
 ```
 ```
-python ./check-devices.py -i examples/all.txt -t examples/all_tests.yaml -o examples/all_results.txt -u arista
-cat examples/all_results.txt
+python ./check-devices.py -i demo/all.txt -t demo/all_tests.yaml -o demo/all_results.txt -u arista
+cat demo/all_results.txt
 ```
 ```
-python ./check-devices.py -i examples/spines.txt -t examples/spines_tests.yaml -o examples/spines_results.txt -u arista
-cat examples/spines_results.txt
+python ./check-devices.py -i demo/spines.txt -t demo/spines_tests.yaml -o demo/spines_results.txt -u arista
+cat demo/spines_results.txt
 ```
 ```
-python ./check-devices.py -i examples/leaves.txt -t examples/leaves_tests.yaml -o examples/leaves_results.txt -u arista
-cat examples/leaves_results.txt
+python ./check-devices.py -i demo/leaves.txt -t demo/leaves_tests.yaml -o demo/leaves_results.txt -u arista
+cat demo/leaves_results.txt
 ```
