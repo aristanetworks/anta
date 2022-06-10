@@ -179,6 +179,8 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 
 ## Run tests on devices
 
+Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.
+
 Run these commands on devbox:
 ```
 python ./check-devices.py --help
@@ -192,8 +194,6 @@ more demo/inventory/leaves.txt
 
 ATD uses cEOS or vEOS so we will skip the hardware tests.
 This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.
-
-Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.
 
 ```
 ls demo/tests
@@ -214,7 +214,7 @@ python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml
 cat demo/tests_result_leaves.txt
 ```
 
-Lets fix the lab, configuring leaf3.
+Lets fix the lab, configuring leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
 ```
