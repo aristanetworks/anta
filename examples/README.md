@@ -35,7 +35,14 @@ The script configured the lab with the exception of leaf3:
 
 Check the state of spine1:
 
-![atd_spine1_state.png](atd_spine1_state.png)
+![atd_spine1.png](atd_spine1.png)
+
+```
+spine1#show ip bgp summary
+spine1#show bgp evpn summary
+spine1#sh lldp neighbors
+```
+Some BGP sessions are not established because Leaf3 is not yet configured.  
 ## Clone the repository
 
 Use the devbox shell and clone the repository:
