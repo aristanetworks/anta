@@ -48,10 +48,24 @@ def main():
         switch = Server(url)
         setdefaulttimeout(5)
         try:
-            switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters', 'clear hardware counter drop'])
-            print('Cleared counters on ' + device)
+            response = switch.runCmds(1, ['show version'], 'json')
+            if response[0]['modelName'] in ['cEOSLab']:
+                hardware_model = False
+            else:
+                hardware_model = True
         except:
             print("Can not connect to " + device)
+        try:
+            if hardware_model == True:
+                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters', 'clear hardware counter drop'])
+                print('Cleared counters on ' + device)
+            elif hardware_model == False:
+                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters'])
+                print('Cleared counters on ' + device)
+            else:
+                print('did not clear counters on ' + device)
+        except:
+            print("Can not clear counters on " + device)
 
 if __name__ == '__main__':
     main()
