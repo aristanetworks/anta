@@ -1,5 +1,4 @@
-Lets use this repository with an ATD (Arista Test Drive) lab.  
-ATD uses cEOS or vEOS so we will skip the hardware tests.
+Lets use this repository with an ATD (Arista Test Drive) lab.
 
 ## Set up an ATD instance
 
@@ -189,6 +188,12 @@ more inventory/all.txt
 more inventory/spines.txt
 more inventory/leaves.txt
 ```
+
+ATD uses cEOS or vEOS so we will skip the hardware tests.
+This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.
+
+Some tests can be used for all devices, some tests can be used only for the spines, and some tests can be used only for the leaves.
+
 ```
 ls tests
 more tests/all.yaml
