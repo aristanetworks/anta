@@ -31,9 +31,9 @@
     - [check-devices.py file](#check-devicespy-file)
     - [evpn-blacklist-recovery.py file](#evpn-blacklist-recoverypy-file)
     - [collect_sheduled_show_tech.py file](#collect_sheduled_show_techpy-file)
+    - [demo directory](#demo-directory)
     - [unit_test.py file](#unit_testpy-file)
     - [mock_data directory](#mock_data-directory)
-    - [demo directory](#demo-directory)
   - [Contribution guide](#contribution-guide)
   - [Continuous Integration](#continuous-integration)
   - [Credits](#credits)
@@ -485,6 +485,9 @@ The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) takes
 The python script [collect_sheduled_show_tech.py](collect_sheduled_show_tech.py) is used to collect the scheduled show tech-support files from EOS devices.
 
 It takes as input a text file with the devices IP address or hostname and collects the show tech-support files from these devices and save the files locally.
+### [demo](demo) directory
+
+The [demo](demo) directory shows a demo of this repository with an ATD (Arista Test Drive) instance.
 ### [unit_test.py](unit_test.py) file
 
 The python script [unit_test.py](unit_test.py) is used to test the functions defined in the directory [test_eos](test_eos) without using actual EOS devices.
@@ -493,10 +496,6 @@ It requires the installation of the package `pytest` that is indicated in the fi
 ### [mock_data](mock_data) directory
 
 The [mock_data](mock_data) directory has data used by the python script [unit_test.py](unit_test.py) to test the functions defined in the directory [test_eos](test_eos) without using actual EOS devices.
-
-### [demo](demo) directory
-
-The [demo](demo) directory shows a demo of this repository with an ATD (Arista Test Drive) instance.
 ## Contribution guide
 
 Contributions are welcome.
