@@ -1,4 +1,4 @@
-Lets use this repository with an ATD (Arista Test Drive) lab.
+Here's the instructions to use this repository with an ATD (Arista Test Drive) lab.
 
 ## Set up an ATD instance
 
@@ -8,7 +8,7 @@ Here's the ATD topology:
 
 ![images/atd_topology.png](images/atd_topology.png)
 
-Load the EVPN lab from ATD:
+Load the EVPN lab:
 
 ![images/atd_configuration.png](images/atd_configuration.png)
 
@@ -22,14 +22,13 @@ Here's the EVPN lab topology:
 ![images/atd_evpn_lab_topology.png](images/atd_evpn_lab_topology.png)
 
 The script configured the lab with the exception of leaf3:
-- eBGP is configured between spines and leaves (underlay, IPv4 address family).
-- BFD is configured for the eBGP sessions (IPv4 address family)
 - Leaves <-> spines interfaces are configured with an IPv4 address.
-- EVPN is configured.
-- eBGP is configured between spines and leaves (overlay, EVPN address family).
-- VXLAN is configured on the leaves.
+- eBGP is configured between spines and leaves (underlay, IPv4 unicast address family).
+- BFD is configured for the eBGP sessions (IPv4 unicast address family)
 - 2 loopback interfaces are configured per leaf.
 - 1 loopback interface is configured per spine.
+- eBGP is configured between spines and leaves (overlay, EVPN address family, Loopback0).
+- VXLAN is configured on the leaves (Loopback1)
 - Default VRF only.
 
 Check the state of spine1:
@@ -54,7 +53,7 @@ cd network_tests_automation
 
 ## Check the inventory files
 
-Run these commands using the devbox shell:
+Run these commands on devbox:
 ```
 ls demo/inventory
 more demo/inventory/all.txt
@@ -80,7 +79,7 @@ sudo apt-get install tree
 sudo apt install unzip
 ```
 
-## Check requirements on the switches
+## Check the requirements on the switches
 
 ```
 spine1#show management api http-commands
@@ -213,7 +212,7 @@ cat demo/tests_result_spines.txt
 python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_leaves.txt
 ```
-Some tests failed, because leaf3 is not yet configured.  
+Some tests failed, because leaf3 is not yet configured.
 Lets fix the lab, configuring leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
