@@ -214,7 +214,7 @@ python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml
 cat demo/tests_result_leaves.txt
 ```
 Some tests failed.  
-This is expected because leaf3 is not yet configured.
+This is expected because leaf3 is not yet configured.  
 Lets configure leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
