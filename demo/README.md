@@ -8,7 +8,7 @@ Here's the ATD topology:
 
 ![images/atd_topology.png](images/atd_topology.png)
 
-## Load the EVPN lab
+## Load the EVPN lab on ATD
 
 ![images/atd_configuration.png](images/atd_configuration.png)
 
@@ -42,7 +42,7 @@ spine1#sh lldp neighbors
 ```
 Some BGP sessions are not established because Leaf3 is not yet configured.
 
-## Clone the repository
+## Clone the repository on devbox
 
 Use the devbox shell and clone the repository:
 ![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
@@ -52,7 +52,7 @@ git clone https://github.com/arista-netdevops-community/network_tests_automation
 cd network_tests_automation
 ```
 
-## Install the requirements
+## Install the requirements on devbox
 
 Run these commands on devbox:
 ```
@@ -63,7 +63,7 @@ pip install -r requirements-dev.txt
 pip list
 ```
 
-## Install some additionnal tools
+## Install some additionnal tools on devbox
 
 Run these commands on devbox:
 ```
@@ -117,7 +117,7 @@ python ./check-devices-reachability.py --help
 python ./check-devices-reachability.py -i demo/inventory/all.txt -u arista
 ```
 
-## Collect commands output from EOS devices
+## Collect commands output 
 
 Run these commands on devbox:
 ```
@@ -130,7 +130,7 @@ more demo/show_commands/192.168.0.10/text/show\ version
 more demo/show_commands/192.168.0.10/json/show\ version
 ```
 
-## Clear counters on EOS devices
+## Clear counters 
 
 ```
 spine1#sh interfaces counters
@@ -144,7 +144,7 @@ python ./clear_counters.py -i demo/inventory/all.txt -u arista
 spine1#sh interfaces counters
 ```
 
-## Clear on devices the list of MAC addresses which are blacklisted in EVPN
+## Clear the list of MAC addresses which are blacklisted in EVPN
 
 ```
 spine1#show bgp evpn host-flap
@@ -158,7 +158,7 @@ python ./evpn-blacklist-recovery.py --help
 spine1#show bgp evpn host-flap
 ```
 
-## Collect the scheduled show tech-support files from EOS devices
+## Collect the scheduled show tech-support files 
 
 ```
 spine1# sh running-config all | grep tech
@@ -178,8 +178,7 @@ ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
 spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 
-## Run tests on devices
-
+## Run tests 
 Run these commands on devbox:
 ```
 python ./check-devices.py --help
