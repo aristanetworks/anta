@@ -117,67 +117,6 @@ python ./check-devices-reachability.py --help
 python ./check-devices-reachability.py -i demo/inventory/all.txt -u arista
 ```
 
-## Collect commands output 
-
-Run these commands on devbox:
-```
-python ./collect-eos-commands.py --help
-more demo/eos-commands.yaml
-python ./collect-eos-commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
-ls demo/show_commands
-tree demo/show_commands
-more demo/show_commands/192.168.0.10/text/show\ version
-more demo/show_commands/192.168.0.10/json/show\ version
-```
-
-## Clear counters 
-
-```
-spine1#sh interfaces counters
-```
-Run these commands on devbox:
-```
-python ./clear_counters.py --help
-python ./clear_counters.py -i demo/inventory/all.txt -u arista
-```
-```
-spine1#sh interfaces counters
-```
-
-## Clear the list of MAC addresses which are blacklisted in EVPN
-
-```
-spine1#show bgp evpn host-flap
-spine1#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
-```
-Run this command on devbox:
-```
-python ./evpn-blacklist-recovery.py --help
-```
-```
-spine1#show bgp evpn host-flap
-```
-
-## Collect the scheduled show tech-support files 
-
-```
-spine1# sh running-config all | grep tech
-spine1# bash ls /mnt/flash/schedule/tech-support/
-```
-Run these commands on devbox:
-```
-python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
-ls demo/show_tech
-ls demo/show_tech/spine1
-unzip demo/show_tech/spine1/xxxx.zip -d demo/show_tech
-ls demo/show_tech/mnt/flash/schedule/tech-support/
-ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
-```
-```
-spine1# bash ls /mnt/flash/schedule/tech-support/
-```
-
 ## Run tests 
 Run these commands on devbox:
 ```
@@ -214,7 +153,10 @@ cat demo/tests_result_leaves.txt
 ```
 Some tests failed.  
 This is expected because leaf3 is not yet configured.  
-Lets configure leaf3 using EAPI.
+
+## Fix the issue 
+
+Lets configure leaf3 using EAPI. 
 ```
 python demo/configure_leaf3.py
 ```
@@ -227,3 +169,83 @@ cat demo/tests_result_all.txt
 cat demo/tests_result_spines.txt
 cat demo/tests_result_leaves.txt
 ```
+
+## Collect commands output 
+
+Run these commands on devbox:
+```
+python ./collect-eos-commands.py --help
+more demo/eos-commands.yaml
+python ./collect-eos-commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
+ls demo/show_commands
+tree demo/show_commands
+more demo/show_commands/192.168.0.10/text/show\ version
+more demo/show_commands/192.168.0.10/json/show\ version
+```
+
+
+## Collect the scheduled show tech-support files 
+
+```
+spine1# sh running-config all | grep tech
+spine1# bash ls /mnt/flash/schedule/tech-support/
+```
+Run these commands on devbox:
+```
+python ./collect_sheduled_show_tech.py --help
+python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
+ls demo/show_tech
+ls demo/show_tech/spine1
+unzip demo/show_tech/spine1/xxxx.zip -d demo/show_tech
+ls demo/show_tech/mnt/flash/schedule/tech-support/
+ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
+```
+```
+spine1# bash ls /mnt/flash/schedule/tech-support/
+```
+## Clear the list of MAC addresses which are blacklisted in EVPN
+
+```
+leaf3#show mac address-table 
+leaf3#show bgp evpn host-flap
+leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
+```
+Run this command alternately on host1 and host2 in order to create 5 mac moves within 180 seconds: 
+```
+bash sudo ethxmit --ip-src=10.10.10.1 --ip-dst=10.10.10.2 -S 948e.d399.4421 -D ffff.ffff.ffff et1 -n 1
+```
+Leaf1 or leaf3 concludes that a duplicate-MAC situation has occurred (948e.d399.4421)
+```
+leaf3#show mac address-table 
+leaf3#show bgp evpn host-flap
+leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
+```
+Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN: 
+```
+python ./evpn-blacklist-recovery.py --help
+```
+Verify: 
+```
+leaf3#show mac address-table 
+leaf3#show bgp evpn host-flap
+leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
+```
+
+## Clear counters 
+
+```
+spine1#sh interfaces counters
+```
+Run these commands on devbox:
+```
+python ./clear_counters.py --help
+python ./clear_counters.py -i demo/inventory/all.txt -u arista
+```
+```
+spine1#sh interfaces counters
+```
+
+
+
+
+
