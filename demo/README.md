@@ -8,7 +8,7 @@ Here's the ATD topology:
 
 ![images/atd_topology.png](images/atd_topology.png)
 
-Load the EVPN lab:
+## Load the EVPN lab
 
 ![images/atd_configuration.png](images/atd_configuration.png)
 
@@ -31,7 +31,7 @@ The script configured the lab with the exception of leaf3:
 - VXLAN is configured on the leaves (Loopback1)
 - Default VRF only.
 
-Check the state of spine1:
+## Check the state of spine1
 
 ![images/atd_spine1.png](images/atd_spine1.png)
 
@@ -41,6 +41,7 @@ spine1#show bgp evpn summary
 spine1#sh lldp neighbors
 ```
 Some BGP sessions are not established because Leaf3 is not yet configured.
+
 ## Clone the repository
 
 Use the devbox shell and clone the repository:
@@ -51,15 +52,6 @@ git clone https://github.com/arista-netdevops-community/network_tests_automation
 cd network_tests_automation
 ```
 
-## Check the inventory files
-
-Run these commands on devbox:
-```
-ls demo/inventory
-more demo/inventory/all.txt
-more demo/inventory/spines.txt
-more demo/inventory/leaves.txt
-```
 ## Install the requirements
 
 Run these commands on devbox:
@@ -83,6 +75,16 @@ sudo apt install unzip
 
 ```
 spine1#show management api http-commands
+```
+
+## Check the inventory files
+
+Run these commands on devbox:
+```
+ls demo/inventory
+more demo/inventory/all.txt
+more demo/inventory/spines.txt
+more demo/inventory/leaves.txt
 ```
 
 ## Test devices reachability using EAPI
