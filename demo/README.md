@@ -180,22 +180,21 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 
 ## Run tests on devices
 
-Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.
-
 Run these commands on devbox:
 ```
 python ./check-devices.py --help
 ```
+
+ATD uses cEOS or vEOS so we will skip the hardware tests.  
+This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.  
+Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
+
 ```
 ls demo/inventory
 more demo/inventory/all.txt
 more demo/inventory/spines.txt
 more demo/inventory/leaves.txt
 ```
-
-ATD uses cEOS or vEOS so we will skip the hardware tests.
-This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.
-
 ```
 ls demo/tests
 more demo/tests/all.yaml
@@ -214,13 +213,13 @@ cat demo/tests_result_spines.txt
 python ./check-devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_leaves.txt
 ```
-Some tests failed, because leaf3 is not yet configured.
-Lets fix the lab, configuring leaf3 using EAPI.
+Some tests failed.  
+This is expected because leaf3 is not yet configured.
+Lets configure leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
 ```
-
-Lets verify, re running all the tests.
+Lets re run all the tests.
 ```
 python ./check-devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
 python ./check-devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
