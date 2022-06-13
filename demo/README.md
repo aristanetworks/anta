@@ -223,6 +223,7 @@ leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN: 
 ```
 python ./evpn-blacklist-recovery.py --help
+python ./evpn-blacklist-recovery.py -i demo/inventory/all.txt -u arista
 ```
 Verify: 
 ```
