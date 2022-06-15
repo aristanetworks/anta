@@ -1,3 +1,7 @@
+"""
+This scripts configure the leaf3 device
+"""
+
 import ssl
 from jsonrpclib import Server
 

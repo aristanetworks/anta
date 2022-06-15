@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script run tests on devices
+"""
+
 from argparse import ArgumentParser
 from getpass import getpass
 from sys import exit

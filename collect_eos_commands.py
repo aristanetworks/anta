@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script collects show commands output from devices
+"""
+
 import os
 import ssl
 from sys import exit

@@ -1,8 +1,11 @@
+"""
+This script is used to test the functions defined in the directory test_eos without using actual EOS devices.
+It requires the installation of the package pytest that is indicated in the file requirements-dev.txt
+"""
 import ast
 from unittest.mock import Mock
 import pytest
 import tests_eos.functions
-
 
 def id_func(param):
     return str(param)

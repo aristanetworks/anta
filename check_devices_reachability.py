@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+"""
+This script checks devices reachability
+"""
 import ssl
 from argparse import ArgumentParser
 from getpass import getpass

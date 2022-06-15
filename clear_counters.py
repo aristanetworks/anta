@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script clear counters on devices
+"""
+
 # standard imports
 from argparse import ArgumentParser
 from getpass import getpass

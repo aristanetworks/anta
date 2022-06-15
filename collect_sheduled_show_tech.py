@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-# This script collects all the tech-support files stored on Arista switches flash 
-# and copies them locally
+"""
+This script collects all the tech-support files stored on Arista switches flash
+"""
 
 # Imports
 import ssl

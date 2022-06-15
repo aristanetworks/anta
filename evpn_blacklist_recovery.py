@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script clears on devices the list of MAC addresses which are blacklisted in EVPN
+"""
+
 from argparse import ArgumentParser
 from getpass import getpass
 import ssl
