@@ -1,0 +1,8 @@
+[MESSAGES CONTROL]
+disable=missing-function-docstring
+
+[BASIC]
+good-names=runCmds, i
+
+[FORMAT]
+max-line-length=172

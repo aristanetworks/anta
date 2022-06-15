@@ -7,7 +7,7 @@ import tests_eos.functions
 def id_func(param):
     return str(param)
 
-def run_cmds(version, commands, format):
+def runCmds(version, commands, format):
     if commands == ['show version'] and format == 'json':
         data_string = open('mock_data/show_version_json_4.27.1.1F.out').read()
         data_list = ast.literal_eval(data_string)
@@ -21,8 +21,8 @@ def run_cmds(version, commands, format):
 
 @pytest.fixture
 def mock_device():
-    mock_device = Mock(spec_set=['run_cmds'])
-    mock_device.run_cmds.side_effect = run_cmds
+    mock_device = Mock(spec_set=['runCmds'])
+    mock_device.runCmds.side_effect = runCmds
     return mock_device
 
 @pytest.mark.parametrize("versions,expected",[(['4.27.1.1F'], True),
