@@ -162,20 +162,18 @@ def verify_field_notice_44_resolution(device, enable_password):
             model = model.replace(variant, '')
         if model not in devices:
             return True
-        else:
-            for component in response[0]['details']['components']:
-                if component['name'] == 'Aboot':
-                    aboot_version = component['version'].split('-')[2]
-            if aboot_version.startswith('4.0.') and int(aboot_version.split('.')[2]) < 7:
-                return False
-            elif aboot_version.startswith('4.1.') and int(aboot_version.split('.')[2]) < 1:
-                return False
-            elif aboot_version.startswith('6.0.') and int(aboot_version.split('.')[2]) < 9:
-                return False
-            elif aboot_version.startswith('6.1.') and int(aboot_version.split('.')[2]) < 7:
-                return False
-            else:
-                return True
+        for component in response[0]['details']['components']:
+            if component['name'] == 'Aboot':
+                aboot_version = component['version'].split('-')[2]
+        if aboot_version.startswith('4.0.') and int(aboot_version.split('.')[2]) < 7:
+            return False
+        if aboot_version.startswith('4.1.') and int(aboot_version.split('.')[2]) < 1:
+            return False
+        if aboot_version.startswith('6.0.') and int(aboot_version.split('.')[2]) < 9:
+            return False
+        if aboot_version.startswith('6.1.') and int(aboot_version.split('.')[2]) < 7:
+            return False
+        return True
     except:
         return None
 
@@ -422,8 +420,7 @@ def verify_system_temperature(device, enable_password):
         response = device.runCmds(1, ['show system environment temperature'], 'json')
         if response[0]['systemStatus'] != 'temperatureOk':
             return False
-        else:
-            return True
+        return True
     except:
         return None
 
@@ -474,8 +471,7 @@ def verify_environment_cooling(device, enable_password):
         response = device.runCmds(1, ['show system environment cooling'], 'json')
         if response[0]['systemStatus'] != 'coolingOk':
             return False
-        else:
-            return True
+        return True
     except:
         return None
 
@@ -843,11 +839,10 @@ def verify_portchannels(device, enable_password):
         response = device.runCmds(1, ['show port-channel'], 'json')
         if len(response[0]['portChannels']) == 0:
             return None
-        else:
-            for portchannel in response[0]['portChannels']:
-                if len(response[0]['portChannels'][portchannel]['inactivePorts']) != 0:
-                    return False
-            return True
+        for portchannel in response[0]['portChannels']:
+            if len(response[0]['portChannels'][portchannel]['inactivePorts']) != 0:
+                return False
+        return True
     except:
         return None
 
@@ -872,12 +867,11 @@ def verify_illegal_lacp(device, enable_password):
         response = device.runCmds(1, ['show lacp counters all-ports'], 'json')
         if len(response[0]['portChannels']) == 0:
             return None
-        else:
-            for portchannel in response[0]['portChannels']:
-                for interface in response[0]['portChannels'][portchannel]['interfaces']:
-                    if response[0]['portChannels'][portchannel]['interfaces'][interface]['illegalRxCount'] != 0:
-                        return False
-            return True
+        for portchannel in response[0]['portChannels']:
+            for interface in response[0]['portChannels'][portchannel]['interfaces']:
+                if response[0]['portChannels'][portchannel]['interfaces'][interface]['illegalRxCount'] != 0:
+                    return False
+        return True
     except:
         return None
 
@@ -902,16 +896,15 @@ def verify_mlag_status(device, enable_password):
         response = device.runCmds(1, ['show mlag'], 'json')
         if response[0]['state'] == 'disabled':
             return None
-        elif response[0]['state'] != 'active':
+        if response[0]['state'] != 'active':
             return False
-        elif response[0]['negStatus'] != 'connected':
+        if response[0]['negStatus'] != 'connected':
             return False
-        elif response[0]['localIntfStatus'] != 'up':
+        if response[0]['localIntfStatus'] != 'up':
             return False
-        elif response[0]['peerLinkStatus'] != 'up':
+        if response[0]['peerLinkStatus'] != 'up':
             return False
-        else:
-            return True
+        return True
     except:
         return None
 
@@ -934,12 +927,11 @@ def verify_mlag_interfaces(device, enable_password):
         response = device.runCmds(1, ['show mlag'], 'json')
         if response[0]['state'] == 'disabled':
             return None
-        elif response[0]['mlagPorts']['Inactive'] != 0:
+        if response[0]['mlagPorts']['Inactive'] != 0:
             return False
-        elif response[0]['mlagPorts']['Active-partial'] != 0:
+        if response[0]['mlagPorts']['Active-partial'] != 0:
             return False
-        else:
-            return True
+        return True
     except:
         return None
 
@@ -963,12 +955,10 @@ def verify_mlag_config_sanity(device, enable_password):
         if response[0]['response']['mlagActive'] is False:
             # MLAG isn't running
             return None
-        else:
-            if len(response[0]['response']['globalConfiguration']) > 0 or \
-                len(response[0]['response']['interfaceConfiguration']) > 0:
-                return False
-            else:
-                return True
+        if len(response[0]['response']['globalConfiguration']) > 0 or \
+            len(response[0]['response']['interfaceConfiguration']) > 0:
+            return False
+        return True
     except:
         return None
 
@@ -1041,12 +1031,11 @@ def verify_vxlan_config_sanity(device, enable_password):
         response = device.runCmds(1, ['show vxlan config-sanity'], 'json')
         if len(response[0]['categories']) == 0:
             return None
-        else:
-            for category in response[0]['categories']:
-                if category in ['localVtep', 'mlag']:
-                    if response[0]['categories'][category]['allCheckPass'] is not True:
-                        return False
-            return True
+        for category in response[0]['categories']:
+            if category in ['localVtep', 'mlag']:
+                if response[0]['categories'][category]['allCheckPass'] is not True:
+                    return False
+        return True
     except:
         return None
 
