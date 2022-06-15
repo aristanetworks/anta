@@ -6,5 +6,10 @@ disable=
 [BASIC]
 good-names=runCmds, i, y, t, c, x
 
+[DESIGN]
+max-statements=60
+max-returns=7
+
 [FORMAT]
 max-line-length=130
+max-module-lines=1800

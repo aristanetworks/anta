@@ -145,7 +145,7 @@ tests file was tests.yaml
 01.02    {"name": "verify_terminattr_version", "versions": ["v1.13.6", "v1.8.0"]}
 01.03    {"name": "verify_eos_extensions"}
 01.04    {"name": "verify_field_notice_44_resolution"}
-02.01    {"name": "verify_uptime", "min": 86400}
+02.01    {"name": "verify_uptime", "minimum": 86400}
 02.02    {"name": "verify_reload_cause"}
 02.03    {"name": "verify_coredump"}
 02.04    {"name": "verify_agent_logs"}
@@ -181,7 +181,7 @@ tests file was tests.yaml
 12.01    {"name": "verify_svi"}
 13.01    {"name": "verify_spanning_tree_blocked_ports"}
 14.01    {"name": "verify_routing_protocol_model", "model": "multi-agent"}
-14.02    {"name": "verify_routing_table_size", "min": 2, "max": 20}
+14.02    {"name": "verify_routing_table_size", "minimum": 2, "maximum": 20}
 15.01    {"name": "verify_bfd"}
 16.01    {"name": "verify_bgp_ipv4_unicast_state"}
 16.02    {"name": "verify_bgp_ipv4_unicast_count", "number": 2, "vrf": "default"}

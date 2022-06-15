@@ -19,7 +19,7 @@
 ##################################
 '02.01':
   name: verify_uptime  # Verifies the device uptime is higher than a value.
-  min: 1000  # Minimum uptime in seconds.
+  minimum: 1000  # Minimum uptime in seconds.
 '02.03':
   name: verify_coredump  # Verifies there is no core file.
 '02.04':
@@ -68,8 +68,8 @@
   model: multi-agent  # Expected routing protocol model (multi-agent or ribd).
 '14.02':
     name: verify_routing_table_size  #  Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds).
-    min: 1  # Expected minimum number of IP routes in default VRF
-    max: 100  # Expected maximum number of IP routes in default VRF
+    minimum: 1  # Expected minimum number of IP routes in default VRF
+    maximum: 100  # Expected maximum number of IP routes in default VRF
 ##################################
 ############## BFD ###############
 ##################################

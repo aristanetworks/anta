@@ -13,7 +13,8 @@ def verify_eos_version(device, enable_password, versions = None):
         versions (list): List of allowed EOS versions.
 
     Returns:
-        bool: `True` if the device is running an allowed EOS version. `False` otherwise.
+        bool: `True` if the device is running an allowed EOS version.
+        `False` otherwise.
 
     """
     if not versions:
@@ -178,7 +179,7 @@ def verify_field_notice_44_resolution(device, enable_password):
     except:
         return None
 
-def verify_uptime(device, enable_password, min = None):
+def verify_uptime(device, enable_password, minimum = None):
     """
     Verifies the device uptime is higher than a value.
 
@@ -187,18 +188,18 @@ def verify_uptime(device, enable_password, min = None):
         Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri
         'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
-        min (int): Minimum uptime in seconds.
+        minimum (int): Minimum uptime in seconds.
 
     Returns:
         bool: `True` if the device uptime is higher than the threshold.
         `False` otherwise.
 
     """
-    if not min:
+    if not minimum:
         return None
     try:
         response = device.runCmds(1, ['show uptime'], 'json')
-        if response[0]['upTime'] > min:
+        if response[0]['upTime'] > minimum:
             return True
         return False
     except:
@@ -1122,7 +1123,7 @@ def verify_routing_protocol_model(device, enable_password, model = None):
     except:
         return None
 
-def verify_routing_table_size(device, enable_password, min = None, max = None):
+def verify_routing_table_size(device, enable_password, minimum = None, maximum = None):
     """
     Verifies the size of the IP routing table (default VRF).
     Should be between the two provided thresholds.
@@ -1132,19 +1133,19 @@ def verify_routing_table_size(device, enable_password, min = None, max = None):
         Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri
         'https://%s:%s@%s/command-api' %(username, password, ip).
         enable_password (str): Enable password.
-        min(int): Expected minimum routing table (default VRF) size.
-        max(int): Expected maximum routing table (default VRF) size.
+        minimum(int): Expected minimum routing table (default VRF) size.
+        maximum(int): Expected maximum routing table (default VRF) size.
 
     Returns:
         bool: `True` if the size of the IP routing table (default VRF) is between two thresholds.
         `False` otherwise.
     """
-    if not min or not max:
+    if not minimum or not maximum:
         return None
     try:
         response = device.runCmds(1, [{'cmd': 'show ip route summary', 'revision': 3}], 'json')
-        if (response[0]['vrfs']['default']['totalRoutes'] >= min) \
-            and (response[0]['vrfs']['default']['totalRoutes'] <= max):
+        if (response[0]['vrfs']['default']['totalRoutes'] >= minimum) \
+            and (response[0]['vrfs']['default']['totalRoutes'] <= maximum):
             return True
         return False
     except:
@@ -1416,7 +1417,7 @@ def verify_ospf_state(device, enable_password):
     """
     try:
         response = device.runCmds(1, ['show ip ospf neighbor | exclude FULL|Address'], 'text')
-        if (response[0]['output'].count('\n') == 0) :
+        if response[0]['output'].count('\n') == 0:
             return True
         return False
     except:
@@ -1442,7 +1443,7 @@ def verify_ospf_count(device, enable_password, number = None):
         return None
     try:
         response = device.runCmds(1, ['show ip ospf neighbor | exclude  Address'], 'text')
-        if (response[0]['output'].count('FULL') == number) :
+        if response[0]['output'].count('FULL') == number:
             return True
         return False
     except:

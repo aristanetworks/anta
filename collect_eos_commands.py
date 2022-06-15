@@ -6,7 +6,7 @@ This script collects show commands output from devices
 
 import os
 import ssl
-from sys import exit
+import sys
 from argparse import ArgumentParser
 from getpass import getpass
 from socket import setdefaulttimeout
@@ -66,14 +66,14 @@ def main():
             eos_commands = safe_load(eos_commands)
     except:
         print('Error opening ' + args.eos_commands)
-        exit(1)
+        sys.exit(1)
 
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)
-        exit(1)
+        sys.exit(1)
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()

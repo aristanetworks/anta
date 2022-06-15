@@ -8,7 +8,7 @@ This script collects all the tech-support files stored on Arista switches flash
 import ssl
 from socket import setdefaulttimeout
 from getpass import getpass
-from sys import exit
+import sys
 from time import strftime, gmtime
 from argparse import ArgumentParser
 import os
@@ -69,7 +69,7 @@ def main():
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)
-        exit(1)
+        sys.exit(1)
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()
@@ -133,7 +133,7 @@ def main():
             pbar.update(1)
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
-            bar.update(1)
+            pbar.update(1)
     
     pbar.close()
     print('Done. Files are in the directory ' + output_dir[0])

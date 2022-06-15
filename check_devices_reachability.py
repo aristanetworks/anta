@@ -6,7 +6,7 @@ This script checks devices reachability
 import ssl
 from argparse import ArgumentParser
 from getpass import getpass
-from sys import exit
+import sys
 from socket import setdefaulttimeout
 from jsonrpclib import Server
 
@@ -37,7 +37,7 @@ def main():
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)
-        exit(1)
+        sys.exit(1)
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()

@@ -6,7 +6,7 @@ This script run tests on devices
 
 from argparse import ArgumentParser
 from getpass import getpass
-from sys import exit
+import sys
 from datetime import datetime
 import ssl
 from math import ceil
@@ -34,7 +34,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
                 )
     except:
         print('Error opening ' + text_file)
-        exit(1)
+        sys.exit(1)
     # Delete unreachable devices from connections dict
     unreachable = []
 
@@ -107,7 +107,7 @@ def main():
             test_catalog = safe_load(file)
     except:
         print('Error opening ' + args.test_catalog)
-        exit(1)
+        sys.exit(1)
 
     # Create the dictionnary test_summary for test results and run the tests
     test_summary = {}
