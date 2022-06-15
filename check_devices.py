@@ -2,17 +2,17 @@
 
 from argparse import ArgumentParser
 from getpass import getpass
-from jsonrpclib import Server
-import ssl
 from sys import exit
-from yaml import safe_load
 from datetime import datetime
-import tests_eos.functions
-from colorama import Fore
-from prettytable import PrettyTable
+import ssl
 from math import ceil
 from socket import setdefaulttimeout
 from json import dumps
+from jsonrpclib import Server
+from prettytable import PrettyTable
+from yaml import safe_load
+from colorama import Fore
+import tests_eos.functions
 
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -96,7 +96,8 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     # Create connections dict
-    connections = create_connections_dict(args.inventory_file, args.username, args.password, args.output_file)
+    connections = create_connections_dict\
+        (args.inventory_file, args.username, args.password, args.output_file)
 
     try:
         with open(args.test_catalog, 'r') as file:
@@ -118,7 +119,8 @@ def main():
                 test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
             else:
                 func_name = test_def
-            test_summary[device][test] = getattr(tests_eos.functions, func_name)(connections[device]['connection'], args.enable_pass, **test_kwargs)
+            test_summary[device][test] = getattr(tests_eos.functions, func_name)\
+                (connections[device]['connection'], args.enable_pass, **test_kwargs)
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
     for device in sorted(test_summary):
@@ -131,21 +133,21 @@ def main():
                 test_summary[device][test] = Fore.BLUE + 'Skip' + Fore.RESET
 
     # Use prettytable so we will display data in a visually appealing format
-    x = PrettyTable(padding_width=2)
+    xxx = PrettyTable(padding_width=2)
     fields = ['devices']
     for test in sorted(test_catalog):
         fields.append(test)
-    x.field_names = fields
+    xxx.field_names = fields
     for device in sorted(test_summary):
         row = [device]
         for test in sorted(test_catalog):
             row.append(test_summary[device][test])
-        x.add_row(row)
+        xxx.add_row(row)
 
     # Split the table into t tables of c columns each
-    c = 12
+    ccc = 12
     lenx = len(fields)
-    t = ceil(lenx/c)
+    ttt = ceil(lenx/ccc)
 
     print("Test results are saved on " + args.output_file)
 
@@ -155,11 +157,11 @@ def main():
     outfile.write('\n\n')
     outfile.write('***** Results *****\n')
     outfile.write('\n')
-    for i in range(t):
-        start = (i * (c -1) + 1)
-        stop = ((c - 1) * (i + 1)) + 1
-        y = ["devices"] + fields[start:stop]
-        outfile.write(x.get_string(fields=y))
+    for i in range(ttt):
+        start = (i * (ccc -1) + 1)
+        stop = ((ccc - 1) * (i + 1)) + 1
+        yyy = ["devices"] + fields[start:stop]
+        outfile.write(xxx.get_string(fields=yyy))
         outfile.write('\n')
 
     outfile.write('\n')

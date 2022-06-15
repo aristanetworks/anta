@@ -57,7 +57,8 @@ def main():
             print("Can not connect to " + device)
         try:
             if hardware_model == True:
-                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters', 'clear hardware counter drop'])
+                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass},\
+                     'clear counters', 'clear hardware counter drop'])
                 print('Cleared counters on ' + device)
             elif hardware_model == False:
                 switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters'])

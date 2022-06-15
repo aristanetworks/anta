@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
-# This script collects all the tech-support files stored on Arista switches flash and copies them locally
+# This script collects all the tech-support files stored on Arista switches flash 
+# and copies them locally
 
 # Imports
-
 import ssl
+from socket import setdefaulttimeout
+from getpass import getpass
+from sys import exit
+from time import strftime, gmtime
+from argparse import ArgumentParser
+import os
 import paramiko
 from jsonrpclib import Server
 from scp import SCPClient
-from time import strftime, gmtime
-from argparse import ArgumentParser
-from getpass import getpass
-import os
-from sys import exit
-from socket import setdefaulttimeout
 from tqdm import tqdm
 
-port = 22
+PORT = 22
 
 ssl._create_default_https_context = ssl._create_unverified_context
 date = strftime("%d %b %Y %H:%M:%S", gmtime())
@@ -31,7 +31,7 @@ def device_directories (device, root_dir):
     result = show_tech_directory, device_directory
     return result
 
-def createSSHClient (device, port, username, password):
+def create_ssh_client (device, port, username, password):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(device, port, username, password)
@@ -95,7 +95,8 @@ def main():
     
     number_of_unreachable_devices = len(unreachable)
     number_of_reachable_devices = len(devices)
-    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices, desc = 'Collecting files from devices')
+    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices,\
+         desc = 'Collecting files from devices')
     pbar.update(number_of_unreachable_devices)
 
     # Collect all the tech-support files stored on Arista switches flash and copy them locally
@@ -103,9 +104,13 @@ def main():
     for device in devices:
         url = "https://" + args.username + ":" + args.password + "@" + device + "/command-api"
         try:
-            # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
+            # Create one zip file named all_files.zip on the device 
+            # with the all the show tech-support files in it
             switch = Server(url)
-            cmds=['bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*']
+            to_zip = '/mnt/flash/schedule/tech-support/*'
+            zip_file = '/mnt/flash/schedule/all_files.zip'
+            zip_command = 'bash timeout 30 zip ' + zip_file + ' ' + to_zip
+            cmds=[zip_command]
             switch.runCmds(1,cmds, 'text')
             # Get device hostname
             cmds=['show hostname']
@@ -114,7 +119,7 @@ def main():
             # Create directories
             output_dir = device_directories (hostname, args.output_directory)
             # Connect to the device using SSH
-            ssh = createSSHClient(device, port, args.username, args.password)
+            ssh = create_ssh_client(device, PORT, args.username, args.password)
             # Get the zipped file all_files.zip using SCP and save it locally
             my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
             scp = SCPClient(ssh.get_transport())

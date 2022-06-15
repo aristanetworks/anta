@@ -1400,7 +1400,7 @@ Verifies the IGMP snooping global configuration.
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if the IGMP snooping configuration for the VLANs is the one we expect. `False` otherwise. 
+ - <b>`bool`</b>:  `True` if the IGMP snooping global configuration is the one we expect. `False` otherwise. 
 
 
 

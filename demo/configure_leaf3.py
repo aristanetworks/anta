@@ -1,15 +1,15 @@
-from jsonrpclib import Server
 import ssl
+from jsonrpclib import Server
 
 ssl._create_default_https_context = ssl._create_unverified_context
-username = "arista"
+USERNAME = "arista"
 # use the password of your ATD instance
-password = "aristaoy21"
-ip = "192.168.0.14"
+PASSWORD = "aristaoy21"
+IP = "192.168.0.14"
 
 print ('Configuring leaf3')
-url = "https://" + username + ":" + password + "@" + ip + "/command-api"
-switch = Server(url)
+URL = "https://" + USERNAME + ":" + PASSWORD + "@" + IP + "/command-api"
+switch = Server(URL)
 
 with open('demo/leaf3.conf','r') as f:
     conf_list = f.read().splitlines()

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 import os
-from argparse import ArgumentParser
-from getpass import getpass
-from jsonrpclib import Server
 import ssl
 from sys import exit
-from yaml import safe_load
+from argparse import ArgumentParser
+from getpass import getpass
 from socket import setdefaulttimeout
+from jsonrpclib import Server
+from yaml import safe_load
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -101,7 +101,8 @@ def main():
             for eos_command in eos_commands['json_format']:
                 try:
                     setdefaulttimeout(10)
-                    result=switch.runCmds(1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
+                    result=switch.runCmds\
+                        (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
                     outfile = output_dir[2] + '/' + eos_command
                     outfile = open(outfile, 'w')
                     outfile.write(str(result[1]))
@@ -112,7 +113,8 @@ def main():
             for eos_command in eos_commands['text_format']:
                 try:
                     setdefaulttimeout(10)
-                    result=switch.runCmds(1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
+                    result=switch.runCmds\
+                        (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
                     outfile = output_dir[3] + '/' + eos_command
                     outfile = open(outfile, 'w')
                     outfile.write(result[1]['output'])

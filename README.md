@@ -25,11 +25,11 @@
     - [tests_eos directory](#tests_eos-directory)
     - [generate_functions_documentation.py file](#generate_functions_documentationpy-file)
     - [documentation directory](#documentation-directory)
-    - [check-devices-reachability.py file](#check-devices-reachabilitypy-file)
+    - [check_devices_reachability.py file](#check_devices_reachabilitypy-file)
     - [clear_counters.py file](#clear_counterspy-file)
-    - [collect-eos-commands.py file](#collect-eos-commandspy-file)
-    - [check-devices.py file](#check-devicespy-file)
-    - [evpn-blacklist-recovery.py file](#evpn-blacklist-recoverypy-file)
+    - [collect_eos_commands.py file](#collect_eos_commandspy-file)
+    - [check_devices.py file](#check_devicespy-file)
+    - [evpn_blacklist_recovery.py file](#evpn_blacklist_recoverypy-file)
     - [collect_sheduled_show_tech.py file](#collect_sheduled_show_techpy-file)
     - [demo directory](#demo-directory)
     - [unit_test.py file](#unit_testpy-file)
@@ -69,8 +69,8 @@ We indicate the tests we would like to run in a YAML file. Some tests require an
 ## Devices testing demo
 
 ```
-./check-devices.py --help
-usage: check-devices.py [-h] -i INVENTORY_FILE -u USERNAME -t TEST_CATALOG -o OUTPUT_FILE
+./check_devices.py --help
+usage: check_devices.py [-h] -i INVENTORY_FILE -u USERNAME -t TEST_CATALOG -o OUTPUT_FILE
 
 EOS devices health checks
 
@@ -82,7 +82,7 @@ optional arguments:
   -o OUTPUT_FILE     Output file
 ```
 ```
-./check-devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
+./check_devices.py -u ansible -i devices.txt -o output.txt -t tests.yaml
 Device password:
 Enable password (if any):
 Testing devices .... please be patient ...
@@ -328,26 +328,26 @@ print(result[0]['output'])
 ### To test devices reachability
 
 * Update the devices inventory [devices.txt](devices.txt) with the devices IP address or hostnames.
-* Run the python script [check-devices-reachability.py](check-devices-reachability.py).
+* Run the python script [check_devices_reachability.py](check_devices_reachability.py).
 * Check the result in the console.
 
 ```shell
 vi devices.txt
-./check-devices-reachability.py --help
-./check-devices-reachability.py -i devices.txt -u username
+./check_devices_reachability.py --help
+./check_devices_reachability.py -i devices.txt -u username
 ```
 ### To run tests on devices
 
 * Update the devices inventory [devices.txt](devices.txt) with the devices IP address or hostnames.
 * Update the file [tests.yaml](tests.yaml) to indicate the tests you would like to run. Some tests require an input. In that case, provide it using the same YAML file.
-* Run the python script [check-devices.py](check-devices.py).
+* Run the python script [check_devices.py](check_devices.py).
 * Check the result in the output file.
 
 ```shell
 vi devices.txt
 vi tests.yaml
-./check-devices.py --help
-./check-devices.py -i devices.txt -t tests.yaml -o output.txt -u username
+./check_devices.py --help
+./check_devices.py -i devices.txt -t tests.yaml -o output.txt -u username
 cat output.txt
 ```
 
@@ -355,15 +355,15 @@ cat output.txt
 
 * Update the devices inventory [devices.txt](devices.txt) with your devices IP address or hostnames.
 * Update the EOS commands list [eos-commands.yaml](eos-commands.yaml) you would like to collect from the devices in text or JSON format.
-* Run the python script [collect-eos-commands.py](collect-eos-commands.py).
+* Run the python script [collect_eos_commands.py](collect_eos_commands.py).
 * Check the output in the output directory.
 
 
 ```shell
 vi devices-list.text
 vi eos-commands.yaml
-./collect-eos-commands.py --help
-./collect-eos-commands.py -i devices.txt -c eos-commands.yaml -o outdir -u username
+./collect_eos_commands.py --help
+./collect_eos_commands.py -i devices.txt -c eos-commands.yaml -o outdir -u username
 ls outdir
 ```
 
@@ -380,12 +380,12 @@ vi devices-list.text
 ### To clear on devices the list of MAC addresses which are blacklisted in EVPN
 
 * Update the devices inventory [devices.txt](devices.txt) with your devices IP address or hostnames.
-* Run the python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py).
+* Run the python script [evpn_blacklist_recovery.py](evpn_blacklist_recovery.py).
 
 ```shell
 vi devices-list.text
-./evpn-blacklist-recovery.py --help
-./evpn-blacklist-recovery.py -i devices.txt -u username
+./evpn_blacklist_recovery.py --help
+./evpn_blacklist_recovery.py -i devices.txt -u username
 ```
 ### To collect the scheduled show tech-support files from EOS devices
 
@@ -440,11 +440,11 @@ The [documentation](documentation) directory has the tests documentation in mark
 * [overview.md](documentation/overview.md) file
 * [tests_eos.functions.md](documentation/tests_eos.functions.md) file
 
-### [check-devices-reachability.py](check-devices-reachability.py) file
+### [check_devices_reachability.py](check_devices_reachability.py) file
 
-The python script [check-devices-reachability.py](check-devices-reachability.py) is used to test devices reachability with eAPI.
+The python script [check_devices_reachability.py](check_devices_reachability.py) is used to test devices reachability with eAPI.
 
-The python script [check-devices-reachability.py](check-devices-reachability.py) takes as input a text file with the devices IP address or hostnames (when resolvable), and tests devices reachability with eAPI and prints the unreachable devices on the console.
+The python script [check_devices_reachability.py](check_devices_reachability.py) takes as input a text file with the devices IP address or hostnames (when resolvable), and tests devices reachability with eAPI and prints the unreachable devices on the console.
 
 ### [clear_counters.py](clear_counters.py) file
 
@@ -452,21 +452,21 @@ The python script [clear_counters.py](clear_counters.py) is used to clear counte
 
 It takes as input a text file with the devices IP address or hostnames (when resolvable) and clears counters on these devices.
 
-### [collect-eos-commands.py](collect-eos-commands.py) file
+### [collect_eos_commands.py](collect_eos_commands.py) file
 
-The python script [collect-eos-commands.py](collect-eos-commands.py) is used to collect commands output from EOS devices.
+The python script [collect_eos_commands.py](collect_eos_commands.py) is used to collect commands output from EOS devices.
 
-The python script [collect-eos-commands.py](collect-eos-commands.py):
+The python script [collect_eos_commands.py](collect_eos_commands.py):
 * Takes as input:
   * A text file with the devices IP address or hostnames (when resolvable).
   * A YAML file with the list of EOS commands we would like to collect in text or JSON format.
 * Collects the EOS commands from the devices, and saves the result in files.
 
-### [check-devices.py](check-devices.py) file
+### [check_devices.py](check_devices.py) file
 
-The python script [check-devices.py](check-devices.py) is used to run tests on devices.
+The python script [check_devices.py](check_devices.py) is used to run tests on devices.
 
-The python script [check-devices.py](check-devices.py):
+The python script [check_devices.py](check_devices.py):
 * Imports the python functions defined in the directory [tests_eos](tests_eos).
   * These functions defined the tests.
 * Takes as input:
@@ -474,11 +474,11 @@ The python script [check-devices.py](check-devices.py):
   * A YAML file with the list of the tests we would like to use and their parameters.
 * Runs the tests, and prints the result on the console and saves the result in a file.
 
-### [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) file
+### [evpn_blacklist_recovery.py](evpn_blacklist_recovery.py) file
 
-The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) is used to clear on EOS devices the list of MAC addresses which are blacklisted in EVPN.
+The python script [evpn_blacklist_recovery.py](evpn_blacklist_recovery.py) is used to clear on EOS devices the list of MAC addresses which are blacklisted in EVPN.
 
-The python script [evpn-blacklist-recovery.py](evpn-blacklist-recovery.py) takes as input a text file with the devices IP address or hostnames (when resolvable) and run the command `clear bgp evpn host-flap` on the EOS devices.
+The python script [evpn_blacklist_recovery.py](evpn_blacklist_recovery.py) takes as input a text file with the devices IP address or hostnames (when resolvable) and run the command `clear bgp evpn host-flap` on the EOS devices.
 
 ### [collect_sheduled_show_tech.py](collect_sheduled_show_tech.py) file
 

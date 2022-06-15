@@ -707,11 +707,11 @@ def verify_interfaces_status(device, enable_password, minimum = None):
         return None
     try:
         response = device.runCmds(1, ['show interfaces description'], 'json')
-        n = 0
+        nbr = 0
         for item in response[0]['interfaceDescriptions']:
             if ('Ethernet' in item) and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up') and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
-                n = n + 1
-        if n >= minimum:
+                nbr = nbr + 1
+        if nbr >= minimum:
             return True
         else:
             return False
@@ -734,9 +734,9 @@ def verify_storm_control_drops(device, enable_password):
     try:
         response = device.runCmds(1, ['show storm-control'], 'json')
         for interface in response[0]['interfaces']:
-            for trafficTypes in ['all', 'unknown-unicast', 'multicast', 'broadcast']:
-                if trafficTypes in response[0]['interfaces'][interface]["trafficTypes"]:
-                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][trafficTypes] and response[0]['interfaces'][interface]["trafficTypes"][trafficTypes]['drop'] != 0:
+            for traffic_type in ['all', 'unknown-unicast', 'multicast', 'broadcast']:
+                if traffic_type in response[0]['interfaces'][interface]["trafficTypes"]:
+                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][traffic_type] and response[0]['interfaces'][interface]["trafficTypes"][traffic_type]['drop'] != 0:
                         return False
         return True
     except:
@@ -940,7 +940,7 @@ def verify_vxlan_config_sanity(device, enable_password):
             for category in response[0]['categories']:
                 if category in ['localVtep', 'mlag']:
                     if response[0]['categories'][category]['allCheckPass'] != True:
-                            return False
+                        return False
             return True
     except:
         return None
@@ -1052,7 +1052,7 @@ def verify_bfd(device, enable_password):
             for neighbor in response[0]['vrfs'][vrf]['ipv4Neighbors']:
                 for interface in response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats']:
                     if response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats'][interface]['status'] != 'up':
-                            return False
+                        return False
             return True
     except:
         return None

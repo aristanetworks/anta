@@ -7,7 +7,7 @@ import tests_eos.functions
 def id_func(param):
     return str(param)
 
-def runCmds(version, commands, format):
+def run_cmds(version, commands, format):
     if commands == ['show version'] and format == 'json':
         data_string = open('mock_data/show_version_json_4.27.1.1F.out').read()
         data_list = ast.literal_eval(data_string)
@@ -21,8 +21,8 @@ def runCmds(version, commands, format):
 
 @pytest.fixture
 def mock_device():
-    mock_device = Mock(spec_set=['runCmds'])
-    mock_device.runCmds.side_effect = runCmds
+    mock_device = Mock(spec_set=['run_cmds'])
+    mock_device.run_cmds.side_effect = run_cmds
     return mock_device
 
 @pytest.mark.parametrize("versions,expected",[(['4.27.1.1F'], True),
@@ -34,7 +34,8 @@ def mock_device():
                                                )
 
 def test_verify_eos_version(mock_device, versions, expected):
-    check = tests_eos.functions.verify_eos_version(device = mock_device, enable_password = 'enable_password', versions = versions)
+    check = tests_eos.functions.verify_eos_version\
+        (device = mock_device, enable_password = 'enable_password', versions = versions)
     assert check == expected
 
 @pytest.mark.parametrize("uptime,expected", [(100, True),
@@ -42,9 +43,11 @@ def test_verify_eos_version(mock_device, versions, expected):
                                              (None, None)])
 
 def test_verify_uptime(mock_device, uptime, expected):
-    check = tests_eos.functions.verify_uptime(device = mock_device, enable_password = 'enable_password', min = uptime)
+    check = tests_eos.functions.verify_uptime\
+        (device = mock_device, enable_password = 'enable_password', min = uptime)
     assert check == expected
 
 def test_verify_ntp(mock_device):
-    check = tests_eos.functions.verify_ntp(device = mock_device, enable_password = 'enable_password')
+    check = tests_eos.functions.verify_ntp\
+        (device = mock_device, enable_password = 'enable_password')
     assert check is True
