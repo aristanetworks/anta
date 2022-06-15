@@ -64,7 +64,8 @@ def verify_eos_extensions(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device has all installed its EOS extensions enabled for boot persistence. `False` otherwise.
+        bool: `True` if the device has all installed its EOS extensions enabled for boot persistence.
+        `False` otherwise.
 
     """
     try:
@@ -91,7 +92,8 @@ def verify_eos_extensions(device, enable_password):
 
 def verify_field_notice_44_resolution(device, enable_password):
     """
-    Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+    Verifies the device is using an Aboot version that fix the bug discussed
+    in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -100,7 +102,9 @@ def verify_field_notice_44_resolution(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device is using an Aboot version that fix the bug discussed in the field notice 44 or if the device model is not affected. `False` otherwise.
+        bool: `True` if the device is using an Aboot version that fix the bug discussed
+        in the field notice 44 or if the device model is not affected.
+        `False` otherwise.
 
     """
     try:
@@ -189,7 +193,8 @@ def verify_uptime(device, enable_password, min = None):
         min (int): Minimum uptime in seconds.
 
     Returns:
-        bool: `True` if the device uptime is higher than the threshold. `False` otherwise.
+        bool: `True` if the device uptime is higher than the threshold.
+        `False` otherwise.
 
     """
     if not min:
@@ -214,7 +219,8 @@ def verify_reload_cause(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device last reload was requested by a user. `False` otherwise.
+        bool: `True` if the device last reload was requested by a user.
+        `False` otherwise.
 
     """
     try:
@@ -241,7 +247,8 @@ def verify_coredump(device, enable_password):
 
     """
     try:
-        response = device.runCmds(1, [{"cmd": "enable", "input": enable_password},'bash timeout 10 ls /var/core'], 'text')
+        response = device.runCmds(1, \
+            [{"cmd": "enable", "input": enable_password},'bash timeout 10 ls /var/core'], 'text')
         if len(response[1]['output']) == 0:
             return True
         else:
@@ -260,7 +267,8 @@ def verify_agent_logs(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device has no agent crash reported. `False` otherwise.
+        bool: `True` if the device has no agent crash reported.
+        `False` otherwise.
 
     """
     try:
@@ -274,7 +282,8 @@ def verify_agent_logs(device, enable_password):
 
 def verify_syslog(device, enable_password):
     """
-    Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
+    Verifies the device had no syslog message with a severity of warning (or a more severe message)
+    during the last 7 days.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -283,7 +292,9 @@ def verify_syslog(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days. `False` otherwise.
+        bool: `True` if the device had no syslog message with a severity of warning (or a more severe message)
+        during the last 7 days.
+        `False` otherwise.
 
     """
     try:
@@ -306,7 +317,8 @@ def verify_cpu_utilization(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device CPU utilization is less than 75%. `False` otherwise.
+        bool: `True` if the device CPU utilization is less than 75%.
+        `False` otherwise.
 
     """
     try:
@@ -329,7 +341,8 @@ def verify_memory_utilization(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device memory utilization is less than 75%. `False` otherwise.
+        bool: `True` if the device memory utilization is less than 75%.
+        `False` otherwise.
 
     """
     try:
@@ -353,12 +366,14 @@ def verify_filesystem_utilization(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if each partition on the disk is used less than 75%. `False` otherwise.
+        bool: `True` if each partition on the disk is used less than 75%.
+        `False` otherwise.
 
     """
 
     try:
-        response = device.runCmds(1, [{"cmd": "enable", "input": enable_password},'bash timeout 10 df -h'], 'text')
+        response = device.runCmds(1, \
+            [{"cmd": "enable", "input": enable_password},'bash timeout 10 df -h'], 'text')
         for line in response[1]['output'].split('\n')[1:]:
             if 'loop' not in line and len(line) > 0:
                 if int(line.split()[4].replace('%', '')) > 75:
@@ -380,7 +395,8 @@ def verify_transceivers_manufacturers(device, enable_password, manufacturers = N
         manufacturers (list): List of allowed transceivers manufacturers.
 
     Returns:
-        bool: `True` if the device is only using transceivers from supported manufacturers. `False` otherwise.
+        bool: `True` if the device is only using transceivers from supported manufacturers.
+        `False` otherwise.
 
     """
     if not manufacturers:
@@ -397,7 +413,8 @@ def verify_transceivers_manufacturers(device, enable_password, manufacturers = N
 def verify_system_temperature(device, enable_password):
 
     """
-    Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past.
+    Verifies the device temperature is currently OK
+    and the device did not report any temperature alarm in the past.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -406,7 +423,8 @@ def verify_system_temperature(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device temperature is OK. `False` otherwise.
+        bool: `True` if the device temperature is OK.
+        `False` otherwise.
 
     """
     try:
@@ -421,7 +439,8 @@ def verify_system_temperature(device, enable_password):
 def verify_transceiver_temperature(device, enable_password):
 
     """
-    Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature.
+    Verifies the transceivers temperature is currently OK
+    and the device did not report any alarm in the past for its transceivers temperature.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -430,7 +449,8 @@ def verify_transceiver_temperature(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the transceivers temperature of the device is currently OK and if the device did not report any alarm in the past for its transceivers temperature.
+        bool: `True` if the transceivers temperature of the device is currently OK
+        and if the device did not report any alarm in the past for its transceivers temperature.
         `False` otherwise.
 
     """
@@ -455,7 +475,8 @@ def verify_environment_cooling(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the if the fans status is OK. `False` otherwise.
+        bool: `True` if the if the fans status is OK.
+        `False` otherwise.
 
     """
     try:
@@ -479,7 +500,8 @@ def verify_environment_power(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the power supplies is OK. `False` otherwise.
+        bool: `True` if the power supplies is OK.
+        `False` otherwise.
 
     """
     try:
@@ -503,7 +525,8 @@ def verify_zerotouch(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if ZeroTouch is disabled. `False` otherwise.
+        bool: `True` if ZeroTouch is disabled.
+        `False` otherwise.
 
     """
     try:
@@ -527,11 +550,13 @@ def verify_running_config_diffs(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no difference between the running-config and the startup-config. `False` otherwise.
+        bool: `True` if there is no difference between the running-config and the startup-config.
+        `False` otherwise.
 
     """
     try:
-        response = device.runCmds(1, [{"cmd": "enable", "input": enable_password},'show running-config diffs'], 'text')
+        response = device.runCmds(1, \
+            [{"cmd": "enable", "input": enable_password},'show running-config diffs'], 'text')
         if len(response[1]['output']) == 0:
             return True
         else:
@@ -552,7 +577,8 @@ def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
         mode (int): The expected Unified Forwarding Table mode.
 
     Returns:
-        bool: `True` if the device is using the expected Unified Forwarding Table mode. `False` otherwise.
+        bool: `True` if the device is using the expected Unified Forwarding Table mode.
+        `False` otherwise.
 
     """
     if not mode:
@@ -579,12 +605,14 @@ def verify_tcam_profile(device, enable_password, profile):
         profile (str): The expected TCAM profile.
 
     Returns:
-        bool: `True` if the device is configured with the expected TCAM profile. `False` otherwise.
+        bool: `True` if the device is configured with the expected TCAM profile.
+        `False` otherwise.
 
     """
     try:
         response = device.runCmds(1, ['show hardware tcam profile'], 'json')
-        if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config']) and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
+        if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
+            and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
             return True
         else:
             return False
@@ -603,7 +631,8 @@ def verify_adverse_drops(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops. `False` if the device (DCS-7280E and DCS-7500E) report adverse drops.
+        bool: `True` if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops.
+        `False` if the device (DCS-7280E and DCS-7500E) report adverse drops.
 
     """
 
@@ -682,7 +711,8 @@ def verify_interface_errors(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the interfaces error counters are equal to zero. `False` otherwise.
+        bool: `True` if the interfaces error counters are equal to zero.
+        `False` otherwise.
 
     """
     try:
@@ -707,7 +737,8 @@ def verify_interface_discards(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the interfaces packet discard counters are equal to zero. `False` otherwise.
+        bool: `True` if the interfaces packet discard counters are equal to zero.
+        `False` otherwise.
 
     """
     try:
@@ -732,7 +763,8 @@ def verify_interface_errdisabled(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no interface in error disable state.. `False` otherwise.
+        bool: `True` if there is no interface in error disable state..
+        `False` otherwise.
 
     """
 
@@ -757,7 +789,9 @@ def verify_interfaces_status(device, enable_password, minimum = None):
         minimum (int): Expected minimum number of Ethernet interfaces up/up
 
     Returns:
-        bool: `True` if the number of Ethernet interfaces up/up on the device is higher or equal than the provided value. `False` otherwise.
+        bool: `True` if the number of Ethernet interfaces up/up on the device is higher or equal
+        than the provided value.
+        `False` otherwise.
 
     """
     if not minimum:
@@ -766,7 +800,9 @@ def verify_interfaces_status(device, enable_password, minimum = None):
         response = device.runCmds(1, ['show interfaces description'], 'json')
         nbr = 0
         for item in response[0]['interfaceDescriptions']:
-            if ('Ethernet' in item) and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up') and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
+            if ('Ethernet' in item) \
+                and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up')\
+                and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
                 nbr = nbr + 1
         if nbr >= minimum:
             return True
@@ -787,7 +823,8 @@ def verify_storm_control_drops(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the device did not drop packet due to its storm-control configuration. `False` otherwise.
+        bool: `True` if the device did not drop packet due to its storm-control configuration.
+        `False` otherwise.
 
     """
     try:
@@ -795,7 +832,8 @@ def verify_storm_control_drops(device, enable_password):
         for interface in response[0]['interfaces']:
             for traffic_type in ['all', 'unknown-unicast', 'multicast', 'broadcast']:
                 if traffic_type in response[0]['interfaces'][interface]["trafficTypes"]:
-                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][traffic_type] and response[0]['interfaces'][interface]["trafficTypes"][traffic_type]['drop'] != 0:
+                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][traffic_type] \
+                        and response[0]['interfaces'][interface]["trafficTypes"][traffic_type]['drop'] != 0:
                         return False
         return True
     except:
@@ -813,7 +851,8 @@ def verify_portchannels(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no inactive port in port channels. `False` otherwise.
+        bool: `True` if there is no inactive port in port channels.
+        `False` otherwise.
 
     """
     try:
@@ -840,7 +879,8 @@ def verify_illegal_lacp(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no illegal LACP packets received. `False` otherwise.
+        bool: `True` if there is no illegal LACP packets received.
+        `False` otherwise.
 
     """
 
@@ -860,7 +900,8 @@ def verify_illegal_lacp(device, enable_password):
 def verify_mlag_status(device, enable_password):
 
     """
-    Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
+    Verifies the MLAG status:
+    state is active, negotiation status is connected, local int is up, peer link is up.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -869,7 +910,8 @@ def verify_mlag_status(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the MLAG status is OK. `False` otherwise.
+        bool: `True` if the MLAG status is OK.
+        `False` otherwise.
 
     """
     try:
@@ -900,7 +942,8 @@ def verify_mlag_interfaces(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no inactive or active-partial MLAG interfaces. `False` otherwise.
+        bool: `True` if there is no inactive or active-partial MLAG interfaces.
+        `False` otherwise.
 
     """
     try:
@@ -928,7 +971,8 @@ def verify_mlag_config_sanity(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no MLAG config-sanity warnings. `False` otherwise.
+        bool: `True` if there is no MLAG config-sanity warnings.
+        `False` otherwise.
     """
     try:
         response = device.runCmds(1, ['show mlag config-sanity'],'json')
@@ -947,7 +991,8 @@ def verify_mlag_config_sanity(device, enable_password):
 
 def verify_loopback_count(device, enable_password, number = None):
     """
-    Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+    Verifies the number of loopback interfaces on the device is the one we expect.
+    And if none of the loopback is down.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -957,7 +1002,8 @@ def verify_loopback_count(device, enable_password, number = None):
         number (int): Expected number of loopback interfaces.
 
     Returns:
-        bool: `True` if the device is running an allowed EOS version. `False` otherwise.
+        bool: `True` if the device is running an allowed EOS version.
+        `False` otherwise.
 
     """
     if not number:
@@ -982,7 +1028,8 @@ def verify_vxlan(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if the interface vxlan 1 status is up/up. `False` otherwise.
+        bool: `True` if the interface vxlan 1 status is up/up.
+        `False` otherwise.
 
     """
     try:
@@ -1005,7 +1052,8 @@ def verify_vxlan_config_sanity(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no VXLAN config-sanity warnings. `False` otherwise.
+        bool: `True` if there is no VXLAN config-sanity warnings.
+        `False` otherwise.
     """
     try:
         response = device.runCmds(1, ['show vxlan config-sanity'], 'json')
@@ -1054,7 +1102,8 @@ def verify_spanning_tree_blocked_ports(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` there is no spanning-tree blocked ports. `False` otherwise.
+        bool: `True` there is no spanning-tree blocked ports.
+        `False` otherwise.
     """
     try:
         response = device.runCmds(1, ['show spanning-tree blockedports'], 'json')
@@ -1068,7 +1117,8 @@ def verify_spanning_tree_blocked_ports(device, enable_password):
 def verify_routing_protocol_model(device, enable_password, model = None):
 
     """
-    Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.
+    Verifies the configured routing protocol model is the one we expect.
+    And if there is no mismatch between the configured and operating routing protocol model.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1078,13 +1128,16 @@ def verify_routing_protocol_model(device, enable_password, model = None):
         model(str): Expected routing protocol model (multi-agent or ribd).
 
     Returns:
-        bool: `True` if the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model. `False` otherwise.
+        bool: `True` if the configured routing protocol model is the one we expect.
+        And if there is no mismatch between the configured and operating routing protocol model.
+        `False` otherwise.
     """
     if not model:
         return None
     try:
         response = device.runCmds(1, [{'cmd': 'show ip route summary', 'revision': 3}], 'json')
-        if (response[0]['protoModelStatus']['configuredProtoModel'] == response[0]['protoModelStatus']['operatingProtoModel']) and (response[0]['protoModelStatus']['operatingProtoModel'] == model):
+        if (response[0]['protoModelStatus']['configuredProtoModel'] == response[0]['protoModelStatus']['operatingProtoModel']) \
+            and (response[0]['protoModelStatus']['operatingProtoModel'] == model):
             return True
         else:
             return False
@@ -1093,7 +1146,8 @@ def verify_routing_protocol_model(device, enable_password, model = None):
 
 def verify_routing_table_size(device, enable_password, min = None, max = None):
     """
-    Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds).
+    Verifies the size of the IP routing table (default VRF).
+    Should be between the two provided thresholds.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1104,13 +1158,15 @@ def verify_routing_table_size(device, enable_password, min = None, max = None):
         max(int): Expected maximum routing table (default VRF) size.
 
     Returns:
-        bool: `True` if the size of the IP routing table (default VRF) is between two thresholds. `False` otherwise.
+        bool: `True` if the size of the IP routing table (default VRF) is between two thresholds.
+        `False` otherwise.
     """
     if not min or not max:
         return None
     try:
         response = device.runCmds(1, [{'cmd': 'show ip route summary', 'revision': 3}], 'json')
-        if (response[0]['vrfs']['default']['totalRoutes'] >= min) and (response[0]['vrfs']['default']['totalRoutes'] <= max):
+        if (response[0]['vrfs']['default']['totalRoutes'] >= min) \
+            and (response[0]['vrfs']['default']['totalRoutes'] <= max):
             return True
         else:
             return False
@@ -1128,7 +1184,8 @@ def verify_bfd(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if there is no BFD peer in down state (all VRF, IPv4 neighbors, single-hop). `False` otherwise.
+        bool: `True` if there is no BFD peer in down state (all VRF, IPv4 neighbors, single-hop).
+        `False` otherwise.
 
     """
     try:
@@ -1144,7 +1201,8 @@ def verify_bfd(device, enable_password):
 
 def verify_bgp_ipv4_unicast_state(device, enable_password):
     """
-    Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
+    Verifies all IPv4 unicast BGP sessions are established (for all VRF)
+    and all BGP messages queues for these sessions are empty (for all VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1153,7 +1211,9 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise.
+        bool: `True` if all IPv4 unicast BGP sessions are established (for all VRF)
+        and all BGP messages queues for these sessions are empty (for all VRF).
+        `False` otherwise.
 
     """
     try:
@@ -1163,7 +1223,9 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
         else:
             for vrf in response[0]['vrfs']:
                 for peer in response[0]['vrfs'][vrf]['peers']:
-                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
+                        or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
+                            or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
                         return False
             return True
     except:
@@ -1171,7 +1233,9 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
 
 def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'default'):
     """
-    Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
+    Verifies all IPv4 unicast BGP sessions are established
+    and all BGP messages queues for these sessions are empty
+    and the actual number of BGP IPv4 unicast neighbors is the one we expect.
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1182,7 +1246,10 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
         vrf(str): VRF to verify.
 
     Returns:
-        bool: `True` if all IPv4 unicast BGP sessions are established and if all BGP messages queues for these sessions are empty and if the actual number of BGP IPv4 unicast neighbors is the one we expect. `False` otherwise.
+        bool: `True` if all IPv4 unicast BGP sessions are established
+        and if all BGP messages queues for these sessions are empty
+        and if the actual number of BGP IPv4 unicast neighbors is the one we expect.
+        `False` otherwise.
 
     """
     if not number:
@@ -1194,7 +1261,9 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
         command = 'show bgp ipv4 unicast summary vrf ' + vrf
         response = device.runCmds(1, [command], 'json')
         for peer in response[0]['vrfs'][vrf]['peers']:
-            if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+            if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
+                or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
+                    or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
                 return False
             else:
                 count = count + 1
@@ -1207,7 +1276,8 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
 
 def verify_bgp_ipv6_unicast_state(device, enable_password):
     """
-    Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
+    Verifies all IPv6 unicast BGP sessions are established (for all VRF)
+    and all BGP messages queues for these sessions are empty (for all VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1216,7 +1286,9 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all IPv6 unicast BGP sessions are established (for all VRF) all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise.
+        bool: `True` if all IPv6 unicast BGP sessions are established (for all VRF)
+        and all BGP messages queues for these sessions are empty (for all VRF).
+        `False` otherwise.
 
     """
     try:
@@ -1226,7 +1298,9 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
         else:
             for vrf in response[0]['vrfs']:
                 for peer in response[0]['vrfs'][vrf]['peers']:
-                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
+                        or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or \
+                            (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
                         return False
             return True
     except:
@@ -1244,7 +1318,8 @@ def verify_bgp_evpn_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all EVPN BGP sessions are established. `False` otherwise.
+        bool: `True` if all EVPN BGP sessions are established.
+        `False` otherwise.
 
     """
     try:
@@ -1261,7 +1336,8 @@ def verify_bgp_evpn_state(device, enable_password):
 
 def verify_bgp_evpn_count(device, enable_password, number):
     """
-    Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
+    Verifies all EVPN BGP sessions are established (default VRF)
+    and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1271,7 +1347,9 @@ def verify_bgp_evpn_count(device, enable_password, number):
         number (int): The expected number of BGP EVPN neighbors in the default VRF.
 
     Returns:
-        bool: `True` if all EVPN BGP sessions are established and if the actual number of BGP EVPN neighbors is the one we expect. `False` otherwise.
+        bool: `True` if all EVPN BGP sessions are established
+        and if the actual number of BGP EVPN neighbors is the one we expect.
+        `False` otherwise.
 
     """
     if not number:
@@ -1303,7 +1381,8 @@ def verify_bgp_rtc_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all RTC BGP sessions are established. `False` otherwise.
+        bool: `True` if all RTC BGP sessions are established.
+        `False` otherwise.
 
     """
     try:
@@ -1320,7 +1399,8 @@ def verify_bgp_rtc_state(device, enable_password):
 
 def verify_bgp_rtc_count(device, enable_password, number):
     """
-    Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).
+    Verifies all RTC BGP sessions are established (default VRF)
+    and the actual number of BGP RTC neighbors is the one we expect (default VRF).
 
     Args:
         device (jsonrpclib.jsonrpc.ServerProxy):
@@ -1330,7 +1410,9 @@ def verify_bgp_rtc_count(device, enable_password, number):
         number (int): The expected number of BGP RTC neighbors (default VRF).
 
     Returns:
-        bool: `True` if all RTC BGP sessions are established and if the actual number of BGP RTC neighbors is the one we expect. `False` otherwise.
+        bool: `True` if all RTC BGP sessions are established
+        and if the actual number of BGP RTC neighbors is the one we expect.
+        `False` otherwise.
 
     """
     if not number:
@@ -1361,7 +1443,8 @@ def verify_ospf_state(device, enable_password):
         enable_password (str): Enable password.
 
     Returns:
-        bool: `True` if all OSPF neighbors are in FULL state. `False` otherwise.
+        bool: `True` if all OSPF neighbors are in FULL state.
+        `False` otherwise.
 
     """
     try:
@@ -1385,7 +1468,8 @@ def verify_ospf_count(device, enable_password, number = None):
         number (int): The expected number of OSPF neighbors in FULL state.
 
     Returns:
-        bool: `True` if the number of OSPF neighbors in FULL state is the one we expect. `False` otherwise.
+        bool: `True` if the number of OSPF neighbors in FULL state is the one we expect.
+        `False` otherwise.
 
     """
     if not number:
@@ -1412,7 +1496,8 @@ def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):
         configuration (str): Expected IGMP snooping configuration (enabled or disabled) for these VLANs.
 
     Returns:
-        bool: `True` if the IGMP snooping configuration for the VLANs is the one we expect. `False` otherwise.
+        bool: `True` if the IGMP snooping configuration for the VLANs is the one we expect.
+        `False` otherwise.
 
     """
     if not vlans or not configuration:
@@ -1440,7 +1525,8 @@ def verify_igmp_snooping_global(device, enable_password,  configuration):
         configuration (str): Expected global IGMP snooping configuration (enabled or disabled) for these VLANs.
 
     Returns:
-        bool: `True` if the IGMP snooping global configuration is the one we expect. `False` otherwise.
+        bool: `True` if the IGMP snooping global configuration is the one we expect.
+        `False` otherwise.
 
     """
     if not configuration:

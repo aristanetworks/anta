@@ -5,4 +5,4 @@ disable=missing-function-docstring
 good-names=runCmds, i, y, t, c
 
 [FORMAT]
-max-line-length=172
+max-line-length=130
