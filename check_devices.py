@@ -133,21 +133,21 @@ def main():
                 test_summary[device][test] = Fore.BLUE + 'Skip' + Fore.RESET
 
     # Use prettytable so we will display data in a visually appealing format
-    xxx = PrettyTable(padding_width=2)
+    x = PrettyTable(padding_width=2)
     fields = ['devices']
     for test in sorted(test_catalog):
         fields.append(test)
-    xxx.field_names = fields
+    x.field_names = fields
     for device in sorted(test_summary):
         row = [device]
         for test in sorted(test_catalog):
             row.append(test_summary[device][test])
-        xxx.add_row(row)
+        x.add_row(row)
 
     # Split the table into t tables of c columns each
-    ccc = 12
+    c = 12
     lenx = len(fields)
-    ttt = ceil(lenx/ccc)
+    t = ceil(lenx/c)
 
     print("Test results are saved on " + args.output_file)
 
@@ -157,11 +157,11 @@ def main():
     outfile.write('\n\n')
     outfile.write('***** Results *****\n')
     outfile.write('\n')
-    for i in range(ttt):
-        start = (i * (ccc -1) + 1)
-        stop = ((ccc - 1) * (i + 1)) + 1
-        yyy = ["devices"] + fields[start:stop]
-        outfile.write(xxx.get_string(fields=yyy))
+    for i in range(t):
+        start = (i * (c -1) + 1)
+        stop = ((c - 1) * (i + 1)) + 1
+        y = ["devices"] + fields[start:stop]
+        outfile.write(x.get_string(fields=y))
         outfile.write('\n')
 
     outfile.write('\n')

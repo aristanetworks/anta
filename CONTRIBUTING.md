@@ -15,6 +15,10 @@ The file [requirements-dev.txt](requirements-dev.txt) has the required packages 
 
 Run the command `yamllint -c .yamllint.yml .`
 
+### To use pylint
+
+Run the command `pylint $(git ls-files '*.py')`
+
 ### To run unit tests
 
 To run the unit tests that test the functions defined in the directory [test_eos](test_eos), run the command `py.test` or `py.test -vv` or `py.test --cov .` or `py.test --cov . -vv`
