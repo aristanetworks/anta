@@ -109,9 +109,7 @@ def main():
             # Create one zip file named all_files.zip on the device
             # with the all the show tech-support files in it
             switch = Server(url)
-            to_zip = '/mnt/flash/schedule/tech-support/*'
-            zip_file = '/mnt/flash/schedule/all_files.zip'
-            zip_command = 'bash timeout 30 zip ' + zip_file + ' ' + to_zip
+            zip_command = 'bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*'
             cmds=[zip_command]
             switch.runCmds(1,cmds, 'text')
             # Get device hostname

@@ -55,7 +55,7 @@ def main():
         except:
             unreachable.append(device)
 
-    if unreachable == []:
+    if not unreachable:
         print('All devices from the file ' + args.file + ' are reachable using eAPI')
     else:
         for item in unreachable:
