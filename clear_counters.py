@@ -49,7 +49,7 @@ def main():
         devices[i] = device.strip()
 
     for device in devices:
-        url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
+        url=f"https://{args.username}:{args.password}@{device}/command-api"
         switch = Server(url)
         setdefaulttimeout(5)
         try:

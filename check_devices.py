@@ -29,8 +29,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
                 device = device.strip()
                 connections[device] = {}
                 connections[device]['connection'] = Server(
-                    'https://%s:%s@%s/command-api' %
-                    (device_username, device_password, device)
+                    f"https://{device_username}:{device_password}@{device}/command-api"
                 )
     except:
         print('Error opening ' + text_file)

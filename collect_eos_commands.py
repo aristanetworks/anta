@@ -86,7 +86,7 @@ def main():
     for device in devices:
         try:
             setdefaulttimeout(5)
-            url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
+            url=f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['show version'])
         except:
@@ -97,7 +97,7 @@ def main():
         print("Can not connect to device " + item)
 
     for device in devices:
-        url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
+        url=f"https://{args.username}:{args.password}@{device}/command-api"
         switch = Server(url)
         print('\n')
         print('Collecting show commands output on device ' + device)
