@@ -50,7 +50,7 @@ def test_verify_eos_version(mock_device, versions, expected):
 
 def test_verify_uptime(mock_device, uptime, expected):
     check = tests_eos.functions.verify_uptime\
-        (device = mock_device, enable_password = 'enable_password', min = uptime)
+        (device = mock_device, enable_password = 'enable_password', minimum = uptime)
     assert check == expected
 
 def test_verify_ntp(mock_device):
