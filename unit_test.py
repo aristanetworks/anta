@@ -13,12 +13,15 @@ def id_func(param):
 def runCmds(version, commands, format):
     if commands == ['show version'] and format == 'json':
         with open('mock_data/show_version_json_4.27.1.1F.out', encoding="utf8") as data_string:
+            data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     elif commands == ['show uptime'] and format == 'json':
         with open('mock_data/show_uptime_json_1000000.out', encoding="utf8") as data_string:
+            data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     elif commands == ['show ntp status'] and format == 'text':
         with open('mock_data/show_ntp_status_text_synchronised.out', encoding="utf8") as data_string:
+            data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     return data_list
 
