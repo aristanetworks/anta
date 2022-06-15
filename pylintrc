@@ -9,6 +9,7 @@ good-names=runCmds, i, y, t, c, x
 [DESIGN]
 max-statements=60
 max-returns=7
+max-locals=23
 
 [FORMAT]
 max-line-length=130

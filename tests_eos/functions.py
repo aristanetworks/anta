@@ -1493,4 +1493,3 @@ def verify_igmp_snooping_global(device, enable_password,  configuration):
         return False
     except:
         return None
-

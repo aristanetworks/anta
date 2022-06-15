@@ -73,7 +73,7 @@ def main():
 
     for i,device in enumerate(devices):
         devices[i] = device.strip()
-    
+
     # Remove unreachable devices from devices list
 
     unreachable = []
@@ -93,8 +93,8 @@ def main():
         devices.remove(item)
         print("Can not connect to device " + item)
 
-    # Progress bar 
-    
+    # Progress bar
+
     number_of_unreachable_devices = len(unreachable)
     number_of_reachable_devices = len(devices)
     pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices,\
@@ -106,7 +106,7 @@ def main():
     for device in devices:
         url = "https://" + args.username + ":" + args.password + "@" + device + "/command-api"
         try:
-            # Create one zip file named all_files.zip on the device 
+            # Create one zip file named all_files.zip on the device
             # with the all the show tech-support files in it
             switch = Server(url)
             to_zip = '/mnt/flash/schedule/tech-support/*'
@@ -134,7 +134,7 @@ def main():
         except:
             print('You are unlucky today! ' + device + ' does not like this script')
             pbar.update(1)
-    
+
     pbar.close()
     print('Done. Files are in the directory ' + output_dir[0])
 
