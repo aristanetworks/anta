@@ -22,8 +22,7 @@ def verify_eos_version(device, enable_password, versions = None):
         response = device.runCmds(1, ['show version'], 'json')
         if response[0]['version'] in versions:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -48,8 +47,7 @@ def verify_terminattr_version(device, enable_password, versions = None):
         response = device.runCmds(1, ['show version detail'], 'json')
         if response[0]['details']['packages']['TerminAttr-core']['version'] in versions:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -85,8 +83,7 @@ def verify_eos_extensions(device, enable_password):
         boot_extensions.sort()
         if installed_extensions == boot_extensions:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -203,8 +200,7 @@ def verify_uptime(device, enable_password, min = None):
         response = device.runCmds(1, ['show uptime'], 'json')
         if response[0]['upTime'] > min:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -227,8 +223,7 @@ def verify_reload_cause(device, enable_password):
         response = device.runCmds(1, ['show version','show reload cause'], 'json')
         if response[0]['resetCauses'][0]['description'] == 'Reload requested by the user.':
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -251,8 +246,7 @@ def verify_coredump(device, enable_password):
             [{"cmd": "enable", "input": enable_password},'bash timeout 10 ls /var/core'], 'text')
         if len(response[1]['output']) == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -275,8 +269,7 @@ def verify_agent_logs(device, enable_password):
         response = device.runCmds(1, ['show agent logs crash'], 'text')
         if len(response[0]['output']) == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -301,8 +294,7 @@ def verify_syslog(device, enable_password):
         response = device.runCmds(1, ['show logging last 7 days threshold warnings'], 'text')
         if len(response[0]['output']) == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -325,8 +317,7 @@ def verify_cpu_utilization(device, enable_password):
         response = device.runCmds(1, ['show processes top once'], 'json')
         if response[0]['cpuInfo']['%Cpu(s)']['idle'] > 25:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -349,8 +340,7 @@ def verify_memory_utilization(device, enable_password):
         response = device.runCmds(1, ['show version'], 'json')
         if float(response[0]['memFree']) / float(response[0]['memTotal']) > 0.25:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -533,8 +523,7 @@ def verify_zerotouch(device, enable_password):
         response = device.runCmds(1, ['show zerotouch'], 'json')
         if response[0]['mode'] == 'disabled':
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -559,8 +548,7 @@ def verify_running_config_diffs(device, enable_password):
             [{"cmd": "enable", "input": enable_password},'show running-config diffs'], 'text')
         if len(response[1]['output']) == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -587,8 +575,7 @@ def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
         response = device.runCmds(1, ['show platform trident forwarding-table partition'], 'json')
         if response[0]['uftMode'] == str(mode):
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -614,8 +601,7 @@ def verify_tcam_profile(device, enable_password, profile):
         if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
             and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -640,8 +626,7 @@ def verify_adverse_drops(device, enable_password):
         response = device.runCmds(1, ['show hardware counter drop'], 'json')
         if response[0]['totalAdverseDrops'] == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -665,8 +650,7 @@ def verify_ntp(device, enable_password):
         response = device.runCmds(1, ['show ntp status'], 'text')
         if response[0]['output'].split('\n')[0].split(' ')[0] == 'synchronised':
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -806,8 +790,7 @@ def verify_interfaces_status(device, enable_password, minimum = None):
                 nbr = nbr + 1
         if nbr >= minimum:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1012,8 +995,7 @@ def verify_loopback_count(device, enable_password, number = None):
         response = device.runCmds(1, ['show ip interface brief  | include Loopback'], 'text')
         if (response[0]['output'].count('\n') == number) and (response[0]['output'].count('down') == 0) :
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1036,8 +1018,7 @@ def verify_vxlan(device, enable_password):
         response = device.runCmds(1, ['show interfaces description | include Vx1'], 'text')
         if response[0]['output'].count('up') == 2:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1085,8 +1066,7 @@ def verify_svi(device, enable_password):
         response = device.runCmds(1, ['show ip interface brief | include Vl'], 'text')
         if response[0]['output'].count('down') == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1109,8 +1089,7 @@ def verify_spanning_tree_blocked_ports(device, enable_password):
         response = device.runCmds(1, ['show spanning-tree blockedports'], 'json')
         if len(response[0]['spanningTreeInstances']) == 0:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1139,8 +1118,7 @@ def verify_routing_protocol_model(device, enable_password, model = None):
         if (response[0]['protoModelStatus']['configuredProtoModel'] == response[0]['protoModelStatus']['operatingProtoModel']) \
             and (response[0]['protoModelStatus']['operatingProtoModel'] == model):
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1168,8 +1146,7 @@ def verify_routing_table_size(device, enable_password, min = None, max = None):
         if (response[0]['vrfs']['default']['totalRoutes'] >= min) \
             and (response[0]['vrfs']['default']['totalRoutes'] <= max):
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1269,8 +1246,7 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
                 count = count + 1
         if count == number:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1364,8 +1340,7 @@ def verify_bgp_evpn_count(device, enable_password, number):
                 count = count + 1
         if count == number:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1427,8 +1402,7 @@ def verify_bgp_rtc_count(device, enable_password, number):
                 count = count + 1
         if count == number:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1451,8 +1425,7 @@ def verify_ospf_state(device, enable_password):
         response = device.runCmds(1, ['show ip ospf neighbor | exclude FULL|Address'], 'text')
         if (response[0]['output'].count('\n') == 0) :
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1478,8 +1451,7 @@ def verify_ospf_count(device, enable_password, number = None):
         response = device.runCmds(1, ['show ip ospf neighbor | exclude  Address'], 'text')
         if (response[0]['output'].count('FULL') == number) :
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
@@ -1535,8 +1507,7 @@ def verify_igmp_snooping_global(device, enable_password,  configuration):
         response = device.runCmds(1, ['show ip igmp snooping'],'json')
         if response[0]['igmpSnoopingState'] == configuration:
             return True
-        else:
-            return False
+        return False
     except:
         return None
 
