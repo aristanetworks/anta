@@ -51,7 +51,7 @@ def main():
             setdefaulttimeout(5)
             url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
             switch = Server(url)
-            response = switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass},\
+            switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass},\
                  'clear bgp evpn host-flap'])
         except:
             print("Can not do it on device " + device)

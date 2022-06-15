@@ -43,25 +43,24 @@ def create_connections_dict(text_file, device_username, device_password, output_
     for device in connections:
         try:
             setdefaulttimeout(5)
-            response = connections[device]['connection'].runCmds(1, ['show version'])
+            connections[device]['connection'].runCmds(1, ['show version'])
         except:
             unreachable.append(device)
     for key in unreachable:
         connections.pop(key)
         print("Can not connect to device " + key)
 
-    outfile = open(output_file, "w", encoding='utf8')
-    now = datetime.now()
-    outfile.write(now.strftime("%c"))
-    outfile.write('\n')
-    outfile.write('devices inventory file was ' + text_file)
-    outfile.write('\n')
-    outfile.write('devices username was ' + device_username)
-    outfile.write('\n')
-    outfile.write('list of unreachable devices is \n')
-    for element in unreachable:
-        outfile.write(element + "\n")
-    outfile.close()
+    with open(output_file, 'w', encoding="utf8") as outfile:
+        now = datetime.now()
+        outfile.write(now.strftime("%c"))
+        outfile.write('\n')
+        outfile.write('devices inventory file was ' + text_file)
+        outfile.write('\n')
+        outfile.write('devices username was ' + device_username)
+        outfile.write('\n')
+        outfile.write('list of unreachable devices is \n')
+        for element in unreachable:
+            outfile.write(element + "\n")
 
 
     return connections
@@ -156,26 +155,25 @@ def main():
     print("Test results are saved on " + args.output_file)
 
     # Write tests result to an external file
-    outfile = open(args.output_file, "a", encoding='utf8')
-    outfile.write('tests file was ' + args.test_catalog)
-    outfile.write('\n\n')
-    outfile.write('***** Results *****\n')
-    outfile.write('\n')
-    for i in range(t):
-        start = (i * (c -1) + 1)
-        stop = ((c - 1) * (i + 1)) + 1
-        y = ["devices"] + fields[start:stop]
-        outfile.write(x.get_string(fields=y))
+    with open(args.output_file, 'a', encoding="utf8") as outfile:
+        outfile.write('tests file was ' + args.test_catalog)
+        outfile.write('\n\n')
+        outfile.write('***** Results *****\n')
         outfile.write('\n')
+        for i in range(t):
+            start = (i * (c -1) + 1)
+            stop = ((c - 1) * (i + 1)) + 1
+            y = ["devices"] + fields[start:stop]
+            outfile.write(x.get_string(fields=y))
+            outfile.write('\n')
 
-    outfile.write('\n')
-    outfile.write('***** Tests *****\n')
-    outfile.write('\n')
-    for test in sorted(test_catalog):
-        outfile.write(test + '\t '+  dumps(test_catalog[test]))
         outfile.write('\n')
-    outfile.write('\n')
-    outfile.close()
+        outfile.write('***** Tests *****\n')
+        outfile.write('\n')
+        for test in sorted(test_catalog):
+            outfile.write(test + '\t '+  dumps(test_catalog[test]))
+            outfile.write('\n')
+        outfile.write('\n')
 
 if __name__ == '__main__':
     main()

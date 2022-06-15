@@ -88,7 +88,7 @@ def main():
             setdefaulttimeout(5)
             url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
             switch = Server(url)
-            response = switch.runCmds(1, ['show version'])
+            switch.runCmds(1, ['show version'])
         except:
             unreachable.append(device)
 
@@ -109,9 +109,8 @@ def main():
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
                     outfile = output_dir[2] + '/' + eos_command
-                    outfile = open(outfile, 'w', encoding='utf8')
-                    outfile.write(str(result[1]))
-                    outfile.close()
+                    with open(outfile, 'w', encoding="utf8") as outfile:
+                        outfile.write(str(result[1]))
                 except:
                     print('Unable to collect and save the json command ' + eos_command)
         if 'text_format' in eos_commands:
@@ -121,9 +120,8 @@ def main():
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
                     outfile = output_dir[3] + '/' + eos_command
-                    outfile = open(outfile, 'w', encoding='utf8')
-                    outfile.write(result[1]['output'])
-                    outfile.close()
+                    with open(outfile, 'w', encoding="utf8") as outfile:
+                        outfile.write(result[1]['output'])
                 except:
                     print('Unable to collect and save the text command ' + eos_command)
 

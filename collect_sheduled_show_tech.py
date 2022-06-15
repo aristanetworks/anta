@@ -85,7 +85,7 @@ def main():
             setdefaulttimeout(5)
             url = 'https://%s:%s@%s/command-api' %(args.username, args.password, device)
             switch = Server(url)
-            response = switch.runCmds(1, ['enable'])
+            switch.runCmds(1, ['enable'])
         except:
             unreachable.append(device)
 
