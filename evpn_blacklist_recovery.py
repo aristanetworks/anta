@@ -7,6 +7,7 @@ from sys import exit
 from socket import setdefaulttimeout
 from jsonrpclib import Server
 
+# pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main():
@@ -30,7 +31,7 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     try:
-        with open(args.file, 'r') as file:
+        with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)

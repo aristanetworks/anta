@@ -14,13 +14,13 @@ from yaml import safe_load
 from colorama import Fore
 import tests_eos.functions
 
-
+# pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def create_connections_dict(text_file, device_username, device_password, output_file):
     connections = {}
     try:
-        with open(text_file, 'r') as file:
+        with open(text_file, 'r', encoding='utf8') as file:
             for device in file:
                 device = device.strip()
                 connections[device] = {}
@@ -46,7 +46,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
         connections.pop(key)
         print("Can not connect to device " + key)
 
-    outfile = open(output_file, "w")
+    outfile = open(output_file, "w", encoding='utf8')
     now = datetime.now()
     outfile.write(now.strftime("%c"))
     outfile.write('\n')
@@ -100,7 +100,7 @@ def main():
         (args.inventory_file, args.username, args.password, args.output_file)
 
     try:
-        with open(args.test_catalog, 'r') as file:
+        with open(args.test_catalog, 'r', encoding='utf8') as file:
             test_catalog = safe_load(file)
     except:
         print('Error opening ' + args.test_catalog)
@@ -152,7 +152,7 @@ def main():
     print("Test results are saved on " + args.output_file)
 
     # Write tests result to an external file
-    outfile = open(args.output_file, "a")
+    outfile = open(args.output_file, "a", encoding='utf8')
     outfile.write('tests file was ' + args.test_catalog)
     outfile.write('\n\n')
     outfile.write('***** Results *****\n')

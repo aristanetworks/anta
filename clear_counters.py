@@ -9,6 +9,7 @@ from socket import setdefaulttimeout
 # third-party libraries
 from jsonrpclib import Server
 
+# pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main():

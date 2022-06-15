@@ -9,6 +9,7 @@ from socket import setdefaulttimeout
 from jsonrpclib import Server
 from yaml import safe_load
 
+# pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def device_directories (device, root_dir):
@@ -56,7 +57,7 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     try:
-        with open(args.eos_commands, 'r') as file:
+        with open(args.eos_commands, 'r', encoding='utf8') as file:
             eos_commands = file.read()
             eos_commands = safe_load(eos_commands)
     except:
@@ -64,7 +65,7 @@ def main():
         exit(1)
 
     try:
-        with open(args.file, 'r') as file:
+        with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
     except:
         print('Error opening ' + args.file)
@@ -104,7 +105,7 @@ def main():
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
                     outfile = output_dir[2] + '/' + eos_command
-                    outfile = open(outfile, 'w')
+                    outfile = open(outfile, 'w', encoding='utf8')
                     outfile.write(str(result[1]))
                     outfile.close()
                 except:
@@ -116,7 +117,7 @@ def main():
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
                     outfile = output_dir[3] + '/' + eos_command
-                    outfile = open(outfile, 'w')
+                    outfile = open(outfile, 'w', encoding='utf8')
                     outfile.write(result[1]['output'])
                     outfile.close()
                 except:
