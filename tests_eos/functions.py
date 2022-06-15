@@ -1197,14 +1197,13 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
         response = device.runCmds(1, ['show bgp ipv4 unicast summary vrf all'], 'json')
         if len(response[0]['vrfs']) == 0:
             return None
-        else:
-            for vrf in response[0]['vrfs']:
-                for peer in response[0]['vrfs'][vrf]['peers']:
-                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
-                        or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
-                            or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
-                        return False
-            return True
+        for vrf in response[0]['vrfs']:
+            for peer in response[0]['vrfs'][vrf]['peers']:
+                if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
+                    or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
+                        or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+                    return False
+        return True
     except:
         return None
 
@@ -1242,8 +1241,7 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
                 or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
                     or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
                 return False
-            else:
-                count = count + 1
+            count = count + 1
         if count == number:
             return True
         return False
@@ -1271,14 +1269,13 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
         response = device.runCmds(1, ['show bgp ipv6 unicast summary vrf all'], 'json')
         if len(response[0]['vrfs']) == 0:
             return None
-        else:
-            for vrf in response[0]['vrfs']:
-                for peer in response[0]['vrfs'][vrf]['peers']:
-                    if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
-                        or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or \
-                            (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
-                        return False
-            return True
+        for vrf in response[0]['vrfs']:
+            for peer in response[0]['vrfs'][vrf]['peers']:
+                if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
+                    or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) or \
+                        (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+                    return False
+        return True
     except:
         return None
 
@@ -1302,11 +1299,10 @@ def verify_bgp_evpn_state(device, enable_password):
         response = device.runCmds(1, ['show bgp evpn summary'], 'json')
         if len(response[0]['vrfs']['default']['peers']) == 0:
             return None
-        else:
-            for peer in response[0]['vrfs']['default']['peers']:
-                if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
-                    return False
-            return True
+        for peer in response[0]['vrfs']['default']['peers']:
+            if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
+                return False
+        return True
     except:
         return None
 
@@ -1336,8 +1332,7 @@ def verify_bgp_evpn_count(device, enable_password, number):
         for peer in response[0]['vrfs']['default']['peers']:
             if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
                 return False
-            else:
-                count = count + 1
+            count = count + 1
         if count == number:
             return True
         return False
@@ -1364,11 +1359,10 @@ def verify_bgp_rtc_state(device, enable_password):
         response = device.runCmds(1, ['show bgp rt-membership summary'], 'json')
         if len(response[0]['vrfs']['default']['peers']) == 0:
             return None
-        else:
-            for peer in response[0]['vrfs']['default']['peers']:
-                if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
-                    return False
-            return True
+        for peer in response[0]['vrfs']['default']['peers']:
+            if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
+                return False
+        return True
     except:
         return None
 
@@ -1398,8 +1392,7 @@ def verify_bgp_rtc_count(device, enable_password, number):
         for peer in response[0]['vrfs']['default']['peers']:
             if response[0]['vrfs']['default']['peers'][peer]['peerState'] != 'Established':
                 return False
-            else:
-                count = count + 1
+            count = count + 1
         if count == number:
             return True
         return False
