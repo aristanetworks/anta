@@ -1,5 +1,7 @@
 [MESSAGES CONTROL]
-disable=missing-function-docstring
+disable=
+    missing-function-docstring, 
+    too-many-branches
 
 [BASIC]
 good-names=runCmds, i, y, t, c, x

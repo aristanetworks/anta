@@ -959,7 +959,7 @@ def verify_mlag_config_sanity(device, enable_password):
     """
     try:
         response = device.runCmds(1, ['show mlag config-sanity'],'json')
-        if response[0]['response']['mlagActive'] == False:
+        if response[0]['response']['mlagActive'] is False:
             # MLAG isn't running
             return None
         else:
@@ -1043,7 +1043,7 @@ def verify_vxlan_config_sanity(device, enable_password):
         else:
             for category in response[0]['categories']:
                 if category in ['localVtep', 'mlag']:
-                    if response[0]['categories'][category]['allCheckPass'] != True:
+                    if response[0]['categories'][category]['allCheckPass'] is not True:
                         return False
             return True
     except:
