@@ -15,12 +15,12 @@
 - [`functions.verify_adverse_drops`](./tests_eos.functions.md#function-verify_adverse_drops): Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 - [`functions.verify_agent_logs`](./tests_eos.functions.md#function-verify_agent_logs): Verifies there is no agent crash reported on the device.
 - [`functions.verify_bfd`](./tests_eos.functions.md#function-verify_bfd): Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
-- [`functions.verify_bgp_evpn_count`](./tests_eos.functions.md#function-verify_bgp_evpn_count): Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
+- [`functions.verify_bgp_evpn_count`](./tests_eos.functions.md#function-verify_bgp_evpn_count): Verifies all EVPN BGP sessions are established (default VRF)
 - [`functions.verify_bgp_evpn_state`](./tests_eos.functions.md#function-verify_bgp_evpn_state): Verifies all EVPN BGP sessions are established (default VRF).
-- [`functions.verify_bgp_ipv4_unicast_count`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_count): Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
-- [`functions.verify_bgp_ipv4_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_state): Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
-- [`functions.verify_bgp_ipv6_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv6_unicast_state): Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
-- [`functions.verify_bgp_rtc_count`](./tests_eos.functions.md#function-verify_bgp_rtc_count): Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).
+- [`functions.verify_bgp_ipv4_unicast_count`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_count): Verifies all IPv4 unicast BGP sessions are established
+- [`functions.verify_bgp_ipv4_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv4_unicast_state): Verifies all IPv4 unicast BGP sessions are established (for all VRF)
+- [`functions.verify_bgp_ipv6_unicast_state`](./tests_eos.functions.md#function-verify_bgp_ipv6_unicast_state): Verifies all IPv6 unicast BGP sessions are established (for all VRF)
+- [`functions.verify_bgp_rtc_count`](./tests_eos.functions.md#function-verify_bgp_rtc_count): Verifies all RTC BGP sessions are established (default VRF)
 - [`functions.verify_bgp_rtc_state`](./tests_eos.functions.md#function-verify_bgp_rtc_state): Verifies all RTC BGP sessions are established (default VRF).
 - [`functions.verify_coredump`](./tests_eos.functions.md#function-verify_coredump): Verifies there is no core file.
 - [`functions.verify_cpu_utilization`](./tests_eos.functions.md#function-verify_cpu_utilization): Verifies the CPU utilization is less than 75%.
@@ -28,7 +28,7 @@
 - [`functions.verify_environment_power`](./tests_eos.functions.md#function-verify_environment_power): Verifies the power supplies status is OK.
 - [`functions.verify_eos_extensions`](./tests_eos.functions.md#function-verify_eos_extensions): Verifies all EOS extensions installed on the device are enabled for boot persistence.
 - [`functions.verify_eos_version`](./tests_eos.functions.md#function-verify_eos_version): Verifies the device is running one of the allowed EOS version.
-- [`functions.verify_field_notice_44_resolution`](./tests_eos.functions.md#function-verify_field_notice_44_resolution): Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+- [`functions.verify_field_notice_44_resolution`](./tests_eos.functions.md#function-verify_field_notice_44_resolution): Verifies the device is using an Aboot version that fix the bug discussed
 - [`functions.verify_filesystem_utilization`](./tests_eos.functions.md#function-verify_filesystem_utilization): Verifies each partition on the disk is used less than 75%.
 - [`functions.verify_igmp_snooping_global`](./tests_eos.functions.md#function-verify_igmp_snooping_global): Verifies the IGMP snooping global configuration.
 - [`functions.verify_igmp_snooping_vlans`](./tests_eos.functions.md#function-verify_igmp_snooping_vlans): Verifies the IGMP snooping configuration for some VLANs.
@@ -38,27 +38,27 @@
 - [`functions.verify_interface_errors`](./tests_eos.functions.md#function-verify_interface_errors): Verifies interfaces error counters are equal to zero.
 - [`functions.verify_interface_utilization`](./tests_eos.functions.md#function-verify_interface_utilization): Verifies interfaces utilization is below 75%.
 - [`functions.verify_interfaces_status`](./tests_eos.functions.md#function-verify_interfaces_status): Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
-- [`functions.verify_loopback_count`](./tests_eos.functions.md#function-verify_loopback_count): Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+- [`functions.verify_loopback_count`](./tests_eos.functions.md#function-verify_loopback_count): Verifies the number of loopback interfaces on the device is the one we expect.
 - [`functions.verify_memory_utilization`](./tests_eos.functions.md#function-verify_memory_utilization): Verifies the memory utilization is less than 75%.
 - [`functions.verify_mlag_config_sanity`](./tests_eos.functions.md#function-verify_mlag_config_sanity): Verifies there is no MLAG config-sanity warnings.
 - [`functions.verify_mlag_interfaces`](./tests_eos.functions.md#function-verify_mlag_interfaces): Verifies there is no inactive or active-partial MLAG interfaces.
-- [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
+- [`functions.verify_mlag_status`](./tests_eos.functions.md#function-verify_mlag_status): Verifies the MLAG status:
 - [`functions.verify_ntp`](./tests_eos.functions.md#function-verify_ntp): Verifies NTP is synchronised.
 - [`functions.verify_ospf_count`](./tests_eos.functions.md#function-verify_ospf_count): Verifies the number of OSPF neighbors in FULL state is the one we expect.
 - [`functions.verify_ospf_state`](./tests_eos.functions.md#function-verify_ospf_state): Verifies all OSPF neighbors are in FULL state.
 - [`functions.verify_portchannels`](./tests_eos.functions.md#function-verify_portchannels): Verifies there is no inactive port in port channels.
 - [`functions.verify_reload_cause`](./tests_eos.functions.md#function-verify_reload_cause): Verifies the last reload of the device was requested by a user.
-- [`functions.verify_routing_protocol_model`](./tests_eos.functions.md#function-verify_routing_protocol_model): Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.
-- [`functions.verify_routing_table_size`](./tests_eos.functions.md#function-verify_routing_table_size): Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds).
+- [`functions.verify_routing_protocol_model`](./tests_eos.functions.md#function-verify_routing_protocol_model): Verifies the configured routing protocol model is the one we expect.
+- [`functions.verify_routing_table_size`](./tests_eos.functions.md#function-verify_routing_table_size): Verifies the size of the IP routing table (default VRF).
 - [`functions.verify_running_config_diffs`](./tests_eos.functions.md#function-verify_running_config_diffs): Verifies there is no difference between the running-config and the startup-config.
 - [`functions.verify_spanning_tree_blocked_ports`](./tests_eos.functions.md#function-verify_spanning_tree_blocked_ports): Verifies there is no spanning-tree blocked ports.
 - [`functions.verify_storm_control_drops`](./tests_eos.functions.md#function-verify_storm_control_drops): Verifies the device did not drop packets due its to storm-control configuration.
 - [`functions.verify_svi`](./tests_eos.functions.md#function-verify_svi): Verifies there is no interface vlan down.
-- [`functions.verify_syslog`](./tests_eos.functions.md#function-verify_syslog): Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
-- [`functions.verify_system_temperature`](./tests_eos.functions.md#function-verify_system_temperature): Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past.
+- [`functions.verify_syslog`](./tests_eos.functions.md#function-verify_syslog): Verifies the device had no syslog message with a severity of warning (or a more severe message)
+- [`functions.verify_system_temperature`](./tests_eos.functions.md#function-verify_system_temperature): Verifies the device temperature is currently OK
 - [`functions.verify_tcam_profile`](./tests_eos.functions.md#function-verify_tcam_profile): Verifies the configured TCAM profile is the expected one.
 - [`functions.verify_terminattr_version`](./tests_eos.functions.md#function-verify_terminattr_version): Verifies the device is running one of the allowed TerminAttr version.
-- [`functions.verify_transceiver_temperature`](./tests_eos.functions.md#function-verify_transceiver_temperature): Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature.
+- [`functions.verify_transceiver_temperature`](./tests_eos.functions.md#function-verify_transceiver_temperature): Verifies the transceivers temperature is currently OK
 - [`functions.verify_transceivers_manufacturers`](./tests_eos.functions.md#function-verify_transceivers_manufacturers): Verifies the device is only using transceivers from supported manufacturers.
 - [`functions.verify_unified_forwarding_table_mode`](./tests_eos.functions.md#function-verify_unified_forwarding_table_mode): Verifies the device is using the expected Unified Forwarding Table mode.
 - [`functions.verify_uptime`](./tests_eos.functions.md#function-verify_uptime): Verifies the device uptime is higher than a value.

@@ -21,8 +21,8 @@ Verifies the device is running one of the allowed EOS version.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`versions`</b> (list):  List of allowed EOS versions. 
 
@@ -35,7 +35,7 @@ Verifies the device is running one of the allowed EOS version.
 
 ---
 
-<a href="../tests_eos/functions.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L29"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_terminattr_version`
 
@@ -48,8 +48,8 @@ Verifies the device is running one of the allowed TerminAttr version.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`versions`</b> (list):  List of allowed TerminAttr versions. 
 
@@ -62,7 +62,7 @@ Verifies the device is running one of the allowed TerminAttr version.
 
 ---
 
-<a href="../tests_eos/functions.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L53"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_eos_extensions`
 
@@ -75,8 +75,8 @@ Verifies all EOS extensions installed on the device are enabled for boot persist
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -88,7 +88,7 @@ Verifies all EOS extensions installed on the device are enabled for boot persist
 
 ---
 
-<a href="../tests_eos/functions.py#L92"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L88"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_field_notice_44_resolution`
 
@@ -101,8 +101,8 @@ Verifies the device is using an Aboot version that fix the bug discussed in the 
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -114,12 +114,12 @@ Verifies the device is using an Aboot version that fix the bug discussed in the 
 
 ---
 
-<a href="../tests_eos/functions.py#L180"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L176"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_uptime`
 
 ```python
-verify_uptime(device, enable_password, min=None)
+verify_uptime(device, enable_password, minimum=None)
 ```
 
 Verifies the device uptime is higher than a value. 
@@ -127,10 +127,10 @@ Verifies the device uptime is higher than a value.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
- - <b>`min`</b> (int):  Minimum uptime in seconds. 
+ - <b>`minimum`</b> (int):  Minimum uptime in seconds. 
 
 
 
@@ -141,7 +141,7 @@ Verifies the device uptime is higher than a value.
 
 ---
 
-<a href="../tests_eos/functions.py#L206"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L201"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_reload_cause`
 
@@ -154,8 +154,8 @@ Verifies the last reload of the device was requested by a user.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -167,7 +167,7 @@ Verifies the last reload of the device was requested by a user.
 
 ---
 
-<a href="../tests_eos/functions.py#L229"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L223"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_coredump`
 
@@ -180,8 +180,8 @@ Verifies there is no core file.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -193,7 +193,7 @@ Verifies there is no core file.
 
 ---
 
-<a href="../tests_eos/functions.py#L252"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L245"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_agent_logs`
 
@@ -206,8 +206,8 @@ Verifies there is no agent crash reported on the device.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -219,7 +219,7 @@ Verifies there is no agent crash reported on the device.
 
 ---
 
-<a href="../tests_eos/functions.py#L275"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L267"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_syslog`
 
@@ -232,8 +232,8 @@ Verifies the device had no syslog message with a severity of warning (or a more 
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -245,7 +245,7 @@ Verifies the device had no syslog message with a severity of warning (or a more 
 
 ---
 
-<a href="../tests_eos/functions.py#L298"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L291"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_cpu_utilization`
 
@@ -258,8 +258,8 @@ Verifies the CPU utilization is less than 75%.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -271,7 +271,7 @@ Verifies the CPU utilization is less than 75%.
 
 ---
 
-<a href="../tests_eos/functions.py#L321"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L313"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_memory_utilization`
 
@@ -284,8 +284,8 @@ Verifies the memory utilization is less than 75%.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -297,7 +297,7 @@ Verifies the memory utilization is less than 75%.
 
 ---
 
-<a href="../tests_eos/functions.py#L344"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L335"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_filesystem_utilization`
 
@@ -310,8 +310,8 @@ Verifies each partition on the disk is used less than 75%.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -323,7 +323,7 @@ Verifies each partition on the disk is used less than 75%.
 
 ---
 
-<a href="../tests_eos/functions.py#L370"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L362"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_transceivers_manufacturers`
 
@@ -336,8 +336,8 @@ Verifies the device is only using transceivers from supported manufacturers.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`manufacturers`</b> (list):  List of allowed transceivers manufacturers. 
 
@@ -350,7 +350,7 @@ Verifies the device is only using transceivers from supported manufacturers.
 
 ---
 
-<a href="../tests_eos/functions.py#L397"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L389"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_system_temperature`
 
@@ -363,8 +363,8 @@ Verifies the device temperature is currently OK and the device did not report an
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -376,7 +376,7 @@ Verifies the device temperature is currently OK and the device did not report an
 
 ---
 
-<a href="../tests_eos/functions.py#L421"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L413"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_transceiver_temperature`
 
@@ -389,8 +389,8 @@ Verifies the transceivers temperature is currently OK and the device did not rep
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -402,7 +402,7 @@ Verifies the transceivers temperature is currently OK and the device did not rep
 
 ---
 
-<a href="../tests_eos/functions.py#L446"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L439"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_environment_cooling`
 
@@ -415,8 +415,8 @@ Verifies the fans status is OK.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -428,7 +428,7 @@ Verifies the fans status is OK.
 
 ---
 
-<a href="../tests_eos/functions.py#L470"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L462"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_environment_power`
 
@@ -441,8 +441,8 @@ Verifies the power supplies status is OK.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -454,7 +454,7 @@ Verifies the power supplies status is OK.
 
 ---
 
-<a href="../tests_eos/functions.py#L494"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L486"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_zerotouch`
 
@@ -467,8 +467,8 @@ Verifies ZeroTouch is disabled.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -480,7 +480,7 @@ Verifies ZeroTouch is disabled.
 
 ---
 
-<a href="../tests_eos/functions.py#L518"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L509"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_running_config_diffs`
 
@@ -493,8 +493,8 @@ Verifies there is no difference between the running-config and the startup-confi
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -506,7 +506,7 @@ Verifies there is no difference between the running-config and the startup-confi
 
 ---
 
-<a href="../tests_eos/functions.py#L542"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L533"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_unified_forwarding_table_mode`
 
@@ -519,8 +519,8 @@ Verifies the device is using the expected Unified Forwarding Table mode.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`mode`</b> (int):  The expected Unified Forwarding Table mode. 
 
@@ -533,7 +533,7 @@ Verifies the device is using the expected Unified Forwarding Table mode.
 
 ---
 
-<a href="../tests_eos/functions.py#L569"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L559"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_tcam_profile`
 
@@ -546,8 +546,8 @@ Verifies the configured TCAM profile is the expected one.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`profile`</b> (str):  The expected TCAM profile. 
 
@@ -560,7 +560,7 @@ Verifies the configured TCAM profile is the expected one.
 
 ---
 
-<a href="../tests_eos/functions.py#L594"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L584"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_adverse_drops`
 
@@ -573,8 +573,8 @@ Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -586,7 +586,7 @@ Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
 ---
 
-<a href="../tests_eos/functions.py#L619"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L608"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ntp`
 
@@ -599,8 +599,8 @@ Verifies NTP is synchronised.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -612,7 +612,7 @@ Verifies NTP is synchronised.
 
 ---
 
-<a href="../tests_eos/functions.py#L644"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L631"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_utilization`
 
@@ -625,8 +625,8 @@ Verifies interfaces utilization is below 75%.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -638,7 +638,7 @@ Verifies interfaces utilization is below 75%.
 
 ---
 
-<a href="../tests_eos/functions.py#L673"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L659"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errors`
 
@@ -651,8 +651,8 @@ Verifies interfaces error counters are equal to zero.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -664,7 +664,7 @@ Verifies interfaces error counters are equal to zero.
 
 ---
 
-<a href="../tests_eos/functions.py#L698"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L684"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_discards`
 
@@ -677,8 +677,8 @@ Verifies interfaces packet discard counters are equal to zero.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -690,7 +690,7 @@ Verifies interfaces packet discard counters are equal to zero.
 
 ---
 
-<a href="../tests_eos/functions.py#L723"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L709"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errdisabled`
 
@@ -703,8 +703,8 @@ Verifies there is no interface in error disable state.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -716,7 +716,7 @@ Verifies there is no interface in error disable state.
 
 ---
 
-<a href="../tests_eos/functions.py#L748"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L734"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interfaces_status`
 
@@ -729,8 +729,8 @@ Verifies the number of Ethernet interfaces up/up on the device is higher or equa
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`minimum`</b> (int):  Expected minimum number of Ethernet interfaces up/up 
 
@@ -743,7 +743,7 @@ Verifies the number of Ethernet interfaces up/up on the device is higher or equa
 
 ---
 
-<a href="../tests_eos/functions.py#L779"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L767"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_storm_control_drops`
 
@@ -756,8 +756,8 @@ Verifies the device did not drop packets due its to storm-control configuration.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -769,7 +769,7 @@ Verifies the device did not drop packets due its to storm-control configuration.
 
 ---
 
-<a href="../tests_eos/functions.py#L804"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L793"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_portchannels`
 
@@ -782,8 +782,8 @@ Verifies there is no inactive port in port channels.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -795,7 +795,7 @@ Verifies there is no inactive port in port channels.
 
 ---
 
-<a href="../tests_eos/functions.py#L831"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L819"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_illegal_lacp`
 
@@ -808,8 +808,8 @@ Verifies there is no illegal LACP packets received.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -821,7 +821,7 @@ Verifies there is no illegal LACP packets received.
 
 ---
 
-<a href="../tests_eos/functions.py#L860"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L847"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_status`
 
@@ -834,8 +834,8 @@ Verifies the MLAG status: state is active, negotiation status is connected, loca
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -847,7 +847,7 @@ Verifies the MLAG status: state is active, negotiation status is connected, loca
 
 ---
 
-<a href="../tests_eos/functions.py#L892"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L879"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_interfaces`
 
@@ -860,8 +860,8 @@ Verifies there is no inactive or active-partial MLAG interfaces.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -873,7 +873,7 @@ Verifies there is no inactive or active-partial MLAG interfaces.
 
 ---
 
-<a href="../tests_eos/functions.py#L920"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L906"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_config_sanity`
 
@@ -886,8 +886,8 @@ Verifies there is no MLAG config-sanity warnings.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -899,7 +899,7 @@ Verifies there is no MLAG config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L948"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L932"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_loopback_count`
 
@@ -912,8 +912,8 @@ Verifies the number of loopback interfaces on the device is the one we expect. A
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  Expected number of loopback interfaces. 
 
@@ -926,7 +926,7 @@ Verifies the number of loopback interfaces on the device is the one we expect. A
 
 ---
 
-<a href="../tests_eos/functions.py#L974"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L958"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan`
 
@@ -939,8 +939,8 @@ Verifies the interface vxlan 1 status is up/up.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -952,7 +952,7 @@ Verifies the interface vxlan 1 status is up/up.
 
 ---
 
-<a href="../tests_eos/functions.py#L997"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L980"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan_config_sanity`
 
@@ -965,8 +965,8 @@ Verifies there is no VXLAN config-sanity warnings.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -978,7 +978,7 @@ Verifies there is no VXLAN config-sanity warnings.
 
 ---
 
-<a href="../tests_eos/functions.py#L1023"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1005"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_svi`
 
@@ -991,8 +991,8 @@ Verifies there is no interface vlan down.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1004,7 +1004,7 @@ Verifies there is no interface vlan down.
 
 ---
 
-<a href="../tests_eos/functions.py#L1045"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1025"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_spanning_tree_blocked_ports`
 
@@ -1017,8 +1017,8 @@ Verifies there is no spanning-tree blocked ports.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1030,7 +1030,7 @@ Verifies there is no spanning-tree blocked ports.
 
 ---
 
-<a href="../tests_eos/functions.py#L1068"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1047"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_protocol_model`
 
@@ -1043,8 +1043,8 @@ Verifies the configured routing protocol model is the one we expect. And if ther
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`model`</b> (str):  Expected routing protocol model (multi-agent or ribd). 
 
@@ -1057,24 +1057,24 @@ Verifies the configured routing protocol model is the one we expect. And if ther
 
 ---
 
-<a href="../tests_eos/functions.py#L1094"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1075"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_table_size`
 
 ```python
-verify_routing_table_size(device, enable_password, min=None, max=None)
+verify_routing_table_size(device, enable_password, minimum=None, maximum=None)
 ```
 
-Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds). 
+Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds. 
 
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
- - <b>`min`</b> (int):  Expected minimum routing table (default VRF) size. 
- - <b>`max`</b> (int):  Expected maximum routing table (default VRF) size. 
+ - <b>`minimum`</b> (int):  Expected minimum routing table (default VRF) size. 
+ - <b>`maximum`</b> (int):  Expected maximum routing table (default VRF) size. 
 
 
 
@@ -1085,7 +1085,7 @@ Verifies the size of the IP routing table (default VRF) (should be between the t
 
 ---
 
-<a href="../tests_eos/functions.py#L1120"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1102"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bfd`
 
@@ -1098,8 +1098,8 @@ Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1111,7 +1111,7 @@ Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
 ---
 
-<a href="../tests_eos/functions.py#L1145"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1127"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_state`
 
@@ -1124,8 +1124,8 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1137,7 +1137,7 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../tests_eos/functions.py#L1172"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1157"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
@@ -1150,8 +1150,8 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  Expected number of BGP IPv4 unicast neighbors 
  - <b>`vrf`</b> (str):  VRF to verify. 
@@ -1165,7 +1165,7 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 ---
 
-<a href="../tests_eos/functions.py#L1208"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1197"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1178,20 +1178,20 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
 
 **Returns:**
  
- - <b>`bool`</b>:  `True` if all IPv6 unicast BGP sessions are established (for all VRF) all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise. 
+ - <b>`bool`</b>:  `True` if all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF). `False` otherwise. 
 
 
 ---
 
-<a href="../tests_eos/functions.py#L1235"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1227"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1204,8 +1204,8 @@ Verifies all EVPN BGP sessions are established (default VRF).
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1217,7 +1217,7 @@ Verifies all EVPN BGP sessions are established (default VRF).
 
 ---
 
-<a href="../tests_eos/functions.py#L1262"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1253"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1230,8 +1230,8 @@ Verifies all EVPN BGP sessions are established (default VRF) and the actual numb
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  The expected number of BGP EVPN neighbors in the default VRF. 
 
@@ -1244,7 +1244,7 @@ Verifies all EVPN BGP sessions are established (default VRF) and the actual numb
 
 ---
 
-<a href="../tests_eos/functions.py#L1294"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1285"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1257,8 +1257,8 @@ Verifies all RTC BGP sessions are established (default VRF).
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1270,7 +1270,7 @@ Verifies all RTC BGP sessions are established (default VRF).
 
 ---
 
-<a href="../tests_eos/functions.py#L1321"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1311"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1283,8 +1283,8 @@ Verifies all RTC BGP sessions are established (default VRF) and the actual numbe
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  The expected number of BGP RTC neighbors (default VRF). 
 
@@ -1297,7 +1297,7 @@ Verifies all RTC BGP sessions are established (default VRF) and the actual numbe
 
 ---
 
-<a href="../tests_eos/functions.py#L1353"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1343"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_state`
 
@@ -1310,8 +1310,8 @@ Verifies all OSPF neighbors are in FULL state.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
 
 
@@ -1323,7 +1323,7 @@ Verifies all OSPF neighbors are in FULL state.
 
 ---
 
-<a href="../tests_eos/functions.py#L1376"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1365"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_count`
 
@@ -1336,8 +1336,8 @@ Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`number`</b> (int):  The expected number of OSPF neighbors in FULL state. 
 
@@ -1350,7 +1350,7 @@ Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 ---
 
-<a href="../tests_eos/functions.py#L1402"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1390"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1363,8 +1363,8 @@ Verifies the IGMP snooping configuration for some VLANs.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`vlans`</b> (list):  A list of VLANs 
  - <b>`configuration`</b> (str):  Expected IGMP snooping configuration (enabled or disabled) for these VLANs. 
@@ -1378,7 +1378,7 @@ Verifies the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../tests_eos/functions.py#L1429"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../tests_eos/functions.py#L1417"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 
@@ -1391,8 +1391,8 @@ Verifies the IGMP snooping global configuration.
 
 
 **Args:**
-  device (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri 
- - <b>`'https`</b>: //%s:%s@%s/command-api' %(username, password, ip). 
+ 
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy            with the uri 'https://%s:%s@%s/command-api' %(username, password, ip). 
  - <b>`enable_password`</b> (str):  Enable password. 
  - <b>`configuration`</b> (str):  Expected global IGMP snooping configuration (enabled or disabled) for these VLANs. 
 
