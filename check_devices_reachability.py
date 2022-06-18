@@ -35,7 +35,7 @@ def main():
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
-    except:
+    except FileNotFoundError:
         print('Error opening ' + args.file)
         sys.exit(1)
 
