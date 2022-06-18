@@ -134,8 +134,8 @@ def main():
                 pbar.update(1)
         pbar.close()
         print('Done. Files are in the directory ' + + output_dir[0])
-    else: 
-        print("can not connect on any device")    
+    else:
+        print("can not connect on any device")
 
 if __name__ == '__main__':
     main()

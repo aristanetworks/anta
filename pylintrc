@@ -1,7 +1,9 @@
 [MESSAGES CONTROL]
 disable=
     missing-function-docstring, 
-    too-many-branches
+    too-many-branches,
+    unused-argument,
+    duplicate-code
 
 [BASIC]
 good-names=runCmds, i, y, t, c, x
@@ -12,5 +14,5 @@ max-returns=8
 max-locals=23
 
 [FORMAT]
-max-line-length=130
+max-line-length=128
 max-module-lines=1700
