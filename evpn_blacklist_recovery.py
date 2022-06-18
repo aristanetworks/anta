@@ -59,6 +59,7 @@ def main():
             print(device + ' is not reachable using eAPI')
         except jsonrpc.AppError:
             print("Could not run this command on device " + device)
+    print('done')
 
 if __name__ == '__main__':
     main()

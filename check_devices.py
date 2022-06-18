@@ -12,7 +12,7 @@ import ssl
 from math import ceil
 from socket import setdefaulttimeout
 from json import dumps
-from jsonrpclib import Server
+from jsonrpclib import Server,jsonrpc
 from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
