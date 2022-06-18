@@ -1,6 +1,9 @@
 """
 Module that defines various functions to test EOS devices.
 """
+
+from jsonrpclib import jsonrpc
+
 def verify_eos_version(device, enable_password, versions = None):
     """
     Verifies the device is running one of the allowed EOS version.
