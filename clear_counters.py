@@ -41,7 +41,7 @@ def main():
     try:
         with open(args.file, 'r', encoding="utf8") as file:
             devices = file.readlines()
-    except:
+    except FileNotFoundError:
         print('Error opening ' + args.file)
         sys.exit(1)
 
@@ -54,7 +54,7 @@ def main():
         setdefaulttimeout(5)
         try:
             response = switch.runCmds(1, ['show version'], 'json')
-            if response[0]['modelName'] in ['cEOSLab']:
+            if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
                 hardware_model = False
             else:
                 hardware_model = True
