@@ -96,48 +96,46 @@ def main():
     for item in unreachable:
         devices.remove(item)
 
-    # Progress bar
-
-    number_of_unreachable_devices = len(unreachable)
-    number_of_reachable_devices = len(devices)
-    pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices,\
-         desc = 'Collecting files from devices')
-    pbar.update(number_of_unreachable_devices)
-
-    # Collect all the tech-support files stored on Arista switches flash and copy them locally
-
-    for device in devices:
-        url = "https://" + args.username + ":" + args.password + "@" + device + "/command-api"
-        try:
-            # Create one zip file named all_files.zip on the device
-            # with the all the show tech-support files in it
-            switch = Server(url)
-            zip_command = 'bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*'
-            cmds=[zip_command]
-            switch.runCmds(1,cmds, 'text')
-            # Get device hostname
-            cmds=['show hostname']
-            result = switch.runCmds(1,cmds, 'json')
-            hostname = result[0]['hostname']
-            # Create directories
-            output_dir = device_directories (hostname, args.output_directory)
-            # Connect to the device using SSH
-            ssh = create_ssh_client(device, PORT, args.username, args.password)
-            # Get the zipped file all_files.zip using SCP and save it locally
-            my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
-            scp = SCPClient(ssh.get_transport())
-            scp.get("/mnt/flash/schedule/all_files.zip",local_path = my_path)
-            scp.close()
-            # Delete the created zip file on the device
-            cmds=['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
-            switch.runCmds(1,cmds, 'text')
-            pbar.update(1)
-        except:
-            print('You are unlucky today! ' + device + ' does not like this script')
-            pbar.update(1)
-
-    pbar.close()
-    print('Done. Files are in the directory ' + output_dir[0])
+    if len(devices) > 0:
+        # Progress bar
+        number_of_unreachable_devices = len(unreachable)
+        number_of_reachable_devices = len(devices)
+        pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices,\
+            desc = 'Collecting files from devices')
+        pbar.update(number_of_unreachable_devices)
+        # Collect all the tech-support files stored on Arista switches flash and copy them locally
+        for device in devices:
+            url = "https://" + args.username + ":" + args.password + "@" + device + "/command-api"
+            try:
+                # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
+                switch = Server(url)
+                zip_command = 'bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*'
+                cmds=[zip_command]
+                switch.runCmds(1,cmds, 'text')
+                # Get device hostname
+                cmds=['show hostname']
+                result = switch.runCmds(1,cmds, 'json')
+                hostname = result[0]['hostname']
+                # Create directories
+                output_dir = device_directories (hostname, args.output_directory)
+                # Connect to the device using SSH
+                ssh = create_ssh_client(device, PORT, args.username, args.password)
+                # Get the zipped file all_files.zip using SCP and save it locally
+                my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
+                scp = SCPClient(ssh.get_transport())
+                scp.get("/mnt/flash/schedule/all_files.zip",local_path = my_path)
+                scp.close()
+                # Delete the created zip file on the device
+                cmds=['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
+                switch.runCmds(1,cmds, 'text')
+                pbar.update(1)
+            except jsonrpc.AppError:
+                print("Could not collect show tech files on device " + device)
+                pbar.update(1)
+        pbar.close()
+        print('Done. Files are in the directory ' + + output_dir[0])
+    else: 
+        print("can not connect on any device")    
 
 if __name__ == '__main__':
     main()
