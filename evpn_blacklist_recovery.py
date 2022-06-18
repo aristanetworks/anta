@@ -9,7 +9,7 @@ from getpass import getpass
 import ssl
 import sys
 from socket import setdefaulttimeout
-from jsonrpclib import Server
+from jsonrpclib import Server,jsonrpc
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -37,8 +37,8 @@ def main():
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
-    except:
-        print('Error opening ' + args.file)
+    except FileNotFoundError:
+        print('Error reading ' + args.file)
         sys.exit(1)
 
     for i,device in enumerate(devices):
@@ -53,8 +53,14 @@ def main():
             switch = Server(url)
             switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass},\
                  'clear bgp evpn host-flap'])
-        except:
-            print("Can not do it on device " + device)
+        except jsonrpc.TransportError:
+            print('wrong credentials for ' + device)
+            unreachable.append(device)
+        except OSError:
+            print(device + ' is not reachable using eAPI')
+            unreachable.append(device)
+        except jsonrpc.AppError:
+            print("Could not run this command on device " + device)
 
 if __name__ == '__main__':
     main()

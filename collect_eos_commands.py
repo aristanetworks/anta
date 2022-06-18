@@ -10,7 +10,7 @@ import sys
 from argparse import ArgumentParser
 from getpass import getpass
 from socket import setdefaulttimeout
-from jsonrpclib import Server
+from jsonrpclib import Server,jsonrpc
 from yaml import safe_load
 
 # pylint: disable=protected-access
@@ -64,15 +64,15 @@ def main():
         with open(args.eos_commands, 'r', encoding='utf8') as file:
             eos_commands = file.read()
             eos_commands = safe_load(eos_commands)
-    except:
-        print('Error opening ' + args.eos_commands)
+    except FileNotFoundError:
+        print('Error reading ' + args.eos_commands)
         sys.exit(1)
 
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
-    except:
-        print('Error opening ' + args.file)
+    except FileNotFoundError:
+        print('Error reading ' + args.file)
         sys.exit(1)
 
     for i,device in enumerate(devices):
@@ -89,12 +89,15 @@ def main():
             url=f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['show version'])
-        except:
+        except jsonrpc.TransportError:
+            print('wrong credentials for ' + device)
+            unreachable.append(device)
+        except OSError:
+            print(device + ' is not reachable using eAPI')
             unreachable.append(device)
 
     for item in unreachable:
         devices.remove(item)
-        print("Can not connect to device " + item)
 
     for device in devices:
         url=f"https://{args.username}:{args.password}@{device}/command-api"

@@ -13,7 +13,7 @@ from time import strftime, gmtime
 from argparse import ArgumentParser
 import os
 import paramiko
-from jsonrpclib import Server
+from jsonrpclib import Server,jsonrpc
 from scp import SCPClient
 from tqdm import tqdm
 
@@ -67,8 +67,8 @@ def main():
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
-    except:
-        print('Error opening ' + args.file)
+    except FileNotFoundError:
+        print('Error reading ' + args.file)
         sys.exit(1)
 
     for i,device in enumerate(devices):
@@ -86,12 +86,15 @@ def main():
             url=f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['enable'])
-        except:
+        except jsonrpc.TransportError:
+            print('wrong credentials for ' + device)
+            unreachable.append(device)
+        except OSError:
+            print(device + ' is not reachable using eAPI')
             unreachable.append(device)
 
     for item in unreachable:
         devices.remove(item)
-        print("Can not connect to device " + item)
 
     # Progress bar
 

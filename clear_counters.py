@@ -42,7 +42,7 @@ def main():
         with open(args.file, 'r', encoding="utf8") as file:
             devices = file.readlines()
     except FileNotFoundError:
-        print('Error opening ' + args.file)
+        print('Error reading ' + args.file)
         sys.exit(1)
 
     for i,device in enumerate(devices):
