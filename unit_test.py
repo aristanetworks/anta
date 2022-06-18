@@ -25,8 +25,8 @@ def runCmds(version, commands, cmd_format):
             data_list = ast.literal_eval(data_string)
     return data_list
 
-@pytest.fixture
-def mock_device():
+@pytest.fixture(name="mock_device")
+def fixture_mock_device():
     mock_device = Mock(spec_set=['runCmds'])
     mock_device.runCmds.side_effect = runCmds
     return mock_device
