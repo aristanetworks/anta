@@ -31,7 +31,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
                 connections[device]['connection'] = Server(
                     f"https://{device_username}:{device_password}@{device}/command-api"
                 )
-    except:
+    except FileNotFoundError:
         print('Error opening ' + text_file)
         sys.exit(1)
     # Delete unreachable devices from connections dict
@@ -43,8 +43,13 @@ def create_connections_dict(text_file, device_username, device_password, output_
         try:
             setdefaulttimeout(5)
             connections[device]['connection'].runCmds(1, ['show version'])
-        except:
+        except jsonrpc.TransportError:
+            print('wrong credentials for ' + device)
             unreachable.append(device)
+        except OSError:
+            print(device + ' is not reachable using eAPI')
+            unreachable.append(device)
+
     for key in unreachable:
         connections.pop(key)
         print("Can not connect to device " + key)
@@ -104,7 +109,7 @@ def main():
     try:
         with open(args.test_catalog, 'r', encoding='utf8') as file:
             test_catalog = safe_load(file)
-    except:
+    except FileNotFoundError:
         print('Error opening ' + args.test_catalog)
         sys.exit(1)
 
