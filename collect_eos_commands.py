@@ -107,25 +107,25 @@ def main():
         output_dir = device_directories (device, args.output_directory)
         if 'json_format' in eos_commands:
             for eos_command in eos_commands['json_format']:
+                setdefaulttimeout(10)
                 try:
-                    setdefaulttimeout(10)
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
                     outfile = output_dir[2] + '/' + eos_command
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(str(result[1]))
-                except:
+                except jsonrpc.AppError:
                     print('Unable to collect and save the json command ' + eos_command)
         if 'text_format' in eos_commands:
             for eos_command in eos_commands['text_format']:
+                setdefaulttimeout(10)
                 try:
-                    setdefaulttimeout(10)
                     result=switch.runCmds\
                         (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
                     outfile = output_dir[3] + '/' + eos_command
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(result[1]['output'])
-                except:
+                except jsonrpc.AppError:
                     print('Unable to collect and save the text command ' + eos_command)
 
 if __name__ == '__main__':
