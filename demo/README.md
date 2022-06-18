@@ -113,14 +113,14 @@ exit()
 
 Run these commands on devbox:
 ```
-python ./check_devices_reachability.py --help
-python ./check_devices_reachability.py -i demo/inventory/all.txt -u arista
+./check_devices_reachability.py --help
+./check_devices_reachability.py -i demo/inventory/all.txt -u arista
 ```
 
 ## Run tests 
 Run these commands on devbox:
 ```
-python ./check_devices.py --help
+./check_devices.py --help
 ```
 
 ATD uses cEOS or vEOS so we will skip the hardware tests.  
@@ -140,15 +140,15 @@ more demo/tests/spines.yaml
 more demo/tests/leaves.yaml
 ```
 ```
-python ./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
+./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
 cat demo/tests_result_all.txt
 ```
 ```
-python ./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
+./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
 cat demo/tests_result_spines.txt
 ```
 ```
-python ./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
+./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_leaves.txt
 ```
 Some tests failed.  
@@ -162,9 +162,9 @@ python demo/configure_leaf3.py
 ```
 Lets re run all the tests.
 ```
-python ./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
-python ./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
-python ./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
+./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
+./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
+./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
 cat demo/tests_result_all.txt
 cat demo/tests_result_spines.txt
 cat demo/tests_result_leaves.txt
@@ -174,9 +174,9 @@ cat demo/tests_result_leaves.txt
 
 Run these commands on devbox:
 ```
-python ./collect_eos_commands.py --help
+./collect_eos_commands.py --help
 more demo/eos-commands.yaml
-python ./collect_eos_commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
+./collect_eos_commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
 ls demo/show_commands
 tree demo/show_commands
 more demo/show_commands/192.168.0.10/text/show\ version
@@ -192,8 +192,8 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 Run these commands on devbox:
 ```
-python ./collect_sheduled_show_tech.py --help
-python ./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
+./collect_sheduled_show_tech.py --help
+./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
 ls demo/show_tech
 ls demo/show_tech/spine1
 unzip demo/show_tech/spine1/xxxx.zip -d demo/show_tech
@@ -222,8 +222,8 @@ leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
 Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN: 
 ```
-python ./evpn_blacklist_recovery.py --help
-python ./evpn_blacklist_recovery.py -i demo/inventory/all.txt -u arista
+./evpn_blacklist_recovery.py --help
+./evpn_blacklist_recovery.py -i demo/inventory/all.txt -u arista
 ```
 Verify: 
 ```
@@ -239,8 +239,8 @@ spine1#sh interfaces counters
 ```
 Run these commands on devbox:
 ```
-python ./clear_counters.py --help
-python ./clear_counters.py -i demo/inventory/all.txt -u arista
+./clear_counters.py --help
+./clear_counters.py -i demo/inventory/all.txt -u arista
 ```
 ```
 spine1#sh interfaces counters

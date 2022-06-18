@@ -55,10 +55,8 @@ def main():
                  'clear bgp evpn host-flap'])
         except jsonrpc.TransportError:
             print('wrong credentials for ' + device)
-            unreachable.append(device)
         except OSError:
             print(device + ' is not reachable using eAPI')
-            unreachable.append(device)
         except jsonrpc.AppError:
             print("Could not run this command on device " + device)
 
