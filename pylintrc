@@ -7,10 +7,10 @@ disable=
 good-names=runCmds, i, y, t, c, x
 
 [DESIGN]
-max-statements=60
-max-returns=7
+max-statements=61
+max-returns=8
 max-locals=23
 
 [FORMAT]
 max-line-length=130
-max-module-lines=1800
+max-module-lines=1700
