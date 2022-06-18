@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 import sys
 from socket import setdefaulttimeout
-from jsonrpclib import Server
+from jsonrpclib import Server, jsonrpc
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -35,7 +35,7 @@ def main():
     try:
         with open(args.file, 'r', encoding='utf8') as file:
             devices = file.readlines()
-    except FileNotFoundError:
+    except:
         print('Error opening ' + args.file)
         sys.exit(1)
 
@@ -52,14 +52,16 @@ def main():
             url=f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['show version'])
-        except:
+        except jsonrpc.TransportError:
+            print('wrong credentials for ' + device)
+            unreachable.append(device)
+        except OSError:
+            print(device + ' is not reachable using eAPI')
             unreachable.append(device)
 
     if not unreachable:
         print('All devices from the file ' + args.file + ' are reachable using eAPI')
-    else:
-        for item in unreachable:
-            print("Can not connect to device " + item + " using eAPI")
 
 if __name__ == '__main__':
     main()
+
