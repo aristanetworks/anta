@@ -23,9 +23,9 @@ jobs:
       - name: validate the syntax of python scripts
         run: |
           python -m py_compile $(git ls-files '*.py')
-    #  - name: run pylint
-    #    run: |
-    #      pylint --max-line-length=130 $(git ls-files '*.py')
+      - name: run pylint
+        run: |
+          pylint $(git ls-files '*.py')
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
