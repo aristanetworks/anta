@@ -12,7 +12,7 @@ import ssl
 from math import ceil
 from socket import setdefaulttimeout
 from json import dumps
-from jsonrpclib import Server
+from jsonrpclib import Server,jsonrpc
 from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
@@ -52,7 +52,6 @@ def create_connections_dict(text_file, device_username, device_password, output_
 
     for key in unreachable:
         connections.pop(key)
-        print("Can not connect to device " + key)
 
     with open(output_file, 'w', encoding="utf8") as outfile:
         now = datetime.now()
