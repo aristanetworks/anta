@@ -27,8 +27,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
         with open(text_file, 'r', encoding='utf8') as file:
             for device in file:
                 device = device.strip()
-                connections[device] = {}
-                connections[device]['connection'] = Server(
+                connections[device] = Server(
                     f"https://{device_username}:{device_password}@{device}/command-api"
                 )
     except FileNotFoundError:
@@ -39,10 +38,10 @@ def create_connections_dict(text_file, device_username, device_password, output_
 
     print('Testing devices .... please be patient ... ')
 
-    for device in connections:
+    for device, connection in connections.items():
         try:
             setdefaulttimeout(5)
-            connections[device]['connection'].runCmds(1, ['show version'])
+            connection.runCmds(1, ['show version'])
         except jsonrpc.TransportError:
             print('wrong credentials for ' + device)
             unreachable.append(device)
@@ -65,11 +64,9 @@ def create_connections_dict(text_file, device_username, device_password, output_
         for element in unreachable:
             outfile.write(element + "\n")
 
-
     return connections
 
 def main():
-
     parser = ArgumentParser(
         description='EOS devices health checks'
         )
@@ -114,7 +111,7 @@ def main():
 
     # Create the dictionnary test_summary for test results and run the tests
     test_summary = {}
-    for device in connections:
+    for device, connection in connections.items():
         print('Running tests on device ' + device + ' ...')
         test_summary[device] = {}
         for test, test_def in test_catalog.items():
@@ -126,7 +123,7 @@ def main():
             else:
                 func_name = test_def
             test_summary[device][test] = getattr(tests_eos.functions, func_name)\
-                (connections[device]['connection'], args.enable_pass, **test_kwargs)
+                (connection, args.enable_pass, **test_kwargs)
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
     for device in sorted(test_summary):

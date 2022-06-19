@@ -3,9 +3,8 @@ disable=
     missing-function-docstring, 
     too-many-branches,
     unused-argument,
-    duplicate-code, 
-    consider-using-dict-items
-
+    duplicate-code 
+   
 [BASIC]
 good-names=runCmds, i, y, t, c, x
 
