@@ -1,4 +1,30 @@
+**Table of contents**
+
+- [Set up the lab](#set-up-the-lab)
+  - [Set up an ATD instance](#set-up-an-atd-instance)
+  - [Load the EVPN lab on ATD](#load-the-evpn-lab-on-atd)
+  - [Check the state of spine1](#check-the-state-of-spine1)
+  - [Clone the repository on devbox](#clone-the-repository-on-devbox)
+  - [Install the requirements on devbox](#install-the-requirements-on-devbox)
+  - [Install some additionnal tools on devbox](#install-some-additionnal-tools-on-devbox)
+  - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
+  - [Check the inventory files](#check-the-inventory-files)
+- [Test devices reachability using EAPI](#test-devices-reachability-using-eapi)
+- [Test devices reachability](#test-devices-reachability)
+- [Test devices](#test-devices)
+  - [Run the tests](#run-the-tests)
+  - [Fix the issue](#fix-the-issue)
+  - [Re run the tests](#re-run-the-tests)
+- [Collect commands output](#collect-commands-output)
+- [Collect the scheduled show tech-support files](#collect-the-scheduled-show-tech-support-files)
+- [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+  - [create 5 mac moves within 180 seconds](#create-5-mac-moves-within-180-seconds)
+  - [clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn-1)
+- [Clear counters](#clear-counters)
+
 Here's the instructions to use this repository with an ATD (Arista Test Drive) lab.
+
+# Set up the lab 
 
 ## Set up an ATD instance
 
@@ -87,7 +113,7 @@ more demo/inventory/spines.txt
 more demo/inventory/leaves.txt
 ```
 
-## Test devices reachability using EAPI
+# Test devices reachability using EAPI
 
 Start a python interactive session on devbox:
 ```
@@ -109,7 +135,7 @@ print(result[0]['output'])
 exit()
 ```
 
-## Test devices reachability
+# Test devices reachability
 
 Run these commands on devbox:
 ```
@@ -117,7 +143,8 @@ Run these commands on devbox:
 ./check_devices_reachability.py -i demo/inventory/all.txt -u arista
 ```
 
-## Run tests 
+# Test devices
+## Run the tests 
 Run these commands on devbox:
 ```
 ./check_devices.py --help
@@ -160,6 +187,9 @@ Lets configure leaf3 using EAPI.
 ```
 python demo/configure_leaf3.py
 ```
+
+## Re run the tests
+
 Lets re run all the tests.
 ```
 ./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
@@ -170,7 +200,7 @@ cat demo/tests_result_spines.txt
 cat demo/tests_result_leaves.txt
 ```
 
-## Collect commands output 
+# Collect commands output 
 
 Run these commands on devbox:
 ```
@@ -184,7 +214,7 @@ more demo/show_commands/192.168.0.10/json/show\ version
 ```
 
 
-## Collect the scheduled show tech-support files 
+# Collect the scheduled show tech-support files 
 
 ```
 spine1# sh running-config all | grep tech
@@ -203,13 +233,15 @@ ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
 ```
 spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
-## Clear the list of MAC addresses which are blacklisted in EVPN
+# Clear the list of MAC addresses which are blacklisted in EVPN
 
 ```
 leaf3#show mac address-table 
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
+## create 5 mac moves within 180 seconds
+
 Run this command alternately on host1 and host2 in order to create 5 mac moves within 180 seconds: 
 ```
 bash sudo ethxmit --ip-src=10.10.10.1 --ip-dst=10.10.10.2 -S 948e.d399.4421 -D ffff.ffff.ffff et1 -n 1
@@ -220,6 +252,8 @@ leaf3#show mac address-table
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
+## clear the list of MAC addresses which are blacklisted in EVPN
+
 Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN: 
 ```
 ./evpn_blacklist_recovery.py --help
@@ -232,7 +266,7 @@ leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
 
-## Clear counters 
+# Clear counters 
 
 ```
 spine1#sh interfaces counters
