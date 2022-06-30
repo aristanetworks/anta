@@ -37,6 +37,7 @@
   - [Contribution guide](#contribution-guide)
   - [Continuous Integration](#continuous-integration)
   - [Credits](#credits)
+  
 ## About this repository
 
 This repository has automation content to test Arista devices.

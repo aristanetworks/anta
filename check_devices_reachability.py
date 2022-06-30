@@ -3,6 +3,7 @@
 """
 This script checks devices reachability
 """
+
 import ssl
 from argparse import ArgumentParser
 from getpass import getpass
