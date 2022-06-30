@@ -235,7 +235,8 @@ def verify_reload_cause(device, enable_password):
     except jsonrpc.AppError:
         return None
     try:
-        if response[0]['resetCauses'][0]['description'] == 'Reload requested by the user.':
+        if response[0]['response']['resetCauses'][0]['description'] == 'Reload requested by the user.' or \
+           response[0]['response']['resetCauses'][0]['description'] == 'Reload requested after FPGA upgrade':
             return True
         return False
     except KeyError:
