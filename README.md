@@ -1,9 +1,9 @@
-[![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/network_tests_automation/blob/master/LICENSE)
-[![CI](https://github.com/arista-netdevops-community/network_tests_automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network_tests_automation/actions)
+[![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/network-test-automation/blob/master/LICENSE)
+[![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network-test-automation/actions)
 
-# Network tests automation
+# Network Test Automation
 
-- [Network tests automation](#network-tests-automation)
+- [Network Test Automation](#network-test-automation)
   - [About this repository](#about-this-repository)
   - [List of available tests](#list-of-available-tests)
   - [Devices testing demo](#devices-testing-demo)
