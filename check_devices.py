@@ -16,7 +16,7 @@ from jsonrpclib import Server,jsonrpc
 from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
-import tests_eos.functions
+import nta.tests
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -122,7 +122,7 @@ def main():
                 test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
             else:
                 func_name = test_def
-            test_summary[device][test] = getattr(tests_eos.functions, func_name)\
+            test_summary[device][test] = getattr(nta.tests, func_name)\
                 (connection, args.enable_pass, **test_kwargs)
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary

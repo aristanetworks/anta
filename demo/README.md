@@ -74,8 +74,8 @@ Use the devbox shell and clone the repository:
 ![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
 
 ```
-git clone https://github.com/arista-netdevops-community/network_tests_automation.git
-cd network_tests_automation
+git clone https://github.com/arista-netdevops-community/network-test-automation.git
+cd network-test-automation
 ```
 
 ## Install the requirements on devbox

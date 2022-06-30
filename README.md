@@ -22,7 +22,7 @@
     - [devices.txt file](#devicestxt-file)
     - [eos-commands.yaml file](#eos-commandsyaml-file)
     - [tests.yaml file](#testsyaml-file)
-    - [tests_eos directory](#tests_eos-directory)
+    - [nta directory](#nta-directory)
     - [generate_functions_documentation.py file](#generate_functions_documentationpy-file)
     - [documentation directory](#documentation-directory)
     - [check_devices_reachability.py file](#check_devices_reachabilitypy-file)
@@ -57,12 +57,12 @@ This repository uses Python scripts and eAPI (EOS API). You can find examples of
 
 ## List of available tests
 
-The tests are defined in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
+The tests are defined in the python module [tests.py](nta/tests.py) in the python package [nta](nta).
 Each function returns `True` or `False` (or `None` when it can not run properly).
 
 The [documentation](documentation) directory has the tests documentation:
 * [overview.md](documentation/overview.md) file
-* [tests_eos.functions.md](documentation/tests_eos.functions.md) file
+* [nta.tests.md](documentation/nta.tests.md) file
 
 We indicate the tests we would like to run in a YAML file. Some tests require an input. Here's an [example](tests.yaml).
 
@@ -415,20 +415,20 @@ The file [eos-commands.yaml](eos-commands.yaml) is a YAML file used to indicated
 
 The file [tests.yaml](tests.yaml) is a YAML file used to indicated the tests we would like to run. It is also used to indicated the parameters used by the tests.
 Each test has an identifier which is then used in the tests report.
-The tests are defined in the directory [tests_eos](tests_eos).
+The tests are defined in the directory [nta](nta).
 
-### [tests_eos](tests_eos) directory
+### [nta](nta) directory
 
-The directory [tests_eos](tests_eos) is a python package.
+The directory [nta](nta) is a python package.
 
-The python functions to test EOS devices are defined the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
+The python functions to test EOS devices are defined the python module [tests.py](nta/tests.py) in the python package [nta](nta).
 
 ### [generate_functions_documentation.py](generate_functions_documentation.py) file
 
 The script [generate_functions_documentation.py](generate_functions_documentation.py) is used to generate the functions documentation in markdown format.
 It requires the installation of the package `lazydocs` that is indicated in the file [requirements-dev.txt](requirements-dev.txt)
 
-The functions to test EOS devices are coded in the python module [functions.py](tests_eos/functions.py) in the python package [tests_eos](tests_eos).
+The functions to test EOS devices are coded in the python module [tests.py](nta/tests.py) in the python package [nta](nta).
 These functions have docstrings.
 The docstrings are used by the script [generate_functions_documentation.py](generate_functions_documentation.py) to generate the functions documentation in markdown format in the directory [documentation](documentation).
 
@@ -438,7 +438,7 @@ Please refer to the [contribution guide](CONTRIBUTING.md) to get instructions.
 
 The [documentation](documentation) directory has the tests documentation in markdown format:
 * [overview.md](documentation/overview.md) file
-* [tests_eos.functions.md](documentation/tests_eos.functions.md) file
+* [nta.tests.md](documentation/nta.tests.md) file
 
 ### [check_devices_reachability.py](check_devices_reachability.py) file
 
@@ -467,7 +467,7 @@ The python script [collect_eos_commands.py](collect_eos_commands.py):
 The python script [check_devices.py](check_devices.py) is used to run tests on devices.
 
 The python script [check_devices.py](check_devices.py):
-* Imports the python functions defined in the directory [tests_eos](tests_eos).
+* Imports the python functions defined in the directory [nta](nta).
   * These functions defined the tests.
 * Takes as input:
   * A text file with the devices IP address or hostnames (when resolvable).

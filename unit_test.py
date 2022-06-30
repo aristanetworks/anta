@@ -5,7 +5,7 @@ It requires the installation of the package pytest that is indicated in the file
 import ast
 from unittest.mock import Mock
 import pytest
-import tests_eos.functions
+import nta.tests
 
 def id_func(param):
     return str(param)
@@ -40,7 +40,7 @@ def fixture_mock_device():
                                                )
 
 def test_verify_eos_version(mock_device, versions, expected):
-    check = tests_eos.functions.verify_eos_version\
+    check = nta.tests.verify_eos_version\
         (device = mock_device, enable_password = 'enable_password', versions = versions)
     assert check == expected
 
@@ -49,11 +49,11 @@ def test_verify_eos_version(mock_device, versions, expected):
                                              (None, None)])
 
 def test_verify_uptime(mock_device, uptime, expected):
-    check = tests_eos.functions.verify_uptime\
+    check = nta.tests.verify_uptime\
         (device = mock_device, enable_password = 'enable_password', minimum = uptime)
     assert check == expected
 
 def test_verify_ntp(mock_device):
-    check = tests_eos.functions.verify_ntp\
+    check = nta.tests.verify_ntp\
         (device = mock_device, enable_password = 'enable_password')
     assert check is True
