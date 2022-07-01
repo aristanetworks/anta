@@ -7,4 +7,4 @@ The generated markdown documentation is in the directory "documentation".
 
 from lazydocs import generate_docs
 
-generate_docs(["anta.tests"], output_path="./documentation", overview_file = 'overview.md')
+generate_docs(["anta"], output_path="./documentation", overview_file = 'overview.md')
