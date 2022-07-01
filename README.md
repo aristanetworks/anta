@@ -7,6 +7,11 @@
 - [List of tests defined in the python package](#list-of-tests-defined-in-the-python-package)
 - [Requirements](#requirements)
   - [Requirements on your laptop](#requirements-on-your-laptop)
+    - [Use the `pip install` command with the git url](#use-the-pip-install-command-with-the-git-url)
+    - [Use the `pip install` command with the package name](#use-the-pip-install-command-with-the-package-name)
+    - [Clone the repository and use the `pip install .` command](#clone-the-repository-and-use-the-pip-install--command)
+    - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
+    - [Clone the repository and use `setup.py`](#clone-the-repository-and-use-setuppy)
   - [Requirements on the switches](#requirements-on-the-switches)
   - [Quick check](#quick-check)
 - [Repository usage](#repository-usage)
@@ -63,7 +68,33 @@ Python 3 (at least 3.3) and some packages that are not part of the standard Pyth
 python -V
 ```
 
-Clone the repository and install the required packages. There is a [requirements.txt](requirements.txt) file.
+There are differents way to install the requirements. 
+
+### Use the `pip install` command with the git url  
+
+```shell
+sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+```
+
+To update, run this command:
+
+```shell
+sudo pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
+```
+
+### Use the `pip install` command with the package name  
+
+This will be supported once this package will be published on Pypi.
+
+### Clone the repository and use the `pip install .` command
+
+```shell
+git clone https://github.com/arista-netdevops-community/network-test-automation.git
+cd network-test-automation
+pip install .
+```
+
+### Clone the repository and use the `pip install -r requirements.txt` command
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -71,10 +102,23 @@ cd network-test-automation
 pip install -r requirements.txt
 ```
 
-Verify
+### Clone the repository and use `setup.py`
 
 ```shell
-pip list
+git clone https://github.com/arista-netdevops-community/network-test-automation.git
+cd network-test-automation
+```
+
+Build the package:
+
+```shell
+python setup.py build
+```
+
+Install the package:
+
+```shell
+python setup.py install
 ```
 
 ## Requirements on the switches
@@ -221,7 +265,7 @@ To test devices, once you are done with the requirements described above, you si
 - Your devices name or IP address in a text file. Here's an [example](examples/devices.txt).
 - The tests you would like to run in a YAML file. Some tests require an argument. In that case, provide it using the same YAML file. Here's an [example](examples/tests.yaml).  
 
-```bash
+```text
 ./check-devices.py --help
 usage: check-devices.py [-h] -i INVENTORY_FILE -u USERNAME -t TEST_CATALOG -o OUTPUT_FILE
 
@@ -235,7 +279,7 @@ optional arguments:
   -o OUTPUT_FILE     Output file
 ```
 
-```bash
+```text
 ./check-devices.py -u arista -i devices.txt -o output.txt -t tests.yaml
 Device password:
 Enable password (if any):
@@ -247,7 +291,7 @@ Running tests on device 10.73.1.106 ...
 Test results are saved on output.txt
 ```
 
-```bash
+```text
 $ cat output.txt
 Mon Apr 11 19:12:58 2022
 devices inventory file was devices.txt
@@ -364,7 +408,7 @@ We can view the result [here](https://github.com/arista-netdevops-community/netw
 
 # Credits
 
-Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [gilbert moisio](https://github.com/gmoisio), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi) and [Paul Lavelle](https://github.com/paullavelle), [Thomas Grimonet](https://github.com/titom73) 
+Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi) and [Paul Lavelle](https://github.com/paullavelle), [Thomas Grimonet](https://github.com/titom73) 
 for their contributions and guidances.
 
 # Repository structure
