@@ -23,7 +23,10 @@ jobs:
           python setup.py install
           python -m pip install --upgrade pip pylint
       - name: run pylint
-        run: pylint $(git ls-files '*.py')
+        run: |
+          pylint anta
+          pylint scripts
+          pylint tools
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
