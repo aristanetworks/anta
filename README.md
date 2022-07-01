@@ -10,12 +10,12 @@
   - [Requirements on the switches](#requirements-on-the-switches)
   - [Quick check](#quick-check)
 - [Repository usage](#repository-usage)
-  - [To tests devices](#to-tests-devices)
-  - [To test devices reachability](#to-test-devices-reachability)
-  - [To collect commands output from devices](#to-collect-commands-output-from-devices)
-  - [To collect the scheduled show tech-support files from devices](#to-collect-the-scheduled-show-tech-support-files-from-devices)
-  - [To clear counters on devices](#to-clear-counters-on-devices)
-  - [To clear on devices the list of MAC addresses which are blacklisted in EVPN](#to-clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+  - [Tests devices](#tests-devices)
+  - [Test devices reachability](#test-devices-reachability)
+  - [Collect commands output from devices](#collect-commands-output-from-devices)
+  - [Collect the scheduled show tech-support files from devices](#collect-the-scheduled-show-tech-support-files-from-devices)
+  - [Clear counters on devices](#clear-counters-on-devices)
+  - [Clear on devices the list of MAC addresses which are blacklisted in EVPN](#clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -24,23 +24,25 @@
   
 # About this repository
 
-This repository has a [python package](anta) to automate tests on Arista devices. This package can be imported in a Python program to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
-The package name is anta, which stands for Arista Network Test Automation.
+This repository has a [python package](anta) to automate tests on Arista devices.
+
+- This package can be imported in a Python program to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
+- The package name is anta, which stands for Arista Network Test Automation.
 
 In addition, this repository has also scripts to:
 
-- [Execute tests on devices](scripts/check-devices.py)
-- [Collect commands output on devices](scripts/collect-eos-commands.py)
-- [Clear counters on devices](scripts/tools/clear-counters.py)
-- [Test the devices reachability](scripts/tools/check-devices-reachability.py)
-- [Clear the list of MAC addresses which are blacklisted in EVPN](scripts/tools/evpn-blacklist-recovery.py)
+- [Test devices](scripts/check-devices.py)
+- [Test devices reachability](scripts/tools/check-devices-reachability.py)
+- [Collect commands output from devices](scripts/collect-eos-commands.py)
 - [Collect the scheduled show tech-support files from devices](scripts/tools/collect-sheduled-show-tech.py)
+- [Clear counters on devices](scripts/tools/clear-counters.py)
+- [Clear on devices the list of MAC addresses which are blacklisted in EVPN](scripts/tools/evpn-blacklist-recovery.py)
 
 This content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
 # List of tests defined in the python package
 
-The tests are defined with functions in the python module [tests.py](anta/tests.py) in the python package [anta](anta).  
+The tests are defined in functions in the python module [tests.py](anta/tests.py) in the python package [anta](anta).  
  Each function returns `True` or `False` (or `None` when it can not run properly).
 
 The [documentation](documentation) directory has the tests documentation:
@@ -61,7 +63,7 @@ Python 3 (at least 3.3) and some packages that are not part of the standard Pyth
 python -V
 ```
 
-Clone the repository and install the required packages. They are in the [requirements.txt](requirements.txt) file.
+Clone the repository and install the required packages. There is a [requirements.txt](requirements.txt) file.
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -135,7 +137,7 @@ print(result[0]['output'])
 - Clone this repository.
 - Install the requirements (see above)
 
-## To tests devices
+## Tests devices
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
@@ -150,7 +152,7 @@ vi tests.yaml
 cat output.txt
 ```
 
-## To test devices reachability
+## Test devices reachability
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Run the python script [check-devices-reachability.py](scripts/tools/check-devices-reachability.py).
@@ -162,7 +164,7 @@ vi devices.txt
 ./check-devices-reachability.py -i devices.txt -u username
 ```
 
-## To collect commands output from devices
+## Collect commands output from devices
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Update the EOS commands list [eos-commands.yaml](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format.
@@ -177,7 +179,7 @@ vi eos-commands.yaml
 ls outdir
 ```
 
-## To collect the scheduled show tech-support files from devices
+## Collect the scheduled show tech-support files from devices
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostname.
 - Run the python script [collect-sheduled-show-tech.py](scripts/tools/collect-sheduled-show-tech.py).
@@ -190,7 +192,7 @@ vi devices-list.text
 ls outdir
 ```
 
-## To clear counters on devices
+## Clear counters on devices
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [clear-counters.py](scripts/tools/clear-counters.py).
@@ -201,7 +203,7 @@ vi devices-list.text
 ./clear-counters.py -i devices.txt -u username
 ```
 
-## To clear on devices the list of MAC addresses which are blacklisted in EVPN
+## Clear on devices the list of MAC addresses which are blacklisted in EVPN
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [evpn-blacklist-recovery.py](scripts/tools/evpn-blacklist-recovery.py).
