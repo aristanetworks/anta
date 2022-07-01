@@ -25,7 +25,6 @@
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
 - [Credits](#credits)
-- [Repository structure](#repository-structure)
   
 # About this repository
 
@@ -410,7 +409,3 @@ We can view the result [here](https://github.com/arista-netdevops-community/netw
 
 Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi) and [Paul Lavelle](https://github.com/paullavelle), [Thomas Grimonet](https://github.com/titom73) 
 for their contributions and guidances.
-
-# Repository structure
-
-Please visit this [page](./documentation/repository-structure.md) to get a description of the files and directories used in this repository.
