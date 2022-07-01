@@ -2,10 +2,6 @@
 name: repo-testing
 on: [push, pull_request]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
-  cancel-in-progress: true
-
 jobs:
   linting:
     runs-on: ubuntu-20.04
@@ -26,7 +22,6 @@ jobs:
         run: |
           pylint anta
           pylint scripts
-          pylint demo
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
