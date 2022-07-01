@@ -1,30 +1,45 @@
-
+**Table of Contents**
+- [devices.txt file](#devicestxt-file)
+- [eos-commands.yaml file](#eos-commandsyaml-file)
+- [tests.yaml file](#testsyaml-file)
+- [anta directory](#anta-directory)
+- [generate_functions_documentation.py file](#generate_functions_documentationpy-file)
+- [documentation directory](#documentation-directory)
+- [check_devices_reachability.py file](#check_devices_reachabilitypy-file)
+- [clear_counters.py file](#clear_counterspy-file)
+- [collect_eos_commands.py file](#collect_eos_commandspy-file)
+- [check_devices.py file](#check_devicespy-file)
+- [evpn_blacklist_recovery.py file](#evpn_blacklist_recoverypy-file)
+- [collect_sheduled_show_tech.py file](#collect_sheduled_show_techpy-file)
+- [demo directory](#demo-directory)
+- [unit_test.py file](#unit_testpy-file)
+- [mock_data directory](#mock_data-directory)
 # [devices.txt](devices.txt) file
 
-The file [devices.txt](devices.txt) is the devices inventory.
+The file [devices.txt](../examples/devices.txt) is the devices inventory.
 
 The devices inventory is a text file with the devices IP address or hostnames (if resolvable with DNS or your hosts file). This file has one device per ligne.
 
-# [eos-commands.yaml](eos-commands.yaml) file
+# [eos-commands.yaml](../examples/eos-commands.yaml) file
 
-The file [eos-commands.yaml](eos-commands.yaml) is a YAML file used to indicated the list of commands output we would like to collect from devices in text or json format.
+The file [eos-commands.yaml](../examples/eos-commands.yaml) is a YAML file used to indicated the list of commands output we would like to collect from devices in text or json format.
 
-# [tests.yaml](tests.yaml) file
+# [tests.yaml](../examples/tests.yaml) file
 
-The file [tests.yaml](tests.yaml) is a YAML file used to indicated the tests we would like to run. It is also used to indicated the parameters used by the tests.
+The file [tests.yaml](../examples/tests.yaml) is a YAML file used to indicated the tests we would like to run. It is also used to indicated the parameters used by the tests.
 Each test has an identifier which is then used in the tests report.
-The tests are defined in the directory [nta](nta).
+The tests are defined in the directory [anta](../anta/).
 
-# [anta](anta) directory
+# [anta](../anta/) directory
 
-The directory [nta](nta) is a python package.
+The directory [anta](../anta/) is a python package.
 
-The python functions to test EOS devices are defined the python module [tests.py](nta/tests.py) in the python package [nta](nta).
+The python functions to test EOS devices are defined the python module [tests.py](../anta/tests.py) in the python package [anta](../anta/).
 
-# [generate_functions_documentation.py](generate_functions_documentation.py) file
+# [generate_functions_documentation.py](../documentation/generate-functions-documentation.py) file
 
-The script [generate_functions_documentation.py](generate_functions_documentation.py) is used to generate the functions documentation in markdown format.
-It requires the installation of the package `lazydocs` that is indicated in the file [requirements-dev.txt](requirements-dev.txt)
+The script [generate_functions_documentation.py](../documentation/generate-functions-documentation.py) file is used to generate the functions documentation in markdown format.
+It requires the installation of the package `lazydocs` that is indicated in the file [requirements-dev.txt](../requirements-dev.txt)
 
 The functions to test EOS devices are coded in the python module [tests.py](nta/tests.py) in the python package [nta](nta).
 These functions have docstrings.

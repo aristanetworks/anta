@@ -20,7 +20,11 @@ setup(
     packages=['anta'],
     scripts=[
         "scripts/check-devices.py",
-        "scripts/collect-eos-commands.py"
+        "scripts/collect-eos-commands.py",
+        "scripts/check-devices-reachability.py",
+        "scripts/clear-counters.py",
+        "scripts/collect-sheduled-show-tech.py",
+        "scripts/evpn-blacklist-recovery.py"
     ],
     install_requires=required,
     include_package_data=True,
