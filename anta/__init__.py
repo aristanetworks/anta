@@ -5,6 +5,6 @@
 anta init
 """
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 __author__ = 'Khelil Sator'
-__email__ = 'ksator@arista.com'
+__author_email__ = 'ksator@arista.com'

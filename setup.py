@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
+#!/usr/bin/env python3
 
 """
 anta installation script
@@ -17,19 +16,18 @@ with open('requirements.txt', encoding='utf8') as f:
 setup(
     name="anta",
     version=f"{anta.__version__}",
-    python_requires=">=3.8",
+    python_requires=">=3.7",
     packages=['anta'],
     scripts=[
-        "scripts/check-devices-reachability.py",
         "scripts/check-devices.py",
         "scripts/collect-eos-commands.py"
     ],
     install_requires=required,
     include_package_data=True,
-    url="https://github.com/to-be-set-after",
+    url="https://github.com/arista-netdevops-community/network-test-automation",
     license="APACHE",
     author=f"{anta.__author__}",
-    author_email=f"{anta.__email__}",
+    author_email=f"{anta.__author_email__}",
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
@@ -37,17 +35,13 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Intended Audience :: Information Technology',
-        'Topic :: System :: Software Distribution',
-        'Topic :: Terminals',
-        'Topic :: Utilities',
+        'Topic :: System :: Networking',
         'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: 3 :: Only'
     ]
 )
