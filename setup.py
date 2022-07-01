@@ -17,9 +17,9 @@ setup(
     python_requires=">=3.8",
     packages=['anta'],
     scripts=[
-        "scripts/check_devices_reachability.py", 
-        "scripts/check_devices.py", 
-        "scripts/collect_eos_commands.py"
+        "scripts/check-devices-reachability.py", 
+        "scripts/check-devices.py", 
+        "scripts/collect-eos-commands.py"
     ],
     install_requires=required,
     include_package_data=True,
