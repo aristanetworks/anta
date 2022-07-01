@@ -1,32 +1,35 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
 
-from setuptools import setup
+"""
+anta installation script
+"""
 from pathlib import Path
+from setuptools import setup
 import anta
 
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
-with open('requirements.txt') as f:
+with open('requirements.txt', encoding='utf8') as f:
     required = f.read().splitlines()
 
 setup(
     name="anta",
-    version="{}".format(anta.__version__),
+    version=f"{anta.__version__}",
     python_requires=">=3.8",
     packages=['anta'],
     scripts=[
-        "scripts/check-devices-reachability.py", 
-        "scripts/check-devices.py", 
+        "scripts/check-devices-reachability.py",
+        "scripts/check-devices.py",
         "scripts/collect-eos-commands.py"
     ],
     install_requires=required,
     include_package_data=True,
     url="https://github.com/to-be-set-after",
     license="APACHE",
-    author="{}".format(anta.__author__),
-    author_email="{}".format(anta.__email__),
+    author=f"{anta.__author__}",
+    author_email=f"{anta.__email__}",
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
