@@ -44,7 +44,7 @@ This content uses eAPI (EOS API). You can find examples of EOS automation with e
 
 # List of tests available in the python package [anta](anta)
 
-The tests are defined in functions in the python module [tests.py](anta/tests.py) in the python package [anta](anta).  
+The tests are defined in functions in the python package [anta](anta).  
 Each function returns `True`, `False` or `None` (when it can not run properly).
 
 The [overview.md](documentation/overview.md) file has the functions documentation.
@@ -53,13 +53,15 @@ The [overview.md](documentation/overview.md) file has the functions documentatio
 
 ## Requirements on your laptop
 
-Python 3 (at least 3.3) and some packages that are not part of the standard Python library.
+Python 3 (at least 3.3) is required:
 
 ```shell
 python -V
 ```
 
-There are several ways to install the requirements.
+The Python package [anta](anta) and these [scrips](scripts) require some packages that are not part of the Python standard library.  
+They are indicated in the [requirements.txt](requirements.txt) file.  
+There are several ways to install them.
 
 ### Use the `pip install` command with the git url  
 
@@ -82,6 +84,9 @@ git clone https://github.com/arista-netdevops-community/network-test-automation.
 cd network-test-automation
 pip install .
 ```
+
+This will install the package [anta](anta) and its dependencies.
+
 ### Clone the repository and use `setup.py`
 
 ```shell
@@ -89,13 +94,13 @@ git clone https://github.com/arista-netdevops-community/network-test-automation.
 cd network-test-automation
 ```
 
-Build the package:
+Build the package [anta](anta):
 
 ```shell
 python setup.py build
 ```
 
-Install the package:
+Install the package [anta](anta) and its dependencies:
 
 ```shell
 python setup.py install
@@ -109,6 +114,8 @@ cd network-test-automation
 pip install -r requirements.txt
 ```
 
+This will install the packages in the [requirements.txt](requirements.txt) file but will not install the [anta](anta) package.
+
 ## Requirements on the switches
 
 ```text
@@ -120,7 +127,7 @@ interface Management1
 switch1#
 ```
 
-- Enable eAPI on the MGMT vrf:
+Enable eAPI on the MGMT vrf:
 
 ```text
 switch1#configure
@@ -136,7 +143,7 @@ switch1(config)#
 
 Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
 
-- Verify:
+Verify:
 
 ```text
 switch1#sh management http-server
@@ -148,7 +155,7 @@ switch1#show management api http-commands
 
 ## Quick check
 
-Run this python script to validate the device reachability using eAPI.
+Run this python script to validate the device reachability using eAPI.  
 Use your device credentials and IP address.
 
 ```python
