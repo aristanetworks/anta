@@ -1,4 +1,4 @@
-## [requirements.md](requirements.md)
+## [requirements-and-installation.md](requirements-and-installation.md)
 
 This file provides instructions about the requirements and installation procedure.  
 

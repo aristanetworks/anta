@@ -183,21 +183,11 @@ result=switch.runCmds(1,['show version'], 'text')
 print(result[0]['output'])
 ```
 
-Run these python commands to validate you can import and use the [anta](anta) package
+Run these python commands to validate you can import the [anta](anta) package
 
 ```python
 >>> from anta.tests import *
 >>> dir()
 >>> help(verify_eos_version)
->>> import ssl
->>> from jsonrpclib import Server
->>> ssl._create_default_https_context = ssl._create_unverified_context
->>> USERNAME = "arista"
->>> PASSWORD = "aristatwfn"
->>> ENABLE_PASSWORD = "aristatwfn"
->>> IP = "192.168.0.12"
->>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
->>> switch = Server(URL)
->>> verify_eos_version(switch, ENABLE_PASSWORD, ["4.22.1F"])
 >>> exit()
 ```

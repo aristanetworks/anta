@@ -4,14 +4,16 @@
 **Table of Contents**
 - [About this repository](#about-this-repository)
 - [Tests available in the python package anta](#tests-available-in-the-python-package-anta)
-- [Requirements](#requirements)
+- [Requirements and installation](#requirements-and-installation)
 - [Repository usage](#repository-usage)
-  - [How to tests devices](#how-to-tests-devices)
-  - [How to test devices reachability](#how-to-test-devices-reachability)
-  - [How to collect commands output](#how-to-collect-commands-output)
-  - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
-  - [How to clear counters](#how-to-clear-counters)
-  - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
+  - [How to use the anta package](#how-to-use-the-anta-package)
+  - [How to use the scripts](#how-to-use-the-scripts)
+    - [How to tests devices](#how-to-tests-devices)
+    - [How to test devices reachability](#how-to-test-devices-reachability)
+    - [How to collect commands output](#how-to-collect-commands-output)
+    - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
+    - [How to clear counters](#how-to-clear-counters)
+    - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -44,15 +46,43 @@ The tests are defined in functions in the python package [anta](anta):
 - Each function returns `True`, `False` or `None` (when it can not run properly)
 - The [overview.md](documentation/overview.md) file has an overview of the functions documentation
 
-# Requirements
+# Requirements and installation
 
-Please see the [requirements documentation](documentation/requirements.md) for the requirements and installation procedure.  
+Please see the [requirements and intallation documentation](documentation/requirements-and-installation.md) for the requirements and installation procedure.  
 
 # Repository usage  
 
 Once you are done with the installation, you can use the [anta](anta) package and the [scripts](scripts).
 
-## How to tests devices
+
+## How to use the [anta](anta) package
+
+Have a quick look to the package documentation:
+
+- The [overview.md](documentation/overview.md) file is an overview of the [anta](anta) package documentation
+- The [tests.md](tests.md) file is a detailled documentation of the [anta](anta) package
+  
+Here's how we can import and use the functions of the [anta](anta) package:
+
+```python
+>>> from anta.tests import *
+>>> dir()
+>>> help(verify_eos_version)
+>>> import ssl
+>>> from jsonrpclib import Server
+>>> ssl._create_default_https_context = ssl._create_unverified_context
+>>> USERNAME = "arista"
+>>> PASSWORD = "aristatwfn"
+>>> ENABLE_PASSWORD = "aristatwfn"
+>>> IP = "192.168.0.12"
+>>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
+>>> switch = Server(URL)
+>>> verify_eos_version(switch, ENABLE_PASSWORD, ["4.22.1F"])
+>>> exit()
+```
+
+## How to use the [scripts](scripts)
+### How to tests devices
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
@@ -69,7 +99,7 @@ vi tests.yaml
 cat output.txt
 ```
 
-## How to test devices reachability
+### How to test devices reachability
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py).
@@ -81,7 +111,7 @@ vi devices.txt
 ./check-devices-reachability.py -i devices.txt -u username
 ```
 
-## How to collect commands output
+### How to collect commands output
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Update the EOS commands list [eos-commands.yaml](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format.
@@ -96,7 +126,7 @@ vi eos-commands.yaml
 ls outdir
 ```
 
-## How to collect the scheduled show tech-support files
+### How to collect the scheduled show tech-support files
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostname.
 - Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py).
@@ -109,7 +139,7 @@ vi devices-list.text
 ls outdir
 ```
 
-## How to clear counters
+### How to clear counters
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [clear-counters.py](scripts/clear-counters.py).
@@ -120,7 +150,7 @@ vi devices-list.text
 ./clear-counters.py -i devices.txt -u username
 ```
 
-## How to clear the MAC addresses which are blacklisted in EVPN
+### How to clear the MAC addresses which are blacklisted in EVPN
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py).
