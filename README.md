@@ -6,12 +6,12 @@
 - [Tests available in the python package anta](#tests-available-in-the-python-package-anta)
 - [Requirements](#requirements)
 - [Repository usage](#repository-usage)
-  - [Tests devices](#tests-devices)
-  - [Test devices reachability](#test-devices-reachability)
-  - [Collect commands output](#collect-commands-output)
-  - [Collect the scheduled show tech-support files](#collect-the-scheduled-show-tech-support-files)
-  - [Clear counters](#clear-counters)
-  - [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+  - [How to tests devices](#how-to-tests-devices)
+  - [How to test devices reachability](#how-to-test-devices-reachability)
+  - [How to collect commands output](#how-to-collect-commands-output)
+  - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
+  - [How to clear counters](#how-to-clear-counters)
+  - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -42,7 +42,7 @@ This content uses eAPI (EOS API). You can find examples of EOS automation with e
 The tests are defined in functions in the python package [anta](anta):
 
 - Each function returns `True`, `False` or `None` (when it can not run properly)
-- The [overview.md](documentation/overview.md) file has the functions documentation
+- The [overview.md](documentation/overview.md) file has an overview of the functions documentation
 
 # Requirements
 
@@ -50,9 +50,9 @@ Please see the [requirements documentation](documentation/requirements.md) for t
 
 # Repository usage  
 
-Once you are done with the installation, you can use the [scripts](scripts).
+Once you are done with the installation, you can use the [anta](anta) package and the [scripts](scripts).
 
-## Tests devices
+## How to tests devices
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
@@ -69,7 +69,7 @@ vi tests.yaml
 cat output.txt
 ```
 
-## Test devices reachability
+## How to test devices reachability
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py).
@@ -81,7 +81,7 @@ vi devices.txt
 ./check-devices-reachability.py -i devices.txt -u username
 ```
 
-## Collect commands output
+## How to collect commands output
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Update the EOS commands list [eos-commands.yaml](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format.
@@ -96,7 +96,7 @@ vi eos-commands.yaml
 ls outdir
 ```
 
-## Collect the scheduled show tech-support files
+## How to collect the scheduled show tech-support files
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostname.
 - Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py).
@@ -109,7 +109,7 @@ vi devices-list.text
 ls outdir
 ```
 
-## Clear counters
+## How to clear counters
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [clear-counters.py](scripts/clear-counters.py).
@@ -120,7 +120,7 @@ vi devices-list.text
 ./clear-counters.py -i devices.txt -u username
 ```
 
-## Clear the list of MAC addresses which are blacklisted in EVPN
+## How to clear the MAC addresses which are blacklisted in EVPN
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py).

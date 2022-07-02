@@ -1,11 +1,10 @@
 **Table of contents**
 
 - [Set up the lab](#set-up-the-lab)
-  - [Set up an ATD instance](#set-up-an-atd-instance)
+  - [Start an ATD instance](#start-an-atd-instance)
   - [Load the EVPN lab on ATD](#load-the-evpn-lab-on-atd)
   - [Check the state of spine1](#check-the-state-of-spine1)
   - [Install the packages on devbox](#install-the-packages-on-devbox)
-  - [Install some additionnal tools on devbox](#install-some-additionnal-tools-on-devbox)
   - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
   - [Check the inventory files](#check-the-inventory-files)
 - [Test devices reachability using EAPI](#test-devices-reachability-using-eapi)
@@ -25,7 +24,7 @@ Here's the instructions to use this repository with an ATD (Arista Test Drive) l
 
 # Set up the lab 
 
-## Set up an ATD instance
+## Start an ATD instance
 
 Here's the ATD topology:
 
@@ -77,7 +76,7 @@ This is expected because Leaf3 is not yet configured.
 
 ## Install the packages on devbox
 
-Use the devbox shell:
+Use the devbox shell
 ![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
 
 Run these commands to clone the repository and to move to the new folder:
@@ -97,6 +96,7 @@ Run this command to install:
 
 - The package [anta](../anta) and its dependencies
 - The packages required by these [scripts](../scripts)  
+- These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
 python setup.py install
@@ -108,9 +108,7 @@ Run this command to verify:
 pip list
 ```
 
-## Install some additionnal tools on devbox
-
-Run this commands on devbox to install additional packages:
+Run this commands on devbox to install some additional packages:
 
 ```bash
 sudo apt-get install tree unzip -y
