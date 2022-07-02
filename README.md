@@ -26,10 +26,10 @@
   
 # About this repository
 
-This repository has a [python package](anta) to automate tests on Arista devices.
+This repository has a python package to automate tests on Arista devices.
 
+- The package name is [anta](anta), which stands for **Arista Network Test Automation**.
 - This package (or some functions of this package) can be imported in Python scripts to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
-- The package name is **anta**, which stands for **Arista Network Test Automation**.
 
 In addition, this repository has also Python scripts to:
 
@@ -45,15 +45,9 @@ This content uses eAPI (EOS API). You can find examples of EOS automation with e
 # List of tests available in the python package [anta](anta)
 
 The tests are defined in functions in the python module [tests.py](anta/tests.py) in the python package [anta](anta).  
- Each function returns `True` or `False` (or `None` when it can not run properly).
+Each function returns `True`, `False` or `None` (when it can not run properly).
 
-The [documentation](documentation) directory has the tests documentation:
-
-- [overview.md](documentation/overview.md) file
-- [tests.md](documentation/tests.md) file
-
-These two files are generated using the python package [lazydocs](https://github.com/ml-tooling/lazydocs) and the docstrings in the python package [anta](anta).  
-
+The [overview.md](documentation/overview.md) file has the functions documentation.
 
 # Requirements
 
@@ -401,5 +395,4 @@ We can view the result [here](https://github.com/arista-netdevops-community/netw
 
 # Credits
 
-Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi) and [Paul Lavelle](https://github.com/paullavelle), [Thomas Grimonet](https://github.com/titom73) 
-for their contributions and guidances.
+Thank you to [Angélique Phillipps](https://github.com/aphillipps), [Colin MacGiollaEáin](https://github.com/colinmacgiolla), [Khelil Sator](https://github.com/ksator), [Matthieu Tache](https://github.com/mtache), [Onur Gashi](https://github.com/onurgashi), [Paul Lavelle](https://github.com/paullavelle) and [Thomas Grimonet](https://github.com/titom73) for their contributions and guidances.
