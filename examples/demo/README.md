@@ -4,8 +4,7 @@
   - [Set up an ATD instance](#set-up-an-atd-instance)
   - [Load the EVPN lab on ATD](#load-the-evpn-lab-on-atd)
   - [Check the state of spine1](#check-the-state-of-spine1)
-  - [Clone the repository on devbox](#clone-the-repository-on-devbox)
-  - [Install the requirements on devbox](#install-the-requirements-on-devbox)
+  - [Install the packages on devbox](#install-the-packages-on-devbox)
   - [Install some additionnal tools on devbox](#install-some-additionnal-tools-on-devbox)
   - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
   - [Check the inventory files](#check-the-inventory-files)
@@ -28,13 +27,15 @@ Here's the instructions to use this repository with an ATD (Arista Test Drive) l
 
 ## Set up an ATD instance
 
-Login to the Arista Test Drive portal, create and start an instance.
-
 Here's the ATD topology:
 
 ![images/atd_topology.png](images/atd_topology.png)
 
+Login to the Arista Test Drive portal and start an instance.
+
 ## Load the EVPN lab on ATD
+
+Load the EVPN lab on your ATD instance
 
 ![images/atd_configuration.png](images/atd_configuration.png)
 
@@ -50,16 +51,18 @@ Here's the EVPN lab topology:
 
 The script configured the lab with the exception of leaf3:
 
-- Leaves <-> spines interfaces are configured with an IPv4 address.
-- eBGP is configured between spines and leaves (underlay, IPv4 unicast address family).
+- Leaves <-> spines interfaces are configured with an IPv4 address
+- eBGP is configured between spines and leaves (underlay, IPv4 unicast address family)
 - BFD is configured for the eBGP sessions (IPv4 unicast address family)
-- 2 loopback interfaces are configured per leaf.
-- 1 loopback interface is configured per spine.
-- eBGP is configured between spines and leaves (overlay, EVPN address family, Loopback0).
+- 2 loopback interfaces are configured per leaf
+- 1 loopback interface is configured per spine
+- eBGP is configured between spines and leaves (overlay, EVPN address family, Loopback0)
 - VXLAN is configured on the leaves (Loopback1)
-- Default VRF only.
+- Default VRF only
 
 ## Check the state of spine1
+
+ssh to spine1 and run some EOS commands to check the state
 
 ![images/atd_spine1.png](images/atd_spine1.png)
 
@@ -69,26 +72,37 @@ spine1#show bgp evpn summary
 spine1#sh lldp neighbors
 ```
 
-Some BGP sessions are not established because Leaf3 is not yet configured.
+Some BGP sessions are not established.  
+This is expected because Leaf3 is not yet configured.
 
-## Clone the repository on devbox
+## Install the packages on devbox
 
-Use the devbox shell and clone the repository:
+Use the devbox shell:
 ![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
 
-```bash
+Run these commands to clone the repository and to move to the new folder:
+
+```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
 cd network-test-automation
 ```
 
-## Install the requirements on devbox
+Run this command to build the package [anta](../anta):
 
-Run these commands on devbox:
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+```shell
+python setup.py build
 ```
+
+Run this command to install:
+
+- The package [anta](../anta) and its dependencies
+- The packages required by these [scripts](../scripts)  
+
+```shell
+python setup.py install
+```
+
+Run this command to verify:
 
 ```bash
 pip list
@@ -96,28 +110,24 @@ pip list
 
 ## Install some additionnal tools on devbox
 
-Run these commands on devbox:
+Run this commands on devbox to install additional packages:
 
 ```bash
-sudo apt-get install tree
-sudo apt install unzip
+sudo apt-get install tree unzip -y
 ```
 
 ## Check the requirements on the switches
 
-```bash
+```text
 spine1#show management api http-commands
 ```
 
 ## Check the inventory files
 
-Run these commands on devbox:
+Run this command on devbox to check the inventory files:
 
 ```bash
-ls demo/inventory
-more demo/inventory/all.txt
-more demo/inventory/spines.txt
-more demo/inventory/leaves.txt
+ls examples/demo/inventory
 ```
 
 # Test devices reachability using EAPI
@@ -134,12 +144,12 @@ Run these python commands:
 from jsonrpclib import Server
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-username = "arista"
+USERNAME = "arista"
 # use the device password of your ATD instance
-password = "aristaoy21"
-ip = "192.168.1.10"
-url = "https://" + username + ":" + password + "@" + ip + "/command-api"
-switch = Server(url)
+PASSWORD = "aristatwfn"
+IP = "192.168.1.10"
+URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
+switch = Server(URL)
 result=switch.runCmds(1,['show version'], 'text')
 print(result[0]['output'])
 exit()
@@ -150,51 +160,35 @@ exit()
 Run these commands on devbox:
 
 ```bash
-./check_devices_reachability.py --help
-./check_devices_reachability.py -i demo/inventory/all.txt -u arista
+check-devices-reachability.py --help
+check-devices-reachability.py -i examples/demo/inventory/all.txt -u arista
 ```
 
 # Test devices
 
-## Run the tests 
+## Run the tests
 
 Run these commands on devbox:
 
 ```bash
-./check_devices.py --help
+check-devices.py --help
 ```
 
 ATD uses cEOS or vEOS so we will skip the hardware tests.  
-This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we will skip these tests as well.  
+This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well.  
 Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
 
 ```bash
-ls demo/inventory
-more demo/inventory/all.txt
-more demo/inventory/spines.txt
-more demo/inventory/leaves.txt
+ls examples/demo/inventory
 ```
 
 ```bash
-ls demo/tests
-more demo/tests/all.yaml
-more demo/tests/spines.yaml
-more demo/tests/leaves.yaml
+ls examples/demo/tests
 ```
 
 ```bash
-./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
-cat demo/tests_result_all.txt
-```
-
-```bash
-./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
-cat demo/tests_result_spines.txt
-```
-
-```bash
-./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
-cat demo/tests_result_leaves.txt
+check-devices.py -i examples/demo/inventory/all.txt -t examples/demo/tests/all.yaml -o examples/demo/tests_result_all.txt -u arista
+cat examples/demo/tests_result_all.txt
 ```
 
 Some tests failed.  
@@ -205,7 +199,7 @@ This is expected because leaf3 is not yet configured.
 Lets configure leaf3 using EAPI.
 
 ```bash
-python demo/configure_leaf3.py
+python examples/demo/configure-leaf3.py
 ```
 
 ## Re run the tests
@@ -213,12 +207,8 @@ python demo/configure_leaf3.py
 Lets re run all the tests.
 
 ```bash
-./check_devices.py -i demo/inventory/all.txt -t demo/tests/all.yaml -o demo/tests_result_all.txt -u arista
-./check_devices.py -i demo/inventory/spines.txt -t demo/tests/spines.yaml -o demo/tests_result_spines.txt -u arista
-./check_devices.py -i demo/inventory/leaves.txt -t demo/tests/leaves.yaml -o demo/tests_result_leaves.txt -u arista
-cat demo/tests_result_all.txt
-cat demo/tests_result_spines.txt
-cat demo/tests_result_leaves.txt
+check-devices.py -i examples/demo/inventory/all.txt -t examples/demo/tests/all.yaml -o examples/demo/tests_result_all.txt -u arista
+cat examples/demo/tests_result_all.txt
 ```
 
 # Collect commands output
@@ -226,18 +216,16 @@ cat demo/tests_result_leaves.txt
 Run these commands on devbox:
 
 ```bash
-./collect_eos_commands.py --help
-more demo/eos-commands.yaml
-./collect_eos_commands.py -i demo/inventory/all.txt -c demo/eos-commands.yaml -o demo/show_commands -u arista
-ls demo/show_commands
-tree demo/show_commands
-more demo/show_commands/192.168.0.10/text/show\ version
-more demo/show_commands/192.168.0.10/json/show\ version
+collect-eos-commands.py --help
+more examples/demo/eos-commands.yaml
+collect-eos-commands.py -i examples/demo/inventory/all.txt -c examples/demo/eos-commands.yaml -o examples/demo/show_commands -u arista
+tree examples/demo/show_commands
+more examples/demo/show_commands/192.168.0.10/text/show\ version
 ```
 
 # Collect the scheduled show tech-support files
 
-```bash
+```text
 spine1# sh running-config all | grep tech
 spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
@@ -245,13 +233,12 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 Run these commands on devbox:
 
 ```bash
-./collect_sheduled_show_tech.py --help
-./collect_sheduled_show_tech.py -i demo/inventory/all.txt -u arista -o demo/show_tech
-ls demo/show_tech
-ls demo/show_tech/spine1
-unzip demo/show_tech/spine1/xxxx.zip -d demo/show_tech
-ls demo/show_tech/mnt/flash/schedule/tech-support/
-ls demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
+collect-sheduled-show-tech.py --help
+collect-sheduled-show-tech.py -i examples/demo/inventory/all.txt -u arista -o examples/demo/show_tech
+tree examples/demo/show_tech
+unzip examples/demo/show_tech/spine1/xxxx.zip -d examples/demo/show_tech
+ls examples/demo/show_tech/mnt/flash/schedule/tech-support/
+ls examples/demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
 ```
 
 ```bash
@@ -259,12 +246,6 @@ spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 
 # Clear the list of MAC addresses which are blacklisted in EVPN
-
-```bash
-leaf3#show mac address-table 
-leaf3#show bgp evpn host-flap
-leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
-```
 
 ## Create 5 mac moves within 180 seconds
 
@@ -276,7 +257,7 @@ bash sudo ethxmit --ip-src=10.10.10.1 --ip-dst=10.10.10.2 -S 948e.d399.4421 -D f
 
 Leaf1 or leaf3 concludes that a duplicate-MAC situation has occurred (948e.d399.4421)
 
-```bash
+```text
 leaf3#show mac address-table 
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
@@ -287,13 +268,13 @@ leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN:
 
 ```bash
-./evpn_blacklist_recovery.py --help
-./evpn_blacklist_recovery.py -i demo/inventory/all.txt -u arista
+evpn-blacklist-recovery.py --help
+evpn-blacklist-recovery.py -i examples/demo/inventory/all.txt -u arista
 ```
 
 Verify:
 
-```bash
+```text
 leaf3#show mac address-table 
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
@@ -308,8 +289,8 @@ spine1#sh interfaces counters
 Run these commands on devbox:
 
 ```bash
-./clear_counters.py --help
-./clear_counters.py -i demo/inventory/all.txt -u arista
+clear-counters.py --help
+clear-counters.py -i examples/demo/inventory/all.txt -u arista
 ```
 
 ```bash

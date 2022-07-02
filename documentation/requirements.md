@@ -180,9 +180,6 @@ Run these python commands to validate you can import and use the [anta](anta) pa
 >>> from anta.tests import *
 >>> dir()
 >>> help(verify_eos_version)
-```
-
-```python
 >>> import ssl
 >>> from jsonrpclib import Server
 >>> ssl._create_default_https_context = ssl._create_unverified_context
