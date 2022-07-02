@@ -3,3 +3,6 @@ __pycache__
 .pages
 .coverage
 .pytest_cache
+build
+dist
+*.egg-info
