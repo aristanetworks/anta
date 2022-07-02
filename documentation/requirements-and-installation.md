@@ -176,18 +176,20 @@ from jsonrpclib import Server
 ssl._create_default_https_context = ssl._create_unverified_context
 USERNAME = "arista"
 PASSWORD = "aristatwfn"
+ENABLE_PASSWORD = "aristatwfn"
 IP = "192.168.0.12"
 URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
-switch = Server(url)
-result=switch.runCmds(1,['show version'], 'text')
-print(result[0]['output'])
+switch = Server(URL)
+result=switch.runCmds(1,['show version'], 'json')
+print(result[0]['uptime'])
 ```
 
-Run these python commands to validate you can import the [anta](anta) package
+Run these python commands to validate you can import and use the [anta](anta) package
 
 ```python
->>> from anta.tests import *
->>> dir()
->>> help(verify_eos_version)
->>> exit()
+from anta.tests import *
+dir()
+help(verify_bgp_ipv4_unicast_state)
+verify_bgp_ipv4_unicast_state(switch, ENABLE_PASSWORD)
+exit()
 ```
