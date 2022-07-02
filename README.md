@@ -1,26 +1,24 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/network-test-automation/blob/master/LICENSE)
 [![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network-test-automation/actions)
 
-
 **Table of Contents**
 - [About this repository](#about-this-repository)
-- [List of tests defined in the python package](#list-of-tests-defined-in-the-python-package)
+- [List of tests available in the python package anta](#list-of-tests-available-in-the-python-package-anta)
 - [Requirements](#requirements)
   - [Requirements on your laptop](#requirements-on-your-laptop)
     - [Use the `pip install` command with the git url](#use-the-pip-install-command-with-the-git-url)
-    - [Use the `pip install` command with the package name](#use-the-pip-install-command-with-the-package-name)
     - [Clone the repository and use the `pip install .` command](#clone-the-repository-and-use-the-pip-install--command)
-    - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
     - [Clone the repository and use `setup.py`](#clone-the-repository-and-use-setuppy)
+    - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
   - [Requirements on the switches](#requirements-on-the-switches)
   - [Quick check](#quick-check)
 - [Repository usage](#repository-usage)
   - [Tests devices](#tests-devices)
   - [Test devices reachability](#test-devices-reachability)
-  - [Collect commands output from devices](#collect-commands-output-from-devices)
-  - [Collect the scheduled show tech-support files from devices](#collect-the-scheduled-show-tech-support-files-from-devices)
-  - [Clear counters on devices](#clear-counters-on-devices)
-  - [Clear on devices the list of MAC addresses which are blacklisted in EVPN](#clear-on-devices-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+  - [Collect commands output](#collect-commands-output)
+  - [Collect the scheduled show tech-support files](#collect-the-scheduled-show-tech-support-files)
+  - [Clear counters](#clear-counters)
+  - [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -30,21 +28,21 @@
 
 This repository has a [python package](anta) to automate tests on Arista devices.
 
-- This package can be imported in a Python program to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
-- The package name is anta, which stands for Arista Network Test Automation.
+- This package (or some functions of this package) can be imported in Python scripts to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
+- The package name is **anta**, which stands for **Arista Network Test Automation**.
 
-In addition, this repository has also scripts to:
+In addition, this repository has also Python scripts to:
 
-- [Test devices](scripts/check-devices.py)
-- [Test devices reachability](scripts/tools/check-devices-reachability.py)
-- [Collect commands output from devices](scripts/collect-eos-commands.py)
-- [Collect the scheduled show tech-support files from devices](scripts/tools/collect-sheduled-show-tech.py)
-- [Clear counters on devices](scripts/tools/clear-counters.py)
-- [Clear on devices the list of MAC addresses which are blacklisted in EVPN](scripts/tools/evpn-blacklist-recovery.py)
+- [Test devices](#tests-devices)
+- [Test devices reachability](#test-devices-reachability)
+- [Collect commands output from devices](#collect-commands-output)
+- [Collect the scheduled show tech-support files from devices](#collect-the-scheduled-show-tech-support-files)
+- [Clear counters on devices](#clear-counters)
+- [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
 
 This content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
-# List of tests defined in the python package
+# List of tests available in the python package [anta](anta)
 
 The tests are defined in functions in the python module [tests.py](anta/tests.py) in the python package [anta](anta).  
  Each function returns `True` or `False` (or `None` when it can not run properly).
@@ -67,7 +65,7 @@ Python 3 (at least 3.3) and some packages that are not part of the standard Pyth
 python -V
 ```
 
-There are differents way to install the requirements. 
+There are several ways to install the requirements.
 
 ### Use the `pip install` command with the git url  
 
@@ -75,15 +73,13 @@ There are differents way to install the requirements.
 sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
+This will install the package [anta](anta) and its dependencies.
+
 To update, run this command:
 
 ```shell
 sudo pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
-
-### Use the `pip install` command with the package name  
-
-This will be supported once this package will be published on Pypi.
 
 ### Clone the repository and use the `pip install .` command
 
@@ -92,15 +88,6 @@ git clone https://github.com/arista-netdevops-community/network-test-automation.
 cd network-test-automation
 pip install .
 ```
-
-### Clone the repository and use the `pip install -r requirements.txt` command
-
-```shell
-git clone https://github.com/arista-netdevops-community/network-test-automation.git
-cd network-test-automation
-pip install -r requirements.txt
-```
-
 ### Clone the repository and use `setup.py`
 
 ```shell
@@ -118,6 +105,14 @@ Install the package:
 
 ```shell
 python setup.py install
+```
+
+### Clone the repository and use the `pip install -r requirements.txt` command
+
+```shell
+git clone https://github.com/arista-netdevops-community/network-test-automation.git
+cd network-test-automation
+pip install -r requirements.txt
 ```
 
 ## Requirements on the switches
@@ -177,14 +172,13 @@ print(result[0]['output'])
 
 # Repository usage
 
-- Clone this repository.
-- Install the requirements (see above)
-
 ## Tests devices
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
 - Run the python script [check-devices.py](scripts/check-devices.py).
+  - This script imports the python functions defined in the directory [anta](anta).
+  - These functions defined the tests.
 - Check the result in the output file.
 
 ```shell
@@ -198,7 +192,7 @@ cat output.txt
 ## Test devices reachability
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
-- Run the python script [check-devices-reachability.py](scripts/tools/check-devices-reachability.py).
+- Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py).
 - Check the result in the console.
 
 ```shell
@@ -207,7 +201,7 @@ vi devices.txt
 ./check-devices-reachability.py -i devices.txt -u username
 ```
 
-## Collect commands output from devices
+## Collect commands output
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
 - Update the EOS commands list [eos-commands.yaml](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format.
@@ -222,10 +216,10 @@ vi eos-commands.yaml
 ls outdir
 ```
 
-## Collect the scheduled show tech-support files from devices
+## Collect the scheduled show tech-support files
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostname.
-- Run the python script [collect-sheduled-show-tech.py](scripts/tools/collect-sheduled-show-tech.py).
+- Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py).
 - Check the output in the output directory.
 
 ```shell
@@ -235,10 +229,10 @@ vi devices-list.text
 ls outdir
 ```
 
-## Clear counters on devices
+## Clear counters
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
-- Run the python script [clear-counters.py](scripts/tools/clear-counters.py).
+- Run the python script [clear-counters.py](scripts/clear-counters.py).
 
 ```shell
 vi devices-list.text
@@ -246,10 +240,10 @@ vi devices-list.text
 ./clear-counters.py -i devices.txt -u username
 ```
 
-## Clear on devices the list of MAC addresses which are blacklisted in EVPN
+## Clear the list of MAC addresses which are blacklisted in EVPN
 
 - Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
-- Run the python script [evpn-blacklist-recovery.py](scripts/tools/evpn-blacklist-recovery.py).
+- Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py).
 
 ```shell
 vi devices-list.text
