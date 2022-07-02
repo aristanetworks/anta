@@ -8,7 +8,7 @@
 - [Repository usage](#repository-usage)
   - [How to use the anta package](#how-to-use-the-anta-package)
   - [How to use the scripts](#how-to-use-the-scripts)
-    - [How to tests devices](#how-to-tests-devices)
+    - [How to check devices state](#how-to-check-devices-state)
     - [How to test devices reachability](#how-to-test-devices-reachability)
     - [How to collect commands output](#how-to-collect-commands-output)
     - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
@@ -30,7 +30,7 @@ This repository has a [Python package](anta) to automate tests on Arista devices
 
 In addition, this repository has also Python scripts to:
 
-- Test devices
+- Check devices state
 - Test devices reachability
 - Collect commands output from devices
 - Collect the scheduled show tech-support files from devices
@@ -61,8 +61,8 @@ Have a quick look to the package documentation:
 
 - The [overview.md](documentation/overview.md) file is an overview of the [anta](anta) package documentation
 - The [tests.md](tests.md) file is a detailled documentation of the [anta](anta) package
-  
-Here's how we can import and use the functions of the [anta](anta) package:
+
+Instantiate the class `Server` of `jsonrpclib` for an EOS device:
 
 ```python
 >>> import ssl
@@ -75,6 +75,8 @@ Here's how we can import and use the functions of the [anta](anta) package:
 >>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
 >>> switch = Server(URL)
 ```
+
+Here's how we can import and use the functions of the [anta](anta) package:
 
 ```python
 >>> from anta.tests import *
@@ -91,7 +93,8 @@ Here's how we can import and use the functions of the [anta](anta) package:
 ```
 
 ## How to use the [scripts](scripts)
-### How to tests devices
+
+### How to check devices state
 
 - Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
 - Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
