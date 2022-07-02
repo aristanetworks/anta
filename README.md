@@ -68,6 +68,11 @@ Here's how we can import and use the functions of the [anta](anta) package:
 >>> from anta.tests import *
 >>> dir()
 >>> help(verify_eos_version)
+>>> help(verify_bgp_evpn_state)
+>>> help(verify_interface_discards)
+```
+
+```python
 >>> import ssl
 >>> from jsonrpclib import Server
 >>> ssl._create_default_https_context = ssl._create_unverified_context
@@ -78,6 +83,7 @@ Here's how we can import and use the functions of the [anta](anta) package:
 >>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
 >>> switch = Server(URL)
 >>> verify_eos_version(switch, ENABLE_PASSWORD, ["4.22.1F"])
+>>> verify_bgp_ipv4_unicast_state(switch, ENABLE_PASSWORD)
 >>> exit()
 ```
 
