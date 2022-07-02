@@ -27,15 +27,17 @@ Run this command to install:
 
 - The package [anta](../anta) and its dependencies
 - The packages required by these [scripts](../scripts)  
-
+- These [scripts](../scripts) in `/usr/local/bin/`
+  
 ```shell
 sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-Run this command to verify:
+Run these commands to verify:
 
 ```bash
 pip list
+check-devices-reachability.py --help
 ```
 
 To update, run this command:
@@ -50,17 +52,19 @@ Run these commands to install:
 
 - The package [anta](../anta) and its dependencies
 - The packages required by these [scripts](../scripts)  
+- These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
 cd network-test-automation
-pip install .
+sudo pip install .
 ```
 
-Run this command to verify:
+Run these commands to verify:
 
 ```bash
 pip list
+check-devices-reachability.py --help
 ```
 
 ## Clone the repository and use `setup.py`
@@ -82,15 +86,17 @@ Run this command to install:
 
 - The package [anta](../anta) and its dependencies
 - The packages required by these [scripts](../scripts)  
+- These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
-python setup.py install
+sudo python setup.py install
 ```
 
-Run this command to verify:
+Run these commands to verify:
 
 ```bash
 pip list
+check-devices-reachability.py --help
 ```
 
 ## Clone the repository and use the `pip install -r requirements.txt` command
@@ -108,7 +114,10 @@ These packages are required by:
 - These [scripts](../scripts)
 - The package [anta](../anta)
 
-But this will not install the [anta](../anta) package.
+But this will **not** install:
+
+- The [anta](../anta) package
+- These [scripts](../scripts) in `/usr/local/bin/`
 
 Run this command to verify:
 

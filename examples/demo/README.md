@@ -99,7 +99,7 @@ Run this command to install:
 - These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
-python setup.py install
+sudo python setup.py install
 ```
 
 Run this command to verify:
