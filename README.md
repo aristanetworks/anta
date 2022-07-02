@@ -3,15 +3,8 @@
 
 **Table of Contents**
 - [About this repository](#about-this-repository)
-- [List of tests available in the python package anta](#list-of-tests-available-in-the-python-package-anta)
+- [Tests available in the python package anta](#tests-available-in-the-python-package-anta)
 - [Requirements](#requirements)
-  - [Requirements on your laptop](#requirements-on-your-laptop)
-    - [Use the `pip install` command with the git url](#use-the-pip-install-command-with-the-git-url)
-    - [Clone the repository and use the `pip install .` command](#clone-the-repository-and-use-the-pip-install--command)
-    - [Clone the repository and use `setup.py`](#clone-the-repository-and-use-setuppy)
-    - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
-  - [Requirements on the switches](#requirements-on-the-switches)
-  - [Quick check](#quick-check)
 - [Repository usage](#repository-usage)
   - [Tests devices](#tests-devices)
   - [Test devices reachability](#test-devices-reachability)
@@ -26,152 +19,38 @@
   
 # About this repository
 
-This repository has a python package to automate tests on Arista devices.
+This repository has a [Python package](anta) to automate tests on Arista devices.
 
-- The package name is [anta](anta), which stands for **Arista Network Test Automation**.
-- This package (or some functions of this package) can be imported in Python scripts to automate NRFU (Network Ready For Use) test or to automate tests on a production network (periodically or on demand).  
+- The package name is **anta**, which stands for **Arista Network Test Automation**.
+- This package (or some functions of this package) can be imported in Python scripts:
+  - To automate NRFU (Network Ready For Use) test on a preproduction network
+  - Or to automate tests on a live network (periodically or on demand)  
 
 In addition, this repository has also Python scripts to:
 
-- [Test devices](#tests-devices)
-- [Test devices reachability](#test-devices-reachability)
-- [Collect commands output from devices](#collect-commands-output)
-- [Collect the scheduled show tech-support files from devices](#collect-the-scheduled-show-tech-support-files)
-- [Clear counters on devices](#clear-counters)
-- [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+- Test devices
+- Test devices reachability
+- Collect commands output from devices
+- Collect the scheduled show tech-support files from devices
+- Clear counters on devices
+- Clear the list of MAC addresses which are blacklisted in EVPN
 
 This content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
-# List of tests available in the python package [anta](anta)
+# Tests available in the python package [anta](anta)
 
-The tests are defined in functions in the python package [anta](anta).  
-Each function returns `True`, `False` or `None` (when it can not run properly).
+The tests are defined in functions in the python package [anta](anta):
 
-The [overview.md](documentation/overview.md) file has the functions documentation.
+- Each function returns `True`, `False` or `None` (when it can not run properly)
+- The [overview.md](documentation/overview.md) file has the functions documentation
 
 # Requirements
 
-## Requirements on your laptop
+Please see the [requirements documentation](documentation/requirements.md) for the requirements and installation procedure.  
 
-Python 3 (at least 3.3) is required:
+# Repository usage  
 
-```shell
-python -V
-```
-
-The Python package [anta](anta) and these [scrips](scripts) require some packages that are not part of the Python standard library.  
-They are indicated in the [requirements.txt](requirements.txt) file.  
-There are several ways to install them.
-
-### Use the `pip install` command with the git url  
-
-```shell
-sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
-```
-
-This will install the package [anta](anta) and its dependencies.
-
-To update, run this command:
-
-```shell
-sudo pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
-```
-
-### Clone the repository and use the `pip install .` command
-
-```shell
-git clone https://github.com/arista-netdevops-community/network-test-automation.git
-cd network-test-automation
-pip install .
-```
-
-This will install the package [anta](anta) and its dependencies.
-
-### Clone the repository and use `setup.py`
-
-```shell
-git clone https://github.com/arista-netdevops-community/network-test-automation.git
-cd network-test-automation
-```
-
-Build the package [anta](anta):
-
-```shell
-python setup.py build
-```
-
-Install the package [anta](anta) and its dependencies:
-
-```shell
-python setup.py install
-```
-
-### Clone the repository and use the `pip install -r requirements.txt` command
-
-```shell
-git clone https://github.com/arista-netdevops-community/network-test-automation.git
-cd network-test-automation
-pip install -r requirements.txt
-```
-
-This will install the packages in the [requirements.txt](requirements.txt) file but will not install the [anta](anta) package.
-
-## Requirements on the switches
-
-```text
-switch1#sh run int ma1
-interface Management1
-   description oob_management
-   vrf MGMT
-   ip address 10.73.1.105/24
-switch1#
-```
-
-Enable eAPI on the MGMT vrf:
-
-```text
-switch1#configure
-switch1(config)#management api http-commands
-switch1(config-mgmt-api-http-cmds)#protocol https port 443
-switch1(config-mgmt-api-http-cmds)#no shutdown
-switch1(config-mgmt-api-http-cmds)#vrf MGMT
-switch1(config-mgmt-api-http-cmds-vrf-MGMT)#no shutdown
-switch1(config-mgmt-api-http-cmds-vrf-MGMT)#exit
-switch1(config-mgmt-api-http-cmds)#exit
-switch1(config)#
-```
-
-Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
-
-Verify:
-
-```text
-switch1#sh management http-server
-```
-
-```text
-switch1#show management api http-commands
-```
-
-## Quick check
-
-Run this python script to validate the device reachability using eAPI.  
-Use your device credentials and IP address.
-
-```python
-import ssl
-from jsonrpclib import Server
-ssl._create_default_https_context = ssl._create_unverified_context
-USERNAME = "arista"
-PASSWORD = "arista"
-IP = "10.100.164.145"
-URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
-switch = Server(url)
-result=switch.runCmds(1,['show version'], 'text')
-print(result[0]['output'])
-```
-
-# Repository usage
+Once you are done with the installation, you can use the [scripts](scripts).
 
 ## Tests devices
 
@@ -254,7 +133,7 @@ vi devices-list.text
 
 # Devices testing demo
 
-To test devices, once you are done with the requirements described above, you simply need to indicate:
+To test devices, once you are done with the installation, you simply need to indicate:
 
 - Your devices name or IP address in a text file. Here's an [example](examples/devices.txt).
 - The tests you would like to run in a YAML file. Some tests require an argument. In that case, provide it using the same YAML file. Here's an [example](examples/tests.yaml).  
