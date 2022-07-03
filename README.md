@@ -8,13 +8,13 @@
 - [Repository usage](#repository-usage)
   - [How to use the anta package](#how-to-use-the-anta-package)
   - [How to use the scripts](#how-to-use-the-scripts)
+    - [How to create an inventory from CVP](#how-to-create-an-inventory-from-cvp)
     - [How to check devices state](#how-to-check-devices-state)
     - [How to test devices reachability](#how-to-test-devices-reachability)
     - [How to collect commands output](#how-to-collect-commands-output)
     - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
     - [How to clear counters](#how-to-clear-counters)
     - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
-    - [How to create an inventory from CVP](#how-to-create-an-inventory-from-cvp)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -38,7 +38,9 @@ In addition, this repository has also Python scripts to:
 - Clear counters on devices
 - Clear the list of MAC addresses which are blacklisted in EVPN
 
-This content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
+The above content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
+
+This repository has also a Python script to create an inventory file from CVP.
 
 # Tests available in the python package [anta](anta)
 
@@ -94,6 +96,26 @@ Here's how we can import and use the functions of the [anta](anta) package:
 ```
 
 ## How to use the [scripts](scripts)
+
+### How to create an inventory from CVP
+
+The python script [create-devices-inventory-from-cvp.py](scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
+
+Run these commands to get an inventory with all devices IP address.
+
+```shell
+./create-devices-inventory-from-cvp.py --help
+./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory 
+cat inventory/all.text
+```
+
+Run these commands to get an inventory with the IP address of the devices under the container `Spine`
+
+```shell
+./create-devices-inventory-from-cvp.py --help
+./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
+cat inventory/Spine.text
+```
 
 ### How to check devices state
 
@@ -182,26 +204,6 @@ The python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.p
 vi devices-list.text
 ./evpn-blacklist-recovery.py --help
 ./evpn-blacklist-recovery.py -i devices.txt -u username
-```
-
-### How to create an inventory from CVP
-
-The python script [create-devices-inventory-from-cvp.py](scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
-
-Run these commands to get an inventory with all devices IP address.
-
-```shell
-./create-devices-inventory-from-cvp.py --help
-./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory 
-cat inventory/all.text
-```
-
-Run these commands to get an inventory with the IP address of the devices under the container Spine
-
-```shell
-./create-devices-inventory-from-cvp.py --help
-./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
-cat inventory/Spine.text
 ```
 
 # Devices testing demo

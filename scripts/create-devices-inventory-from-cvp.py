@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 """
-This script uses CVP REST API to generate a token.
-It then uses cvprac with this token to get the device inventory.
-it then creates a text file with the devices IP address under a container (Spine, Leaf ...).
-if we dont provide the argument `c` it creates a text file with all the devices IP address.
+This script:
+- uses CVP REST API to generate a token
+- uses cvprac with this token to get the device inventory
+- creates a text file with the devices IP address under the container passed in argument
+    - if we dont provide the argument `c` it creates a text file with all the devices IP address.
+
 usage: ./create-devices-inventory-from-cvp.py --help
 requirement: pip install cvprac==1.2.0
 """

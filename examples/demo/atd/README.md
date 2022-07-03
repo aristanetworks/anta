@@ -132,8 +132,8 @@ Run this command on devbox to check the inventory files:
 ls examples/demo/atd/inventory
 ```
 
-There is already an inventory file for the leaves and another one for all devices.
-But there is no inventory file for the spines.
+There is already an inventory file for the leaves and another one for all devices.  
+But there is no inventory file for the spines.  
 Run this command on devbox to check to generate from CVP an inventory file with the IP address of all the devices under the container `Spine`.
 
 ```bash
