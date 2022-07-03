@@ -1,30 +1,33 @@
 **Table of contents**
 
-- [Set up the lab](#set-up-the-lab)
-  - [Start an ATD instance](#start-an-atd-instance)
-  - [Load the EVPN lab on ATD](#load-the-evpn-lab-on-atd)
-  - [Check the state of spine1](#check-the-state-of-spine1)
-  - [Install the packages on devbox](#install-the-packages-on-devbox)
-  - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
-  - [Check the inventory files](#check-the-inventory-files)
-- [Test devices reachability using EAPI](#test-devices-reachability-using-eapi)
-- [Test devices reachability](#test-devices-reachability)
-- [Test devices](#test-devices)
-  - [Run the tests](#run-the-tests)
-  - [Fix the issue](#fix-the-issue)
-  - [Re run the tests](#re-run-the-tests)
-- [Collect commands output](#collect-commands-output)
-- [Collect the scheduled show tech-support files](#collect-the-scheduled-show-tech-support-files)
-- [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
-  - [Create 5 mac moves within 180 seconds](#create-5-mac-moves-within-180-seconds)
-  - [Clear the blacklisted MAC addresses](#clear-the-blacklisted-mac-addresses)
-- [Clear counters](#clear-counters)
+- [Demo using an ATD (Arista Test Drive) lab](#demo-using-an-atd-arista-test-drive-lab)
+  - [Set up the lab](#set-up-the-lab)
+    - [Start an ATD instance](#start-an-atd-instance)
+    - [Load the EVPN lab on ATD](#load-the-evpn-lab-on-atd)
+    - [Check the state of spine1](#check-the-state-of-spine1)
+    - [Install the packages on devbox](#install-the-packages-on-devbox)
+    - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
+    - [Check the inventory files](#check-the-inventory-files)
+  - [Test devices reachability using EAPI](#test-devices-reachability-using-eapi)
+  - [Test devices reachability](#test-devices-reachability)
+  - [Test devices](#test-devices)
+    - [Run the tests](#run-the-tests)
+    - [Fix the issue](#fix-the-issue)
+    - [Re run the tests](#re-run-the-tests)
+  - [Collect commands output](#collect-commands-output)
+  - [Collect the scheduled show tech-support files](#collect-the-scheduled-show-tech-support-files)
+  - [Clear the list of MAC addresses which are blacklisted in EVPN](#clear-the-list-of-mac-addresses-which-are-blacklisted-in-evpn)
+    - [Create 5 mac moves within 180 seconds](#create-5-mac-moves-within-180-seconds)
+    - [Clear the blacklisted MAC addresses](#clear-the-blacklisted-mac-addresses)
+  - [Clear counters](#clear-counters)
+
+# Demo using an ATD (Arista Test Drive) lab
 
 Here's the instructions to use this repository with an ATD (Arista Test Drive) lab.
 
-# Set up the lab 
+## Set up the lab 
 
-## Start an ATD instance
+### Start an ATD instance
 
 Here's the ATD topology:
 
@@ -32,7 +35,7 @@ Here's the ATD topology:
 
 Login to the Arista Test Drive portal and start an instance.
 
-## Load the EVPN lab on ATD
+### Load the EVPN lab on ATD
 
 Load the EVPN lab on your ATD instance
 
@@ -59,7 +62,7 @@ The script configured the lab with the exception of leaf3:
 - VXLAN is configured on the leaves (Loopback1)
 - Default VRF only
 
-## Check the state of spine1
+### Check the state of spine1
 
 ssh to spine1 and run some EOS commands to check the state
 
@@ -74,7 +77,7 @@ spine1#sh lldp neighbors
 Some BGP sessions are not established.  
 This is expected because Leaf3 is not yet configured.
 
-## Install the packages on devbox
+### Install the packages on devbox
 
 Use the devbox shell
 ![images/atd_devbox_shell.png](images/atd_devbox_shell.png)
@@ -114,21 +117,21 @@ Run this commands on devbox to install some additional packages:
 sudo apt-get install tree unzip -y
 ```
 
-## Check the requirements on the switches
+### Check the requirements on the switches
 
 ```text
 spine1#show management api http-commands
 ```
 
-## Check the inventory files
+### Check the inventory files
 
 Run this command on devbox to check the inventory files:
 
 ```bash
-ls examples/demo/inventory
+ls examples/demo/atd/inventory
 ```
 
-# Test devices reachability using EAPI
+## Test devices reachability using EAPI
 
 Start a python interactive session on devbox:
 
@@ -153,18 +156,18 @@ print(result[0]['output'])
 exit()
 ```
 
-# Test devices reachability
+## Test devices reachability
 
 Run these commands on devbox:
 
 ```bash
 check-devices-reachability.py --help
-check-devices-reachability.py -i examples/demo/inventory/all.txt -u arista
+check-devices-reachability.py -i examples/demo/atd/inventory/all.txt -u arista
 ```
 
-# Test devices
+## Test devices
 
-## Run the tests
+### Run the tests
 
 Run these commands on devbox:
 
@@ -177,51 +180,51 @@ This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well
 Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
 
 ```bash
-ls examples/demo/inventory
+ls examples/demo/atd/inventory
 ```
 
 ```bash
-ls examples/demo/tests
+ls examples/demo/atd/tests
 ```
 
 ```bash
-check-devices.py -i examples/demo/inventory/all.txt -t examples/demo/tests/all.yaml -o examples/demo/tests_result_all.txt -u arista
-cat examples/demo/tests_result_all.txt
+check-devices.py -i examples/demo/atd/inventory/all.txt -t examples/demo/atd/tests/all.yaml -o examples/demo/atd/tests_result_all.txt -u arista
+cat examples/demo/atd/tests_result_all.txt
 ```
 
 Some tests failed.  
 This is expected because leaf3 is not yet configured.  
 
-## Fix the issue
+### Fix the issue
 
 Lets configure leaf3 using EAPI.
 
 ```bash
-python examples/demo/configure-leaf3.py
+python examples/demo/atd/configure-leaf3.py
 ```
 
-## Re run the tests
+### Re run the tests
 
 Lets re run all the tests.
 
 ```bash
-check-devices.py -i examples/demo/inventory/all.txt -t examples/demo/tests/all.yaml -o examples/demo/tests_result_all.txt -u arista
-cat examples/demo/tests_result_all.txt
+check-devices.py -i examples/demo/atd/inventory/all.txt -t examples/demo/atd/tests/all.yaml -o examples/demo/atd/tests_result_all.txt -u arista
+cat examples/demo/atd/tests_result_all.txt
 ```
 
-# Collect commands output
+## Collect commands output
 
 Run these commands on devbox:
 
 ```bash
 collect-eos-commands.py --help
-more examples/demo/eos-commands.yaml
-collect-eos-commands.py -i examples/demo/inventory/all.txt -c examples/demo/eos-commands.yaml -o examples/demo/show_commands -u arista
-tree examples/demo/show_commands
-more examples/demo/show_commands/192.168.0.10/text/show\ version
+more examples/demo/atd/eos-commands.yaml
+collect-eos-commands.py -i examples/demo/atd/inventory/all.txt -c examples/demo/atd/eos-commands.yaml -o examples/demo/atd/show_commands -u arista
+tree examples/demo/atd/show_commands
+more examples/demo/atd/show_commands/192.168.0.10/text/show\ version
 ```
 
-# Collect the scheduled show tech-support files
+## Collect the scheduled show tech-support files
 
 ```text
 spine1# sh running-config all | grep tech
@@ -232,20 +235,20 @@ Run these commands on devbox:
 
 ```bash
 collect-sheduled-show-tech.py --help
-collect-sheduled-show-tech.py -i examples/demo/inventory/all.txt -u arista -o examples/demo/show_tech
-tree examples/demo/show_tech
-unzip examples/demo/show_tech/spine1/xxxx.zip -d examples/demo/show_tech
-ls examples/demo/show_tech/mnt/flash/schedule/tech-support/
-ls examples/demo/show_tech/mnt/flash/schedule/tech-support/ | wc -l
+collect-sheduled-show-tech.py -i examples/demo/atd/inventory/all.txt -u arista -o examples/demo/atd/show_tech
+tree examples/demo/atd/show_tech
+unzip examples/demo/atd/show_tech/spine1/xxxx.zip -d examples/demo/atd/show_tech
+ls examples/demo/atd/show_tech/mnt/flash/schedule/tech-support/
+ls examples/demo/atd/show_tech/mnt/flash/schedule/tech-support/ | wc -l
 ```
 
 ```bash
 spine1# bash ls /mnt/flash/schedule/tech-support/
 ```
 
-# Clear the list of MAC addresses which are blacklisted in EVPN
+## Clear the list of MAC addresses which are blacklisted in EVPN
 
-## Create 5 mac moves within 180 seconds
+### Create 5 mac moves within 180 seconds
 
 Run this command alternately on host1 and host2 in order to create 5 mac moves within 180 seconds:
 
@@ -261,13 +264,13 @@ leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
 
-## Clear the blacklisted MAC addresses
+### Clear the blacklisted MAC addresses
 
 Run this command on devbox to clear on devices the list of MAC addresses which are blacklisted in EVPN:
 
 ```bash
 evpn-blacklist-recovery.py --help
-evpn-blacklist-recovery.py -i examples/demo/inventory/all.txt -u arista
+evpn-blacklist-recovery.py -i examples/demo/atd/inventory/all.txt -u arista
 ```
 
 Verify:
@@ -278,7 +281,7 @@ leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
 
-# Clear counters
+## Clear counters
 
 ```bash
 spine1#sh interfaces counters
@@ -288,7 +291,7 @@ Run these commands on devbox:
 
 ```bash
 clear-counters.py --help
-clear-counters.py -i examples/demo/inventory/all.txt -u arista
+clear-counters.py -i examples/demo/atd/inventory/all.txt -u arista
 ```
 
 ```bash
