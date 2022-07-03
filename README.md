@@ -21,12 +21,12 @@
   
 # About this repository
 
-This repository has a [Python package](anta) to automate tests on Arista devices.
+This repository has a Python package to automate tests on Arista devices.
 
-- The package name is **anta**, which stands for **Arista Network Test Automation**.
+- The package name is [anta](anta), which stands for **Arista Network Test Automation**.
 - This package (or some functions of this package) can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network
-  - Or to automate tests on a live network (periodically or on demand)  
+  - To automate tests on a live network (periodically or on demand)  
 
 In addition, this repository has also Python scripts to:
 
@@ -59,8 +59,8 @@ Once you are done with the installation, you can use the [anta](anta) package an
 
 Have a quick look to the package documentation:
 
-- The [overview.md](documentation/overview.md) file is an overview of the [anta](anta) package documentation
-- The [tests.md](tests.md) file is a detailled documentation of the [anta](anta) package
+- The [overview.md](documentation/overview.md) file is an overview of the package documentation
+- The [tests.md](tests.md) file is a detailled documentation of the package
 
 Instantiate the class `Server` of `jsonrpclib` for an EOS device:
 
@@ -96,12 +96,12 @@ Here's how we can import and use the functions of the [anta](anta) package:
 
 ### How to check devices state
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
-- Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file.
-- Run the python script [check-devices.py](scripts/check-devices.py).
-  - This script imports the python functions defined in the directory [anta](anta).
-  - These functions defined the tests.
-- Check the result in the output file.
+The python script [check-devices.py](scripts/check-devices.py) uses the python functions defined in the package [anta](anta) to test devices:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
+- Execute the script [check-devices.py](scripts/check-devices.py)
+- Check the tests result in the output file
 
 ```shell
 vi devices.txt
@@ -113,9 +113,11 @@ cat output.txt
 
 ### How to test devices reachability
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostnames.
-- Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py).
-- Check the result in the console.
+The python script [check-devices-reachability.py](scripts/check-devices-reachability.py) checks the devices reachability using eAPI:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py)
+- Check the result in the console
 
 ```shell
 vi devices.txt
@@ -125,10 +127,12 @@ vi devices.txt
 
 ### How to collect commands output
 
-- Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
-- Update the EOS commands list [eos-commands.yaml](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format.
-- Run the python script [collect-eos-commands.py](scripts/collect-eos-commands.py).
-- Check the output in the output directory.
+The python script [collect-eos-commands.py](scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Update the [EOS commands list](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
+- Run the python script [collect-eos-commands.py](scripts/collect-eos-commands.py)
+- The commands output is saved in the output directory
 
 ```shell
 vi devices-list.text
@@ -140,9 +144,11 @@ ls outdir
 
 ### How to collect the scheduled show tech-support files
 
-- Update the devices [inventory](examples/devices.txt) with your devices IP address or hostname.
-- Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py).
-- Check the output in the output directory.
+The python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py)
+- The files are saved in the output directory
 
 ```shell
 vi devices-list.text
@@ -153,8 +159,10 @@ ls outdir
 
 ### How to clear counters
 
-- Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
-- Run the python script [clear-counters.py](scripts/clear-counters.py).
+The python script [clear-counters.py](scripts/clear-counters.py) clears counters:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Run the python script [clear-counters.py](scripts/clear-counters.py)
 
 ```shell
 vi devices-list.text
@@ -164,8 +172,10 @@ vi devices-list.text
 
 ### How to clear the MAC addresses which are blacklisted in EVPN
 
-- Update the devices [inventory](examples/devices.txt) with your devices IP address or hostnames.
-- Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py).
+The python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
+
+- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
+- Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py)
 
 ```shell
 vi devices-list.text
@@ -175,10 +185,12 @@ vi devices-list.text
 
 # Devices testing demo
 
-To test devices, once you are done with the installation, you simply need to indicate:
+To test devices, once you are done with the installation, you simply need:
 
-- Your devices name or IP address in a text file. Here's an [example](examples/devices.txt).
-- The tests you would like to run in a YAML file. Some tests require an argument. In that case, provide it using the same YAML file. Here's an [example](examples/tests.yaml).  
+- A text file with your devices hostname or IP address. Here's an [example](examples/devices.txt).
+- A YAML file with the tests you would like to run. Some tests require an argument. Here's an [example](examples/tests.yaml).  
+
+Then you can run the Python script [check-devices.py](scripts/check-devices.py):
 
 ```text
 ./check-devices.py --help
@@ -205,6 +217,8 @@ Running tests on device 10.73.1.102 ...
 Running tests on device 10.73.1.106 ...
 Test results are saved on output.txt
 ```
+
+Then you can check the tests result in the output file: 
 
 ```text
 $ cat output.txt
