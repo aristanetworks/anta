@@ -24,7 +24,8 @@ setup(
         "scripts/check-devices-reachability.py",
         "scripts/clear-counters.py",
         "scripts/collect-sheduled-show-tech.py",
-        "scripts/evpn-blacklist-recovery.py"
+        "scripts/evpn-blacklist-recovery.py",
+        "scripts/create-devices-inventory-from-cvp.py"
     ],
     install_requires=required,
     include_package_data=True,

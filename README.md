@@ -14,6 +14,7 @@
     - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
     - [How to clear counters](#how-to-clear-counters)
     - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
+    - [How to create an inventory from CVP](#how-to-create-an-inventory-from-cvp)
 - [Devices testing demo](#devices-testing-demo)
 - [Contribution guide](#contribution-guide)
 - [Continuous Integration](#continuous-integration)
@@ -181,6 +182,26 @@ The python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.p
 vi devices-list.text
 ./evpn-blacklist-recovery.py --help
 ./evpn-blacklist-recovery.py -i devices.txt -u username
+```
+
+### How to create an inventory from CVP
+
+The python script [create-devices-inventory-from-cvp.py](scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
+
+Run these commands to get an inventory with all devices IP address.
+
+```shell
+./create-devices-inventory-from-cvp.py --help
+./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory 
+cat inventory/all.text
+```
+
+Run these commands to get an inventory with the IP address of the devices under the container Spine
+
+```shell
+./create-devices-inventory-from-cvp.py --help
+./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
+cat inventory/Spine.text
 ```
 
 # Devices testing demo
