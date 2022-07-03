@@ -7,10 +7,11 @@
     - [Check the state of spine1](#check-the-state-of-spine1)
     - [Install the packages on devbox](#install-the-packages-on-devbox)
     - [Check the requirements on the switches](#check-the-requirements-on-the-switches)
-    - [Check the inventory files](#check-the-inventory-files)
+  - [Create the inventory files](#create-the-inventory-files)
   - [Test devices reachability using EAPI](#test-devices-reachability-using-eapi)
   - [Test devices reachability](#test-devices-reachability)
   - [Test devices](#test-devices)
+    - [Define the tests](#define-the-tests)
     - [Run the tests](#run-the-tests)
     - [Fix the issue](#fix-the-issue)
     - [Re run the tests](#re-run-the-tests)
@@ -123,12 +124,21 @@ sudo apt-get install tree unzip -y
 spine1#show management api http-commands
 ```
 
-### Check the inventory files
+## Create the inventory files
 
 Run this command on devbox to check the inventory files:
 
 ```bash
 ls examples/demo/atd/inventory
+```
+
+There is already an inventory file for the leaves and another one for all devices.
+But there is no inventory file for the spines.
+Run this command on devbox to check to generate from CVP an inventory file with the IP address of all the devices under the container `Spine`.
+
+```bash
+create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o examples/demo/atd/inventory -c Spine
+more examples/demo/atd/inventory/Spine.txt
 ```
 
 ## Test devices reachability using EAPI
@@ -167,6 +177,24 @@ check-devices-reachability.py -i examples/demo/atd/inventory/all.txt -u arista
 
 ## Test devices
 
+### Define the tests
+
+ATD uses cEOS or vEOS so we will skip the hardware tests.  
+This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well.  
+Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
+
+Here's the inventory files:
+
+```bash
+ls examples/demo/atd/inventory
+```
+
+Here's the tests:
+
+```bash
+ls examples/demo/atd/tests
+```
+
 ### Run the tests
 
 Run these commands on devbox:
@@ -175,21 +203,20 @@ Run these commands on devbox:
 check-devices.py --help
 ```
 
-ATD uses cEOS or vEOS so we will skip the hardware tests.  
-This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well.  
-Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
-
-```bash
-ls examples/demo/atd/inventory
-```
-
-```bash
-ls examples/demo/atd/tests
-```
+Run these commands to test the devices:
 
 ```bash
 check-devices.py -i examples/demo/atd/inventory/all.txt -t examples/demo/atd/tests/all.yaml -o examples/demo/atd/tests_result_all.txt -u arista
+check-devices.py -i examples/demo/atd/inventory/Spine.txt -t examples/demo/atd/tests/Spine.yaml -o examples/demo/atd/tests_result_Spine.txt -u arista
+check-devices.py -i examples/demo/atd/inventory/Leaf.txt -t examples/demo/atd/tests/leaf.yaml -o examples/demo/atd/tests_result_Leaf.txt -u arista
+```
+
+Run these commands to check the result:
+
+```bash
 cat examples/demo/atd/tests_result_all.txt
+cat examples/demo/atd/tests_result_Spine.txt
+cat examples/demo/atd/tests_result_Leaf.txt
 ```
 
 Some tests failed.  
@@ -209,7 +236,16 @@ Lets re run all the tests.
 
 ```bash
 check-devices.py -i examples/demo/atd/inventory/all.txt -t examples/demo/atd/tests/all.yaml -o examples/demo/atd/tests_result_all.txt -u arista
+check-devices.py -i examples/demo/atd/inventory/Spine.txt -t examples/demo/atd/tests/Spine.yaml -o examples/demo/atd/tests_result_Spine.txt -u arista
+check-devices.py -i examples/demo/atd/inventory/Leaf.txt -t examples/demo/atd/tests/leaf.yaml -o examples/demo/atd/tests_result_Leaf.txt -u arista
+```
+
+Run these commands to check the result:
+
+```bash
 cat examples/demo/atd/tests_result_all.txt
+cat examples/demo/atd/tests_result_Spine.txt
+cat examples/demo/atd/tests_result_Leaf.txt
 ```
 
 ## Collect commands output
