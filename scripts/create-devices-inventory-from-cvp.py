@@ -17,6 +17,7 @@ import requests
 from cvprac.cvp_client import CvpClient
 
 # Ignore certificate warnings
+# pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
 
 def main():
