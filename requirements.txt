@@ -5,3 +5,5 @@ prettytable
 paramiko
 scp
 tqdm
+requests
+cvprac

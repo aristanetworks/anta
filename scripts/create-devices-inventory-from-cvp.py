@@ -3,8 +3,8 @@
 """
 This script uses CVP REST API to generate a token.
 It then uses cvprac with this token to get the device inventory.
-it then creates a text file with the devices IP address under a container (Spine, Leaf ...)
-if we dont provide the argument `c` it creates a text file with all the devices IP address. 
+it then creates a text file with the devices IP address under a container (Spine, Leaf ...).
+if we dont provide the argument `c` it creates a text file with all the devices IP address.
 usage: ./create-devices-inventory-from-cvp.py --help
 requirement: pip install cvprac==1.2.0
 """
@@ -62,7 +62,7 @@ def main():
     }
     response = requests.request("POST", URL, headers=headers, data=payload, verify=False)
     token = response.json()['sessionId']
-    
+
     # Create output directory
     cwd = os.getcwd()
     out_dir = os.path.dirname(cwd + "/" + args.output_directory + "/")
@@ -77,8 +77,8 @@ def main():
     clnt.connect(nodes=[args.cvp], username='',password='',api_token=token)
 
     if args.container is None:
-        # Get a list of all devices. 
-        # # help(clnt.api.get_inventory)
+        # Get a list of all devices
+        # help(clnt.api.get_inventory)
         inventory = clnt.api.get_inventory()
         # write all IP addresses from the CVP inventory in the all.txt file
         out_file = f'{out_dir}/all.txt'
@@ -86,9 +86,9 @@ def main():
             for dev in inventory:
                 out_file.write(dev['ipAddress'])
                 out_file.write('\n')
-    else: 
+    else:
         # Get devices under a container and write the devices IP address in a file
-        # help(clnt.api.get_devices_in_container)  
+        # help(clnt.api.get_devices_in_container)
         container = args.container
         container_inventory = clnt.api.get_devices_in_container(container)
         out_file = f'{out_dir}/{container}.txt'
