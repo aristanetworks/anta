@@ -15,5 +15,5 @@ max-returns=8
 max-locals=23
 
 [FORMAT]
-max-line-length=128
+max-line-length=165
 max-module-lines=1700
