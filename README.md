@@ -2,17 +2,6 @@
 [![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network-test-automation/actions)
 [![github release](https://img.shields.io/github/release/arista-netdevops-community/network-test-automation.svg)](https://github.com/arista-netdevops-community/network-test-automation/releases/)
 
-**Table of Contents**
-- [About this repository](#about-this-repository)
-- [Requirements and installation](#requirements-and-installation)
-- [Getting Started](#getting-started)
-  - [Configure Arista EOS devices.](#configure-arista-eos-devices)
-  - [Create your inventory](#create-your-inventory)
-  - [Test device reachability](#test-device-reachability)
-  - [Test you network](#test-you-network)
-- [Contribution guide](#contribution-guide)
-- [Credits](#credits)
-
 # About this repository
 
 This repository is a Python package to automate tests on Arista devices.
