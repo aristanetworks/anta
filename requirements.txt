@@ -1,5 +1,5 @@
-jsonrpclib-pelix
-PyYAML
+jsonrpclib-pelix>=0.4.3.2
+PyYAML>=6.0
 colorama
 prettytable
 paramiko
@@ -7,3 +7,6 @@ scp
 tqdm
 requests
 cvprac
+netaddr>=0.8.0
+pydantic>=1.9.1
+Jinja2>=3.1.2
