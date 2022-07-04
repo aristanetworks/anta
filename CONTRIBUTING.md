@@ -1,6 +1,6 @@
 # Contributions guide
 
-Contributions are welcome.  
+Contributions are welcome.
 Please open an issue and submit a PR.
 
 ## Requirements
@@ -26,12 +26,7 @@ Run the command `pylint $(git ls-files '-.py')`
 To run the unit tests that test the functions defined in the directory [anta](anta), run the following commands from the `tests` directory:
 
 ```bash
-py.test 
-py.test -vv
-py.test --cov .
-py.test --cov . -vv
-py.test --cov=anta.tests
-py.test --cov=anta.tests -vv 
+py.test --cov=anta -vv
 ```
 
 ## To generate documentation functions
@@ -42,3 +37,8 @@ To generate from the functions docstring the documentation in markdown format in
 python documentation/generate-functions-documentation.py
 ls documentation
 ```
+
+## Continuous Integration
+
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](.github/workflows).
+We can view the result [here](https://github.com/arista-netdevops-community/network-test-automation/actions).
