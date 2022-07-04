@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: skip-file
 
 from typing import List, Optional, Any
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
