@@ -7,7 +7,7 @@ This section provides generic documentation related to the Arista Network Test A
 
 - [requirements-and-installation.md](requirements-and-installation.md): This file provides instructions about the requirements and installation procedure.
 - [usage.md](usage.md): Command usages
-- [demo.dm](demo.md): This file content full output of commands profvided by ANTA package.
+- [demo.md](demo.md): This file content full output of commands profvided by ANTA package.
 
 
 ## Automated documentation
