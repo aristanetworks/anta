@@ -1,22 +1,27 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
 
+"""
+Inventory Module for ANTA
+"""
+
 import logging
-import yaml
 import ssl
-from jinja2 import Template
 from socket import setdefaulttimeout
-from jsonrpclib import Server, jsonrpc, ProtocolError
-from yaml.loader import SafeLoader
+
+import yaml
+from jinja2 import Template
+from jsonrpclib import ProtocolError, Server, jsonrpc
 from netaddr import IPNetwork
 from pydantic import ValidationError
+from yaml.loader import SafeLoader
 
 from .models import AntaInventoryInput, InventoryDevice
 
-# pylint: disable=protected-access
+# pylint: disable=W0212
 ssl._create_default_https_context = ssl._create_unverified_context
 
-class AntaInventory(object):
+class AntaInventory():
     """
     Inventory Abstraction for ANTA framework
 
@@ -134,8 +139,9 @@ class AntaInventory(object):
         """
         device = [ dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
         if not device.established:
-            logging.debug(f'trying to connect to device')
+            logging.debug('trying to connect to device')
             device = self._create_session(device=device)
+            # pylint: disable=W0104
             [device if dev.host == device.host else dev for dev in self._inventory]
         return device
 
@@ -185,7 +191,7 @@ class AntaInventory(object):
                 )
                 self._inventory.append(device)
 
-    def get_inventory(self, format: str = 'native', established_only: bool = True):
+    def get_inventory(self, format_out: str = 'native', established_only: bool = True):
         """
         get_inventory Expose device inventory
 
@@ -203,7 +209,6 @@ class AntaInventory(object):
         else:
             devices = self._inventory
 
-        if format == 'json':
+        if format_out == 'json':
             return [dev.dict() for dev in devices]
-        else:
-            return devices
+        return devices
