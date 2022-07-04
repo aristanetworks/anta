@@ -27,13 +27,31 @@ class AntaInventory():
 
     Inventory file example:
     ----------------------
-    anta_read_inventory:
+    anta_inventory:
       hosts:
         - hosts: 1.1.1.1
         - host: 2.2.2.2
       networks:
         - network: 10.0.0.0/8
         - network: 192.168.0.0/16
+
+    Inventory Output:
+    ------------------
+    [
+        "InventoryDevice(host=IPv4Address('192.168.0.17')",
+        "username='ansible'",
+        "password='ansible'",
+        "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
+        "url='https://ansible:ansible@192.168.0.17/command-api'",
+        "established=True",
+
+        "InventoryDevice(host=IPv4Address('192.168.0.2')",
+        "username='ansible'",
+        "password='ansible'",
+        "session=None",
+        "url='https://ansible:ansible@192.168.0.2/command-api'",
+        "established=False"
+    ]
     """
 
     # Root key of inventory part of the inventory file
@@ -113,17 +131,14 @@ class AntaInventory():
         try:
             setdefaulttimeout(timeout)
             connection.runCmds(1,['show version'])
-        # except TransportError:
-        #     logging.error(f'Incorrect credentials for device f{device.host}')
-        #     device.session = None
-        except ConnectionRefusedError:
+        # pylint: disable=W0702
+        except:
             logging.error(f'Service not running on device {device.host}')
             device.session = None
         else:
             device.established = True
             device.session = connection
         return device
-
 
     def get_session(self, host_ip: str):
         """
