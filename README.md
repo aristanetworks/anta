@@ -4,360 +4,118 @@
 
 **Table of Contents**
 - [About this repository](#about-this-repository)
-- [Tests available in the python package anta](#tests-available-in-the-python-package-anta)
 - [Requirements and installation](#requirements-and-installation)
-- [Repository usage](#repository-usage)
-  - [How to use the anta package](#how-to-use-the-anta-package)
-  - [How to use the scripts](#how-to-use-the-scripts)
-    - [How to create an inventory from CVP](#how-to-create-an-inventory-from-cvp)
-    - [How to check devices state](#how-to-check-devices-state)
-    - [How to test devices reachability](#how-to-test-devices-reachability)
-    - [How to collect commands output](#how-to-collect-commands-output)
-    - [How to collect the scheduled show tech-support files](#how-to-collect-the-scheduled-show-tech-support-files)
-    - [How to clear counters](#how-to-clear-counters)
-    - [How to clear the MAC addresses which are blacklisted in EVPN](#how-to-clear-the-mac-addresses-which-are-blacklisted-in-evpn)
-- [Devices testing demo](#devices-testing-demo)
+- [Getting Started](#getting-started)
+  - [Configure Arista EOS devices.](#configure-arista-eos-devices)
+  - [Create your inventory](#create-your-inventory)
+  - [Test device reachability](#test-device-reachability)
+  - [Test you network](#test-you-network)
 - [Contribution guide](#contribution-guide)
-- [Continuous Integration](#continuous-integration)
 - [Credits](#credits)
-  
+
 # About this repository
 
-This repository has a Python package to automate tests on Arista devices.
+This repository is a Python package to automate tests on Arista devices.
 
 - The package name is [anta](anta), which stands for **Arista Network Test Automation**.
 - This package (or some functions of this package) can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network
-  - To automate tests on a live network (periodically or on demand)  
+  - To automate tests on a live network (periodically or on demand)
 
-In addition, this repository has also Python scripts to:
+ANTA provides a set of tests to validate the state of your network. All these tests are documented in the [repository](./documentation/overview.md) and can be used in your own python environment by importing this python package in your scripts.
 
-- Check devices state
-- Test devices reachability
-- Collect commands output from devices
-- Collect the scheduled show tech-support files from devices
-- Clear counters on devices
-- Clear the list of MAC addresses which are blacklisted in EVPN
+This repository comes with a set of script to run __Arista Network Test Automation__ framework
 
-The above content uses eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
+- `check-devices.py` is an easy to use script to test your network with ANTA.
+- `check-devices-reachability.py` to test your devices are ready to be tested.
+- `collect-eos-commands.py` to collect commands output from devices
+- `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
 
-This repository has also a Python script to create an inventory file from CVP.
+In addition you have also some useful scripts to help around testing:
 
-# Tests available in the python package [anta](anta)
+- Clear counters on devices (`clear-counters.py`)
+- Clear the list of MAC addresses which are blacklisted in EVPN (`clear-counters.py`)
+- Build inventory for scripts from Arista Cloudvision (CVP) (`create-devices-inventory-from-cvp.py`)
 
-The tests are defined in functions in the python package [anta](anta):
 
-- Each function returns `True`, `False` or `None` (when it can not run properly)
-- The [overview.md](documentation/overview.md) file has an overview of the functions documentation
+> Most of these scripts use eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
 # Requirements and installation
 
-Please see the [requirements and intallation documentation](documentation/requirements-and-installation.md) for the requirements and installation procedure.  
+The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip package to install:
 
-# Repository usage  
-
-Once you are done with the installation, you can use the [anta](anta) package and the [scripts](scripts).
-
-
-## How to use the [anta](anta) package
-
-Have a quick look to the package documentation:
-
-- The [overview.md](documentation/overview.md) file is an overview of the package documentation
-- The [tests.md](tests.md) file is a detailled documentation of the package
-
-Instantiate the class `Server` of `jsonrpclib` for an EOS device:
-
-```python
->>> import ssl
->>> from jsonrpclib import Server
->>> ssl._create_default_https_context = ssl._create_unverified_context
->>> USERNAME = "arista"
->>> PASSWORD = "aristatwfn"
->>> ENABLE_PASSWORD = "aristatwfn"
->>> IP = "192.168.0.12"
->>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
->>> switch = Server(URL)
+```bash
+pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-Here's how we can import and use the functions of the [anta](anta) package:
+For more details about how to install package, please see the [requirements and intallation documentation](documentation/requirements-and-installation.md) for the requirements and installation procedure.
 
-```python
->>> from anta.tests import *
->>> dir()
->>> help(verify_eos_version)
->>> help(verify_bgp_evpn_state)
->>> help(verify_interface_discards)
+# Getting Started
+
+This section shows how to use ANTA scripts with basic configuration. For more information, please refer to this [page](./documentation/usage.md). Also a demo page is available in the [repository](./documentation/demo.md) with full outputs.
+
+## Configure Arista EOS devices.
+
+First, you need to configure your management interface
+
+```eos
+interface Management1
+   description oob_management
+   vrf MGMT
+   ip address 10.73.1.105/24
 ```
 
-```python
->>> verify_eos_version(switch, ENABLE_PASSWORD, ["4.22.1F"])
->>> verify_bgp_ipv4_unicast_state(switch, ENABLE_PASSWORD)
->>> exit()
+Then, configure access to eAPI:
+
+```eos
+management api http-commands
+   protocol https port 443
+   no shutdown
+   vrf MGMT
+      no shutdown
+   !
+!
 ```
 
-## How to use the [scripts](scripts)
+## Create your inventory
 
-### How to create an inventory from CVP
+First, we need to list devices we want to test. You can create a file manually with this format:
 
-The python script [create-devices-inventory-from-cvp.py](scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
-
-Run these commands to get an inventory with all devices IP address.
-
-```shell
-./create-devices-inventory-from-cvp.py --help
-./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory 
-cat inventory/all.text
-```
-
-Run these commands to get an inventory with the IP address of the devices under the container `Spine`
-
-```shell
-./create-devices-inventory-from-cvp.py --help
-./create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
-cat inventory/Spine.text
-```
-
-### How to check devices state
-
-The python script [check-devices.py](scripts/check-devices.py) uses the python functions defined in the package [anta](anta) to test devices:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
-- Execute the script [check-devices.py](scripts/check-devices.py)
-- Check the tests result in the output file
-
-```shell
-vi devices.txt
-vi tests.yaml
-./check-devices.py --help
-./check-devices.py -i devices.txt -t tests.yaml -o output.txt -u username
-cat output.txt
-```
-
-### How to test devices reachability
-
-The python script [check-devices-reachability.py](scripts/check-devices-reachability.py) checks the devices reachability using eAPI:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py)
-- Check the result in the console
-
-```shell
-vi devices.txt
-./check-devices-reachability.py --help
-./check-devices-reachability.py -i devices.txt -u username
-```
-
-### How to collect commands output
-
-The python script [collect-eos-commands.py](scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Update the [EOS commands list](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
-- Run the python script [collect-eos-commands.py](scripts/collect-eos-commands.py)
-- The commands output is saved in the output directory
-
-```shell
-vi devices-list.text
-vi eos-commands.yaml
-./collect-eos-commands.py --help
-./collect-eos-commands.py -i devices.txt -c eos-commands.yaml -o outdir -u username
-ls outdir
-```
-
-### How to collect the scheduled show tech-support files
-
-The python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py)
-- The files are saved in the output directory
-
-```shell
-vi devices-list.text
-./collect-sheduled-show-tech.py --help
-./collect-sheduled-show-tech.py -i devices.txt -u username -o outdir
-ls outdir
-```
-
-### How to clear counters
-
-The python script [clear-counters.py](scripts/clear-counters.py) clears counters:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [clear-counters.py](scripts/clear-counters.py)
-
-```shell
-vi devices-list.text
-./clear-counters.py --help
-./clear-counters.py -i devices.txt -u username
-```
-
-### How to clear the MAC addresses which are blacklisted in EVPN
-
-The python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
-
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py)
-
-```shell
-vi devices-list.text
-./evpn-blacklist-recovery.py --help
-./evpn-blacklist-recovery.py -i devices.txt -u username
-```
-
-# Devices testing demo
-
-To test devices, once you are done with the installation, you simply need:
-
-- A text file with your devices hostname or IP address. Here's an [example](examples/devices.txt).
-- A YAML file with the tests you would like to run. Some tests require an argument. Here's an [example](examples/tests.yaml).  
-
-Then you can run the Python script [check-devices.py](scripts/check-devices.py):
-
-```text
-./check-devices.py --help
-usage: check-devices.py [-h] -i INVENTORY_FILE -u USERNAME -t TEST_CATALOG -o OUTPUT_FILE
-
-EOS devices health checks
-
-optional arguments:
-  -h, --help         show this help message and exit
-  -i INVENTORY_FILE  Text file containing a list of switches, one per line
-  -u USERNAME        Devices username
-  -t TEST_CATALOG    Text file containing the tests
-  -o OUTPUT_FILE     Output file
-```
-
-```text
-./check-devices.py -u arista -i devices.txt -o output.txt -t tests.yaml
-Device password:
-Enable password (if any):
-Testing devices .... please be patient ...
-Can not connect to device 2.2.2.2
-Running tests on device 10.73.1.101 ...
-Running tests on device 10.73.1.102 ...
-Running tests on device 10.73.1.106 ...
-Test results are saved on output.txt
-```
-
-Then you can check the tests result in the output file: 
-
-```text
-$ cat output.txt
-Mon Apr 11 19:12:58 2022
-devices inventory file was devices.txt
-devices username was arista
-list of unreachable devices is
+```txt
+10.73.1.101
 2.2.2.2
-tests file was tests.yaml
-
-***** Results *****
-
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  01.01  |  01.02  |  01.03  |  01.04  |  02.01  |  02.02  |  02.03  |  02.04  |  02.05  |  02.06  |  02.07  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Fail  |   Fail  |   Pass  |   Pass  |
-|  10.73.1.102  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
-|  10.73.1.106  |   Fail  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  02.08  |  03.01  |  03.02  |  03.03  |  03.04  |  03.05  |  04.01  |  04.02  |  05.01  |  05.02  |  06.01  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.102  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.106  |   Pass  |   Skip  |   Fail  |   Pass  |   Fail  |   Skip  |   Pass  |   Fail  |   Skip  |   Skip  |   Skip  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  07.01  |  08.01  |  08.02  |  08.03  |  08.04  |  08.05  |  08.06  |  09.01  |  09.02  |  09.03  |  09.04  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.102  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Skip  |   Skip  |   Skip  |
-|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Pass  |   Skip  |   Fail  |   Pass  |   Pass  |   Fail  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  09.05  |  10.01  |  11.01  |  11.02  |  12.01  |  13.01  |  14.01  |  14.02  |  15.01  |  16.01  |  16.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-|  10.73.1.102  |   Skip  |   Fail  |   Fail  |   Skip  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-|  10.73.1.106  |   Skip  |   Fail  |   Pass  |   Fail  |   Pass  |   Pass  |   Pass  |   Fail  |   Pass  |   Pass  |   Fail  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|    devices    |  16.03  |  16.04  |  16.05  |  16.06  |  16.07  |  17.01  |  17.02  |  18.01  |  18.02  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-|  10.73.1.101  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.102  |   Pass  |   Pass  |   Fail  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-|  10.73.1.106  |   Pass  |   Pass  |   Pass  |   Skip  |   Skip  |   Pass  |   Fail  |   Skip  |   Pass  |
-+---------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
-
-***** Tests *****
-
-01.01    {"name": "verify_eos_version", "versions": ["4.25.4M", "4.26.1F"]}
-01.02    {"name": "verify_terminattr_version", "versions": ["v1.13.6", "v1.8.0"]}
-01.03    {"name": "verify_eos_extensions"}
-01.04    {"name": "verify_field_notice_44_resolution"}
-02.01    {"name": "verify_uptime", "minimum": 86400}
-02.02    {"name": "verify_reload_cause"}
-02.03    {"name": "verify_coredump"}
-02.04    {"name": "verify_agent_logs"}
-02.05    {"name": "verify_syslog"}
-02.06    {"name": "verify_cpu_utilization"}
-02.07    {"name": "verify_memory_utilization"}
-02.08    {"name": "verify_filesystem_utilization"}
-03.01    {"name": "verify_transceivers_manufacturers", "manufacturers": ["Not Present", "Arista Networks", "Arastra, Inc."]}
-03.02    {"name": "verify_system_temperature"}
-03.03    {"name": "verify_transceiver_temperature"}
-03.04    {"name": "verify_environment_cooling"}
-03.05    {"name": "verify_environment_power"}
-04.01    {"name": "verify_zerotouch"}
-04.02    {"name": "verify_running_config_diffs"}
-05.01    {"name": "verify_unified_forwarding_table_mode", "mode": 3}
-05.02    {"name": "verify_tcam_profile", "profile": "vxlan-routing"}
-06.01    {"name": "verify_adverse_drops"}
-07.01    {"name": "verify_ntp"}
-08.01    {"name": "verify_interface_utilization"}
-08.02    {"name": "verify_interface_errors"}
-08.03    {"name": "verify_interface_discards"}
-08.04    {"name": "verify_interface_errdisabled"}
-08.05    {"name": "verify_interfaces_status", "minimum": 4}
-08.06    {"name": "verify_storm_control_drops"}
-09.01    {"name": "verify_portchannels"}
-09.02    {"name": "verify_illegal_lacp"}
-09.03    {"name": "verify_mlag_status"}
-09.04    {"name": "verify_mlag_interfaces"}
-09.05    {"name": "verify_mlag_config_sanity"}
-10.01    {"name": "verify_loopback_count", "number": 3}
-11.01    {"name": "verify_vxlan"}
-11.02    {"name": "verify_vxlan_config_sanity"}
-12.01    {"name": "verify_svi"}
-13.01    {"name": "verify_spanning_tree_blocked_ports"}
-14.01    {"name": "verify_routing_protocol_model", "model": "multi-agent"}
-14.02    {"name": "verify_routing_table_size", "minimum": 2, "maximum": 20}
-15.01    {"name": "verify_bfd"}
-16.01    {"name": "verify_bgp_ipv4_unicast_state"}
-16.02    {"name": "verify_bgp_ipv4_unicast_count", "number": 2, "vrf": "default"}
-16.03    {"name": "verify_bgp_ipv6_unicast_state"}
-16.04    {"name": "verify_bgp_evpn_state"}
-16.05    {"name": "verify_bgp_evpn_count", "number": 2}
-16.06    {"name": "verify_bgp_rtc_state"}
-16.07    {"name": "verify_bgp_rtc_count", "number": 2}
-17.01    {"name": "verify_ospf_state"}
-17.02    {"name": "verify_ospf_count", "number": 3}
-18.01    {"name": "verify_igmp_snooping_vlans", "configuration": "disabled", "vlans": [10, 12]}
-18.02    {"name": "verify_igmp_snooping_global", "configuration": "enabled"}
+10.73.1.102
+10.73.1.106
 ```
 
+Or you can use [`create-devices-inventory-from-cvp.py`](scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
+
+```bash
+create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
+```
+
+## Test device reachability
+
+Before running NRFU tests, we are going to test if we can connect to devices:
+
+```bash
+check-devices-reachability.py -i devices.txt -u username
+```
+
+## Test you network
+
+Now we can run tests across the entire inventory
+
+```bash
+check-devices.py -i devices.txt -t tests.yaml -o output.txt -u <username>
+```
+
+> Note the `-t tests.yml` that list all your tests. An example is available under [examples folder](./examples/tests.yaml)
+
+You can find more information about usage in the following [documentation](./documentation/usage.md). Also a demo page is available in the [repository](./documentation/demo.md) with full outputs.
 # Contribution guide
 
-Contributions are welcome.
-Please refer to the [contribution guide](CONTRIBUTING.md)
-
-# Continuous Integration
-
-GitHub actions is used to test git pushes and pull requests.
-The workflows are defined in this [directory](.github/workflows).
-We can view the result [here](https://github.com/arista-netdevops-community/network-test-automation/actions).
+Contributions are welcome. Please refer to the [contribution guide](CONTRIBUTING.md)
 
 # Credits
 
