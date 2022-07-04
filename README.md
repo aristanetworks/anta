@@ -2,11 +2,11 @@
 [![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network-test-automation/actions)
 [![github release](https://img.shields.io/github/release/arista-netdevops-community/network-test-automation.svg)](https://github.com/arista-netdevops-community/network-test-automation/releases/)
 
-# About this repository
+# Arista Network Test Automation (ANTA) Framework
 
 This repository is a Python package to automate tests on Arista devices.
 
-- The package name is [anta](anta), which stands for **Arista Network Test Automation**.
+- The package name is [ANTA](./anta), which stands for **Arista Network Test Automation**.
 - This package (or some functions of this package) can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
@@ -22,14 +22,13 @@ This repository comes with a set of script to run __Arista Network Test Automati
 
 In addition you have also some useful scripts to help around testing:
 
-- Clear counters on devices (`clear-counters.py`)
-- Clear the list of MAC addresses which are blacklisted in EVPN (`clear-counters.py`)
-- Build inventory for scripts from Arista Cloudvision (CVP) (`create-devices-inventory-from-cvp.py`)
-
+- `clear-counters.py` to clear counters on devices
+- `clear-counters.py` to clear the list of MAC addresses which are blacklisted in EVPN
+- `create-devices-inventory-from-cvp.py`: Build inventory for scripts from Arista Cloudvision (CVP)
 
 > Most of these scripts use eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
-# Requirements and installation
+# Installation
 
 The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip package to install:
 
@@ -91,7 +90,7 @@ Before running NRFU tests, we are going to test if we can connect to devices:
 check-devices-reachability.py -i devices.txt -u username
 ```
 
-## Test you network
+## Test your network
 
 Now we can run tests across the entire inventory
 
@@ -102,6 +101,7 @@ check-devices.py -i devices.txt -t tests.yaml -o output.txt -u <username>
 > Note the `-t tests.yml` that list all your tests. An example is available under [examples folder](./examples/tests.yaml)
 
 You can find more information about usage in the following [documentation](./documentation/usage.md). Also a demo page is available in the [repository](./documentation/demo.md) with full outputs.
+
 # Contribution guide
 
 Contributions are welcome. Please refer to the [contribution guide](CONTRIBUTING.md)
