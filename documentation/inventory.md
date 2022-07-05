@@ -3,42 +3,38 @@
 <a href="../anta/inventory/__init__.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `inventory`
-Inventory Module for ANTA 
+Inventory Module for ANTA. 
 
 **Global Variables**
 ---------------
-- **models**: # coding: utf-8 -*-
+- **models**: # -*- coding: utf-8 -*-
 # pylint: skip-file
 
 
 
 ---
 
-<a href="../anta/inventory/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventory`
-Inventory Abstraction for ANTA framework 
+Inventory Abstraction for ANTA framework. 
 
-Inventory file example: 
----------------------- ``` print(inventory.yml)```
-``` anta_inventory:``` ```   hosts:```
-```     - hosts: 1.1.1.1``` ```     - host: 2.2.2.2```
-```   networks:``` ```     - network: 10.0.0.0/8```
-```     - network: 192.168.0.0/16``` 
 
-Inventory Output: 
------------------- ``` test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)```
-``` test.inventory_get()``` ``` [```
-```     "InventoryDevice(host=IPv4Address('192.168.0.17')",``` ```     "username='ansible'",```
-```     "password='ansible'",``` ```     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",```
-```     "url='https://ansible:ansible@192.168.0.17/command-api'",``` ```     "established=True",```
 
-```     "InventoryDevice(host=IPv4Address('192.168.0.2')",``` ```     "username='ansible'",```
-```     "password='ansible'",``` ```     "session=None",```
-```     "url='https://ansible:ansible@192.168.0.2/command-api'",``` ```     "established=False"```
-``` ]``` 
+**Attributes:**
+ 
+ - <b>`inventory_get`</b> (List):  Get all devices in inventory 
+ - <b>`device_get`</b> (InventoryDevice):  Get a device from Inventory 
+ - <b>`session_get`</b> (jsonrpclib.Server):  Get a session for a host IP 
 
-<a href="../anta/inventory/__init__.py#L65"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+
+**Returns:**
+ A list of InventoryDevice objects. 
+
+
+
+<a href="../anta/inventory/__init__.py#L74"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.__init__`
 
@@ -51,7 +47,7 @@ __init__(
 )
 ```
 
-__init__ Class constructor 
+Class constructor. 
 
 
 
@@ -60,14 +56,14 @@ __init__ Class constructor
  - <b>`inventory_file`</b> (str):  Path to inventory YAML file where user has described his inputs 
  - <b>`username`</b> (str):  Username to use to connect to devices 
  - <b>`password`</b> (str):  Password to use to connect to devices 
- - <b>`auto_connect`</b> (bool, optional):  Automatically build eAPI context for every devices. Defaults to False. 
+ - <b>`auto_connect`</b> (bool, optional):  Automatically build eAPI context for every devices. Defaults to True. 
 
 
 
 
 ---
 
-<a href="../anta/inventory/__init__.py#L115"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L122"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.device_get`
 
@@ -75,7 +71,7 @@ __init__ Class constructor
 device_get(host_ip)
 ```
 
-device_get Get device information from a given IP 
+Get device information from a given IP. 
 
 
 
@@ -91,7 +87,7 @@ device_get Get device information from a given IP
 
 ---
 
-<a href="../anta/inventory/__init__.py#L259"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L258"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.inventory_get`
 
@@ -99,7 +95,7 @@ device_get Get device information from a given IP
 inventory_get(format_out: str = 'native', established_only: bool = True)
 ```
 
-inventory_get Expose device inventory 
+inventory_get Expose device inventory. 
 
 Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices. 
 
@@ -118,7 +114,7 @@ Provides inventory has a list of InventoryDevice objects. If requried, it can be
 
 ---
 
-<a href="../anta/inventory/__init__.py#L175"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L179"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_create`
 
@@ -126,7 +122,7 @@ Provides inventory has a list of InventoryDevice objects. If requried, it can be
 session_create(host_ip: str)
 ```
 
-session_create Get session of a device 
+Get session of a device. 
 
 If device has already a session, function only returns active session, if not, try to build a new session 
 
@@ -144,7 +140,7 @@ If device has already a session, function only returns active session, if not, t
 
 ---
 
-<a href="../anta/inventory/__init__.py#L196"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L199"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_get`
 
@@ -152,7 +148,7 @@ If device has already a session, function only returns active session, if not, t
 session_get(host_ip: str)
 ```
 
-session_get Expose RPC session of a given host from our inventory 
+Expose RPC session of a given host from our inventory. 
 
 Provide RPC session if the session exists, if not, it returns None 
 
@@ -170,7 +166,7 @@ Provide RPC session if the session exists, if not, it returns None
 
 ---
 
-<a href="../anta/inventory/__init__.py#L213"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../anta/inventory/__init__.py#L215"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.sessions_create`
 
@@ -178,7 +174,7 @@ Provide RPC session if the session exists, if not, it returns None
 sessions_create()
 ```
 
-sessions_create Helper to build RPC sessions to all devices 
+Helper to build RPC sessions to all devices 
 
 
 
