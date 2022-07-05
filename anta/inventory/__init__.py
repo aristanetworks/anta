@@ -1,7 +1,9 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# coding: utf-8 -*-
 
-"""Inventory Module for ANTA."""
+"""
+Inventory Module for ANTA.
+"""
 
 import logging
 import ssl
@@ -19,11 +21,12 @@ from .models import AntaInventoryInput, InventoryDevice
 # pylint: disable=W0212
 ssl._create_default_https_context = ssl._create_unverified_context
 
+class AntaInventory():
+    """Inventory Abstraction for ANTA framework.
 
-"""Inventory Abstraction for ANTA framework.
-
-Example of user's input:
-
+    Inventory file example:
+    ----------------------
+    >>> print(inventory.yml)
     >>> anta_inventory:
     >>>   hosts:
     >>>     - hosts: 1.1.1.1
@@ -32,8 +35,8 @@ Example of user's input:
     >>>     - network: 10.0.0.0/8
     >>>     - network: 192.168.0.0/16
 
-Example of module's output:
-
+    Inventory Output:
+    ------------------
     >>> test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)
     >>> test.inventory_get()
     >>> [
@@ -51,20 +54,7 @@ Example of module's output:
     >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
     >>>     "established=False"
     >>> ]
-"""
-
-class AntaInventory():
-    """Inventory Abstraction for ANTA framework.
-
-   Attributes:
-        inventory_get (List): Get all devices in inventory
-        device_get (InventoryDevice): Get a device from Inventory
-        session_get (jsonrpclib.Server): Get a session for a host IP
-
-    Returns:
-        A list of InventoryDevice objects.
     """
-
 
     # Root key of inventory part of the inventory file
     INVENTORY_ROOT_KEY = 'anta_inventory'
@@ -91,7 +81,7 @@ class AntaInventory():
         try:
             self._read_inventory = AntaInventoryInput( **data[self.INVENTORY_ROOT_KEY] )
         except KeyError:
-            logging.error(f'Inventory root key is missi0ng: {self.INVENTORY_ROOT_KEY}')
+            logging.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
         except ValidationError as error:
             logging.error('Inventory data are not compliant with inventory models')
             logging.error(f'error is: {error}')
@@ -236,8 +226,7 @@ class AntaInventory():
             self._inventory.append(device)
 
     def _inventory_read_networks(self):
-        """
-        _inventory_read_networks Read input data from networks section and create inventory structure.
+        """Read input data from networks section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared subnet
         """
@@ -256,8 +245,7 @@ class AntaInventory():
                 self._inventory.append(device)
 
     def inventory_get(self, format_out: str = 'native', established_only: bool = True):
-        """
-        inventory_get Expose device inventory.
+        """inventory_get Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
 
