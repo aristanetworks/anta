@@ -27,31 +27,34 @@ class AntaInventory():
 
     Inventory file example:
     ----------------------
-    anta_inventory:
-      hosts:
-        - hosts: 1.1.1.1
-        - host: 2.2.2.2
-      networks:
-        - network: 10.0.0.0/8
-        - network: 192.168.0.0/16
+    >>> print(inventory.yml)
+    >>> anta_inventory:
+    >>>   hosts:
+    >>>     - hosts: 1.1.1.1
+    >>>     - host: 2.2.2.2
+    >>>   networks:
+    >>>     - network: 10.0.0.0/8
+    >>>     - network: 192.168.0.0/16
 
     Inventory Output:
     ------------------
-    [
-        "InventoryDevice(host=IPv4Address('192.168.0.17')",
-        "username='ansible'",
-        "password='ansible'",
-        "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
-        "url='https://ansible:ansible@192.168.0.17/command-api'",
-        "established=True",
+    >>> test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)
+    >>> test.inventory_get()
+    >>> [
+    >>>     "InventoryDevice(host=IPv4Address('192.168.0.17')",
+    >>>     "username='ansible'",
+    >>>     "password='ansible'",
+    >>>     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
+    >>>     "url='https://ansible:ansible@192.168.0.17/command-api'",
+    >>>     "established=True",
 
-        "InventoryDevice(host=IPv4Address('192.168.0.2')",
-        "username='ansible'",
-        "password='ansible'",
-        "session=None",
-        "url='https://ansible:ansible@192.168.0.2/command-api'",
-        "established=False"
-    ]
+    >>>     "InventoryDevice(host=IPv4Address('192.168.0.2')",
+    >>>     "username='ansible'",
+    >>>     "password='ansible'",
+    >>>     "session=None",
+    >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
+    >>>     "established=False"
+    >>> ]
     """
 
     # Root key of inventory part of the inventory file
