@@ -2,7 +2,7 @@
 # coding: utf-8 -*-
 
 """
-Inventory Module for ANTA
+Inventory Module for ANTA.
 """
 
 import logging
@@ -22,8 +22,7 @@ from .models import AntaInventoryInput, InventoryDevice
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class AntaInventory():
-    """
-    Inventory Abstraction for ANTA framework
+    """Inventory Abstraction for ANTA framework.
 
     Inventory file example:
     ----------------------
@@ -63,14 +62,13 @@ class AntaInventory():
     EAPI_SESSION_TPL = 'https://{{device_username}}:{{device_password}}@{{device}}/command-api'
 
     def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True):
-        """
-        __init__ Class constructor
+        """Class constructor.
 
         Args:
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
-            auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to False.
+            auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
         """
         self._username = username
         self._password = password
@@ -99,8 +97,7 @@ class AntaInventory():
             self.sessions_create()
 
     def _is_ip_exist(self, ip: str):
-        """
-        _is_ip_exist Check if an IP is part of the current inventory
+        """Check if an IP is part of the current inventory.
 
         Args:
             ip (str): IP address to search in our inventory
@@ -113,8 +110,7 @@ class AntaInventory():
         return False
 
     def device_get(self, host_ip):
-        """
-        device_get Get device information from a given IP
+        """Get device information from a given IP.
 
         Args:
             host_ip (str): IP address of the device
@@ -127,10 +123,9 @@ class AntaInventory():
         return None
 
     def _session_build_path(self, host: str, username: str, password: str):
-        """
-        _session_build_path Construct URL to reach device using eAPI
+        """Construct URL to reach device using eAPI.
 
-        Jinja2 render to build URL to use for eAPI session
+        Jinja2 render to build URL to use for eAPI session.
 
         Args:
             host (str): IP Address of the device to target in the eAPI session
@@ -148,8 +143,7 @@ class AntaInventory():
          )
 
     def _session_create(self, device : InventoryDevice, timeout: int = 5):
-        """
-        _session_create Create eAPI RPC session to Arista EOS devices
+        """Create eAPI RPC session to Arista EOS devices.
 
         Args:
             device (InventoryDevice): Device information based on InventoryDevice structure
@@ -173,8 +167,7 @@ class AntaInventory():
         return device
 
     def session_create(self, host_ip: str):
-        """
-        session_create Get session of a device
+        """Get session of a device.
 
         If device has already a session, function only returns active session, if not, try to build a new session
 
@@ -194,8 +187,7 @@ class AntaInventory():
         return False
 
     def session_get(self, host_ip: str):
-        """
-        session_get Expose RPC session of a given host from our inventory
+        """Expose RPC session of a given host from our inventory.
 
         Provide RPC session if the session exists, if not, it returns None
 
@@ -211,15 +203,12 @@ class AntaInventory():
         return device.session
 
     def sessions_create(self):
-        """
-        sessions_create Helper to build RPC sessions to all devices
-        """
+        """Helper to build RPC sessions to all devices"""
         for device in self._inventory:
             self.session_create(host_ip=device.host)
 
     def _inventory_read_hosts(self):
-        """
-        _inventory_read_hosts Read input data from hosts section and create inventory structure
+        """Read input data from hosts section and create inventory structure.
 
         Build InventoryDevice structure for all hosts under hosts section
         """
@@ -237,8 +226,7 @@ class AntaInventory():
             self._inventory.append(device)
 
     def _inventory_read_networks(self):
-        """
-        _inventory_read_networks Read input data from networks section and create inventory structure
+        """Read input data from networks section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared subnet
         """
@@ -257,8 +245,7 @@ class AntaInventory():
                 self._inventory.append(device)
 
     def inventory_get(self, format_out: str = 'native', established_only: bool = True):
-        """
-        inventory_get Expose device inventory
+        """inventory_get Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
 
