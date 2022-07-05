@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 
-<a href="../anta/inventory/__init__.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `inventory`
 Inventory Module for ANTA 
@@ -14,7 +14,7 @@ Inventory Module for ANTA
 
 ---
 
-<a href="../anta/inventory/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventory`
 Inventory Abstraction for ANTA framework 
@@ -38,7 +38,7 @@ Inventory Output:
 ```     "url='https://ansible:ansible@192.168.0.2/command-api'",``` ```     "established=False"```
 ``` ]``` 
 
-<a href="../anta/inventory/__init__.py#L65"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L65"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.__init__`
 
@@ -67,7 +67,7 @@ __init__ Class constructor
 
 ---
 
-<a href="../anta/inventory/__init__.py#L115"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L115"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.device_get`
 
@@ -91,7 +91,7 @@ device_get Get device information from a given IP
 
 ---
 
-<a href="../anta/inventory/__init__.py#L259"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L259"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.inventory_get`
 
@@ -118,7 +118,7 @@ Provides inventory has a list of InventoryDevice objects. If requried, it can be
 
 ---
 
-<a href="../anta/inventory/__init__.py#L175"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L175"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_create`
 
@@ -144,7 +144,7 @@ If device has already a session, function only returns active session, if not, t
 
 ---
 
-<a href="../anta/inventory/__init__.py#L196"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L196"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_get`
 
@@ -170,7 +170,7 @@ Provide RPC session if the session exists, if not, it returns None
 
 ---
 
-<a href="../anta/inventory/__init__.py#L213"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L213"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.sessions_create`
 
