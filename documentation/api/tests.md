@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 
-<a href="../anta/tests.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests`
 Module that defines various functions to test EOS devices. 
@@ -8,7 +8,7 @@ Module that defines various functions to test EOS devices.
 
 ---
 
-<a href="../anta/tests.py#L7"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L7"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_eos_version`
 
@@ -35,7 +35,7 @@ Verifies the device is running one of the allowed EOS version.
 
 ---
 
-<a href="../anta/tests.py#L34"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L34"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_terminattr_version`
 
@@ -62,7 +62,7 @@ Verifies the device is running one of the allowed TerminAttr version.
 
 ---
 
-<a href="../anta/tests.py#L60"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L60"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_eos_extensions`
 
@@ -88,7 +88,7 @@ Verifies all EOS extensions installed on the device are enabled for boot persist
 
 ---
 
-<a href="../anta/tests.py#L97"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L97"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_field_notice_44_resolution`
 
@@ -114,7 +114,7 @@ Verifies the device is using an Aboot version that fix the bug discussed in the 
 
 ---
 
-<a href="../anta/tests.py#L187"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L187"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_uptime`
 
@@ -141,7 +141,7 @@ Verifies the device uptime is higher than a value.
 
 ---
 
-<a href="../anta/tests.py#L214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_reload_cause`
 
@@ -167,7 +167,7 @@ Verifies the last reload of the device was requested by a user.
 
 ---
 
-<a href="../anta/tests.py#L239"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L239"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_coredump`
 
@@ -193,7 +193,7 @@ Verifies there is no core file.
 
 ---
 
-<a href="../anta/tests.py#L263"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L263"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_agent_logs`
 
@@ -219,7 +219,7 @@ Verifies there is no agent crash reported on the device.
 
 ---
 
-<a href="../anta/tests.py#L287"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L287"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_syslog`
 
@@ -245,7 +245,7 @@ Verifies the device had no syslog message with a severity of warning (or a more 
 
 ---
 
-<a href="../anta/tests.py#L313"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L313"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_cpu_utilization`
 
@@ -271,7 +271,7 @@ Verifies the CPU utilization is less than 75%.
 
 ---
 
-<a href="../anta/tests.py#L337"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L337"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_memory_utilization`
 
@@ -297,7 +297,7 @@ Verifies the memory utilization is less than 75%.
 
 ---
 
-<a href="../anta/tests.py#L361"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L361"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_filesystem_utilization`
 
@@ -323,7 +323,7 @@ Verifies each partition on the disk is used less than 75%.
 
 ---
 
-<a href="../anta/tests.py#L390"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L390"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_transceivers_manufacturers`
 
@@ -350,7 +350,7 @@ Verifies the device is only using transceivers from supported manufacturers.
 
 ---
 
-<a href="../anta/tests.py#L419"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L419"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_system_temperature`
 
@@ -376,7 +376,7 @@ Verifies the device temperature is currently OK and the device did not report an
 
 ---
 
-<a href="../anta/tests.py#L445"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L445"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_transceiver_temperature`
 
@@ -402,7 +402,7 @@ Verifies the transceivers temperature is currently OK and the device did not rep
 
 ---
 
-<a href="../anta/tests.py#L473"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L473"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_environment_cooling`
 
@@ -428,7 +428,7 @@ Verifies the fans status is OK.
 
 ---
 
-<a href="../anta/tests.py#L498"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L498"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_environment_power`
 
@@ -454,7 +454,7 @@ Verifies the power supplies status is OK.
 
 ---
 
-<a href="../anta/tests.py#L524"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L524"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_zerotouch`
 
@@ -480,7 +480,7 @@ Verifies ZeroTouch is disabled.
 
 ---
 
-<a href="../anta/tests.py#L549"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L549"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_running_config_diffs`
 
@@ -506,7 +506,7 @@ Verifies there is no difference between the running-config and the startup-confi
 
 ---
 
-<a href="../anta/tests.py#L575"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L575"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_unified_forwarding_table_mode`
 
@@ -533,7 +533,7 @@ Verifies the device is using the expected Unified Forwarding Table mode.
 
 ---
 
-<a href="../anta/tests.py#L603"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L603"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_tcam_profile`
 
@@ -560,7 +560,7 @@ Verifies the configured TCAM profile is the expected one.
 
 ---
 
-<a href="../anta/tests.py#L630"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L630"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_adverse_drops`
 
@@ -586,7 +586,7 @@ Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
 ---
 
-<a href="../anta/tests.py#L655"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L655"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ntp`
 
@@ -612,7 +612,7 @@ Verifies NTP is synchronised.
 
 ---
 
-<a href="../anta/tests.py#L680"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L680"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_utilization`
 
@@ -638,7 +638,7 @@ Verifies interfaces utilization is below 75%.
 
 ---
 
-<a href="../anta/tests.py#L710"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L710"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errors`
 
@@ -664,7 +664,7 @@ Verifies interfaces error counters are equal to zero.
 
 ---
 
-<a href="../anta/tests.py#L737"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L737"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_discards`
 
@@ -690,7 +690,7 @@ Verifies interfaces packet discard counters are equal to zero.
 
 ---
 
-<a href="../anta/tests.py#L764"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L764"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errdisabled`
 
@@ -716,7 +716,7 @@ Verifies there is no interface in error disable state.
 
 ---
 
-<a href="../anta/tests.py#L791"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L791"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interfaces_status`
 
@@ -743,7 +743,7 @@ Verifies the number of Ethernet interfaces up/up on the device is higher or equa
 
 ---
 
-<a href="../anta/tests.py#L826"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L826"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_storm_control_drops`
 
@@ -769,7 +769,7 @@ Verifies the device did not drop packets due its to storm-control configuration.
 
 ---
 
-<a href="../anta/tests.py#L854"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L854"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_portchannels`
 
@@ -795,7 +795,7 @@ Verifies there is no inactive port in port channels.
 
 ---
 
-<a href="../anta/tests.py#L882"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L882"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_illegal_lacp`
 
@@ -821,7 +821,7 @@ Verifies there is no illegal LACP packets received.
 
 ---
 
-<a href="../anta/tests.py#L912"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L912"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_status`
 
@@ -847,7 +847,7 @@ Verifies the MLAG status: state is active, negotiation status is connected, loca
 
 ---
 
-<a href="../anta/tests.py#L946"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L946"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_interfaces`
 
@@ -873,7 +873,7 @@ Verifies there is no inactive or active-partial MLAG interfaces.
 
 ---
 
-<a href="../anta/tests.py#L975"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L975"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_mlag_config_sanity`
 
@@ -899,7 +899,7 @@ Verifies there is no MLAG config-sanity warnings.
 
 ---
 
-<a href="../anta/tests.py#L1003"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1003"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_loopback_count`
 
@@ -926,7 +926,7 @@ Verifies the number of loopback interfaces on the device is the one we expect. A
 
 ---
 
-<a href="../anta/tests.py#L1031"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1031"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan`
 
@@ -952,7 +952,7 @@ Verifies the interface vxlan 1 status is up/up.
 
 ---
 
-<a href="../anta/tests.py#L1055"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1055"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_vxlan_config_sanity`
 
@@ -978,7 +978,7 @@ Verifies there is no VXLAN config-sanity warnings.
 
 ---
 
-<a href="../anta/tests.py#L1082"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1082"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_svi`
 
@@ -1004,7 +1004,7 @@ Verifies there is no interface vlan down.
 
 ---
 
-<a href="../anta/tests.py#L1104"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1104"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_spanning_tree_blocked_ports`
 
@@ -1030,7 +1030,7 @@ Verifies there is no spanning-tree blocked ports.
 
 ---
 
-<a href="../anta/tests.py#L1128"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1128"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_protocol_model`
 
@@ -1057,7 +1057,7 @@ Verifies the configured routing protocol model is the one we expect. And if ther
 
 ---
 
-<a href="../anta/tests.py#L1158"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1158"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_routing_table_size`
 
@@ -1085,7 +1085,7 @@ Verifies the size of the IP routing table (default VRF). Should be between the t
 
 ---
 
-<a href="../anta/tests.py#L1187"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1187"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bfd`
 
@@ -1111,7 +1111,7 @@ Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
 ---
 
-<a href="../anta/tests.py#L1214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_state`
 
@@ -1137,7 +1137,7 @@ Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../anta/tests.py#L1246"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1246"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv4_unicast_count`
 
@@ -1165,7 +1165,7 @@ Verifies all IPv4 unicast BGP sessions are established and all BGP messages queu
 
 ---
 
-<a href="../anta/tests.py#L1288"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1288"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_ipv6_unicast_state`
 
@@ -1191,7 +1191,7 @@ Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP
 
 ---
 
-<a href="../anta/tests.py#L1320"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1320"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_state`
 
@@ -1217,7 +1217,7 @@ Verifies all EVPN BGP sessions are established (default VRF).
 
 ---
 
-<a href="../anta/tests.py#L1348"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1348"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_evpn_count`
 
@@ -1244,7 +1244,7 @@ Verifies all EVPN BGP sessions are established (default VRF) and the actual numb
 
 ---
 
-<a href="../anta/tests.py#L1382"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1382"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_state`
 
@@ -1270,7 +1270,7 @@ Verifies all RTC BGP sessions are established (default VRF).
 
 ---
 
-<a href="../anta/tests.py#L1410"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1410"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_bgp_rtc_count`
 
@@ -1297,7 +1297,7 @@ Verifies all RTC BGP sessions are established (default VRF) and the actual numbe
 
 ---
 
-<a href="../anta/tests.py#L1444"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1444"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_state`
 
@@ -1323,7 +1323,7 @@ Verifies all OSPF neighbors are in FULL state.
 
 ---
 
-<a href="../anta/tests.py#L1468"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1468"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_ospf_count`
 
@@ -1350,7 +1350,7 @@ Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 ---
 
-<a href="../anta/tests.py#L1495"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1495"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_vlans`
 
@@ -1378,7 +1378,7 @@ Verifies the IGMP snooping configuration for some VLANs.
 
 ---
 
-<a href="../anta/tests.py#L1524"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests.py#L1524"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_igmp_snooping_global`
 

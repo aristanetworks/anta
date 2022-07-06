@@ -10,10 +10,10 @@ The file [eos-commands.yaml](eos-commands.yaml) is a YAML file used to indicated
 
 # [tests.yaml](tests.yaml) file
 
-The file [tests.yaml](tests.yaml) is a YAML file used to indicated the tests we would like to run.  
-It is also used to indicated the parameters used by the tests.  
-Each test has an identifier which is then used in the tests report.  
-The tests are defined in the directory [anta](../anta/).
+The file [tests.yaml](tests.yaml) is a YAML file used to indicated the tests we would like to run.
+It is also used to indicated the parameters used by the tests.
+Each test has an identifier which is then used in the tests report.
+The tests are defined in the directory [ANTA](../anta/).
 
 # [demo](demo) directory
 

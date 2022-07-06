@@ -1,14 +1,14 @@
 # Repository usage
 
-Once you are done with the installation, you can use the [anta](anta) package and the [scripts](scripts).
+Once you are done with the installation, you can use the [ANTA](api/README.md) package and the [scripts](../scripts).
 
 
-## How to use the [anta](anta) package
+## How to use the [ANTA](api/README.md) package
 
 Have a quick look to the package documentation:
 
-- The [overview.md](documentation/overview.md) file is an overview of the package documentation
-- The [tests.md](tests.md) file is a detailled documentation of the package
+- The [overview.md](api/README.md) file is an overview of the package documentation
+- The [tests.md](api/tests.md) file is a detailled documentation of the package
 
 Instantiate the class `Server` of `jsonrpclib` for an EOS device:
 
@@ -24,7 +24,7 @@ Instantiate the class `Server` of `jsonrpclib` for an EOS device:
 >>> switch = Server(URL)
 ```
 
-Here's how we can import and use the functions of the [anta](anta) package:
+Here's how we can import and use the functions of the [ANTA](api/README.md) package:
 
 ```python
 >>> from anta.tests import *
@@ -44,7 +44,7 @@ Here's how we can import and use the functions of the [anta](anta) package:
 
 ### How to create an inventory from CVP
 
-The python script [create-devices-inventory-from-cvp.py](scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
+The python script [create-devices-inventory-from-cvp.py](../scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
 
 Run these commands to get an inventory with all devices IP address.
 
@@ -64,11 +64,11 @@ cat inventory/Spine.text
 
 ### How to check devices state
 
-The python script [check-devices.py](scripts/check-devices.py) uses the python functions defined in the package [anta](anta) to test devices:
+The python script [check-devices.py](../scripts/check-devices.py) uses the python functions defined in the package [ANTA](api/README.md) to test devices:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Update the file [tests.yaml](examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
-- Execute the script [check-devices.py](scripts/check-devices.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Update the file [tests.yaml](../examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
+- Execute the script [check-devices.py](../scripts/check-devices.py)
 - Check the tests result in the output file
 
 ```shell
@@ -81,10 +81,10 @@ cat output.txt
 
 ### How to test devices reachability
 
-The python script [check-devices-reachability.py](scripts/check-devices-reachability.py) checks the devices reachability using eAPI:
+The python script [check-devices-reachability.py](../scripts/check-devices-reachability.py) checks the devices reachability using eAPI:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [check-devices-reachability.py](scripts/check-devices-reachability.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Run the python script [check-devices-reachability.py](../scripts/check-devices-reachability.py)
 - Check the result in the console
 
 ```shell
@@ -95,11 +95,11 @@ vi devices.txt
 
 ### How to collect commands output
 
-The python script [collect-eos-commands.py](scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
+The python script [collect-eos-commands.py](../scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Update the [EOS commands list](examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
-- Run the python script [collect-eos-commands.py](scripts/collect-eos-commands.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Update the [EOS commands list](../examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
+- Run the python script [collect-eos-commands.py](../scripts/collect-eos-commands.py)
 - The commands output is saved in the output directory
 
 ```shell
@@ -112,10 +112,10 @@ ls outdir
 
 ### How to collect the scheduled show tech-support files
 
-The python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
+The python script [collect-sheduled-show-tech.py](../scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [collect-sheduled-show-tech.py](scripts/collect-sheduled-show-tech.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Run the python script [collect-sheduled-show-tech.py](../scripts/collect-sheduled-show-tech.py)
 - The files are saved in the output directory
 
 ```shell
@@ -127,10 +127,10 @@ ls outdir
 
 ### How to clear counters
 
-The python script [clear-counters.py](scripts/clear-counters.py) clears counters:
+The python script [clear-counters.py](../scripts/clear-counters.py) clears counters:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [clear-counters.py](scripts/clear-counters.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Run the python script [clear-counters.py](../scripts/clear-counters.py)
 
 ```shell
 vi devices-list.text
@@ -140,10 +140,10 @@ vi devices-list.text
 
 ### How to clear the MAC addresses which are blacklisted in EVPN
 
-The python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
+The python script [evpn-blacklist-recovery.py](../scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
 
-- Update the devices [inventory](examples/devices.txt) with the devices IP address or hostname
-- Run the python script [evpn-blacklist-recovery.py](scripts/evpn-blacklist-recovery.py)
+- Update the devices [inventory](../examples/devices.txt) with the devices IP address or hostname
+- Run the python script [evpn-blacklist-recovery.py](../scripts/evpn-blacklist-recovery.py)
 
 ```shell
 vi devices-list.text
