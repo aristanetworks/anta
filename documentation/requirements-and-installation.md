@@ -16,19 +16,19 @@ Python 3 (at least 3.3) is required:
 python -V
 ```
 
-The Python package [anta](../anta) and these [scripts](../scripts) require some packages that are not part of the Python standard library:  
+The Python package [ANTA](../anta) and these [scripts](../scripts) require some packages that are not part of the Python standard library:
 
 - They are indicated in the [requirements.txt](../requirements.txt) file
 - There are several ways to install them. They are described below.
 
-## Use the `pip install` command with the git url  
+## Use the `pip install` command with the git url
 
 Run this command to install:
 
-- The package [anta](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)  
+- The package [ANTA](../anta) and its dependencies
+- The packages required by these [scripts](../scripts)
 - These [scripts](../scripts) in `/usr/local/bin/`
-  
+
 ```shell
 sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
@@ -50,8 +50,8 @@ sudo pip install -U git+https://github.com/arista-netdevops-community/network-te
 
 Run these commands to install:
 
-- The package [anta](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)  
+- The package [ANTA](../anta) and its dependencies
+- The packages required by these [scripts](../scripts)
 - These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
@@ -76,7 +76,7 @@ git clone https://github.com/arista-netdevops-community/network-test-automation.
 cd network-test-automation
 ```
 
-Run this command to build the package [anta](../anta):
+Run this command to build the package [ANTA](../anta):
 
 ```shell
 python setup.py build
@@ -84,8 +84,8 @@ python setup.py build
 
 Run this command to install:
 
-- The package [anta](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)  
+- The package [ANTA](../anta) and its dependencies
+- The packages required by these [scripts](../scripts)
 - These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
@@ -101,7 +101,7 @@ check-devices-reachability.py --help
 
 ## Clone the repository and use the `pip install -r requirements.txt` command
 
-Run these commands to install the packages indicated in the [requirements.txt](../requirements.txt) file.  
+Run these commands to install the packages indicated in the [requirements.txt](../requirements.txt) file.
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -112,11 +112,11 @@ pip install -r requirements.txt
 These packages are required by:
 
 - These [scripts](../scripts)
-- The package [anta](../anta)
+- The package [ANTA](../anta)
 
 But this will **not** install:
 
-- The [anta](../anta) package
+- The [ANTA](../anta) package
 - These [scripts](../scripts) in `/usr/local/bin/`
 
 Run this command to verify:
@@ -184,7 +184,7 @@ result=switch.runCmds(1,['show version'], 'json')
 print(result[0]['uptime'])
 ```
 
-Run these python commands to validate you can import and use the [anta](anta) package
+Run these python commands to validate you can import and use the [ANTA](anta) package
 
 ```python
 from anta.tests import *

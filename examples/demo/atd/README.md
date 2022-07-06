@@ -26,7 +26,7 @@
 
 Here's the instructions to use this repository with an ATD (Arista Test Drive) lab.
 
-## Set up the lab 
+## Set up the lab
 
 ### Start an ATD instance
 
@@ -75,7 +75,7 @@ spine1#show bgp evpn summary
 spine1#sh lldp neighbors
 ```
 
-Some BGP sessions are not established.  
+Some BGP sessions are not established.
 This is expected because Leaf3 is not yet configured.
 
 ### Install the packages on devbox
@@ -90,7 +90,7 @@ git clone https://github.com/arista-netdevops-community/network-test-automation.
 cd network-test-automation
 ```
 
-Run this command to build the package [anta](../anta):
+Run this command to build the package [ANTA](../anta):
 
 ```shell
 python setup.py build
@@ -98,8 +98,8 @@ python setup.py build
 
 Run this command to install:
 
-- The package [anta](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)  
+- The package [ANTA](../anta) and its dependencies
+- The packages required by these [scripts](../scripts)
 - These [scripts](../scripts) in `/usr/local/bin/`
 
 ```shell
@@ -132,8 +132,8 @@ Run this command on devbox to check the inventory files:
 ls examples/demo/atd/inventory
 ```
 
-There is already an inventory file for the leaves and another one for all devices.  
-But there is no inventory file for the spines.  
+There is already an inventory file for the leaves and another one for all devices.
+But there is no inventory file for the spines.
 Run this command on devbox to check to generate from CVP an inventory file with the IP address of all the devices under the container `Spine`.
 
 ```bash
@@ -179,9 +179,9 @@ check-devices-reachability.py -i examples/demo/atd/inventory/all.txt -u arista
 
 ### Define the tests
 
-ATD uses cEOS or vEOS so we will skip the hardware tests.  
-This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well.  
-Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.  
+ATD uses cEOS or vEOS so we will skip the hardware tests.
+This lab doesnt use MLAG, OSPF, IPv6, RTC ... so we wont run these tests as well.
+Some tests can be used for all devices, some tests should be used only for the spines, and some tests should be used only for the leaves.
 
 Here's the inventory files:
 
@@ -219,8 +219,8 @@ cat examples/demo/atd/tests_result_Spine.txt
 cat examples/demo/atd/tests_result_Leaf.txt
 ```
 
-Some tests failed.  
-This is expected because leaf3 is not yet configured.  
+Some tests failed.
+This is expected because leaf3 is not yet configured.
 
 ### Fix the issue
 
@@ -295,7 +295,7 @@ bash sudo ethxmit --ip-src=10.10.10.1 --ip-dst=10.10.10.2 -S 948e.d399.4421 -D f
 Leaf1 or leaf3 concludes that a duplicate-MAC situation has occurred (948e.d399.4421)
 
 ```text
-leaf3#show mac address-table 
+leaf3#show mac address-table
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
@@ -312,7 +312,7 @@ evpn-blacklist-recovery.py -i examples/demo/atd/inventory/all.txt -u arista
 Verify:
 
 ```text
-leaf3#show mac address-table 
+leaf3#show mac address-table
 leaf3#show bgp evpn host-flap
 leaf3#show logging | grep EVPN-3-BLACKLISTED_DUPLICATE_MAC
 ```
