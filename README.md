@@ -11,9 +11,9 @@ This repository is a Python package to automate tests on Arista devices.
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
 
-ANTA provides a set of tests to validate the state of your network. All these tests are documented in the [repository](./documentation/api/README.md) and can be used in your own python environment by importing this python package in your scripts.
+ANTA provides a set of tests to validate the state of your network. All these tests are documented in the [repository](./docs/api/README.md) and can be used in your own python environment by importing this python package in your scripts.
 
-This repository comes with a set of script to run __Arista Network Test Automation__ framework
+This repository comes with a set of [scripts](./scripts) to run __Arista Network Test Automation__ (ANTA) framework
 
 - `check-devices.py` is an easy to use script to test your network with ANTA.
 - `check-devices-reachability.py` to test your devices are ready to be tested.
@@ -36,11 +36,11 @@ The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip pa
 pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-For more details about how to install package, please see the [requirements and intallation documentation](documentation/requirements-and-installation.md) for the requirements and installation procedure.
+For more details about how to install package, please see the [requirements and intallation docs](docs/requirements-and-installation.md) for the requirements and installation procedure.
 
 # Getting Started
 
-This section shows how to use ANTA scripts with basic configuration. For more information, please refer to this [page](./documentation/usage.md). Also a demo page is available in the [repository](./documentation/demo.md) with full outputs.
+This section shows how to use ANTA scripts with basic configuration. For more information, please refer to this [page](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
 
 ## Configure Arista EOS devices.
 
@@ -100,7 +100,7 @@ check-devices.py -i devices.txt -t tests.yaml -o output.txt -u <username>
 
 > Note the `-t tests.yml` that list all your tests. An example is available under [examples folder](./examples/tests.yaml)
 
-You can find more information about usage in the following [documentation](./documentation/usage.md). Also a demo page is available in the [repository](./documentation/demo.md) with full outputs.
+You can find more information about usage in the following [docs](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
 
 # Contribution guide
 
