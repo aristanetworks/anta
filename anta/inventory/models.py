@@ -18,10 +18,16 @@ class AntaInventoryNetwork(BaseModel):
     """Network definition for user's inventory."""
     network: IPvAnyNetwork
 
+class AntaInventoryRange(BaseModel):
+    """IP Range definition for user's inventory."""
+    start: IPvAnyAddress
+    end: IPvAnyAddress
+
 class AntaInventoryInput(BaseModel):
     """User's inventory model."""
     networks: Optional[List[AntaInventoryNetwork]]
     hosts: Optional[List[AntaInventoryHost]]
+    ranges: Optional[List[AntaInventoryRange]]
 
 # Pydantic models for inventory output structures
 

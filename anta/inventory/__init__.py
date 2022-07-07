@@ -12,11 +12,12 @@ from socket import setdefaulttimeout
 import yaml
 from jinja2 import Template
 from jsonrpclib import ProtocolError, Server, jsonrpc
-from netaddr import IPNetwork
+from netaddr import IPNetwork, IPAddress
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
 from .models import AntaInventoryInput, InventoryDevice
+from .exceptions import InventoryRootKeyErrors, InventoryIncorrectSchema, InventoryUnknownFormat
 
 # pylint: disable=W0212
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -34,6 +35,9 @@ class AntaInventory():
     >>>   networks:
     >>>     - network: 10.0.0.0/8
     >>>     - network: 192.168.0.0/16
+    >>>   ranges:
+    >>>     - start: 10.0.0.1
+    >>>       end: 10.0.0.11
 
     Inventory Output:
     ------------------
@@ -60,6 +64,8 @@ class AntaInventory():
     INVENTORY_ROOT_KEY = 'anta_inventory'
     # Template to build eAPI connection URL
     EAPI_SESSION_TPL = 'https://{{device_username}}:{{device_password}}@{{device}}/command-api'
+    # Supported Output format
+    INVENTORY_OUTPUT_FORMAT = ['native', 'json']
 
     def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True):
         """Class constructor.
@@ -80,17 +86,22 @@ class AntaInventory():
         # Load data using Pydantic
         try:
             self._read_inventory = AntaInventoryInput( **data[self.INVENTORY_ROOT_KEY] )
-        except KeyError:
+        except KeyError as exc:
             logging.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
-        except ValidationError as error:
+            raise InventoryRootKeyErrors(
+                f'Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory') from exc
+        except ValidationError as exc:
             logging.error('Inventory data are not compliant with inventory models')
-            logging.error(f'error is: {error}')
+            raise InventoryIncorrectSchema(
+                'Inventory is not following schema') from exc
 
         # Read data from input
         if self._read_inventory.dict()['hosts'] is not None:
             self._inventory_read_hosts()
         if self._read_inventory.dict()['networks'] is not None:
             self._inventory_read_networks()
+        if self._read_inventory.dict()['ranges'] is not None:
+            self._inventory_read_ranges()
 
         # Create RPC connection for all devices
         if auto_connect:
@@ -207,23 +218,33 @@ class AntaInventory():
         for device in self._inventory:
             self.session_create(host_ip=device.host)
 
+    def _inventory_add_device(self, host_ip):
+        """Add a InventoryDevice to final inventory.
+
+        Create InventoryDevice and append to existing inventory
+
+        Args:
+            host_ip (str): IP address of the host
+        """
+        device = InventoryDevice(
+            host=host_ip,
+            username=self._username,
+            password=self._password,
+            url=self._session_build_path(
+                host=host_ip,
+                username=self._username,
+                password=self._password
+            )
+        )
+        self._inventory.append(device)
+
     def _inventory_read_hosts(self):
         """Read input data from hosts section and create inventory structure.
 
         Build InventoryDevice structure for all hosts under hosts section
         """
         for host in self._read_inventory.hosts:
-            device = InventoryDevice(
-                host=host.host,
-                username=self._username,
-                password=self._password,
-                url=self._session_build_path(
-                    host=host.host,
-                    username=self._username,
-                    password=self._password
-                )
-            )
-            self._inventory.append(device)
+            self._inventory_add_device(host_ip=host.host)
 
     def _inventory_read_networks(self):
         """Read input data from networks section and create inventory structure.
@@ -232,17 +253,19 @@ class AntaInventory():
         """
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                device = InventoryDevice(
-                    host=host_ip,
-                    username=self._username,
-                    password=self._password,
-                    url=self._session_build_path(
-                        host=host_ip,
-                        username=self._username,
-                        password=self._password
-                    )
-                )
-                self._inventory.append(device)
+                self._inventory_add_device(host_ip=host_ip)
+
+    def _inventory_read_ranges(self):
+        """Read input data from ranges section and create inventory structure.
+
+        Build InventoryDevice structure for all IPs available in each declared range
+        """
+        for range_def in self._read_inventory.ranges:
+            range_increment = IPAddress(range_def['start'])
+            range_stop = IPAddress(range_def['end'])
+            while range_increment <= range_stop:
+                self._inventory_add_device(host_ip=str(range_increment))
+                range_increment += 1
 
     def inventory_get(self, format_out: str = 'native', established_only: bool = True):
         """inventory_get Expose device inventory.
@@ -256,6 +279,10 @@ class AntaInventory():
         Returns:
             List: List of InventoryDevice
         """
+        if format_out not in ['native', 'json']:
+            raise InventoryUnknownFormat(
+                f'Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}')
+
         if established_only:
             devices = [dev for dev in self._inventory if dev.established]
         else:

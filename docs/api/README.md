@@ -5,15 +5,20 @@
 ## Modules
 
 - [`inventory`](./inventory.md#module-inventory): Inventory Module for ANTA.
+- [`inventory.exceptions`](./inventory.exceptions.md#module-inventoryexceptions): Manage Exception in Inventory module.
 - [`inventory.models`](./inventory.models.md#module-inventorymodels): Models related to inventory management.
 - [`tests`](./tests.md#module-tests): Module that defines various functions to test EOS devices.
 
 ## Classes
 
 - [`inventory.AntaInventory`](./inventory.md#class-antainventory): Inventory Abstraction for ANTA framework.
+- [`exceptions.InventoryIncorrectSchema`](./inventory.exceptions.md#class-inventoryincorrectschema): Error when user data does not follow ANTA schema.
+- [`exceptions.InventoryRootKeyErrors`](./inventory.exceptions.md#class-inventoryrootkeyerrors): Error raised when inventory root key is not found.
+- [`exceptions.InventoryUnknownFormat`](./inventory.exceptions.md#class-inventoryunknownformat): Error when inventory format output is not a supported one.
 - [`models.AntaInventoryHost`](./inventory.models.md#class-antainventoryhost): Host definition for user's inventory.
 - [`models.AntaInventoryInput`](./inventory.models.md#class-antainventoryinput): User's inventory model.
 - [`models.AntaInventoryNetwork`](./inventory.models.md#class-antainventorynetwork): Network definition for user's inventory.
+- [`models.AntaInventoryRange`](./inventory.models.md#class-antainventoryrange): IP Range definition for user's inventory.
 - [`models.InventoryDevice`](./inventory.models.md#class-inventorydevice): Inventory model exposed by Inventory class.
 
 ## Functions
