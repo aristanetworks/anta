@@ -3,15 +3,13 @@
 <a href="../../anta/inventory/exceptions.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `inventory.exceptions`
-
-
-
+Manage Exception in Inventory module. 
 
 
 
 ---
 
-<a href="../../anta/inventory/exceptions.py#L9"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/exceptions.py#L8"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryRootKeyErrors`
 Error raised when inventory root key is not found. 
@@ -22,7 +20,7 @@ Error raised when inventory root key is not found.
 
 ---
 
-<a href="../../anta/inventory/exceptions.py#L13"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/exceptions.py#L12"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryIncorrectSchema`
 Error when user data does not follow ANTA schema. 
@@ -33,7 +31,7 @@ Error when user data does not follow ANTA schema.
 
 ---
 
-<a href="../../anta/inventory/exceptions.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/exceptions.py#L16"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryUnknownFormat`
 Error when inventory format output is not a supported one. 

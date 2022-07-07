@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
 
+"""Manage Exception in Inventory module."""
 
 from logging import exception
-
-"""Manage Exception in Inventory module."""
 
 class InventoryRootKeyErrors(Exception):
     """Error raised when inventory root key is not found."""

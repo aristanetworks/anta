@@ -5,7 +5,7 @@
 ## Modules
 
 - [`inventory`](./inventory.md#module-inventory): Inventory Module for ANTA.
-- [`inventory.exceptions`](./inventory.exceptions.md#module-inventoryexceptions)
+- [`inventory.exceptions`](./inventory.exceptions.md#module-inventoryexceptions): Manage Exception in Inventory module.
 - [`inventory.models`](./inventory.models.md#module-inventorymodels): Models related to inventory management.
 - [`tests`](./tests.md#module-tests): Module that defines various functions to test EOS devices.
 
