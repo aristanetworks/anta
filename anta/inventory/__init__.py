@@ -86,13 +86,14 @@ class AntaInventory():
         # Load data using Pydantic
         try:
             self._read_inventory = AntaInventoryInput( **data[self.INVENTORY_ROOT_KEY] )
-        except KeyError:
+        except KeyError as exc:
             logging.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
             raise InventoryRootKeyErrors(
-                f'Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory')
-        except ValidationError as error:
+                f'Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory') from exc
+        except ValidationError as exc:
             logging.error('Inventory data are not compliant with inventory models')
-            raise InventoryIncorrectSchema('Inventory is not following schema')
+            raise InventoryIncorrectSchema(
+                'Inventory is not following schema') from exc
 
         # Read data from input
         if self._read_inventory.dict()['hosts'] is not None:
@@ -252,16 +253,16 @@ class AntaInventory():
         """
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-               self._inventory_add_device(host_ip=host_ip)
+                self._inventory_add_device(host_ip=host_ip)
 
     def _inventory_read_ranges(self):
         """Read input data from ranges section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared range
         """
-        for range in self._read_inventory.ranges:
-            range_increment = IPAddress(range['start'])
-            range_stop = IPAddress(range['end'])
+        for range_def in self._read_inventory.ranges:
+            range_increment = IPAddress(range_def['start'])
+            range_stop = IPAddress(range_def['end'])
             while range_increment <= range_stop:
                 self._inventory_add_device(host_ip=str(range_increment))
                 range_increment += 1
