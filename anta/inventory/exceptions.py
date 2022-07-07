@@ -3,7 +3,6 @@
 
 """Manage Exception in Inventory module."""
 
-from logging import exception
 
 class InventoryRootKeyErrors(Exception):
     """Error raised when inventory root key is not found."""
