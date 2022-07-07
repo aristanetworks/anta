@@ -11,7 +11,7 @@ import sys
 import shutil
 from lazydocs import generate_docs
 
-DOCUMENTATION_FOLDER = './documentation/api/'
+DOCUMENTATION_FOLDER = './docs/api/'
 
 if __name__ == '__main__':
 
