@@ -33,6 +33,17 @@ Network definition for user's inventory.
 
 <a href="../../anta/inventory/models.py#L21"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
+## <kbd>class</kbd> `AntaInventoryRange`
+IP Range definition for user's inventory. 
+
+
+
+
+
+---
+
+<a href="../../anta/inventory/models.py#L26"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
 ## <kbd>class</kbd> `AntaInventoryInput`
 User's inventory model. 
 
@@ -42,7 +53,7 @@ User's inventory model.
 
 ---
 
-<a href="../../anta/inventory/models.py#L28"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L34"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryDevice`
 Inventory model exposed by Inventory class. 

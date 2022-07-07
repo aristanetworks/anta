@@ -10,11 +10,13 @@ Inventory Module for ANTA.
 - **models**: # -*- coding: utf-8 -*-
 # pylint: skip-file
 
+- **exceptions**: # coding: utf-8 -*-
+
 
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L25"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventory`
 Inventory Abstraction for ANTA framework. 
@@ -24,21 +26,25 @@ Inventory file example:
 ``` anta_inventory:``` ```   hosts:```
 ```     - hosts: 1.1.1.1``` ```     - host: 2.2.2.2```
 ```   networks:``` ```     - network: 10.0.0.0/8```
-```     - network: 192.168.0.0/16``` 
+```     - network: 192.168.0.0/16``` ```   ranges:```
+```     - start: 10.0.0.1``` ```       end: 10.0.0.11```
 
-Inventory Output: 
------------------- ``` test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)```
-``` test.inventory_get()``` ``` [```
-```     "InventoryDevice(host=IPv4Address('192.168.0.17')",``` ```     "username='ansible'",```
-```     "password='ansible'",``` ```     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",```
-```     "url='https://ansible:ansible@192.168.0.17/command-api'",``` ```     "established=True",```
+Inventory Output:
 
-```     "InventoryDevice(host=IPv4Address('192.168.0.2')",``` ```     "username='ansible'",```
-```     "password='ansible'",``` ```     "session=None",```
-```     "url='https://ansible:ansible@192.168.0.2/command-api'",``` ```     "established=False"```
-``` ]``` 
+------------------
+``` test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)``` ``` test.inventory_get()```
+``` [``` ```     "InventoryDevice(host=IPv4Address('192.168.0.17')",```
+```     "username='ansible'",``` ```     "password='ansible'",```
+```     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",``` ```     "url='https://ansible:ansible@192.168.0.17/command-api'",```
+```     "established=True",``` 
 
-<a href="../../anta/inventory/__init__.py#L64"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+```     "InventoryDevice(host=IPv4Address('192.168.0.2')",```
+```     "username='ansible'",``` ```     "password='ansible'",```
+```     "session=None",``` ```     "url='https://ansible:ansible@192.168.0.2/command-api'",```
+```     "established=False"``` ``` ]```
+
+
+<a href="../../anta/inventory/__init__.py#L70"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.__init__`
 
@@ -67,7 +73,7 @@ Class constructor.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L112"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L122"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.device_get`
 
@@ -91,7 +97,7 @@ Get device information from a given IP.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L247"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L269"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.inventory_get`
 
@@ -118,7 +124,7 @@ Provides inventory has a list of InventoryDevice objects. If requried, it can be
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L169"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L179"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_create`
 
@@ -144,7 +150,7 @@ If device has already a session, function only returns active session, if not, t
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L189"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L199"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.session_get`
 
@@ -170,7 +176,7 @@ Provide RPC session if the session exists, if not, it returns None
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L205"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L215"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.sessions_create`
 
