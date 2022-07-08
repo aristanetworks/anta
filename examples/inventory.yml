@@ -1,11 +1,28 @@
-anta_inventory:
-  hosts:
-    - host: 192.168.0.17
-    - host: 192.168.0.2
-  networks:
-    - network: 192.168.0.0/24
-  ranges:
-    - start: 10.0.0.1
-      end: 10.0.0.11
-    - start: 10.0.0.100
-      end: 10.0.0.111
+{
+    "anta_inventory": {
+        "hosts": [
+            {
+                "host": "192.168.0.17"
+            },
+            {
+                "host": "192.168.0.2"
+            }
+        ],
+        "networks": [
+            {
+                "network": "192.168.0.0/24"
+            }
+        ],
+        "ranges": [
+            {
+                "start": "10.0.0.1",
+                "end": "10.0.0.11"
+            },
+            {
+                "start": "10.0.0.100",
+                "end": "10.0.0.111"
+            }
+        ]
+    }
+}
+
