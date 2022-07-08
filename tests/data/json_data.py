@@ -2,10 +2,6 @@
 # coding: utf-8 -*-
 
 
-# INVENTORY_MODEL_HOST = {
-#     "validIPv4": { 'input': "1.1.1.1", 'result': 'valid' },
-#     "validIPv6":  { 'input': "fe80::cc62:a9ff:feef:932a", 'result': 'valid' },
-# }
 
 INVENTORY_MODEL_HOST = [
     {
@@ -39,7 +35,6 @@ INVENTORY_MODEL_HOST = [
         'expected_result': 'invalid'
     },
 ]
-
 
 INVENTORY_MODEL_NETWORK = [
     {
@@ -102,6 +97,16 @@ INVENTORY_MODEL = [
         "expected_result": "valid"
     },
     {
+        "name": "Valid_Ranges_Only",
+        "input": {
+            "networks": [
+                {'start':'10.1.0.1', 'end':'10.1.0.10'},
+               {'start':'10.2.0.1', 'end':'10.2.1.10'}
+            ]
+        },
+        "expected_result": "valid"
+    },
+    {
         "name": "Host_with_Invalid_entry",
         "input": {
             "hosts": [
@@ -114,5 +119,74 @@ INVENTORY_MODEL = [
             ]
         },
         "expected_result": "invalid"
+    }
+]
+
+INVENTORY_DEVICE_MODEL = [
+    {
+        "name": "Valid_Inventory",
+        "input": [
+            {
+                'host': '1.1.1.1',
+                'username': 'arista',
+                'password': 'arista123!',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            },
+            {
+                'host': '1.1.1.1',
+                'username': 'arista',
+                'password': 'arista123!',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            }
+        ],
+        "expected_result": "valid"
+    },
+    {
+        "name": "Invalid_Inventory",
+        "input": [
+            {
+                'host': '1.1.1.1',
+                'password': 'arista123!',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            },
+            {
+                'host': '1.1.1.1',
+                'username': 'arista',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            },
+            {
+                'username': 'arista',
+                'password': 'arista123!',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            },
+            {
+                'host': '1.1.1.1',
+                'username': 'arista',
+                'password': 'arista123!',
+                'established': False,
+            },
+            {
+                'host': '1.1.1.1/32',
+                'username': 'arista',
+                'password': 'arista123!',
+                'established': False,
+                'url': 'https://demo.io/fake/url'
+            }
+        ],
+        "expected_result": "invalid"
+    },
+]
+
+
+ANTA_INVENTORY_TESTS = [
+    {
+        'name': 'ValidInventory_with_host_only',
+        'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+        'expected_result': 'valid',
     }
 ]
