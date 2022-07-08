@@ -188,5 +188,37 @@ ANTA_INVENTORY_TESTS = [
         'name': 'ValidInventory_with_host_only',
         'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
         'expected_result': 'valid',
-    }
+        'parameters': {
+            'ipaddress_in_scope': '192.168.0.17',
+            'ipaddress_out_of_scope': '192.168.1.1',
+        }
+    },
+    {
+        'name': 'ValidInventory_with_networks_only',
+        'input':{"anta_inventory":{"networks":[{"network":"192.168.0.0/29"}]}},
+        'expected_result': 'valid',
+        'parameters': {
+            'ipaddress_in_scope': '192.168.0.1',
+            'ipaddress_out_of_scope': '192.168.1.1',
+        }
+    },
+    {
+        'name': 'ValidInventory_with_ranges_only',
+        'input':{"anta_inventory":{"ranges":[{"start":"10.0.0.1","end":"10.0.0.11"},{"start":"10.0.0.100","end":"10.0.0.111"}]}},
+        'expected_result': 'valid',
+        'parameters': {
+            'ipaddress_in_scope': '10.0.0.10',
+            'ipaddress_out_of_scope': '192.168.1.1',
+        }
+    },
+    {
+        'name': 'InvalidInventory_with_host_only',
+        'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17/32"},{"host":"192.168.0.2"}]}},
+        'expected_result': 'invalid',
+    },
+    {
+        'name': 'Invalid_Root_Key',
+        'input':{"inventory":{"ranges":[{"start":"10.0.0.1","end":"10.0.0.11"},{"start":"10.0.0.100","end":"10.0.0.111"}]}},
+        'expected_result': 'invalid',
+    },
 ]

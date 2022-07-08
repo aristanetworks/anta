@@ -116,7 +116,7 @@ class AntaInventory():
         Returns:
             bool: True if device is in our inventory, False if not
         """
-        if ip in [dev.host for dev in self._inventory ]:
+        if ip in [str(dev.host) for dev in self._inventory ]:
             return True
         return False
 
@@ -261,8 +261,8 @@ class AntaInventory():
         Build InventoryDevice structure for all IPs available in each declared range
         """
         for range_def in self._read_inventory.ranges:
-            range_increment = IPAddress(range_def['start'])
-            range_stop = IPAddress(range_def['end'])
+            range_increment = IPAddress(str(range_def.start))
+            range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
                 self._inventory_add_device(host_ip=str(range_increment))
                 range_increment += 1
