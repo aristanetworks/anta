@@ -44,7 +44,7 @@ jobs:
         run: |
           python setup.py install
       - name: install dev requirements
-        run: pip install -r requirements-dev.txt  
+        run: pip install -r requirements-dev.txt
       - name: validate the syntax of python scripts
         run: python -m py_compile $(git ls-files '*.py')
 
@@ -67,4 +67,4 @@ jobs:
       - name: run pytest with code coverage
         run: |
           cd tests
-          py.test -vv --cov=anta.tests
+          py.test units/ -vv --cov=anta.tests
