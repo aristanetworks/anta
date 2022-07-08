@@ -39,3 +39,20 @@ class InventoryDevice(BaseModel):
     session: Any
     established = False
     url: str
+
+class InventoryDevices(BaseModel):
+    """Inventory model to list all InventoryDevice entries."""
+    __root__ = []
+
+    def append(self, value) -> None:
+        """Add support for append method."""
+        self.__root__.append(value)
+        super().__init__(__root__=self.__root__)
+
+    def __iter__(self):
+        """Use custom iter method."""
+        return iter(self.__root__)
+
+    def __getitem__(self, item):
+        """Use custom getitem method."""
+        return self.__root__[item]

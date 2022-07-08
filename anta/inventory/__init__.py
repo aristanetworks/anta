@@ -8,7 +8,7 @@ Inventory Module for ANTA.
 import logging
 import ssl
 from socket import setdefaulttimeout
-
+from typing import List
 import yaml
 from jinja2 import Template
 from jsonrpclib import ProtocolError, Server, jsonrpc
@@ -16,7 +16,7 @@ from netaddr import IPNetwork, IPAddress
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from .models import AntaInventoryInput, InventoryDevice
+from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
 from .exceptions import InventoryRootKeyErrors, InventoryIncorrectSchema, InventoryUnknownFormat
 
 # pylint: disable=W0212
@@ -78,7 +78,7 @@ class AntaInventory():
         """
         self._username = username
         self._password = password
-        self._inventory = []
+        self._inventory = InventoryDevices()
 
         with open(inventory_file, 'r', encoding='utf8') as f:
             data = yaml.load(f, Loader=SafeLoader)
@@ -289,5 +289,5 @@ class AntaInventory():
             devices = self._inventory
 
         if format_out == 'json':
-            return [dev.dict() for dev in devices]
+            return self._inventory.json()
         return devices
