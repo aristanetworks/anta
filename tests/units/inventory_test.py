@@ -18,6 +18,7 @@ class Test_AntaInventory():
     """Test AntaInventory class."""
 
     def create_inventory(self, content, tmp_path):
+        """Create fakefs inventory file."""
         tmp_inventory = tmp_path / "mydir/myfile"
         tmp_inventory.parent.mkdir()
         tmp_inventory.touch()
@@ -25,12 +26,30 @@ class Test_AntaInventory():
         return str(tmp_inventory)
 
     def check_parameter(self, parameter: str, test_definition):
+        """Check if parameter is configured in testbed."""
         if 'parameters' not in test_definition.keys() or parameter not in test_definition['parameters'].keys():
             return False
         return True
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_init_valid(self, test_definition, tmp_path):
+        """Test class constructor with valid data.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'ValidInventory_with_host_only',
+            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+            'expected_result': 'valid',
+            'parameters': {
+                'ipaddress_in_scope': '192.168.0.17',
+                'ipaddress_out_of_scope': '192.168.1.1',
+            }
+        }
+
+        """
+
         if test_definition['expected_result'] == 'invalid':
             pytest.skip('Not concerned by the test')
 
@@ -50,6 +69,23 @@ class Test_AntaInventory():
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_init_invalid(self, test_definition, tmp_path):
+        """Test class constructor with invalid data.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'ValidInventory_with_host_only',
+            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+            'expected_result': 'valid',
+            'parameters': {
+                'ipaddress_in_scope': '192.168.0.17',
+                'ipaddress_out_of_scope': '192.168.1.1',
+            }
+        }
+
+        """
+
         if test_definition['expected_result'] == 'valid':
             pytest.skip('Not concerned by the test')
 
@@ -72,6 +108,23 @@ class Test_AntaInventory():
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_is_ip_exists(self, test_definition, tmp_path):
+        """Test _is_ip_exists with valid data.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'ValidInventory_with_host_only',
+            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+            'expected_result': 'valid',
+            'parameters': {
+                'ipaddress_in_scope': '192.168.0.17',
+                'ipaddress_out_of_scope': '192.168.1.1',
+            }
+        }
+
+        """
+
         if test_definition['expected_result'] == 'invalid':
             pytest.skip('Not concerned by the test')
 
@@ -90,6 +143,22 @@ class Test_AntaInventory():
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_is_ip_exists_false(self, test_definition, tmp_path):
+        """Test _is_ip_exists with invalid data.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'ValidInventory_with_host_only',
+            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+            'expected_result': 'valid',
+            'parameters': {
+                'ipaddress_in_scope': '192.168.0.17',
+                'ipaddress_out_of_scope': '192.168.1.1',
+            }
+        }
+
+        """
         if test_definition['expected_result'] == 'invalid':
             pytest.skip('Not concerned by the test')
 
@@ -108,6 +177,22 @@ class Test_AntaInventory():
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_device_get(self,  test_definition, tmp_path):
+        """Test device_get function.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'ValidInventory_with_host_only',
+            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+            'expected_result': 'valid',
+            'parameters': {
+                'ipaddress_in_scope': '192.168.0.17',
+                'ipaddress_out_of_scope': '192.168.1.1',
+            }
+        }
+
+        """
         if test_definition['expected_result'] == 'invalid':
             pytest.skip('Not concerned by the test')
 
