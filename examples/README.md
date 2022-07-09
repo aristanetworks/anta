@@ -14,7 +14,3 @@ The file [tests.yaml](tests.yaml) is a YAML file used to indicated the tests we 
 It is also used to indicated the parameters used by the tests.
 Each test has an identifier which is then used in the tests report.
 The tests are defined in the directory [ANTA](../anta/).
-
-# demo directory
-
-The [demo](demo) directory shows a demo of this repository with an ATD (Arista Test Drive) instance.
