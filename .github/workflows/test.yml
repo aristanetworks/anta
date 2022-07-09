@@ -5,7 +5,6 @@ on: [push, pull_request]
 jobs:
   compiling:
     runs-on: ubuntu-20.04
-    needs: [linting]
     strategy:
       matrix:
         python-version: ["3.7", "3.10"]
@@ -24,6 +23,7 @@ jobs:
         run: python -m py_compile $(git ls-files '*.py')
   linting:
     runs-on: ubuntu-20.04
+    needs: [compiling]
     strategy:
       matrix:
         python-version: ["3.7", "3.10"]
@@ -48,7 +48,7 @@ jobs:
           file_or_dir: .
   testing:
     runs-on: ubuntu-20.04
-    needs: [compiling]
+    needs: [linting]
     strategy:
       matrix:
         python-version: ["3.7", "3.10"]
