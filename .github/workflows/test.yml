@@ -3,6 +3,25 @@ name: repo-testing
 on: [push, pull_request]
 
 jobs:
+  compiling:
+    runs-on: ubuntu-20.04
+    needs: [linting]
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.10"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install requirements
+        run: |
+          python setup.py install
+      - name: install dev requirements
+        run: pip install -r requirements-dev.txt
+      - name: validate the syntax of python scripts
+        run: python -m py_compile $(git ls-files '*.py')
   linting:
     runs-on: ubuntu-20.04
     strategy:
@@ -27,27 +46,6 @@ jobs:
         with:
           config_file: .yamllint.yml
           file_or_dir: .
-
-  compiling:
-    runs-on: ubuntu-20.04
-    needs: [linting]
-    strategy:
-      matrix:
-        python-version: ["3.7", "3.10"]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: install requirements
-        run: |
-          python setup.py install
-      - name: install dev requirements
-        run: pip install -r requirements-dev.txt
-      - name: validate the syntax of python scripts
-        run: python -m py_compile $(git ls-files '*.py')
-
   testing:
     runs-on: ubuntu-20.04
     needs: [compiling]
