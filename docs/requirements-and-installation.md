@@ -1,10 +1,12 @@
 **Table of Contents**
 
 - [Requirements on your laptop](#requirements-on-your-laptop)
-  - [Use the `pip install` command with the git url](#use-the-pip-install-command-with-the-git-url)
-  - [Clone the repository and use the `pip install .` command](#clone-the-repository-and-use-the-pip-install--command)
-  - [Clone the repository and use `setup.py`](#clone-the-repository-and-use-setuppy)
-  - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
+  - [Install the package ANTA and the scripts and the requirements](#install-the-package-anta-and-the-scripts-and-the-requirements)
+    - [Use the `pip install` command with the git url](#use-the-pip-install-command-with-the-git-url)
+    - [Clone the repository and use the `pip install .` command](#clone-the-repository-and-use-the-pip-install--command)
+    - [Clone the repository and use `setup.py`](#clone-the-repository-and-use-setuppy)
+    - [Clone the repository and use the `pip install -r requirements.txt` command](#clone-the-repository-and-use-the-pip-install--r-requirementstxt-command)
+  - [Update your PATH environment variable if it is required](#update-your-path-environment-variable-if-it-is-required)
 - [Requirements on the switches](#requirements-on-the-switches)
 - [Quick checks](#quick-checks)
 
@@ -15,22 +17,21 @@ Python 3 (at least 3.3) is required:
 ```shell
 python -V
 ```
+## Install the package ANTA and the scripts and the requirements
 
-The Python package [ANTA](../anta) and these [scripts](../scripts) require some packages that are not part of the Python standard library:
+[ANTA](../anta) and these [scripts](../scripts) require some packages that are not part of the Python standard library. They are indicated in the [requirements.txt](../requirements.txt) file
 
-- They are indicated in the [requirements.txt](../requirements.txt) file
-- There are several ways to install them. They are described below.
+There are several ways to installt the [ANTA](../anta) and the [scripts](../scripts) and the [requirements](../requirements.txt). This is described below.
 
-## Use the `pip install` command with the git url
+### Use the `pip install` command with the git url
 
 Run this command to install:
 
 - The package [ANTA](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)
-- These [scripts](../scripts) in `/usr/local/bin/`
+- These [scripts](../scripts) and the packages they required
 
 ```shell
-sudo pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
 Run these commands to verify:
@@ -43,21 +44,20 @@ check-devices-reachability.py --help
 To update, run this command:
 
 ```shell
-sudo pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
+pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-## Clone the repository and use the `pip install .` command
+### Clone the repository and use the `pip install .` command
 
 Run these commands to install:
 
 - The package [ANTA](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)
-- These [scripts](../scripts) in `/usr/local/bin/`
+- These [scripts](../scripts) and the packages they required
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
 cd network-test-automation
-sudo pip install .
+pip install .
 ```
 
 Run these commands to verify:
@@ -67,7 +67,7 @@ pip list
 check-devices-reachability.py --help
 ```
 
-## Clone the repository and use `setup.py`
+### Clone the repository and use `setup.py`
 
 Run these commands to clone the repository and to move to the new folder:
 
@@ -85,11 +85,10 @@ python setup.py build
 Run this command to install:
 
 - The package [ANTA](../anta) and its dependencies
-- The packages required by these [scripts](../scripts)
-- These [scripts](../scripts) in `/usr/local/bin/`
+- These [scripts](../scripts) and the packages they required
 
 ```shell
-sudo python setup.py install
+python setup.py install
 ```
 
 Run these commands to verify:
@@ -99,7 +98,7 @@ pip list
 check-devices-reachability.py --help
 ```
 
-## Clone the repository and use the `pip install -r requirements.txt` command
+### Clone the repository and use the `pip install -r requirements.txt` command
 
 Run these commands to install the packages indicated in the [requirements.txt](../requirements.txt) file.
 
@@ -117,12 +116,31 @@ These packages are required by:
 But this will **not** install:
 
 - The [ANTA](../anta) package
-- These [scripts](../scripts) in `/usr/local/bin/`
+- These [scripts](../scripts)
 
 Run this command to verify:
 
 ```bash
 pip list
+```
+
+## Update your PATH environment variable if it is required
+
+If the path where the scripts are installed is not yet include in your PATH environment variable, please update it.  
+
+Here's an example if the scripts are installed here:
+
+```bash
+ls -l /home/arista/.local/bin/
+```
+
+Run this command to update path  to update your PATH environment variable:
+
+```bash
+echo $HOME
+echo $PATH
+export PATH="$HOME/.local/bin:$PATH"
+echo $PATH
 ```
 
 # Requirements on the switches
