@@ -6,7 +6,7 @@ paramiko
 scp
 tqdm
 requests
-cvprac
+cvprac>=1.2.0
 netaddr>=0.8.0
 pydantic>=1.9.1
 Jinja2>=3.1.2

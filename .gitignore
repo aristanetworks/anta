@@ -6,5 +6,3 @@ __pycache__
 build
 dist
 *.egg-info
-
-scripts/tests.py

@@ -23,7 +23,7 @@ This repository comes with a set of [scripts](./scripts) to run __Arista Network
 In addition you have also some useful scripts to help around testing:
 
 - `clear-counters.py` to clear counters on devices
-- `clear-counters.py` to clear the list of MAC addresses which are blacklisted in EVPN
+- `evpn-blacklist-recovery.py` to clear the list of MAC addresses which are blacklisted in EVPN
 - `create-devices-inventory-from-cvp.py`: Build inventory for scripts from Arista Cloudvision (CVP)
 
 > Most of these scripts use eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
@@ -36,13 +36,13 @@ The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip pa
 pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-For more details about how to install package, please see the [requirements and intallation docs](docs/requirements-and-installation.md) for the requirements and installation procedure.
+For more details about how to install package, please see the [requirements and intallation docs](docs/requirements-and-installation.md).
 
 # Getting Started
 
 This section shows how to use ANTA scripts with basic configuration. For more information, please refer to this [page](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
 
-## Configure Arista EOS devices.
+## Configure Arista EOS devices
 
 First, you need to configure your management interface
 
