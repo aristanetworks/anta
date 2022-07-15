@@ -22,6 +22,9 @@ from .exceptions import InventoryRootKeyErrors, InventoryIncorrectSchema, Invent
 # pylint: disable=W0212
 ssl._create_default_https_context = ssl._create_unverified_context
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 class AntaInventory():
     """Inventory Abstraction for ANTA framework.
 
@@ -67,7 +70,7 @@ class AntaInventory():
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
 
-    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True):
+    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: int = 5):
         """Class constructor.
 
         Args:
@@ -75,9 +78,11 @@ class AntaInventory():
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
             auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
+            timeout (int, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
         """
         self._username = username
         self._password = password
+        self.timeout = timeout
         self._inventory = InventoryDevices()
 
         with open(inventory_file, 'r', encoding='utf8') as f:
@@ -87,11 +92,11 @@ class AntaInventory():
         try:
             self._read_inventory = AntaInventoryInput( **data[self.INVENTORY_ROOT_KEY] )
         except KeyError as exc:
-            logging.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
+            logger.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
             raise InventoryRootKeyErrors(
                 f'Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory') from exc
         except ValidationError as exc:
-            logging.error('Inventory data are not compliant with inventory models')
+            logger.error('Inventory data are not compliant with inventory models')
             raise InventoryIncorrectSchema(
                 'Inventory is not following schema') from exc
 
@@ -116,9 +121,7 @@ class AntaInventory():
         Returns:
             bool: True if device is in our inventory, False if not
         """
-        if ip in [str(dev.host) for dev in self._inventory ]:
-            return True
-        return False
+        return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
 
     def device_get(self, host_ip):
         """Get device information from a given IP.
@@ -168,9 +171,8 @@ class AntaInventory():
         try:
             setdefaulttimeout(timeout)
             connection.runCmds(1,['show version'])
-        # pylint: disable=W0702
-        except:
-            logging.error(f'Service not running on device {device.host}')
+        except Exception:
+            logger.warning(f'Service not running on device {device.host}')
             device.session = None
         else:
             device.established = True
@@ -188,13 +190,16 @@ class AntaInventory():
         Returns:
             bool: True if update succeed, False if not
         """
-        device = [ dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
-        if not device.established and self._is_ip_exist(host_ip):
-            logging.debug('trying to connect to device')
-            device = self._session_create(device=device)
-            # pylint: disable=W0104
-            [device if dev.host == device.host else dev for dev in self._inventory]
-            return True
+        logger.debug(f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
+        if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)])>0:
+            device = [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
+            logger.debug(f'Search result is: {device}')
+            if not device.established and self._is_ip_exist(host_ip):
+                logger.debug(f'Trying to connect to device {str(device.host)}')
+                device = self._session_create(device=device, timeout=self.timeout)
+                # pylint: disable=W0104
+                [device if dev.host == device.host else dev for dev in self._inventory]
+                return True
         return False
 
     def session_get(self, host_ip: str):
