@@ -70,6 +70,7 @@ class AntaInventory():
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
 
+    # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: int = 5):
         """Class constructor.
 
@@ -171,6 +172,7 @@ class AntaInventory():
         try:
             setdefaulttimeout(timeout)
             connection.runCmds(1,['show version'])
+        # pylint: disable=W0703
         except Exception:
             logger.warning(f'Service not running on device {device.host}')
             device.session = None
