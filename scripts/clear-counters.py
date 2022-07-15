@@ -8,22 +8,52 @@ This script clear counters on devices
 from argparse import ArgumentParser
 from getpass import getpass
 import ssl
-import sys
-from socket import setdefaulttimeout
-# third-party libraries
-from jsonrpclib import Server,jsonrpc
+from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
-def main():
+def clear_counters(inventory, enable_pass):
+    """
+    clear counters
+    """ 
+    devices = inventory.inventory_get(established_only = True)
+    for device in devices:
+        switch = device.session
+        response = switch.runCmds(1, ['show version'], 'json')
+        if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
+            hardware_model = False
+        else:
+            hardware_model = True
+        if hardware_model is True:
+            switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
+                'clear counters', 'clear hardware counter drop'])
+            print('Cleared counters on ' + str(device.host))
+        elif hardware_model is False:
+            switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
+            print('Cleared counters on ' + str(device.host))
+        else:
+            print('Could not clear counters on device ' + str(device.host))
 
+def report_uncleared_counters(inventory):
+    """
+    report unreachable devices
+    """
+    devices = inventory.inventory_get(established_only = False)
+    for device in devices:
+        if device.established is False:
+            print("Could not clear counters on device " + str(device.host))
+
+def main():
+    """
+    test.
+    """
     parser = ArgumentParser(
         description='Clear counters on EOS devices'
         )
     parser.add_argument(
         '-i',
-        help='Text file containing a list of switches',
+        help='Text file containing switches inventory',
         dest='file',
         required=True
         )
@@ -38,43 +68,10 @@ def main():
     args.password = getpass(prompt='Device password: ')
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
-    try:
-        with open(args.file, 'r', encoding="utf8") as file:
-            devices = file.readlines()
-    except FileNotFoundError:
-        print('Error reading ' + args.file)
-        sys.exit(1)
-
-    for i,device in enumerate(devices):
-        devices[i] = device.strip()
-
-    for device in devices:
-        url=f"https://{args.username}:{args.password}@{device}/command-api"
-        switch = Server(url)
-        setdefaulttimeout(5)
-        try:
-            response = switch.runCmds(1, ['show version'], 'json')
-            if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
-                hardware_model = False
-            else:
-                hardware_model = True
-            if hardware_model is True:
-                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass},\
-                    'clear counters', 'clear hardware counter drop'])
-                print('Cleared counters on ' + device)
-            elif hardware_model is False:
-                switch.runCmds(1,[{"cmd": "enable", "input": args.enable_pass}, 'clear counters'])
-                print('Cleared counters on ' + device)
-            else:
-                print('Could not clear counters on device ' + device)
-        except jsonrpc.TransportError:
-            print('wrong credentials for ' + device)
-        except OSError:
-            print(device + ' is not reachable using eAPI')
-        except jsonrpc.AppError:
-            print("Could not clear counters on device " + device)
-        except KeyError:
-            print("Could not clear counters on device " + device)
+    print('Password is: %s', str(args.password))
+    inventory = AntaInventory(inventory_file=args.file,username=args.username, password=args.password, auto_connect=True)
+    clear_counters(inventory, args.enable_pass)
+    report_uncleared_counters(inventory)
 
 if __name__ == '__main__':
     main()
