@@ -24,29 +24,34 @@ def clear_counters(inventory, enable_pass):
     devices = inventory.get_inventory(established_only = True)
     for device in devices:
         switch = device.session
-        response = switch.runCmds(1, ['show version'], 'json')
-        if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
-            hardware_model = False
-        else:
-            hardware_model = True
-        if hardware_model is True:
-            switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
-                'clear counters', 'clear hardware counter drop'])
-            print('Cleared counters on ' + str(device.host))
-        elif hardware_model is False:
-            switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
-            print('Cleared counters on ' + str(device.host))
-        else:
-            print('Could not clear counters on device ' + str(device.host))
+        try:
+            response = switch.runCmds(1, ['show version'], 'json')
+            if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
+                hardware_model = False
+            else:
+                hardware_model = True
+            if hardware_model is True:
+                switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
+                    'clear counters', 'clear hardware counter drop'])
+                print('Cleared counters on ' + str(device.host))
+            elif hardware_model is False:
+                switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
+                print('Cleared counters on ' + str(device.host))
+            else:
+                print('Could not clear counters on device ' + str(device.host))
+        except jsonrpc.AppError:
+            print("Could not clear counters on device " + str(device.host))
+        except KeyError:
+            print("Could not clear counters on device " + str(device.host))
 
-def report_uncleared_counters(inventory):
+def report_unreachable_devices(inventory):
     """
     report unreachable devices
     """
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print("Could not clear counters on device " + str(device.host))
+            print("Could not connect on device " + str(device.host))
 
 def main():
     """
@@ -82,7 +87,7 @@ def main():
         timeout=0.5
     )
     clear_counters(inventory, args.enable_pass)
-    report_uncleared_counters(inventory)
+    report_unreachable_devices(inventory)
 
 if __name__ == '__main__':
     main()
