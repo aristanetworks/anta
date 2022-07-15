@@ -16,7 +16,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 def clear_counters(inventory, enable_pass):
     """
     clear counters
-    """ 
+    """
     devices = inventory.inventory_get(established_only = True)
     for device in devices:
         switch = device.session
