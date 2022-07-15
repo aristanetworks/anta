@@ -10,11 +10,12 @@ import sys
 # standard imports
 from argparse import ArgumentParser
 from getpass import getpass
-
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
+
+logging.disable(level=logging.WARNING)
 
 def clear_counters(inventory, enable_pass):
     """
@@ -72,7 +73,7 @@ def main():
     args = parser.parse_args()
     args.password = getpass(prompt='Device password: ')
     args.enable_pass = getpass(prompt='Enable password (if any): ')
-
+    print('Clearing counters on devices .... please be patient ... ')
     inventory = AntaInventory(
         inventory_file=args.file,
         username=args.username,
