@@ -4,10 +4,13 @@
 This script clear counters on devices
 """
 
+import logging
+import ssl
+import sys
 # standard imports
 from argparse import ArgumentParser
 from getpass import getpass
-import ssl
+
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
@@ -17,7 +20,7 @@ def clear_counters(inventory, enable_pass):
     """
     clear counters
     """
-    devices = inventory.inventory_get(established_only = True)
+    devices = inventory.get_inventory(established_only = True)
     for device in devices:
         switch = device.session
         response = switch.runCmds(1, ['show version'], 'json')
@@ -39,15 +42,17 @@ def report_uncleared_counters(inventory):
     """
     report unreachable devices
     """
-    devices = inventory.inventory_get(established_only = False)
+    devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
             print("Could not clear counters on device " + str(device.host))
 
 def main():
     """
-    test.
+    Main.
     """
+    logging.disable(sys.maxsize)
+
     parser = ArgumentParser(
         description='Clear counters on EOS devices'
         )
@@ -68,8 +73,13 @@ def main():
     args.password = getpass(prompt='Device password: ')
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
-    print('Password is: %s', str(args.password))
-    inventory = AntaInventory(inventory_file=args.file,username=args.username, password=args.password, auto_connect=True)
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=0.5
+    )
     clear_counters(inventory, args.enable_pass)
     report_uncleared_counters(inventory)
 
