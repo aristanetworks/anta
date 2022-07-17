@@ -38,6 +38,7 @@ class InventoryDevice(BaseModel):
     password: str
     session: Any
     established = False
+    is_online = False
     url: str
 
 class InventoryDevices(BaseModel):

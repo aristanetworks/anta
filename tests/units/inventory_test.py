@@ -208,7 +208,7 @@ class Test_AntaInventory():
             auto_connect=False
         )
         logging.info('Getting if %s from inventory', str(test_definition['parameters']['ipaddress_in_scope']))
-        device = inventory_test.device_get(host_ip= str(test_definition['parameters']['ipaddress_in_scope']))
+        device = inventory_test.get_device(host_ip= str(test_definition['parameters']['ipaddress_in_scope']))
         assert isinstance(device,InventoryDevice)
         assert str(device.host) == str(test_definition['parameters']['ipaddress_in_scope'])
 
@@ -247,6 +247,6 @@ class Test_AntaInventory():
             password='arista123',
             auto_connect=False
         )
-        inventory_json = json.loads(inventory_test.inventory_get(format_out='json', established_only=False))
+        inventory_json = json.loads(inventory_test.get_inventory(format_out='json', established_only=False))
         assert test_definition['parameters']['ipaddress_in_scope'] in [d['host'] for d in inventory_json]
         assert int(test_definition['parameters']['nb_hosts']) == len([d['host'] for d in inventory_json])

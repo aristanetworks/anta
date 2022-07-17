@@ -62,6 +62,29 @@ Inventory model exposed by Inventory class.
 
 
 
+---
+
+<a href="../../anta/inventory/models.py#L44"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>class</kbd> `InventoryDevices`
+Inventory model to list all InventoryDevice entries. 
+
+
+
+
+---
+
+<a href="../../anta/inventory/models.py#L48"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+### <kbd>method</kbd> `InventoryDevices.append`
+
+```python
+append(value) → None
+```
+
+Add support for append method. 
+
+
 
 
 ---

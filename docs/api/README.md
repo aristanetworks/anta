@@ -20,6 +20,7 @@
 - [`models.AntaInventoryNetwork`](./inventory.models.md#class-antainventorynetwork): Network definition for user's inventory.
 - [`models.AntaInventoryRange`](./inventory.models.md#class-antainventoryrange): IP Range definition for user's inventory.
 - [`models.InventoryDevice`](./inventory.models.md#class-inventorydevice): Inventory model exposed by Inventory class.
+- [`models.InventoryDevices`](./inventory.models.md#class-inventorydevices): Inventory model to list all InventoryDevice entries.
 
 ## Functions
 
