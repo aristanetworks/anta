@@ -77,7 +77,7 @@ class AntaInventory():
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5):
+    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5) -> None:
         """Class constructor.
 
         Args:
@@ -124,7 +124,7 @@ class AntaInventory():
     ### Boolean methods
     ###########################################################################
 
-    def _is_ip_exist(self, ip: str):
+    def _is_ip_exist(self, ip: str) -> bool:
         """Check if an IP is part of the current inventory.
 
         Args:
@@ -136,7 +136,7 @@ class AntaInventory():
         logger.debug(f'Checking if device {ip} is in ourr inventory')
         return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
 
-    def _is_device_online(self, device: InventoryDevice, timeout: float = 5):
+    def _is_device_online(self, device: InventoryDevice, timeout: float = 5) -> bool:
         """
         _is_device_online Check if device is online.
 
@@ -167,7 +167,7 @@ class AntaInventory():
     ### Internal methods
     ###########################################################################
 
-    def _refresh_online_flag_device(self, device: InventoryDevice):
+    def _refresh_online_flag_device(self, device: InventoryDevice) -> InventoryDevice:
         """
         _refresh_online_flag_device Update online flag for InventoryDevice
 
@@ -182,7 +182,7 @@ class AntaInventory():
             device=device, timeout=self.timeout)
         return device
 
-    def _build_device_session_path(self, host: str, username: str, password: str):
+    def _build_device_session_path(self, host: str, username: str, password: str) -> str:
         """Construct URL to reach device using eAPI.
 
         Jinja2 render to build URL to use for eAPI session.
@@ -202,7 +202,7 @@ class AntaInventory():
             device_password=password
         )
 
-    def _build_device_session(self, device: InventoryDevice, timeout: float = 5):
+    def _build_device_session(self, device: InventoryDevice, timeout: float = 5) -> InventoryDevice:
         """Create eAPI RPC session to Arista EOS devices.
 
         Args:
@@ -226,7 +226,7 @@ class AntaInventory():
             device.session = connection
         return device
 
-    def _add_device_to_inventory(self, host_ip):
+    def _add_device_to_inventory(self, host_ip) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -246,7 +246,7 @@ class AntaInventory():
         )
         self._inventory.append(device)
 
-    def _inventory_read_hosts(self):
+    def _inventory_read_hosts(self) -> None:
         """Read input data from hosts section and create inventory structure.
 
         Build InventoryDevice structure for all hosts under hosts section
@@ -254,7 +254,7 @@ class AntaInventory():
         for host in self._read_inventory.hosts:
             self._add_device_to_inventory(host_ip=host.host)
 
-    def _inventory_read_networks(self):
+    def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared subnet
@@ -263,7 +263,7 @@ class AntaInventory():
             for host_ip in IPNetwork(str(network.network)):
                 self._add_device_to_inventory(host_ip=host_ip)
 
-    def _inventory_read_ranges(self):
+    def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared range
@@ -275,6 +275,23 @@ class AntaInventory():
                 self._add_device_to_inventory(host_ip=str(range_increment))
                 range_increment += 1
 
+    def _inventory_rebuild(self, list_devices: List[InventoryDevice]) -> InventoryDevices:
+        """
+        _inventory_rebuild Transform a list of InventoryDevice into a InventoryDevices object.
+
+        Args:
+            list_devices (List[InventoryDevice]): List of devices to add into InventoryDevices
+
+        Returns:
+            InventoryDevices: An object with all the devices.
+        """
+        logger.debug(f'Create a new version of InventoryDevices')
+        inventory = InventoryDevices()
+        for device in list_devices:
+            inventory.append(device)
+        return inventory
+
+
     ###########################################################################
     ### Public methods
     ###########################################################################
@@ -282,7 +299,7 @@ class AntaInventory():
     ###########################################################################
     ### GET methods
 
-    def get_inventory(self, format_out: str = 'native', established_only: bool = True):
+    def get_inventory(self, format_out: str = 'native', established_only: bool = True) -> InventoryDevices:
         """get_inventory Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
@@ -292,7 +309,7 @@ class AntaInventory():
             established_only (bool, optional): Allow to expose also unreachable devices. Defaults to True.
 
         Returns:
-            List: List of InventoryDevice
+            InventoryDevices: List of InventoryDevice
         """
         if format_out not in ['native', 'json']:
             raise InventoryUnknownFormat(
@@ -307,7 +324,7 @@ class AntaInventory():
             return self._inventory.json()
         return devices
 
-    def get_device(self, host_ip):
+    def get_device(self, host_ip) -> InventoryDevice:
         """Get device information from a given IP.
 
         Args:
@@ -320,7 +337,7 @@ class AntaInventory():
             return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
         return None
 
-    def get_device_session(self, host_ip: str):
+    def get_device_session(self, host_ip: str) -> Server:
         """Expose RPC session of a given host from our inventory.
 
         Provide RPC session if the session exists, if not, it returns None
@@ -339,7 +356,7 @@ class AntaInventory():
     ###########################################################################
     ### CREATE methods
 
-    def create_all_sessions(self, refresh_online_first: bool = False):
+    def create_all_sessions(self, refresh_online_first: bool = False) -> None:
         """Helper to build RPC sessions to all devices.
 
          Args:
@@ -352,7 +369,7 @@ class AntaInventory():
         for device in self._inventory:
             self.create_device_session(host_ip=device.host)
 
-    def create_device_session(self, host_ip: str):
+    def create_device_session(self, host_ip: str) -> bool:
         """Get session of a device.
 
         If device has already a session, function only returns active session, if not, try to build a new session
@@ -381,7 +398,7 @@ class AntaInventory():
     ###########################################################################
     ### MISC methods
 
-    def refresh_online_flag_inventory(self):
+    def refresh_online_flag_inventory(self) -> None:
         """
         refresh_online_flag_inventory Update is_online flag for all devices.
 
@@ -390,10 +407,8 @@ class AntaInventory():
         logger.debug(f'Refreshing is_online flag in current inventory')
         with Pool(processes=multiprocessing.cpu_count()) as pool:
             logger.debug(f'Refreshing is_online flag in current inventory')
-            logger.debug(f'  * Check devices using multiprocessing')
+            logger.debug(f'Check devices using multiprocessing')
             results_map = pool.map(
                 self._refresh_online_flag_device,  self._inventory)
-            self._inventory = InventoryDevices()
-            logger.debug(f'  * Rebuild inventory')
-            for device in results_map:
-                self._inventory.append(device)
+            logger.debug(f'Update inventory with updated data')
+            self._inventory = self._inventory_rebuild(results_map)
