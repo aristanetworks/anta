@@ -6,20 +6,24 @@ Inventory Module for ANTA.
 """
 
 import logging
+import multiprocessing
 import ssl
+from multiprocessing import Pool
 from socket import setdefaulttimeout
 from typing import List
+
 import yaml
-import multiprocessing
-from multiprocessing import Pool
 from jinja2 import Template
 from jsonrpclib import ProtocolError, Server, jsonrpc
-from netaddr import IPNetwork, IPAddress
+from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
+from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
+                         InventoryUnknownFormat)
 from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
-from .exceptions import InventoryRootKeyErrors, InventoryIncorrectSchema, InventoryUnknownFormat
+
+# pylint: disable=W1309
 
 # pylint: disable=W0212
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -379,12 +383,12 @@ class AntaInventory():
 
     def refresh_online_flag_inventory(self):
         logger.debug(f'Refreshing is_online flag in current inventory')
-        pool = Pool(processes=multiprocessing.cpu_count())
-        logger.debug(f'Refreshing is_online flag in current inventory')
-        logger.debug(f'  * Check devices using multiprocessing')
-        results_map = pool.map(
-            self._refresh_online_flag_device,  self._inventory)
-        self._inventory = InventoryDevices()
-        logger.debug(f'  * Rebuild inventory')
-        for device in results_map:
-            self._inventory.append(device)
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            logger.debug(f'Refreshing is_online flag in current inventory')
+            logger.debug(f'  * Check devices using multiprocessing')
+            results_map = pool.map(
+                self._refresh_online_flag_device,  self._inventory)
+            self._inventory = InventoryDevices()
+            logger.debug(f'  * Rebuild inventory')
+            for device in results_map:
+                self._inventory.append(device)
