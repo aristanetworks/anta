@@ -405,7 +405,8 @@ class AntaInventory():
         Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
         """
         logger.debug(f'Refreshing is_online flag in current inventory')
-        with Pool(processes=multiprocessing.cpu_count()) as pool:
+        number_of_devices = len([dev.host for dev in self._inventory])
+        with Pool(processes=number_of_devices) as pool:
             logger.debug(f'Refreshing is_online flag in current inventory')
             logger.debug(f'Check devices using multiprocessing')
             results_map = pool.map(
