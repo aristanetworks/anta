@@ -8,7 +8,6 @@ import ssl
 from argparse import ArgumentParser
 from getpass import getpass
 import logging
-from jsonrpclib import jsonrpc
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
