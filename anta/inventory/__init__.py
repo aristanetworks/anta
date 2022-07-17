@@ -138,7 +138,7 @@ class AntaInventory():
 
     def _is_device_online(self, device: InventoryDevice, timeout: float = 5):
         """
-        _is_online Check if device is online.
+        _is_device_online Check if device is online.
 
         Execute an eAPI call to check if device is online and has eAPI working as expected
         If device is ready to serve request, method returns True, else return False.
@@ -382,6 +382,11 @@ class AntaInventory():
     ### MISC methods
 
     def refresh_online_flag_inventory(self):
+        """
+        refresh_online_flag_inventory Update is_online flag for all devices.
+
+        Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
+        """
         logger.debug(f'Refreshing is_online flag in current inventory')
         with Pool(processes=multiprocessing.cpu_count()) as pool:
             logger.debug(f'Refreshing is_online flag in current inventory')
