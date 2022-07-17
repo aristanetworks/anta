@@ -10,6 +10,8 @@ import ssl
 from socket import setdefaulttimeout
 from typing import List
 import yaml
+import multiprocessing
+from multiprocessing import Pool
 from jinja2 import Template
 from jsonrpclib import ProtocolError, Server, jsonrpc
 from netaddr import IPNetwork, IPAddress
@@ -45,7 +47,7 @@ class AntaInventory():
     Inventory Output:
     ------------------
     >>> test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)
-    >>> test.inventory_get()
+    >>> test.get_inventory()
     >>> [
     >>>     "InventoryDevice(host=IPv4Address('192.168.0.17')",
     >>>     "username='ansible'",
@@ -71,7 +73,7 @@ class AntaInventory():
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: int = 5):
+    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5):
         """Class constructor.
 
         Args:
@@ -79,7 +81,7 @@ class AntaInventory():
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
             auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
-            timeout (int, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
+            timeout (float, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
         """
         self._username = username
         self._password = password
@@ -111,7 +113,12 @@ class AntaInventory():
 
         # Create RPC connection for all devices
         if auto_connect:
-            self.sessions_create()
+            self.refresh_online_flag_inventory()
+            self.create_all_sessions()
+
+    ###########################################################################
+    ### Boolean methods
+    ###########################################################################
 
     def _is_ip_exist(self, ip: str):
         """Check if an IP is part of the current inventory.
@@ -122,22 +129,56 @@ class AntaInventory():
         Returns:
             bool: True if device is in our inventory, False if not
         """
+        logger.debug(f'Checking if device {ip} is in ourr inventory')
         return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
 
-    def device_get(self, host_ip):
-        """Get device information from a given IP.
+    def _is_device_online(self, device: InventoryDevice, timeout: float = 5):
+        """
+        _is_online Check if device is online.
+
+        Execute an eAPI call to check if device is online and has eAPI working as expected
+        If device is ready to serve request, method returns True, else return False.
 
         Args:
-            host_ip (str): IP address of the device
+            device (InventoryDevice): InventoryDevice structure to test
+            timeout (float, optional): Request timeout. Defaults to 5.
 
         Returns:
-            InventoryDevice: Device information
+            bool: True if device ready, False by default.
         """
-        if self._is_ip_exist(host_ip):
-            return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
-        return None
+        logger.debug(f'Checking if device {device.host} is online')
+        connection = Server(device.url)
+        # Check connectivity
+        try:
+            setdefaulttimeout(timeout)
+            connection.runCmds(1,['show version'])
+        # pylint: disable=W0703
+        except Exception:
+            logger.warning(f'Service not running on device {device.host}')
+            return False
+        else:
+            return True
 
-    def _session_build_path(self, host: str, username: str, password: str):
+    ###########################################################################
+    ### Internal methods
+    ###########################################################################
+
+    def _refresh_online_flag_device(self, device: InventoryDevice):
+        """
+        _refresh_online_flag_device Update online flag for InventoryDevice
+
+        Args:
+            device (InventoryDevice): Device to check using InventoryDevice structure.
+
+        Returns:
+            InventoryDevice: Updated structure with valid online key
+        """
+        logger.debug(f'Refreshing is_online flag for device {device.host}')
+        device.is_online = self._is_device_online(
+            device=device, timeout=self.timeout)
+        return device
+
+    def _build_device_session_path(self, host: str, username: str, password: str):
         """Construct URL to reach device using eAPI.
 
         Jinja2 render to build URL to use for eAPI session.
@@ -155,9 +196,9 @@ class AntaInventory():
             device=host,
             device_username=username,
             device_password=password
-         )
+        )
 
-    def _session_create(self, device : InventoryDevice, timeout: int = 5):
+    def _build_device_session(self, device: InventoryDevice, timeout: float = 5):
         """Create eAPI RPC session to Arista EOS devices.
 
         Args:
@@ -171,7 +212,7 @@ class AntaInventory():
         # Check connectivity
         try:
             setdefaulttimeout(timeout)
-            connection.runCmds(1,['show version'])
+            connection.runCmds(1, ['show version'])
         # pylint: disable=W0703
         except Exception:
             logger.warning(f'Service not running on device {device.host}')
@@ -181,51 +222,7 @@ class AntaInventory():
             device.session = connection
         return device
 
-    def session_create(self, host_ip: str):
-        """Get session of a device.
-
-        If device has already a session, function only returns active session, if not, try to build a new session
-
-        Args:
-            host_ip (str): IP address of the device
-
-        Returns:
-            bool: True if update succeed, False if not
-        """
-        logger.debug(f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
-        if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)])>0:
-            device = [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
-            logger.debug(f'Search result is: {device}')
-            if not device.established and self._is_ip_exist(host_ip):
-                logger.debug(f'Trying to connect to device {str(device.host)}')
-                device = self._session_create(device=device, timeout=self.timeout)
-                # pylint: disable=W0104
-                [device if dev.host == device.host else dev for dev in self._inventory]
-                return True
-        return False
-
-    def session_get(self, host_ip: str):
-        """Expose RPC session of a given host from our inventory.
-
-        Provide RPC session if the session exists, if not, it returns None
-
-        Args:
-            host_ip (str): IP address of the host to match
-
-        Returns:
-            jsonrpclib.Server: Instance to the device. None if session does not exist
-        """
-        device = self.device_get(host_ip=host_ip)
-        if device is None:
-            return None
-        return device.session
-
-    def sessions_create(self):
-        """Helper to build RPC sessions to all devices"""
-        for device in self._inventory:
-            self.session_create(host_ip=device.host)
-
-    def _inventory_add_device(self, host_ip):
+    def _add_device_to_inventory(self, host_ip):
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -237,7 +234,7 @@ class AntaInventory():
             host=host_ip,
             username=self._username,
             password=self._password,
-            url=self._session_build_path(
+            url=self._build_device_session_path(
                 host=host_ip,
                 username=self._username,
                 password=self._password
@@ -251,7 +248,7 @@ class AntaInventory():
         Build InventoryDevice structure for all hosts under hosts section
         """
         for host in self._read_inventory.hosts:
-            self._inventory_add_device(host_ip=host.host)
+            self._add_device_to_inventory(host_ip=host.host)
 
     def _inventory_read_networks(self):
         """Read input data from networks section and create inventory structure.
@@ -260,7 +257,7 @@ class AntaInventory():
         """
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                self._inventory_add_device(host_ip=host_ip)
+                self._add_device_to_inventory(host_ip=host_ip)
 
     def _inventory_read_ranges(self):
         """Read input data from ranges section and create inventory structure.
@@ -271,11 +268,18 @@ class AntaInventory():
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._inventory_add_device(host_ip=str(range_increment))
+                self._add_device_to_inventory(host_ip=str(range_increment))
                 range_increment += 1
 
-    def inventory_get(self, format_out: str = 'native', established_only: bool = True):
-        """inventory_get Expose device inventory.
+    ###########################################################################
+    ### Public methods
+    ###########################################################################
+
+    ###########################################################################
+    ### GET methods
+
+    def get_inventory(self, format_out: str = 'native', established_only: bool = True):
+        """get_inventory Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
 
@@ -298,3 +302,89 @@ class AntaInventory():
         if format_out == 'json':
             return self._inventory.json()
         return devices
+
+    def get_device(self, host_ip):
+        """Get device information from a given IP.
+
+        Args:
+            host_ip (str): IP address of the device
+
+        Returns:
+            InventoryDevice: Device information
+        """
+        if self._is_ip_exist(host_ip):
+            return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
+        return None
+
+    def get_device_session(self, host_ip: str):
+        """Expose RPC session of a given host from our inventory.
+
+        Provide RPC session if the session exists, if not, it returns None
+
+        Args:
+            host_ip (str): IP address of the host to match
+
+        Returns:
+            jsonrpclib.Server: Instance to the device. None if session does not exist
+        """
+        device = self.get_device(host_ip=host_ip)
+        if device is None:
+            return None
+        return device.session
+
+    ###########################################################################
+    ### CREATE methods
+
+    def create_all_sessions(self, refresh_online_first: bool = False):
+        """Helper to build RPC sessions to all devices.
+
+         Args:
+            refresh_online_first (bool): Run  a refresh of is_online flag for all devices.
+        """
+        if refresh_online_first:
+            logger.debug(f'Running a refresh for devices online')
+            self.refresh_online_flag_inventory()
+
+        for device in self._inventory:
+            self.create_device_session(host_ip=device.host)
+
+    def create_device_session(self, host_ip: str):
+        """Get session of a device.
+
+        If device has already a session, function only returns active session, if not, try to build a new session
+
+        Args:
+            host_ip (str): IP address of the device
+
+        Returns:
+            bool: True if update succeed, False if not
+        """
+        logger.debug(
+            f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
+        if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)]) > 0:
+            device = [dev for dev in self._inventory if str(
+                dev.host) == str(host_ip)][0]
+            logger.debug(f'Search result is: {device}')
+            if device.is_online and not device.established and self._is_ip_exist(host_ip):
+                logger.debug(f'Trying to connect to device {str(device.host)}')
+                device = self._build_device_session(
+                    device=device, timeout=self.timeout)
+                # pylint: disable=W0104
+                [device if dev.host == device.host else dev for dev in self._inventory]
+                return True
+        return False
+
+    ###########################################################################
+    ### MISC methods
+
+    def refresh_online_flag_inventory(self):
+        logger.debug(f'Refreshing is_online flag in current inventory')
+        pool = Pool(processes=multiprocessing.cpu_count())
+        logger.debug(f'Refreshing is_online flag in current inventory')
+        logger.debug(f'  * Check devices using multiprocessing')
+        results_map = pool.map(
+            self._refresh_online_flag_device,  self._inventory)
+        self._inventory = InventoryDevices()
+        logger.debug(f'  * Rebuild inventory')
+        for device in results_map:
+            self._inventory.append(device)
