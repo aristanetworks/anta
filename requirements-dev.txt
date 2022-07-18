@@ -6,3 +6,4 @@ pytest-html>=3.1.1
 pytest-metadata>=1.11.0
 pytest-dependency
 yamllint
+pre-commit>=2.20.0
