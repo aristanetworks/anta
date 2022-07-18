@@ -7,15 +7,12 @@ This script clear counters on devices
 import logging
 import ssl
 import sys
-# standard imports
 from argparse import ArgumentParser
 from getpass import getpass
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
-
-logging.disable(level=logging.WARNING)
 
 def clear_counters(inventory, enable_pass):
     """
@@ -25,20 +22,13 @@ def clear_counters(inventory, enable_pass):
     for device in devices:
         switch = device.session
         try:
-            response = switch.runCmds(1, ['show version'], 'json')
-            if response[0]['modelName'] in ['cEOSLab', 'vEOS-lab']:
-                hardware_model = False
-            else:
-                hardware_model = True
-            if hardware_model is True:
+            if device.hw_model in ['cEOSLab', 'vEOS-lab']:
+                switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
+                print('Cleared counters on ' + str(device.host))
+            else: 
                 switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
                     'clear counters', 'clear hardware counter drop'])
                 print('Cleared counters on ' + str(device.host))
-            elif hardware_model is False:
-                switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
-                print('Cleared counters on ' + str(device.host))
-            else:
-                print('Could not clear counters on device ' + str(device.host))
         except jsonrpc.AppError:
             print("Could not clear counters on device " + str(device.host))
         except KeyError:
@@ -57,7 +47,7 @@ def main():
     """
     Main.
     """
-    logging.disable(sys.maxsize)
+    logging.disable(level=logging.WARNING)
 
     parser = ArgumentParser(
         description='Clear counters on EOS devices'
@@ -84,7 +74,7 @@ def main():
         username=args.username,
         password=args.password,
         auto_connect=True,
-        timeout=0.5
+        timeout=2
     )
     clear_counters(inventory, args.enable_pass)
     report_unreachable_devices(inventory)
