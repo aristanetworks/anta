@@ -7,9 +7,9 @@ anta_inventory:
   - host: 192.168.0.14
   - host: 192.168.0.15
   networks:
-  - network: 192.168.110.0/30
-  ranges:
-  - start: 10.0.0.9
-    end: 10.0.0.11
-  - start: 10.0.0.100
-    end: 10.0.0.101
+  - network: 192.168.110.0/24
+  # ranges:
+  # - start: 10.0.0.9
+  #   end: 10.0.0.11
+  # - start: 10.0.0.100
+  #   end: 10.0.0.101
