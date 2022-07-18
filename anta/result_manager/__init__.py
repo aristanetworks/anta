@@ -6,7 +6,6 @@ Result Manager Module for ANTA.
 """
 
 import json
-import logging
 
 from tabulate import tabulate
 
@@ -54,7 +53,7 @@ class ResultManager():
         # Default return for native format.
         return self._result_entries
 
-    def get_result_by_test(self, test_name: str) -> list[TestResult]:
+    def get_result_by_test(self, test_name: str):
         """
         get_result_by_test Get list of test result for a given test.
 
@@ -66,7 +65,7 @@ class ResultManager():
         """
         return [result for result in self._result_entries if str(result.test) == test_name]
 
-    def get_result_by_host(self, host_ip: str) -> list[TestResult]:
+    def get_result_by_host(self, host_ip: str):
         """
         get_result_by_test Get list of test result for a given host.
 
