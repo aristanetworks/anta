@@ -6,7 +6,6 @@ This script clear counters on devices
 
 import logging
 import ssl
-import sys
 from argparse import ArgumentParser
 from getpass import getpass
 from anta.inventory import AntaInventory
@@ -25,7 +24,7 @@ def clear_counters(inventory, enable_pass):
             if device.hw_model in ['cEOSLab', 'vEOS-lab']:
                 switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
                 print('Cleared counters on ' + str(device.host))
-            else: 
+            else:
                 switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
                     'clear counters', 'clear hardware counter drop'])
                 print('Cleared counters on ' + str(device.host))
