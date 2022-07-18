@@ -18,7 +18,7 @@ def report_unreachable_devices(inventory):
     """
     report unreachable devices
     """
-    devices = inventory.inventory_get(established_only = False)
+    devices = inventory.get_inventory(established_only = False)
     all_devices_reachable = True
     for device in devices:
         if device.established is False:
@@ -49,7 +49,13 @@ def main():
     args = parser.parse_args()
     args.password = getpass(prompt='Device password: ')
     print('Testing devices reachability .... please be patient ... ')
-    inventory = AntaInventory(inventory_file=args.file, username=args.username, password=args.password, auto_connect=True)
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=1
+    )
     report_unreachable_devices(inventory)
 
 
