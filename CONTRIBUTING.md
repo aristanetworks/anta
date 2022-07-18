@@ -39,6 +39,28 @@ python documentation/generate-functions-documentation.py
 ls docs/api
 ```
 
+## Git Pre-commit hook
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+When running a commit or a pre-commit check:
+
+```
+❯ echo "import foobaz" > test.py && git add test.py
+❯ pre-commit
+pylint...................................................................Failed
+- hook id: pylint
+- exit code: 22
+
+************* Module test
+test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+test.py:1:0: E0401: Unable to import 'foobaz' (import-error)
+test.py:1:0: W0611: Unused import foobaz (unused-import)
+```
+
 ## Continuous Integration
 
 GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](.github/workflows).
