@@ -14,11 +14,11 @@ class TestResult(BaseModel):
     result: Optional[str]
     message: Optional[str]
 
-    @validator('result')
-    def result_validator(cls, v):
-        if v not in ['unset', 'success', 'failure']:
-            raise ValueError('result must be either success or failure')
-        return v
+    # @validator('result')
+    # def result_validator(cls, v):
+    #     if v not in ['unset', 'success', 'failure']:
+    #         raise ValueError('result must be either success or failure')
+    #     return v
 
 class ListResult(BaseModel):
     __root__= []

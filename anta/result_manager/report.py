@@ -6,6 +6,7 @@ Report management for ANTA.
 """
 
 from operator import itemgetter
+from typing import List
 
 from tabulate import tabulate
 
@@ -140,7 +141,7 @@ class TableReport():
             colalign=("left", "left", "left", "left")
         )
 
-    def add_content(self, results: list[TestResult]):
+    def add_content(self, results: List[TestResult]):
         """
         add_content Add content to manage in the report.
 

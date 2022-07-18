@@ -6,6 +6,7 @@ Result Manager Module for ANTA.
 """
 
 import json
+from typing import List
 
 from tabulate import tabulate
 
