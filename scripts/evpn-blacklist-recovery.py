@@ -19,7 +19,7 @@ def clear_evpn_blacklisted_mac_addresses(inventory, enable_pass):
     """
     clear EVPN blacklisted mac addresses
     """
-    devices = inventory.inventory_get(established_only = True)
+    devices = inventory.get_inventory(established_only = True)
     for device in devices:
         switch = device.session
         try:
@@ -32,7 +32,7 @@ def report_unreachable_devices(inventory):
     """
     report unreachable devices
     """
-    devices = inventory.inventory_get(established_only = False)
+    devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
             print("Could not connect on device " + str(device.host))
@@ -61,7 +61,13 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     print('Clearing on all the devices the list of MAC addresses which are blacklisted in EVPN ... please be patient ...')
-    inventory = AntaInventory(inventory_file=args.file,username=args.username, password=args.password, auto_connect=True)
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=1
+    )
     clear_evpn_blacklisted_mac_addresses(inventory, args.enable_pass)
     report_unreachable_devices(inventory)
 
