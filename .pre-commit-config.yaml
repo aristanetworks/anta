@@ -9,6 +9,7 @@ repos:
       entry: pylint
       language: system
       types: [python]
+      exclude: ^docs/*
       args:
         [
           "-rn", # Only display messages

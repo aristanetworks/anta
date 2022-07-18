@@ -30,7 +30,7 @@ if __name__ == '__main__':
     generate_docs(
         ["anta"],
         output_path=DOCUMENTATION_FOLDER,
-        overview_file = 'README.md'
+        overview_file = 'README.md',
     )
 
     sys.exit(0)
