@@ -39,6 +39,7 @@ class InventoryDevice(BaseModel):
     session: Any
     established = False
     is_online = False
+    hw_model: str = 'unset'
     url: str
 
 class InventoryDevices(BaseModel):

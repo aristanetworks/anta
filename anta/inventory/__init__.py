@@ -59,6 +59,8 @@ class AntaInventory():
     >>>     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
     >>>     "url='https://ansible:ansible@192.168.0.17/command-api'",
     >>>     "established=True",
+    >>>     "is_online=True",
+    >>>     "hw_model=cEOS-LAB",
 
     >>>     "InventoryDevice(host=IPv4Address('192.168.0.2')",
     >>>     "username='ansible'",
@@ -66,6 +68,8 @@ class AntaInventory():
     >>>     "session=None",
     >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
     >>>     "established=False"
+    >>>     "is_online=False",
+    >>>     "hw_model=unset",
     >>> ]
     """
 
@@ -75,6 +79,8 @@ class AntaInventory():
     EAPI_SESSION_TPL = 'https://{{device_username}}:{{device_password}}@{{device}}/command-api'
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
+    # HW model definition in show version
+    HW_MODEL_KEY = 'modelName'
 
     # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5) -> None:
@@ -117,8 +123,7 @@ class AntaInventory():
 
         # Create RPC connection for all devices
         if auto_connect:
-            self.refresh_online_flag_inventory()
-            self.create_all_sessions()
+            self.connect_inventory()
 
     ###########################################################################
     ### Boolean methods
@@ -167,19 +172,51 @@ class AntaInventory():
     ### Internal methods
     ###########################################################################
 
-    def _refresh_online_flag_device(self, device: InventoryDevice) -> InventoryDevice:
+    def _read_device_hw(self, device: InventoryDevice, timeout: float = 5) -> str:
         """
-        _refresh_online_flag_device Update online flag for InventoryDevice
+        _read_device_hw Read HW model from the device and update entry with correct value.
+
+        It returns HW model name from show version or None if device is not reachable
+        or if it cannot find the modelName key
+
+        Args:
+            device (InventoryDevice): Device to update
+            timeout (float, optional): Connection timeout. Defaults to 5.
+
+        Returns:
+            str: HW value read from the device using show version.
+        """
+        logger.debug(f'Reading HW information for {device.host}')
+        connection = Server(device.url)
+        try:
+            setdefaulttimeout(timeout)
+            response = connection.runCmds(1, ['show version'])
+        # pylint: disable=W0703
+        except Exception:
+            logger.warning(f'Service not running on device {device.host}')
+            return None
+        else:
+            return response[0][self.HW_MODEL_KEY] if self.HW_MODEL_KEY in response[0] else None
+
+    def _get_from_device(self, device: InventoryDevice) -> InventoryDevice:
+        """
+        _get_from_device Update online flag for InventoryDevice.
+
+        It updates following keys:
+        - is_online
+        - hw_model
 
         Args:
             device (InventoryDevice): Device to check using InventoryDevice structure.
 
         Returns:
-            InventoryDevice: Updated structure with valid online key
+            InventoryDevice: Updated structure with devices information (is_online, HW model)
         """
         logger.debug(f'Refreshing is_online flag for device {device.host}')
         device.is_online = self._is_device_online(
             device=device, timeout=self.timeout)
+        if device.is_online:
+            device.hw_model = self._read_device_hw(device=device, timeout=self.timeout)
         return device
 
     def _build_device_session_path(self, host: str, username: str, password: str) -> str:
@@ -364,7 +401,7 @@ class AntaInventory():
         """
         if refresh_online_first:
             logger.debug(f'Running a refresh for devices online')
-            self.refresh_online_flag_inventory()
+            self.refresh_device_facts()
 
         for device in self._inventory:
             self.create_device_session(host_ip=device.host)
@@ -398,18 +435,26 @@ class AntaInventory():
     ###########################################################################
     ### MISC methods
 
-    def refresh_online_flag_inventory(self) -> None:
+    def connect_inventory(self):
+        """connect_inventory Helper to prepare inventory with network data."""
+        # Check if devices are online & update is_online flag
+        self.refresh_device_facts()
+
+        # Create eAPI session for all online devices
+        self.create_all_sessions()
+
+
+    def refresh_device_facts(self) -> None:
         """
         refresh_online_flag_inventory Update is_online flag for all devices.
 
         Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
         """
-        logger.debug(f'Refreshing is_online flag in current inventory')
+        logger.debug(f'Refreshing facts for current inventory')
         number_of_devices = len([dev.host for dev in self._inventory])
         with Pool(processes=number_of_devices) as pool:
-            logger.debug(f'Refreshing is_online flag in current inventory')
             logger.debug(f'Check devices using multiprocessing')
             results_map = pool.map(
-                self._refresh_online_flag_device,  self._inventory)
+                self._get_from_device,  self._inventory)
             logger.debug(f'Update inventory with updated data')
             self._inventory = self._inventory_rebuild(results_map)
