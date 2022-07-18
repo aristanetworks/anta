@@ -15,12 +15,26 @@ import json
 import os
 from argparse import ArgumentParser
 from getpass import getpass
+import yaml
 import requests
 from cvprac.cvp_client import CvpClient
+from anta.inventory import AntaInventory
 
 # Ignore certificate warnings
 # pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
+
+def create_inventory(cvp_inventory, out_dir, container):
+    """
+    create an inventory file
+    """
+    inv={AntaInventory.INVENTORY_ROOT_KEY:{"hosts":[]}}
+    for dev in cvp_inventory:
+        inv[AntaInventory.INVENTORY_ROOT_KEY]['hosts'].append({"host":dev["ipAddress"]})
+    # write the devices IP address in a file
+    out_file = f'{out_dir}/{container}.yml'
+    with open(out_file, 'w', encoding="utf8") as out_file:
+        out_file.write(yaml.dump(inv))
 
 def main():
     parser = ArgumentParser(
@@ -81,31 +95,14 @@ def main():
 
     if args.container is None:
         # Get a list of all devices
-        inventory = clnt.api.get_inventory()
-        # write the IP addresses in a file
-        out_file = f'{out_dir}/all.yml'
-        with open(out_file, 'w', encoding="utf8") as out_file:
-            out_file.write("anta_inventory:")
-            out_file.write('\n')
-            out_file.write("  hosts:")
-            out_file.write('\n')
-            for dev in inventory:
-                out_file.write("  - host: " + dev['ipAddress'])
-                out_file.write('\n')
+        cvp_inventory = clnt.api.get_inventory()
+        create_inventory(cvp_inventory, out_dir, "all")
+
     else:
         # Get devices under a container
         container = args.container
         container_inventory = clnt.api.get_devices_in_container(container)
-        # write the devices IP address in a file
-        out_file = f'{out_dir}/{container}.yml'
-        with open(out_file, 'w', encoding="utf8") as out_file:
-            out_file.write("anta_inventory:")
-            out_file.write('\n')
-            out_file.write("  hosts:")
-            out_file.write('\n')
-            for dev in container_inventory:
-                out_file.write("  - host: " + dev['ipAddress'])
-                out_file.write('\n')
+        create_inventory(container_inventory, out_dir, container)
 
 if __name__ == '__main__':
     main()
