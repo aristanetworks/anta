@@ -189,38 +189,36 @@ echo $PATH
 
 # Requirements on the switches
 
-```text
-switch1#sh run int ma1
+```eos
+configure
 interface Management1
    description oob_management
    vrf MGMT
    ip address 10.73.1.105/24
-switch1#
+end
 ```
 
 Enable eAPI on the MGMT vrf:
 
-```text
-switch1#configure
-switch1(config)#management api http-commands
-switch1(config-mgmt-api-http-cmds)#protocol https port 443
-switch1(config-mgmt-api-http-cmds)#no shutdown
-switch1(config-mgmt-api-http-cmds)#vrf MGMT
-switch1(config-mgmt-api-http-cmds-vrf-MGMT)#no shutdown
-switch1(config-mgmt-api-http-cmds-vrf-MGMT)#exit
-switch1(config-mgmt-api-http-cmds)#exit
-switch1(config)#
+```eos
+configure
+management api http-commands
+   protocol https port 443
+   no shutdown
+   vrf MGMT
+      no shutdown
+end
 ```
 
 Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
 
 Run these EOS commands to verify:
 
-```text
-switch1#sh management http-server
+```eos
+switch1#show management http-server
 ```
 
-```text
+```eos
 switch1#show management api http-commands
 ```
 
