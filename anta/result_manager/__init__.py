@@ -54,7 +54,7 @@ class ResultManager():
         # Default return for native format.
         return self._result_entries
 
-    def get_result_by_test(self, test_name: str):
+    def get_result_by_test(self, test_name: str) -> List[TestResult]:
         """
         get_result_by_test Get list of test result for a given test.
 
@@ -66,7 +66,7 @@ class ResultManager():
         """
         return [result for result in self._result_entries if str(result.test) == test_name]
 
-    def get_result_by_host(self, host_ip: str):
+    def get_result_by_host(self, host_ip: str) -> List[TestResult]:
         """
         get_result_by_test Get list of test result for a given host.
 

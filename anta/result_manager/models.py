@@ -5,22 +5,26 @@
 """Models related to anta.result_manager module."""
 
 from typing import List, Optional, Any
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, validator
+from pydantic import BaseModel, IPvAnyAddress, validator
 
+RESULT_OPTIONS = ['unset', 'success', 'failure']
 
 class TestResult(BaseModel):
-    host: str
+    """Describe result of a test from a single device."""
+    host: IPvAnyAddress
     test: str
-    result: Optional[str]
+    result: str = 'unset'
     message: Optional[str]
 
-    # @validator('result')
-    # def result_validator(cls, v):
-    #     if v not in ['unset', 'success', 'failure']:
-    #         raise ValueError('result must be either success or failure')
-    #     return v
+    @validator('result')
+    def name_must_contain_space(cls, v):
+        if v not in RESULT_OPTIONS:
+            raise ValueError(f'must be one of {RESULT_OPTIONS}')
+        return v
+
 
 class ListResult(BaseModel):
+    """List result for all tests on all devices."""
     __root__= []
 
     def append(self, value) -> None:
