@@ -1,3 +1,6 @@
+"""
+Test functions related to VXLAN
+"""
 from jsonrpclib import jsonrpc
 
 def verify_vxlan(device, enable_password):

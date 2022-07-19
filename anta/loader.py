@@ -1,3 +1,6 @@
+"""
+Loader that parses a YAML test catalog and imports corresponding Python functions
+"""
 import importlib
 from typing import Callable, List, Tuple
 import sys

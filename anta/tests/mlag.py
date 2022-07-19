@@ -1,3 +1,6 @@
+"""
+Test functions related to Multi-Chassis LAG
+"""
 from jsonrpclib import jsonrpc
 
 def verify_mlag_status(device, enable_password):

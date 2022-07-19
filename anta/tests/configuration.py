@@ -1,3 +1,6 @@
+"""
+Test functions related to the device configuration
+"""
 from jsonrpclib import jsonrpc
 
 def verify_zerotouch(device, enable_password):

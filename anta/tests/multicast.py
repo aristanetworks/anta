@@ -1,3 +1,6 @@
+"""
+Test functions related to multicast
+"""
 from jsonrpclib import jsonrpc
 
 def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):

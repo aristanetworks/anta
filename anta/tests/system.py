@@ -1,3 +1,6 @@
+"""
+Test functions related to system-level features and protocols
+"""
 from jsonrpclib import jsonrpc
 
 def verify_uptime(device, enable_password, minimum = None):

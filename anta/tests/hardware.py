@@ -1,3 +1,6 @@
+"""
+Test functions related to the hardware or environement
+"""
 from jsonrpclib import jsonrpc
 
 def verify_transceivers_manufacturers(device, enable_password, manufacturers = None):

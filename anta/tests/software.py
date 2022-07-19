@@ -1,3 +1,6 @@
+"""
+Test functions related to the EOS software
+"""
 from jsonrpclib import jsonrpc
 
 def verify_eos_version(device, enable_password, versions = None):

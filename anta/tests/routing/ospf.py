@@ -1,3 +1,6 @@
+"""
+OSPF test functions
+"""
 from jsonrpclib import jsonrpc
 
 def verify_ospf_state(device, enable_password):

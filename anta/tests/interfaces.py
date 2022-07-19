@@ -1,3 +1,6 @@
+"""
+Test functions related to the device interfaces
+"""
 from jsonrpclib import jsonrpc
 
 def verify_interface_utilization(device, enable_password):

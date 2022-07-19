@@ -1,3 +1,6 @@
+"""
+Generic routing test functions
+"""
 from jsonrpclib import jsonrpc
 
 def verify_routing_protocol_model(device, enable_password, model = None):

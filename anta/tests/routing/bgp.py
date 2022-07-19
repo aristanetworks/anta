@@ -1,3 +1,6 @@
+"""
+BGP test functions
+"""
 from jsonrpclib import jsonrpc
 
 def verify_bgp_ipv4_unicast_state(device, enable_password):

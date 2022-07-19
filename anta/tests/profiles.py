@@ -1,3 +1,6 @@
+"""
+Test functions related to ASIC profiles
+"""
 from jsonrpclib import jsonrpc
 
 def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
