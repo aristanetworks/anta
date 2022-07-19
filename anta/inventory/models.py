@@ -58,3 +58,7 @@ class InventoryDevices(BaseModel):
     def __getitem__(self, item):
         """Use custom getitem method."""
         return self.__root__[item]
+
+    def __len__(self):
+        """Support for length of __root__"""
+        return len(self.__root__)
