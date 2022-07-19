@@ -23,15 +23,15 @@ def clear_counters(inventory, enable_pass):
         try:
             if device.hw_model in ['cEOSLab', 'vEOS-lab']:
                 switch.runCmds(1,[{"cmd": "enable", "input": enable_pass}, 'clear counters'])
-                print('Cleared counters on ' + str(device.host))
+                print(f'Cleared counters on {str(device.host)}')
             else:
                 switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
                     'clear counters', 'clear hardware counter drop'])
-                print('Cleared counters on ' + str(device.host))
+                print(f'Cleared counters on {str(device.host)}')
         except jsonrpc.AppError:
-            print("Could not clear counters on device " + str(device.host))
+            print(f'Could not clear counters on device {str(device.host)}')
         except KeyError:
-            print("Could not clear counters on device " + str(device.host))
+            print(f'Could not clear counters on device {str(device.host)}')
 
 def report_unreachable_devices(inventory):
     """
@@ -40,7 +40,7 @@ def report_unreachable_devices(inventory):
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print("Could not connect on device " + str(device.host))
+            print(f'Could not connect to device {str(device.host)}')
 
 def main():
     """
