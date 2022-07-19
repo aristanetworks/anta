@@ -26,7 +26,7 @@ def clear_evpn_blacklisted_mac_addresses(inventory, enable_pass):
             switch.runCmds(1,[{"cmd": "enable", "input": enable_pass},\
                  'clear bgp evpn host-flap'])
         except jsonrpc.AppError:
-            print("Could not clear the EVPN blacklisted mac addresses on device " + str(device.host))
+            print(f"Could not clear the EVPN blacklisted mac addresses on device {str(device.host)}")
 
 def report_unreachable_devices(inventory):
     """
@@ -35,7 +35,7 @@ def report_unreachable_devices(inventory):
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print("Could not connect on device " + str(device.host))
+            print(f"Could not connect to device {str(device.host)}")
 
 def main():
     """
