@@ -22,7 +22,7 @@ def report_unreachable_devices(inventory):
     all_devices_reachable = True
     for device in devices:
         if device.established is False:
-            print("Could not connect on device " + str(device.host))
+            print(f"Could not connect to device {str(device.host)}")
             all_devices_reachable = False
     if all_devices_reachable is True:
         print('All devices from the file are reachable using eAPI')
@@ -57,7 +57,6 @@ def main():
         timeout=1
     )
     report_unreachable_devices(inventory)
-
 
 if __name__ == '__main__':
     main()
