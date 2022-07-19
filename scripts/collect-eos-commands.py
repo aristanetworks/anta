@@ -4,22 +4,27 @@
 This script collects show commands output from devices
 """
 
+import logging
 import os
 import ssl
 import sys
 from argparse import ArgumentParser
 from getpass import getpass
 from socket import setdefaulttimeout
-from jsonrpclib import Server,jsonrpc
+from jsonrpclib import jsonrpc
 from yaml import safe_load
+from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def device_directories (device, root_dir):
+    """
+    Create device directories
+    """
     cwd = os.getcwd()
     output_directory = os.path.dirname(cwd + "/" + root_dir + "/")
-    device_directory = output_directory + '/' + device
+    device_directory = output_directory + '/' + str(device.host)
     json_directory = device_directory + '/json'
     text_directory = device_directory + '/text'
     for directory in [output_directory, device_directory, json_directory, text_directory]:
@@ -28,7 +33,20 @@ def device_directories (device, root_dir):
     result = output_directory, device_directory, json_directory, text_directory
     return result
 
+def report_unreachable_devices(inventory):
+    """
+    report unreachable devices
+    """
+    devices = inventory.get_inventory(established_only = False)
+    for device in devices:
+        if device.established is False:
+            print("Could not connect on device " + str(device.host))
+
 def main():
+    """
+    Main
+    """
+    logging.disable(level=logging.WARNING)
     parser = ArgumentParser(
         description='Collect output of EOS commands'
         )
@@ -68,42 +86,21 @@ def main():
         print('Error reading ' + args.eos_commands)
         sys.exit(1)
 
-    try:
-        with open(args.file, 'r', encoding='utf8') as file:
-            devices = file.readlines()
-    except FileNotFoundError:
-        print('Error reading ' + args.file)
-        sys.exit(1)
-
-    for i,device in enumerate(devices):
-        devices[i] = device.strip()
-
-    # Delete unreachable devices from devices list
-    unreachable = []
-
     print('Connecting to devices .... please be patient ... ')
 
-    for device in devices:
-        try:
-            setdefaulttimeout(5)
-            url=f"https://{args.username}:{args.password}@{device}/command-api"
-            switch = Server(url)
-            switch.runCmds(1, ['show version'])
-        except jsonrpc.TransportError:
-            print('wrong credentials for ' + device)
-            unreachable.append(device)
-        except OSError:
-            print(device + ' is not reachable using eAPI')
-            unreachable.append(device)
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=2
+    )
 
-    for item in unreachable:
-        devices.remove(item)
-
+    devices = inventory.get_inventory(established_only = True)
     for device in devices:
-        url=f"https://{args.username}:{args.password}@{device}/command-api"
-        switch = Server(url)
+        switch = device.session
         print('\n')
-        print('Collecting show commands output on device ' + device)
+        print('Collecting show commands output on device ' +  str(device.host))
         output_dir = device_directories (device, args.output_directory)
         if 'json_format' in eos_commands:
             for eos_command in eos_commands['json_format']:
@@ -127,6 +124,8 @@ def main():
                         outfile.write(result[1]['output'])
                 except jsonrpc.AppError:
                     print('Unable to collect and save the text command ' + eos_command)
+
+    report_unreachable_devices(inventory)
 
 if __name__ == '__main__':
     main()
