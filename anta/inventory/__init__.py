@@ -328,6 +328,24 @@ class AntaInventory():
             inventory.append(device)
         return inventory
 
+    def _filtered_inventory(self, established_only: bool = False) -> InventoryDevices:
+        """
+        _filtered_inventory Generate a temporary inventory filtered.
+
+        Args:
+            established_only (bool, optional): Do we have to include non-established devices. Defaults to False.
+
+        Returns:
+            InventoryDevices: A inventory with concerned devices
+        """
+        inventory = InventoryDevices()
+        if established_only is False:
+            return self._inventory
+
+        for device in self._inventory:
+            if device.established:
+                inventory.append(device)
+        return inventory
 
     ###########################################################################
     ### Public methods
@@ -342,24 +360,26 @@ class AntaInventory():
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
 
         Args:
-            format (str, optional): Format output, can be native or JSON. Defaults to 'native'.
+            format (str, optional): Format output, can be native, list or JSON. Defaults to 'native'.
             established_only (bool, optional): Allow to expose also unreachable devices. Defaults to True.
 
         Returns:
             InventoryDevices: List of InventoryDevice
         """
-        if format_out not in ['native', 'json']:
+        if format_out not in ['native', 'json', 'list']:
             raise InventoryUnknownFormat(
                 f'Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}')
 
-        if established_only:
-            devices = [dev for dev in self._inventory if dev.established]
-        else:
-            devices = self._inventory
+        inventory = self._filtered_inventory(established_only)
+
+        if format_out == 'list':
+            # pylint: disable=R1721
+            return [dev for dev in inventory]
 
         if format_out == 'json':
-            return self._inventory.json()
-        return devices
+            return inventory.json()
+
+        return inventory
 
     def get_device(self, host_ip) -> InventoryDevice:
         """Get device information from a given IP.
