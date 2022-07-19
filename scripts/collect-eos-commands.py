@@ -40,7 +40,7 @@ def report_unreachable_devices(inventory):
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print("Could not connect on device " + str(device.host))
+            print(f"Could not connect to device {str(device.host)}")
 
 def main():
     """
@@ -83,7 +83,7 @@ def main():
             eos_commands = file.read()
             eos_commands = safe_load(eos_commands)
     except FileNotFoundError:
-        print('Error reading ' + args.eos_commands)
+        print(f'Error reading {args.eos_commands}')
         sys.exit(1)
 
     print('Connecting to devices .... please be patient ... ')
@@ -100,7 +100,7 @@ def main():
     for device in devices:
         switch = device.session
         print('\n')
-        print('Collecting show commands output on device ' +  str(device.host))
+        print(f'Collecting show commands output to device {str(device.host)}')
         output_dir = device_directories (device, args.output_directory)
         if 'json_format' in eos_commands:
             for eos_command in eos_commands['json_format']:
@@ -112,7 +112,7 @@ def main():
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(str(result[1]))
                 except jsonrpc.AppError:
-                    print('Unable to collect and save the json command ' + eos_command)
+                    print(f'Unable to collect and save the json command {eos_command}')
         if 'text_format' in eos_commands:
             for eos_command in eos_commands['text_format']:
                 setdefaulttimeout(10)
@@ -123,7 +123,7 @@ def main():
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(result[1]['output'])
                 except jsonrpc.AppError:
-                    print('Unable to collect and save the text command ' + eos_command)
+                    print(f'Unable to collect and save the text command {eos_command}')
 
     report_unreachable_devices(inventory)
 
