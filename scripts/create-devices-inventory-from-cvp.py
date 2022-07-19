@@ -5,7 +5,7 @@ This script:
 - uses CVP REST API to generate a token
 - uses cvprac with this token to get the device inventory
 - creates a text file with the devices IP address under the container passed in argument
-    - if we dont provide the argument `c` it creates a text file with all the devices IP address.
+- if we dont provide the argument `c` it creates a text file with all the devices IP address from the CVP inventory.
 
 usage: ./create-devices-inventory-from-cvp.py --help
 requirement: pip install cvprac==1.2.0
@@ -15,12 +15,26 @@ import json
 import os
 from argparse import ArgumentParser
 from getpass import getpass
+import yaml
 import requests
 from cvprac.cvp_client import CvpClient
+from anta.inventory import AntaInventory
 
 # Ignore certificate warnings
 # pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
+
+def create_inventory(cvp_inventory, out_dir, container):
+    """
+    create an inventory file
+    """
+    inv={AntaInventory.INVENTORY_ROOT_KEY:{"hosts":[]}}
+    for dev in cvp_inventory:
+        inv[AntaInventory.INVENTORY_ROOT_KEY]['hosts'].append({"host":dev["ipAddress"]})
+    # write the devices IP address in a file
+    out_file = f'{out_dir}/{container}.yml'
+    with open(out_file, 'w', encoding="utf8") as out_file:
+        out_file.write(yaml.dump(inv))
 
 def main():
     parser = ArgumentParser(
@@ -81,24 +95,14 @@ def main():
 
     if args.container is None:
         # Get a list of all devices
-        # help(clnt.api.get_inventory)
-        inventory = clnt.api.get_inventory()
-        # write all IP addresses from the CVP inventory in the all.txt file
-        out_file = f'{out_dir}/all.txt'
-        with open(out_file, 'w', encoding="utf8") as out_file:
-            for dev in inventory:
-                out_file.write(dev['ipAddress'])
-                out_file.write('\n')
+        cvp_inventory = clnt.api.get_inventory()
+        create_inventory(cvp_inventory, out_dir, "all")
+
     else:
-        # Get devices under a container and write the devices IP address in a file
-        # help(clnt.api.get_devices_in_container)
+        # Get devices under a container
         container = args.container
         container_inventory = clnt.api.get_devices_in_container(container)
-        out_file = f'{out_dir}/{container}.txt'
-        with open(out_file, 'w', encoding="utf8") as out_file:
-            for dev in container_inventory:
-                out_file.write(dev['ipAddress'])
-                out_file.write('\n')
+        create_inventory(container_inventory, out_dir, container)
 
 if __name__ == '__main__':
     main()
