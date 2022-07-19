@@ -45,7 +45,7 @@ def report_unreachable_devices(inventory):
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print("Could not connect on device " + str(device.host))
+            print(f"Could not connect to device {str(device.host)}")
 
 def main():
     """
@@ -120,12 +120,12 @@ def main():
                 switch.runCmds(1,cmds, 'text')
                 pbar.update(1)
             except jsonrpc.AppError:
-                print("Could not collect show tech files on device " + device)
+                print(f"Could not collect show tech files on device {str(device.host)}")
                 pbar.update(1)
         pbar.close()
-        print('Done. Files are in the directory ' + output_dir[0])
+        print(f'Done. Files are in the directory {output_dir[0]}')
     else:
-        print("can not connect on any device")
+        print("can not connect to any device")
 
     report_unreachable_devices(inventory)
 
