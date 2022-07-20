@@ -81,8 +81,6 @@ class AntaInventory():
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
     # HW model definition in show version
     HW_MODEL_KEY = 'modelName'
-    # Max number of thread to launch for discovery
-    MAX_DISCOVERY_THREADS = 100
 
     # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5) -> None:
@@ -99,6 +97,9 @@ class AntaInventory():
         self._password = password
         self.timeout = timeout
         self._inventory = InventoryDevices()
+
+        # Max number of thread to launch for discovery
+        self.max_multiprocessing_thread = multiprocessing.cpu_count() + 30
 
         with open(inventory_file, 'r', encoding='utf8') as f:
             data = yaml.load(f, Loader=SafeLoader)
@@ -473,9 +474,7 @@ class AntaInventory():
         Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
         """
         logger.debug(f'Refreshing facts for current inventory')
-        number_of_threads = len(self._inventory) if len(
-            self._inventory) < self.MAX_DISCOVERY_THREADS else self.MAX_DISCOVERY_THREADS
-        with Pool(processes=number_of_threads) as pool:
+        with Pool(processes=self.max_multiprocessing_thread) as pool:
             logger.debug(f'Check devices using multiprocessing')
             results_map = pool.map(
                 self._get_from_device,  self._inventory)
