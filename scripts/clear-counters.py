@@ -8,7 +8,9 @@ import logging
 import ssl
 from argparse import ArgumentParser
 from getpass import getpass
+
 from anta.inventory import AntaInventory
+from jsonrpclib import jsonrpc
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
