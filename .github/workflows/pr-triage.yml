@@ -1,0 +1,19 @@
+name: "Pull Request Triage"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - ready_for_review
+
+jobs:
+  assign_author:
+    name: "Assign Author to PR"
+    # https://github.com/marketplace/actions/auto-author-assign
+    runs-on: ubuntu-latest
+    steps:
+      - uses: toshimaru/auto-author-assign@v1.2.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
