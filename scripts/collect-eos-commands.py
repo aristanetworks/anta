@@ -23,10 +23,10 @@ def device_directories (device, root_dir):
     Create device directories
     """
     cwd = os.getcwd()
-    output_directory = os.path.dirname(cwd + "/" + root_dir + "/")
-    device_directory = output_directory + '/' + str(device.host)
-    json_directory = device_directory + '/json'
-    text_directory = device_directory + '/text'
+    output_directory = os.path.dirname(f'{cwd}/{root_dir}/')
+    device_directory = f'{output_directory}/{device.host}'
+    json_directory = f'{device_directory}/json'
+    text_directory = f'{device_directory}/text'
     for directory in [output_directory, device_directory, json_directory, text_directory]:
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -40,7 +40,7 @@ def report_unreachable_devices(inventory):
     devices = inventory.get_inventory(established_only = False)
     for device in devices:
         if device.established is False:
-            print(f"Could not connect to device {str(device.host)}")
+            print(f"Could not connect to device {device.host}")
 
 def main():
     """
@@ -100,7 +100,7 @@ def main():
     for device in devices:
         switch = device.session
         print('\n')
-        print(f'Collecting show commands output to device {str(device.host)}')
+        print(f'Collecting show commands output to device {device.host}')
         output_dir = device_directories (device, args.output_directory)
         if 'json_format' in eos_commands:
             for eos_command in eos_commands['json_format']:
