@@ -34,43 +34,46 @@ logger.setLevel(logging.DEBUG)
 class AntaInventory():
     """Inventory Abstraction for ANTA framework.
 
-    Inventory file example:
-    ----------------------
-    >>> print(inventory.yml)
-    >>> anta_inventory:
-    >>>   hosts:
-    >>>     - hosts: 1.1.1.1
-    >>>     - host: 2.2.2.2
-    >>>   networks:
-    >>>     - network: 10.0.0.0/8
-    >>>     - network: 192.168.0.0/16
-    >>>   ranges:
-    >>>     - start: 10.0.0.1
-    >>>       end: 10.0.0.11
+    Examples:
+        # Inventory file input
+        >>> print(inventory.yml)
+        >>> anta_inventory:
+        >>>   hosts:
+        >>>     - hosts: 1.1.1.1
+        >>>     - host: 2.2.2.2
+        >>>   networks:
+        >>>     - network: 10.0.0.0/8
+        >>>     - network: 192.168.0.0/16
+        >>>   ranges:
+        >>>     - start: 10.0.0.1
+        >>>       end: 10.0.0.11
 
-    Inventory Output:
-    ------------------
-    >>> test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)
-    >>> test.get_inventory()
-    >>> [
-    >>>     "InventoryDevice(host=IPv4Address('192.168.0.17')",
-    >>>     "username='ansible'",
-    >>>     "password='ansible'",
-    >>>     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
-    >>>     "url='https://ansible:ansible@192.168.0.17/command-api'",
-    >>>     "established=True",
-    >>>     "is_online=True",
-    >>>     "hw_model=cEOS-LAB",
-
-    >>>     "InventoryDevice(host=IPv4Address('192.168.0.2')",
-    >>>     "username='ansible'",
-    >>>     "password='ansible'",
-    >>>     "session=None",
-    >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
-    >>>     "established=False"
-    >>>     "is_online=False",
-    >>>     "hw_model=unset",
-    >>> ]
+        # Inventory result
+        >>> test = AntaInventory(
+        >>> ... inventory_file='examples/inventory.yml',
+        >>> ... username='ansible',
+        >>> ... password='ansible',
+        >>> ... auto_connect=True)
+        >>> test.get_inventory()
+        >>> [
+        >>>     "InventoryDevice(host=IPv4Address('192.168.0.17')",
+        >>>     "username='ansible'",
+        >>>     "password='ansible'",
+        >>>     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
+        >>>     "url='https://ansible:ansible@192.168.0.17/command-api'",
+        >>>     "established=True",
+        >>>     "is_online=True",
+        >>>     "hw_model=cEOS-LAB",
+        >>>  ...
+        >>>     "InventoryDevice(host=IPv4Address('192.168.0.2')",
+        >>>     "username='ansible'",
+        >>>     "password='ansible'",
+        >>>     "session=None",
+        >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
+        >>>     "established=False"
+        >>>     "is_online=False",
+        >>>     "hw_model=unset",
+        >>> ]
     """
 
     # Root key of inventory part of the inventory file

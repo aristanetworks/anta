@@ -16,8 +16,8 @@ class TestResult(BaseModel):
     result: str = 'unset'
     message: Optional[str]
 
-    @validator('result')
-    def name_must_contain_space(cls, v):
+    @validator('result', allow_reuse=True)
+    def name_must_be_in(cls, v):
         if v not in RESULT_OPTIONS:
             raise ValueError(f'must be one of {RESULT_OPTIONS}')
         return v

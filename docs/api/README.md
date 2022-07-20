@@ -25,8 +25,8 @@
 - [`models.InventoryDevice`](./inventory.models.md#class-inventorydevice): Inventory model exposed by Inventory class.
 - [`models.InventoryDevices`](./inventory.models.md#class-inventorydevices): Inventory model to list all InventoryDevice entries.
 - [`result_manager.ResultManager`](./result_manager.md#class-resultmanager): ResultManager Helper to manage Test Results and generate reports.
-- [`models.ListResult`](./result_manager.models.md#class-listresult)
-- [`models.TestResult`](./result_manager.models.md#class-testresult)
+- [`models.ListResult`](./result_manager.models.md#class-listresult): List result for all tests on all devices.
+- [`models.TestResult`](./result_manager.models.md#class-testresult): Describe result of a test from a single device.
 - [`report.Colors`](./result_manager.report.md#class-colors): Manage colors for output.
 - [`report.TableReport`](./result_manager.report.md#class-tablereport): TableReport Generate a Table based on tabulate and TestResult.
 
