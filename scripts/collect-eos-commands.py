@@ -10,13 +10,14 @@ import sys
 from argparse import ArgumentParser
 from getpass import getpass
 from socket import setdefaulttimeout
-from jsonrpclib import Server,jsonrpc
+from jsonrpclib import Server, jsonrpc
 from yaml import safe_load
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
-def device_directories (device, root_dir):
+
+def device_directories(device, root_dir):
     cwd = os.getcwd()
     output_directory = os.path.dirname(cwd + "/" + root_dir + "/")
     device_directory = output_directory + '/' + device
@@ -27,6 +28,7 @@ def device_directories (device, root_dir):
             os.makedirs(directory)
     result = output_directory, device_directory, json_directory, text_directory
     return result
+
 
 def main():
     parser = ArgumentParser(
@@ -75,7 +77,7 @@ def main():
         print('Error reading ' + args.file)
         sys.exit(1)
 
-    for i,device in enumerate(devices):
+    for i, device in enumerate(devices):
         devices[i] = device.strip()
 
     # Delete unreachable devices from devices list
@@ -86,7 +88,7 @@ def main():
     for device in devices:
         try:
             setdefaulttimeout(5)
-            url=f"https://{args.username}:{args.password}@{device}/command-api"
+            url = f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['show version'])
         except jsonrpc.TransportError:
@@ -100,17 +102,17 @@ def main():
         devices.remove(item)
 
     for device in devices:
-        url=f"https://{args.username}:{args.password}@{device}/command-api"
+        url = f"https://{args.username}:{args.password}@{device}/command-api"
         switch = Server(url)
         print('\n')
         print('Collecting show commands output on device ' + device)
-        output_dir = device_directories (device, args.output_directory)
+        output_dir = device_directories(device, args.output_directory)
         if 'json_format' in eos_commands:
             for eos_command in eos_commands['json_format']:
                 setdefaulttimeout(10)
                 try:
-                    result=switch.runCmds\
-                        (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json')
+                    result = (switch.runCmds
+                              (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'json'))
                     outfile = output_dir[2] + '/' + eos_command
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(str(result[1]))
@@ -120,13 +122,14 @@ def main():
             for eos_command in eos_commands['text_format']:
                 setdefaulttimeout(10)
                 try:
-                    result=switch.runCmds\
-                        (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text')
+                    result = (switch.runCmds
+                              (1, [{"cmd": "enable", "input": args.enable_pass}, eos_command], 'text'))
                     outfile = output_dir[3] + '/' + eos_command
                     with open(outfile, 'w', encoding="utf8") as outfile:
                         outfile.write(result[1]['output'])
                 except jsonrpc.AppError:
                     print('Unable to collect and save the text command ' + eos_command)
+
 
 if __name__ == '__main__':
     main()

@@ -21,7 +21,7 @@ class ResultManager():
         """__init__ Class constructor."""
         self._result_entries = ListResult()
 
-    def add_test_result(self, entry: TestResult)-> None:
+    def add_test_result(self, entry: TestResult) -> None:
         """
         add_test_result Add a result to the list
 

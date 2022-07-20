@@ -24,17 +24,19 @@ from anta.inventory import AntaInventory
 # pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
 
+
 def create_inventory(cvp_inventory, out_dir, container):
     """
     create an inventory file
     """
-    inv={AntaInventory.INVENTORY_ROOT_KEY:{"hosts":[]}}
+    inv = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
     for dev in cvp_inventory:
-        inv[AntaInventory.INVENTORY_ROOT_KEY]['hosts'].append({"host":dev["ipAddress"]})
+        inv[AntaInventory.INVENTORY_ROOT_KEY]['hosts'].append({"host": dev["ipAddress"]})
     # write the devices IP address in a file
     out_file = f'{out_dir}/{container}.yml'
     with open(out_file, 'w', encoding="utf8") as out_file:
         out_file.write(yaml.dump(inv))
+
 
 def main():
     parser = ArgumentParser(
@@ -91,7 +93,7 @@ def main():
     clnt = CvpClient()
 
     # help(clnt.connect)
-    clnt.connect(nodes=[args.cvp], username='',password='',api_token=token)
+    clnt.connect(nodes=[args.cvp], username='', password='', api_token=token)
 
     if args.container is None:
         # Get a list of all devices
@@ -103,6 +105,7 @@ def main():
         container = args.container
         container_inventory = clnt.api.get_devices_in_container(container)
         create_inventory(container_inventory, out_dir, container)
+
 
 if __name__ == '__main__':
     main()

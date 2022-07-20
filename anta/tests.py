@@ -4,13 +4,14 @@ Module that defines various functions to test EOS devices.
 
 from jsonrpclib import jsonrpc
 
-def verify_eos_version(device, enable_password, versions = None):
+
+def verify_eos_version(device, versions=None):
     """
     Verifies the device is running one of the allowed EOS version.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         versions (list): List of allowed EOS versions.
 
     Returns:
@@ -31,13 +32,14 @@ def verify_eos_version(device, enable_password, versions = None):
     except KeyError:
         return None
 
-def verify_terminattr_version(device, enable_password, versions = None):
+
+def verify_terminattr_version(device, versions=None):
     """
     Verifies the device is running one of the allowed TerminAttr version.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         versions (list): List of allowed TerminAttr versions.
 
     Returns:
@@ -57,13 +59,14 @@ def verify_terminattr_version(device, enable_password, versions = None):
     except KeyError:
         return None
 
-def verify_eos_extensions(device, enable_password):
+
+def verify_eos_extensions(device):
     """
     Verifies all EOS extensions installed on the device are enabled for boot persistence.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device has all installed its EOS extensions enabled for boot persistence.
@@ -94,14 +97,15 @@ def verify_eos_extensions(device, enable_password):
     except KeyError:
         return None
 
-def verify_field_notice_44_resolution(device, enable_password):
+
+def verify_field_notice_44_resolution(device):
     """
     Verifies the device is using an Aboot version that fix the bug discussed
     in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device is using an Aboot version that fix the bug discussed
@@ -184,13 +188,14 @@ def verify_field_notice_44_resolution(device, enable_password):
     except KeyError:
         return None
 
-def verify_uptime(device, enable_password, minimum = None):
+
+def verify_uptime(device, minimum=None):
     """
     Verifies the device uptime is higher than a value.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         minimum (int): Minimum uptime in seconds.
 
     Returns:
@@ -211,13 +216,14 @@ def verify_uptime(device, enable_password, minimum = None):
     except KeyError:
         return None
 
-def verify_reload_cause(device, enable_password):
+
+def verify_reload_cause(device):
     """
     Verifies the last reload of the device was requested by a user.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device last reload was requested by a user.
@@ -225,23 +231,25 @@ def verify_reload_cause(device, enable_password):
 
     """
     try:
-        response = device.runCmds(1, ['show version','show reload cause'], 'json')
+        response = device.runCmds(1, ['show version', 'show reload cause'], 'json')
     except jsonrpc.AppError:
         return None
     try:
-        if response[0]['response']['resetCauses'][0]['description'] == 'Reload requested by the user.' or \
-           response[0]['response']['resetCauses'][0]['description'] == 'Reload requested after FPGA upgrade':
+        if (response[0]['response']['resetCauses'][0]['description'] == 'Reload requested by the user.' or
+                response[0]['response']['resetCauses'][0]['description'] == 'Reload requested after FPGA upgrade'):
             return True
         return False
     except KeyError:
         return None
+
 
 def verify_coredump(device, enable_password):
     """
     Verifies there is no core file.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         enable_password (str): Enable password.
 
     Returns:
@@ -249,8 +257,9 @@ def verify_coredump(device, enable_password):
 
     """
     try:
-        response = device.runCmds(1, \
-            [{"cmd": "enable", "input": enable_password},'bash timeout 10 ls /var/core'], 'text')
+        response = device.runCmds(1,
+                                  [{"cmd": "enable", "input": enable_password}, 'bash timeout 10 ls /var/core'],
+                                  'text')
     except jsonrpc.AppError:
         return None
     try:
@@ -260,13 +269,14 @@ def verify_coredump(device, enable_password):
     except KeyError:
         return None
 
-def verify_agent_logs(device, enable_password):
+
+def verify_agent_logs(device):
     """
     Verifies there is no agent crash reported on the device.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device has no agent crash reported.
@@ -284,14 +294,15 @@ def verify_agent_logs(device, enable_password):
     except KeyError:
         return None
 
-def verify_syslog(device, enable_password):
+
+def verify_syslog(device):
     """
     Verifies the device had no syslog message with a severity of warning (or a more severe message)
     during the last 7 days.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device had no syslog message with a severity of warning (or a more severe message)
@@ -310,13 +321,14 @@ def verify_syslog(device, enable_password):
     except KeyError:
         return None
 
-def verify_cpu_utilization(device, enable_password):
+
+def verify_cpu_utilization(device):
     """
     Verifies the CPU utilization is less than 75%.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device CPU utilization is less than 75%.
@@ -334,13 +346,14 @@ def verify_cpu_utilization(device, enable_password):
     except KeyError:
         return None
 
-def verify_memory_utilization(device, enable_password):
+
+def verify_memory_utilization(device):
     """
     Verifies the memory utilization is less than 75%.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device memory utilization is less than 75%.
@@ -358,13 +371,15 @@ def verify_memory_utilization(device, enable_password):
     except KeyError:
         return None
 
+
 def verify_filesystem_utilization(device, enable_password):
 
     """
     Verifies each partition on the disk is used less than 75%.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         enable_password (str): Enable password.
 
     Returns:
@@ -374,8 +389,10 @@ def verify_filesystem_utilization(device, enable_password):
     """
 
     try:
-        response = device.runCmds(1, \
-            [{"cmd": "enable", "input": enable_password},'bash timeout 10 df -h'], 'text')
+        response = device.runCmds(1,
+                                  [{"cmd": "enable", "input": enable_password},
+                                   'bash timeout 10 df -h'],
+                                  'text')
     except jsonrpc.AppError:
         return None
     try:
@@ -387,14 +404,15 @@ def verify_filesystem_utilization(device, enable_password):
     except KeyError:
         return None
 
-def verify_transceivers_manufacturers(device, enable_password, manufacturers = None):
+
+def verify_transceivers_manufacturers(device, manufacturers=None):
 
     """
     Verifies the device is only using transceivers from supported manufacturers.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         manufacturers (list): List of allowed transceivers manufacturers.
 
     Returns:
@@ -416,15 +434,16 @@ def verify_transceivers_manufacturers(device, enable_password, manufacturers = N
     except KeyError:
         return None
 
-def verify_system_temperature(device, enable_password):
+
+def verify_system_temperature(device):
 
     """
     Verifies the device temperature is currently OK
     and the device did not report any temperature alarm in the past.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device temperature is OK.
@@ -442,15 +461,16 @@ def verify_system_temperature(device, enable_password):
     except KeyError:
         return None
 
-def verify_transceiver_temperature(device, enable_password):
+
+def verify_transceiver_temperature(device):
 
     """
     Verifies the transceivers temperature is currently OK
     and the device did not report any alarm in the past for its transceivers temperature.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the transceivers temperature of the device is currently OK
@@ -470,14 +490,15 @@ def verify_transceiver_temperature(device, enable_password):
     except KeyError:
         return None
 
-def verify_environment_cooling(device, enable_password):
+
+def verify_environment_cooling(device):
 
     """
     Verifies the fans status is OK.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the if the fans status is OK.
@@ -495,14 +516,15 @@ def verify_environment_cooling(device, enable_password):
     except KeyError:
         return None
 
-def verify_environment_power(device, enable_password):
+
+def verify_environment_power(device):
 
     """
     Verifies the power supplies status is OK.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the power supplies is OK.
@@ -521,14 +543,15 @@ def verify_environment_power(device, enable_password):
     except KeyError:
         return None
 
-def verify_zerotouch(device, enable_password):
+
+def verify_zerotouch(device):
 
     """
     Verifies ZeroTouch is disabled.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if ZeroTouch is disabled.
@@ -546,13 +569,15 @@ def verify_zerotouch(device, enable_password):
     except KeyError:
         return None
 
+
 def verify_running_config_diffs(device, enable_password):
 
     """
     Verifies there is no difference between the running-config and the startup-config.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         enable_password (str): Enable password.
 
     Returns:
@@ -561,8 +586,10 @@ def verify_running_config_diffs(device, enable_password):
 
     """
     try:
-        response = device.runCmds(1, \
-            [{"cmd": "enable", "input": enable_password},'show running-config diffs'], 'text')
+        response = device.runCmds(1,
+                                  [{"cmd": "enable", "input": enable_password},
+                                   'show running-config diffs'],
+                                  'text')
     except jsonrpc.AppError:
         return None
     try:
@@ -572,14 +599,15 @@ def verify_running_config_diffs(device, enable_password):
     except KeyError:
         return None
 
-def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
+
+def verify_unified_forwarding_table_mode(device, mode=None):
 
     """
     Verifies the device is using the expected Unified Forwarding Table mode.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         mode (int): The expected Unified Forwarding Table mode.
 
     Returns:
@@ -600,14 +628,15 @@ def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
     except KeyError:
         return None
 
-def verify_tcam_profile(device, enable_password, profile):
+
+def verify_tcam_profile(device, profile):
 
     """
     Verifies the configured TCAM profile is the expected one.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         profile (str): The expected TCAM profile.
 
     Returns:
@@ -620,21 +649,23 @@ def verify_tcam_profile(device, enable_password, profile):
     except jsonrpc.AppError:
         return None
     try:
+        # FIXME - could be one return
         if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
-            and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
+                and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
             return True
         return False
     except KeyError:
         return None
 
-def verify_adverse_drops(device, enable_password):
+
+def verify_adverse_drops(device):
 
     """
     Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops.
@@ -646,20 +677,22 @@ def verify_adverse_drops(device, enable_password):
     except jsonrpc.AppError:
         return None
     try:
+        # FIXME could just be `return response[0]['totalAdverseDrops'] == 0`
         if response[0]['totalAdverseDrops'] == 0:
             return True
         return False
     except KeyError:
         return None
 
-def verify_ntp(device, enable_password):
+
+def verify_ntp(device):
 
     """
     Verifies NTP is synchronised.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the NTP is synchronised. `False` otherwise.
@@ -677,14 +710,15 @@ def verify_ntp(device, enable_password):
     except KeyError:
         return None
 
-def verify_interface_utilization(device, enable_password):
+
+def verify_interface_utilization(device):
 
     """
     Verifies interfaces utilization is below 75%.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if interfaces utilization is below 75%. `False` otherwise.
@@ -707,14 +741,15 @@ def verify_interface_utilization(device, enable_password):
     except KeyError:
         return None
 
-def verify_interface_errors(device, enable_password):
+
+def verify_interface_errors(device):
 
     """
     Verifies interfaces error counters are equal to zero.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the interfaces error counters are equal to zero.
@@ -734,14 +769,15 @@ def verify_interface_errors(device, enable_password):
     except KeyError:
         return None
 
-def verify_interface_discards(device, enable_password):
+
+def verify_interface_discards(device):
 
     """
     Verifies interfaces packet discard counters are equal to zero.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the interfaces packet discard counters are equal to zero.
@@ -761,14 +797,15 @@ def verify_interface_discards(device, enable_password):
     except KeyError:
         return None
 
-def verify_interface_errdisabled(device, enable_password):
+
+def verify_interface_errdisabled(device):
 
     """
     Verifies there is no interface in error disable state.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no interface in error disable state..
@@ -788,13 +825,14 @@ def verify_interface_errdisabled(device, enable_password):
     except KeyError:
         return None
 
-def verify_interfaces_status(device, enable_password, minimum = None):
+
+def verify_interfaces_status(device, minimum=None):
     """
     Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         minimum (int): Expected minimum number of Ethernet interfaces up/up
 
     Returns:
@@ -813,9 +851,10 @@ def verify_interfaces_status(device, enable_password, minimum = None):
     try:
         for item in response[0]['interfaceDescriptions']:
             if ('Ethernet' in item) \
-                and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up')\
-                and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
+                    and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up')\
+                    and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
                 nbr = nbr + 1
+        # FIXME `return nbr >= minimum`
         if nbr >= minimum:
             return True
         return False
@@ -823,13 +862,13 @@ def verify_interfaces_status(device, enable_password, minimum = None):
         return None
 
 
-def verify_storm_control_drops(device, enable_password):
+def verify_storm_control_drops(device):
     """
     Verifies the device did not drop packets due its to storm-control configuration.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the device did not drop packet due to its storm-control configuration.
@@ -844,21 +883,22 @@ def verify_storm_control_drops(device, enable_password):
         for interface in response[0]['interfaces']:
             for traffic_type in ['all', 'unknown-unicast', 'multicast', 'broadcast']:
                 if traffic_type in response[0]['interfaces'][interface]["trafficTypes"]:
-                    if 'drop' in response[0]['interfaces'][interface]["trafficTypes"][traffic_type] \
-                        and response[0]['interfaces'][interface]["trafficTypes"][traffic_type]['drop'] != 0:
+                    if ('drop' in response[0]['interfaces'][interface]["trafficTypes"][traffic_type]
+                            and response[0]['interfaces'][interface]["trafficTypes"][traffic_type]['drop'] != 0):
                         return False
         return True
     except KeyError:
         return None
 
-def verify_portchannels(device, enable_password):
+
+def verify_portchannels(device):
 
     """
     Verifies there is no inactive port in port channels.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no inactive port in port channels.
@@ -879,21 +919,21 @@ def verify_portchannels(device, enable_password):
     except KeyError:
         return None
 
-def verify_illegal_lacp(device, enable_password):
+
+def verify_illegal_lacp(device):
 
     """
     Verifies there is no illegal LACP packets received.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no illegal LACP packets received.
         `False` otherwise.
 
     """
-
     try:
         response = device.runCmds(1, ['show lacp counters all-ports'], 'json')
     except jsonrpc.AppError:
@@ -909,15 +949,16 @@ def verify_illegal_lacp(device, enable_password):
     except KeyError:
         return None
 
-def verify_mlag_status(device, enable_password):
+
+def verify_mlag_status(device):
 
     """
     Verifies the MLAG status:
     state is active, negotiation status is connected, local int is up, peer link is up.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the MLAG status is OK.
@@ -943,13 +984,14 @@ def verify_mlag_status(device, enable_password):
     except KeyError:
         return None
 
-def verify_mlag_interfaces(device, enable_password):
+
+def verify_mlag_interfaces(device):
     """
     Verifies there is no inactive or active-partial MLAG interfaces.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no inactive or active-partial MLAG interfaces.
@@ -972,42 +1014,42 @@ def verify_mlag_interfaces(device, enable_password):
         return None
 
 
-def verify_mlag_config_sanity(device, enable_password):
+def verify_mlag_config_sanity(device):
     """
     Verifies there is no MLAG config-sanity warnings.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no MLAG config-sanity warnings.
         `False` otherwise.
     """
     try:
-        response = device.runCmds(1, ['show mlag config-sanity'],'json')
+        response = device.runCmds(1, ['show mlag config-sanity'], 'json')
     except jsonrpc.AppError:
         return None
     try:
         if response[0]['response']['mlagActive'] is False:
             # MLAG isn't running
             return None
-        if len(response[0]['response']['globalConfiguration']) > 0 or \
-            len(response[0]['response']['interfaceConfiguration']) > 0:
+        if (len(response[0]['response']['globalConfiguration']) > 0 or
+                len(response[0]['response']['interfaceConfiguration']) > 0):
             return False
         return True
     except KeyError:
         return None
 
 
-def verify_loopback_count(device, enable_password, number = None):
+def verify_loopback_count(device, number=None):
     """
     Verifies the number of loopback interfaces on the device is the one we expect.
     And if none of the loopback is down.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         number (int): Expected number of loopback interfaces.
 
     Returns:
@@ -1022,19 +1064,20 @@ def verify_loopback_count(device, enable_password, number = None):
     except jsonrpc.AppError:
         return None
     try:
-        if (response[0]['output'].count('\n') == number) and (response[0]['output'].count('down') == 0) :
+        if (response[0]['output'].count('\n') == number) and (response[0]['output'].count('down') == 0):
             return True
         return False
     except KeyError:
         return None
 
-def verify_vxlan(device, enable_password):
+
+def verify_vxlan(device):
     """
     Verifies the interface vxlan 1 status is up/up.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if the interface vxlan 1 status is up/up.
@@ -1052,13 +1095,14 @@ def verify_vxlan(device, enable_password):
     except KeyError:
         return None
 
-def verify_vxlan_config_sanity(device, enable_password):
+
+def verify_vxlan_config_sanity(device):
     """
     Verifies there is no VXLAN config-sanity warnings.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no VXLAN config-sanity warnings.
@@ -1079,13 +1123,14 @@ def verify_vxlan_config_sanity(device, enable_password):
     except KeyError:
         return None
 
-def verify_svi(device, enable_password):
+
+def verify_svi(device):
     """
     Verifies there is no interface vlan down.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no interface vlan down. `False` otherwise.
@@ -1101,14 +1146,15 @@ def verify_svi(device, enable_password):
     except KeyError:
         return None
 
-def verify_spanning_tree_blocked_ports(device, enable_password):
+
+def verify_spanning_tree_blocked_ports(device):
 
     """
     Verifies there is no spanning-tree blocked ports.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` there is no spanning-tree blocked ports.
@@ -1125,15 +1171,16 @@ def verify_spanning_tree_blocked_ports(device, enable_password):
     except KeyError:
         return None
 
-def verify_routing_protocol_model(device, enable_password, model = None):
+
+def verify_routing_protocol_model(device, model=None):
 
     """
     Verifies the configured routing protocol model is the one we expect.
     And if there is no mismatch between the configured and operating routing protocol model.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         model(str): Expected routing protocol model (multi-agent or ribd).
 
     Returns:
@@ -1148,21 +1195,23 @@ def verify_routing_protocol_model(device, enable_password, model = None):
     except jsonrpc.AppError:
         return None
     try:
-        if (response[0]['protoModelStatus']['configuredProtoModel'] == response[0]['protoModelStatus']['operatingProtoModel']) \
-            and (response[0]['protoModelStatus']['operatingProtoModel'] == model):
+        proto_model_status = response[0]['protoModelStatus']
+        if (proto_model_status['configuredProtoModel'] == proto_model_status['operatingProtoModel']
+                and proto_model_status['operatingProtoModel'] == model):
             return True
         return False
     except KeyError:
         return None
 
-def verify_routing_table_size(device, enable_password, minimum = None, maximum = None):
+
+def verify_routing_table_size(device, minimum=None, maximum=None):
     """
     Verifies the size of the IP routing table (default VRF).
     Should be between the two provided thresholds.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         minimum(int): Expected minimum routing table (default VRF) size.
         maximum(int): Expected maximum routing table (default VRF) size.
 
@@ -1177,20 +1226,22 @@ def verify_routing_table_size(device, enable_password, minimum = None, maximum =
     except jsonrpc.AppError:
         return None
     try:
-        if (response[0]['vrfs']['default']['totalRoutes'] >= minimum) \
-            and (response[0]['vrfs']['default']['totalRoutes'] <= maximum):
+        # FIXME - just return
+        if (response[0]['vrfs']['default']['totalRoutes'] >= minimum
+                and response[0]['vrfs']['default']['totalRoutes'] <= maximum):
             return True
         return False
     except KeyError:
         return None
 
-def verify_bfd(device, enable_password):
+
+def verify_bfd(device):
     """
     Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if there is no BFD peer in down state (all VRF, IPv4 neighbors, single-hop).
@@ -1211,14 +1262,15 @@ def verify_bfd(device, enable_password):
     except KeyError:
         return None
 
-def verify_bgp_ipv4_unicast_state(device, enable_password):
+
+def verify_bgp_ipv4_unicast_state(device):
     """
     Verifies all IPv4 unicast BGP sessions are established (for all VRF)
     and all BGP messages queues for these sessions are empty (for all VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if all IPv4 unicast BGP sessions are established (for all VRF)
@@ -1235,23 +1287,24 @@ def verify_bgp_ipv4_unicast_state(device, enable_password):
             return None
         for vrf in response[0]['vrfs']:
             for peer in response[0]['vrfs'][vrf]['peers']:
-                if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established') \
-                    or (response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0) \
-                        or (response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
+                if (response[0]['vrfs'][vrf]['peers'][peer]['peerState'] != 'Established'
+                        or response[0]['vrfs'][vrf]['peers'][peer]["inMsgQueue"] != 0
+                        or response[0]['vrfs'][vrf]['peers'][peer]["outMsgQueue"] != 0):
                     return False
         return True
     except KeyError:
         return None
 
-def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'default'):
+
+def verify_bgp_ipv4_unicast_count(device, number, vrf='default'):
     """
     Verifies all IPv4 unicast BGP sessions are established
     and all BGP messages queues for these sessions are empty
     and the actual number of BGP IPv4 unicast neighbors is the one we expect.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         number (int): Expected number of BGP IPv4 unicast neighbors
         vrf(str): VRF to verify.
 
@@ -1285,14 +1338,15 @@ def verify_bgp_ipv4_unicast_count(device, enable_password, number, vrf = 'defaul
     except KeyError:
         return None
 
-def verify_bgp_ipv6_unicast_state(device, enable_password):
+
+def verify_bgp_ipv6_unicast_state(device):
     """
     Verifies all IPv6 unicast BGP sessions are established (for all VRF)
     and all BGP messages queues for these sessions are empty (for all VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if all IPv6 unicast BGP sessions are established (for all VRF)
@@ -1317,14 +1371,15 @@ def verify_bgp_ipv6_unicast_state(device, enable_password):
     except KeyError:
         return None
 
-def verify_bgp_evpn_state(device, enable_password):
+
+def verify_bgp_evpn_state(device):
 
     """
     Verifies all EVPN BGP sessions are established (default VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if all EVPN BGP sessions are established.
@@ -1345,14 +1400,15 @@ def verify_bgp_evpn_state(device, enable_password):
     except KeyError:
         return None
 
-def verify_bgp_evpn_count(device, enable_password, number):
+
+def verify_bgp_evpn_count(device, number):
     """
     Verifies all EVPN BGP sessions are established (default VRF)
     and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         number (int): The expected number of BGP EVPN neighbors in the default VRF.
 
     Returns:
@@ -1379,14 +1435,15 @@ def verify_bgp_evpn_count(device, enable_password, number):
     except KeyError:
         return None
 
-def verify_bgp_rtc_state(device, enable_password):
+
+def verify_bgp_rtc_state(device):
 
     """
     Verifies all RTC BGP sessions are established (default VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if all RTC BGP sessions are established.
@@ -1407,14 +1464,15 @@ def verify_bgp_rtc_state(device, enable_password):
     except KeyError:
         return None
 
-def verify_bgp_rtc_count(device, enable_password, number):
+
+def verify_bgp_rtc_count(device, number):
     """
     Verifies all RTC BGP sessions are established (default VRF)
     and the actual number of BGP RTC neighbors is the one we expect (default VRF).
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         number (int): The expected number of BGP RTC neighbors (default VRF).
 
     Returns:
@@ -1441,13 +1499,14 @@ def verify_bgp_rtc_count(device, enable_password, number):
     except KeyError:
         return None
 
-def verify_ospf_state(device, enable_password):
+
+def verify_ospf_state(device):
     """
     Verifies all OSPF neighbors are in FULL state.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
 
     Returns:
         bool: `True` if all OSPF neighbors are in FULL state.
@@ -1465,13 +1524,14 @@ def verify_ospf_state(device, enable_password):
     except KeyError:
         return None
 
-def verify_ospf_count(device, enable_password, number = None):
+
+def verify_ospf_count(device, number=None):
     """
     Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         number (int): The expected number of OSPF neighbors in FULL state.
 
     Returns:
@@ -1492,13 +1552,14 @@ def verify_ospf_count(device, enable_password, number = None):
     except KeyError:
         return None
 
-def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):
+
+def verify_igmp_snooping_vlans(device, vlans, configuration):
     """
     Verifies the IGMP snooping configuration for some VLANs.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         vlans (list): A list of VLANs
         configuration (str): Expected IGMP snooping configuration (enabled or disabled) for these VLANs.
 
@@ -1510,7 +1571,7 @@ def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):
     if not vlans or not configuration:
         return None
     try:
-        response = device.runCmds(1, ['show ip igmp snooping'],'json')
+        response = device.runCmds(1, ['show ip igmp snooping'], 'json')
     except jsonrpc.AppError:
         return None
     try:
@@ -1521,13 +1582,14 @@ def verify_igmp_snooping_vlans(device, enable_password, vlans, configuration):
     except KeyError:
         return None
 
-def verify_igmp_snooping_global(device, enable_password,  configuration):
+
+def verify_igmp_snooping_global(device,  configuration):
     """
     Verifies the IGMP snooping global configuration.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with
+                                                 the uri f'https://{username}:{password}@{ip}/command-api'.
         configuration (str): Expected global IGMP snooping configuration (enabled or disabled) for these VLANs.
 
     Returns:
@@ -1538,7 +1600,7 @@ def verify_igmp_snooping_global(device, enable_password,  configuration):
     if not configuration:
         return None
     try:
-        response = device.runCmds(1, ['show ip igmp snooping'],'json')
+        response = device.runCmds(1, ['show ip igmp snooping'], 'json')
     except jsonrpc.AppError:
         return None
     try:

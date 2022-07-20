@@ -12,7 +12,7 @@ import ssl
 from math import ceil
 from socket import setdefaulttimeout
 from json import dumps
-from jsonrpclib import Server,jsonrpc
+from jsonrpclib import Server, jsonrpc
 from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
@@ -20,6 +20,7 @@ import anta.tests
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 def create_connections_dict(text_file, device_username, device_password, output_file):
     connections = {}
@@ -66,6 +67,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
 
     return connections
 
+
 def main():
     parser = ArgumentParser(
         description='EOS devices health checks'
@@ -99,8 +101,8 @@ def main():
     args.enable_pass = getpass(prompt='Enable password (if any): ')
 
     # Create connections dict
-    connections = create_connections_dict\
-        (args.inventory_file, args.username, args.password, args.output_file)
+    connections = create_connections_dict(
+        args.inventory_file, args.username, args.password, args.output_file)
 
     try:
         with open(args.test_catalog, 'r', encoding='utf8') as file:
@@ -119,11 +121,11 @@ def main():
             test_kwargs = {}
             if 'name' in test_def:
                 func_name = test_def['name']
-                test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
+                test_kwargs = {k: v for k, v in test_def.items() if k != 'name'}
             else:
                 func_name = test_def
-            test_summary[device][test] = getattr(anta.tests, func_name)\
-                (connection, args.enable_pass, **test_kwargs)
+            test_summary[device][test] = (getattr(anta.tests, func_name)
+                                          (connection, args.enable_pass, **test_kwargs))
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
     for device in sorted(test_summary):
@@ -161,7 +163,7 @@ def main():
         outfile.write('***** Results *****\n')
         outfile.write('\n')
         for i in range(t):
-            start = (i * (c -1) + 1)
+            start = (i * (c - 1) + 1)
             stop = ((c - 1) * (i + 1)) + 1
             y = ["devices"] + fields[start:stop]
             outfile.write(x.get_string(fields=y))
@@ -171,9 +173,10 @@ def main():
         outfile.write('***** Tests *****\n')
         outfile.write('\n')
         for test in sorted(test_catalog):
-            outfile.write(test + '\t '+  dumps(test_catalog[test]))
+            outfile.write(test + '\t ' + dumps(test_catalog[test]))
             outfile.write('\n')
         outfile.write('\n')
+
 
 if __name__ == '__main__':
     main()

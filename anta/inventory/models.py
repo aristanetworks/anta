@@ -14,14 +14,17 @@ class AntaInventoryHost(BaseModel):
     """Host definition for user's inventory."""
     host: IPvAnyAddress
 
+
 class AntaInventoryNetwork(BaseModel):
     """Network definition for user's inventory."""
     network: IPvAnyNetwork
+
 
 class AntaInventoryRange(BaseModel):
     """IP Range definition for user's inventory."""
     start: IPvAnyAddress
     end: IPvAnyAddress
+
 
 class AntaInventoryInput(BaseModel):
     """User's inventory model."""
@@ -30,6 +33,7 @@ class AntaInventoryInput(BaseModel):
     ranges: Optional[List[AntaInventoryRange]]
 
 # Pydantic models for inventory output structures
+
 
 class InventoryDevice(BaseModel):
     """Inventory model exposed by Inventory class."""
@@ -41,6 +45,7 @@ class InventoryDevice(BaseModel):
     is_online = False
     hw_model: str = 'unset'
     url: str
+
 
 class InventoryDevices(BaseModel):
     """Inventory model to list all InventoryDevice entries."""

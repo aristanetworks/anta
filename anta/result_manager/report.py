@@ -46,7 +46,7 @@ class TableReport():
         self.colors = colors
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
 
-    def content_sorted_by_host(self,reverse: bool = False):
+    def content_sorted_by_host(self, reverse: bool = False):
         """
         content_sorted_by_host Sort content by using host field
 
@@ -91,7 +91,7 @@ class TableReport():
         """
         return sorted(self.content, key=itemgetter(2), reverse=reverse)
 
-    def content_sorted_by(self, key_index: int, reverse: bool = False)-> list:
+    def content_sorted_by(self, key_index: int, reverse: bool = False) -> list:
         """
         content_sorted_by Sort content by using a user's defined key ID
 
@@ -106,7 +106,8 @@ class TableReport():
         """
         return sorted(self.content, key=itemgetter(key_index), reverse=reverse)
 
-    def get(self, table_format: str = 'pretty', sort_by: str = 'host', reverse: bool = False, enable_colors: bool = True):
+    def get(self, table_format: str = 'pretty', sort_by: str = 'host',
+            reverse: bool = False, enable_colors: bool = True):
         """
         get Expose report.
 

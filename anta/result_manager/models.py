@@ -4,10 +4,11 @@
 
 """Models related to anta.result_manager module."""
 
-from typing import List, Optional, Any
+from typing import Optional
 from pydantic import BaseModel, IPvAnyAddress, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure']
+
 
 class TestResult(BaseModel):
     """Describe result of a test from a single device."""
@@ -25,7 +26,7 @@ class TestResult(BaseModel):
 
 class ListResult(BaseModel):
     """List result for all tests on all devices."""
-    __root__= []
+    __root__ = []
 
     def append(self, value) -> None:
         """Add support for append method."""

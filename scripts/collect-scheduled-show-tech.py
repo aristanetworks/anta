@@ -22,7 +22,8 @@ PORT = 22
 ssl._create_default_https_context = ssl._create_unverified_context
 date = strftime("%d %b %Y %H:%M:%S", gmtime())
 
-def device_directories (device, root_dir):
+
+def device_directories(device, root_dir):
     cwd = os.getcwd()
     show_tech_directory = cwd + '/' + root_dir
     device_directory = show_tech_directory + '/' + device
@@ -32,20 +33,23 @@ def device_directories (device, root_dir):
     result = show_tech_directory, device_directory
     return result
 
-def create_ssh_client (device, port, username, password):
+
+def create_ssh_client(device, port, username, password):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(device, port, username, password)
     return client
 
+
 def report_unreachable_devices(inventory):
     """
     report unreachable devices
     """
-    devices = inventory.get_inventory(established_only = False)
+    devices = inventory.get_inventory(established_only=False)
     for device in devices:
         if device.established is False:
             print(f"Could not connect to device {str(device.host)}")
+
 
 def main():
     """
@@ -86,13 +90,13 @@ def main():
         timeout=2
     )
 
-    inv_size = inventory.get_inventory(established_only = False)
-    devices = inventory.get_inventory(established_only = True)
+    inv_size = inventory.get_inventory(established_only=False)
+    devices = inventory.get_inventory(established_only=True)
     number_of_reachable_devices = len(devices)
     number_of_unreachable_devices = len(inv_size) - number_of_reachable_devices
     if len(devices) > 0:
         # Progress bar
-        pbar = tqdm(total = len(inv_size),desc = 'Collecting files from devices')
+        pbar = tqdm(total=len(inv_size), desc='Collecting files from devices')
         pbar.update(number_of_unreachable_devices)
         # Collect all the tech-support files stored on Arista switches flash and copy them locally
         for device in devices:
@@ -100,24 +104,24 @@ def main():
                 switch = device.session
                 # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
                 zip_command = 'bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*'
-                cmds=[zip_command]
-                switch.runCmds(1,cmds, 'text')
+                cmds = [zip_command]
+                switch.runCmds(1, cmds, 'text')
                 # Get device hostname
-                cmds=['show hostname']
-                result = switch.runCmds(1,cmds, 'json')
+                cmds = ['show hostname']
+                result = switch.runCmds(1, cmds, 'json')
                 hostname = result[0]['hostname']
                 # Create directories
-                output_dir = device_directories (hostname, args.output_directory)
+                output_dir = device_directories(hostname, args.output_directory)
                 # Connect to the device using SSH
                 ssh = create_ssh_client(str(device.host), PORT, args.username, args.password)
                 # Get the zipped file all_files.zip using SCP and save it locally
                 my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
                 scp = SCPClient(ssh.get_transport())
-                scp.get("/mnt/flash/schedule/all_files.zip",local_path = my_path)
+                scp.get("/mnt/flash/schedule/all_files.zip", local_path=my_path)
                 scp.close()
                 # Delete the created zip file on the device
-                cmds=['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
-                switch.runCmds(1,cmds, 'text')
+                cmds = ['bash timeout 30 rm /mnt/flash/schedule/all_files.zip']
+                switch.runCmds(1, cmds, 'text')
                 pbar.update(1)
             except jsonrpc.AppError:
                 print(f"Could not collect show tech files on device {str(device.host)}")
@@ -128,6 +132,7 @@ def main():
         print("can not connect to any device")
 
     report_unreachable_devices(inventory)
+
 
 if __name__ == '__main__':
     main()

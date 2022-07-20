@@ -14,6 +14,7 @@ from jsonrpclib import Server, jsonrpc
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
+
 def main():
     parser = ArgumentParser(
         description='Verify devices eAPI connectivity'
@@ -40,7 +41,7 @@ def main():
         print('Error reading ' + args.file)
         sys.exit(1)
 
-    for i,device in enumerate(devices):
+    for i, device in enumerate(devices):
         devices[i] = device.strip()
 
     unreachable = []
@@ -50,7 +51,7 @@ def main():
     for device in devices:
         try:
             setdefaulttimeout(5)
-            url=f"https://{args.username}:{args.password}@{device}/command-api"
+            url = f"https://{args.username}:{args.password}@{device}/command-api"
             switch = Server(url)
             switch.runCmds(1, ['show version'])
         except jsonrpc.TransportError:
@@ -62,6 +63,7 @@ def main():
 
     if not unreachable:
         print('All devices from the file ' + args.file + ' are reachable using eAPI')
+
 
 if __name__ == '__main__':
     main()

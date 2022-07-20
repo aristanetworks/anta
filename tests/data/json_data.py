@@ -2,7 +2,6 @@
 # coding: utf-8 -*-
 
 
-
 INVENTORY_MODEL_HOST = [
     {
         'name': 'validIPv4',
@@ -62,7 +61,7 @@ INVENTORY_MODEL_NETWORK = [
 INVENTORY_MODEL_RANGE = [
     {
         'name': 'ValidIPv4_Range',
-        'input': {'start':'10.1.0.1', 'end':'10.1.0.10'},
+        'input': {'start': '10.1.0.1', 'end': '10.1.0.10'},
         'expected_result': 'valid'
     },
 ]
@@ -100,8 +99,8 @@ INVENTORY_MODEL = [
         "name": "Valid_Ranges_Only",
         "input": {
             "networks": [
-                {'start':'10.1.0.1', 'end':'10.1.0.10'},
-               {'start':'10.2.0.1', 'end':'10.2.1.10'}
+                {'start': '10.1.0.1', 'end': '10.1.0.10'},
+                {'start': '10.2.0.1', 'end': '10.2.1.10'}
             ]
         },
         "expected_result": "valid"
@@ -186,7 +185,7 @@ INVENTORY_DEVICE_MODEL = [
 ANTA_INVENTORY_TESTS = [
     {
         'name': 'ValidInventory_with_host_only',
-        'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
+        'input': {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]}},
         'expected_result': 'valid',
         'parameters': {
             'ipaddress_in_scope': '192.168.0.17',
@@ -196,7 +195,7 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         'name': 'ValidInventory_with_networks_only',
-        'input':{"anta_inventory":{"networks":[{"network":"192.168.0.0/24"}]}},
+        'input': {"anta_inventory": {"networks": [{"network": "192.168.0.0/24"}]}},
         'expected_result': 'valid',
         'parameters': {
             'ipaddress_in_scope': '192.168.0.1',
@@ -206,7 +205,8 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         'name': 'ValidInventory_with_ranges_only',
-        'input':{"anta_inventory":{"ranges":[{"start":"10.0.0.1","end":"10.0.0.11"},{"start":"10.0.0.101","end":"10.0.0.111"}]}},
+        'input': {"anta_inventory": {"ranges": [{"start": "10.0.0.1", "end": "10.0.0.11"},
+                                                {"start": "10.0.0.101", "end": "10.0.0.111"}]}},
         'expected_result': 'valid',
         'parameters': {
             'ipaddress_in_scope': '10.0.0.10',
@@ -216,12 +216,13 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         'name': 'InvalidInventory_with_host_only',
-        'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17/32"},{"host":"192.168.0.2"}]}},
+        'input': {"anta_inventory": {"hosts": [{"host": "192.168.0.17/32"}, {"host": "192.168.0.2"}]}},
         'expected_result': 'invalid',
     },
     {
         'name': 'Invalid_Root_Key',
-        'input':{"inventory":{"ranges":[{"start":"10.0.0.1","end":"10.0.0.11"},{"start":"10.0.0.100","end":"10.0.0.111"}]}},
+        'input': {"inventory": {"ranges": [{"start": "10.0.0.1", "end": "10.0.0.11"},
+                                           {"start": "10.0.0.100", "end": "10.0.0.111"}]}},
         'expected_result': 'invalid',
     },
 ]

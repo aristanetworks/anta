@@ -3,10 +3,10 @@
 
 """ANTA Inventory unit tests."""
 
-import pytest
+import json
 import logging
 import yaml
-import json
+import pytest
 from pydantic import ValidationError
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
@@ -56,7 +56,7 @@ class Test_AntaInventory():
 
         inventory_file = self.create_inventory(content=test_definition['input'], tmp_path=tmp_path)
         try:
-            inventory_test = AntaInventory(
+            AntaInventory(
                 inventory_file=inventory_file,
                 username='arista',
                 password='arista123',
@@ -92,7 +92,7 @@ class Test_AntaInventory():
 
         inventory_file = self.create_inventory(content=test_definition['input'], tmp_path=tmp_path)
         try:
-            inventory_test = AntaInventory(
+            AntaInventory(
                 inventory_file=inventory_file,
                 username='arista',
                 password='arista123',
@@ -208,10 +208,9 @@ class Test_AntaInventory():
             auto_connect=False
         )
         logging.info('Getting if %s from inventory', str(test_definition['parameters']['ipaddress_in_scope']))
-        device = inventory_test.get_device(host_ip= str(test_definition['parameters']['ipaddress_in_scope']))
-        assert isinstance(device,InventoryDevice)
+        device = inventory_test.get_device(host_ip=str(test_definition['parameters']['ipaddress_in_scope']))
+        assert isinstance(device, InventoryDevice)
         assert str(device.host) == str(test_definition['parameters']['ipaddress_in_scope'])
-
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_inventory_get_json(self,  test_definition, tmp_path):
