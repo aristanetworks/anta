@@ -19,9 +19,30 @@ Result Manager Module for ANTA.
 <a href="../../anta/result_manager/__init__.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `ResultManager`
-ResultManager Helper to manage Test Results and generate reports. 
+Helper to manage Test Results and generate reports. 
 
-<a href="../../anta/result_manager/__init__.py#L20"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+
+**Examples:**
+ 
+
+ Create Inventory: 
+
+ inventory_anta = AntaInventory(  inventory_file='examples/inventory.yml',  username='ansible',  password='ansible',  timeout=0.5,  auto_connect=True  ) 
+
+ Create Result Manager: 
+
+ manager = ResultManager() 
+
+ Run tests for all connected devices: 
+
+ for device in inventory_anta.get_inventory():  manager.add_test_result(  verify_eos_version(  device=device, versions=['4.28.0F']  )  )  manager.add_test_result(  verify_uptime(  device=device, minimum=1  )  ) 
+
+ Print result in native format: 
+
+ manager.get_results()  [  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='failure',  message="device is running version 4.27.3F-26379303.4273F (engineering build) and test expect ['4.28.0F']"  ),  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='success',  message=None  ),  ] 
+
+<a href="../../anta/result_manager/__init__.py#L70"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.__init__`
 
@@ -29,14 +50,14 @@ ResultManager Helper to manage Test Results and generate reports.
 __init__() → None
 ```
 
-__init__ Class constructor. 
+Class constructor. 
 
 
 
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L74"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.add_test_result`
 
@@ -44,7 +65,7 @@ __init__ Class constructor.
 add_test_result(entry: result_manager.models.TestResult) → None
 ```
 
-add_test_result Add a result to the list 
+Add a result to the list 
 
 
 
@@ -54,45 +75,47 @@ add_test_result Add a result to the list
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L69"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L127"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_result_by_host`
 
 ```python
-get_result_by_host(host_ip: str) → List[result_manager.models.TestResult]
+get_result_by_host(host_ip: str, output_format: str = 'native') → Any
 ```
 
-get_result_by_test Get list of test result for a given host. 
+Get list of test result for a given host. 
 
 
 
 **Args:**
  
  - <b>`host_ip`</b> (str):  IP Address of the host to use to filter results. 
+ - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'. 
 
 
 
 **Returns:**
  
- - <b>`list[TestResult]`</b>:  List of results related to the host. 
+ - <b>`Any`</b>:  List of results related to the host. 
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L57"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L106"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_result_by_test`
 
 ```python
-get_result_by_test(test_name: str) → List[result_manager.models.TestResult]
+get_result_by_test(test_name: str, output_format: str = 'native') → Any
 ```
 
-get_result_by_test Get list of test result for a given test. 
+Get list of test result for a given test. 
 
 
 
 **Args:**
  
  - <b>`test_name`</b> (str):  Test name to use to filter results 
+ - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'. 
 
 
 
@@ -102,7 +125,7 @@ get_result_by_test Get list of test result for a given test.
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L82"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_results`
 
@@ -110,7 +133,7 @@ get_result_by_test Get list of test result for a given test.
 get_results(output_format: str = 'native') → <built-in function any>
 ```
 
-get_results Expose list of all test results in different format 
+Expose list of all test results in different format 
 
 Support multiple format: 
 - native: ListResults format 
@@ -131,7 +154,7 @@ Support multiple format:
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L81"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L147"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.table_report`
 
@@ -140,10 +163,10 @@ table_report(
     sort_by: str = 'host',
     reverse: bool = False,
     colors: bool = True
-) → <function tabulate at 0x7feeddb4b040>
+) → <function tabulate at 0x7fc8a3fb23a0>
 ```
 
-table_report Build a table report of all tests 
+Build a table report of all tests 
 
 
 
