@@ -32,48 +32,65 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 class AntaInventory():
-    """Inventory Abstraction for ANTA framework.
+        """
+    Inventory Abstraction for ANTA framework.
+
+    Attributes:
+        timeout(float): Connection to device timeout.
+        INVENTORY_ROOT_KEY(str, Optional): head of the YAML inventory. Default is anta_inventory
+        EAPI_SESSION_TPL(str, Optional): Template for eAPI URL builder
+        INVENTORY_OUTPUT_FORMAT (List[str],Optional): List of supported output format. Default ['native', 'json']
+        HW_MODEL_KEY (str,Optional): Name of the key in Arista eAPI JSON provided by device.
 
     Examples:
-        # Inventory file input
-        >>> print(inventory.yml)
-        >>> anta_inventory:
-        >>>   hosts:
-        >>>     - hosts: 1.1.1.1
-        >>>     - host: 2.2.2.2
-        >>>   networks:
-        >>>     - network: 10.0.0.0/8
-        >>>     - network: 192.168.0.0/16
-        >>>   ranges:
-        >>>     - start: 10.0.0.1
-        >>>       end: 10.0.0.11
 
-        # Inventory result
-        >>> test = AntaInventory(
-        >>> ... inventory_file='examples/inventory.yml',
-        >>> ... username='ansible',
-        >>> ... password='ansible',
-        >>> ... auto_connect=True)
-        >>> test.get_inventory()
-        >>> [
-        >>>     "InventoryDevice(host=IPv4Address('192.168.0.17')",
-        >>>     "username='ansible'",
-        >>>     "password='ansible'",
-        >>>     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
-        >>>     "url='https://ansible:ansible@192.168.0.17/command-api'",
-        >>>     "established=True",
-        >>>     "is_online=True",
-        >>>     "hw_model=cEOS-LAB",
-        >>>  ...
-        >>>     "InventoryDevice(host=IPv4Address('192.168.0.2')",
-        >>>     "username='ansible'",
-        >>>     "password='ansible'",
-        >>>     "session=None",
-        >>>     "url='https://ansible:ansible@192.168.0.2/command-api'",
-        >>>     "established=False"
-        >>>     "is_online=False",
-        >>>     "hw_model=unset",
-        >>> ]
+        Inventory file input
+
+            print(inventory.yml)
+            anta_inventory:
+              hosts:
+                - hosts: 1.1.1.1
+                - host: 2.2.2.2
+              networks:
+                - network: 10.0.0.0/8
+                - network: 192.168.0.0/16
+              ranges:
+                - start: 10.0.0.1
+                  end: 10.0.0.11
+
+        Inventory result:
+
+            test = AntaInventory(
+                ... inventory_file='examples/inventory.yml',
+                ... username='ansible',
+                ... password='ansible',
+                ... auto_connect=True)
+            test.get_inventory()
+            [
+                    "InventoryDevice(host=IPv4Address('192.168.0.17')",
+                    "username='ansible'",
+                    "password='ansible'",
+                    "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
+                    "url='https://ansible:ansible@192.168.0.17/command-api'",
+                    "established=True",
+                    "is_online=True",
+                    "hw_model=cEOS-LAB",
+                 ...
+                    "InventoryDevice(host=IPv4Address('192.168.0.2')",
+                    "username='ansible'",
+                    "password='ansible'",
+                    "session=None",
+                    "url='https://ansible:ansible@192.168.0.2/command-api'",
+                    "established=False"
+                    "is_online=False",
+                    "hw_model=unset",
+                ]
+
+    Raises:
+        InventoryRootKeyErrors: Root key of inventory is missing.
+        InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+        InventoryUnknownFormat: Output format is not supported.
+
     """
 
     # Root key of inventory part of the inventory file
