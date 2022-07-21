@@ -7,14 +7,14 @@
 from typing import List, Optional, Any
 from pydantic import BaseModel, IPvAnyAddress, validator
 
-RESULT_OPTIONS = ['unset', 'success', 'failure']
+RESULT_OPTIONS = ['unset', 'success', 'failure', 'error']
 
 class TestResult(BaseModel):
     """Describe result of a test from a single device."""
     host: IPvAnyAddress
     test: str
     result: str = 'unset'
-    message: Optional[str]
+    messages: List[str] = []
 
     @validator('result')
     def name_must_contain_space(cls, v):
