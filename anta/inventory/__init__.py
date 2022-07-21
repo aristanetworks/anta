@@ -94,7 +94,7 @@ class AntaInventory():
             auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
             timeout (float, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
         """
-        self.set_credentials(username,password,enable_password)
+        self.set_credentials(username, password, enable_password)
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
