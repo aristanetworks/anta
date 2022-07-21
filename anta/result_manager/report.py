@@ -47,10 +47,7 @@ class TableReport():
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
 
     def _split_list_to_txt_list(self, usr_list: List[str], delimiter: str = '*'):
-        result = ''
-        for line in usr_list:
-            result = f'{result}\n{delimiter} {line}' if result != '' else f'{delimiter} {line}'
-        return result
+        return "\n".join(f"{delimiter} {line}" for line in usr_list)
 
     def content_sorted_by_host(self,reverse: bool = False):
         """
