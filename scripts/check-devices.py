@@ -19,6 +19,7 @@ from colorama import Fore
 # The next line is causing pylint issues because of the anta/tests/__init__.py
 # file syntax
 import anta.tests  # pylint: disable=import-error,no-name-in-module
+import anta.loader
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -111,42 +112,37 @@ def main():
         print('Error opening ' + args.test_catalog)
         sys.exit(1)
 
+    tests = anta.loader.parse_catalog(test_catalog)
+
     # Create the dictionnary test_summary for test results and run the tests
     test_summary = {}
     for device, connection in connections.items():
         print('Running tests on device ' + device + ' ...')
         test_summary[device] = {}
-        for test, test_def in test_catalog.items():
-            # Run test cases
-            test_kwargs = {}
-            if 'name' in test_def:
-                func_name = test_def['name']
-                test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
-            else:
-                func_name = test_def
-            test_summary[device][test] = getattr(anta.tests, func_name)\
-                (connection, args.enable_pass, **test_kwargs)
+        for test, test_args in tests:
+            test_summary[device][f"{test.__module__}.{test.__name__}"] = test(connection, args.enable_pass, **test_args)
 
     # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
     for device in sorted(test_summary):
-        for test in sorted(test_catalog):
-            if test_summary[device][test] is True:
-                test_summary[device][test] = Fore.GREEN + 'Pass' + Fore.RESET
-            elif test_summary[device][test] is False:
-                test_summary[device][test] = Fore.RED + 'Fail' + Fore.RESET
-            elif test_summary[device][test] is None:
-                test_summary[device][test] = Fore.BLUE + 'Skip' + Fore.RESET
+        for test, _ in tests:
+            summary = test_summary[device][f"{test.__module__}.{test.__name__}"]
+            if summary is True:
+                summary = Fore.GREEN + 'Pass' + Fore.RESET
+            elif summary is False:
+                summary = Fore.RED + 'Fail' + Fore.RESET
+            elif summary is None:
+                summary = Fore.BLUE + 'Skip' + Fore.RESET
 
     # Use prettytable so we will display data in a visually appealing format
     x = PrettyTable(padding_width=2)
     fields = ['devices']
-    for test in sorted(test_catalog):
-        fields.append(test)
+    for test, _ in tests:
+        fields.append(f"{test.__module__}.{test.__name__}")
     x.field_names = fields
     for device in sorted(test_summary):
         row = [device]
-        for test in sorted(test_catalog):
-            row.append(test_summary[device][test])
+        for test, _ in tests:
+            row.append(test_summary[device][f"{test.__module__}.{test.__name__}"])
         x.add_row(row)
 
     # Split the table into t tables of c columns each

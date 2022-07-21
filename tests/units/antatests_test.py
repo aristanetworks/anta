@@ -9,7 +9,7 @@ It requires the installation of the package pytest that is indicated in the file
 import ast
 from unittest.mock import Mock
 import pytest
-import anta.tests
+from anta.tests import software, system
 
 def id_func(param):
     return str(param)
@@ -44,7 +44,7 @@ def fixture_mock_device():
                                                )
 
 def test_verify_eos_version(mock_device, versions, expected):
-    check = anta.tests.verify_eos_version\
+    check = software.verify_eos_version\
         (device = mock_device, enable_password = 'enable_password', versions = versions)
     assert check == expected
 
@@ -53,11 +53,11 @@ def test_verify_eos_version(mock_device, versions, expected):
                                              (None, None)])
 
 def test_verify_uptime(mock_device, uptime, expected):
-    check = anta.tests.verify_uptime\
+    check = system.verify_uptime\
         (device = mock_device, enable_password = 'enable_password', minimum = uptime)
     assert check == expected
 
 def test_verify_ntp(mock_device):
-    check = anta.tests.verify_ntp\
+    check = system.verify_ntp\
         (device = mock_device, enable_password = 'enable_password')
     assert check is True
