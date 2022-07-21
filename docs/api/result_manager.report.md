@@ -9,7 +9,7 @@ Report management for ANTA.
 
 ---
 
-<a href="../../anta/result_manager/report.py#L16"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `Colors`
 Manage colors for output. 
@@ -20,12 +20,12 @@ Manage colors for output.
 
 ---
 
-<a href="../../anta/result_manager/report.py#L29"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `TableReport`
 TableReport Generate a Table based on tabulate and TestResult. 
 
-<a href="../../anta/result_manager/report.py#L35"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L36"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.__init__`
 
@@ -46,12 +46,12 @@ __init__ Class constructor
 
 ---
 
-<a href="../../anta/result_manager/report.py#L143"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L145"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.add_content`
 
 ```python
-add_content(results: list[result_manager.models.TestResult])
+add_content(results: List[result_manager.models.TestResult])
 ```
 
 add_content Add content to manage in the report. 
@@ -64,7 +64,7 @@ add_content Add content to manage in the report.
 
 ---
 
-<a href="../../anta/result_manager/report.py#L153"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L155"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.build_content`
 
@@ -82,7 +82,7 @@ build_content Build output for the report.
 
 ---
 
-<a href="../../anta/result_manager/report.py#L93"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L94"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.content_sorted_by`
 
@@ -109,7 +109,7 @@ Key ID indicates which column in the inner list to use for sorting
 
 ---
 
-<a href="../../anta/result_manager/report.py#L48"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L49"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.content_sorted_by_host`
 
@@ -138,7 +138,7 @@ Only valid for line using this structure: ``` [entry.host, entry.test, entry.res
 
 ---
 
-<a href="../../anta/result_manager/report.py#L78"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L79"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.content_sorted_by_result`
 
@@ -167,7 +167,7 @@ Only valid for line using this structure: ``` [entry.host, entry.test, entry.res
 
 ---
 
-<a href="../../anta/result_manager/report.py#L63"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L64"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.content_sorted_by_test`
 
@@ -196,7 +196,7 @@ Only valid for line using this structure: ``` [entry.host, entry.test, entry.res
 
 ---
 
-<a href="../../anta/result_manager/report.py#L108"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/report.py#L109"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `TableReport.get`
 

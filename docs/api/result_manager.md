@@ -16,12 +16,12 @@ Result Manager Module for ANTA.
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L16"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `ResultManager`
 ResultManager Helper to manage Test Results and generate reports. 
 
-<a href="../../anta/result_manager/__init__.py#L19"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L20"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.__init__`
 
@@ -36,7 +36,7 @@ __init__ Class constructor.
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L23"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.add_test_result`
 
@@ -54,12 +54,12 @@ add_test_result Add a result to the list
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L68"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L69"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_result_by_host`
 
 ```python
-get_result_by_host(host_ip: str)
+get_result_by_host(host_ip: str) → List[result_manager.models.TestResult]
 ```
 
 get_result_by_test Get list of test result for a given host. 
@@ -78,12 +78,12 @@ get_result_by_test Get list of test result for a given host.
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L57"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_result_by_test`
 
 ```python
-get_result_by_test(test_name: str)
+get_result_by_test(test_name: str) → List[result_manager.models.TestResult]
 ```
 
 get_result_by_test Get list of test result for a given test. 
@@ -102,7 +102,7 @@ get_result_by_test Get list of test result for a given test.
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L32"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.get_results`
 
@@ -131,7 +131,7 @@ Support multiple format:
 
 ---
 
-<a href="../../anta/result_manager/__init__.py#L80"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/result_manager/__init__.py#L81"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `ResultManager.table_report`
 
@@ -140,7 +140,7 @@ table_report(
     sort_by: str = 'host',
     reverse: bool = False,
     colors: bool = True
-) → <function tabulate at 0x7fa05bc62dc0>
+) → <function tabulate at 0x102a18c10>
 ```
 
 table_report Build a table report of all tests 

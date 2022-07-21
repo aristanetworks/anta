@@ -32,7 +32,7 @@ Inventory file example:
 Inventory Output:
 
 ------------------
-``` test = AntaInventory(inventory_file='examples/inventory.yml',username='ansible', password='ansible', auto_connect=True)``` ``` test.get_inventory()```
+``` test = AntaInventory(inventory_file='examples/inventory.yml', username='ansible',```  password='ansible', auto_connect=True) ``` test.get_inventory()```
 ``` [``` ```     "InventoryDevice(host=IPv4Address('192.168.0.17')",```
 ```     "username='ansible'",``` ```     "password='ansible'",```
 ```     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",``` ```     "url='https://ansible:ansible@192.168.0.17/command-api'",```
@@ -46,7 +46,7 @@ Inventory Output:
 ```     "hw_model=unset",``` ``` ]```
 
 
-<a href="../../anta/inventory/__init__.py#L86"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L87"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.__init__`
 
@@ -77,7 +77,7 @@ Class constructor.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L438"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L462"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.connect_inventory`
 
@@ -89,7 +89,7 @@ connect_inventory Helper to prepare inventory with network data.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L396"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L420"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.create_all_sessions`
 
@@ -107,7 +107,7 @@ Helper to build RPC sessions to all devices.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L409"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L433"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.create_device_session`
 
@@ -133,7 +133,7 @@ If device has already a session, function only returns active session, if not, t
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L364"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L388"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.get_device`
 
@@ -157,7 +157,7 @@ Get device information from a given IP.
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L377"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L401"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.get_device_session`
 
@@ -183,7 +183,7 @@ Provide RPC session if the session exists, if not, it returns None
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L339"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L359"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.get_inventory`
 
@@ -196,13 +196,13 @@ get_inventory(
 
 get_inventory Expose device inventory. 
 
-Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices. 
+Provides inventory has a list of InventoryDevice objects. If required, it can be exposed in JSON format. By default expose only active devices. 
 
 
 
 **Args:**
  
- - <b>`format`</b> (str, optional):  Format output, can be native or JSON. Defaults to 'native'. 
+ - <b>`format`</b> (str, optional):  Format output, can be native, list or JSON. Defaults to 'native'. 
  - <b>`established_only`</b> (bool, optional):  Allow to expose also unreachable devices. Defaults to True. 
 
 
@@ -213,7 +213,7 @@ Provides inventory has a list of InventoryDevice objects. If requried, it can be
 
 ---
 
-<a href="../../anta/inventory/__init__.py#L447"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/__init__.py#L470"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `AntaInventory.refresh_device_facts`
 

@@ -8,7 +8,6 @@
 - [`inventory.exceptions`](./inventory.exceptions.md#module-inventoryexceptions): Manage Exception in Inventory module.
 - [`inventory.models`](./inventory.models.md#module-inventorymodels): Models related to inventory management.
 - [`result_manager`](./result_manager.md#module-result_manager): Result Manager Module for ANTA.
-- [`result_manager.models`](./result_manager.models.md#module-result_managermodels): Models related to anta.result_manager module.
 - [`result_manager.report`](./result_manager.report.md#module-result_managerreport): Report management for ANTA.
 - [`tests`](./tests.md#module-tests): Module that defines various functions to test EOS devices.
 
@@ -25,8 +24,6 @@
 - [`models.InventoryDevice`](./inventory.models.md#class-inventorydevice): Inventory model exposed by Inventory class.
 - [`models.InventoryDevices`](./inventory.models.md#class-inventorydevices): Inventory model to list all InventoryDevice entries.
 - [`result_manager.ResultManager`](./result_manager.md#class-resultmanager): ResultManager Helper to manage Test Results and generate reports.
-- [`models.ListResult`](./result_manager.models.md#class-listresult)
-- [`models.TestResult`](./result_manager.models.md#class-testresult)
 - [`report.Colors`](./result_manager.report.md#class-colors): Manage colors for output.
 - [`report.TableReport`](./result_manager.report.md#class-tablereport): TableReport Generate a Table based on tabulate and TestResult.
 
