@@ -649,7 +649,6 @@ def verify_tcam_profile(device, profile):
     except jsonrpc.AppError:
         return None
     try:
-        # FIXME - could be one return
         if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
                 and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
             return True
@@ -677,7 +676,6 @@ def verify_adverse_drops(device):
     except jsonrpc.AppError:
         return None
     try:
-        # FIXME could just be `return response[0]['totalAdverseDrops'] == 0`
         if response[0]['totalAdverseDrops'] == 0:
             return True
         return False
@@ -854,7 +852,6 @@ def verify_interfaces_status(device, minimum=None):
                     and (response[0]['interfaceDescriptions'][item]['lineProtocolStatus'] == 'up')\
                     and (response[0]['interfaceDescriptions'][item]['interfaceStatus'] == 'up'):
                 nbr = nbr + 1
-        # FIXME `return nbr >= minimum`
         if nbr >= minimum:
             return True
         return False
@@ -1226,7 +1223,6 @@ def verify_routing_table_size(device, minimum=None, maximum=None):
     except jsonrpc.AppError:
         return None
     try:
-        # FIXME - just return
         if (response[0]['vrfs']['default']['totalRoutes'] >= minimum
                 and response[0]['vrfs']['default']['totalRoutes'] <= maximum):
             return True
