@@ -4,18 +4,17 @@
 This script collects all the tech-support files stored on Arista switches flash
 """
 
-# Imports
+import logging
 import ssl
-from socket import setdefaulttimeout
 from getpass import getpass
-import sys
 from time import strftime, gmtime
 from argparse import ArgumentParser
 import os
 import paramiko
-from jsonrpclib import Server,jsonrpc
+from jsonrpclib import jsonrpc
 from scp import SCPClient
 from tqdm import tqdm
+from anta.inventory import AntaInventory
 
 PORT = 22
 
@@ -39,7 +38,20 @@ def create_ssh_client (device, port, username, password):
     client.connect(device, port, username, password)
     return client
 
+def report_unreachable_devices(inventory):
+    """
+    report unreachable devices
+    """
+    devices = inventory.get_inventory(established_only = False)
+    for device in devices:
+        if device.established is False:
+            print(f"Could not connect to device {str(device.host)}")
+
 def main():
+    """
+    Main
+    """
+    logging.disable(level=logging.WARNING)
     parser = ArgumentParser(
         description='Collect all the tech-support files'
         )
@@ -64,51 +76,29 @@ def main():
     args = parser.parse_args()
     args.password = getpass(prompt='Device password: ')
 
-    try:
-        with open(args.file, 'r', encoding='utf8') as file:
-            devices = file.readlines()
-    except FileNotFoundError:
-        print('Error reading ' + args.file)
-        sys.exit(1)
-
-    for i,device in enumerate(devices):
-        devices[i] = device.strip()
-
-    # Remove unreachable devices from devices list
-
-    unreachable = []
-
     print('Checking connectivity to devices .... please be patient ... ')
 
-    for device in devices:
-        try:
-            setdefaulttimeout(5)
-            url=f"https://{args.username}:{args.password}@{device}/command-api"
-            switch = Server(url)
-            switch.runCmds(1, ['enable'])
-        except jsonrpc.TransportError:
-            print('wrong credentials for ' + device)
-            unreachable.append(device)
-        except OSError:
-            print(device + ' is not reachable using eAPI')
-            unreachable.append(device)
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=2
+    )
 
-    for item in unreachable:
-        devices.remove(item)
-
+    inv_size = inventory.get_inventory(established_only = False)
+    devices = inventory.get_inventory(established_only = True)
+    number_of_reachable_devices = len(devices)
+    number_of_unreachable_devices = len(inv_size) - number_of_reachable_devices
     if len(devices) > 0:
         # Progress bar
-        number_of_unreachable_devices = len(unreachable)
-        number_of_reachable_devices = len(devices)
-        pbar = tqdm(total = number_of_unreachable_devices + number_of_reachable_devices,\
-            desc = 'Collecting files from devices')
+        pbar = tqdm(total = len(inv_size),desc = 'Collecting files from devices')
         pbar.update(number_of_unreachable_devices)
         # Collect all the tech-support files stored on Arista switches flash and copy them locally
         for device in devices:
-            url = "https://" + args.username + ":" + args.password + "@" + device + "/command-api"
             try:
+                switch = device.session
                 # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
-                switch = Server(url)
                 zip_command = 'bash timeout 30 zip /mnt/flash/schedule/all_files.zip /mnt/flash/schedule/tech-support/*'
                 cmds=[zip_command]
                 switch.runCmds(1,cmds, 'text')
@@ -119,7 +109,7 @@ def main():
                 # Create directories
                 output_dir = device_directories (hostname, args.output_directory)
                 # Connect to the device using SSH
-                ssh = create_ssh_client(device, PORT, args.username, args.password)
+                ssh = create_ssh_client(str(device.host), PORT, args.username, args.password)
                 # Get the zipped file all_files.zip using SCP and save it locally
                 my_path = output_dir[1] + '/' + date + '_' + hostname + '.zip'
                 scp = SCPClient(ssh.get_transport())
@@ -130,12 +120,14 @@ def main():
                 switch.runCmds(1,cmds, 'text')
                 pbar.update(1)
             except jsonrpc.AppError:
-                print("Could not collect show tech files on device " + device)
+                print(f"Could not collect show tech files on device {str(device.host)}")
                 pbar.update(1)
         pbar.close()
-        print('Done. Files are in the directory ' + output_dir[0])
+        print(f'Done. Files are in the directory {output_dir[0]}')
     else:
-        print("can not connect on any device")
+        print("can not connect to any device")
+
+    report_unreachable_devices(inventory)
 
 if __name__ == '__main__':
     main()
