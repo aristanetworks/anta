@@ -16,7 +16,9 @@ from jsonrpclib import Server,jsonrpc
 from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
-import anta.tests
+# The next line is causing pylint issues because of the anta/tests/__init__.py
+# file syntax
+import anta.tests  # pylint: disable=import-error,no-name-in-module
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
