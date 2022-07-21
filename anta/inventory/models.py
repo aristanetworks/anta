@@ -36,6 +36,7 @@ class InventoryDevice(BaseModel):
     host: IPvAnyAddress
     username: str
     password: str
+    enable_password: Optional[str]
     session: Any
     established = False
     is_online = False
