@@ -10,21 +10,34 @@ from pydantic import BaseModel, IPvAnyAddress, validator
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error']
 
 class TestResult(BaseModel):
-    """Describe result of a test from a single device."""
+    """
+    Describe result of a test from a single device.
+
+    Attributes:
+        host(IPvAnyAddress): IPv4 or IPv6 address of the device where the test has run.
+        test(str): Test name runs on the device.
+        results(str): Result of the test. Can be one of unset / failure / success.
+        message(str, optional): Message to report after the test.
+    """
     host: IPvAnyAddress
     test: str
     result: str = 'unset'
     messages: List[str] = []
 
-    @validator('result')
-    def name_must_contain_space(cls, v):
+    @validator('result', allow_reuse=True)
+    def name_must_be_in(cls, v):
         if v not in RESULT_OPTIONS:
             raise ValueError(f'must be one of {RESULT_OPTIONS}')
         return v
 
 
 class ListResult(BaseModel):
-    """List result for all tests on all devices."""
+    """
+    List result for all tests on all devices.
+
+    Attributes:
+        __root__(List[TestResult]): A list of TestResult objects.
+    """
     __root__= []
 
     def append(self, value) -> None:
@@ -39,3 +52,7 @@ class ListResult(BaseModel):
     def __getitem__(self, item):
         """Use custom getitem method."""
         return self.__root__[item]
+
+    def __len__(self):
+        """Support for length of __root__"""
+        return len(self.__root__)
