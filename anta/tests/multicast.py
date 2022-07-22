@@ -71,7 +71,7 @@ def verify_igmp_snooping_global(device: InventoryDevice, configuration: str):
         )
         return result
     try:
-        response = device.runCmds(1, ["show ip igmp snooping"], "json")
+        response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
         igmp_state = response[0]["igmpSnoopingState"]
         if igmp_state == configuration:
             result.result = "success"
