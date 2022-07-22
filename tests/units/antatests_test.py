@@ -45,6 +45,7 @@ def fixture_mock_device():
     return mock_device
 
 
+@pytest.skip("Legacy syntax")
 @pytest.mark.parametrize(
     "versions,expected",
     [
@@ -63,6 +64,7 @@ def test_verify_eos_version(mock_device, versions, expected):
     assert check == expected
 
 
+@pytest.skip("Legacy syntax")
 @pytest.mark.parametrize(
     "uptime,expected", [(100, True), (10000000, False), (None, None)]
 )
@@ -73,6 +75,7 @@ def test_verify_uptime(mock_device, uptime, expected):
     assert check == expected
 
 
+@pytest.skip("Legacy syntax")
 def test_verify_ntp(mock_device):
     check = anta.tests.verify_ntp(device=mock_device, enable_password="enable_password")
     assert check is True
