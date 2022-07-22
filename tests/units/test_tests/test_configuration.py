@@ -4,7 +4,7 @@ Tests for anta.tests.configuration.py
 from unittest.mock import patch
 from jsonrpclib.jsonrpc import AppError
 import pytest
-from anta.tests import verify_zerotouch, verify_running_config_diffs
+from anta.tests.configuration import verify_zerotouch, verify_running_config_diffs
 
 
 @pytest.mark.parametrize(
