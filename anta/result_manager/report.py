@@ -49,7 +49,7 @@ class TableReport():
     def _split_list_to_txt_list(self, usr_list: List[str], delimiter: str = '*'):
         return "\n".join(f"{delimiter} {line}" for line in usr_list)
 
-    def content_sorted_by_host(self,reverse: bool = False):
+    def content_sorted_by_host(self, reverse: bool = False):
         """
         content_sorted_by_host Sort content by using host field
 
@@ -94,7 +94,7 @@ class TableReport():
         """
         return sorted(self.content, key=itemgetter(2), reverse=reverse)
 
-    def content_sorted_by(self, key_index: int, reverse: bool = False)-> list:
+    def content_sorted_by(self, key_index: int, reverse: bool = False) -> list:
         """
         content_sorted_by Sort content by using a user's defined key ID
 
