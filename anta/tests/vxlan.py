@@ -1,55 +1,71 @@
 """
 Test functions related to VXLAN
 """
-from jsonrpclib import jsonrpc
 
-def verify_vxlan(device, enable_password):
+from jsonrpclib import jsonrpc
+from anta.inventory.models import InventoryDevice
+from anta.result_manager.models import TestResult
+
+def verify_vxlan(device: InventoryDevice) -> TestResult:
     """
     Verifies the interface vxlan 1 status is up/up.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
 
     Returns:
-        bool: `True` if the interface vxlan 1 status is up/up.
-        `False` otherwise.
+        TestResult instance with
+        * result = "unset" if test has not been executed
+        * result = "success" if vxlan1 interface is UP UP
+        * result = "failure" otherwise.
+        * result = "error" if any exception is caught
 
     """
+    result = TestResult(host=str(device.host),
+                        test="verify_vxlan")
     try:
-        response = device.runCmds(1, ['show interfaces description | include Vx1'], 'text')
-    except jsonrpc.AppError:
-        return None
-    try:
-        if response[0]['output'].count('up') == 2:
-            return True
-        return False
-    except KeyError:
-        return None
+        response = device.session.runCmds(1, ['show interfaces description | include Vx1'], 'text')
+        response_data = response[0]['output']
+        if response_data.count('up') == 2:
+            result.result = 'success'
+        else:
+            result.result = 'failure'
+            result.messages.append(f'Vxlan interface is {response_data}')
+    except (jsonrpc.AppError, KeyError) as e:
+        result.messages.append(str(e))
+        result.result = 'error'
+    return result
 
-def verify_vxlan_config_sanity(device, enable_password):
+def verify_vxlan_config_sanity(device: InventoryDevice) -> TestResult:
     """
     Verifies there is no VXLAN config-sanity warnings.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
 
     Returns:
-        bool: `True` if there is no VXLAN config-sanity warnings.
-        `False` otherwise.
+        TestResult instance with
+        * result = "unset" if test has not been executed
+        * result = "success" if VXLAN config sanity is OK
+        * result = "failure" otherwise.
+        * result = "error" if any exception is caught
     """
+    result = TestResult(host=str(device.host),
+                        test="verify_vxlan_config_sanity")
     try:
-        response = device.runCmds(1, ['show vxlan config-sanity'], 'json')
-    except jsonrpc.AppError:
-        return None
-    try:
-        if len(response[0]['categories']) == 0:
-            return None
+        response = device.session.runCmds(1, ['show vxlan config-sanity'], 'json')
+        response_data = response[0]['categories']
+        if len(response_data) == 0:
+            result.result = 'error'
+            result.messages.append(f'error in device response {response_data}')
+        # pylint: disable=W0104
+        result.result == 'success'
         for category in response[0]['categories']:
             if category in ['localVtep', 'mlag']:
-                if response[0]['categories'][category]['allCheckPass'] is not True:
-                    return False
-        return True
-    except KeyError:
-        return None
+                if response_data['allCheckPass'] is not True:
+                    result.result = 'failure'
+                    result.messages.append(f'Vxlan config sanity check is not passing: {response_data}')
+    except (jsonrpc.AppError, KeyError) as e:
+        result.messages.append(str(e))
+        result.result = 'error'
+    return result
