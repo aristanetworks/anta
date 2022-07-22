@@ -69,11 +69,22 @@ management api http-commands
 
 First, we need to list devices we want to test. You can create a file manually with this format:
 
-```txt
-10.73.1.101
-2.2.2.2
-10.73.1.102
-10.73.1.106
+```yaml
+anta_inventory:
+  hosts:
+  - host: 192.168.0.10
+  - host: 192.168.0.11
+  - host: 192.168.0.12
+  - host: 192.168.0.13
+  - host: 192.168.0.14
+  - host: 192.168.0.15
+  networks:
+  - network: '192.168.110.0/24'
+  ranges:
+  - start: 10.0.0.9
+    end: 10.0.0.11
+  - start: 10.0.0.100
+    end: 10.0.0.101
 ```
 
 Or you can use [`create-devices-inventory-from-cvp.py`](scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
@@ -82,12 +93,23 @@ Or you can use [`create-devices-inventory-from-cvp.py`](scripts/create-devices-i
 create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
 ```
 
+> __Note:__ Because repository is transitioning to this YAML inventory, some scripts are still based on legacy text based approach
+>
+> ```text
+> 192.168.0.10
+> 192.168.0.11
+> 192.168.0.12
+> 192.168.0.13
+> 192.168.0.14
+> 192.168.0.15
+> ```
+
 ## Test device reachability
 
 Before running NRFU tests, we are going to test if we can connect to devices:
 
 ```bash
-check-devices-reachability.py -i devices.txt -u username
+check-devices-reachability.py -i inventory.yml -u username
 ```
 
 ## Test your network
@@ -95,7 +117,7 @@ check-devices-reachability.py -i devices.txt -u username
 Now we can run tests across the entire inventory
 
 ```bash
-check-devices.py -i devices.txt -t tests.yaml -o output.txt -u <username>
+check-devices.py -i inventory.yml -t tests.yaml -o output.txt -u <username>
 ```
 
 > Note the `-t tests.yml` that list all your tests. An example is available under [examples folder](./examples/tests.yaml)
