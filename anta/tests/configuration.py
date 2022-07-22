@@ -2,54 +2,88 @@
 Test functions related to the device configuration
 """
 from jsonrpclib import jsonrpc
+from anta.inventory.models import InventoryDevice
+from anta.result_manager.models import TestResult
 
-def verify_zerotouch(device, enable_password):
+
+def verify_zerotouch(device: InventoryDevice) -> TestResult:
 
     """
     Verifies ZeroTouch is disabled.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
 
     Returns:
-        bool: `True` if ZeroTouch is disabled.
-        `False` otherwise.
+        TestResult instance with
+        * result = "success" if ZTP is disabled
+        * result = "failure" if ZTP is enabled
+        * result = "error" if any exception is caught
 
     """
+    result = TestResult(host=str(device.host), test="verify_zerotouch")
     try:
-        response = device.runCmds(1, ['show zerotouch'], 'json')
-    except jsonrpc.AppError:
-        return None
-    try:
-        if response[0]['mode'] == 'disabled':
-            return True
-        return False
-    except KeyError:
-        return None
+        response = device.session.runCmds(1, ["show zerotouch"], "json")
 
-def verify_running_config_diffs(device, enable_password):
+        if response[0]["mode"] == "disabled":
+            result.result = "success"
+            result.messages.append("ZTP is disabled")
+        else:
+            result.result = "failure"
+            result.messages.append("ZTP is NOT disabled")
+
+    except (jsonrpc.AppError, KeyError) as e:
+        result.result = "error"
+        result.messages.append(str(e))
+
+    return result
+
+
+def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
 
     """
     Verifies there is no difference between the running-config and the startup-config.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
 
     Returns:
-        bool: `True` if there is no difference between the running-config and the startup-config.
-        `False` otherwise.
+        TestResult instance with
+        * result = "success" if there is no difference between the running-config and the startup-config
+        * result = "failure" if there are differences
+        * result = "error" if any exception is caught
 
     """
+    result = TestResult(host=str(device.host), test="verify_running_config_diffs")
     try:
-        response = device.runCmds(1, \
-            [{"cmd": "enable", "input": enable_password},'show running-config diffs'], 'text')
-    except jsonrpc.AppError:
-        return None
-    try:
-        if len(response[1]['output']) == 0:
-            return True
-        return False
-    except KeyError:
-        return None
+        if not device.enable_password:
+            raise ValueError(
+                "verify_running_config_diff requires the device to"
+                "have the `enable_password` configured"
+            )
+
+        response = device.session.runCmds(
+            1,
+            [
+                {"cmd": "enable", "input": device.enable_password},
+                "show running-config diffs",
+            ],
+            "text",
+        )
+
+        if len(response[1]["output"]) == 0:
+            result.result = "success"
+            result.messages.append(
+                "There is no difference between the running-config and the startup-config."
+            )
+
+        else:
+            result.result = "failure"
+            for line in response[1]["output"]:
+                result.messages.append(line)
+
+    except (jsonrpc.AppError, KeyError, ValueError) as e:
+        result.result = "error"
+        result.messages.append(str(e))
+
+    return result

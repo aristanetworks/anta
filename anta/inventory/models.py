@@ -19,6 +19,7 @@ class AntaInventoryHost(BaseModel):
     """
     host: IPvAnyAddress
 
+
 class AntaInventoryNetwork(BaseModel):
     """
     Network definition for user's inventory.
@@ -27,6 +28,7 @@ class AntaInventoryNetwork(BaseModel):
         network(IPvAnyNetwork): Subnet to use for testing.
     """
     network: IPvAnyNetwork
+
 
 class AntaInventoryRange(BaseModel):
     """
@@ -38,6 +40,7 @@ class AntaInventoryRange(BaseModel):
     """
     start: IPvAnyAddress
     end: IPvAnyAddress
+
 
 class AntaInventoryInput(BaseModel):
     """
@@ -53,6 +56,7 @@ class AntaInventoryInput(BaseModel):
     ranges: Optional[List[AntaInventoryRange]]
 
 # Pydantic models for inventory output structures
+
 
 class InventoryDevice(BaseModel):
     """
@@ -77,6 +81,7 @@ class InventoryDevice(BaseModel):
     is_online = False
     hw_model: str = 'unset'
     url: str
+
 
 class InventoryDevices(BaseModel):
     """
