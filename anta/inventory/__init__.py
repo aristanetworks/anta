@@ -6,9 +6,8 @@ Inventory Module for ANTA.
 """
 
 import logging
-import multiprocessing
 import ssl
-from multiprocessing import Pool
+from multiprocessing import cpu_count, Pool
 from socket import setdefaulttimeout
 from typing import List
 
@@ -99,7 +98,7 @@ class AntaInventory():
         self._inventory = InventoryDevices()
 
         # Max number of thread to launch for discovery
-        self.max_multiprocessing_thread = multiprocessing.cpu_count() + 30
+        self.max_multiprocessing_thread = cpu_count() + 30
 
         with open(inventory_file, 'r', encoding='utf8') as f:
             data = yaml.load(f, Loader=SafeLoader)
