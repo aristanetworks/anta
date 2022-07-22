@@ -5,7 +5,8 @@ disable=
     unused-argument,
     duplicate-code,
     invalid-name,
-    logging-fstring-interpolation
+    logging-fstring-interpolation,
+    c-extension-no-member
 
 [BASIC]
 good-names=runCmds, i, y, t, c, x
