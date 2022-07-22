@@ -5,6 +5,7 @@
 Inventory Module for ANTA.
 """
 
+from cgitb import enable
 import logging
 import multiprocessing
 import ssl
@@ -83,7 +84,7 @@ class AntaInventory():
     HW_MODEL_KEY = 'modelName'
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str, auto_connect: bool = True, timeout: float = 5) -> None:
+    def __init__(self, inventory_file: str, username: str, password: str, enable_password: str = None, auto_connect: bool = True, timeout: float = 5) -> None:
         """Class constructor.
 
         Args:
@@ -93,8 +94,7 @@ class AntaInventory():
             auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
             timeout (float, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
         """
-        self._username = username
-        self._password = password
+        self.set_credentials(username, password, enable_password)
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
@@ -275,6 +275,7 @@ class AntaInventory():
             host=host_ip,
             username=self._username,
             password=self._password,
+            enable_password=self._enable_password,
             url=self._build_device_session_path(
                 host=host_ip,
                 username=self._username,
@@ -454,6 +455,11 @@ class AntaInventory():
 
     ###########################################################################
     ### MISC methods
+
+    def set_credentials(self, username: str = None, password: str = None, enable_password: str = None):
+        self._username = username
+        self._password = password
+        self._enable_password = enable_password
 
     def connect_inventory(self):
         """connect_inventory Helper to prepare inventory with network data."""

@@ -46,6 +46,9 @@ class TableReport():
         self.colors = colors
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
 
+    def _split_list_to_txt_list(self, usr_list: List[str], delimiter: str = '*'):
+        return "\n".join(f"{delimiter} {line}" for line in usr_list)
+
     def content_sorted_by_host(self,reverse: bool = False):
         """
         content_sorted_by_host Sort content by using host field
@@ -182,10 +185,12 @@ class TableReport():
         content = []
         if self.colors:
             if entry.result == 'failure':
-                content = [entry.host, entry.test, f'{Colors.FAIL}{entry.result}{Colors.ENDC}', entry.message]
+                content = [entry.host, entry.test, f'{Colors.FAIL}{entry.result}{Colors.ENDC}', self._split_list_to_txt_list(
+                    entry.messages)]
             elif entry.result == 'success':
-                content = [entry.host, entry.test, f'{Colors.OKGREEN}{entry.result}{Colors.ENDC}', entry.message]
+                content = [entry.host, entry.test, f'{Colors.OKGREEN}{entry.result}{Colors.ENDC}', self._split_list_to_txt_list(
+                    entry.messages)]
         else:
             content = [entry.host, entry.test,
-                       f'{entry.result}', entry.message]
+                       f'{entry.result}', self._split_list_to_txt_list(entry.messages)]
         return content
