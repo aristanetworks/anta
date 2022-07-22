@@ -424,7 +424,7 @@ def verify_loopback_count(device: InventoryDevice, number: int = None) -> TestRe
         else:
             result.result = "failure"
             if loopback_count != number:
-                result.message.append(
+                result.messages.append(
                     f"Found {loopback_count} Loopbacks when expecting {number}"
                 )
             elif len(down_loopback_interfaces) != 0:
