@@ -5,6 +5,8 @@ from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
+# pylint: disable=W0511
+
 
 def verify_interface_utilization(device: InventoryDevice) -> TestResult:
 
@@ -363,7 +365,8 @@ def verify_illegal_lacp(device: InventoryDevice) -> TestResult:
         else:
             result.result = "failure"
             result.messages.append(
-                f"The following port-channels have recieved illegal lacp packets on the follwoing ports: {po_with_illegal_lacp}"
+                "The following port-channels have recieved illegal lacp packets on the "
+                f"following ports: {po_with_illegal_lacp}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
@@ -496,7 +499,9 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_spanning_tree_blocked_ports")
+    result = TestResult(
+        host=str(device.host), test="verify_spanning_tree_blocked_ports"
+    )
 
     try:
         response = device.session.runCmds(
@@ -508,8 +513,9 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
         else:
             result.result = "failure"
             # TODO: a bit lazy would need a real output for this
-            result.messages.append(f"The following ports are spanning-tree blocked {response[0]['spanningTreeInstances'])}"
-
+            result.messages.append(
+                f"The following ports are spanning-tree blocked {response[0]['spanningTreeInstances']}"
+            )
 
     except (jsonrpc.AppError, KeyError) as e:
         result.messages.append(str(e))
