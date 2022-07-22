@@ -508,7 +508,7 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
         else:
             result.result = "failure"
             # TODO: a bit lazy would need a real output for this
-            result.messages.append(f"The following ports are spanning-tree blocked {response[0]["spanningTreeInstances"])}"
+            result.messages.append(f"The following ports are spanning-tree blocked {response[0]['spanningTreeInstances'])}"
 
 
     except (jsonrpc.AppError, KeyError) as e:
