@@ -25,7 +25,7 @@ username=username, password=password, enable_password=enable_password, auto_conn
 devices = inventory.get_inventory(established_only = True)
 
 try:
-    with open(f"{dir_path}/../../examples/tests2.yaml", 'r', encoding='utf8') as file:
+    with open(f"{dir_path}/../../examples/tests.yaml", 'r', encoding='utf8') as file:
         test_catalog = safe_load(file)
 except FileNotFoundError:
     print('Error opening tests_catalog')
