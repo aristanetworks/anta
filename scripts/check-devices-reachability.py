@@ -7,14 +7,30 @@ This script checks devices reachability
 import ssl
 from argparse import ArgumentParser
 from getpass import getpass
-import sys
-from socket import setdefaulttimeout
-from jsonrpclib import Server, jsonrpc
+import logging
+from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
+logging.disable(level=logging.WARNING)
+
+def report_unreachable_devices(inventory):
+    """
+    report unreachable devices
+    """
+    devices = inventory.get_inventory(established_only = False)
+    all_devices_reachable = True
+    for device in devices:
+        if device.established is False:
+            print(f"Could not connect to device {str(device.host)}")
+            all_devices_reachable = False
+    if all_devices_reachable is True:
+        print('All devices from the file are reachable using eAPI')
 
 def main():
+    """
+    check devices rechability
+    """
     parser = ArgumentParser(
         description='Verify devices eAPI connectivity'
         )
@@ -32,36 +48,15 @@ def main():
         )
     args = parser.parse_args()
     args.password = getpass(prompt='Device password: ')
-
-    try:
-        with open(args.file, 'r', encoding='utf8') as file:
-            devices = file.readlines()
-    except FileNotFoundError:
-        print('Error reading ' + args.file)
-        sys.exit(1)
-
-    for i,device in enumerate(devices):
-        devices[i] = device.strip()
-
-    unreachable = []
-
     print('Testing devices reachability .... please be patient ... ')
-
-    for device in devices:
-        try:
-            setdefaulttimeout(5)
-            url=f"https://{args.username}:{args.password}@{device}/command-api"
-            switch = Server(url)
-            switch.runCmds(1, ['show version'])
-        except jsonrpc.TransportError:
-            print('wrong credentials for ' + device)
-            unreachable.append(device)
-        except OSError:
-            print(device + ' is not reachable using eAPI')
-            unreachable.append(device)
-
-    if not unreachable:
-        print('All devices from the file ' + args.file + ' are reachable using eAPI')
+    inventory = AntaInventory(
+        inventory_file=args.file,
+        username=args.username,
+        password=args.password,
+        auto_connect=True,
+        timeout=1
+    )
+    report_unreachable_devices(inventory)
 
 if __name__ == '__main__':
     main()
