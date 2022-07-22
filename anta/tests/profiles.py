@@ -2,58 +2,83 @@
 Test functions related to ASIC profiles
 """
 from jsonrpclib import jsonrpc
+from anta.inventory.models import InventoryDevice
+from anta.result_manager.models import TestResult
 
-def verify_unified_forwarding_table_mode(device, enable_password, mode = None):
+
+def verify_unified_forwarding_table_mode(device: InventoryDevice, mode: str) -> TestResult:
 
     """
     Verifies the device is using the expected Unified Forwarding Table mode.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
-        mode (int): The expected Unified Forwarding Table mode.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
+        mode (str): The expected Unified Forwarding Table mode.
 
     Returns:
-        bool: `True` if the device is using the expected Unified Forwarding Table mode.
-        `False` otherwise.
-
+        TestResult instance with
+        * result = "unset" if test has not been executed
+        * result = "success" if UFT mode is correct
+        * result = "failure" otherwise.
+        * result = "error" if any exception is caught
     """
+    result = TestResult(host=str(device.host),
+                        test="verify_vxlan")
     if not mode:
-        return None
+        result.result = 'unset'
+        result.messages.append(
+            "verify_unified_forwarding_table_mode was not run as no "
+            "mode was givem"
+        )
+        return result
     try:
-        response = device.runCmds(1, ['show platform trident forwarding-table partition'], 'json')
-    except jsonrpc.AppError:
-        return None
-    try:
-        if response[0]['uftMode'] == str(mode):
-            return True
-        return False
-    except KeyError:
-        return None
+        response = device.session.runCmds(1, ['show platform trident forwarding-table partition'], 'json')
+        response_data = response[0]['uftMode']
+        if response_data == str(mode):
+            result.result = 'success'
+        else:
+            result.result = 'failure'
+            result.messages.append(f'device is not running correct UFT mode (expected: {mode} / running: {response_data})')
+    except (jsonrpc.AppError, KeyError) as e:
+        result.messages.append(str(e))
+        result.result = 'error'
+    return result
 
-def verify_tcam_profile(device, enable_password, profile):
+
+def verify_tcam_profile(device: InventoryDevice, profile : str) -> TestResult:
 
     """
     Verifies the configured TCAM profile is the expected one.
 
     Args:
-        device (jsonrpclib.jsonrpc.ServerProxy): Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
-        enable_password (str): Enable password.
-        profile (str): The expected TCAM profile.
+        device (InventoryDevice): InventoryDevice instance containing all devices information.
+        profile (str): The expected TCAM profile.0
 
     Returns:
-        bool: `True` if the device is configured with the expected TCAM profile.
-        `False` otherwise.
-
+        TestResult instance with
+        * result = "unset" if test has not been executed
+        * result = "success" if TCAM profile is correct
+        * result = "failure" otherwise.
+        * result = "error" if any exception is caught
     """
+    result = TestResult(host=str(device.host),
+                        test="verify_vxlan")
+    if not profile:
+        result.result = 'unset'
+        result.messages.append(
+            "verify_tcam_profile was not run as no "
+            "profile was givem"
+        )
+        return result
     try:
-        response = device.runCmds(1, ['show hardware tcam profile'], 'json')
-    except jsonrpc.AppError:
-        return None
-    try:
+        response = device.session.runCmds(1, ['show hardware tcam profile'], 'json')
         if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
             and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
-            return True
-        return False
-    except KeyError:
-        return None
+            result.result = 'success'
+        else:
+            result.result = 'failure'
+            result.messages.append(f'Incorrect profile configured on device: {response[0]["pmfProfiles"]["FixedSystem"]["status"]}')
+    except (jsonrpc.AppError, KeyError) as e:
+        result.messages.append(str(e))
+        result.result = 'error'
+    return result
