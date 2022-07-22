@@ -33,7 +33,7 @@ def verify_transceivers_manufacturers(
         )
         return result
     try:
-        response = device.runCmds(1, ["show inventory"], "json")
+        response = device.session.runCmds(1, ["show inventory"], "json")
 
         wrong_manufacturers = {
             interface: value["mfgName"]
@@ -76,7 +76,7 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_system_temperature")
 
     try:
-        response = device.runCmds(1, ["show system environment temperature"], "json")
+        response = device.session.runCmds(1, ["show system environment temperature"], "json")
 
         if response[0]["systemStatus"] == "temperatureOk":
             result.result = "success"
@@ -114,7 +114,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_transceiver_temperature")
 
     try:
-        response = device.runCmds(
+        response = device.session.runCmds(
             1, ["show system environment temperature transceiver"], "json"
         )
 
@@ -163,7 +163,7 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_environment_cooling")
 
     try:
-        response = device.runCmds(1, ["show system environment cooling"], "json")
+        response = device.session.runCmds(1, ["show system environment cooling"], "json")
 
         if response[0]["systemStatus"] == "coolingOk":
             result.result = "success"
@@ -199,7 +199,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_environment_power")
 
     try:
-        response = device.runCmds(1, ["show system environment power"], "json")
+        response = device.session.runCmds(1, ["show system environment power"], "json")
 
         wrong_power_supplies = {
             powersupply: {"state": value["state"]}
@@ -239,7 +239,7 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_adverse_drops")
 
     try:
-        response = device.runCmds(1, ["show hardware counter drop"], "json")
+        response = device.session.runCmds(1, ["show hardware counter drop"], "json")
 
         if response[0]["totalAdverseDrops"] == 0:
             result.result = "success"
