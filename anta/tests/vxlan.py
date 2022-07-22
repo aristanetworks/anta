@@ -30,7 +30,10 @@ def verify_vxlan(device: InventoryDevice) -> TestResult:
             result.result = 'success'
         else:
             result.result = 'failure'
-            result.messages.append(f'Vxlan interface is {response_data}')
+            if response_data is not None:
+                result.messages.append(f'Vxlan interface is {response_data}')
+            else:
+                result.messages.append('No interface VXLAN 1 detected')
     except (jsonrpc.AppError, KeyError) as e:
         result.messages.append(str(e))
         result.result = 'error'
