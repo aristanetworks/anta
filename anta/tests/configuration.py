@@ -1,7 +1,6 @@
 """
 Test functions related to the device configuration
 """
-import sys
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -22,7 +21,7 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test=sys._getframe().f_code.co_name)
+    result = TestResult(host=str(device.host), test="verify_zerotouch")
     try:
         response = device.session.runCmds(1, ["show zerotouch"], "json")
 
@@ -55,7 +54,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test=sys._getframe().f_code.co_name)
+    result = TestResult(host=str(device.host), test="verify_running_config_diffs")
     try:
         if not device.enable_password:
             raise ValueError(
@@ -75,7 +74,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         if len(response[1]["output"]) == 0:
             result.result = "success"
             result.messages.append(
-                "The is no difference between the running-config and the startup-config"
+                "There is no difference between the running-config and the startup-config."
             )
 
         else:
