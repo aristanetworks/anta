@@ -9,6 +9,7 @@ from pydantic import BaseModel, IPvAnyAddress, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error']
 
+
 class TestResult(BaseModel):
     """
     Describe result of a test from a single device.
@@ -38,7 +39,7 @@ class ListResult(BaseModel):
     Attributes:
         __root__(List[TestResult]): A list of TestResult objects.
     """
-    __root__= []
+    __root__ = []
 
     def append(self, value) -> None:
         """Add support for append method."""
