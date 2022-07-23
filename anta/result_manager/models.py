@@ -7,7 +7,7 @@
 from typing import List, Optional, Any
 from pydantic import BaseModel, IPvAnyAddress, validator
 
-RESULT_OPTIONS = ['unset', 'success', 'failure', 'error']
+RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
 
 
 class TestResult(BaseModel):
@@ -26,11 +26,76 @@ class TestResult(BaseModel):
     messages: List[str] = []
 
     @validator('result', allow_reuse=True)
-    def name_must_be_in(cls, v):
+    def name_must_be_in(cls, v: str) -> str:
+        """
+        Status validator
+
+        Validate status is a supported one
+
+        Args:
+            v (str): User defined status
+
+        Raises:
+            ValueError: If status is unsupported
+
+        Returns:
+            str: status value
+        """
         if v not in RESULT_OPTIONS:
             raise ValueError(f'must be one of {RESULT_OPTIONS}')
         return v
 
+    def is_success(self, message: str) -> bool:
+        """
+        Helper to set status to success
+
+        Args:
+            message (str): Optional message related to the test
+
+        Returns:
+            bool: Alwayss true
+        """
+        return self._set_status('success', message)
+
+    def is_failure(self, message: str) -> bool:
+        """
+        Helper to set status to failure
+
+        Args:
+            message (str): Optional message related to the test
+
+        Returns:
+            bool: Alwayss true
+        """
+        return self._set_status('failure', message)
+
+    def is_skipped(self, message: str) -> bool:
+        """
+        Helper to set status to skipped
+
+        Args:
+            message (str): Optional message related to the test
+
+        Returns:
+            bool: Alwayss true
+        """
+        return self._set_status('skipped', message)
+
+    def _set_status(self, status: str, message: str = None) -> bool:
+        """
+        Set status and insert optional message
+
+        Args:
+            status (str): status of the test
+            message (str): optional message
+
+        Returns:
+            bool: Always true
+        """
+        self.result = status
+        if message is not None:
+            self.messages.append(message)
+        return True
 
 class ListResult(BaseModel):
     """
