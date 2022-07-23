@@ -61,7 +61,7 @@ def verify_tcam_profile(device: InventoryDevice, profile : str) -> TestResult:
     result = TestResult(host=str(device.host),
                         test="verify_vxlan")
     if not profile:
-        result.ris_skipped(
+        result.is_skipped(
             "verify_tcam_profile was not run as no "
             "profile was givem"
         )

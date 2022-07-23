@@ -62,7 +62,7 @@ def verify_terminattr_version(device: InventoryDevice, versions=None) -> TestRes
     result = TestResult(host=str(device.host),
                         test="verify_terminattr_version")
     if not versions:
-        result.ris_skipped(
+        result.is_skipped(
             "verify_terminattr_version was not run as no "
             "versions were givem"
         )
