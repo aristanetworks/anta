@@ -91,7 +91,7 @@ class TestResult(BaseModel):
         Returns:
             bool: Always true
         """
-        return self._set_status('skipped', message)
+        return self._set_status('error', message)
 
     def _set_status(self, status: str, message: str = '') -> bool:
         """

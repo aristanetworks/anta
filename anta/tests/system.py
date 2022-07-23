@@ -5,7 +5,8 @@ from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
-def verify_uptime(device, enable_password, minimum = None):
+
+def verify_uptime(device: InventoryDevice, minimum=None):
     """
     Verifies the device uptime is higher than a value.
 
@@ -90,7 +91,7 @@ def verify_coredump(device: InventoryDevice) -> TestResult:
                         test="verify_coredump")
     try:
         response = device.session.runCmds(1, \
-            [{"cmd": "enable", "input": device.enable_password},'bash timeout 10 ls /var/core'], 'text')
+            [{"cmd": "enable", "input": str(device.enable_password)},'bash timeout 10 ls /var/core'], 'text')
         response_data = response[1]['output']
         if len(response_data) == 0:
             result.is_success()
@@ -116,7 +117,7 @@ def verify_agent_logs(device: InventoryDevice) -> TestResult:
 
     """
     result = TestResult(host=str(device.host),
-                        test="verify_vxlan")
+                        test="verify_agent_logs")
     try:
         response = device.session.runCmds(1, ['show agent logs crash'], 'text')
         response_data = response[0]['output']

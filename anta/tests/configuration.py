@@ -55,7 +55,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
     """
     result = TestResult(host=str(device.host), test="verify_running_config_diffs")
     try:
-        if not device.enable_password:
+        if not str(device.enable_password):
             raise ValueError(
                 "verify_running_config_diff requires the device to"
                 "have the `enable_password` configured"
@@ -64,7 +64,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(
             1,
             [
-                {"cmd": "enable", "input": device.enable_password},
+                {"cmd": "enable", "input": str(device.enable_password)},
                 "show running-config diffs",
             ],
             "text",
