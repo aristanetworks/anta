@@ -26,15 +26,14 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show zerotouch"], "json")
 
         if response[0]["mode"] == "disabled":
-            result.result = "success"
+            result.is_success()
             result.messages.append("ZTP is disabled")
         else:
-            result.result = "failure"
+            result.is_failure()
             result.messages.append("ZTP is NOT disabled")
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -72,18 +71,16 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         )
 
         if len(response[1]["output"]) == 0:
-            result.result = "success"
-            result.messages.append(
+            result.is_success(
                 "There is no difference between the running-config and the startup-config."
             )
 
         else:
-            result.result = "failure"
+            result.is_failure()
             for line in response[1]["output"]:
-                result.messages.append(line)
+                result.is_failure(line)
 
     except (jsonrpc.AppError, KeyError, ValueError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result

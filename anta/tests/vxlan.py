@@ -27,16 +27,15 @@ def verify_vxlan(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ['show interfaces description | include Vx1'], 'text')
         response_data = response[0]['output']
         if response_data.count('up') == 2:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
+            result.is_failure()
             if response_data is not None:
                 result.messages.append(f'Vxlan interface is {response_data}')
             else:
                 result.messages.append('No interface VXLAN 1 detected')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_vxlan_config_sanity(device: InventoryDevice) -> TestResult:
@@ -66,9 +65,7 @@ def verify_vxlan_config_sanity(device: InventoryDevice) -> TestResult:
         for category in response[0]['categories']:
             if category in ['localVtep', 'mlag']:
                 if response_data['allCheckPass'] is not True:
-                    result.result = 'failure'
-                    result.messages.append(f'Vxlan config sanity check is not passing: {response_data}')
+                    result.is_failure(f'Vxlan config sanity check is not passing: {response_data}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

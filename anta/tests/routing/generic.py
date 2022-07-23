@@ -25,8 +25,7 @@ def verify_routing_protocol_model(device: InventoryDevice, model : str = 'multi-
     result = TestResult(host=str(device.host),
                         test="verify_routing_protocol_model")
     if not model:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_routing_protocol_model was not run as no "
             "model was givem"
         )
@@ -36,13 +35,11 @@ def verify_routing_protocol_model(device: InventoryDevice, model : str = 'multi-
         configured_model = response[0]['protoModelStatus']['configuredProtoModel']
         operating_model = response[0]['protoModelStatus']['operatingProtoModel']
         if configured_model == operating_model == model:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'routing model is misconfigured: configured:{configured_model} - operating:{operating_model} - expected:{model} ')
+            result.is_failure(f'routing model is misconfigured: configured:{configured_model} - operating:{operating_model} - expected:{model} ')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 
@@ -66,8 +63,7 @@ def verify_routing_table_size(device: InventoryDevice, minimum: int, maximum: in
     result = TestResult(host=str(device.host),
                         test="verify_routing_table_size")
     if not minimum or not maximum:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_routing_table_size was not run as no "
             "minimum or maximum were givem"
         )
@@ -76,13 +72,11 @@ def verify_routing_table_size(device: InventoryDevice, minimum: int, maximum: in
         response = device.session.runCmds(1, [{'cmd': 'show ip route summary', 'revision': 3}], 'json')
         total_routes = int(response[0]['vrfs']['default']['totalRoutes'])
         if minimum <= total_routes <= maximum:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'routing-table has {total_routes} routes and not between min ({minimum}) and maximum ({maximum})')
+            result.is_failure(f'routing-table has {total_routes} routes and not between min ({minimum}) and maximum ({maximum})')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 
@@ -112,11 +106,9 @@ def verify_bfd(device: InventoryDevice) -> TestResult:
                         intf_state = response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats'][interface]['status']
                         intf_name = response[0]['vrfs'][vrf]['ipv4Neighbors'][neighbor]['peerStats'][interface]
                         has_failed = True
-                        result.result = 'failure'
-                        result.messages.append(f'bfd state on interface {intf_name} is {intf_state} (expected up)')
+                        result.is_failure(f'bfd state on interface {intf_name} is {intf_state} (expected up)')
         if has_failed is not False:
-            result.result = 'success'
+            result.is_success()
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

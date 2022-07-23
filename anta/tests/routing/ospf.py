@@ -25,12 +25,11 @@ def verify_ospf_state(device: InventoryDevice) -> TestResult:
     try:
         response = device.session.runCmds(1, ['show ip ospf neighbor | exclude FULL|Address'], 'text')
         if response[0]['output'].count('\n') == 0:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
+            result.is_failure('Some neighbors are not correctly configured.')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 
@@ -52,8 +51,7 @@ def verify_ospf_count(device: InventoryDevice, number : int) -> TestResult:
     result = TestResult(host=str(device.host),
                         test="verify_ospf_count")
     if not number:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_igmp_snooping_vlans was not run as no "
             "number was givem"
         )
@@ -62,11 +60,9 @@ def verify_ospf_count(device: InventoryDevice, number : int) -> TestResult:
         response = device.session.runCmds(1, ['show ip ospf neighbor | exclude  Address'], 'text')
         response_data = response[0]['output'].count('FULL')
         if response_data.count('FULL') == number:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device has {response_data.count("FULL")} neighbors (expected {number}')
+            result.is_failure(f'device has {response_data.count("FULL")} neighbors (expected {number}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

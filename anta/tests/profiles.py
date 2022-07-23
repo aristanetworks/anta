@@ -25,8 +25,7 @@ def verify_unified_forwarding_table_mode(device: InventoryDevice, mode: str) -> 
     result = TestResult(host=str(device.host),
                         test="verify_vxlan")
     if not mode:
-        result.result = 'unset'
-        result.messages.append(
+        result.is_skipped(
             "verify_unified_forwarding_table_mode was not run as no "
             "mode was givem"
         )
@@ -34,14 +33,12 @@ def verify_unified_forwarding_table_mode(device: InventoryDevice, mode: str) -> 
     try:
         response = device.session.runCmds(1, ['show platform trident forwarding-table partition'], 'json')
         response_data = response[0]['uftMode']
-        if response_data == str(mode):
-            result.result = 'success'
+        if response_data == mode:
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device is not running correct UFT mode (expected: {mode} / running: {response_data})')
+            result.is_failure(f'device is not running correct UFT mode (expected: {mode} / running: {response_data})')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 
@@ -64,8 +61,7 @@ def verify_tcam_profile(device: InventoryDevice, profile : str) -> TestResult:
     result = TestResult(host=str(device.host),
                         test="verify_vxlan")
     if not profile:
-        result.result = 'unset'
-        result.messages.append(
+        result.ris_skipped(
             "verify_tcam_profile was not run as no "
             "profile was givem"
         )
@@ -74,11 +70,9 @@ def verify_tcam_profile(device: InventoryDevice, profile : str) -> TestResult:
         response = device.session.runCmds(1, ['show hardware tcam profile'], 'json')
         if (response[0]['pmfProfiles']['FixedSystem']['status'] == response[0]['pmfProfiles']['FixedSystem']['config'])\
             and (response[0]['pmfProfiles']['FixedSystem']['status'] == profile):
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'Incorrect profile configured on device: {response[0]["pmfProfiles"]["FixedSystem"]["status"]}')
+            result.is_failure(f'Incorrect profile configured on device: {response[0]["pmfProfiles"]["FixedSystem"]["status"]}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

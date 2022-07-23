@@ -26,8 +26,7 @@ def verify_transceivers_manufacturers(
     """
     result = TestResult(host=str(device.host), test="verify_transceivers_manufacturers")
     if not manufacturers:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_transceivers_manufacturers was not run as no "
             "manufacturers were givem"
         )
@@ -41,18 +40,15 @@ def verify_transceivers_manufacturers(
             if value["mfgName"] not in manufacturers
         }
         if len(wrong_manufacturers) == 0:
-            result.result = "success"
-            result.messages.append("All transceivers belongs to allowed manufacturers")
+            result.is_success("All transceivers belongs to allowed manufacturers")
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 "The following interfaces have transceivers from unauthorized manufacturers"
             )
             result.messages.append(wrong_manufacturers)
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -79,17 +75,14 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show system environment temperature"], "json")
 
         if response[0]["systemStatus"] == "temperatureOk":
-            result.result = "success"
-            result.messages.append("Device temperature is OK.")
+            result.is_success("Device temperature is OK.")
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -127,20 +120,17 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
             if value["hwStatus"] != "ok" or value["alertCount"] != 0
         }
         if len(wrong_sensors) == 0:
-            result.result = "success"
-            result.messages.append(
+            result.is_success(
                 "All sensor temperature is OK and there was no alarm in the past"
             )
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 "The following sensors do not have the correct temperature or had alarms in the past:"
             )
             result.messages.append(wrong_sensors)
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -166,17 +156,14 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show system environment cooling"], "json")
 
         if response[0]["systemStatus"] == "coolingOk":
-            result.result = "success"
-            result.messages.append("Device cooling is OK.")
+            result.is_success("Device cooling is OK.")
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -207,16 +194,13 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
             if value["state"] != "ok"
         }
         if len(wrong_power_supplies) == 0:
-            result.result = "success"
-            result.messages.append("All power supplies are OK.")
+            result.is_success("All power supplies are OK.")
         else:
-            result.result = "failure"
-            result.messages.append("The following power suppliers are not ok:")
+            result.is_failure("The following power suppliers are not ok:")
             result.messages.append(wrong_power_supplies)
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
 
@@ -242,16 +226,13 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show hardware counter drop"], "json")
 
         if response[0]["totalAdverseDrops"] == 0:
-            result.result = "success"
-            result.messages.append("Device TotalAdverseDrops counter is 0.")
+            result.is_success("Device TotalAdverseDrops counter is 0.")
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.result = "error"
-        result.messages.append(str(e))
+        result.is_error(str(e))
 
     return result
