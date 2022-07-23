@@ -45,7 +45,7 @@ class TestResult(BaseModel):
             raise ValueError(f'must be one of {RESULT_OPTIONS}')
         return v
 
-    def is_success(self, message: str) -> bool:
+    def is_success(self, message: str = '') -> bool:
         """
         Helper to set status to success
 
@@ -53,11 +53,11 @@ class TestResult(BaseModel):
             message (str): Optional message related to the test
 
         Returns:
-            bool: Alwayss true
+            bool: Always true
         """
         return self._set_status('success', message)
 
-    def is_failure(self, message: str) -> bool:
+    def is_failure(self, message: str = '') -> bool:
         """
         Helper to set status to failure
 
@@ -65,11 +65,11 @@ class TestResult(BaseModel):
             message (str): Optional message related to the test
 
         Returns:
-            bool: Alwayss true
+            bool: Always true
         """
         return self._set_status('failure', message)
 
-    def is_skipped(self, message: str) -> bool:
+    def is_skipped(self, message: str = '') -> bool:
         """
         Helper to set status to skipped
 
@@ -77,11 +77,23 @@ class TestResult(BaseModel):
             message (str): Optional message related to the test
 
         Returns:
-            bool: Alwayss true
+            bool: Always true
         """
         return self._set_status('skipped', message)
 
-    def _set_status(self, status: str, message: str = None) -> bool:
+    def is_error(self, message: str = '') -> bool:
+        """
+        Helper to set status to error
+
+        Args:
+            message (str): Optional message related to the test
+
+        Returns:
+            bool: Always true
+        """
+        return self._set_status('skipped', message)
+
+    def _set_status(self, status: str, message: str = '') -> bool:
         """
         Set status and insert optional message
 
@@ -93,7 +105,7 @@ class TestResult(BaseModel):
             bool: Always true
         """
         self.result = status
-        if message is not None:
+        if message != '':
             self.messages.append(message)
         return True
 
