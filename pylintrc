@@ -6,7 +6,8 @@ disable=
     duplicate-code,
     invalid-name,
     logging-fstring-interpolation,
-    c-extension-no-member
+    c-extension-no-member,
+    no-value-for-parameter
 
 [BASIC]
 good-names=runCmds, i, y, t, c, x

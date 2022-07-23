@@ -40,16 +40,14 @@ def verify_interface_utilization(device: InventoryDevice) -> TestResult:
                     wrong_interfaces[line.split()[0]] = line.split()[-2]
 
         if len(wrong_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following interfaces have a usage > 75%: {wrong_interfaces}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -82,16 +80,14 @@ def verify_interface_errors(device: InventoryDevice) -> TestResult:
             for interface, outer_v in response[0]["interfaceErrorCounters"]
         }
         if len(wrong_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following interfaces have non 0 error counter(s): {wrong_interfaces}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -124,16 +120,14 @@ def verify_interface_discards(device: InventoryDevice) -> TestResult:
             for interface, outer_v in response[0]["interfaces"]
         }
         if len(wrong_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following interfaces have non 0 discard counter(s): {wrong_interfaces}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -166,16 +160,14 @@ def verify_interface_errdisabled(device: InventoryDevice) -> TestResult:
         ]
 
         if len(errdisabled_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following interfaces are in error disabled state: {errdisabled_interfaces}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -223,10 +215,9 @@ def verify_interfaces_status(
                     other_ethernet_interfaces.append(interface)
 
         if count_up_up >= minimum:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Only {count_up_up}, less than {minimum} Ethernet interfaces are UP/UP"
             )
             result.messages.append(
@@ -234,8 +225,7 @@ def verify_interfaces_status(
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -272,16 +262,14 @@ def verify_storm_control_drops(device: InventoryDevice) -> TestResult:
                     )
 
         if len(storm_controlled_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following interfaces have none 0 storm-control drop counters {storm_controlled_interfaces}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -315,16 +303,14 @@ def verify_portchannels(device: InventoryDevice) -> TestResult:
         }
 
         if len(po_with_invactive_ports) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following port-channels have inactive port(s): {po_with_invactive_ports}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -361,17 +347,15 @@ def verify_illegal_lacp(device: InventoryDevice) -> TestResult:
         }
 
         if len(po_with_illegal_lacp) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 "The following port-channels have recieved illegal lacp packets on the "
                 f"following ports: {po_with_illegal_lacp}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -397,8 +381,7 @@ def verify_loopback_count(device: InventoryDevice, number: int = None) -> TestRe
     result = TestResult(host=str(device.host), test="verify_loopback_count")
 
     if not number:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_loopback_count was not run as no number value was given."
         )
         return result
@@ -420,21 +403,20 @@ def verify_loopback_count(device: InventoryDevice, number: int = None) -> TestRe
                     down_loopback_interfaces.append(interface)
 
         if loopback_count == number and len(down_loopback_interfaces) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
+            result.is_failure()
             if loopback_count != number:
-                result.messages.append(
+                result.is_failure(
                     f"Found {loopback_count} Loopbacks when expecting {number}"
                 )
             elif len(down_loopback_interfaces) != 0:
-                result.messages.append(
+                result.is_failure(
                     f"The following Loopbacks are not up: {down_loopback_interfaces}"
                 )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -471,14 +453,12 @@ def verify_svi(device: InventoryDevice) -> TestResult:
                     down_svis.append(interface)
 
         if len(down_svis) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(f"The following SVIs are not up: {down_svis}")
+            result.is_failure(f"The following SVIs are not up: {down_svis}")
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -509,16 +489,15 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
         )
 
         if len(response[0]["spanningTreeInstances"]) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
+            result.is_failure()
             # TODO: a bit lazy would need a real output for this
             result.messages.append(
                 f"The following ports are spanning-tree blocked {response[0]['spanningTreeInstances']}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result

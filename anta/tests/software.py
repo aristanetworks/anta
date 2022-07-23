@@ -27,8 +27,7 @@ def verify_eos_version(device: InventoryDevice, versions: List[str] = None) -> T
     result = TestResult(host=str(device.host),
                         test="verify_eos_version")
     if not versions:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_eos_version was not run as no "
             "versions were givem"
         )
@@ -37,13 +36,11 @@ def verify_eos_version(device: InventoryDevice, versions: List[str] = None) -> T
     try:
         response = device.session.runCmds(1, ['show version'], 'json')
         if response[0]['version'] in versions:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device is running version {response[0]["version"]} not in expected version')
+            result.is_failure(f'device is running version {response[0]["version"]} not in expected version')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 
@@ -65,8 +62,7 @@ def verify_terminattr_version(device: InventoryDevice, versions=None) -> TestRes
     result = TestResult(host=str(device.host),
                         test="verify_terminattr_version")
     if not versions:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_terminattr_version was not run as no "
             "versions were givem"
         )
@@ -75,13 +71,11 @@ def verify_terminattr_version(device: InventoryDevice, versions=None) -> TestRes
         response = device.session.runCmds(1, ['show version detail'], 'json')
         response_data = response[0]['details']['packages']['TerminAttr-core']['version']
         if response_data in versions:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device is running TerminAttr version {response_data} and is not in the allowed list')
+            result.is_failure(f'device is running TerminAttr version {response_data} and is not in the allowed list')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_eos_extensions(device: InventoryDevice) -> TestResult:
@@ -97,13 +91,12 @@ def verify_eos_extensions(device: InventoryDevice) -> TestResult:
         `False` otherwise.
 
     """
+    result = TestResult(host=str(device.host),
+                        test="verify_eos_extensions")
     try:
         response = device.session.runCmds(1, ['show extensions', 'show boot-extensions'], 'json')
-    except jsonrpc.AppError:
-        return None
-    installed_extensions = []
-    boot_extensions = []
-    try:
+        installed_extensions = []
+        boot_extensions = []
         for extension in response[0]['extensions']:
             if response[0]['extensions'][extension]['status'] == 'installed':
                 installed_extensions.append(extension)
@@ -115,12 +108,13 @@ def verify_eos_extensions(device: InventoryDevice) -> TestResult:
                 boot_extensions.append(extension)
         installed_extensions.sort()
         boot_extensions.sort()
+        result.is_failure(
+            f'Missing EOS extensions: installed {installed_extensions} / configured: {boot_extensions}')
         if installed_extensions == boot_extensions:
-            return True
-        return False
-    except KeyError:
-        return None
-
+            result.is_success()
+    except (jsonrpc.AppError, KeyError) as e:
+        result.is_error(str(e))
+    return result
 
 def verify_field_notice_44_resolution(device: InventoryDevice) -> TestResult:
     """
@@ -196,30 +190,24 @@ def verify_field_notice_44_resolution(device: InventoryDevice) -> TestResult:
         for variant in variants:
             model = model.replace(variant, '')
         if model not in devices:
-            result.result = 'unset'
-            result.messages.append('device is not impacted by FN044')
+            result.is_skipped('device is not impacted by FN044')
 
         for component in response[0]['details']['components']:
             if component['name'] == 'Aboot':
                 aboot_version = component['version'].split('-')[2]
-        result.result = 'success'
+        result.is_success()
         if aboot_version.startswith('4.0.') and int(aboot_version.split('.')[2]) < 7:
-            result.result = 'failure'
-            result.messages.append(
+            result.is_failure(
                 f'device is running incorrect version of aboot ({aboot_version})')
         elif aboot_version.startswith('4.1.') and int(aboot_version.split('.')[2]) < 1:
-            result.result = 'failure'
-            result.messages.append(
+            result.is_failure(
                 f'device is running incorrect version of aboot ({aboot_version})')
         elif aboot_version.startswith('6.0.') and int(aboot_version.split('.')[2]) < 9:
-            result.result = 'failure'
-            result.messages.append(
+            result.is_failure(
                 f'device is running incorrect version of aboot ({aboot_version})')
         elif aboot_version.startswith('6.1.') and int(aboot_version.split('.')[2]) < 7:
-            result.result = 'failure'
-            result.messages.append(
+            result.is_failure(
                 f'device is running incorrect version of aboot ({aboot_version})')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

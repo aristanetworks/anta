@@ -28,22 +28,19 @@ def verify_mlag_status(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show mlag"], "json")
 
         if response[0]["state"] == "disabled":
-            result.result = "unset"
-            result.messages.append("MLAG is disabled")
+            result.is_skipped("MLAG is disabled")
         elif (
             response[0]["state"] != "active"
             or response[0]["negStatus"] != "connected"
             or response[0]["localIntfStatus"] != "up"
             or response[0]["peerLinkStatus"] != "up"
         ):
-            result.result = "failure"
-            result.messages.append(f"MLAG status is not OK: {response[0]}")
+            result.is_failure(f"MLAG status is not OK: {response[0]}")
         else:
-            result.result = "success"
+            result.is_success()
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -69,20 +66,17 @@ def verify_mlag_interfaces(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show mlag"], "json")
 
         if response[0]["state"] == "disabled":
-            result.result = "unset"
-            result.messages.append("MLAG is disabled")
+            result.is_skipped("MLAG is disabled")
         elif (
             response[0]["mlagPorts"]["Inactive"] != 0
             or response[0]["mlagPorts"]["Active-partial"] != 0
         ):
-            result.result = "failure"
-            result.messages.append(f"MLAG status is not OK: {response[0]['mlagPorts']}")
+            result.is_failure(f"MLAG status is not OK: {response[0]['mlagPorts']}")
         else:
-            result.result = "success"
+            result.is_success()
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -109,28 +103,26 @@ def verify_mlag_config_sanity(device: InventoryDevice) -> TestResult:
 
         if response[0]["response"]["mlagActive"] is False:
             # MLAG is not running
-            result.result = "unset"
-            result.messages.append("MLAG is disabled")
+            result.is_skipped("MLAG is disabled")
         elif (
             len(response[0]["response"]["globalConfiguration"]) > 0
             or len(response[0]["response"]["interfaceConfiguration"]) > 0
         ):
-            result.result = "failure"
+            result.is_failure()
             if len(response[0]["response"]["globalConfiguration"]) > 0:
-                result.messages.append(
+                result.is_failure(
                     "MLAG config-sanity returned some Global inconsistencies: "
                     f"{response[0]['response']['globalConfiguration']}"
                 )
             if len(response[0]["response"]["interfaceConfiguration"]) > 0:
-                result.messages.append(
+                result.is_failure(
                     "MLAG config-sanity returned some Interface inconsistencies: "
                     f"{response[0]['response']['interfaceConfiguration']}"
                 )
         else:
-            result.result = "success"
+            result.is_success()
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result

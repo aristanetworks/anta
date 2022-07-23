@@ -5,7 +5,8 @@ from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
-def verify_uptime(device, enable_password, minimum = None):
+
+def verify_uptime(device: InventoryDevice, minimum=None):
     """
     Verifies the device uptime is higher than a value.
 
@@ -24,8 +25,7 @@ def verify_uptime(device, enable_password, minimum = None):
     result = TestResult(host=str(device.host),
                         test="verify_uptime")
     if not minimum:
-        result.result = 'unset'
-        result.messages.append(
+        result.is_skipped(
             "verify_uptime was not run as no minimum were givem"
         )
         return result
@@ -33,13 +33,11 @@ def verify_uptime(device, enable_password, minimum = None):
         response = device.session.runCmds(1, ['show uptime'], 'json')
         response_data = response[0]['upTime']
         if response[0]['upTime'] > minimum:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'Uptime is {response_data}')
+            result.is_failure(f'Uptime is {response_data}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_reload_cause(device: InventoryDevice) -> TestResult:
@@ -67,13 +65,11 @@ def verify_reload_cause(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ['show version','show reload cause'], 'json')
         response_data = response[0]['response']['resetCauses'][0]['description']
         if response_data in ['Reload requested by the user.', 'Reload requested after FPGA upgrade']:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'Reload cause is {response_data}')
+            result.is_failure(f'Reload cause is {response_data}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_coredump(device: InventoryDevice) -> TestResult:
@@ -95,16 +91,14 @@ def verify_coredump(device: InventoryDevice) -> TestResult:
                         test="verify_coredump")
     try:
         response = device.session.runCmds(1, \
-            [{"cmd": "enable", "input": device.enable_password},'bash timeout 10 ls /var/core'], 'text')
+            [{"cmd": "enable", "input": str(device.enable_password)},'bash timeout 10 ls /var/core'], 'text')
         response_data = response[1]['output']
         if len(response_data) == 0:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'Core-dump(s) have been found: {response_data}')
+            result.is_failure(f'Core-dump(s) have been found: {response_data}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_agent_logs(device: InventoryDevice) -> TestResult:
@@ -123,18 +117,16 @@ def verify_agent_logs(device: InventoryDevice) -> TestResult:
 
     """
     result = TestResult(host=str(device.host),
-                        test="verify_vxlan")
+                        test="verify_agent_logs")
     try:
         response = device.session.runCmds(1, ['show agent logs crash'], 'text')
         response_data = response[0]['output']
         if len(response_data) == 0:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device reported some agent crashes: {response_data}')
+            result.is_failure(f'device reported some agent crashes: {response_data}')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_syslog(device: InventoryDevice) -> TestResult:
@@ -158,13 +150,11 @@ def verify_syslog(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ['show logging last 7 days threshold warnings'], 'text')
         response_data = response[0]['output']
         if len(response_data) == 0:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append('Device has some log messages with a severity WARNING or higher')
+            result.is_failure('Device has some log messages with a severity WARNING or higher')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_cpu_utilization(device: InventoryDevice) -> TestResult:
@@ -187,13 +177,12 @@ def verify_cpu_utilization(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ['show processes top once'], 'json')
         response_data = response[0]['cpuInfo']['%Cpu(s)']['idle']
         if response_data > 25:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.messages.append(f'device reported a high CPU utilization ({response_data}%)')
-            result.result = 'failure'
+            result.is_failure(
+                f'device reported a high CPU utilization ({response_data}%)')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_memory_utilization(device: InventoryDevice) -> TestResult:
@@ -217,13 +206,11 @@ def verify_memory_utilization(device: InventoryDevice) -> TestResult:
         memory_usage = float(response[0]['memFree']) / \
             float(response[0]['memTotal'])
         if memory_usage > 0.25:
-            result.result = 'success'
+            result.is_success()
         else:
-            result.result = 'failure'
-            result.messages.append(f'device report a high memory usage: {memory_usage*100}%')
+            result.is_failure(f'device report a high memory usage: {memory_usage*100}%')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_filesystem_utilization(device: InventoryDevice) -> TestResult:
@@ -246,15 +233,13 @@ def verify_filesystem_utilization(device: InventoryDevice) -> TestResult:
     try:
         response = device.session.runCmds(1, \
             [{"cmd": "enable", "input": device.enable_password},'bash timeout 10 df -h'], 'text')
-        result.result = 'success'
+        result.is_success()
         for line in response[1]['output'].split('\n')[1:]:
             if 'loop' not in line and len(line) > 0:
                 if int(line.split()[4].replace('%', '')) > 75:
-                    result.result = 'failure'
-                    result.messages.append(f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})')
+                    result.is_failure(f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result
 
 def verify_ntp(device: InventoryDevice) -> TestResult:
@@ -277,12 +262,10 @@ def verify_ntp(device: InventoryDevice) -> TestResult:
     try:
         response = device.session.runCmds(1, ['show ntp status'], 'text')
         if response[0]['output'].split('\n')[0].split(' ')[0] == 'synchronised':
-            result.result = 'success'
+            result.is_success()
         else:
             data = response[0]["output"].split("\n")[0]
-            result.result = 'failure'
-            result.messages.append(f'not sync with NTP server ({data})')
+            result.is_failure(f'not sync with NTP server ({data})')
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = 'error'
+        result.is_error(str(e))
     return result

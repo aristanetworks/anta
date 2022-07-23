@@ -31,8 +31,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
 
         if len(response[0]["vrfs"]) == 0:
             # No VRF
-            result.result = "unset"
-            result.messages.append("No BGP VRF")
+            result.is_skipped("No BGP VRF")
 
         state_issue = {}
         for vrf in response[0]["vrfs"]:
@@ -63,16 +62,14 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
                     )
 
         if len(state_issue) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Some IPv4 Unicast BGP Peer are not up: {state_issue}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -102,8 +99,7 @@ def verify_bgp_ipv4_unicast_count(
     result = TestResult(host=str(device.host), test="verify_bgp_ipv4_unicast_count")
 
     if not number or not vrf:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_bgp_ipv4_unicast_count could not run because number of vrf was not supplied"
         )
         return result
@@ -131,21 +127,20 @@ def verify_bgp_ipv4_unicast_count(
                 }
 
         if len(peer_state_issue) == 0 and peer_number == number:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
+            result.is_failure()
             if len(peer_state_issue) > 0:
-                result.messages.append(
+                result.is_failure(
                     f"Some IPv4 Unicast BGP Peer in VRF {vrf} are not up: {peer_state_issue}"
                 )
             if peer_number != number:
-                result.messages.append(
+                result.is_failure(
                     f"Expecting {number} BGP peer in vrf {vrf} and got {peer_number}"
                 )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -175,8 +170,7 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
 
         if len(response[0]["vrfs"]) == 0:
             # No VRF
-            result.result = "unset"
-            result.messages.append("No IPv6 BGP VRF")
+            result.is_skipped("No IPv6 BGP VRF")
             return result
 
         state_issue = {}
@@ -208,16 +202,14 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
                     )
 
         if len(state_issue) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"Some IPv6 Unicast BGP Peer are not up: {state_issue}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -255,16 +247,14 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
         ]
 
         if len(non_established_peers) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following EVPN peers are not established: {non_established_peers}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -290,8 +280,7 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_bgp_evpn_count")
 
     if not number:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_bgp_evpn_count could not run because number was not supplied."
         )
         return result
@@ -305,9 +294,9 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
         ]
 
         if len(non_established_peers) == 0 and len(peers) == number:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
+            result.is_failure()
             if len(non_established_peers) > 0:
                 result.messages.append(
                     f"The following EVPN peers are not established: {non_established_peers}"
@@ -318,8 +307,7 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
                 )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -346,8 +334,7 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
 
         if len(response[0]["vrfs"]["default"]["peers"]) == 0:
             # No peers
-            result.result = "unset"
-            result.messages.append("No RTC peer")
+            result.is_skipped("No RTC peer")
             return result
 
         peers = response[0]["vrfs"]["default"]["peers"]
@@ -356,16 +343,14 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
         ]
 
         if len(non_established_peers) == 0:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
-            result.messages.append(
+            result.is_failure(
                 f"The following RTC peers are not established: {non_established_peers}"
             )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
 
@@ -391,8 +376,7 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_bgp_rtc_count")
 
     if not number:
-        result.result = "unset"
-        result.messages.append(
+        result.is_skipped(
             "verify_bgp_rtc_count could not run because number was not supplied"
         )
         return result
@@ -406,20 +390,19 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
         ]
 
         if len(non_established_peers) == 0 and len(peers) == number:
-            result.result = "success"
+            result.is_success()
         else:
-            result.result = "failure"
+            result.is_failure()
             if len(non_established_peers) > 0:
-                result.messages.append(
+                result.is_failure(
                     f"The following RTC peers are not established: {non_established_peers}"
                 )
             if len(peers) != number:
-                result.messages.append(
+                result.is_failure(
                     f"Expecting {number} BGP RTC peers and got {len(peers)}"
                 )
 
     except (jsonrpc.AppError, KeyError) as e:
-        result.messages.append(str(e))
-        result.result = "error"
+        result.is_error(str(e))
 
     return result
