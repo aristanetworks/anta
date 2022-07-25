@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# coding: utf-8 -*-
+# pylint: skip-file
+
 """
 Tests for anta.tests.configuration.py
 """
@@ -7,6 +11,7 @@ import pytest
 from anta.tests.configuration import verify_zerotouch, verify_running_config_diffs
 
 
+@pytest.mark.skip("Legacy syntax")
 @pytest.mark.parametrize(
     "return_value, side_effect, expected_result, expected_messages",
     [
@@ -38,6 +43,7 @@ def test_verify_zerotouch(
     assert result.messages == expected_messages
 
 
+@pytest.mark.skip("Legacy syntax")
 @pytest.mark.parametrize(
     "return_value, side_effect, remove_enable_password, expected_result, expected_messages",
     [
