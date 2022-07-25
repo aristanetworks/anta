@@ -1,13 +1,10 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
-# pylint: skip-file
 
 """ANTA Result Manager models unit tests."""
 
-import pytest
 import logging
-import yaml
-from pydantic import ValidationError
+import pytest
 from anta.result_manager.models import TestResult
 from tests.data.utils import generate_test_ids_dict
 from tests.data.json_data import TEST_RESULT_UNIT
@@ -34,6 +31,7 @@ class Test_InventoryUnitModels():
         try:
             result = TestResult(**test_definition['input'])
             logging.info(f'TestResult is {result.dict()}')
+        # pylint: disable=W0703
         except Exception as e:
             logging.error(f'Error loading data:\n{str(e)}')
             assert False
@@ -54,7 +52,7 @@ class Test_InventoryUnitModels():
         if test_definition['expected_result'] == 'valid':
             pytest.skip('Not concerned by the test')
         try:
-            result = TestResult(**test_definition['input'])
+            TestResult(**test_definition['input'])
         except ValueError as e:
             logging.warning(f'Error loading data:\n{str(e)}')
         else:
@@ -80,12 +78,19 @@ class Test_InventoryUnitModels():
         result = TestResult(**test_definition['input'])
 
         result.is_success()
-        if result.result == 'success' and len(result.messages) == len(test_definition['input']['messages']) if 'messages' in test_definition['input'] else 0:
-            logging.debug('is_success only is working')
+        assert result.result == 'success'
+        result_message_len = len(result.messages)
 
+        if 'messages' in test_definition['input']:
+            assert result_message_len == len(
+                test_definition['input']['messages'])
+        else:
+            assert result_message_len == 0
+
+        # Adding one message
         result.is_success('it is a great success')
-        if result.result == 'success' and len(result.messages) == len(test_definition['input']['messages'])+1 if 'messages' in test_definition['input'] else 1:
-            logging.debug('is_success with message is working')
+        assert result.result == 'success'
+        assert len(result.messages) == result_message_len + 1
 
     @pytest.mark.parametrize("test_definition", TEST_RESULT_UNIT, ids=generate_test_ids_dict)
     def test_anta_result_set_status_failure(self, test_definition):
@@ -106,12 +111,19 @@ class Test_InventoryUnitModels():
         result = TestResult(**test_definition['input'])
 
         result.is_failure()
-        if result.result == 'failure' and len(result.messages) == len(test_definition['input']['messages']) if 'messages' in test_definition['input'] else 0:
-            logging.debug('is_failure only is working')
+        assert result.result == 'failure'
+        result_message_len = len(result.messages)
 
+        if 'messages' in test_definition['input']:
+            assert result_message_len == len(
+                test_definition['input']['messages'])
+        else:
+            assert result_message_len == 0
+
+        # Adding one message
         result.is_failure('it is a great failure')
-        if result.result == 'failure' and len(result.messages) == len(test_definition['input']['messages'])+1 if 'messages' in test_definition['input'] else 1:
-            logging.debug('is_failure with message is working')
+        assert result.result == 'failure'
+        assert len(result.messages) == result_message_len + 1
 
     @pytest.mark.parametrize("test_definition", TEST_RESULT_UNIT, ids=generate_test_ids_dict)
     def test_anta_result_set_status_error(self, test_definition):
@@ -132,12 +144,19 @@ class Test_InventoryUnitModels():
         result = TestResult(**test_definition['input'])
 
         result.is_error()
-        if result.result == 'error' and len(result.messages) == len(test_definition['input']['messages']) if 'messages' in test_definition['input'] else 0:
-            logging.debug('is_error only is working')
+        assert result.result == 'error'
+        result_message_len = len(result.messages)
 
+        if 'messages' in test_definition['input']:
+            assert result_message_len == len(
+                test_definition['input']['messages'])
+        else:
+            assert result_message_len == 0
+
+        # Adding one message
         result.is_error('it is a great error')
-        if result.result == 'error' and len(result.messages) == len(test_definition['input']['messages'])+1 if 'messages' in test_definition['input'] else 1:
-            logging.debug('is_error with message is working')
+        assert result.result == 'error'
+        assert len(result.messages) == result_message_len + 1
 
     @pytest.mark.parametrize("test_definition", TEST_RESULT_UNIT, ids=generate_test_ids_dict)
     def test_anta_result_set_status_skipped(self, test_definition):
@@ -158,9 +177,16 @@ class Test_InventoryUnitModels():
         result = TestResult(**test_definition['input'])
 
         result.is_skipped()
-        if result.result == 'skipped' and len(result.messages) == len(test_definition['input']['messages']) if 'messages' in test_definition['input'] else 0:
-            logging.debug('is_skipped only is working')
+        assert result.result == 'skipped'
+        result_message_len = len(result.messages)
 
+        if 'messages' in test_definition['input']:
+            assert result_message_len == len(
+                test_definition['input']['messages'])
+        else:
+            assert result_message_len == 0
+
+        # Adding one message
         result.is_skipped('it is a great skipped')
-        if result.result == 'skipped' and len(result.messages) == len(test_definition['input']['messages'])+1 if 'messages' in test_definition['input'] else 1:
-            logging.debug('is_skipped with message is working')
+        assert result.result == 'skipped'
+        assert len(result.messages) == result_message_len + 1
