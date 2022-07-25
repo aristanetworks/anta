@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: skip-file
 
 
 
@@ -134,14 +135,14 @@ INVENTORY_DEVICE_MODEL = [
                 'url': 'https://demo.io/fake/url'
             },
             {
-                'host': '1.1.1.1',
+                'host': '1.1.1.2',
                 'username': 'arista',
                 'password': 'arista123!',
                 'established': False,
                 'url': 'https://demo.io/fake/url'
             }
         ],
-        "expected_result": "valid"
+        "expected_result": "valid",
     },
     {
         "name": "Invalid_Inventory",
@@ -181,7 +182,6 @@ INVENTORY_DEVICE_MODEL = [
         "expected_result": "invalid"
     },
 ]
-
 
 ANTA_INVENTORY_TESTS = [
     {

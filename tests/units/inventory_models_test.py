@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: skip-file
 
 """ANTA Inventory models unit tests."""
 
@@ -7,7 +8,7 @@ import pytest
 import logging
 import yaml
 from pydantic import ValidationError
-from anta.inventory.models import AntaInventoryHost, AntaInventoryNetwork, AntaInventoryRange, AntaInventoryInput, InventoryDevice
+from anta.inventory.models import AntaInventoryHost, AntaInventoryNetwork, AntaInventoryRange, AntaInventoryInput, InventoryDevice, InventoryDevices
 from tests.data.utils import generate_test_ids_dict
 from tests.data.json_data import INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE, INVENTORY_MODEL, INVENTORY_DEVICE_MODEL
 
@@ -61,7 +62,6 @@ class Test_InventoryUnitModels():
             host_inventory = AntaInventoryHost(host= test_definition['input'])
         except ValidationError as exc:
             logging.warning('Error: %s', str(exc))
-            assert True
         else:
             assert False
 
@@ -111,7 +111,6 @@ class Test_InventoryUnitModels():
             network_inventory = AntaInventoryNetwork(network= test_definition['input'])
         except ValidationError as exc:
             logging.warning('Error: %s', str(exc))
-            assert True
         else:
             assert False
 
@@ -168,7 +167,6 @@ class Test_InventoryUnitModels():
             )
         except ValidationError as exc:
             logging.warning('Error: %s', str(exc))
-            assert True
         else:
             assert False
 
@@ -269,7 +267,6 @@ class Test_AntaInventoryInputModel():
                 inventory.hosts=inventory_def['input']['ranges']
         except ValidationError as exc:
             logging.warning('Error: %s', str(exc))
-            assert True
         else:
             return False
 
@@ -315,12 +312,50 @@ class Test_InventoryDeviceModel():
             except ValidationError as exc:
                 logging.warning('Error: %s', str(exc))
                 assert False
-            else:
-                assert True
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_device_invalid(self,test_definition):
         """Test loading invalid data to InventoryDevice class.
+
+        Test structure:
+        ---------------
+
+       {
+            "name": "Valid_Inventory",
+            "input": [
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                },
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                }
+            ],
+            "expected_result": "valid"
+        }
+
+        """
+        if test_definition['expected_result'] == 'valid':
+            pytest.skip('Not concerned by the test')
+
+        for entity in test_definition['input']:
+            try:
+                inventory_device = InventoryDevice( **entity )
+            except ValidationError as exc:
+                logging.warning('Error: %s', str(exc))
+            else:
+                assert False
+
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
+    def test_inventory_devices_len(self,test_definition):
+        """Test len & append methods for InventoryDevice class.
 
         Test structure:
         ---------------
@@ -343,18 +378,98 @@ class Test_InventoryDeviceModel():
                     'url': 'https://demo.io/fake/url'
                 }
             ],
-            "expected_result": "invalid"
+            "expected_result": "valid"
         }
 
         """
-        if test_definition['expected_result'] == 'valid':
+        if test_definition['expected_result'] != 'valid':
             pytest.skip('Not concerned by the test')
+        inventory_devices = InventoryDevices()
+        for entry in test_definition['input']:
+            inventory_devices.append(InventoryDevice(**entry))
+        if len(test_definition['input']) == len(inventory_devices):
+            logging.info(f'Inventory size is correct ({len(inventory_devices)})')
+        else:
+            logging.error('len function is broken')
+            assert False
 
-        for entity in test_definition['input']:
-            try:
-                inventory_device = InventoryDevice( **entity )
-            except ValidationError as exc:
-                logging.warning('Error: %s', str(exc))
-                assert True
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
+    def test_inventory_devices_get_item(self,test_definition):
+        """Test __iter__ method for InventoryDevice class.
+
+        Test structure:
+        ---------------
+
+       {
+            "name": "Invalid_Inventory",
+            "input": [
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                },
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                }
+            ],
+            "expected_result": "valid"
+        }
+
+        """
+        if test_definition['expected_result'] != 'valid':
+            pytest.skip('Not concerned by the test')
+        inventory_devices = InventoryDevices()
+        for entry in test_definition['input']:
+            inventory_devices.append(InventoryDevice(**entry))
+        if str(inventory_devices[0].host) == test_definition['input'][0]['host']:
+            logging.info('__getitem__ function is valid')
+        else:
+            logging.error('__getitem__ is not working as expected')
+            assert False
+
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
+    def test_inventory_devices_iter(self, test_definition):
+        """Test __getitem__ method for InventoryDevice class.
+
+        Test structure:
+        ---------------
+
+       {
+            "name": "Invalid_Inventory",
+            "input": [
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                },
+                {
+                    'host': '1.1.1.1',
+                    'username': 'arista',
+                    'password': 'arista123!',
+                    'established': False,
+                    'url': 'https://demo.io/fake/url'
+                }
+            ],
+            "expected_result": "valid"
+        }
+
+        """
+        if test_definition['expected_result'] != 'valid':
+            pytest.skip('Not concerned by the test')
+        inventory_devices = InventoryDevices()
+        for entry in test_definition['input']:
+            inventory_devices.append(InventoryDevice(**entry))
+        for idx, device in enumerate(inventory_devices):
+            if str(device.host) == test_definition['input'][idx]['host']:
+                logging.info('__iter__ function is valid')
             else:
+                logging.error('__iter__ is not working as expected')
                 assert False
