@@ -163,7 +163,7 @@ table_report(
     sort_by: str = 'host',
     reverse: bool = False,
     colors: bool = True
-) → <function tabulate at 0x7fc8a3fb23a0>
+) → <function tabulate at 0x7fc131b2b160>
 ```
 
 Build a table report of all tests 
