@@ -16,7 +16,8 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if no BGP vrf are returned by the device
         * result = "success" if all IPv4 unicast BGP sessions are established (for all VRF)
                              and all BGP messages queues for these sessions are empty (for all VRF).
         * result = "failure" otherwise.
@@ -29,32 +30,29 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
             1, ["show bgp ipv4 unicast summary vrf all"], "json"
         )
 
-        if len(response[0]["vrfs"]) == 0:
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
             # No VRF
             result.is_skipped("No BGP VRF")
 
         state_issue = {}
-        for vrf in response[0]["vrfs"]:
-            for peer in response[0]["vrfs"][vrf]["peers"]:
+        for vrf in bgp_vrfs:
+            for peer in bgp_vrfs[vrf]["peers"]:
                 if (
-                    (
-                        response[0]["vrfs"][vrf]["peers"][peer]["peerState"]
-                        != "Established"
-                    )
-                    or (response[0]["vrfs"][vrf]["peers"][peer]["inMsgQueue"] != 0)
-                    or (response[0]["vrfs"][vrf]["peers"][peer]["outMsgQueue"] != 0)
+                    (bgp_vrfs[vrf]["peers"][peer]["peerState"] != "Established")
+                    or (bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"] != 0)
+                    or (bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"] != 0)
                 ):
                     vrf_dict = state_issue.setdefault(vrf, {})
                     vrf_dict.update(
                         {
                             peer: {
-                                "peerState": response[0]["vrfs"][vrf]["peers"][peer][
-                                    "peerState"
-                                ],
-                                "inMsgQueue": response[0]["vrfs"][vrf]["peers"][peer][
+                                "peerState": bgp_vrfs[vrf]["peers"][peer]["peerState"],
+                                "inMsgQueue": bgp_vrfs[vrf]["peers"][peer][
                                     "inMsgQueue"
                                 ],
-                                "outMsgQueue": response[0]["vrfs"][vrf]["peers"][peer][
+                                "outMsgQueue": bgp_vrfs[vrf]["peers"][peer][
                                     "outMsgQueue"
                                 ],
                             }
@@ -64,9 +62,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
         if len(state_issue) == 0:
             result.is_success()
         else:
-            result.is_failure(
-                f"Some IPv4 Unicast BGP Peer are not up: {state_issue}"
-            )
+            result.is_failure(f"Some IPv4 Unicast BGP Peer are not up: {state_issue}")
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))
@@ -89,7 +85,8 @@ def verify_bgp_ipv4_unicast_count(
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the `number` or `vrf` parameter is missing
         * result = "success" if all IPv4 unicast BGP sessions are established
                              and if all BGP messages queues for these sessions are empty
                              and if the actual number of BGP IPv4 unicast neighbors is equal to `number.
@@ -109,21 +106,20 @@ def verify_bgp_ipv4_unicast_count(
             1, [f"show bgp ipv4 unicast summary vrf {vrf}"], "json"
         )
 
+        bgp_vrfs = response[0]["vrfs"]
         peer_state_issue = {}
-        peer_number = len(response[0]["vrfs"][vrf]["peers"])
+        peer_number = len(bgp_vrfs[vrf]["peers"])
 
-        for peer in response[0]["vrfs"][vrf]["peers"]:
+        for peer in bgp_vrfs[vrf]["peers"]:
             if (
-                (response[0]["vrfs"][vrf]["peers"][peer]["peerState"] != "Established")
-                or (response[0]["vrfs"][vrf]["peers"][peer]["inMsgQueue"] != 0)
-                or (response[0]["vrfs"][vrf]["peers"][peer]["outMsgQueue"] != 0)
+                (bgp_vrfs[vrf]["peers"][peer]["peerState"] != "Established")
+                or (bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"] != 0)
+                or (bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"] != 0)
             ):
                 peer_state_issue[peer] = {
-                    "peerState": response[0]["vrfs"][vrf]["peers"][peer]["peerState"],
-                    "inMsgQueue": response[0]["vrfs"][vrf]["peers"][peer]["inMsgQueue"],
-                    "outMsgQueue": response[0]["vrfs"][vrf]["peers"][peer][
-                        "outMsgQueue"
-                    ],
+                    "peerState": bgp_vrfs[vrf]["peers"][peer]["peerState"],
+                    "inMsgQueue": bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"],
+                    "outMsgQueue": bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"],
                 }
 
         if len(peer_state_issue) == 0 and peer_number == number:
@@ -155,7 +151,8 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if no BGP vrf are returned by the device
         * result = "success" if all IPv6 unicast BGP sessions are established (for all VRF)
                              and all BGP messages queues for these sessions are empty (for all VRF).
         * result = "failure" otherwise.
@@ -168,33 +165,30 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
             1, ["show bgp ipv6 unicast summary vrf all"], "json"
         )
 
-        if len(response[0]["vrfs"]) == 0:
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
             # No VRF
             result.is_skipped("No IPv6 BGP VRF")
             return result
 
         state_issue = {}
-        for vrf in response[0]["vrfs"]:
-            for peer in response[0]["vrfs"][vrf]["peers"]:
+        for vrf in bgp_vrfs:
+            for peer in bgp_vrfs[vrf]["peers"]:
                 if (
-                    (
-                        response[0]["vrfs"][vrf]["peers"][peer]["peerState"]
-                        != "Established"
-                    )
-                    or (response[0]["vrfs"][vrf]["peers"][peer]["inMsgQueue"] != 0)
-                    or (response[0]["vrfs"][vrf]["peers"][peer]["outMsgQueue"] != 0)
+                    (bgp_vrfs[vrf]["peers"][peer]["peerState"] != "Established")
+                    or (bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"] != 0)
+                    or (bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"] != 0)
                 ):
                     vrf_dict = state_issue.setdefault(vrf, {})
                     vrf_dict.update(
                         {
                             peer: {
-                                "peerState": response[0]["vrfs"][vrf]["peers"][peer][
-                                    "peerState"
-                                ],
-                                "inMsgQueue": response[0]["vrfs"][vrf]["peers"][peer][
+                                "peerState": bgp_vrfs[vrf]["peers"][peer]["peerState"],
+                                "inMsgQueue": bgp_vrfs[vrf]["peers"][peer][
                                     "inMsgQueue"
                                 ],
-                                "outMsgQueue": response[0]["vrfs"][vrf]["peers"][peer][
+                                "outMsgQueue": bgp_vrfs[vrf]["peers"][peer][
                                     "outMsgQueue"
                                 ],
                             }
@@ -204,9 +198,7 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
         if len(state_issue) == 0:
             result.is_success()
         else:
-            result.is_failure(
-                f"Some IPv6 Unicast BGP Peer are not up: {state_issue}"
-            )
+            result.is_failure(f"Some IPv6 Unicast BGP Peer are not up: {state_issue}")
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))
@@ -224,7 +216,8 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if no BGP EVPN peers are returned by the device
         * result = "success" if all EVPN BGP sessions are established.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -235,13 +228,14 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
     try:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
 
-        if len(response[0]["vrfs"]["default"]["peers"]) == 0:
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs["default"]["peers"]) == 0:
             # No peers
-            result.result = "unset"
-            result.messages.append("No EVPN peer")
+            result.is_skipped("No EVPN peer")
             return result
 
-        peers = response[0]["vrfs"]["default"]["peers"]
+        peers = bgp_vrfs["default"]["peers"]
         non_established_peers = [
             peer for peer, peer_dict in peers if peer_dict["peerState"] != "Established"
         ]
@@ -270,7 +264,8 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the `number` parameter is missing
         * result = "success" if all EVPN BGP sessions are Established and if the actual
                              number of BGP EVPN neighbors is the one we expect.
         * result = "failure" otherwise.
@@ -321,7 +316,8 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if no BGP RTC peers are returned by the device
         * result = "success" if all RTC BGP sessions are Established.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -366,7 +362,8 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the `number` parameter is missing
         * result = "success" if all RTC BGP sessions are established
                              and if the actual number of BGP RTC neighbors is the one we expect.
         * result = "failure" otherwise.

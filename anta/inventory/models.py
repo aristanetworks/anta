@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# pylint: skip-file
 
 """Models related to inventory management."""
 
@@ -10,6 +9,7 @@ from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
 
 # Pydantic models for input validation
 
+
 class AntaInventoryHost(BaseModel):
     """
     Host definition for user's inventory.
@@ -17,6 +17,7 @@ class AntaInventoryHost(BaseModel):
     Attributes:
         host(IPvAnyAddress): IPv4 or IPv6 address of the device
     """
+
     host: IPvAnyAddress
 
 
@@ -27,6 +28,7 @@ class AntaInventoryNetwork(BaseModel):
     Attributes:
         network(IPvAnyNetwork): Subnet to use for testing.
     """
+
     network: IPvAnyNetwork
 
 
@@ -38,6 +40,7 @@ class AntaInventoryRange(BaseModel):
         start(IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop(IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
     """
+
     start: IPvAnyAddress
     end: IPvAnyAddress
 
@@ -51,9 +54,11 @@ class AntaInventoryInput(BaseModel):
         hosts(List[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
         range(List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
+
     networks: Optional[List[AntaInventoryNetwork]]
     hosts: Optional[List[AntaInventoryHost]]
     ranges: Optional[List[AntaInventoryRange]]
+
 
 # Pydantic models for inventory output structures
 
@@ -66,12 +71,14 @@ class InventoryDevice(BaseModel):
         host(IPvAnyAddress): IPv4 or IPv6 address of the device.
         username(str): Username to use for connection.
         password(password): Password to use for connection.
+        enable_password(Optional[str]): enable_password to use on the device, required for some tests
         session(Any): JSONRPC session.
         established(bool): Flag to mark if connection is established (True) or not (False). Default: False.
         is_online(bool): Flag to mark if host is alive (True) or not (False). Default: False.
         hw_model(str): HW name gathered during device discovery.
         url(str): eAPI URL to use to build session.
     """
+
     host: IPvAnyAddress
     username: str
     password: str
@@ -79,8 +86,19 @@ class InventoryDevice(BaseModel):
     session: Any
     established = False
     is_online = False
-    hw_model: str = 'unset'
+    hw_model: str = "unset"
     url: str
+
+    def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
+        """
+        raise ValueError is enable_password is None
+        """
+        if not self.enable_password:
+            if test_name:
+                message = f"{test_name} requires `enable_password` to be set"
+            else:
+                message = "`enable_password` is not set"
+            raise ValueError(message)
 
 
 class InventoryDevices(BaseModel):
@@ -90,6 +108,8 @@ class InventoryDevices(BaseModel):
     Attributes:
         __root__(List[InventoryDevice]): A list of InventoryDevice objects.
     """
+    # pylint: disable=R0801
+
     __root__ = []
 
     def append(self, value) -> None:
