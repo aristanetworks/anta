@@ -26,7 +26,7 @@ Host definition for user's inventory.
 
 ---
 
-<a href="../../anta/inventory/models.py#L22"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L23"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventoryNetwork`
 Network definition for user's inventory. 
@@ -43,7 +43,7 @@ Network definition for user's inventory.
 
 ---
 
-<a href="../../anta/inventory/models.py#L31"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventoryRange`
 IP Range definition for user's inventory. 
@@ -61,7 +61,7 @@ IP Range definition for user's inventory.
 
 ---
 
-<a href="../../anta/inventory/models.py#L42"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L45"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `AntaInventoryInput`
 User's inventory model. 
@@ -80,7 +80,7 @@ User's inventory model.
 
 ---
 
-<a href="../../anta/inventory/models.py#L57"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L61"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryDevice`
 Inventory model exposed by Inventory class. 
@@ -104,7 +104,7 @@ Inventory model exposed by Inventory class.
 
 ---
 
-<a href="../../anta/inventory/models.py#L80"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L86"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `InventoryDevices`
 Inventory model to list all InventoryDevice entries. 
@@ -120,7 +120,7 @@ Inventory model to list all InventoryDevice entries.
 
 ---
 
-<a href="../../anta/inventory/models.py#L89"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/inventory/models.py#L95"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `InventoryDevices.append`
 

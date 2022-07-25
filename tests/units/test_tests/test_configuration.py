@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# coding: utf-8 -*-
+# pylint: skip-file
+
 """
 Tests for anta.tests.configuration.py
 """

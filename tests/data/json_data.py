@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: skip-file
 
 
 
@@ -134,14 +135,14 @@ INVENTORY_DEVICE_MODEL = [
                 'url': 'https://demo.io/fake/url'
             },
             {
-                'host': '1.1.1.1',
+                'host': '1.1.1.2',
                 'username': 'arista',
                 'password': 'arista123!',
                 'established': False,
                 'url': 'https://demo.io/fake/url'
             }
         ],
-        "expected_result": "valid"
+        "expected_result": "valid",
     },
     {
         "name": "Invalid_Inventory",
@@ -182,7 +183,6 @@ INVENTORY_DEVICE_MODEL = [
     },
 ]
 
-
 ANTA_INVENTORY_TESTS = [
     {
         'name': 'ValidInventory_with_host_only',
@@ -222,6 +222,54 @@ ANTA_INVENTORY_TESTS = [
     {
         'name': 'Invalid_Root_Key',
         'input':{"inventory":{"ranges":[{"start":"10.0.0.1","end":"10.0.0.11"},{"start":"10.0.0.100","end":"10.0.0.111"}]}},
+        'expected_result': 'invalid',
+    },
+]
+
+TEST_RESULT_UNIT = [
+    {
+        'name': 'valid_with_host_ip_only',
+        'input': { "host": '1.1.1.1', 'test': 'pytest_unit_test'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_success_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_skipped_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_failure_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'failure'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_error_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'error'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_full',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success', 'messages': ['test']},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'invalid_by_host',
+        'input': {"host": 'demo.arista.com', 'test': 'pytest_unit_test'},
+        'expected_result': 'invalid',
+    },
+    {
+        'name': 'invalid_by_test',
+        'input': {"host": '1.1.1.1'},
+        'expected_result': 'invalid',
+    },
+    {
+        'name': 'invelid_by_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'ok'},
         'expected_result': 'invalid',
     },
 ]

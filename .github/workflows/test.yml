@@ -67,4 +67,4 @@ jobs:
       - name: run pytest with code coverage
         run: |
           cd tests
-          py.test units/ -vv --cov=anta.tests
+          py.test units/ -vv --cov=anta
