@@ -225,3 +225,51 @@ ANTA_INVENTORY_TESTS = [
         'expected_result': 'invalid',
     },
 ]
+
+TEST_RESULT_UNIT = [
+    {
+        'name': 'valid_with_host_ip_only',
+        'input': { "host": '1.1.1.1', 'test': 'pytest_unit_test'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_success_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_skipped_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_failure_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'failure'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_with_host_ip_and_error_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'error'},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'valid_full',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'success', 'messages': ['test']},
+        'expected_result': 'valid',
+    },
+    {
+        'name': 'invalid_by_host',
+        'input': {"host": 'demo.arista.com', 'test': 'pytest_unit_test'},
+        'expected_result': 'invalid',
+    },
+    {
+        'name': 'invalid_by_test',
+        'input': {"host": '1.1.1.1'},
+        'expected_result': 'invalid',
+    },
+    {
+        'name': 'invelid_by_result',
+        'input': {"host": '1.1.1.1', 'test': 'pytest_unit_test', 'result': 'ok'},
+        'expected_result': 'invalid',
+    },
+]
