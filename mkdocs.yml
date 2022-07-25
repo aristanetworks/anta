@@ -12,7 +12,7 @@ repo_url: https://github.com/arista-netdevops-community/network-test-automation
 use_directory_urls: true
 theme:
   name: material
-  custom_dir: docs/_overrides
+  # custom_dir: docs/_overrides
   features:
     - navigation.instant
     - navigation.top
@@ -98,7 +98,7 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
   - pymdownx.snippets:
-      base_path: 'ansible_collections/arista/cvp/'
+      base_path: 'docs/'
 
 # TOC
 docs_dir: docs/
