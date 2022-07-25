@@ -203,7 +203,7 @@ class ReportTable():
                 nb_success = len(
                     [result for result in results if result.result == 'success'])
                 table.add_row(
-                    host,
+                    str(host_read),
                     str(nb_success),
                     str(nb_failure),
                     str(nb_error),
