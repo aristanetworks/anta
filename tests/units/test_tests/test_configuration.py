@@ -10,9 +10,7 @@ from anta.tests.configuration import verify_zerotouch, verify_running_config_dif
 @pytest.mark.parametrize(
     "return_value, side_effect, expected_result, expected_messages",
     [
-        pytest.param(
-            [{"mode": "disabled"}], None, "success", ["ZTP is disabled"], id="success"
-        ),
+        pytest.param([{"mode": "disabled"}], None, "success", [], id="success"),
         pytest.param(
             [{"mode": "enabled"}],
             None,
@@ -46,9 +44,7 @@ def test_verify_zerotouch(
             None,
             False,
             "success",
-            [
-                "There is no difference between the running-config and the startup-config."
-            ],
+            [],
             id="success",
         ),
         pytest.param(
@@ -71,9 +67,7 @@ def test_verify_zerotouch(
             None,
             True,
             "error",
-            [
-                "verify_running_config_diff requires the device tohave the `enable_password` configured"
-            ],
+            ["verify_running_config_diffs requires `enable_password` to be set"],
             id="Missing enable password",
         ),
     ],

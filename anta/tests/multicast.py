@@ -20,7 +20,7 @@ def verify_igmp_snooping_vlans(
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if IGMP snooping is configured on these vlans
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -28,10 +28,10 @@ def verify_igmp_snooping_vlans(
     """
     result = TestResult(host=str(device.host), test="verify_igmp_snooping_vlans")
     if not vlans or not configuration:
-        result.result = "unset"
+        result.result = "skipped"
         result.messages.append(
             "verify_igmp_snooping_vlans was not run as no "
-            "vlans or configuration was givem"
+            "vlans or configuration was given"
         )
         return result
     try:
@@ -57,7 +57,8 @@ def verify_igmp_snooping_global(device: InventoryDevice, configuration: str):
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the `configuration` parameter was missing
         * result = "success" if IGMP snooping is globally configured
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -65,7 +66,7 @@ def verify_igmp_snooping_global(device: InventoryDevice, configuration: str):
     result = TestResult(host=str(device.host), test="verify_igmp_snooping_global")
     if not configuration:
         result.is_skipped(
-            "verify_igmp_snooping_global was not run as no configuration was givem"
+            "verify_igmp_snooping_global was not run as no configuration was given"
         )
         return result
     try:

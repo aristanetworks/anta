@@ -3,6 +3,7 @@ conftest.py
 
 used to store anta specific fixtures used for tests
 """
+import functools
 from unittest.mock import create_autospec, MagicMock
 import pytest
 from anta.inventory.models import InventoryDevice
@@ -20,4 +21,9 @@ def mocked_device():
     mock.established = True
     mock.hw_model = "unset"
     mock.url = "https://42.42.42.42:666"
+
+    # keeping the original assert_enable_password_is_not_none() method
+    mock.assert_enable_password_is_not_none = functools.partial(
+        InventoryDevice.assert_enable_password_is_not_none, mock
+    )
     return mock
