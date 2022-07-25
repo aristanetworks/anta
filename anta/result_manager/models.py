@@ -1,11 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# pylint: skip-file
 
 """Models related to anta.result_manager module."""
 
-from typing import List, Optional, Any
-from rich.style import Style
+from typing import List
 from pydantic import BaseModel, IPvAnyAddress, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
@@ -110,6 +108,7 @@ class TestResult(BaseModel):
             self.messages.append(message)
         return True
 
+
 class ListResult(BaseModel):
     """
     List result for all tests on all devices.
@@ -117,6 +116,8 @@ class ListResult(BaseModel):
     Attributes:
         __root__(List[TestResult]): A list of TestResult objects.
     """
+    # pylint: disable=R0801
+
     __root__ = []
 
     def append(self, value) -> None:

@@ -18,7 +18,7 @@ def verify_interface_utilization(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if interfaces utilization is below 75%
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -62,7 +62,7 @@ def verify_interface_errors(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if interfaces error counters are equal to zero.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -102,7 +102,7 @@ def verify_interface_discards(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if interfaces discard counters are equal to zero.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -142,7 +142,7 @@ def verify_interface_errdisabled(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if no interface is in error disable state.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -184,7 +184,8 @@ def verify_interfaces_status(
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the `minimum` parameter is missing
         * result = "success" if the number of Ethernet interface up/up is >= minimum
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -192,7 +193,7 @@ def verify_interfaces_status(
     """
     result = TestResult(host=str(device.host), test="verify_interfaces_status")
     if not minimum:
-        result.result = "unset"
+        result.result = "skipped"
         result.messages.append(
             "verify_interfaces_status was not run as no minimum value was given."
         )
@@ -239,7 +240,7 @@ def verify_storm_control_drops(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if the device did not drop packet due to its storm-control configuration.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -284,7 +285,7 @@ def verify_portchannels(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no inactive ports in port-channels
                              in particular "success" if there is no port-channel
         * result = "failure" otherwise.
@@ -325,7 +326,7 @@ def verify_illegal_lacp(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no illegal LACP packets received.
                              in particular "success" if there is no port-channel
         * result = "failure" otherwise.
@@ -371,7 +372,7 @@ def verify_loopback_count(device: InventoryDevice, number: int = None) -> TestRe
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if the number of loopback is equal to `number` and if
                              none of the loopback is down
         * result = "failure" otherwise.
@@ -430,7 +431,7 @@ def verify_svi(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if no SVI is down
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -473,7 +474,7 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no spanning-tree blocked ports
         * result = "failure" otherwise.
         * result = "error" if any exception is caught

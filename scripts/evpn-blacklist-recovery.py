@@ -4,6 +4,9 @@
 This script clears on devices the list of MAC addresses which are blacklisted in EVPN
 """
 
+# disabling duplicate-code for scripts as this is expected between scripts
+# pylint: disable=R0801
+
 from argparse import ArgumentParser
 from getpass import getpass
 import ssl

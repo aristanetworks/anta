@@ -4,6 +4,9 @@
 This script clear counters on devices
 """
 
+# disabling duplicate-code for scripts as this is expected between scripts
+# pylint: disable=R0801
+
 import logging
 import ssl
 from argparse import ArgumentParser

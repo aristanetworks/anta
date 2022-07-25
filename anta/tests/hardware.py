@@ -18,7 +18,8 @@ def verify_transceivers_manufacturers(
 
     Returns:
         TestResult instance with
-        * result = "unset" if no manufacturers were given
+        * result = "unset" if the test has not been executed
+        * result = "skipped" if the test was not executed because no manufacturers were given
         * result = "success" if the device is only using transceivers from supported manufacturers.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -28,7 +29,7 @@ def verify_transceivers_manufacturers(
     if not manufacturers:
         result.is_skipped(
             "verify_transceivers_manufacturers was not run as no "
-            "manufacturers were givem"
+            "manufacturers were given"
         )
         return result
     try:
@@ -40,7 +41,7 @@ def verify_transceivers_manufacturers(
             if value["mfgName"] not in manufacturers
         }
         if len(wrong_manufacturers) == 0:
-            result.is_success("All transceivers belongs to allowed manufacturers")
+            result.is_success()
         else:
             result.is_failure(
                 "The following interfaces have transceivers from unauthorized manufacturers"
@@ -64,6 +65,7 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if the device temperature is OK.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -72,10 +74,12 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_system_temperature")
 
     try:
-        response = device.session.runCmds(1, ["show system environment temperature"], "json")
+        response = device.session.runCmds(
+            1, ["show system environment temperature"], "json"
+        )
 
         if response[0]["systemStatus"] == "temperatureOk":
-            result.is_success("Device temperature is OK.")
+            result.is_success()
         else:
             result.is_failure(
                 f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
@@ -98,6 +102,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if the device transceivers temperature of the device is currently OK
                              AND the device did not report any alarm in the past for its transceivers temperature.
         * result = "failure" otherwise,
@@ -120,9 +125,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
             if value["hwStatus"] != "ok" or value["alertCount"] != 0
         }
         if len(wrong_sensors) == 0:
-            result.is_success(
-                "All sensor temperature is OK and there was no alarm in the past"
-            )
+            result.is_success()
         else:
             result.is_failure(
                 "The following sensors do not have the correct temperature or had alarms in the past:"
@@ -145,6 +148,7 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if the fans status is OK.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -153,10 +157,12 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test="verify_environment_cooling")
 
     try:
-        response = device.session.runCmds(1, ["show system environment cooling"], "json")
+        response = device.session.runCmds(
+            1, ["show system environment cooling"], "json"
+        )
 
         if response[0]["systemStatus"] == "coolingOk":
-            result.is_success("Device cooling is OK.")
+            result.is_success()
         else:
             result.is_failure(
                 f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
@@ -178,6 +184,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if the power supplies status is OK.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -194,7 +201,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
             if value["state"] != "ok"
         }
         if len(wrong_power_supplies) == 0:
-            result.is_success("All power supplies are OK.")
+            result.is_success()
         else:
             result.is_failure("The following power suppliers are not ok:")
             result.messages.append(wrong_power_supplies)
@@ -215,6 +222,7 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops.
         * result = "failure" if the device (DCS-7280E and DCS-7500E) report adverse drops.
         * result = "error" if any exception is caught
@@ -226,7 +234,7 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show hardware counter drop"], "json")
 
         if response[0]["totalAdverseDrops"] == 0:
-            result.is_success("Device TotalAdverseDrops counter is 0.")
+            result.is_success()
         else:
             result.is_failure(
                 f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."

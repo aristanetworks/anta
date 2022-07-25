@@ -1,16 +1,12 @@
 [MESSAGES CONTROL]
 disable=
-    missing-function-docstring,
-    too-many-branches,
-    unused-argument,
-    duplicate-code,
     invalid-name,
     logging-fstring-interpolation,
-    c-extension-no-member,
-    no-value-for-parameter
+    fixme
+
 
 [BASIC]
-good-names=runCmds, i, y, t, c, x
+good-names=runCmds, i, y, t, c, x, e, fd, ip, v
 
 [DESIGN]
 max-statements=61
@@ -20,3 +16,11 @@ max-locals=23
 [FORMAT]
 max-line-length=165
 max-module-lines=1700
+
+[SIMILARITIES]
+# making similarity lines limit a bit higher than default 4
+min-similarity-lines=5
+
+[MAIN]
+load-plugins=pylint_pydantic
+extension-pkg-whitelist=pydantic
