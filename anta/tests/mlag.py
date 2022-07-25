@@ -16,7 +16,7 @@ def verify_mlag_status(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if the MLAG status is OK
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -54,7 +54,7 @@ def verify_mlag_interfaces(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no inactive or active-partial MLAG interfaces.
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
@@ -90,7 +90,7 @@ def verify_mlag_config_sanity(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
-        * result = "unset" if test has not been executed
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no MLAG config-sanity inconsistencies
         * result = "failure" otherwise.
         * result = "error" if any exception is caught

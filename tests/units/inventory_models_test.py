@@ -383,7 +383,7 @@ class Test_InventoryDeviceModel():
         inventory_devices = InventoryDevices()
         for entry in test_definition['input']:
             inventory_devices.append(InventoryDevice(**entry))
-            assert len(test_definition['input']) == len(inventory_devices)
+        assert len(test_definition['input']) == len(inventory_devices)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_get_item(self,test_definition):

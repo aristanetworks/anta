@@ -16,6 +16,7 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if ZTP is disabled
         * result = "failure" if ZTP is enabled
         * result = "error" if any exception is caught
@@ -27,10 +28,8 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
 
         if response[0]["mode"] == "disabled":
             result.is_success()
-            result.messages.append("ZTP is disabled")
         else:
-            result.is_failure()
-            result.messages.append("ZTP is NOT disabled")
+            result.is_failure("ZTP is NOT disabled")
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))
@@ -48,6 +47,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
 
     Returns:
         TestResult instance with
+        * result = "unset" if the test has not been executed
         * result = "success" if there is no difference between the running-config and the startup-config
         * result = "failure" if there are differences
         * result = "error" if any exception is caught
@@ -55,11 +55,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
     """
     result = TestResult(host=str(device.host), test="verify_running_config_diffs")
     try:
-        if not str(device.enable_password):
-            raise ValueError(
-                "verify_running_config_diff requires the device to"
-                "have the `enable_password` configured"
-            )
+        device.assert_enable_password_is_not_none("verify_running_config_diffs")
 
         response = device.session.runCmds(
             1,
@@ -71,9 +67,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         )
 
         if len(response[1]["output"]) == 0:
-            result.is_success(
-                "There is no difference between the running-config and the startup-config."
-            )
+            result.is_success()
 
         else:
             result.is_failure()

@@ -4,6 +4,9 @@
 This script collects show commands output from devices
 """
 
+# disabling duplicate-code for scripts as this is expected between scripts
+# pylint: disable=R0801
+
 import logging
 import os
 import ssl

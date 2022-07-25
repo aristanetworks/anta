@@ -169,7 +169,7 @@ class TableReport():
             )
         return content
 
-    def _table_build_line_result(self, entry: TestResult, colors: bool = True) -> list:
+    def _table_build_line_result(self, entry: TestResult) -> list:
         """
         _table_build_line_result Add a test to the report.
 
@@ -177,7 +177,6 @@ class TableReport():
 
         Args:
             entry (TestResult): A test to add to the report
-            colors (bool, optional): Select if tests results are colored or not. Defaults to True.
 
         Returns:
             list: List of data for one line.
