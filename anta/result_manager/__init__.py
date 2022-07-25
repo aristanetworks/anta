@@ -11,7 +11,7 @@ from typing import List, Any
 from tabulate import tabulate
 
 from .models import ListResult, TestResult
-from .report import TableReport
+from ..reporter import ReportTable
 
 
 class ResultManager():
@@ -140,24 +140,50 @@ class ResultManager():
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:
-            if result.host == host_ip:
+            if str(result.host) == host_ip:
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
-    def table_report(self, sort_by: str = 'host', reverse: bool = False, colors: bool = True) -> tabulate:
-        """
-        Build a table report of all tests
+    # def table_report(self, sort_by: str = 'host', reverse: bool = False, colors: bool = True) -> tabulate:
+    #     """
+    #     Build a table report of all tests
 
-        Args:
-            sort_by (str, optional): Key to use to filter result. Can be either host/test/result. Defaults to 'host'.
-            reverse (bool, optional): Enable reverse sorting. Defaults to False.
-            colors (bool, optional): Select if tests results are colored or not. Defaults to True.
+    #     Args:
+    #         sort_by (str, optional): Key to use to filter result. Can be either host/test/result. Defaults to 'host'.
+    #         reverse (bool, optional): Enable reverse sorting. Defaults to False.
+    #         colors (bool, optional): Select if tests results are colored or not. Defaults to True.
+
+    #     Returns:
+    #         tabulate: A Tabulate str that can be printed.
+    #     """
+    #     report = ReportTable()
+    #     report.add_content(
+    #         results=self.get_results(output_format='list'),
+    #     )
+    #     return report.get(sort_by=sort_by, reverse=reverse, enable_colors=colors)
+
+    def get_testcases(self) -> List[str]:
+        """
+        Get list of name of all test cases in current manager.
 
         Returns:
-            tabulate: A Tabulate str that can be printed.
+            List[str]: List of names for all tests.
         """
-        report = TableReport()
-        report.add_content(
-            results=self.get_results(output_format='list'),
-        )
-        return report.get(sort_by=sort_by, reverse=reverse, enable_colors=colors)
+        result_list = []
+        for testcase in self._result_entries:
+            if str(testcase.test) not in result_list:
+                result_list.append(str(testcase.test))
+        return result_list
+
+    def get_hosts(self) -> List[str]:
+        """
+        Get list of IP addresses in current manager.
+
+        Returns:
+            List[str]: List of IP addresses.
+        """
+        result_list = []
+        for testcase in self._result_entries:
+            if str(testcase.host) not in result_list:
+                result_list.append(str(testcase.host))
+        return result_list

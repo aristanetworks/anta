@@ -5,6 +5,7 @@
 """Models related to anta.result_manager module."""
 
 from typing import List, Optional, Any
+from rich.style import Style
 from pydantic import BaseModel, IPvAnyAddress, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
