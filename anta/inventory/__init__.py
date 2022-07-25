@@ -237,7 +237,8 @@ class AntaInventory():
         logger.debug(f'Refreshing is_online flag for device {device.host}')
         device.is_online = self._is_device_online(
             device=device, timeout=self.timeout)
-        if device.is_online and (hw_model := self._read_device_hw(device=device, timeout=self.timeout)):
+        hw_model = self._read_device_hw(device=device, timeout=self.timeout)
+        if device.is_online and hw_model:
             device.hw_model = hw_model
         return device
 
