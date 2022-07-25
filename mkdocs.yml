@@ -1,0 +1,117 @@
+# Project information
+site_name: ANTA
+site_author: Khelil Sator
+site_description: Arista Network Test Automation
+copyright: Copyright &copy; 2019 - 2022 Arista Networks
+
+# Repository
+repo_name: ANTA on Github
+repo_url: https://github.com/arista-netdevops-community/network-test-automation
+
+# Configuration
+use_directory_urls: true
+theme:
+  name: material
+  custom_dir: docs/_overrides
+  features:
+    - navigation.instant
+    - navigation.top
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - python
+    - shell
+  icon:
+    repo: fontawesome/brands/github
+    logo: fontawesome/solid/book
+  favicon: docs/_media/favicon.ico
+  font:
+    code: Fira Mono
+  language: en
+  include_search_page: false
+  search_index_only: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.material.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
+  - docs/stylesheets/tables.js
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
+  - docs/stylesheets/highlight.js
+
+plugins:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_root_heading: false
+            show_source: true
+  - search:
+      lang: en
+  - git-revision-date-localized:
+      type: date
+  # Deactivated due to https://github.com/tikitu/jsmin/issues/33
+  # Issue in progress: https://github.com/byrnereese/mkdocs-minify-plugin/issues/15
+  # - minify:
+  #     minify_html: true
+  #     minify_js: true
+
+markdown_extensions:
+  - mdx_truly_sane_lists
+  - smarty
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - fontawesome_markdown
+  - admonition
+  - codehilite:
+      guess_lang: true
+  - toc:
+      separator: "-"
+      # permalink: "#"
+      permalink: true
+      baselevel: 3
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: 'ansible_collections/arista/cvp/'
+
+# TOC
+docs_dir: docs/
+nav:
+  - Home: README.md
+  - Getting Started: getting-started.md
+  - Tests Catalog:
+    - System: api/tests.system.md
+    - Software: api/tests.software.md
+  - API Documentation:
+    - Inventory module: api/inventory.md
+    - Inventory models:
+      - User Inventory data model: api/inventory.models.input.md
+      - Generated Inventory data model: api/inventory.models.md
+    - Result Manager module: api/result_manager.md
+    - Result Manager models: api/result_manager.models.md
