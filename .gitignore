@@ -8,3 +8,4 @@ dist
 *.egg-info
 scripts/test*.py
 .python-version
+site/
