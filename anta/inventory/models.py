@@ -15,7 +15,7 @@ class AntaInventoryHost(BaseModel):
     Host definition for user's inventory.
 
     Attributes:
-        host(IPvAnyAddress): IPv4 or IPv6 address of the device
+        host (IPvAnyAddress): IPv4 or IPv6 address of the device
     """
 
     host: IPvAnyAddress
@@ -26,7 +26,7 @@ class AntaInventoryNetwork(BaseModel):
     Network definition for user's inventory.
 
     Attributes:
-        network(IPvAnyNetwork): Subnet to use for testing.
+        network (IPvAnyNetwork): Subnet to use for testing.
     """
 
     network: IPvAnyNetwork
@@ -37,8 +37,8 @@ class AntaInventoryRange(BaseModel):
     IP Range definition for user's inventory.
 
     Attributes:
-        start(IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
-        stop(IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
+        start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
+        stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
     """
 
     start: IPvAnyAddress
@@ -50,9 +50,9 @@ class AntaInventoryInput(BaseModel):
     User's inventory model.
 
     Attributes:
-        netwrks(List[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
-        hosts(List[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
-        range(List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
+        netwrks (List[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
+        hosts (List[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
+        range (List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
 
     networks: Optional[List[AntaInventoryNetwork]]
@@ -68,15 +68,15 @@ class InventoryDevice(BaseModel):
     Inventory model exposed by Inventory class.
 
     Attributes:
-        host(IPvAnyAddress): IPv4 or IPv6 address of the device.
-        username(str): Username to use for connection.
-        password(password): Password to use for connection.
-        enable_password(Optional[str]): enable_password to use on the device, required for some tests
-        session(Any): JSONRPC session.
-        established(bool): Flag to mark if connection is established (True) or not (False). Default: False.
-        is_online(bool): Flag to mark if host is alive (True) or not (False). Default: False.
-        hw_model(str): HW name gathered during device discovery.
-        url(str): eAPI URL to use to build session.
+        host (IPvAnyAddress): IPv4 or IPv6 address of the device.
+        username (str): Username to use for connection.
+        password (password): Password to use for connection.
+        enable_password (Optional[str]): enable_password to use on the device, required for some tests
+        session (Any): JSONRPC session.
+        established (bool): Flag to mark if connection is established (True) or not (False). Default: False.
+        is_online (bool): Flag to mark if host is alive (True) or not (False). Default: False.
+        hw_model (str): HW name gathered during device discovery.
+        url (str): eAPI URL to use to build session.
     """
 
     host: IPvAnyAddress

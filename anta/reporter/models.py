@@ -9,7 +9,12 @@ from pydantic import BaseModel, validator
 from ..result_manager.models import RESULT_OPTIONS
 
 class ColorManager(BaseModel):
-    """Color mangement for status report."""
+    """Color mangement for status report.
+
+    Attributes:
+        level (str): Test result value.
+        color (str): Associated color.
+    """
     level: str
     color: str
 

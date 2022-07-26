@@ -14,10 +14,10 @@ class TestResult(BaseModel):
     Describe result of a test from a single device.
 
     Attributes:
-        host(IPvAnyAddress): IPv4 or IPv6 address of the device where the test has run.
-        test(str): Test name runs on the device.
-        results(str): Result of the test. Can be one of unset / failure / success.
-        message(str, optional): Message to report after the test.
+        host (IPvAnyAddress): IPv4 or IPv6 address of the device where the test has run.
+        test (str): Test name runs on the device.
+        results (str): Result of the test. Can be one of unset / failure / success.
+        message (str, optional): Message to report after the test.
     """
     host: IPvAnyAddress
     test: str
@@ -114,7 +114,7 @@ class ListResult(BaseModel):
     List result for all tests on all devices.
 
     Attributes:
-        __root__(List[TestResult]): A list of TestResult objects.
+        __root__ (List[TestResult]): A list of TestResult objects.
     """
     # pylint: disable=R0801
 
