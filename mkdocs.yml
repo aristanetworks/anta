@@ -106,8 +106,18 @@ nav:
   - Home: README.md
   - Getting Started: getting-started.md
   - Tests Catalog:
+    - Configuration: api/tests.configuration.md
+    - Hardware: api/tests.hardware.md
+    - Interfaces: api/tests.interfaces.md
+    - MLAG: api/tests.mlag.md
+    - Multicast: api/tests.multicast.md
+    - Profiles: api/tests.profiles.md
     - System: api/tests.system.md
     - Software: api/tests.software.md
+    - Routing:
+      - Generic: api/tests.routing.generic.md
+      - BGP: api/tests.routing.bgp.md
+      - OSPF: api/tests.routing.ospf.md
   - API Documentation:
     - Inventory module: api/inventory.md
     - Inventory models:
