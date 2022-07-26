@@ -27,7 +27,6 @@ import sys
 import itertools
 from yaml import safe_load
 
-from rich import print
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -121,25 +120,22 @@ if __name__ == '__main__':
     if cli_options.verbose:
         output = Pretty(
             inventory_anta.get_inventory(format_out="list"),
-            # expand_all=True,
-            max_string=5
         )
         console.print(
             Panel('Current Inventory (active devices only)', style='cyan'))
         console.print(output)
 
-    logger.info('starting running test on devices...')
+    if cli_options.search_ip is not None:
+        logger.info(f'starting running test on device {cli_options.search_ip} ...')
+    else:
+        logger.info('starting running test on devices ...')
 
     ############################################################################
     # Test loader
     ############################################################################
 
-    try:
-        with open(cli_options.catalog, 'r', encoding='utf8') as file:
-            test_catalog_input = safe_load(file)
-    except FileNotFoundError:
-        print('Error opening tests_catalog')
-        sys.exit(1)
+    with open(cli_options.catalog, 'r', encoding='utf8') as file:
+        test_catalog_input = safe_load(file)
 
     tests_catalog = anta.loader.parse_catalog(test_catalog_input)
 
@@ -150,14 +146,15 @@ if __name__ == '__main__':
     manager = ResultManager()
     list_tests = []
     for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
-        list_tests.append(str(test[0]))
-        manager.add_test_result(
-            test[0](
-                device,
-                **test[1]
+        if (cli_options.search_ip is None or cli_options.search_ip == str(device.host)) and \
+           (cli_options.search_test is None or cli_options.search_test == str(test[0].__name__)):
+            list_tests.append(str(test[0]))
+            manager.add_test_result(
+                test[0](
+                    device,
+                    **test[1]
+                )
             )
-        )
-    list_tests_name = [test[0].__name__ for test in tests_catalog]
 
     ############################################################################
     # Test Reporting
