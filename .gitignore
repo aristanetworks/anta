@@ -8,6 +8,7 @@ dist
 *.egg-info
 scripts/test*.py
 examples/tests_*
+.personal/*
 
 # Distribution / packaging
 .Python
