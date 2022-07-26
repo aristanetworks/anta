@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# legacy code
+# type: ignore
+
 
 """
 This script is used to test the functions defined in the directory test_eos without using actual EOS devices.
@@ -9,14 +12,20 @@ It requires the installation of the package pytest that is indicated in the file
 import ast
 from unittest.mock import Mock
 import pytest
-from anta.tests import software, system
+import anta
 
 
 def id_func(param):
+    """
+    Return ids for parametrized tests based on params
+    """
     return str(param)
 
 
 def runCmds(version, commands, cmd_format):
+    """
+    Mocked runCmds
+    """
     if version == 1 and commands == ["show version"] and cmd_format == "json":
         with open(
             "mock_data/show_version_json_4.27.1.1F.out", encoding="utf8"
@@ -40,6 +49,9 @@ def runCmds(version, commands, cmd_format):
 
 @pytest.fixture(name="mock_device")
 def fixture_mock_device():
+    """
+    Mocked device fixture
+    """
     mock_device = Mock(spec_set=["runCmds"])
     mock_device.runCmds.side_effect = runCmds
     return mock_device
@@ -58,8 +70,11 @@ def fixture_mock_device():
     ids=id_func,
 )
 def test_verify_eos_version(mock_device, versions, expected):
-    check = anta.tests.verify_eos_version(
-        device=mock_device, enable_password="enable_password", versions=versions
+    """
+    Legacy tests verify_eos_version
+    """
+    check = anta.tests.software.verify_eos_version(
+        device=mock_device, versions=versions
     )
     assert check == expected
 
@@ -69,13 +84,17 @@ def test_verify_eos_version(mock_device, versions, expected):
     "uptime,expected", [(100, True), (10000000, False), (None, None)]
 )
 def test_verify_uptime(mock_device, uptime, expected):
-    check = anta.tests.verify_uptime(
-        device=mock_device, enable_password="enable_password", minimum=uptime
-    )
+    """
+    Legacy tests verify_uptime
+    """
+    check = anta.tests.system.verify_uptime(device=mock_device, minimum=uptime)
     assert check == expected
 
 
 @pytest.mark.skip("Legacy syntax")
 def test_verify_ntp(mock_device):
-    check = anta.tests.verify_ntp(device=mock_device, enable_password="enable_password")
+    """
+    Legacy tests verify_ntp
+    """
+    check = anta.tests.system.verify_ntp(device=mock_device)
     assert check is True

@@ -3,7 +3,7 @@
 
 """Models related to inventory management."""
 
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Iterator
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
 
 
@@ -110,21 +110,21 @@ class InventoryDevices(BaseModel):
     """
     # pylint: disable=R0801
 
-    __root__ = []
+    __root__: List[InventoryDevice] = []
 
-    def append(self, value) -> None:
+    def append(self, value: InventoryDevice) -> None:
         """Add support for append method."""
         self.__root__.append(value)
         super().__init__(__root__=self.__root__)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[InventoryDevice]:
         """Use custom iter method."""
         return iter(self.__root__)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> InventoryDevice:
         """Use custom getitem method."""
         return self.__root__[item]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Support for length of __root__"""
         return len(self.__root__)

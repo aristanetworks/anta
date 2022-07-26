@@ -1,6 +1,7 @@
 """
 BGP test functions
 """
+from typing import Dict, Any
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -36,7 +37,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
             # No VRF
             result.is_skipped("No BGP VRF")
 
-        state_issue = {}
+        state_issue: Dict[str, Any] = {}
         for vrf in bgp_vrfs:
             for peer in bgp_vrfs[vrf]["peers"]:
                 if (
@@ -172,7 +173,7 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
             result.is_skipped("No IPv6 BGP VRF")
             return result
 
-        state_issue = {}
+        state_issue: Dict[str, Any] = {}
         for vrf in bgp_vrfs:
             for peer in bgp_vrfs[vrf]["peers"]:
                 if (

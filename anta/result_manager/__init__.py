@@ -8,13 +8,10 @@ Result Manager Module for ANTA.
 import json
 from typing import List, Any
 
-from tabulate import tabulate
-
 from .models import ListResult, TestResult
-from ..reporter import ReportTable
 
 
-class ResultManager():
+class ResultManager:
     """
     Helper to manage Test Results and generate reports.
 
@@ -68,24 +65,24 @@ class ResultManager():
     """
 
     def __init__(self) -> None:
-        """ Class constructor."""
+        """Class constructor."""
         self._result_entries = ListResult()
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Implement __len__ method to count number of results.
         """
         return len(self._result_entries)
 
-    def add_test_result(self, entry: TestResult)-> None:
-        """ Add a result to the list
+    def add_test_result(self, entry: TestResult) -> None:
+        """Add a result to the list
 
         Args:
             entry (TestResult): TestResult data to add to the report
         """
         self._result_entries.append(entry)
 
-    def get_results(self, output_format: str = 'native') -> any:
+    def get_results(self, output_format: str = "native") -> Any:
         """
         Expose list of all test results in different format
 
@@ -100,16 +97,16 @@ class ResultManager():
         Returns:
             any: List of results.
         """
-        if output_format == 'list':
+        if output_format == "list":
             return list(self._result_entries)
 
-        if output_format == 'json':
-            return json.loads([result.json() for result in self._result_entries])
+        if output_format == "json":
+            return json.loads(str([result.json() for result in self._result_entries]))
 
         # Default return for native format.
         return self._result_entries
 
-    def get_result_by_test(self, test_name: str, output_format: str = 'native') -> Any:
+    def get_result_by_test(self, test_name: str, output_format: str = "native") -> Any:
         """
         Get list of test result for a given test.
 
@@ -120,8 +117,12 @@ class ResultManager():
         Returns:
             list[TestResult]: List of results related to the test.
         """
-        if output_format == 'list':
-            return [result for result in self._result_entries if str(result.test) == test_name]
+        if output_format == "list":
+            return [
+                result
+                for result in self._result_entries
+                if str(result.test) == test_name
+            ]
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:
@@ -129,8 +130,7 @@ class ResultManager():
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
-
-    def get_result_by_host(self, host_ip: str,  output_format: str = 'native') ->Any:
+    def get_result_by_host(self, host_ip: str, output_format: str = "native") -> Any:
         """
         Get list of test result for a given host.
 
@@ -141,8 +141,10 @@ class ResultManager():
         Returns:
             Any: List of results related to the host.
         """
-        if output_format == 'list':
-            return [result for result in self._result_entries if str(result.host) == host_ip]
+        if output_format == "list":
+            return [
+                result for result in self._result_entries if str(result.host) == host_ip
+            ]
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:

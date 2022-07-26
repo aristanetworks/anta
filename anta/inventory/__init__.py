@@ -9,11 +9,11 @@ import logging
 import ssl
 from multiprocessing import cpu_count, Pool
 from socket import setdefaulttimeout
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import yaml
 from jinja2 import Template
-from jsonrpclib import ProtocolError, Server, jsonrpc
+from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
@@ -103,7 +103,9 @@ class AntaInventory():
     HW_MODEL_KEY = 'modelName'
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str, enable_password: str = None, auto_connect: bool = True, timeout: float = 5) -> None:
+    def __init__(self, inventory_file: str, username: str, password: str,
+                 enable_password: str = None, auto_connect: bool = True,
+                 timeout: float = 5) -> None:
         """Class constructor.
 
         Args:
@@ -315,14 +317,16 @@ class AntaInventory():
 
         Build InventoryDevice structure for all hosts under hosts section
         """
+        assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host_ip=host.host)
+            self._add_device_to_inventory(host_ip=str(host.host))
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
 
         Build InventoryDevice structure for all IPs available in each declared subnet
         """
+        assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
                 self._add_device_to_inventory(host_ip=host_ip)
@@ -332,6 +336,7 @@ class AntaInventory():
 
         Build InventoryDevice structure for all IPs available in each declared range
         """
+        assert self._read_inventory.ranges is not None
         for range_def in self._read_inventory.ranges:
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
@@ -349,7 +354,7 @@ class AntaInventory():
         Returns:
             InventoryDevices: An object with all the devices.
         """
-        logger.debug(f'Create a new version of InventoryDevices')
+        logger.debug('Create a new version of InventoryDevices')
         inventory = InventoryDevices()
         for device in list_devices:
             inventory.append(device)
@@ -381,7 +386,8 @@ class AntaInventory():
     ###########################################################################
     # GET methods
 
-    def get_inventory(self, format_out: str = 'native', established_only: bool = True) -> InventoryDevices:
+    # TODO refactor this to avoid having a union of return of types ..
+    def get_inventory(self, format_out: str = 'native', established_only: bool = True) -> Union[List[InventoryDevice], str, InventoryDevices]:
         """get_inventory Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
@@ -408,7 +414,7 @@ class AntaInventory():
 
         return inventory
 
-    def get_device(self, host_ip) -> InventoryDevice:
+    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:
         """Get device information from a given IP.
 
         Args:
@@ -447,11 +453,11 @@ class AntaInventory():
             refresh_online_first (bool): Run  a refresh of is_online flag for all devices.
         """
         if refresh_online_first:
-            logger.debug(f'Running a refresh for devices online')
+            logger.debug('Running a refresh for devices online')
             self.refresh_device_facts()
 
         for device in self._inventory:
-            self.create_device_session(host_ip=device.host)
+            self.create_device_session(host_ip=str(device.host))
 
     def create_device_session(self, host_ip: str) -> bool:
         """Get session of a device.
@@ -482,7 +488,7 @@ class AntaInventory():
     ###########################################################################
     # MISC methods
 
-    def set_credentials(self, username: str = None, password: str = None, enable_password: str = None):
+    def set_credentials(self, username: str = None, password: str = None, enable_password: str = None) -> None:
         """
         Set the credentials for the Inventory
         """
@@ -490,7 +496,7 @@ class AntaInventory():
         self._password = password
         self._enable_password = enable_password
 
-    def connect_inventory(self):
+    def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
         # Check if devices are online & update is_online flag
         self.refresh_device_facts()

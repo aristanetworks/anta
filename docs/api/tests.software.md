@@ -3,7 +3,7 @@
 <a href="../../anta/tests/software.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.software`
-Test functions related to the EOS software 
+Test functions related to the EOS software
 
 
 ---
@@ -19,19 +19,19 @@ verify_eos_version(
 ) → TestResult
 ```
 
-Verifies the device is running one of the allowed EOS version. 
+Verifies the device is running one of the allowed EOS version.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`versions`</b> (list):  List of allowed EOS versions. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`versions`</b> (list):  List of allowed EOS versions.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if EOS version is valid against versions * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if EOS version is valid against versions * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -47,19 +47,19 @@ verify_terminattr_version(
 ) → TestResult
 ```
 
-Verifies the device is running one of the allowed TerminAttr version. 
+Verifies the device is running one of the allowed TerminAttr version.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`versions`</b> (list):  List of allowed TerminAttr versions. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`versions`</b> (list):  List of allowed TerminAttr versions.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if TerminAttr version is valid against versions * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if TerminAttr version is valid against versions * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -74,20 +74,20 @@ verify_eos_extensions(
 ) → TestResult
 ```
 
-Verifies all EOS extensions installed on the device are enabled for boot persistence. 
+Verifies all EOS extensions installed on the device are enabled for boot persistence.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'. 
- - <b>`enable_password`</b> (str):  Enable password. 
+
+ - <b>`device`</b> (jsonrpclib.jsonrpc.ServerProxy):  Instance of the class jsonrpclib.jsonrpc.ServerProxy with the uri f'https://{username}:{password}@{ip}/command-api'.
+ - <b>`enable_password`</b> (str):  Enable password.
 
 
 
 **Returns:**
- 
- - <b>`bool`</b>:  `True` if the device has all installed its EOS extensions enabled for boot persistence. `False` otherwise. 
+
+ - <b>`bool`</b>:  `True` if the device has all installed its EOS extensions enabled for boot persistence. `False` otherwise.
 
 
 ---
@@ -102,18 +102,18 @@ verify_field_notice_44_resolution(
 ) → TestResult
 ```
 
-Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization). 
+Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if aboot is running valid version * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if aboot is running valid version * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

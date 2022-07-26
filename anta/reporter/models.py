@@ -8,6 +8,7 @@ from rich.text import Text
 from pydantic import BaseModel, validator
 from ..result_manager.models import RESULT_OPTIONS
 
+
 class ColorManager(BaseModel):
     """Color mangement for status report.
 
@@ -19,7 +20,7 @@ class ColorManager(BaseModel):
     color: str
 
     @validator('level', allow_reuse=True)
-    def name_must_be_in(cls, v: str):
+    def name_must_be_in(cls, v: str) -> str:
         """
         Status validator
 

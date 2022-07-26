@@ -3,7 +3,7 @@
 <a href="../../anta/tests/system.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.system`
-Test functions related to system-level features and protocols 
+Test functions related to system-level features and protocols
 
 
 ---
@@ -16,19 +16,19 @@ Test functions related to system-level features and protocols
 verify_uptime(device: anta.inventory.models.InventoryDevice, minimum=None)
 ```
 
-Verifies the device uptime is higher than a value. 
+Verifies the device uptime is higher than a value.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`minimum`</b> (int):  Minimum uptime in seconds. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`minimum`</b> (int):  Minimum uptime in seconds.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if uptime is greater than minimun * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if uptime is greater than minimun * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -41,20 +41,20 @@ Verifies the device uptime is higher than a value.
 verify_reload_cause(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies the last reload of the device was requested by a user. 
+Verifies the last reload of the device was requested by a user.
 
-Test considers the following messages as normal and will return success. Failure is for other messages * Reload requested by the user. * Reload requested after FPGA upgrade 
+Test considers the following messages as normal and will return success. Failure is for other messages * Reload requested by the user. * Reload requested after FPGA upgrade
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if reload cause is standard * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if reload cause is standard * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -67,18 +67,18 @@ Test considers the following messages as normal and will return success. Failure
 verify_coredump(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no core file. 
+Verifies there is no core file.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if device has no core-dump * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if device has no core-dump * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -91,18 +91,18 @@ Verifies there is no core file.
 verify_agent_logs(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no agent crash reported on the device. 
+Verifies there is no agent crash reported on the device.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no agent crash * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no agent crash * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -115,18 +115,18 @@ Verifies there is no agent crash reported on the device.
 verify_syslog(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days. 
+Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if syslog has no WARNING message * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if syslog has no WARNING message * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -141,18 +141,18 @@ verify_cpu_utilization(
 ) → TestResult
 ```
 
-Verifies the CPU utilization is less than 75%. 
+Verifies the CPU utilization is less than 75%.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if CPU usage is lower than 75% * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if CPU usage is lower than 75% * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -167,18 +167,18 @@ verify_memory_utilization(
 ) → TestResult
 ```
 
-Verifies the memory utilization is less than 75%. 
+Verifies the memory utilization is less than 75%.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if memory usage is lower than 75% * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if memory usage is lower than 75% * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -193,18 +193,18 @@ verify_filesystem_utilization(
 ) → TestResult
 ```
 
-Verifies each partition on the disk is used less than 75%. 
+Verifies each partition on the disk is used less than 75%.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if disk is used less than 75% * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if disk is used less than 75% * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -217,18 +217,18 @@ Verifies each partition on the disk is used less than 75%.
 verify_ntp(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies NTP is synchronised. 
+Verifies NTP is synchronised.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if synchronized with NTP server * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if synchronized with NTP server * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

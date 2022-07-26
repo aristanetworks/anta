@@ -3,7 +3,7 @@
 <a href="../../anta/loader.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `loader`
-Loader that parses a YAML test catalog and imports corresponding Python functions 
+Loader that parses a YAML test catalog and imports corresponding Python functions
 
 
 ---

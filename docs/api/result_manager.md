@@ -3,7 +3,7 @@
 <a href="../../anta/result_manager/__init__.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `result_manager`
-Result Manager Module for ANTA. 
+Result Manager Module for ANTA.
 
 **Global Variables**
 ---------------
@@ -19,28 +19,28 @@ Result Manager Module for ANTA.
 <a href="../../anta/result_manager/__init__.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `ResultManager`
-Helper to manage Test Results and generate reports. 
+Helper to manage Test Results and generate reports.
 
 
 
 **Examples:**
- 
 
- Create Inventory: 
 
- inventory_anta = AntaInventory(  inventory_file='examples/inventory.yml',  username='ansible',  password='ansible',  timeout=0.5,  auto_connect=True  ) 
+ Create Inventory:
 
- Create Result Manager: 
+ inventory_anta = AntaInventory(  inventory_file='examples/inventory.yml',  username='ansible',  password='ansible',  timeout=0.5,  auto_connect=True  )
 
- manager = ResultManager() 
+ Create Result Manager:
 
- Run tests for all connected devices: 
+ manager = ResultManager()
 
- for device in inventory_anta.get_inventory():  manager.add_test_result(  verify_eos_version(  device=device, versions=['4.28.0F']  )  )  manager.add_test_result(  verify_uptime(  device=device, minimum=1  )  ) 
+ Run tests for all connected devices:
 
- Print result in native format: 
+ for device in inventory_anta.get_inventory():  manager.add_test_result(  verify_eos_version(  device=device, versions=['4.28.0F']  )  )  manager.add_test_result(  verify_uptime(  device=device, minimum=1  )  )
 
- manager.get_results()  [  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='failure',  message="device is running version 4.27.3F-26379303.4273F (engineering build) and test expect ['4.28.0F']"  ),  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='success',  message=None  ),  ] 
+ Print result in native format:
+
+ manager.get_results()  [  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='failure',  message="device is running version 4.27.3F-26379303.4273F (engineering build) and test expect ['4.28.0F']"  ),  TestResult(  host=IPv4Address('192.168.0.10'),  test='verify_eos_version',  result='success',  message=None  ),  ]
 
 <a href="../../anta/result_manager/__init__.py#L70"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
@@ -50,7 +50,7 @@ Helper to manage Test Results and generate reports.
 __init__() → None
 ```
 
-Class constructor. 
+Class constructor.
 
 
 
@@ -65,13 +65,13 @@ Class constructor.
 add_test_result(entry: result_manager.models.TestResult) → None
 ```
 
-Add a result to the list 
+Add a result to the list
 
 
 
 **Args:**
- 
- - <b>`entry`</b> (TestResult):  TestResult data to add to the report 
+
+ - <b>`entry`</b> (TestResult):  TestResult data to add to the report
 
 ---
 
@@ -83,20 +83,20 @@ Add a result to the list
 get_result_by_host(host_ip: str, output_format: str = 'native') → Any
 ```
 
-Get list of test result for a given host. 
+Get list of test result for a given host.
 
 
 
 **Args:**
- 
- - <b>`host_ip`</b> (str):  IP Address of the host to use to filter results. 
- - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'. 
+
+ - <b>`host_ip`</b> (str):  IP Address of the host to use to filter results.
+ - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'.
 
 
 
 **Returns:**
- 
- - <b>`Any`</b>:  List of results related to the host. 
+
+ - <b>`Any`</b>:  List of results related to the host.
 
 ---
 
@@ -108,20 +108,20 @@ Get list of test result for a given host.
 get_result_by_test(test_name: str, output_format: str = 'native') → Any
 ```
 
-Get list of test result for a given test. 
+Get list of test result for a given test.
 
 
 
 **Args:**
- 
- - <b>`test_name`</b> (str):  Test name to use to filter results 
- - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'. 
+
+ - <b>`test_name`</b> (str):  Test name to use to filter results
+ - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list. Defaults to 'native'.
 
 
 
 **Returns:**
- 
- - <b>`list[TestResult]`</b>:  List of results related to the test. 
+
+ - <b>`list[TestResult]`</b>:  List of results related to the test.
 
 ---
 
@@ -133,24 +133,24 @@ Get list of test result for a given test.
 get_results(output_format: str = 'native') → <built-in function any>
 ```
 
-Expose list of all test results in different format 
+Expose list of all test results in different format
 
-Support multiple format: 
-- native: ListResults format 
-- list: a list of TestResult 
-- json: a native JSON format 
+Support multiple format:
+- native: ListResults format
+- list: a list of TestResult
+- json: a native JSON format
 
 
 
 **Args:**
- 
- - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list/json. Defaults to 'native'. 
+
+ - <b>`output_format`</b> (str, optional):  format selector. Can be either native/list/json. Defaults to 'native'.
 
 
 
 **Returns:**
- 
- - <b>`any`</b>:  List of results. 
+
+ - <b>`any`</b>:  List of results.
 
 ---
 
@@ -166,21 +166,21 @@ table_report(
 ) → <function tabulate at 0x7fc131b2b160>
 ```
 
-Build a table report of all tests 
+Build a table report of all tests
 
 
 
 **Args:**
- 
- - <b>`sort_by`</b> (str, optional):  Key to use to filter result. Can be either host/test/result. Defaults to 'host'. 
- - <b>`reverse`</b> (bool, optional):  Enable reverse sorting. Defaults to False. 
- - <b>`colors`</b> (bool, optional):  Select if tests results are colored or not. Defaults to True. 
+
+ - <b>`sort_by`</b> (str, optional):  Key to use to filter result. Can be either host/test/result. Defaults to 'host'.
+ - <b>`reverse`</b> (bool, optional):  Enable reverse sorting. Defaults to False.
+ - <b>`colors`</b> (bool, optional):  Select if tests results are colored or not. Defaults to True.
 
 
 
 **Returns:**
- 
- - <b>`tabulate`</b>:  A Tabulate str that can be printed. 
+
+ - <b>`tabulate`</b>:  A Tabulate str that can be printed.
 
 
 

@@ -18,32 +18,36 @@ import json
 import os
 from argparse import ArgumentParser
 from getpass import getpass
+from typing import Dict, Any, List
 import yaml
 import requests
+import urllib3
 from cvprac.cvp_client import CvpClient
 from anta.inventory import AntaInventory
 
 # Ignore certificate warnings
-# pylint: disable=E1101
-requests.packages.urllib3.disable_warnings()
+# https://github.com/python/typeshed/issues/6893#issuecomment-1012511758
+urllib3.disable_warnings()
 
 
-def create_inventory(cvp_inventory, out_dir, container):
+def create_inventory(
+    cvp_inventory: List[Dict[str, Any]], out_dir: str, container: str
+) -> None:
     """
     create an inventory file
     """
-    inv = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
+    inv: Dict[str, Dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
     for dev in cvp_inventory:
         inv[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append(
             {"host": dev["ipAddress"]}
         )
     # write the devices IP address in a file
     out_file = f"{out_dir}/{container}.yml"
-    with open(out_file, "w", encoding="utf8") as out_file:
-        out_file.write(yaml.dump(inv))
+    with open(out_file, "w", encoding="utf8") as out_fd:
+        out_fd.write(yaml.dump(inv))
 
 
-def main():
+def main() -> None:
     """
     Main script routine
     """
