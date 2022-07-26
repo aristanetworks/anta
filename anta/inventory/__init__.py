@@ -36,9 +36,9 @@ class AntaInventory():
     Inventory Abstraction for ANTA framework.
 
     Attributes:
-        timeout(float): Connection to device timeout.
-        INVENTORY_ROOT_KEY(str, Optional): head of the YAML inventory. Default is anta_inventory
-        EAPI_SESSION_TPL(str, Optional): Template for eAPI URL builder
+        timeout (float): Connection to device timeout.
+        INVENTORY_ROOT_KEY (str, Optional): head of the YAML inventory. Default is anta_inventory
+        EAPI_SESSION_TPL (str, Optional): Template for eAPI URL builder
         INVENTORY_OUTPUT_FORMAT (List[str],Optional): List of supported output format. Default ['native', 'json']
         HW_MODEL_KEY (str,Optional): Name of the key in Arista eAPI JSON provided by device.
 
