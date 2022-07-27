@@ -44,7 +44,7 @@ logging.basicConfig(
 )
 logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
-
+logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
 
 def cli_manager():
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
@@ -122,6 +122,9 @@ def cli_manager():
     parser.add_argument('--verbose', '-v', required=False, action='store_true',
                         help='Set script to verbose mode')
 
+    parser.add_argument('--verbose-test', '-vt', required=False, action='store_true',
+                        help='Set script to be in verbose mode for anta.tests only (DEBUG)')
+
     return parser.parse_args()
 
 
@@ -134,6 +137,15 @@ if __name__ == '__main__':
     if cli_options.verbose:
         logging.getLogger('anta.inventory').setLevel(logging.DEBUG)
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
+
+    if cli_options.verbose_test:
+        logging.getLogger('anta.tests.system').setLevel(logging.DEBUG)
+
+    console.print(Panel('Active logger for testing', style='orange3'))
+    # pylint: disable=E1101
+    loggers = [logging.getLogger(name)
+               for name in logging.root.manager.loggerDict]
+    pprint(loggers)
 
     logger.info('ANTA testing program started')
 
@@ -162,6 +174,7 @@ if __name__ == '__main__':
         logger.info(f'starting running test on device {cli_options.search_ip} ...')
     else:
         logger.info('starting running test on devices ...')
+
 
     ############################################################################
     # Test loader

@@ -71,6 +71,12 @@ class ResultManager():
         """ Class constructor."""
         self._result_entries = ListResult()
 
+    def __len__(self):
+        """
+        Implement __len__ method to count number of results.
+        """
+        return len(self._result_entries)
+
     def add_test_result(self, entry: TestResult)-> None:
         """ Add a result to the list
 

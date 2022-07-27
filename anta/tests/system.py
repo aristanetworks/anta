@@ -1,10 +1,14 @@
 """
 Test functions related to system-level features and protocols
 """
+import inspect
+import socket
+import logging
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
+logger = logging.getLogger(__name__)
 
 def verify_uptime(device: InventoryDevice, minimum=None):
     """
@@ -282,14 +286,18 @@ def verify_ntp(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
+    logger.debug(f'Start {inspect.stack()[0][3]} check for host {device.host}')
     result = TestResult(host=str(device.host), test="verify_ntp")
     try:
         response = device.session.runCmds(1, ["show ntp status"], "text")
+        logger.debug(f'query result is: {response}')
         if response[0]["output"].split("\n")[0].split(" ")[0] == "synchronised":
             result.is_success()
         else:
             data = response[0]["output"].split("\n")[0]
             result.is_failure(f"not sync with NTP server ({data})")
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
