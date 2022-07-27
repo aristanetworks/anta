@@ -43,6 +43,7 @@ logging.basicConfig(
     level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
 )
 logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
+logging.getLogger('anta.result_manager').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
 
 
@@ -101,6 +102,7 @@ if __name__ == '__main__':
 
     if cli_options.verbose:
         logging.getLogger('anta.inventory').setLevel(logging.DEBUG)
+        logging.getLogger('anta.result_manager').setLevel(logging.DEBUG)
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
 
     logger.info('ANTA testing program started')
