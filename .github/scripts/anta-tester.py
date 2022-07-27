@@ -49,11 +49,18 @@ logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
 
 def cli_manager():
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
+
+    #############################
+    # ANTA options
+
     parser.add_argument('--inventory', '-i', required=False,
                         default='examples/inventory.yml', help='ANTA Inventory file')
 
     parser.add_argument('--catalog', '-c', required=False,
                         default='examples/tests_custom.yaml', help='ANTA Tests cagtalog')
+
+    #############################
+    # Device connectivity
 
     parser.add_argument('--username', '-u', required=False,
                         default='ansible', help='EOS Username')
@@ -61,35 +68,63 @@ def cli_manager():
     parser.add_argument('--password', '-p', required=False,
                         default='ansible', help='EOS Password')
 
+    parser.add_argument('--enable_password', '-e', required=False,
+                        default='ansible', help='EOS Enable Password')
+
+    parser.add_argument('--timeout', required=False,
+                        default=0.5, help='eAPI connection timeout')
+
+    #############################
+    # Search options
+
     parser.add_argument('--search_ip', required=False,
                         default=None, help='search result for host')
 
     parser.add_argument('--search_test', required=False,
                         default=None, help='search result for test')
 
-    parser.add_argument('--verbose', '-v', required=False, action='store_true',
-                        help='Set script to verbose mode')
+    #############################
+    # Display content using PPRINT
 
     parser.add_argument('--list', '-l', required=False, action='store_true',
                         help='Display internal data')
 
-    parser.add_argument('--full', required=False, action='store_true',
-                        help='Display all test cases results')
-
-    parser.add_argument('--devices', required=False, action='store_true',
-                        help='Provides summary of test results per device')
-
-    parser.add_argument('--testcases', required=False, action='store_true',
-                        help='Provides summary of test results per test case')
+    #############################
+    # Options for table report
 
     parser.add_argument('--table', required=False, action='store_true',
                         help='Result represented in tables')
+
+    ## List of all tests per device
+    parser.add_argument('--full', required=False, action='store_true',
+                        help='Display all test cases results')
+
+    ## Summary of tests results per device
+    parser.add_argument('--devices', required=False, action='store_true',
+                        help='Provides summary of test results per device')
+
+    ## Summary of tests results per test-case
+    parser.add_argument('--testcases', required=False, action='store_true',
+                        help='Provides summary of test results per test case')
+
+    #############################
+    # Options to save reports
 
     parser.add_argument('--save', required=False, action='store_true',
                         help='Save result to file')
 
     parser.add_argument('--save_file', required=False,
                         default='report.txt', help='Generated report file')
+
+    #############################
+    # Verbosity management.
+    # If enable, print all logs in debug (including from modules)
+
+    parser.add_argument('--verbose', '-v', required=False, action='store_true',
+                        help='Set script to verbose mode (INFO)')
+
+    parser.add_argument('--very-verbose', '-vv', required=False, action='store_true',
+                        help='Set script to very verbose mode (DEBUG)')
 
     return parser.parse_args()
 
@@ -101,6 +136,10 @@ if __name__ == '__main__':
     cli_options = cli_manager()
 
     if cli_options.verbose:
+        logging.getLogger('anta.inventory').setLevel(logging.INFO)
+        logging.getLogger('anta.result_manager').setLevel(logging.INFO)
+        logging.getLogger('anta.reporter').setLevel(logging.INFO)
+    elif cli_options.very_verbose:
         logging.getLogger('anta.inventory').setLevel(logging.DEBUG)
         logging.getLogger('anta.result_manager').setLevel(logging.DEBUG)
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
@@ -115,6 +154,7 @@ if __name__ == '__main__':
         inventory_file=cli_options.inventory,
         username=cli_options.username,
         password=cli_options.password,
+        enable_password=cli_options.enable_password,
         timeout=0.5,
         auto_connect=True
     )
