@@ -21,9 +21,6 @@ from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
 
-# The next line is causing pylint issues because of the anta/tests/__init__.py
-# file syntax
-import anta.tests  # pylint: disable=import-error,no-name-in-module
 import anta.loader
 from anta.result_manager.models import TestResult
 
@@ -99,7 +96,10 @@ def main() -> None:
     )
     parser.add_argument("-u", help="Devices username", dest="username", required=True)
     parser.add_argument(
-        "-t", help="Text file containing the tests", dest="test_catalog_file", required=True
+        "-t",
+        help="Text file containing the tests",
+        dest="test_catalog_file",
+        required=True,
     )
     parser.add_argument("-o", help="Output file", dest="output_file", required=True)
     args = parser.parse_args()
@@ -143,12 +143,16 @@ def main() -> None:
 
     # Use prettytable so we will display data in a visually appealing format
     x = PrettyTable(padding_width=2)
-    x.field_names = ["devices"] + [f"{test.__module__}.{test.__name__}" for test, _ in tests]
+    x.field_names = ["devices"] + [
+        f"{test.__module__}.{test.__name__}" for test, _ in tests
+    ]
 
     for device in sorted(test_summary):
         row = [device]
         for test, _ in tests:
-            row.append(test_summary[device][f"{test.__module__}.{test.__name__}"].result)
+            row.append(
+                test_summary[device][f"{test.__module__}.{test.__name__}"].result
+            )
         x.add_row(row)
 
     # Split the table into ceil(lenx)/c tables of c columns each

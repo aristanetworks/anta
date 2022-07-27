@@ -17,7 +17,6 @@ setup(
     name="anta",
     version=f"{anta.__version__}",
     python_requires=">=3.7",
-    packages=['anta', 'anta.inventory'],
     scripts=[
         "scripts/check-devices.py",
         "scripts/collect-eos-commands.py",

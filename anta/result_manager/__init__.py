@@ -8,7 +8,7 @@ Result Manager Module for ANTA.
 import json
 from typing import List, Any
 
-from .models import ListResult, TestResult
+from anta.result_manager.models import ListResult, TestResult
 
 
 class ResultManager:
