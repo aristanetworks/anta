@@ -5,6 +5,7 @@
 Result Manager Module for ANTA.
 """
 
+import logging
 import json
 from typing import List, Any
 
@@ -13,6 +14,9 @@ from tabulate import tabulate
 from .models import ListResult, TestResult
 from ..reporter import ReportTable
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class ResultManager():
     """
@@ -69,6 +73,7 @@ class ResultManager():
 
     def __init__(self) -> None:
         """ Class constructor."""
+        logger.debug('Instantiate result-manager')
         self._result_entries = ListResult()
 
     def add_test_result(self, entry: TestResult)-> None:
@@ -77,6 +82,7 @@ class ResultManager():
         Args:
             entry (TestResult): TestResult data to add to the report
         """
+        logger.info(f'add new test result to manager: {entry}')
         self._result_entries.append(entry)
 
     def get_results(self, output_format: str = 'native') -> any:
@@ -94,6 +100,7 @@ class ResultManager():
         Returns:
             any: List of results.
         """
+        logger.info(f'retrieve list of result using output_format {output_format}')
         if output_format == 'list':
             return list(self._result_entries)
 
@@ -114,6 +121,8 @@ class ResultManager():
         Returns:
             list[TestResult]: List of results related to the test.
         """
+        logger.info(
+            f'retrieve list of result using output_format {output_format} for test {test_name}')
         if output_format == 'list':
             return [result for result in self._result_entries if str(result.test) == test_name]
 
@@ -124,7 +133,7 @@ class ResultManager():
         return result_manager_filtered
 
 
-    def get_result_by_host(self, host_ip: str,  output_format: str = 'native') ->Any:
+    def get_result_by_host(self, host_ip: str,  output_format: str = 'native') -> Any:
         """
         Get list of test result for a given host.
 
@@ -135,6 +144,8 @@ class ResultManager():
         Returns:
             Any: List of results related to the host.
         """
+        logger.info(
+            f'retrieve list of result using output_format {output_format} for host {host_ip}')
         if output_format == 'list':
             return [result for result in self._result_entries if str(result.host) == host_ip]
 
@@ -144,24 +155,6 @@ class ResultManager():
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
-    # def table_report(self, sort_by: str = 'host', reverse: bool = False, colors: bool = True) -> tabulate:
-    #     """
-    #     Build a table report of all tests
-
-    #     Args:
-    #         sort_by (str, optional): Key to use to filter result. Can be either host/test/result. Defaults to 'host'.
-    #         reverse (bool, optional): Enable reverse sorting. Defaults to False.
-    #         colors (bool, optional): Select if tests results are colored or not. Defaults to True.
-
-    #     Returns:
-    #         tabulate: A Tabulate str that can be printed.
-    #     """
-    #     report = ReportTable()
-    #     report.add_content(
-    #         results=self.get_results(output_format='list'),
-    #     )
-    #     return report.get(sort_by=sort_by, reverse=reverse, enable_colors=colors)
-
     def get_testcases(self) -> List[str]:
         """
         Get list of name of all test cases in current manager.
@@ -169,10 +162,12 @@ class ResultManager():
         Returns:
             List[str]: List of names for all tests.
         """
+        logger.info('build list of testcases registered in result-manager')
         result_list = []
         for testcase in self._result_entries:
             if str(testcase.test) not in result_list:
                 result_list.append(str(testcase.test))
+        logger.debug(f'list of tests name: {result_list}')
         return result_list
 
     def get_hosts(self) -> List[str]:
@@ -182,8 +177,10 @@ class ResultManager():
         Returns:
             List[str]: List of IP addresses.
         """
+        logger.info('build list of host ip registered in result-manager')
         result_list = []
         for testcase in self._result_entries:
             if str(testcase.host) not in result_list:
                 result_list.append(str(testcase.host))
+        logger.debug(f'list of tests name: {result_list}')
         return result_list
