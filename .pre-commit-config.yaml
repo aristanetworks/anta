@@ -17,7 +17,7 @@ repos:
         name: Check for PEP8 error on Python files
         args:
           - --config=/dev/null
-          - --max-line-length=160
+          - --max-line-length=165
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
@@ -39,10 +39,8 @@ repos:
     rev: v0.971
     hooks:
       - id: mypy
-        args:  # Using pydantic argument https://pydantic-docs.helpmanual.io/usage/mypy/
-          - --ignore-missing-imports
-          - --follow-imports=skip
-          - --strict-optional
+        args:
+          - --config-file=pyproject.toml
         additional_dependencies:
           - pydantic
           - types-PyYAML

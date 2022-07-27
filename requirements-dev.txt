@@ -10,3 +10,6 @@ pre-commit>=2.20.0
 pylint-pydantic>=0.1.4
 mypy>=0.971
 tox>=3.25.1
+types-PyYAML
+types-paramiko
+types-requests
