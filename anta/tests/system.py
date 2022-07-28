@@ -73,10 +73,14 @@ def verify_reload_cause(device: InventoryDevice) -> TestResult:
     result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(
-            1, ["show version", "show reload cause"], "json"
+            1, ["show reload cause"], "json"
         )
         logger.debug(f'query result is: {response}')
-        response_data = response[0]["response"]["resetCauses"][0]["description"]
+        if 'resetCauses' not in response[0].keys() or len(response[0]['resetCauses']) == 0:
+            result.is_error("no reload cause available")
+            return result
+
+        response_data = response[0].get("resetCauses")[0].get("description")
         if response_data in [
             "Reload requested by the user.",
             "Reload requested after FPGA upgrade",
@@ -86,7 +90,7 @@ def verify_reload_cause(device: InventoryDevice) -> TestResult:
             result.is_failure(f"Reload cause is {response_data}")
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {e.__class__.__name__} - {str(e)}')
         result.is_error(str(e))
     return result
 
