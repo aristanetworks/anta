@@ -2,8 +2,9 @@
 Test functions related to ASIC profiles
 """
 import inspect
-import socket
 import logging
+import socket
+
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
