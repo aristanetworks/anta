@@ -9,7 +9,7 @@ from anta.result_manager.models import TestResult
 
 def verify_igmp_snooping_vlans(
     device: InventoryDevice, vlans: List[str], configuration: str
-):
+) -> TestResult:
     """
     Verifies the IGMP snooping configuration for some VLANs.
 
@@ -47,7 +47,9 @@ def verify_igmp_snooping_vlans(
     return result
 
 
-def verify_igmp_snooping_global(device: InventoryDevice, configuration: str):
+def verify_igmp_snooping_global(
+    device: InventoryDevice, configuration: str
+) -> TestResult:
     """
     Verifies the IGMP snooping global configuration.
 

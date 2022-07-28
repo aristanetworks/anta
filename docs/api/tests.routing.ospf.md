@@ -3,7 +3,7 @@
 <a href="../../anta/tests/routing/ospf.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.routing.ospf`
-OSPF test functions 
+OSPF test functions
 
 
 ---
@@ -16,18 +16,18 @@ OSPF test functions
 verify_ospf_state(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies all OSPF neighbors are in FULL state. 
+Verifies all OSPF neighbors are in FULL state.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if all OSPF neighbors are FULL. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if all OSPF neighbors are FULL. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -43,19 +43,19 @@ verify_ospf_count(
 ) → TestResult
 ```
 
-Verifies the number of OSPF neighbors in FULL state is the one we expect. 
+Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`number`</b> (int):  The expected number of OSPF neighbors in FULL state. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`number`</b> (int):  The expected number of OSPF neighbors in FULL state.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if device has correct number of devices * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if device has correct number of devices * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

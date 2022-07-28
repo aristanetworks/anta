@@ -3,7 +3,7 @@
 <a href="../../anta/tests/hardware.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.hardware`
-Test functions related to the hardware or environement 
+Test functions related to the hardware or environement
 
 
 ---
@@ -19,19 +19,19 @@ verify_transceivers_manufacturers(
 ) → TestResult
 ```
 
-Verifies the device is only using transceivers from supported manufacturers. 
+Verifies the device is only using transceivers from supported manufacturers.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`manufacturers`</b> (list):  List of allowed transceivers manufacturers. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`manufacturers`</b> (list):  List of allowed transceivers manufacturers.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if no manufacturers were given * result = "success" if the device is only using transceivers from supported manufacturers. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if no manufacturers were given * result = "success" if the device is only using transceivers from supported manufacturers. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -46,18 +46,18 @@ verify_system_temperature(
 ) → TestResult
 ```
 
-Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past. 
+Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if the device temperature is OK. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if the device temperature is OK. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -72,18 +72,18 @@ verify_transceiver_temperature(
 ) → TestResult
 ```
 
-Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature. 
+Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if the device transceivers temperature of the device is currently OK  AND the device did not report any alarm in the past for its transceivers temperature. * result = "failure" otherwise, * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if the device transceivers temperature of the device is currently OK  AND the device did not report any alarm in the past for its transceivers temperature. * result = "failure" otherwise, * result = "error" if any exception is caught
 
 
 ---
@@ -98,18 +98,18 @@ verify_environment_cooling(
 ) → TestResult
 ```
 
-Verifies the fans status is OK. 
+Verifies the fans status is OK.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if the fans status is OK. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if the fans status is OK. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -124,18 +124,18 @@ verify_environment_power(
 ) → TestResult
 ```
 
-Verifies the power supplies status is OK. 
+Verifies the power supplies status is OK.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if the power supplies status is OK. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if the power supplies status is OK. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -148,18 +148,18 @@ Verifies the power supplies status is OK.
 verify_adverse_drops(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches. 
+Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops. * result = "failure" if the device (DCS-7280E and DCS-7500E) report adverse drops. * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops. * result = "failure" if the device (DCS-7280E and DCS-7500E) report adverse drops. * result = "error" if any exception is caught
 
 
 

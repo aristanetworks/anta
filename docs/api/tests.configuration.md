@@ -3,7 +3,7 @@
 <a href="../../anta/tests/configuration.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.configuration`
-Test functions related to the device configuration 
+Test functions related to the device configuration
 
 
 ---
@@ -16,18 +16,18 @@ Test functions related to the device configuration
 verify_zerotouch(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies ZeroTouch is disabled. 
+Verifies ZeroTouch is disabled.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if ZTP is disabled * result = "failure" if ZTP is enabled * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if ZTP is disabled * result = "failure" if ZTP is enabled * result = "error" if any exception is caught
 
 
 ---
@@ -42,18 +42,18 @@ verify_running_config_diffs(
 ) → TestResult
 ```
 
-Verifies there is no difference between the running-config and the startup-config. 
+Verifies there is no difference between the running-config and the startup-config.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "success" if there is no difference between the running-config and the startup-config * result = "failure" if there are differences * result = "error" if any exception is caught 
+ TestResult instance with * result = "success" if there is no difference between the running-config and the startup-config * result = "failure" if there are differences * result = "error" if any exception is caught
 
 
 

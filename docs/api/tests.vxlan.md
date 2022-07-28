@@ -3,7 +3,7 @@
 <a href="../../anta/tests/vxlan.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.vxlan`
-Test functions related to VXLAN 
+Test functions related to VXLAN
 
 
 ---
@@ -16,18 +16,18 @@ Test functions related to VXLAN
 verify_vxlan(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies the interface vxlan 1 status is up/up. 
+Verifies the interface vxlan 1 status is up/up.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if vxlan1 interface is UP UP * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if vxlan1 interface is UP UP * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -42,18 +42,18 @@ verify_vxlan_config_sanity(
 ) → TestResult
 ```
 
-Verifies there is no VXLAN config-sanity warnings. 
+Verifies there is no VXLAN config-sanity warnings.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if VXLAN config sanity is OK * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if VXLAN config sanity is OK * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

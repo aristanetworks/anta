@@ -10,7 +10,10 @@ from anta.inventory.models import InventoryDevice
 
 
 @pytest.fixture
-def mocked_device():
+def mocked_device() -> MagicMock:
+    """
+    Returns a mocked device with initiazlied fields
+    """
     mock = create_autospec(InventoryDevice)
     mock.host = "42.42.42.42"
     mock.username = "toto"

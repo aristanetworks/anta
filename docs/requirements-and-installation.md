@@ -36,7 +36,7 @@ Run this command to install:
 pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-You can even specify the commit you would like to install.  
+You can even specify the commit you would like to install.
 
 Run these commands to verify:
 
@@ -107,11 +107,11 @@ which check-devices-reachability.py
 
 ### Clone the repository and install the package in editable mode
 
-`python setup.py install` is used to install packages that you're not going to modify yourself.  
+`python setup.py install` is used to install packages that you're not going to modify yourself.
 If you want to install the package and then be able to edit the code without having to re-install the package every time for the changes take effect, you can use `python setup.py develop`
 
 you can also use `pip install -e .`
-The `.` refers to the current working directory (the directory where is the setup.py file).  
+The `.` refers to the current working directory (the directory where is the setup.py file).
 The `-e` flag specifies that we want to install in editable mode, which means that when we edit the files in our package we do not need to re-install the package before the changes come into effect. You will need to reload the package though!
 
 Run these commands to install:
@@ -170,7 +170,7 @@ pip list
 
 ## Update your PATH environment variable if it is required
 
-If the path where the scripts are installed is not yet include in your PATH environment variable, please update it.  
+If the path where the scripts are installed is not yet include in your PATH environment variable, please update it.
 
 Here's an example if the scripts are installed here:
 

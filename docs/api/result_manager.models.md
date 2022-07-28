@@ -3,7 +3,7 @@
 <a href="../../anta/result_manager/models.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `result_manager.models`
-Models related to anta.result_manager module. 
+Models related to anta.result_manager module.
 
 **Global Variables**
 ---------------
@@ -15,16 +15,16 @@ Models related to anta.result_manager module.
 <a href="../../anta/result_manager/models.py#L13"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `TestResult`
-Describe result of a test from a single device. 
+Describe result of a test from a single device.
 
 
 
 **Attributes:**
- 
- - <b>`host`</b> (IPvAnyAddress):  IPv4 or IPv6 address of the device where the test has run. 
- - <b>`test`</b> (str):  Test name runs on the device. 
- - <b>`results`</b> (str):  Result of the test. Can be one of unset / failure / success. 
- - <b>`message`</b> (str, optional):  Message to report after the test. 
+
+ - <b>`host`</b> (IPvAnyAddress):  IPv4 or IPv6 address of the device where the test has run.
+ - <b>`test`</b> (str):  Test name runs on the device.
+ - <b>`results`</b> (str):  Result of the test. Can be one of unset / failure / success.
+ - <b>`message`</b> (str, optional):  Message to report after the test.
 
 
 
@@ -39,19 +39,19 @@ Describe result of a test from a single device.
 is_error(message: str = '') → bool
 ```
 
-Helper to set status to error 
+Helper to set status to error
 
 
 
 **Args:**
- 
- - <b>`message`</b> (str):  Optional message related to the test 
+
+ - <b>`message`</b> (str):  Optional message related to the test
 
 
 
 **Returns:**
- 
- - <b>`bool`</b>:  Always true 
+
+ - <b>`bool`</b>:  Always true
 
 ---
 
@@ -63,19 +63,19 @@ Helper to set status to error
 is_failure(message: str = '') → bool
 ```
 
-Helper to set status to failure 
+Helper to set status to failure
 
 
 
 **Args:**
- 
- - <b>`message`</b> (str):  Optional message related to the test 
+
+ - <b>`message`</b> (str):  Optional message related to the test
 
 
 
 **Returns:**
- 
- - <b>`bool`</b>:  Always true 
+
+ - <b>`bool`</b>:  Always true
 
 ---
 
@@ -87,19 +87,19 @@ Helper to set status to failure
 is_skipped(message: str = '') → bool
 ```
 
-Helper to set status to skipped 
+Helper to set status to skipped
 
 
 
 **Args:**
- 
- - <b>`message`</b> (str):  Optional message related to the test 
+
+ - <b>`message`</b> (str):  Optional message related to the test
 
 
 
 **Returns:**
- 
- - <b>`bool`</b>:  Always true 
+
+ - <b>`bool`</b>:  Always true
 
 ---
 
@@ -111,19 +111,19 @@ Helper to set status to skipped
 is_success(message: str = '') → bool
 ```
 
-Helper to set status to success 
+Helper to set status to success
 
 
 
 **Args:**
- 
- - <b>`message`</b> (str):  Optional message related to the test 
+
+ - <b>`message`</b> (str):  Optional message related to the test
 
 
 
 **Returns:**
- 
- - <b>`bool`</b>:  Always true 
+
+ - <b>`bool`</b>:  Always true
 
 ---
 
@@ -135,27 +135,27 @@ Helper to set status to success
 name_must_be_in(v: str) → str
 ```
 
-Status validator 
+Status validator
 
-Validate status is a supported one 
+Validate status is a supported one
 
 
 
 **Args:**
- 
- - <b>`v`</b> (str):  User defined status 
+
+ - <b>`v`</b> (str):  User defined status
 
 
 
 **Raises:**
- 
- - <b>`ValueError`</b>:  If status is unsupported 
+
+ - <b>`ValueError`</b>:  If status is unsupported
 
 
 
 **Returns:**
- 
- - <b>`str`</b>:  status value 
+
+ - <b>`str`</b>:  status value
 
 
 ---
@@ -163,13 +163,13 @@ Validate status is a supported one
 <a href="../../anta/result_manager/models.py#L112"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `ListResult`
-List result for all tests on all devices. 
+List result for all tests on all devices.
 
 
 
 **Attributes:**
- 
- - <b>`__root__`</b> (List[TestResult]):  A list of TestResult objects. 
+
+ - <b>`__root__`</b> (List[TestResult]):  A list of TestResult objects.
 
 
 
@@ -184,7 +184,7 @@ List result for all tests on all devices.
 append(value) → None
 ```
 
-Add support for append method. 
+Add support for append method.
 
 
 

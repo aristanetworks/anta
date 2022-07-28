@@ -22,7 +22,6 @@
 
 import argparse
 import logging
-import pprint
 import sys
 import itertools
 from yaml import safe_load
@@ -46,7 +45,7 @@ logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
 logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
 
-def cli_manager():
+def cli_manager() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
 
     #############################
@@ -213,7 +212,6 @@ if __name__ == '__main__':
         console.print(Panel('Raw results of all tests', style='cyan'))
         pprint(manager.get_results(output_format="list"))
 
-
     if cli_options.table:
         reporter = ReportTable()
         if cli_options.full:
@@ -240,6 +238,5 @@ if __name__ == '__main__':
             output = reporter.report_all(result_manager=manager)
             console = Console(file=report_file)
             console.rule(console.print(output))
-
 
     sys.exit(0)

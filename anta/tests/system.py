@@ -10,7 +10,8 @@ from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
-def verify_uptime(device: InventoryDevice, minimum=None):
+
+def verify_uptime(device: InventoryDevice, minimum: int = None) -> TestResult:
     """
     Verifies the device uptime is higher than a value.
 

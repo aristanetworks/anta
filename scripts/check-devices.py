@@ -11,6 +11,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 import sys
 from datetime import datetime
+from typing import Dict
 import ssl
 from math import ceil
 from socket import setdefaulttimeout
@@ -20,16 +21,16 @@ from prettytable import PrettyTable
 from yaml import safe_load
 from colorama import Fore
 
-# The next line is causing pylint issues because of the anta/tests/__init__.py
-# file syntax
-import anta.tests  # pylint: disable=import-error,no-name-in-module
 import anta.loader
+from anta.result_manager.models import TestResult
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-def create_connections_dict(text_file, device_username, device_password, output_file):
+def create_connections_dict(
+    text_file: str, device_username: str, device_password: str, output_file: str
+) -> Dict[str, Server]:
     """
     Create connection dict
     """
@@ -78,7 +79,7 @@ def create_connections_dict(text_file, device_username, device_password, output_
     return connections
 
 
-def main():
+def main() -> None:
     """
     Main core routine
     """
@@ -95,7 +96,10 @@ def main():
     )
     parser.add_argument("-u", help="Devices username", dest="username", required=True)
     parser.add_argument(
-        "-t", help="Text file containing the tests", dest="test_catalog", required=True
+        "-t",
+        help="Text file containing the tests",
+        dest="test_catalog_file",
+        required=True,
     )
     parser.add_argument("-o", help="Output file", dest="output_file", required=True)
     args = parser.parse_args()
@@ -108,16 +112,16 @@ def main():
     )
 
     try:
-        with open(args.test_catalog, "r", encoding="utf8") as file:
+        with open(args.test_catalog_file, "r", encoding="utf8") as file:
             test_catalog = safe_load(file)
     except FileNotFoundError:
-        print("Error opening " + args.test_catalog)
+        print("Error opening " + args.test_catalog_file)
         sys.exit(1)
 
     tests = anta.loader.parse_catalog(test_catalog)
 
     # Create the dictionnary test_summary for test results and run the tests
-    test_summary = {}
+    test_summary: Dict[str, Dict[str, TestResult]] = {}
     for device, connection in connections.items():
         print("Running tests on device " + device + " ...")
         test_summary[device] = {}
@@ -139,41 +143,41 @@ def main():
 
     # Use prettytable so we will display data in a visually appealing format
     x = PrettyTable(padding_width=2)
-    fields = ["devices"]
-    for test, _ in tests:
-        fields.append(f"{test.__module__}.{test.__name__}")
-    x.field_names = fields
+    x.field_names = ["devices"] + [
+        f"{test.__module__}.{test.__name__}" for test, _ in tests
+    ]
+
     for device in sorted(test_summary):
         row = [device]
         for test, _ in tests:
-            row.append(test_summary[device][f"{test.__module__}.{test.__name__}"])
+            row.append(
+                test_summary[device][f"{test.__module__}.{test.__name__}"].result
+            )
         x.add_row(row)
 
-    # Split the table into t tables of c columns each
+    # Split the table into ceil(lenx)/c tables of c columns each
     c = 12
-    lenx = len(fields)
-    t = ceil(lenx / c)
 
     print("Test results are saved on " + args.output_file)
 
     # Write tests result to an external file
     with open(args.output_file, "a", encoding="utf8") as outfile:
-        outfile.write("tests file was " + args.test_catalog)
+        outfile.write("tests file was " + args.test_catalog_file)
         outfile.write("\n\n")
         outfile.write("***** Results *****\n")
         outfile.write("\n")
-        for i in range(t):
+        for i in range(ceil(len(x.field_names) / c)):
             start = i * (c - 1) + 1
             stop = ((c - 1) * (i + 1)) + 1
-            y = ["devices"] + fields[start:stop]
+            y = ["devices"] + x.field_names[start:stop]
             outfile.write(x.get_string(fields=y))
             outfile.write("\n")
 
         outfile.write("\n")
         outfile.write("***** Tests *****\n")
         outfile.write("\n")
-        for test in sorted(test_catalog):
-            outfile.write(test + "\t " + dumps(test_catalog[test]))
+        for test_element in sorted(test_catalog):
+            outfile.write(test_element + "\t " + dumps(test_catalog[test_element]))
             outfile.write("\n")
         outfile.write("\n")
 

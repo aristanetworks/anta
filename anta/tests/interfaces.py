@@ -1,6 +1,7 @@
 """
 Test functions related to the device interfaces
 """
+from typing import Dict, Any
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -251,7 +252,7 @@ def verify_storm_control_drops(device: InventoryDevice) -> TestResult:
     try:
         response = device.session.runCmds(1, ["show storm-control"], "json")
 
-        storm_controlled_interfaces = {}
+        storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
         for interface, interface_dict in response[0]["interfaces"].items():
             for traffic_type, traffic_type_dict in interface_dict["trafficTypes"]:
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:

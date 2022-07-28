@@ -5,7 +5,8 @@
 """
 Tests for anta.tests.configuration.py
 """
-from unittest.mock import patch
+from unittest.mock import MagicMock
+from typing import List, Any, Dict
 from jsonrpclib.jsonrpc import AppError
 import pytest
 from anta.tests.configuration import verify_zerotouch, verify_running_config_diffs
@@ -28,8 +29,12 @@ from anta.tests.configuration import verify_zerotouch, verify_running_config_dif
     ],
 )
 def test_verify_zerotouch(
-    mocked_device, return_value, side_effect, expected_result, expected_messages
-):
+    mocked_device: MagicMock,
+    return_value: List[Dict[str, str]],
+    side_effect: Any,
+    expected_result: str,
+    expected_messages: List[str],
+) -> None:
     mocked_device.session.runCmds.return_value = return_value
     mocked_device.session.runCmds.side_effect = side_effect
     result = verify_zerotouch(mocked_device)
@@ -77,13 +82,13 @@ def test_verify_zerotouch(
     ],
 )
 def test_verify_running_config_diffs(
-    mocked_device,
-    return_value,
-    side_effect,
-    remove_enable_password,
-    expected_result,
-    expected_messages,
-):
+    mocked_device: MagicMock,
+    return_value: List[Any],
+    side_effect: Any,
+    remove_enable_password: str,
+    expected_result: str,
+    expected_messages: List[str],
+) -> None:
     if remove_enable_password:
         mocked_device.enable_password = None
     mocked_device.session.runCmds.return_value = return_value

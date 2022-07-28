@@ -3,7 +3,7 @@
 
 """Models related to anta.result_manager module."""
 
-from typing import List
+from typing import List, Iterator
 from pydantic import BaseModel, IPvAnyAddress, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
@@ -118,21 +118,21 @@ class ListResult(BaseModel):
     """
     # pylint: disable=R0801
 
-    __root__ = []
+    __root__: List[TestResult] = []
 
-    def append(self, value) -> None:
+    def append(self, value: TestResult) -> None:
         """Add support for append method."""
         self.__root__.append(value)
         super().__init__(__root__=self.__root__)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[TestResult]:
         """Use custom iter method."""
         return iter(self.__root__)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> TestResult:
         """Use custom getitem method."""
         return self.__root__[item]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Support for length of __root__"""
         return len(self.__root__)

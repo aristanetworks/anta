@@ -4,7 +4,6 @@ disable=
     logging-fstring-interpolation,
     fixme
 
-
 [BASIC]
 good-names=runCmds, i, y, t, c, x, e, fd, ip, v
 

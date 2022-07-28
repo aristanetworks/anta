@@ -10,14 +10,17 @@
 """
 parametrize.py - Retrieves the mock data from the json_data file
 """
+from typing import Dict, List, Any
 
-def generate_list_from_dict(data):
+
+def generate_list_from_dict(data: Dict[str, Any]) -> List[Any]:
     """
     generate_flat_data Generate a flat list of dict
 
     Example
     -------
-    >>> CUSTOMER_CVP_CONTAINER_TOPOLOGY = {"Tenant":{"name":"Tenant","key":"root","parentContainerId":"None"},"Undefined":{"name":"Undefined","key":"undefined_container","parentContainerId":"root"}}
+    >>> CUSTOMER_CVP_CONTAINER_TOPOLOGY = {"Tenant":{"name":"Tenant","key":"root","parentContainerId":"None"},
+                                           "Undefined":{"name":"Undefined","key":"undefined_container","parentContainerId":"root"}}
 
     >>> result = generate_flat_data(CUSTOMER_CVP_CONTAINER_TOPOLOGY)
 
