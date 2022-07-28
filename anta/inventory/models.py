@@ -115,7 +115,6 @@ class InventoryDevices(BaseModel):
     def append(self, value: InventoryDevice) -> None:
         """Add support for append method."""
         self.__root__.append(value)
-        super().__init__(__root__=self.__root__)
 
     def __iter__(self) -> Iterator[InventoryDevice]:
         """Use custom iter method."""

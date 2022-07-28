@@ -371,11 +371,12 @@ class AntaInventory():
             InventoryDevices: A inventory with concerned devices
         """
         inventory = InventoryDevices()
-        if established_only is False:
+        if not established_only:
             return self._inventory
 
         for device in self._inventory:
             if device.established:
+                logger.warning(f'device type is: {type(device)}')
                 inventory.append(device)
         return inventory
 
