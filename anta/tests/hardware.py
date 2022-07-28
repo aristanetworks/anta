@@ -1,12 +1,20 @@
 """
 Test functions related to the hardware or environement
 """
+import inspect
+import logging
 from typing import List
+import socket
+
 from jsonrpclib import jsonrpc
+from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
+logger = logging.getLogger(__name__)
 
+
+@skip_on_platforms(["cEOSLab"])
 def verify_transceivers_manufacturers(
     device: InventoryDevice, manufacturers: List[str] = None
 ) -> TestResult:
@@ -26,7 +34,10 @@ def verify_transceivers_manufacturers(
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_transceivers_manufacturers")
+
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     if not manufacturers:
         result.is_skipped(
             "verify_transceivers_manufacturers was not run as no "
@@ -35,6 +46,7 @@ def verify_transceivers_manufacturers(
         return result
     try:
         response = device.session.runCmds(1, ["show inventory"], "json")
+        logger.debug(f"query result is: {response}")
 
         wrong_manufacturers = {
             interface: value["mfgName"]
@@ -49,12 +61,16 @@ def verify_transceivers_manufacturers(
             )
             result.messages.append(str(wrong_manufacturers))
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
 
 
+@skip_on_platforms(["cEOSLab"])
 def verify_system_temperature(device: InventoryDevice) -> TestResult:
 
     """
@@ -72,12 +88,15 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_system_temperature")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(
             1, ["show system environment temperature"], "json"
         )
+        logger.debug(f"query result is: {response}")
 
         if response[0]["systemStatus"] == "temperatureOk":
             result.is_success()
@@ -86,12 +105,16 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
                 f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
             )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
 
 
+@skip_on_platforms(["cEOSLab"])
 def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
 
     """
@@ -110,12 +133,15 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_transceiver_temperature")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(
             1, ["show system environment temperature transceiver"], "json"
         )
+        logger.debug(f"query result is: {response}")
 
         wrong_sensors = {
             sensor["name"]: {
@@ -133,12 +159,16 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
             )
             result.messages.append(str(wrong_sensors))
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
 
 
+@skip_on_platforms(["cEOSLab"])
 def verify_environment_cooling(device: InventoryDevice) -> TestResult:
 
     """
@@ -155,12 +185,21 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_environment_cooling")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
+    if device.hw_model == "cEOSLab":
+        result.is_skipped(
+            f"{function_name} test is not supported on {device.hw_model}."
+        )
+        return result
 
     try:
         response = device.session.runCmds(
             1, ["show system environment cooling"], "json"
         )
+        logger.debug(f"query result is: {response}")
 
         if response[0]["systemStatus"] == "coolingOk":
             result.is_success()
@@ -169,12 +208,16 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
                 f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
             )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
 
 
+@skip_on_platforms(["cEOSLab"])
 def verify_environment_power(device: InventoryDevice) -> TestResult:
 
     """
@@ -191,10 +234,13 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_environment_power")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show system environment power"], "json")
+        logger.debug(f"query result is: {response}")
 
         wrong_power_supplies = {
             powersupply: {"state": value["state"]}
@@ -207,12 +253,16 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
             result.is_failure("The following power suppliers are not ok:")
             result.messages.append(str(wrong_power_supplies))
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
 
 
+@skip_on_platforms(["cEOSLab"])
 def verify_adverse_drops(device: InventoryDevice) -> TestResult:
 
     """
@@ -229,10 +279,13 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_adverse_drops")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show hardware counter drop"], "json")
+        logger.debug(f"query result is: {response}")
 
         if response[0]["totalAdverseDrops"] == 0:
             result.is_success()
@@ -241,7 +294,10 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
                 f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."
             )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
 
     return result
