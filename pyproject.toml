@@ -47,12 +47,13 @@ deps =
   lint: pylint
   lint,type: -r requirements-dev.txt
 commands =
-  lint: flake8 --max-line-length=165 --config=/dev/null
+  lint: flake8 --max-line-length=165 --config=/dev/null anta
+  lint: flake8 --max-line-length=165 --config=/dev/null scripts
+  lint: flake8 --max-line-length=165 --config=/dev/null tests
   lint: pylint anta
   lint: pylint scripts
   type: mypy --config-file=pyproject.toml anta
   type: mypy --config-file=pyproject.toml scripts
-  type: mypy --config-file=pyproject.toml tests
   test: pytest
 
 [testenv:clean]

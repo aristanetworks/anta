@@ -1,6 +1,8 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+files: ^(anta|scripts|tests)/
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
@@ -46,3 +48,5 @@ repos:
           - types-PyYAML
           - types-paramiko
           - types-requests
+        # Do not run mypy on tests but only on code and scripts
+        files: ^(anta|scripts)/
