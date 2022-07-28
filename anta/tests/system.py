@@ -28,18 +28,23 @@ def verify_uptime(device: InventoryDevice, minimum: int = None) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_uptime")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     if not minimum:
         result.is_skipped("verify_uptime was not run as no minimum were given")
         return result
     try:
         response = device.session.runCmds(1, ["show uptime"], "json")
+        logger.debug(f'query result is: {response}')
         response_data = response[0]["upTime"]
         if response[0]["upTime"] > minimum:
             result.is_success()
         else:
             result.is_failure(f"Uptime is {response_data}")
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -63,11 +68,14 @@ def verify_reload_cause(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_reload_cause")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(
             1, ["show version", "show reload cause"], "json"
         )
+        logger.debug(f'query result is: {response}')
         response_data = response[0]["response"]["resetCauses"][0]["description"]
         if response_data in [
             "Reload requested by the user.",
@@ -76,7 +84,9 @@ def verify_reload_cause(device: InventoryDevice) -> TestResult:
             result.is_success()
         else:
             result.is_failure(f"Reload cause is {response_data}")
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -96,7 +106,9 @@ def verify_coredump(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_coredump")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         device.assert_enable_password_is_not_none("verify_coredump")
 
@@ -108,6 +120,7 @@ def verify_coredump(device: InventoryDevice) -> TestResult:
             ],
             "text",
         )
+        logger.debug(f'query result is: {response}')
         response_data = response[1]["output"]
         if len(response_data) == 0:
             result.is_success()
@@ -134,15 +147,20 @@ def verify_agent_logs(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_agent_logs")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(1, ["show agent logs crash"], "text")
+        logger.debug(f'query result is: {response}')
         response_data = response[0]["output"]
         if len(response_data) == 0:
             result.is_success()
         else:
             result.is_failure(f"device reported some agent crashes: {response_data}")
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -162,11 +180,14 @@ def verify_syslog(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_syslog")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(
             1, ["show logging last 7 days threshold warnings"], "text"
         )
+        logger.debug(f'query result is: {response}')
         response_data = response[0]["output"]
         if len(response_data) == 0:
             result.is_success()
@@ -174,7 +195,9 @@ def verify_syslog(device: InventoryDevice) -> TestResult:
             result.is_failure(
                 "Device has some log messages with a severity WARNING or higher"
             )
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -193,9 +216,12 @@ def verify_cpu_utilization(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_cpu_utilization")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(1, ["show processes top once"], "json")
+        logger.debug(f'query result is: {response}')
         response_data = response[0]["cpuInfo"]["%Cpu(s)"]["idle"]
         if response_data > 25:
             result.is_success()
@@ -203,7 +229,9 @@ def verify_cpu_utilization(device: InventoryDevice) -> TestResult:
             result.is_failure(
                 f"device reported a high CPU utilization ({response_data}%)"
             )
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -222,15 +250,21 @@ def verify_memory_utilization(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_memory_utilization")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(1, ["show version"], "json")
-        memory_usage = float(response[0]["memFree"]) / float(response[0]["memTotal"])
+        logger.debug(f'query result is: {response}')
+        memory_usage = float(response[0]["memFree"]) / \
+            float(response[0]["memTotal"])
         if memory_usage > 0.25:
             result.is_success()
         else:
             result.is_failure(f"device report a high memory usage: {memory_usage*100}%")
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -250,7 +284,9 @@ def verify_filesystem_utilization(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_filesystem_utilization")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(
             1,
@@ -260,14 +296,16 @@ def verify_filesystem_utilization(device: InventoryDevice) -> TestResult:
             ],
             "text",
         )
+        logger.debug(f'query result is: {response}')
         result.is_success()
         for line in response[1]["output"].split("\n")[1:]:
-            if "loop" not in line and len(line) > 0:
-                if int(line.split()[4].replace("%", "")) > 75:
-                    result.is_failure(
-                        f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})'
-                    )
-    except (jsonrpc.AppError, KeyError) as e:
+            if "loop" not in line and len(line) > 0 and int(line.split()[4].replace("%", "")) > 75:
+                result.is_failure(
+                    f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})'
+                )
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+
         result.is_error(str(e))
     return result
 
@@ -287,8 +325,9 @@ def verify_ntp(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    logger.debug(f'Start {inspect.stack()[0][3]} check for host {device.host}')
-    result = TestResult(host=str(device.host), test="verify_ntp")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(1, ["show ntp status"], "text")
         logger.debug(f'query result is: {response}')
