@@ -3,7 +3,7 @@
 <a href="../../anta/tests/mlag.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.mlag`
-Test functions related to Multi-Chassis LAG 
+Test functions related to Multi-Chassis LAG
 
 
 ---
@@ -16,18 +16,18 @@ Test functions related to Multi-Chassis LAG
 verify_mlag_status(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up. 
+Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if the MLAG status is OK * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if the MLAG status is OK * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -42,18 +42,18 @@ verify_mlag_interfaces(
 ) → TestResult
 ```
 
-Verifies there is no inactive or active-partial MLAG interfaces. 
+Verifies there is no inactive or active-partial MLAG interfaces.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no inactive or active-partial MLAG interfaces. * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no inactive or active-partial MLAG interfaces. * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -68,18 +68,18 @@ verify_mlag_config_sanity(
 ) → TestResult
 ```
 
-Verifies there is no MLAG config-sanity inconsistencies. 
+Verifies there is no MLAG config-sanity inconsistencies.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no MLAG config-sanity inconsistencies * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no MLAG config-sanity inconsistencies * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

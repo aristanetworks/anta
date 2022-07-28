@@ -1,13 +1,14 @@
 """
 Test functions related to the hardware or environement
 """
+from typing import List
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
 
 def verify_transceivers_manufacturers(
-    device: InventoryDevice, manufacturers=None
+    device: InventoryDevice, manufacturers: List[str] = None
 ) -> TestResult:
     """
     Verifies the device is only using transceivers from supported manufacturers.
@@ -46,7 +47,7 @@ def verify_transceivers_manufacturers(
             result.is_failure(
                 "The following interfaces have transceivers from unauthorized manufacturers"
             )
-            result.messages.append(wrong_manufacturers)
+            result.messages.append(str(wrong_manufacturers))
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))
@@ -130,7 +131,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
             result.is_failure(
                 "The following sensors do not have the correct temperature or had alarms in the past:"
             )
-            result.messages.append(wrong_sensors)
+            result.messages.append(str(wrong_sensors))
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))
@@ -204,7 +205,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
             result.is_success()
         else:
             result.is_failure("The following power suppliers are not ok:")
-            result.messages.append(wrong_power_supplies)
+            result.messages.append(str(wrong_power_supplies))
 
     except (jsonrpc.AppError, KeyError) as e:
         result.is_error(str(e))

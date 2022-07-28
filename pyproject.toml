@@ -1,0 +1,80 @@
+# content of pyproject.toml
+
+# mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
+[tool.mypy]
+plugins = [
+  "pydantic.mypy",
+  ]
+follow_imports = "skip"
+ignore_missing_imports = true
+warn_redundant_casts = true
+# Note: tox find some unused type ignore which are required for pre-commit.. to
+# investigate
+# warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+strict_optional = true
+
+# for strict mypy: (this is the tricky one :-))
+disallow_untyped_defs = true
+
+mypy_path = "anta"
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = clean,py{37,38,39,310}-{lint,type,test},report
+[gh-actions]
+python =
+  3.7: py37
+  3.8: py38
+  3.9: py39
+  3.10: py310, coverage
+
+[testenv]
+deps =
+  tets: pytest
+  test: pytest-cov
+  lint: flake8
+  lint: pylint
+  lint,type: -r requirements-dev.txt
+commands =
+  lint: flake8 --max-line-length=165 --config=/dev/null anta
+  lint: flake8 --max-line-length=165 --config=/dev/null scripts
+  lint: flake8 --max-line-length=165 --config=/dev/null tests
+  lint: pylint anta
+  lint: pylint scripts
+  type: mypy --config-file=pyproject.toml anta
+  type: mypy --config-file=pyproject.toml scripts
+  test: pytest
+
+[testenv:clean]
+deps = coverage[toml]
+skip_install = true
+commands = coverage erase
+
+[testenv:report]
+deps = coverage[toml]
+commands = coverage report
+# add the following to make the report fail under some percentage
+# commands = coverage report --fail-under=80
+depends = py310
+
+"""
+
+[tool.pytest.ini_options]
+addopts = "-ra -q -s -vv --capture=tee-sys --ignore=tests/scripts --cov --cov-append"
+log_level = "INFO"
+log_cli = "True"
+
+[tool.coverage.run]
+source = ['anta']
+# omit = []

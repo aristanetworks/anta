@@ -3,7 +3,7 @@
 <a href="../../anta/tests/multicast.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.multicast`
-Test functions related to multicast 
+Test functions related to multicast
 
 
 ---
@@ -20,20 +20,20 @@ verify_igmp_snooping_vlans(
 )
 ```
 
-Verifies the IGMP snooping configuration for some VLANs. 
+Verifies the IGMP snooping configuration for some VLANs.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`vlans`</b> (List[str]):  A list of VLANs 
- - <b>`configuration`</b> (str):  Expected IGMP snooping configuration (enabled or disabled) for these VLANs. 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`vlans`</b> (List[str]):  A list of VLANs
+ - <b>`configuration`</b> (str):  Expected IGMP snooping configuration (enabled or disabled) for these VLANs.
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if IGMP snooping is configured on these vlans * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if IGMP snooping is configured on these vlans * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 ---
@@ -49,19 +49,19 @@ verify_igmp_snooping_global(
 )
 ```
 
-Verifies the IGMP snooping global configuration. 
+Verifies the IGMP snooping global configuration.
 
 
 
 **Args:**
- 
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
- - <b>`configuration`</b> (str):  Expected global IGMP snooping configuration (enabled or disabled). 
+
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ - <b>`configuration`</b> (str):  Expected global IGMP snooping configuration (enabled or disabled).
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if IGMP snooping is globally configured * result = "failure" otherwise. * result = "error" if any exception is caught 
+ TestResult instance with * result = "unset" if test has not been executed * result = "success" if IGMP snooping is globally configured * result = "failure" otherwise. * result = "error" if any exception is caught
 
 
 

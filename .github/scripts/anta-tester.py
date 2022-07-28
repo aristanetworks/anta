@@ -22,7 +22,6 @@
 
 import argparse
 import logging
-import pprint
 import sys
 import itertools
 from yaml import safe_load
@@ -45,9 +44,9 @@ logging.basicConfig(
 logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
 logging.getLogger('anta.result_manager').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
+logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
 
-
-def cli_manager():
+def cli_manager() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
 
     #############################
@@ -126,6 +125,9 @@ def cli_manager():
     parser.add_argument('--very-verbose', '-vv', required=False, action='store_true',
                         help='Set script to very verbose mode (DEBUG)')
 
+    parser.add_argument('--verbose-test', '-vt', required=False, action='store_true',
+                        help='Set script to be in verbose mode for anta.tests only (DEBUG)')
+
     return parser.parse_args()
 
 
@@ -143,6 +145,15 @@ if __name__ == '__main__':
         logging.getLogger('anta.inventory').setLevel(logging.DEBUG)
         logging.getLogger('anta.result_manager').setLevel(logging.DEBUG)
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
+
+    if cli_options.verbose_test:
+        logging.getLogger('anta.tests.system').setLevel(logging.DEBUG)
+
+    console.print(Panel('Active logger for testing', style='orange3'))
+    # pylint: disable=E1101
+    loggers = [logging.getLogger(name)
+               for name in logging.root.manager.loggerDict]
+    pprint(loggers)
 
     logger.info('ANTA testing program started')
 
@@ -171,6 +182,7 @@ if __name__ == '__main__':
         logger.info(f'starting running test on device {cli_options.search_ip} ...')
     else:
         logger.info('starting running test on devices ...')
+
 
     ############################################################################
     # Test loader
@@ -209,7 +221,6 @@ if __name__ == '__main__':
         console.print(Panel('Raw results of all tests', style='cyan'))
         pprint(manager.get_results(output_format="list"))
 
-
     if cli_options.table:
         reporter = ReportTable()
         if cli_options.full:
@@ -236,6 +247,5 @@ if __name__ == '__main__':
             output = reporter.report_all(result_manager=manager)
             console = Console(file=report_file)
             console.rule(console.print(output))
-
 
     sys.exit(0)

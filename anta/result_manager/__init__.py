@@ -9,16 +9,12 @@ import logging
 import json
 from typing import List, Any
 
-from tabulate import tabulate
-
-from .models import ListResult, TestResult
-from ..reporter import ReportTable
+from anta.result_manager.models import ListResult, TestResult
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
-class ResultManager():
+class ResultManager:
     """
     Helper to manage Test Results and generate reports.
 
@@ -76,8 +72,14 @@ class ResultManager():
         logger.debug('Instantiate result-manager')
         self._result_entries = ListResult()
 
-    def add_test_result(self, entry: TestResult)-> None:
-        """ Add a result to the list
+    def __len__(self) -> int:
+        """
+        Implement __len__ method to count number of results.
+        """
+        return len(self._result_entries)
+
+    def add_test_result(self, entry: TestResult) -> None:
+        """Add a result to the list
 
         Args:
             entry (TestResult): TestResult data to add to the report
@@ -85,7 +87,7 @@ class ResultManager():
         logger.info(f'add new test result to manager: {entry}')
         self._result_entries.append(entry)
 
-    def get_results(self, output_format: str = 'native') -> any:
+    def get_results(self, output_format: str = "native") -> Any:
         """
         Expose list of all test results in different format
 
@@ -104,13 +106,13 @@ class ResultManager():
         if output_format == 'list':
             return list(self._result_entries)
 
-        if output_format == 'json':
-            return json.loads([result.json() for result in self._result_entries])
+        if output_format == "json":
+            return json.loads(str([result.json() for result in self._result_entries]))
 
         # Default return for native format.
         return self._result_entries
 
-    def get_result_by_test(self, test_name: str, output_format: str = 'native') -> Any:
+    def get_result_by_test(self, test_name: str, output_format: str = "native") -> Any:
         """
         Get list of test result for a given test.
 
@@ -123,8 +125,12 @@ class ResultManager():
         """
         logger.info(
             f'retrieve list of result using output_format {output_format} for test {test_name}')
-        if output_format == 'list':
-            return [result for result in self._result_entries if str(result.test) == test_name]
+        if output_format == "list":
+            return [
+                result
+                for result in self._result_entries
+                if str(result.test) == test_name
+            ]
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:
@@ -132,8 +138,7 @@ class ResultManager():
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
-
-    def get_result_by_host(self, host_ip: str,  output_format: str = 'native') -> Any:
+    def get_result_by_host(self, host_ip: str, output_format: str = "native") -> Any:
         """
         Get list of test result for a given host.
 
@@ -146,8 +151,10 @@ class ResultManager():
         """
         logger.info(
             f'retrieve list of result using output_format {output_format} for host {host_ip}')
-        if output_format == 'list':
-            return [result for result in self._result_entries if str(result.host) == host_ip]
+        if output_format == "list":
+            return [
+                result for result in self._result_entries if str(result.host) == host_ip
+            ]
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:

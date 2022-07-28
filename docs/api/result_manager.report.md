@@ -3,7 +3,7 @@
 <a href="../../anta/result_manager/report.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `result_manager.report`
-Report management for ANTA. 
+Report management for ANTA.
 
 
 
@@ -12,7 +12,7 @@ Report management for ANTA.
 <a href="../../anta/result_manager/report.py#L17"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `Colors`
-Manage colors for output. 
+Manage colors for output.
 
 
 
@@ -23,7 +23,7 @@ Manage colors for output.
 <a href="../../anta/result_manager/report.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `TableReport`
-TableReport Generate a Table based on tabulate and TestResult. 
+TableReport Generate a Table based on tabulate and TestResult.
 
 <a href="../../anta/result_manager/report.py#L36"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
@@ -33,13 +33,13 @@ TableReport Generate a Table based on tabulate and TestResult.
 __init__(headers=None, colors: bool = True) → None
 ```
 
-__init__ Class constructor 
+__init__ Class constructor
 
 
 
 **Args:**
- 
- - <b>`headers`</b> (list[str], optional):  List of headers. Defaults to None. 
+
+ - <b>`headers`</b> (list[str], optional):  List of headers. Defaults to None.
 
 
 
@@ -54,13 +54,13 @@ __init__ Class constructor
 add_content(results: List[result_manager.models.TestResult])
 ```
 
-add_content Add content to manage in the report. 
+add_content Add content to manage in the report.
 
 
 
 **Args:**
- 
- - <b>`results`</b> (list[TestResult]):  A list of tests. 
+
+ - <b>`results`</b> (list[TestResult]):  A list of tests.
 
 ---
 
@@ -72,13 +72,13 @@ add_content Add content to manage in the report.
 build_content()
 ```
 
-build_content Build output for the report. 
+build_content Build output for the report.
 
 
 
 **Returns:**
- 
- - <b>`list`</b>:  A list of tests. 
+
+ - <b>`list`</b>:  A list of tests.
 
 ---
 
@@ -90,22 +90,22 @@ build_content Build output for the report.
 content_sorted_by(key_index: int, reverse: bool = False) → list
 ```
 
-content_sorted_by Sort content by using a user's defined key ID 
+content_sorted_by Sort content by using a user's defined key ID
 
-Key ID indicates which column in the inner list to use for sorting 
+Key ID indicates which column in the inner list to use for sorting
 
 
 
 **Args:**
- 
- - <b>`key_index`</b> (int):  innerkey to use to filter. 
- - <b>`reverse`</b> (bool, optional):  Do reverse sorting. Defaults to False. 
+
+ - <b>`key_index`</b> (int):  innerkey to use to filter.
+ - <b>`reverse`</b> (bool, optional):  Do reverse sorting. Defaults to False.
 
 
 
 **Returns:**
- 
- - <b>`List`</b>:  List of result to print 
+
+ - <b>`List`</b>:  List of result to print
 
 ---
 
@@ -117,7 +117,7 @@ Key ID indicates which column in the inner list to use for sorting
 content_sorted_by_host(reverse: bool = False)
 ```
 
-content_sorted_by_host Sort content by using host field 
+content_sorted_by_host Sort content by using host field
 
 Only valid for line using this structure: ``` [entry.host, entry.test, entry.result, entry.message]```
 
@@ -146,7 +146,7 @@ Only valid for line using this structure: ``` [entry.host, entry.test, entry.res
 content_sorted_by_result(reverse: bool = False)
 ```
 
-content_sorted_by_result Sort content by using result field 
+content_sorted_by_result Sort content by using result field
 
 Only valid for line using this structure: ``` [entry.host, entry.test, entry.result, entry.message]```
 
@@ -175,7 +175,7 @@ Only valid for line using this structure: ``` [entry.host, entry.test, entry.res
 content_sorted_by_test(reverse: bool = False)
 ```
 
-content_sorted_by_test Sort content by using test field 
+content_sorted_by_test Sort content by using test field
 
 Only valid for line using this structure: ``` [entry.host, entry.test, entry.result, entry.message]```
 
@@ -209,27 +209,27 @@ get(
 )
 ```
 
-get Expose report. 
+get Expose report.
 
-Expose report with multiple rendering options: 
-- Table style (from tabulate style support) 
-- Column sorting 
-- Reverse sorting 
+Expose report with multiple rendering options:
+- Table style (from tabulate style support)
+- Column sorting
+- Reverse sorting
 
 
 
 **Args:**
- 
- - <b>`table_format`</b> (str, optional):  Table format to use based on tabulate style. Defaults to 'pretty'. 
- - <b>`sort_by`</b> (str, optional):  Column to sort tests. Defaults to 'host'. 
- - <b>`reverse`</b> (bool, optional):  Revert sort. Defaults to False. 
- - <b>`enable_colors`</b> (bool, optional):  Add color to report. Defaults to True. 
+
+ - <b>`table_format`</b> (str, optional):  Table format to use based on tabulate style. Defaults to 'pretty'.
+ - <b>`sort_by`</b> (str, optional):  Column to sort tests. Defaults to 'host'.
+ - <b>`reverse`</b> (bool, optional):  Revert sort. Defaults to False.
+ - <b>`enable_colors`</b> (bool, optional):  Add color to report. Defaults to True.
 
 
 
 **Returns:**
- 
- - <b>`tabulate`</b>:  A tabulate instance 
+
+ - <b>`tabulate`</b>:  A tabulate instance
 
 
 

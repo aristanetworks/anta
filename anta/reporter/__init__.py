@@ -6,13 +6,14 @@ Report management for ANTA.
 """
 
 import logging
-from operator import itemgetter
 from typing import List, Any
 
 from rich.table import Table
+from anta.result_manager import ResultManager
 from .models import ColorManager
 
 logger = logging.getLogger(__name__)
+
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
 # pylint: disable=R0903
@@ -96,7 +97,7 @@ class ReportTable():
             return code.style_rich() if output_type == 'Text' else code.string()
         return None
 
-    def report_all(self, result_manager, host: str = None, testcase: str = None, title: str = 'All tests results') -> Table:
+    def report_all(self, result_manager: ResultManager, host: str = None, testcase: str = None, title: str = 'All tests results') -> Table:
         """
         Create a table report with all tests for one or all devices.
 
@@ -118,8 +119,8 @@ class ReportTable():
         for result in result_manager.get_results(output_format='list'):
             # pylint: disable=R0916
             if (host is None and testcase is None) \
-                or (host is not None and str(result.host) == host) \
-                or (testcase is not None and testcase == str(result.test)):
+                    or (host is not None and str(result.host) == host) \
+                    or (testcase is not None and testcase == str(result.test)):
                 logger.debug(f'adding new entry in table: {result.host} / {result.test} / {result.result}')
                 state = self._color_result(status=str(
                     result.result), output_type='str')
@@ -133,7 +134,7 @@ class ReportTable():
                 )
         return table
 
-    def report_summary_tests(self, result_manager, testcase: str = None, title: str = 'Summary per test case') -> Table:
+    def report_summary_tests(self, result_manager: ResultManager, testcase: str = None, title: str = 'Summary per test case') -> Table:
         """
         Create a table report with result agregated per test.
 
@@ -171,7 +172,7 @@ class ReportTable():
                 )
         return table
 
-    def report_summary_hosts(self, result_manager, host: str = None, title: str = 'Summary per host') -> Table:
+    def report_summary_hosts(self, result_manager: ResultManager, host: str = None, title: str = 'Summary per host') -> Table:
         """
         Create a table report with result agregated per host.
 
