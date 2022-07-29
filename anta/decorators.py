@@ -28,7 +28,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestR
             """
             device = args[0]
             if device.hw_model in platforms:  # type:ignore
-                result = TestResult(host=str(device.host), test="verify_uptime")  # type: ignore
+                result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
                 result.is_skipped(
                     f"{wrapper.__name__} test is not supported on {device.hw_model}."  # type: ignore
                 )
