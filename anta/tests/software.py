@@ -7,6 +7,7 @@ import socket
 from typing import List
 
 from jsonrpclib import jsonrpc
+from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
@@ -154,6 +155,7 @@ def verify_eos_extensions(device: InventoryDevice) -> TestResult:
     return result
 
 
+@skip_on_platforms("cEOSLab")
 def verify_field_notice_44_resolution(device: InventoryDevice) -> TestResult:
     """
     Verifies the device is using an Aboot version that fix the bug discussed
@@ -175,11 +177,6 @@ def verify_field_notice_44_resolution(device: InventoryDevice) -> TestResult:
     logger.debug(f"Start {function_name} check for host {device.host}")
     result = TestResult(host=str(device.host), test=function_name)
 
-    if device.hw_model == "cEOSLab":
-        result.is_skipped(
-            f"{function_name} test is not supported on {device.hw_model}."
-        )
-        return result
     try:
         response = device.session.runCmds(1, ["show version detail"], "json")
         logger.debug(f"query result is: {response}")
