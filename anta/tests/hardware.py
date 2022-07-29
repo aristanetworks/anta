@@ -192,12 +192,6 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
     logger.debug(f"Start {function_name} check for host {device.host}")
     result = TestResult(host=str(device.host), test=function_name)
 
-    if device.hw_model == "cEOSLab", "vEOS-lab":
-        result.is_skipped(
-            f"{function_name} test is not supported on {device.hw_model}."
-        )
-        return result
-
     try:
         response = device.session.runCmds(
             1, ["show system environment cooling"], "json"
