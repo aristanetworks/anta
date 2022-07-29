@@ -14,7 +14,7 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_transceivers_manufacturers(
     device: InventoryDevice, manufacturers: List[str] = None
 ) -> TestResult:
@@ -70,7 +70,7 @@ def verify_transceivers_manufacturers(
     return result
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_system_temperature(device: InventoryDevice) -> TestResult:
 
     """
@@ -114,7 +114,7 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
     return result
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
 
     """
@@ -171,7 +171,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
     return result
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_environment_cooling(device: InventoryDevice) -> TestResult:
 
     """
@@ -191,12 +191,6 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
     function_name = inspect.stack()[0][3]
     logger.debug(f"Start {function_name} check for host {device.host}")
     result = TestResult(host=str(device.host), test=function_name)
-
-    if device.hw_model == "cEOSLab":
-        result.is_skipped(
-            f"{function_name} test is not supported on {device.hw_model}."
-        )
-        return result
 
     try:
         response = device.session.runCmds(
@@ -220,7 +214,7 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
     return result
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_environment_power(device: InventoryDevice) -> TestResult:
 
     """
@@ -265,7 +259,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
     return result
 
 
-@skip_on_platforms(["cEOSLab"])
+@skip_on_platforms(["cEOSLab", "vEOS-lab"])
 def verify_adverse_drops(device: InventoryDevice) -> TestResult:
 
     """
