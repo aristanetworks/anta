@@ -1,12 +1,9 @@
 """
 decorators for tests
 """
-import logging
 from functools import wraps
 from typing import List, Callable, Any, Dict
 from anta.result_manager.models import TestResult
-
-logger = logging.getLogger(__name__)
 
 
 def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestResult]]:
