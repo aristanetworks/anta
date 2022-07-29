@@ -7,12 +7,14 @@ import logging
 
 from typing import Dict, Any
 from jsonrpclib import jsonrpc
+from anta.decorators import check_bgp_family_enable
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
+@check_bgp_family_enable("ipv4")
 def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
     """
     Verifies all IPv4 unicast BGP sessions are established (for all VRF)
@@ -40,16 +42,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
         )
         logger.debug(f'query result is: {response}')
 
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not configured on device")
-            return result
-
         bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("No BGP VRF")
-            return result
 
         state_issue: Dict[str, Any] = {}
         for vrf in bgp_vrfs:
@@ -86,6 +79,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
     return result
 
 
+@check_bgp_family_enable("ipv4")
 def verify_bgp_ipv4_unicast_count(
     device: InventoryDevice, number: int, vrf: str = "default"
 ) -> TestResult:
@@ -125,16 +119,7 @@ def verify_bgp_ipv4_unicast_count(
         )
         logger.debug(f'query result is: {response}')
 
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not configured on device")
-            return result
-
         bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("BGP is not configured on device")
-            return result
 
         peer_state_issue = {}
         peer_number = len(bgp_vrfs[vrf]["peers"])
@@ -171,6 +156,7 @@ def verify_bgp_ipv4_unicast_count(
     return result
 
 
+@check_bgp_family_enable("ipv6")
 def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
     """
     Verifies all IPv6 unicast BGP sessions are established (for all VRF)
@@ -199,11 +185,6 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
 
         logger.debug(f'query result is: {response}')
         bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("No IPv6 BGP VRF")
-            return result
 
         state_issue: Dict[str, Any] = {}
         for vrf in bgp_vrfs:
@@ -240,6 +221,7 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
     return result
 
 
+@check_bgp_family_enable("evpn")
 def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
 
     """
@@ -265,21 +247,7 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
         logger.debug(f'query result is: {response}')
 
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not active on the device")
-            return result
-
         bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("no vrf with EVPN found")
-            return result
-
-        if len(bgp_vrfs["default"]["peers"]) == 0:
-            # No peers
-            result.is_skipped("no vrf with EVPN found")
-            return result
 
         peers = bgp_vrfs["default"]["peers"]
         non_established_peers = [
@@ -300,6 +268,7 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
     return result
 
 
+@check_bgp_family_enable("evpn")
 def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
     """
     Verifies all EVPN BGP sessions are established (default VRF)
@@ -333,22 +302,6 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
         logger.debug(f'query result is: {response}')
 
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not active on the device")
-            return result
-
-        bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("no vrf with EVPN found")
-            return result
-
-        if len(bgp_vrfs["default"]["peers"]) == 0:
-            # No peers
-            result.is_skipped("no vrf with EVPN found")
-            return result
-
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
             peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
@@ -374,6 +327,7 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
     return result
 
 
+@check_bgp_family_enable("rtc")
 def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
     """
     Verifies all RTC BGP sessions are established (default VRF).
@@ -398,22 +352,6 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
         response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
         logger.debug(f'query result is: {response}')
 
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not active on the device")
-            return result
-
-        bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("no vrf with RTC found")
-            return result
-
-        if len(response[0]["vrfs"]["default"]["peers"]) == 0:
-            # No peers
-            result.is_skipped("No RTC peer")
-            return result
-
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
             peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
@@ -433,6 +371,7 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
     return result
 
 
+@check_bgp_family_enable("rtc")
 def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
     """
     Verifies all RTC BGP sessions are established (default VRF)
@@ -465,22 +404,6 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
     try:
         response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
         logger.debug(f'query result is: {response}')
-
-        if "vrfs" not in response[0].keys():
-            result.is_skipped("BGP is not active on the device")
-            return result
-
-        bgp_vrfs = response[0]["vrfs"]
-
-        if len(bgp_vrfs) == 0:
-            # No VRF
-            result.is_skipped("BGP is not active on the device")
-            return result
-
-        if len(response[0]["vrfs"]["default"]["peers"]) == 0:
-            # No peers
-            result.is_skipped("No RTC peer")
-            return result
 
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
