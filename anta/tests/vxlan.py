@@ -1,9 +1,15 @@
 """
 Test functions related to VXLAN
 """
+import inspect
+import logging
+import socket
+
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_vxlan(device: InventoryDevice) -> TestResult:
@@ -21,22 +27,34 @@ def verify_vxlan(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_vxlan")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     try:
-        response = device.session.runCmds(
-            1, ["show interfaces description | include Vx1"], "text"
-        )
-        response_data = response[0]["output"]
-        if response_data.count("up") == 2:
-            result.is_success()
+        response = device.session.runCmds(1, ["show interfaces description"], "json")
+        logger.debug(f"query result is: {response}")
+
+        response_data = response[0]["interfaceDescriptions"]
+
+        if "Vxlan1" not in response_data:
+            result.is_failure("No interface VXLAN 1 detected.")
         else:
-            result.is_failure()
-            if response_data is not None:
-                result.messages.append(f"Vxlan interface is {response_data}")
+            protocol_status = response_data["Vxlan1"]["lineProtocolStatus"]
+            interface_status = response_data["Vxlan1"]["intefraceStatus"]
+            if protocol_status == "up" and interface_status == "up":
+                result.is_success()
             else:
-                result.messages.append("No interface VXLAN 1 detected")
-    except (jsonrpc.AppError, KeyError) as e:
+                result.messages.append(
+                    f"Vxlan interface is {protocol_status}/{interface_status}."
+                )
+
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
+
     return result
 
 
@@ -54,25 +72,36 @@ def verify_vxlan_config_sanity(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_vxlan_config_sanity")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     try:
         response = device.session.runCmds(1, ["show vxlan config-sanity"], "json")
+        logger.debug(f"query result is: {response}")
         response_data = response[0]["categories"]
 
-        # TODO - is it really an error here? if there are no categories it just mean there
-        # were no warning no?
         if len(response_data) == 0:
-            result.result = "error"
-            result.messages.append(f"error in device response {response_data}")
+            result.is_skipped("Vxlan is not enabled on this device")
+            return result
 
-        result.is_success()
+        failed_categories = {
+            category: content
+            for category, content in response_data.items()
+            if category in ["localVtep", "mlag"] and content["allCheckPass"] is not True
+        }
 
-        for category in response[0]["categories"]:
-            if category in ["localVtep", "mlag"]:
-                if response_data["allCheckPass"] is not True:
-                    result.is_failure(
-                        f"Vxlan config sanity check is not passing: {response_data}"
-                    )
-    except (jsonrpc.AppError, KeyError) as e:
+        if len(failed_categories) > 0:
+            result.is_failure(
+                f"Vxlan config sanity check is not passing: {failed_categories}"
+            )
+        else:
+            result.is_success()
+
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
+
     return result
