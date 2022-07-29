@@ -4,10 +4,8 @@ Test functions related to VXLAN
 import inspect
 import logging
 import socket
-from typing import List
 
 from jsonrpclib import jsonrpc
-from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
