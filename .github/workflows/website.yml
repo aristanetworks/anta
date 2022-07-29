@@ -1,0 +1,29 @@
+name: Mkdocs
+on:
+  push:
+    branches:
+      - master
+jobs:
+  'build_doc':
+    name: 'Update Public documentation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: 'Setup Python 3 on runner'
+        uses: actions/setup-python@v2.1.4
+        with:
+          python-version: '3.x'
+
+      - name: 'Build mkdocs content to site folder'
+        run: |
+            pip install -r .docs/requirements.txt
+            mkdocs build -f mkdocs.yml
+
+      - name: 'Deploy last version to gh-pages'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            user_name: 'github-actions[bot]'
+            user_email: 'github-actions[bot]@users.noreply.github.com'
+            publish_dir: ./site
