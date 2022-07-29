@@ -1,9 +1,15 @@
 """
 Generic routing test functions
 """
+import inspect
+import socket
+import logging
+
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_routing_protocol_model(
@@ -26,7 +32,10 @@ def verify_routing_protocol_model(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_routing_protocol_model")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     if not model:
         result.is_skipped(
             "verify_routing_protocol_model was not run as no model was given"
@@ -36,6 +45,7 @@ def verify_routing_protocol_model(
         response = device.session.runCmds(
             1, [{"cmd": "show ip route summary", "revision": 3}], "json"
         )
+        logger.debug(f'query result is: {response}')
         configured_model = response[0]["protoModelStatus"]["configuredProtoModel"]
         operating_model = response[0]["protoModelStatus"]["operatingProtoModel"]
         if configured_model == operating_model == model:
@@ -45,7 +55,10 @@ def verify_routing_protocol_model(
                 f"routing model is misconfigured: configured:{configured_model} - "
                 f"operating:{operating_model} - expected:{model} "
             )
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+
         result.is_error(str(e))
     return result
 
@@ -70,7 +83,10 @@ def verify_routing_table_size(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_routing_table_size")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     if not minimum or not maximum:
         result.is_skipped(
             "verify_routing_table_size was not run as no "
@@ -81,6 +97,7 @@ def verify_routing_table_size(
         response = device.session.runCmds(
             1, [{"cmd": "show ip route summary", "revision": 3}], "json"
         )
+        logger.debug(f'query result is: {response}')
         total_routes = int(response[0]["vrfs"]["default"]["totalRoutes"])
         if minimum <= total_routes <= maximum:
             result.is_success()
@@ -88,7 +105,10 @@ def verify_routing_table_size(
             result.is_failure(
                 f"routing-table has {total_routes} routes and not between min ({minimum}) and maximum ({maximum})"
             )
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+
         result.is_error(str(e))
     return result
 
@@ -107,9 +127,13 @@ def verify_bfd(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_bfd")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     try:
         response = device.session.runCmds(1, ["show bfd peers"], "json")
+        logger.debug(f'query result is: {response}')
         has_failed: bool = False
         for vrf in response[0]["vrfs"]:
             for neighbor in response[0]["vrfs"][vrf]["ipv4Neighbors"]:
@@ -132,8 +156,11 @@ def verify_bfd(device: InventoryDevice) -> TestResult:
                         result.is_failure(
                             f"bfd state on interface {intf_name} is {intf_state} (expected up)"
                         )
-        if has_failed is not False:
+        if has_failed is False:
             result.is_success()
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+
         result.is_error(str(e))
     return result
