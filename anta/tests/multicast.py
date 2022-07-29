@@ -1,10 +1,16 @@
 """
 Test functions related to multicast
 """
+import inspect
+import logging
 from typing import List
+import socket
+
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_igmp_snooping_vlans(
@@ -26,7 +32,10 @@ def verify_igmp_snooping_vlans(
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_igmp_snooping_vlans")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     if not vlans or not configuration:
         result.result = "skipped"
         result.messages.append(
@@ -36,14 +45,25 @@ def verify_igmp_snooping_vlans(
         return result
     try:
         response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+        logger.debug(f"query result is: {response}")
+
         result.is_success()
         for vlan in vlans:
+            if vlan not in response[0]["vlans"]:
+                result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
+                continue
+
             igmp_state = response[0]["vlans"][str(vlan)]["igmpSnoopingState"]
             if igmp_state != configuration:
                 result.is_failure()
                 result.messages.append(f"IGMP state for vlan {vlan} is {igmp_state}")
-    except (jsonrpc.AppError, KeyError) as e:
+
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
+
     return result
 
 
@@ -65,7 +85,10 @@ def verify_igmp_snooping_global(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_igmp_snooping_global")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
+
     if not configuration:
         result.is_skipped(
             "verify_igmp_snooping_global was not run as no configuration was given"
@@ -73,11 +96,18 @@ def verify_igmp_snooping_global(
         return result
     try:
         response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+        logger.debug(f"query result is: {response}")
+
         igmp_state = response[0]["igmpSnoopingState"]
         if igmp_state == configuration:
             result.is_success()
         else:
             result.is_failure(f"IGMP state is not valid: {igmp_state}")
-    except (jsonrpc.AppError, KeyError) as e:
+
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        )
         result.is_error(str(e))
+
     return result
