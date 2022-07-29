@@ -299,11 +299,8 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
         logger.debug(f'query result is: {response}')
 
         peers = response[0]["vrfs"]["default"]["peers"]
-        non_established_peers = [
-            peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
-        ]
 
-        if not non_established_peers and len(peers) == number:
+        if len(peers) == number:
             result.is_success()
         else:
             result.is_failure()
