@@ -136,7 +136,7 @@ def verify_bgp_ipv4_unicast_count(
                     "outMsgQueue": bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"],
                 }
 
-        if len(peer_state_issue) == 0 and peer_number == number:
+        if peer_number == number:
             result.is_success()
         else:
             result.is_failure()
