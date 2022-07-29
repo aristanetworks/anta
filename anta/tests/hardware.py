@@ -143,13 +143,16 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
         )
         logger.debug(f"query result is: {response}")
 
+        # Get the list of sensors
+        sensors = response[0]["tempSensors"]
+
         wrong_sensors = {
             sensor["name"]: {
-                "hwStatus": value["hwStatus"],
-                "alertCount": value["alertCount"],
+                "hwStatus": sensor["hwStatus"],
+                "alertCount": sensor["alertCount"],
             }
-            for sensor, value in response[0]["tempSensors"].items()
-            if value["hwStatus"] != "ok" or value["alertCount"] != 0
+            for sensor in sensors
+            if sensor["hwStatus"] != "ok" or sensor["alertCount"] != 0
         }
         if len(wrong_sensors) == 0:
             result.is_success()
