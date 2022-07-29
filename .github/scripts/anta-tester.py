@@ -42,6 +42,7 @@ logging.basicConfig(
     level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
 )
 logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
+logging.getLogger('anta.result_manager').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
 logging.getLogger('anta.tests.configuration').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.hardware').setLevel(logging.ERROR)
@@ -131,7 +132,10 @@ def cli_manager() -> argparse.Namespace:
     # If enable, print all logs in debug (including from modules)
 
     parser.add_argument('--verbose', '-v', required=False, action='store_true',
-                        help='Set script to verbose mode')
+                        help='Set script to verbose mode (INFO)')
+
+    parser.add_argument('--very-verbose', '-vv', required=False, action='store_true',
+                        help='Set script to very verbose mode (DEBUG)')
 
     parser.add_argument('--verbose-test', '-vt', required=False, action='store_true',
                         help='Set script to be in verbose mode for anta.tests only (DEBUG)')
@@ -146,7 +150,12 @@ if __name__ == '__main__':
     cli_options = cli_manager()
 
     if cli_options.verbose:
+        logging.getLogger('anta.inventory').setLevel(logging.INFO)
+        logging.getLogger('anta.result_manager').setLevel(logging.INFO)
+        logging.getLogger('anta.reporter').setLevel(logging.INFO)
+    elif cli_options.very_verbose:
         logging.getLogger('anta.inventory').setLevel(logging.DEBUG)
+        logging.getLogger('anta.result_manager').setLevel(logging.DEBUG)
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
 
     if cli_options.verbose_test:
