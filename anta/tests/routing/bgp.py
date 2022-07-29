@@ -140,10 +140,6 @@ def verify_bgp_ipv4_unicast_count(
             result.is_success()
         else:
             result.is_failure()
-            if len(peer_state_issue) > 0:
-                result.is_failure(
-                    f"Some IPv4 Unicast BGP Peer in VRF {vrf} are not up: {peer_state_issue}"
-                )
             if peer_number != number:
                 result.is_failure(
                     f"Expecting {number} BGP peer in vrf {vrf} and got {peer_number}"
@@ -311,10 +307,6 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
             result.is_success()
         else:
             result.is_failure()
-            if non_established_peers:
-                result.messages.append(
-                    f"The following EVPN peers are not established: {non_established_peers}"
-                )
             if len(peers) != number:
                 result.messages.append(
                     f"Expecting {number} BGP EVPN peers and got {len(peers)}"
@@ -414,10 +406,6 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
             result.is_success()
         else:
             result.is_failure()
-            if non_established_peers:
-                result.is_failure(
-                    f"The following RTC peers are not established: {non_established_peers}"
-                )
             if len(peers) != number:
                 result.is_failure(
                     f"Expecting {number} BGP RTC peers and got {len(peers)}"
