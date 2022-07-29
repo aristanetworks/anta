@@ -1,9 +1,14 @@
 """
 Test functions related to the device configuration
 """
+import inspect
+import socket
+import logging
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_zerotouch(device: InventoryDevice) -> TestResult:
@@ -22,16 +27,21 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_zerotouch")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         response = device.session.runCmds(1, ["show zerotouch"], "json")
+        logger.debug(f'query result is: {response}')
 
         if response[0]["mode"] == "disabled":
             result.is_success()
         else:
             result.is_failure("ZTP is NOT disabled")
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
 
     return result
@@ -53,7 +63,9 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_running_config_diffs")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
     try:
         device.assert_enable_password_is_not_none("verify_running_config_diffs")
 
@@ -65,6 +77,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
             ],
             "text",
         )
+        logger.debug(f'query result is: {response}')
 
         if len(response[1]["output"]) == 0:
             result.is_success()
@@ -74,7 +87,9 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
             for line in response[1]["output"]:
                 result.is_failure(line)
 
-    except (jsonrpc.AppError, KeyError, ValueError) as e:
+    except (ValueError, jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
 
     return result
