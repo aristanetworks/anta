@@ -1,10 +1,16 @@
 """
 BGP test functions
 """
+import inspect
+import socket
+import logging
+
 from typing import Dict, Any
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
@@ -24,18 +30,26 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_ipv4_unicast_state")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(
             1, ["show bgp ipv4 unicast summary vrf all"], "json"
         )
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not configured on device")
+            return result
 
         bgp_vrfs = response[0]["vrfs"]
 
         if len(bgp_vrfs) == 0:
             # No VRF
             result.is_skipped("No BGP VRF")
+            return result
 
         state_issue: Dict[str, Any] = {}
         for vrf in bgp_vrfs:
@@ -60,14 +74,15 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
                         }
                     )
 
-        if len(state_issue) == 0:
+        if not state_issue:
             result.is_success()
         else:
             result.is_failure(f"Some IPv4 Unicast BGP Peer are not up: {state_issue}")
 
-    except (jsonrpc.AppError, KeyError) as e:
-        result.is_error(str(e))
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
 
+        result.is_error(str(e))
     return result
 
 
@@ -94,7 +109,9 @@ def verify_bgp_ipv4_unicast_count(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_ipv4_unicast_count")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     if not number or not vrf:
         result.is_skipped(
@@ -106,8 +123,19 @@ def verify_bgp_ipv4_unicast_count(
         response = device.session.runCmds(
             1, [f"show bgp ipv4 unicast summary vrf {vrf}"], "json"
         )
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not configured on device")
+            return result
 
         bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
+            # No VRF
+            result.is_skipped("BGP is not configured on device")
+            return result
+
         peer_state_issue = {}
         peer_number = len(bgp_vrfs[vrf]["peers"])
 
@@ -136,9 +164,10 @@ def verify_bgp_ipv4_unicast_count(
                     f"Expecting {number} BGP peer in vrf {vrf} and got {peer_number}"
                 )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
-
     return result
 
 
@@ -159,13 +188,16 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_ipv6_unicast_count")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(
             1, ["show bgp ipv6 unicast summary vrf all"], "json"
         )
 
+        logger.debug(f'query result is: {response}')
         bgp_vrfs = response[0]["vrfs"]
 
         if len(bgp_vrfs) == 0:
@@ -201,9 +233,10 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
         else:
             result.is_failure(f"Some IPv6 Unicast BGP Peer are not up: {state_issue}")
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
-
     return result
 
 
@@ -224,33 +257,46 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_evpn_state")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not active on the device")
+            return result
 
         bgp_vrfs = response[0]["vrfs"]
 
+        if len(bgp_vrfs) == 0:
+            # No VRF
+            result.is_skipped("no vrf with EVPN found")
+            return result
+
         if len(bgp_vrfs["default"]["peers"]) == 0:
             # No peers
-            result.is_skipped("No EVPN peer")
+            result.is_skipped("no vrf with EVPN found")
             return result
 
         peers = bgp_vrfs["default"]["peers"]
         non_established_peers = [
-            peer for peer, peer_dict in peers if peer_dict["peerState"] != "Established"
+            peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
         ]
 
-        if len(non_established_peers) == 0:
+        if not non_established_peers:
             result.is_success()
         else:
             result.is_failure(
                 f"The following EVPN peers are not established: {non_established_peers}"
             )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
-
     return result
 
 
@@ -273,7 +319,9 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_evpn_count")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     if not number:
         result.is_skipped(
@@ -283,17 +331,34 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
 
     try:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not active on the device")
+            return result
+
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
+            # No VRF
+            result.is_skipped("no vrf with EVPN found")
+            return result
+
+        if len(bgp_vrfs["default"]["peers"]) == 0:
+            # No peers
+            result.is_skipped("no vrf with EVPN found")
+            return result
 
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
-            peer for peer, peer_dict in peers if peer_dict["peerState"] != "Established"
+            peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
         ]
 
-        if len(non_established_peers) == 0 and len(peers) == number:
+        if not non_established_peers and len(peers) == number:
             result.is_success()
         else:
             result.is_failure()
-            if len(non_established_peers) > 0:
+            if non_established_peers:
                 result.messages.append(
                     f"The following EVPN peers are not established: {non_established_peers}"
                 )
@@ -302,9 +367,10 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
                     f"Expecting {number} BGP EVPN peers and got {len(peers)}"
                 )
 
-    except (jsonrpc.AppError, KeyError) as e:
-        result.is_error(str(e))
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
 
+        result.is_error(str(e))
     return result
 
 
@@ -324,10 +390,24 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_rtc_state")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not active on the device")
+            return result
+
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
+            # No VRF
+            result.is_skipped("no vrf with RTC found")
+            return result
 
         if len(response[0]["vrfs"]["default"]["peers"]) == 0:
             # No peers
@@ -336,19 +416,20 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
 
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
-            peer for peer, peer_dict in peers if peer_dict["peerState"] != "Established"
+            peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
         ]
 
-        if len(non_established_peers) == 0:
+        if not non_established_peers:
             result.is_success()
         else:
             result.is_failure(
                 f"The following RTC peers are not established: {non_established_peers}"
             )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
-
     return result
 
 
@@ -371,7 +452,9 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_bgp_rtc_count")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     if not number:
         result.is_skipped(
@@ -381,17 +464,34 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
 
     try:
         response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
+        logger.debug(f'query result is: {response}')
+
+        if "vrfs" not in response[0].keys():
+            result.is_skipped("BGP is not active on the device")
+            return result
+
+        bgp_vrfs = response[0]["vrfs"]
+
+        if len(bgp_vrfs) == 0:
+            # No VRF
+            result.is_skipped("BGP is not active on the device")
+            return result
+
+        if len(response[0]["vrfs"]["default"]["peers"]) == 0:
+            # No peers
+            result.is_skipped("No RTC peer")
+            return result
 
         peers = response[0]["vrfs"]["default"]["peers"]
         non_established_peers = [
-            peer for peer, peer_dict in peers if peer_dict["peerState"] != "Established"
+            peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"
         ]
 
-        if len(non_established_peers) == 0 and len(peers) == number:
+        if not non_established_peers and len(peers) == number:
             result.is_success()
         else:
             result.is_failure()
-            if len(non_established_peers) > 0:
+            if non_established_peers:
                 result.is_failure(
                     f"The following RTC peers are not established: {non_established_peers}"
                 )
@@ -400,7 +500,8 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
                     f"Expecting {number} BGP RTC peers and got {len(peers)}"
                 )
 
-    except (jsonrpc.AppError, KeyError) as e:
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
         result.is_error(str(e))
-
     return result
