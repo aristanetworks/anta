@@ -155,7 +155,7 @@ def verify_eos_extensions(device: InventoryDevice) -> TestResult:
     return result
 
 
-@skip_on_platforms("cEOSLab")
+@skip_on_platforms(["cEOSLab"])
 def verify_field_notice_44_resolution(device: InventoryDevice) -> TestResult:
     """
     Verifies the device is using an Aboot version that fix the bug discussed
