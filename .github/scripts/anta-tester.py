@@ -87,10 +87,10 @@ def cli_manager() -> argparse.Namespace:
     #############################
     # Search options
 
-    parser.add_argument('--search_ip', required=False,
+    parser.add_argument('--search_ip', '--hostip', required=False,
                         default=None, help='search result for host')
 
-    parser.add_argument('--search_test', required=False,
+    parser.add_argument('--search_test', '--test', required=False,
                         default=None, help='search result for test')
 
     #############################
@@ -105,15 +105,15 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--table', required=False, action='store_true',
                         help='Result represented in tables')
 
-    ## List of all tests per device
+    ## List of all tests per device -- REQUIRE --table option
     parser.add_argument('--full', required=False, action='store_true',
                         help='Display all test cases results')
 
-    ## Summary of tests results per device
+    ## Summary of tests results per device -- REQUIRE --table option
     parser.add_argument('--devices', required=False, action='store_true',
                         help='Provides summary of test results per device')
 
-    ## Summary of tests results per test-case
+    ## Summary of tests results per test-case -- REQUIRE --table option
     parser.add_argument('--testcases', required=False, action='store_true',
                         help='Provides summary of test results per test case')
 
@@ -162,11 +162,12 @@ if __name__ == '__main__':
         logging.getLogger('anta.tests.routing.bgp').setLevel(logging.DEBUG)
         logging.getLogger('anta.tests.routing.ospf').setLevel(logging.DEBUG)
 
-    console.print(Panel('Active logger for testing', style='orange3'))
-    # pylint: disable=E1101
-    loggers = [logging.getLogger(name)
+    if cli_options.verbose or cli_options.verbose_test:
+        console.print(Panel('Active logger for testing', style='orange3'))
+        # pylint: disable=E1101
+        loggers = [logging.getLogger(name)
                for name in logging.root.manager.loggerDict]
-    pprint(loggers)
+        pprint(loggers)
 
     logger.info('ANTA testing program started')
 
