@@ -1,9 +1,15 @@
 """
 Test functions related to Multi-Chassis LAG
 """
+import inspect
+import socket
+import logging
+
 from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+
+logger = logging.getLogger(__name__)
 
 
 def verify_mlag_status(device: InventoryDevice) -> TestResult:
@@ -22,7 +28,9 @@ def verify_mlag_status(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_mlag_status")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show mlag"], "json")
@@ -39,9 +47,11 @@ def verify_mlag_status(device: InventoryDevice) -> TestResult:
         else:
             result.is_success()
 
-    except (jsonrpc.AppError, KeyError) as e:
-        result.is_error(str(e))
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
 
+        result.is_error(str(e))
     return result
 
 
@@ -60,7 +70,9 @@ def verify_mlag_interfaces(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_mlag_interfaces")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show mlag"], "json")
@@ -75,9 +87,11 @@ def verify_mlag_interfaces(device: InventoryDevice) -> TestResult:
         else:
             result.is_success()
 
-    except (jsonrpc.AppError, KeyError) as e:
-        result.is_error(str(e))
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
 
+        result.is_error(str(e))
     return result
 
 
@@ -96,25 +110,29 @@ def verify_mlag_config_sanity(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_mlag_config_sanity")
+    function_name = inspect.stack()[0][3]
+    logger.debug(f"Start {function_name} check for host {device.host}")
+    result = TestResult(host=str(device.host), test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show mlag config-sanity"], "json")
 
-        if response[0]["response"]["mlagActive"] is False:
+        if "mlagActive" not in response[0].keys():
+            result.is_error('incorrect JSON response')
+        elif response[0]["mlagActive"] is False:
             # MLAG is not running
             result.is_skipped("MLAG is disabled")
         elif (
-            len(response[0]["response"]["globalConfiguration"]) > 0
-            or len(response[0]["response"]["interfaceConfiguration"]) > 0
+            len(response[0]["globalConfiguration"]) > 0
+            or len(response[0]["interfaceConfiguration"]) > 0
         ):
             result.is_failure()
-            if len(response[0]["response"]["globalConfiguration"]) > 0:
+            if len(response[0]["globalConfiguration"]) > 0:
                 result.is_failure(
                     "MLAG config-sanity returned some Global inconsistencies: "
                     f"{response[0]['response']['globalConfiguration']}"
                 )
-            if len(response[0]["response"]["interfaceConfiguration"]) > 0:
+            if len(response[0]["interfaceConfiguration"]) > 0:
                 result.is_failure(
                     "MLAG config-sanity returned some Interface inconsistencies: "
                     f"{response[0]['response']['interfaceConfiguration']}"
@@ -122,7 +140,9 @@ def verify_mlag_config_sanity(device: InventoryDevice) -> TestResult:
         else:
             result.is_success()
 
-    except (jsonrpc.AppError, KeyError) as e:
-        result.is_error(str(e))
+    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
+        logger.error(
+            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
 
+        result.is_error(str(e))
     return result
