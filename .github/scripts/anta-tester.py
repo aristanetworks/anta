@@ -43,7 +43,19 @@ logging.basicConfig(
 )
 logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
 logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
+logging.getLogger('anta.tests.configuration').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.hardware').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.interfaces').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.mlag').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.multicast').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.profiles').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.software').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
+
 
 def cli_manager() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
@@ -138,7 +150,17 @@ if __name__ == '__main__':
         logging.getLogger('anta.reporter').setLevel(logging.DEBUG)
 
     if cli_options.verbose_test:
+        logging.getLogger('anta.tests.hardware').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.interfaces').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.mlag').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.multicast').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.profiles').setLevel(logging.DEBUG)
         logging.getLogger('anta.tests.system').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.software').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.vxlan').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.routing.generic').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.routing.bgp').setLevel(logging.DEBUG)
+        logging.getLogger('anta.tests.routing.ospf').setLevel(logging.DEBUG)
 
     console.print(Panel('Active logger for testing', style='orange3'))
     # pylint: disable=E1101
