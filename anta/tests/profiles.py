@@ -6,12 +6,14 @@ import logging
 import socket
 
 from jsonrpclib import jsonrpc
+from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
+@skip_on_platforms(["cEOSLab", "VEOS-LAB"])
 def verify_unified_forwarding_table_mode(
     device: InventoryDevice, mode: str
 ) -> TestResult:
@@ -39,10 +41,6 @@ def verify_unified_forwarding_table_mode(
             "verify_unified_forwarding_table_mode was not run as no mode was given"
         )
         return result
-    if device.hw_model in ["cEOSLab", "VEOS-LAB"]:
-        result.is_skipped(
-            "verify_tcam_profile was not run as feature is not supported on this HW")
-        return result
     try:
         response = device.session.runCmds(
             1, ["show platform trident forwarding-table partition"], "json"
@@ -62,6 +60,7 @@ def verify_unified_forwarding_table_mode(
     return result
 
 
+@skip_on_platforms(["cEOSLab", "VEOS-LAB"])
 def verify_tcam_profile(device: InventoryDevice, profile: str) -> TestResult:
 
     """
@@ -84,10 +83,6 @@ def verify_tcam_profile(device: InventoryDevice, profile: str) -> TestResult:
     result = TestResult(host=str(device.host), test=function_name)
     if not profile:
         result.is_skipped("verify_tcam_profile was not run as no profile was given")
-        return result
-    if device.hw_model in ["cEOSLab", "VEOS-LAB"]:
-        result.is_skipped(
-            "verify_tcam_profile was not run as feature is not supported on this HW")
         return result
     try:
         response = device.session.runCmds(1, ["show hardware tcam profile"], "json")
