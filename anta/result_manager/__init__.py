@@ -11,8 +11,8 @@ from typing import List, Any
 
 from anta.result_manager.models import ListResult, TestResult
 
-
 logger = logging.getLogger(__name__)
+
 
 class ResultManager:
     """
