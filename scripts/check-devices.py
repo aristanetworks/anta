@@ -156,8 +156,8 @@ if __name__ == '__main__':
     manager = ResultManager()
     list_tests = []
     for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
-        if (cli_options.hostip is None or cli_options.hostip == str(device.host)) and \
-           (cli_options.test is None or cli_options.test == str(test[0].__name__)):
+        if ((cli_options.hostip is None or cli_options.hostip == str(device.host)) and
+            (cli_options.test is None or cli_options.test == str(test[0].__name__))):
             list_tests.append(str(test[0]))
             manager.add_test_result(
                 test[0](
