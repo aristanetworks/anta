@@ -16,7 +16,6 @@ ANTA provides a set of tests to validate the state of your network. All these te
 This repository comes with a set of [scripts](./scripts) to run __Arista Network Test Automation__ (ANTA) framework
 
 - `check-devices.py` is an easy to use script to test your network with ANTA.
-- `check-devices-reachability.py` to test your devices are ready to be tested.
 - `collect-eos-commands.py` to collect commands output from devices
 - `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
 
@@ -104,23 +103,112 @@ create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c 
 > 192.168.0.15
 > ```
 
-## Test device reachability
+## Test Catalog
 
-Before running NRFU tests, we are going to test if we can connect to devices:
+To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by [`anta.loader.parse_catalog`](anta/loader.py)
 
-```bash
-check-devices-reachability.py -i inventory.yml -u username
+The structure to follow is like:
+
+```yaml
+<anta_tests_submodule>:
+  - <anta_tests_submodule function name>:
+      <test function option>:
+        <test function option value>
+```
+
+Here is an example for basic things:
+
+```yaml
+# Load anta.tests.software
+software:
+  - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
+      versions: # List of allowed EOS versions.
+        - 4.25.4M
+        - 4.26.1F
+
+# Load anta.tests.system
+system:
+  - verify_uptime: # Verifies the device uptime is higher than a value.
+      minimum: 1
+
+# Load anta.tests.configuration
+configuration:
+  - verify_zerotouch: # Verifies ZeroTouch is disabled.
+  - verify_running_config_diffs:
 ```
 
 ## Test your network
 
-Now we can run tests across the entire inventory
+To test EOS devices, this package comes with a generic script to run tests in your network. It requires an inventory file as well as a test catalog.
+
+This script has multiple options to manage test coverage and reporting.
 
 ```bash
-check-devices.py -i inventory.yml -t tests.yaml -o output.txt -u <username>
+python scripts/check-devices.py -h
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --inventory INVENTORY, -i INVENTORY
+                        ANTA Inventory file
+  --catalog CATALOG, -c CATALOG
+                        ANTA Tests cagtalog
+  --username USERNAME, -u USERNAME
+                        EOS Username
+  --password PASSWORD, -p PASSWORD
+                        EOS Password
+  --enable_password ENABLE_PASSWORD, -e ENABLE_PASSWORD
+                        EOS Enable Password
+  --timeout TIMEOUT, -t TIMEOUT
+                        eAPI connection timeout
+  --hostip HOSTIP       search result for host
+  --test TEST           search result for test
+  --list                Display internal data
+  --table               Result represented in tables
+  --all-results         Display all test cases results. Default table view (Only valid with --table)
+  --by-host             Provides summary of test results per device (Only valid with --table)
+  --by-test-cases       Provides summary of test results per test case (Only valid with --table)
 ```
 
-> Note the `-t tests.yml` that list all your tests. An example is available under [examples folder](./examples/tests.yaml)
+Default output is a table format listing all test results, and it can be changed to a report per test case or per host
+
+### Default report
+
+```bash
+                             All tests results
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ Device IP     ┃ Test Name              ┃ Test Status ┃ Message(s)       ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 10.73.252.11  │ verify_mlag_interfaces │ success     │                  │
+│ 10.73.252.12  │ verify_mlag_interfaces │ success     │                  │
+│ 10.73.252.102 │ verify_mlag_interfaces │ skipped     │ MLAG is disabled │
+└───────────────┴────────────────────────┴─────────────┴──────────────────┘
+```
+
+### Report per test case
+
+```
+                                        Summary per test case
+┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Test Case              ┃ # of success ┃ # of failure ┃ # of errors ┃ List of failed or error nodes ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ verify_mlag_interfaces │ 8            │ 0            │ 0           │ []                            │
+└────────────────────────┴──────────────┴──────────────┴─────────────┴───────────────────────────────┘
+```
+
+### Report per host
+
+```bash
+                                     Summary per host
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Host IP       ┃ # of success ┃ # of failure ┃ # of errors ┃ List of failed case        ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 10.73.252.11  │ 1            │ 0            │ 0           │ []                         │
+│ 10.73.252.12  │ 1            │ 0            │ 0           │ []                         │
+│ 10.73.252.13  │ 1            │ 0            │ 0           │ []                         │
+│ 10.73.252.102 │ 0            │ 0            │ 0           │ []                         │
+└───────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
+````
+
 
 You can find more information about usage in the following [docs](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
 
