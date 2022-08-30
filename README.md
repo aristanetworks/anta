@@ -151,7 +151,7 @@ optional arguments:
   --inventory INVENTORY, -i INVENTORY
                         ANTA Inventory file
   --catalog CATALOG, -c CATALOG
-                        ANTA Tests cagtalog
+                        ANTA Tests catalog
   --username USERNAME, -u USERNAME
                         EOS Username
   --password PASSWORD, -p PASSWORD
