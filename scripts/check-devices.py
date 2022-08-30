@@ -118,7 +118,7 @@ def cli_manager() -> argparse.Namespace:
                         help='Provides summary of test results per device (Only valid with --table)')
 
     # Summary of tests results per test-case -- REQUIRE --table option
-    parser.add_argument('--by-test-cases', required=False, action='store_true',
+    parser.add_argument('--by-test', required=False, action='store_true',
                         help='Provides summary of test results per test case (Only valid with --table)')
 
     return parser.parse_args()
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     list_tests = []
     for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
         if ((cli_options.hostip is None or cli_options.hostip == str(device.host)) and
-            (cli_options.test is None or cli_options.test == str(test[0].__name__))):
+                (cli_options.test is None or cli_options.test == str(test[0].__name__))):
             list_tests.append(str(test[0]))
             manager.add_test_result(
                 test[0](
@@ -177,11 +177,11 @@ if __name__ == '__main__':
 
     if cli_options.table:
         reporter = ReportTable()
-        if cli_options.all_results or (not cli_options.by_test_cases and not cli_options.by_host):
+        if cli_options.all_results or (not cli_options.by_test and not cli_options.by_host):
             console.print(reporter.report_all(result_manager=manager,
                           host=cli_options.hostip, testcase=cli_options.test))
         # To print only report per Test case
-        if cli_options.by_test_cases:
+        if cli_options.by_test:
             console.print(reporter.report_summary_tests(
                 result_manager=manager, testcase=cli_options.test))
 

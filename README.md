@@ -166,7 +166,7 @@ optional arguments:
   --table               Result represented in tables
   --all-results         Display all test cases results. Default table view (Only valid with --table)
   --by-host             Provides summary of test results per device (Only valid with --table)
-  --by-test-cases       Provides summary of test results per test case (Only valid with --table)
+  --by-test             Provides summary of test results per test case (Only valid with --table)
 ```
 
 Default output is a table format listing all test results, and it can be changed to a report per test case or per host
