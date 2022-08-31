@@ -68,7 +68,7 @@ def main() -> None:
     payload = json.dumps({"userId": args.username, "password": args.password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     response = requests.request(
-        "POST", URL, headers=headers, data=payload, verify=False
+        "POST", URL, headers=headers, data=payload, verify=False, timeout=10
     )
     token = response.json()["sessionId"]
 
