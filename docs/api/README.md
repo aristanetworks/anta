@@ -4,13 +4,13 @@
 
 ## Modules
 
+- [`decorators`](./decorators.md#module-decorators): decorators for tests
 - [`inventory`](./inventory.md#module-inventory): Inventory Module for ANTA.
 - [`inventory.exceptions`](./inventory.exceptions.md#module-inventoryexceptions): Manage Exception in Inventory module.
 - [`inventory.models`](./inventory.models.md#module-inventorymodels): Models related to inventory management.
 - [`loader`](./loader.md#module-loader): Loader that parses a YAML test catalog and imports corresponding Python functions
 - [`result_manager`](./result_manager.md#module-result_manager): Result Manager Module for ANTA.
 - [`result_manager.models`](./result_manager.models.md#module-result_managermodels): Models related to anta.result_manager module.
-- [`result_manager.report`](./result_manager.report.md#module-result_managerreport): Report management for ANTA.
 - [`tests`](./tests.md#module-tests)
 - [`tests.configuration`](./tests.configuration.md#module-testsconfiguration): Test functions related to the device configuration
 - [`tests.hardware`](./tests.hardware.md#module-testshardware): Test functions related to the hardware or environement
@@ -41,12 +41,12 @@
 - [`result_manager.ResultManager`](./result_manager.md#class-resultmanager): Helper to manage Test Results and generate reports.
 - [`models.ListResult`](./result_manager.models.md#class-listresult): List result for all tests on all devices.
 - [`models.TestResult`](./result_manager.models.md#class-testresult): Describe result of a test from a single device.
-- [`report.Colors`](./result_manager.report.md#class-colors): Manage colors for output.
-- [`report.TableReport`](./result_manager.report.md#class-tablereport): TableReport Generate a Table based on tabulate and TestResult.
 
 ## Functions
 
-- [`loader.parse_catalog`](./loader.md#function-parse_catalog)
+- [`decorators.check_bgp_family_enable`](./decorators.md#function-check_bgp_family_enable): Decorator factory to skip a test if BGP is enabled
+- [`decorators.skip_on_platforms`](./decorators.md#function-skip_on_platforms): Decorator factory to skip a test on a list of platforms
+- [`loader.parse_catalog`](./loader.md#function-parse_catalog): Function to pase the catalog and return a list of tests
 - [`configuration.verify_running_config_diffs`](./tests.configuration.md#function-verify_running_config_diffs): Verifies there is no difference between the running-config and the startup-config.
 - [`configuration.verify_zerotouch`](./tests.configuration.md#function-verify_zerotouch): Verifies ZeroTouch is disabled.
 - [`hardware.verify_adverse_drops`](./tests.hardware.md#function-verify_adverse_drops): Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.

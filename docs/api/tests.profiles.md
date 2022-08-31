@@ -3,12 +3,12 @@
 <a href="../../anta/tests/profiles.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.profiles`
-Test functions related to ASIC profiles
+Test functions related to ASIC profiles 
 
 
 ---
 
-<a href="../../anta/tests/profiles.py#L9"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/decorators.py#L16"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_unified_forwarding_table_mode`
 
@@ -19,24 +19,24 @@ verify_unified_forwarding_table_mode(
 ) → TestResult
 ```
 
-Verifies the device is using the expected Unified Forwarding Table mode.
+Verifies the device is using the expected Unified Forwarding Table mode. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
- - <b>`mode`</b> (str):  The expected Unified Forwarding Table mode.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+ - <b>`mode`</b> (str):  The expected Unified Forwarding Table mode. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if UFT mode is correct * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "mode" if the `mode` parameter is missing * result = "success" if UFT mode is correct * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/profiles.py#L45"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/decorators.py#L63"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_tcam_profile`
 
@@ -47,19 +47,19 @@ verify_tcam_profile(
 ) → TestResult
 ```
 
-Verifies the configured TCAM profile is the expected one.
+Verifies the configured TCAM profile is the expected one. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
- - <b>`profile`</b> (str):  The expected TCAM profile.0
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+ - <b>`profile`</b> (str):  The expected TCAM profile.0 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if TCAM profile is correct * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "mode" if the `profile` parameter is missing * result = "success" if TCAM profile is correct * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 

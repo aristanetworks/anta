@@ -3,12 +3,12 @@
 <a href="../../anta/tests/interfaces.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `tests.interfaces`
-Test functions related to the device interfaces
+Test functions related to the device interfaces 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L11"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L12"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_utilization`
 
@@ -18,23 +18,23 @@ verify_interface_utilization(
 ) → TestResult
 ```
 
-Verifies interfaces utilization is below 75%.
+Verifies interfaces utilization is below 75%. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if interfaces utilization is below 75% * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if interfaces utilization is below 75% * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L55"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errors`
 
@@ -44,23 +44,23 @@ verify_interface_errors(
 ) → TestResult
 ```
 
-Verifies interfaces error counters are equal to zero.
+Verifies interfaces error counters are equal to zero. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if interfaces error counters are equal to zero. * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if interfaces error counters are equal to zero. * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L95"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L96"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_discards`
 
@@ -70,23 +70,23 @@ verify_interface_discards(
 ) → TestResult
 ```
 
-Verifies interfaces packet discard counters are equal to zero.
+Verifies interfaces packet discard counters are equal to zero. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if interfaces discard counters are equal to zero. * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if interfaces discard counters are equal to zero. * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L135"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L136"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interface_errdisabled`
 
@@ -96,23 +96,23 @@ verify_interface_errdisabled(
 ) → TestResult
 ```
 
-Verifies there is no interface in error disable state.
+Verifies there is no interface in error disable state. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if no interface is in error disable state. * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if no interface is in error disable state. * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L175"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L176"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_interfaces_status`
 
@@ -123,24 +123,24 @@ verify_interfaces_status(
 ) → TestResult
 ```
 
-Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
- - <b>`minimum`</b> (int):  Expected minimum number of Ethernet interfaces up/up
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+ - <b>`minimum`</b> (int):  Expected minimum number of Ethernet interfaces up/up 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if the number of Ethernet interface up/up is >= minimum * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "skipped" if the `minimum` parameter is missing * result = "success" if the number of Ethernet interface up/up is >= minimum * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L233"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L235"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_storm_control_drops`
 
@@ -150,23 +150,23 @@ verify_storm_control_drops(
 ) → TestResult
 ```
 
-Verifies the device did not drop packets due its to storm-control configuration.
+Verifies the device did not drop packets due its to storm-control configuration. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if the device did not drop packet due to its storm-control configuration. * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if the device did not drop packet due to its storm-control configuration. * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L277"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L279"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_portchannels`
 
@@ -174,23 +174,23 @@ Verifies the device did not drop packets due its to storm-control configuration.
 verify_portchannels(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no inactive port in port channels.
+Verifies there is no inactive port in port channels. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no inactive ports in port-channels  in particular "success" if there is no port-channel * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if there is no inactive ports in port-channels  in particular "success" if there is no port-channel * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L318"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L320"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_illegal_lacp`
 
@@ -198,23 +198,23 @@ Verifies there is no inactive port in port channels.
 verify_illegal_lacp(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no illegal LACP packets received.
+Verifies there is no illegal LACP packets received. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no illegal LACP packets received.  in particular "success" if there is no port-channel * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if there is no illegal LACP packets received.  in particular "success" if there is no port-channel * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L363"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L365"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_loopback_count`
 
@@ -225,24 +225,24 @@ verify_loopback_count(
 ) → TestResult
 ```
 
-Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
- - <b>`number`</b> (int):  Expected number of loopback interfaces.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
+ - <b>`number`</b> (int):  Expected number of loopback interfaces. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if the number of loopback is equal to `number` and if  none of the loopback is down * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if the number of loopback is equal to `number` and if  none of the loopback is down * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L424"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L426"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_svi`
 
@@ -250,23 +250,23 @@ Verifies the number of loopback interfaces on the device is the one we expect. A
 verify_svi(device: anta.inventory.models.InventoryDevice) → TestResult
 ```
 
-Verifies there is no interface vlan down.
+Verifies there is no interface vlan down. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if no SVI is down * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if no SVI is down * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 ---
 
-<a href="../../anta/tests/interfaces.py#L466"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../../anta/tests/interfaces.py#L468"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `verify_spanning_tree_blocked_ports`
 
@@ -276,18 +276,18 @@ verify_spanning_tree_blocked_ports(
 ) → TestResult
 ```
 
-Verifies there is no spanning-tree blocked ports.
+Verifies there is no spanning-tree blocked ports. 
 
 
 
 **Args:**
-
- - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information.
+ 
+ - <b>`device`</b> (InventoryDevice):  InventoryDevice instance containing all devices information. 
 
 
 
 **Returns:**
- TestResult instance with * result = "unset" if test has not been executed * result = "success" if there is no spanning-tree blocked ports * result = "failure" otherwise. * result = "error" if any exception is caught
+ TestResult instance with * result = "unset" if the test has not been executed * result = "success" if there is no spanning-tree blocked ports * result = "failure" otherwise. * result = "error" if any exception is caught 
 
 
 
