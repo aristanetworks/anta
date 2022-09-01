@@ -4,7 +4,7 @@
 anta installation script
 """
 from pathlib import Path
-from setuptools import setup
+from setuptools import setup, find_packages
 import anta
 
 this_directory = Path(__file__).parent
@@ -17,11 +17,10 @@ setup(
     name="anta",
     version=f"{anta.__version__}",
     python_requires=">=3.7",
-    packages=['anta', 'anta.inventory'],
+    packages=find_packages(exclude=["tests", "tests.*", "scripts", "scripts.*"]),
     scripts=[
         "scripts/check-devices.py",
         "scripts/collect-eos-commands.py",
-        "scripts/check-devices-reachability.py",
         "scripts/clear-counters.py",
         "scripts/collect-sheduled-show-tech.py",
         "scripts/evpn-blacklist-recovery.py",

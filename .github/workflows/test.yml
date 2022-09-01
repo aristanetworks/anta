@@ -22,47 +22,34 @@ jobs:
       - name: validate the syntax of python scripts
         run: python -m py_compile $(git ls-files '*.py')
   linting:
+    name: Run linting for yaml files
     runs-on: ubuntu-20.04
     needs: [compiling]
-    strategy:
-      matrix:
-        python-version: ["3.7", "3.10"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install requirements
-        run: |
-          python setup.py install
-          python -m pip install --upgrade pip pylint
-      - name: run pylint
-        run: |
-          pylint anta
-          pylint scripts
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .yamllint.yml
           file_or_dir: .
-  testing:
+  linting-testing:
+    name: Run flake8, pylint and pytest for supported Python versions
     runs-on: ubuntu-20.04
     needs: [linting]
     strategy:
       matrix:
-        python-version: ["3.7", "3.10"]
+        python: ["3.7", "3.8", "3.9", "3.10"]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: install requirements
-        run: |
-          python setup.py install
-          pip install -r requirements-dev.txt
-      - name: run pytest with code coverage
-        run: |
-          cd tests
-          py.test units/ -vv --cov=anta.tests
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies
+        run: pip install tox tox-gh-actions
+      - name: "Run tox for ${{ matrix.python }}"
+        run: tox

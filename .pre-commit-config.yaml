@@ -1,18 +1,52 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+files: ^(anta|scripts|tests)/
+
 repos:
-- repo: local
-  hooks:
-    - id: pylint
-      name: pylint
-      entry: pylint
-      language: system
-      types: [python]
-      exclude: ^docs/*
-      args:
-        [
-          "-rn", # Only display messages
-          "-sn", # Don't display the score
-          "--rcfile=pylintrc", # Link to your config file
-        ]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        name: Check for PEP8 error on Python files
+        args:
+          - --config=/dev/null
+          - --max-line-length=165
+
+  - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+    hooks:
+      - id: pylint
+        entry: pylint
+        language: python
+        name: Check for Linting error on Python files
+        description: This hook runs pylint.
+        types: [python]
+        additional_dependencies:
+          - rich
+          - lazydocs
+        args:
+          - -rn                # Only display messages
+          - -sn                # Don't display the score
+          - --rcfile=pylintrc  # Link to config file
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.971
+    hooks:
+      - id: mypy
+        args:
+          - --config-file=pyproject.toml
+        additional_dependencies:
+          - pydantic
+          - types-PyYAML
+          - types-paramiko
+          - types-requests
+        # Do not run mypy on tests but only on code and scripts
+        files: ^(anta|scripts)/

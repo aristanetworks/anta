@@ -1,181 +1,193 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
+# coding: utf-8 -*-
+# pylint: disable=W0622
+# pylint: disable=C0116
+#
+# Copyright 2022 Arista Networks Thomas Grimonet
+#
+# Licensed under the Apache License, Version 2.0 (the 'License');
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http: //www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an 'AS IS' BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 """
-This script run tests on devices
+Arista NRFU test runner script
 """
 
-from argparse import ArgumentParser
-from getpass import getpass
+import argparse
+import logging
 import sys
-from datetime import datetime
-import ssl
-from math import ceil
-from socket import setdefaulttimeout
-from json import dumps
-from jsonrpclib import Server,jsonrpc
-from prettytable import PrettyTable
+import itertools
 from yaml import safe_load
-from colorama import Fore
-# The next line is causing pylint issues because of the anta/tests/__init__.py
-# file syntax
-import anta.tests  # pylint: disable=import-error,no-name-in-module
 
-# pylint: disable=protected-access
-ssl._create_default_https_context = ssl._create_unverified_context
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.panel import Panel
+from rich.pretty import pprint
 
-def create_connections_dict(text_file, device_username, device_password, output_file):
-    connections = {}
-    try:
-        with open(text_file, 'r', encoding='utf8') as file:
-            for device in file:
-                device = device.strip()
-                connections[device] = Server(
-                    f"https://{device_username}:{device_password}@{device}/command-api"
-                )
-    except FileNotFoundError:
-        print('Error opening ' + text_file)
-        sys.exit(1)
-    # Delete unreachable devices from connections dict
-    unreachable = []
+import anta.loader
+from anta.inventory import AntaInventory
+from anta.result_manager import ResultManager
+from anta.reporter import ReportTable
 
-    print('Testing devices .... please be patient ... ')
 
-    for device, connection in connections.items():
-        try:
-            setdefaulttimeout(5)
-            connection.runCmds(1, ['show version'])
-        except jsonrpc.TransportError:
-            print('wrong credentials for ' + device)
-            unreachable.append(device)
-        except OSError:
-            print(device + ' is not reachable using eAPI')
-            unreachable.append(device)
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+)
+logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
+logging.getLogger('anta.result_manager').setLevel(logging.CRITICAL)
+logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
+logging.getLogger('anta.tests.configuration').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.hardware').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.interfaces').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.mlag').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.multicast').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.profiles').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.software').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
+logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
 
-    for key in unreachable:
-        connections.pop(key)
 
-    with open(output_file, 'w', encoding="utf8") as outfile:
-        now = datetime.now()
-        outfile.write(now.strftime("%c"))
-        outfile.write('\n')
-        outfile.write('devices inventory file was ' + text_file)
-        outfile.write('\n')
-        outfile.write('devices username was ' + device_username)
-        outfile.write('\n')
-        outfile.write('list of unreachable devices is \n')
-        for element in unreachable:
-            outfile.write(element + "\n")
+def cli_manager() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Arista NRFU runner')
 
-    return connections
+    #############################
+    # ANTA options
 
-def main():
-    parser = ArgumentParser(
-        description='EOS devices health checks'
-        )
-    parser.add_argument(
-        '-i',
-        help='Text file containing a list of switches, one per line',
-        dest='inventory_file',
-        required=True
-        )
-    parser.add_argument(
-        '-u',
-        help='Devices username',
-        dest='username',
-        required=True
-        )
-    parser.add_argument(
-        '-t',
-        help='Text file containing the tests',
-        dest='test_catalog',
-        required=True
-        )
-    parser.add_argument(
-        '-o',
-        help='Output file',
-        dest='output_file',
-        required=True
-        )
-    args = parser.parse_args()
-    args.password = getpass(prompt='Device password: ')
-    args.enable_pass = getpass(prompt='Enable password (if any): ')
+    parser.add_argument('--inventory', '-i', required=False,
+                        default='examples/inventory.yml', help='ANTA Inventory file')
 
-    # Create connections dict
-    connections = create_connections_dict\
-        (args.inventory_file, args.username, args.password, args.output_file)
+    parser.add_argument('--catalog', '-c', required=False,
+                        default='examples/tests_custom.yaml', help='ANTA Tests cagtalog')
 
-    try:
-        with open(args.test_catalog, 'r', encoding='utf8') as file:
-            test_catalog = safe_load(file)
-    except FileNotFoundError:
-        print('Error opening ' + args.test_catalog)
-        sys.exit(1)
+    #############################
+    # Device connectivity
 
-    # Create the dictionnary test_summary for test results and run the tests
-    test_summary = {}
-    for device, connection in connections.items():
-        print('Running tests on device ' + device + ' ...')
-        test_summary[device] = {}
-        for test, test_def in test_catalog.items():
-            # Run test cases
-            test_kwargs = {}
-            if 'name' in test_def:
-                func_name = test_def['name']
-                test_kwargs = {k:v for k,v in test_def.items() if k != 'name'}
-            else:
-                func_name = test_def
-            test_summary[device][test] = getattr(anta.tests, func_name)\
-                (connection, args.enable_pass, **test_kwargs)
+    parser.add_argument('--username', '-u', required=False,
+                        default='ansible', help='EOS Username')
 
-    # Replace True/False/None with Pass/Fail/Skip in the test_summary dictionnary
-    for device in sorted(test_summary):
-        for test in sorted(test_catalog):
-            if test_summary[device][test] is True:
-                test_summary[device][test] = Fore.GREEN + 'Pass' + Fore.RESET
-            elif test_summary[device][test] is False:
-                test_summary[device][test] = Fore.RED + 'Fail' + Fore.RESET
-            elif test_summary[device][test] is None:
-                test_summary[device][test] = Fore.BLUE + 'Skip' + Fore.RESET
+    parser.add_argument('--password', '-p', required=False,
+                        default='ansible', help='EOS Password')
 
-    # Use prettytable so we will display data in a visually appealing format
-    x = PrettyTable(padding_width=2)
-    fields = ['devices']
-    for test in sorted(test_catalog):
-        fields.append(test)
-    x.field_names = fields
-    for device in sorted(test_summary):
-        row = [device]
-        for test in sorted(test_catalog):
-            row.append(test_summary[device][test])
-        x.add_row(row)
+    parser.add_argument('--enable_password', '-e', required=False,
+                        default='ansible', help='EOS Enable Password')
 
-    # Split the table into t tables of c columns each
-    c = 12
-    lenx = len(fields)
-    t = ceil(lenx/c)
+    parser.add_argument('--timeout', '-t', required=False,
+                        default=0.5, help='eAPI connection timeout')
 
-    print("Test results are saved on " + args.output_file)
+    #############################
+    # Search options
 
-    # Write tests result to an external file
-    with open(args.output_file, 'a', encoding="utf8") as outfile:
-        outfile.write('tests file was ' + args.test_catalog)
-        outfile.write('\n\n')
-        outfile.write('***** Results *****\n')
-        outfile.write('\n')
-        for i in range(t):
-            start = (i * (c -1) + 1)
-            stop = ((c - 1) * (i + 1)) + 1
-            y = ["devices"] + fields[start:stop]
-            outfile.write(x.get_string(fields=y))
-            outfile.write('\n')
+    parser.add_argument('--hostip', required=False,
+                        default=None, help='search result for host')
 
-        outfile.write('\n')
-        outfile.write('***** Tests *****\n')
-        outfile.write('\n')
-        for test in sorted(test_catalog):
-            outfile.write(test + '\t '+  dumps(test_catalog[test]))
-            outfile.write('\n')
-        outfile.write('\n')
+    parser.add_argument('--test', required=False,
+                        default=None, help='search result for test')
+
+    #############################
+    # Display Options
+
+    parser.add_argument('--list', required=False, action='store_true',
+                        help='Display internal data')
+
+    # Display result using a table (default is TRUE)
+    parser.add_argument('--table', required=False, action='store_true',
+                        help='Result represented in tables')
+
+    #############################
+    # Options for table report
+
+    # List of all tests per device -- REQUIRE --table option
+    parser.add_argument('--all-results', required=False, action='store_true',
+                        help='Display all test cases results. Default table view (Only valid with --table)')
+
+    # Summary of tests results per device -- REQUIRE --table option
+    parser.add_argument('--by-host', required=False, action='store_true',
+                        help='Provides summary of test results per device (Only valid with --table)')
+
+    # Summary of tests results per test-case -- REQUIRE --table option
+    parser.add_argument('--by-test', required=False, action='store_true',
+                        help='Provides summary of test results per test case (Only valid with --table)')
+
+    return parser.parse_args()
+
 
 if __name__ == '__main__':
-    main()
+    logger = logging.getLogger(__name__)
+    console = Console()
+    cli_options = cli_manager()
+
+    inventory_anta = AntaInventory(
+        inventory_file=cli_options.inventory,
+        username=cli_options.username,
+        password=cli_options.password,
+        enable_password=cli_options.enable_password,
+        timeout=cli_options.timeout,
+        auto_connect=True
+    )
+
+    ############################################################################
+    # Test loader
+    ############################################################################
+
+    with open(cli_options.catalog, 'r', encoding='utf8') as file:
+        test_catalog_input = safe_load(file)
+
+    tests_catalog = anta.loader.parse_catalog(test_catalog_input)
+    logger.info(f'Inventory {cli_options.inventory} loaded')
+
+    ############################################################################
+    # Test Execution
+    ############################################################################
+
+    logger.info('starting running test on by_host ...')
+    manager = ResultManager()
+    list_tests = []
+    for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
+        if ((cli_options.hostip is None or cli_options.hostip == str(device.host)) and
+                (cli_options.test is None or cli_options.test == str(test[0].__name__))):
+            list_tests.append(str(test[0]))
+            manager.add_test_result(
+                test[0](
+                    device,
+                    **test[1]
+                )
+            )
+
+    ############################################################################
+    # Test Reporting
+    ############################################################################
+
+    logger.info('testing done !')
+    if cli_options.list:
+        console.print(Panel('List results of all tests', style='cyan'))
+        pprint(manager.get_results(output_format="list"))
+
+    if cli_options.table:
+        reporter = ReportTable()
+        if cli_options.all_results or (not cli_options.by_test and not cli_options.by_host):
+            console.print(reporter.report_all(result_manager=manager,
+                          host=cli_options.hostip, testcase=cli_options.test))
+        # To print only report per Test case
+        if cli_options.by_test:
+            console.print(reporter.report_summary_tests(
+                result_manager=manager, testcase=cli_options.test))
+
+        # To print only report per Device
+        if cli_options.by_host:
+            console.print(reporter.report_summary_hosts(
+                result_manager=manager, host=cli_options.hostip))
+
+    sys.exit(0)

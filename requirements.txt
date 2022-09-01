@@ -11,3 +11,4 @@ netaddr>=0.8.0
 pydantic>=1.9.1
 Jinja2>=3.1.2
 tabulate>=0.8.10
+rich>=12.5.1
