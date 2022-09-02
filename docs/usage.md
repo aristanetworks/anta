@@ -12,7 +12,7 @@ Have a quick look to the package documentation:
 
 Instantiate the class `Server` of `jsonrpclib` for an EOS device:
 
-```python
+```pythno
 >>> import ssl
 >>> from jsonrpclib import Server
 >>> ssl._create_default_https_context = ssl._create_unverified_context
