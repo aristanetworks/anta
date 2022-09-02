@@ -89,20 +89,22 @@ anta_inventory:
 Or you can use [`create-devices-inventory-from-cvp.py`](scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
 
 ```bash
-create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
+# Available options
+create-devices-inventory-from-cvp.py -h
+usage: create-devices-inventory-from-cvp.py [-h] -cvp CVP -u USERNAME [-c CONTAINER] -o OUTPUT_DIRECTORY
+
+Create devices inventory based on CVP containers
+
+optional arguments:
+  -h, --help           show this help message and exit
+  -cvp CVP             CVP address
+  -u USERNAME          CVP username
+  -c CONTAINER         CVP container
+  -o OUTPUT_DIRECTORY  Output directory
+
+# Example
+$ create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
 ```
-
-> __Note:__ Because repository is transitioning to this YAML inventory, some scripts are still based on legacy text based approach
->
-> ```text
-> 192.168.0.10
-> 192.168.0.11
-> 192.168.0.12
-> 192.168.0.13
-> 192.168.0.14
-> 192.168.0.15
-> ```
-
 ## Test Catalog
 
 To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by [`anta.loader.parse_catalog`](anta/loader.py)
@@ -174,6 +176,8 @@ Default output is a table format listing all test results, and it can be changed
 ### Default report
 
 ```bash
+$ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --table
+
                              All tests results
 ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
 ┃ Device IP     ┃ Test Name              ┃ Test Status ┃ Message(s)       ┃
@@ -187,26 +191,27 @@ Default output is a table format listing all test results, and it can be changed
 ### Report per test case
 
 ```
-                                        Summary per test case
-┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Test Case              ┃ # of success ┃ # of failure ┃ # of errors ┃ List of failed or error nodes ┃
-┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ verify_mlag_interfaces │ 8            │ 0            │ 0           │ []                            │
-└────────────────────────┴──────────────┴──────────────┴─────────────┴───────────────────────────────┘
+$ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --table --by-test --test verify_mlag_status
+
+                                              Summary per test case
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Test Case          ┃ # of success ┃ # of skipped ┃ # of failure ┃ # of errors ┃ List of failed or error nodes ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ verify_mlag_status │ 8            │ 13           │ 0            │ 0           │ []                            │
+└────────────────────┴──────────────┴──────────────┴──────────────┴─────────────┴───────────────────────────────┘
 ```
 
 ### Report per host
 
 ```bash
-                                     Summary per host
-┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Host IP       ┃ # of success ┃ # of failure ┃ # of errors ┃ List of failed case        ┃
-┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ 10.73.252.11  │ 1            │ 0            │ 0           │ []                         │
-│ 10.73.252.12  │ 1            │ 0            │ 0           │ []                         │
-│ 10.73.252.13  │ 1            │ 0            │ 0           │ []                         │
-│ 10.73.252.102 │ 0            │ 0            │ 0           │ []                         │
-└───────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
+$ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --table --by-host --test verify_mlag_status --hostip 10.73.252.21
+
+                                            Summary per host
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Host IP      ┃ # of success ┃ # of skipped ┃ # of failure ┃ # of errors ┃ List of failed ortest case ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 10.73.252.21 │ 0            │ 1            │ 0            │ 0           │ []                         │
+└──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
 ````
 
 
