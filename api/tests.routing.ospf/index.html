@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#module-testsroutingospf" class="md-skip">
+        <a href="#anta-catalog-for-routing-ospf-tests" class="md-skip">
           Skip to content
         </a>
       
@@ -478,23 +478,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-testsroutingospf" class="md-nav__link">
-    module tests.routing.ospf
+  <a href="#anta-catalog-for-routing-ospf-tests" class="md-nav__link">
+    ANTA catalog for routing-ospf tests
   </a>
   
-    <nav class="md-nav" aria-label="module tests.routing.ospf">
+    <nav class="md-nav" aria-label="ANTA catalog for routing-ospf tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-verify_ospf_state" class="md-nav__link">
-    function verify_ospf_state
+  <a href="#anta.tests.routing.ospf" class="md-nav__link">
+    anta.tests.routing.ospf
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_ospf_count" class="md-nav__link">
-    function verify_ospf_count
+  <a href="#anta.tests.routing.ospf.verify_ospf_count" class="md-nav__link">
+    verify_ospf_count()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.verify_ospf_state" class="md-nav__link">
+    verify_ospf_state()
   </a>
   
 </li>
@@ -600,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input.md" class="md-nav__link">
+      <a href="../inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -688,23 +695,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-testsroutingospf" class="md-nav__link">
-    module tests.routing.ospf
+  <a href="#anta-catalog-for-routing-ospf-tests" class="md-nav__link">
+    ANTA catalog for routing-ospf tests
   </a>
   
-    <nav class="md-nav" aria-label="module tests.routing.ospf">
+    <nav class="md-nav" aria-label="ANTA catalog for routing-ospf tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-verify_ospf_state" class="md-nav__link">
-    function verify_ospf_state
+  <a href="#anta.tests.routing.ospf" class="md-nav__link">
+    anta.tests.routing.ospf
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_ospf_count" class="md-nav__link">
-    function verify_ospf_count
+  <a href="#anta.tests.routing.ospf.verify_ospf_count" class="md-nav__link">
+    verify_ospf_count()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.verify_ospf_state" class="md-nav__link">
+    verify_ospf_state()
   </a>
   
 </li>
@@ -734,48 +748,411 @@
 
   <h1>OSPF</h1>
 
-<!-- markdownlint-disable -->
+<h3 id="anta-catalog-for-routing-ospf-tests">ANTA catalog for routing-ospf tests<a class="headerlink" href="#anta-catalog-for-routing-ospf-tests" title="Permanent link">&para;</a></h3>
 
-<p><a href="../../anta/tests/routing/ospf.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h3 id="module-testsroutingospf"><kbd>module</kbd> <code>tests.routing.ospf</code><a class="headerlink" href="#module-testsroutingospf" title="Permanent link">&para;</a></h3>
-<p>OSPF test functions </p>
-<hr />
-<p><a href="../../anta/tests/routing/ospf.py#L15"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h4 id="function-verify_ospf_state"><kbd>function</kbd> <code>verify_ospf_state</code><a class="headerlink" href="#function-verify_ospf_state" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="n">verify_ospf_state</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span><span class="p">)</span> <span class="err">→</span> <span class="n">TestResult</span>
-</code></pre></div>
-<p>Verifies all OSPF neighbors are in FULL state. </p>
-<p><strong>Args:</strong></p>
-<ul>
-<li><b><code>device</code></b> (InventoryDevice):  InventoryDevice instance containing all devices information. </li>
-</ul>
-<p><strong>Returns:</strong>
- TestResult instance with * result = &ldquo;unset&rdquo; if the test has not been executed * result = &ldquo;success&rdquo; if all OSPF neighbors are FULL. * result = &ldquo;failure&rdquo; otherwise. * result = &ldquo;error&rdquo; if any exception is caught </p>
-<hr />
-<p><a href="../../anta/tests/routing/ospf.py#L52"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h4 id="function-verify_ospf_count"><kbd>function</kbd> <code>verify_ospf_count</code><a class="headerlink" href="#function-verify_ospf_count" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="n">verify_ospf_count</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span><span class="p">,</span>
-    <span class="n">number</span><span class="p">:</span> <span class="nb">int</span>
-<span class="p">)</span> <span class="err">→</span> <span class="n">TestResult</span>
-</code></pre></div>
-<p>Verifies the number of OSPF neighbors in FULL state is the one we expect. </p>
-<p><strong>Args:</strong></p>
-<ul>
-<li><b><code>device</code></b> (InventoryDevice):  InventoryDevice instance containing all devices information. </li>
-<li><b><code>number</code></b> (int):  The expected number of OSPF neighbors in FULL state. </li>
-</ul>
-<p><strong>Returns:</strong>
- TestResult instance with * result = &ldquo;unset&rdquo; if the test has not been executed * result = &ldquo;skipeed&rdquo; if the <code>number</code> parameter is missing * result = &ldquo;success&rdquo; if device has correct number of devices * result = &ldquo;failure&rdquo; otherwise. * result = &ldquo;error&rdquo; if any exception is caught </p>
-<hr />
-<p><em>This file was automatically generated via <a href="https://github.com/ml-tooling/lazydocs">lazydocs</a>.</em></p>
+
+<div class="doc doc-object doc-module">
+
+
+<a id="anta.tests.routing.ospf"></a>
+  <div class="doc doc-contents first">
+  
+      <p>OSPF test functions</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.tests.routing.ospf.verify_ospf_count" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">verify_ospf_count</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span></code>
+
+<a href="#anta.tests.routing.ospf.verify_ospf_count" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Verifies the number of OSPF neighbors in FULL state is the one we expect.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>device</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+          </td>
+          <td><p>InventoryDevice instance containing all devices information.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>number</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>The expected number of OSPF neighbors in FULL state.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><p>TestResult instance with</p></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;skipeed&rdquo; if the <code>number</code> parameter is missing</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;success&rdquo; if device has correct number of devices</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;failure&rdquo; otherwise.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;error&rdquo; if any exception is caught</li>
+</ul></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_ospf_count</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies the number of OSPF neighbors in FULL state is the one we expect.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+<span class="sd">        number (int): The expected number of OSPF neighbors in FULL state.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TestResult instance with</span>
+<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">        * result = &quot;skipeed&quot; if the `number` parameter is missing</span>
+<span class="sd">        * result = &quot;success&quot; if device has correct number of devices</span>
+<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start </span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2"> check for host </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">test</span><span class="o">=</span><span class="n">function_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">number</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span>
+            <span class="s2">&quot;verify_igmp_snooping_vlans was not run as no number was given&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show ip ospf neighbor | exclude  Address&quot;</span><span class="p">],</span> <span class="s2">&quot;text&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;output&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s1">&#39;no OSPF neighbor found&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;FULL&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_data</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;FULL&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">number</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;device has </span><span class="si">{</span><span class="n">response_data</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;FULL&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> neighbors (expected </span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.tests.routing.ospf.verify_ospf_state" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">verify_ospf_state</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></code>
+
+<a href="#anta.tests.routing.ospf.verify_ospf_state" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Verifies all OSPF neighbors are in FULL state.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>device</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+          </td>
+          <td><p>InventoryDevice instance containing all devices information.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><p>TestResult instance with</p></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;success&rdquo; if all OSPF neighbors are FULL.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;failure&rdquo; otherwise.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;error&rdquo; if any exception is caught</li>
+</ul></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_ospf_state</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies all OSPF neighbors are in FULL state.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TestResult instance with</span>
+<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">        * result = &quot;success&quot; if all OSPF neighbors are FULL.</span>
+<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start </span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2"> check for host </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">test</span><span class="o">=</span><span class="n">function_name</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show ip ospf neighbor | exclude FULL|Address&quot;</span><span class="p">],</span> <span class="s2">&quot;text&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;output&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s1">&#39;no OSPF neighbor found&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Some neighbors are not correctly configured.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 1, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 5, 2022</span>
       
     
   </small>

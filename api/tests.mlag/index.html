@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#module-testsmlag" class="md-skip">
+        <a href="#anta-catalog-for-mlag-tests" class="md-skip">
           Skip to content
         </a>
       
@@ -352,30 +352,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-testsmlag" class="md-nav__link">
-    module tests.mlag
+  <a href="#anta-catalog-for-mlag-tests" class="md-nav__link">
+    ANTA catalog for mlag tests
   </a>
   
-    <nav class="md-nav" aria-label="module tests.mlag">
+    <nav class="md-nav" aria-label="ANTA catalog for mlag tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_status" class="md-nav__link">
-    function verify_mlag_status
+  <a href="#anta.tests.mlag" class="md-nav__link">
+    anta.tests.mlag
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_interfaces" class="md-nav__link">
-    function verify_mlag_interfaces
+  <a href="#anta.tests.mlag.verify_mlag_config_sanity" class="md-nav__link">
+    verify_mlag_config_sanity()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_config_sanity" class="md-nav__link">
-    function verify_mlag_config_sanity
+  <a href="#anta.tests.mlag.verify_mlag_interfaces" class="md-nav__link">
+    verify_mlag_interfaces()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.verify_mlag_status" class="md-nav__link">
+    verify_mlag_status()
   </a>
   
 </li>
@@ -605,7 +612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input.md" class="md-nav__link">
+      <a href="../inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -693,30 +700,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-testsmlag" class="md-nav__link">
-    module tests.mlag
+  <a href="#anta-catalog-for-mlag-tests" class="md-nav__link">
+    ANTA catalog for mlag tests
   </a>
   
-    <nav class="md-nav" aria-label="module tests.mlag">
+    <nav class="md-nav" aria-label="ANTA catalog for mlag tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_status" class="md-nav__link">
-    function verify_mlag_status
+  <a href="#anta.tests.mlag" class="md-nav__link">
+    anta.tests.mlag
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_interfaces" class="md-nav__link">
-    function verify_mlag_interfaces
+  <a href="#anta.tests.mlag.verify_mlag_config_sanity" class="md-nav__link">
+    verify_mlag_config_sanity()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-verify_mlag_config_sanity" class="md-nav__link">
-    function verify_mlag_config_sanity
+  <a href="#anta.tests.mlag.verify_mlag_interfaces" class="md-nav__link">
+    verify_mlag_interfaces()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.verify_mlag_status" class="md-nav__link">
+    verify_mlag_status()
   </a>
   
 </li>
@@ -746,60 +760,589 @@
 
   <h1>MLAG</h1>
 
-<!-- markdownlint-disable -->
+<h3 id="anta-catalog-for-mlag-tests">ANTA catalog for mlag tests<a class="headerlink" href="#anta-catalog-for-mlag-tests" title="Permanent link">&para;</a></h3>
 
-<p><a href="../../anta/tests/mlag.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h3 id="module-testsmlag"><kbd>module</kbd> <code>tests.mlag</code><a class="headerlink" href="#module-testsmlag" title="Permanent link">&para;</a></h3>
-<p>Test functions related to Multi-Chassis LAG </p>
-<hr />
-<p><a href="../../anta/tests/mlag.py#L15"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h4 id="function-verify_mlag_status"><kbd>function</kbd> <code>verify_mlag_status</code><a class="headerlink" href="#function-verify_mlag_status" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="n">verify_mlag_status</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span><span class="p">)</span> <span class="err">→</span> <span class="n">TestResult</span>
-</code></pre></div>
-<p>Verifies the MLAG status: state is active, negotiation status is connected, local int is up, peer link is up. </p>
-<p><strong>Args:</strong></p>
-<ul>
-<li><b><code>device</code></b> (InventoryDevice):  InventoryDevice instance containing all devices information. </li>
-</ul>
-<p><strong>Returns:</strong>
- TestResult instance with * result = &ldquo;unset&rdquo; if the test has not been executed * result = &ldquo;success&rdquo; if the MLAG status is OK * result = &ldquo;failure&rdquo; otherwise. * result = &ldquo;error&rdquo; if any exception is caught </p>
-<hr />
-<p><a href="../../anta/tests/mlag.py#L58"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h4 id="function-verify_mlag_interfaces"><kbd>function</kbd> <code>verify_mlag_interfaces</code><a class="headerlink" href="#function-verify_mlag_interfaces" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="n">verify_mlag_interfaces</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span>
-<span class="p">)</span> <span class="err">→</span> <span class="n">TestResult</span>
-</code></pre></div>
-<p>Verifies there is no inactive or active-partial MLAG interfaces. </p>
-<p><strong>Args:</strong></p>
-<ul>
-<li><b><code>device</code></b> (InventoryDevice):  InventoryDevice instance containing all devices information. </li>
-</ul>
-<p><strong>Returns:</strong>
- TestResult instance with * result = &ldquo;unset&rdquo; if the test has not been executed * result = &ldquo;success&rdquo; if there is no inactive or active-partial MLAG interfaces. * result = &ldquo;failure&rdquo; otherwise. * result = &ldquo;error&rdquo; if any exception is caught </p>
-<hr />
-<p><a href="../../anta/tests/mlag.py#L98"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a></p>
-<h4 id="function-verify_mlag_config_sanity"><kbd>function</kbd> <code>verify_mlag_config_sanity</code><a class="headerlink" href="#function-verify_mlag_config_sanity" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="n">verify_mlag_config_sanity</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span>
-<span class="p">)</span> <span class="err">→</span> <span class="n">TestResult</span>
-</code></pre></div>
-<p>Verifies there is no MLAG config-sanity inconsistencies. </p>
-<p><strong>Args:</strong></p>
-<ul>
-<li><b><code>device</code></b> (InventoryDevice):  InventoryDevice instance containing all devices information. </li>
-</ul>
-<p><strong>Returns:</strong>
- TestResult instance with * result = &ldquo;unset&rdquo; if the test has not been executed * result = &ldquo;success&rdquo; if there is no MLAG config-sanity inconsistencies * result = &ldquo;failure&rdquo; otherwise. * result = &ldquo;error&rdquo; if any exception is caught </p>
-<hr />
-<p><em>This file was automatically generated via <a href="https://github.com/ml-tooling/lazydocs">lazydocs</a>.</em></p>
+
+<div class="doc doc-object doc-module">
+
+
+<a id="anta.tests.mlag"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Test functions related to Multi-Chassis LAG</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.tests.mlag.verify_mlag_config_sanity" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">verify_mlag_config_sanity</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></code>
+
+<a href="#anta.tests.mlag.verify_mlag_config_sanity" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Verifies there is no MLAG config-sanity inconsistencies.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>device</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+          </td>
+          <td><p>InventoryDevice instance containing all devices information.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><p>TestResult instance with</p></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;success&rdquo; if there is no MLAG config-sanity inconsistencies</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;failure&rdquo; otherwise.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;error&rdquo; if any exception is caught</li>
+</ul></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_mlag_config_sanity</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies there is no MLAG config-sanity inconsistencies.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TestResult instance with</span>
+<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">        * result = &quot;success&quot; if there is no MLAG config-sanity inconsistencies</span>
+<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start </span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2"> check for host </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">test</span><span class="o">=</span><span class="n">function_name</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show mlag config-sanity&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;mlagActive&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s1">&#39;incorrect JSON response&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;mlagActive&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1"># MLAG is not running</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="s2">&quot;MLAG config-sanity returned some Global inconsistencies: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;globalConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="s2">&quot;MLAG config-sanity returned some Interface inconsistencies: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;interfaceConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.tests.mlag.verify_mlag_interfaces" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">verify_mlag_interfaces</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></code>
+
+<a href="#anta.tests.mlag.verify_mlag_interfaces" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Verifies there is no inactive or active-partial MLAG interfaces.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>device</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+          </td>
+          <td><p>InventoryDevice instance containing all devices information.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><p>TestResult instance with</p></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;success&rdquo; if there is no inactive or active-partial MLAG interfaces.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;failure&rdquo; otherwise.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;error&rdquo; if any exception is caught</li>
+</ul></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_mlag_interfaces</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies there is no inactive or active-partial MLAG interfaces.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TestResult instance with</span>
+<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">        * result = &quot;success&quot; if there is no inactive or active-partial MLAG interfaces.</span>
+<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start </span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2"> check for host </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">test</span><span class="o">=</span><span class="n">function_name</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show mlag&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Inactive&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Active-partial&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;mlagPorts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.tests.mlag.verify_mlag_status" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">verify_mlag_status</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></code>
+
+<a href="#anta.tests.mlag.verify_mlag_status" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Verifies the MLAG status:
+state is active, negotiation status is connected, local int is up, peer link is up.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>device</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+          </td>
+          <td><p>InventoryDevice instance containing all devices information.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><p>TestResult instance with</p></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;success&rdquo; if the MLAG status is OK</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;failure&rdquo; otherwise.</li>
+</ul></td>
+        </tr>
+        <tr>
+          <td>
+                <code><span title="anta.result_manager.models.TestResult">TestResult</span></code>
+          </td>
+          <td><ul>
+<li>result = &ldquo;error&rdquo; if any exception is caught</li>
+</ul></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_mlag_status</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies the MLAG status:</span>
+<span class="sd">    state is active, negotiation status is connected, local int is up, peer link is up.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TestResult instance with</span>
+<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">        * result = &quot;success&quot; if the MLAG status is OK</span>
+<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start </span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2"> check for host </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">test</span><span class="o">=</span><span class="n">function_name</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show mlag&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;active&quot;</span>
+            <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;negStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;connected&quot;</span>
+            <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;localIntfStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
+            <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
+        <span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 1, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 5, 2022</span>
       
     
   </small>
