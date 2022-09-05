@@ -150,7 +150,7 @@ class ReportTable():
         """
         # sourcery skip: class-extract-method
         table = Table(title=title)
-        headers = ['Test Case', '# of success', '# of failure', '# of errors', 'List of failed or error nodes']
+        headers = ['Test Case', '# of success', '# of skipped', '# of failure', '# of errors', 'List of failed or error nodes']
         table = self._build_headers(headers=headers, table=table)
         for testcase_read in result_manager.get_testcases():
             if testcase is None or str(testcase_read) == testcase:
@@ -163,9 +163,12 @@ class ReportTable():
                     str(result.host) for result in results if result.result in ['failure', 'error']]
                 nb_success = len(
                     [result for result in results if result.result == 'success'])
+                nb_skipped = len(
+                    [result for result in results if result.result == 'skipped'])
                 table.add_row(
                     testcase_read,
                     str(nb_success),
+                    str(nb_skipped),
                     str(nb_failure),
                     str(nb_error),
                     str(list_failure)
@@ -187,7 +190,7 @@ class ReportTable():
             Table: A fully populated rich Table
         """
         table = Table(title=title)
-        headers = ['Host IP', '# of success', '# of failure',
+        headers = ['Host IP', '# of success', '# of skipped', '# of failure',
                    '# of errors', 'List of failed ortest case']
         table = self._build_headers(headers=headers, table=table)
         for host_read in result_manager.get_hosts():
@@ -203,9 +206,12 @@ class ReportTable():
                     str(result.test) for result in results if result.result in ['failure', 'error']]
                 nb_success = len(
                     [result for result in results if result.result == 'success'])
+                nb_skipped = len(
+                    [result for result in results if result.result == 'skipped'])
                 table.add_row(
                     str(host_read),
                     str(nb_success),
+                    str(nb_skipped),
                     str(nb_failure),
                     str(nb_error),
                     str(list_failure)
