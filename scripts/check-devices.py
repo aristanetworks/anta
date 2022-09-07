@@ -35,6 +35,7 @@ from rich.pretty import pprint
 
 import anta.loader
 from anta.inventory import AntaInventory
+from anta.inventory.models import DEFAULT_TAG
 from anta.result_manager import ResultManager
 from anta.reporter import ReportTable
 
@@ -96,6 +97,9 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--test', required=False,
                         default=None, help='search result for test')
 
+    parser.add_argument('--tags', required=False,
+                        default=DEFAULT_TAG, help='List of device tags to limit scope of testing')
+
     #############################
     # Display Options
 
@@ -138,6 +142,9 @@ if __name__ == '__main__':
         auto_connect=True
     )
 
+    scope_tags = cli_options.tags.split(',') if ',' in cli_options.tags else [
+        cli_options.tags]
+
     ############################################################################
     # Test loader
     ############################################################################
@@ -152,10 +159,10 @@ if __name__ == '__main__':
     # Test Execution
     ############################################################################
 
-    logger.info('starting running test on by_host ...')
+    logger.info('starting running test on inventory ...')
     manager = ResultManager()
     list_tests = []
-    for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
+    for device, test in itertools.product(inventory_anta.get_inventory(tags=scope_tags), tests_catalog):
         if ((cli_options.hostip is None or cli_options.hostip == str(device.host)) and
                 (cli_options.test is None or cli_options.test == str(test[0].__name__))):
             list_tests.append(str(test[0]))

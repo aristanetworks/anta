@@ -288,7 +288,7 @@ class AntaInventory():
             device.session = connection
         return device
 
-    def _add_device_to_inventory(self, host_ip: str, tags: List[str] = List(DEFAULT_TAG)) -> None:
+    def _add_device_to_inventory(self, host_ip: str, tags: List[str] = None) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -298,6 +298,9 @@ class AntaInventory():
         """
         assert self._username is not None
         assert self._password is not None
+
+        if tags is None:
+            tags = [DEFAULT_TAG]
 
         device = InventoryDevice(
             host=host_ip,
@@ -362,24 +365,33 @@ class AntaInventory():
             inventory.append(device)
         return inventory
 
-    def _filtered_inventory(self, established_only: bool = False) -> InventoryDevices:
+    def _filtered_inventory(self, established_only: bool = False, tags: List[str] = None) -> InventoryDevices:
         """
         _filtered_inventory Generate a temporary inventory filtered.
 
         Args:
             established_only (bool, optional): Do we have to include non-established devices. Defaults to False.
+            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
 
         Returns:
             InventoryDevices: A inventory with concerned devices
         """
-        inventory = InventoryDevices()
-        if not established_only:
-            return self._inventory
+        if tags is None:
+            tags = [DEFAULT_TAG]
 
+        inventory_filtered_tags = InventoryDevices()
         for device in self._inventory:
+            if any(tag in tags for tag in device.tags):
+                inventory_filtered_tags.append(device)
+
+        if not established_only:
+            return inventory_filtered_tags
+
+        inventory_final = InventoryDevices()
+        for device in inventory_filtered_tags:
             if device.established:
-                inventory.append(device)
-        return inventory
+                inventory_final.append(device)
+        return inventory_final
 
     ###########################################################################
     # Public methods
@@ -389,7 +401,9 @@ class AntaInventory():
     # GET methods
 
     # TODO refactor this to avoid having a union of return of types ..
-    def get_inventory(self, format_out: str = 'native', established_only: bool = True) -> Union[List[InventoryDevice], str, InventoryDevices]:
+    def get_inventory(
+        self, format_out: str = 'native', established_only: bool = True, tags: List[str] = None
+    ) -> Union[List[InventoryDevice], str, InventoryDevices]:
         """get_inventory Expose device inventory.
 
         Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
@@ -397,15 +411,19 @@ class AntaInventory():
         Args:
             format (str, optional): Format output, can be native, list or JSON. Defaults to 'native'.
             established_only (bool, optional): Allow to expose also unreachable devices. Defaults to True.
+            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
 
         Returns:
             InventoryDevices: List of InventoryDevice
         """
+        if tags is None:
+            tags = [DEFAULT_TAG]
+
         if format_out not in ['native', 'json', 'list']:
             raise InventoryUnknownFormat(
                 f'Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}')
 
-        inventory = self._filtered_inventory(established_only)
+        inventory = self._filtered_inventory(established_only, tags)
 
         if format_out == 'list':
             # pylint: disable=R1721
