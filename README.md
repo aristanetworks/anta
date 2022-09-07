@@ -73,15 +73,21 @@ anta_inventory:
   hosts:
   - host: 192.168.0.10
   - host: 192.168.0.11
+    # Optional tag to assign to this device
+    tags: ['tag01', 'tag02']
   - host: 192.168.0.12
   - host: 192.168.0.13
   - host: 192.168.0.14
   - host: 192.168.0.15
   networks:
   - network: '192.168.110.0/24'
+    # Optional tag to assign to all devices in this subnet
+    tags: ['tag01', 'tag02']
   ranges:
   - start: 10.0.0.9
     end: 10.0.0.11
+    # Optional tag to assign to all devices in this range
+    tags: ['tag01', 'tag02']
   - start: 10.0.0.100
     end: 10.0.0.101
 ```
@@ -164,6 +170,7 @@ optional arguments:
                         eAPI connection timeout
   --hostip HOSTIP       search result for host
   --test TEST           search result for test
+  --tags TAGS           List of device tags to limit scope of testing
   --list                Display internal data
   --table               Result represented in tables
   --all-results         Display all test cases results. Default table view (Only valid with --table)
