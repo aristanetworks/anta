@@ -58,7 +58,7 @@ class AntaInventoryInput(BaseModel):
     User's inventory model.
 
     Attributes:
-        netwrks (List[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
+        networks (List[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
         hosts (List[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
         range (List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
