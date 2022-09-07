@@ -153,7 +153,7 @@ optional arguments:
   --inventory INVENTORY, -i INVENTORY
                         ANTA Inventory file
   --catalog CATALOG, -c CATALOG
-                        ANTA Tests catalog
+                        ANTA Tests cagtalog
   --username USERNAME, -u USERNAME
                         EOS Username
   --password PASSWORD, -p PASSWORD
@@ -165,7 +165,9 @@ optional arguments:
   --hostip HOSTIP       search result for host
   --test TEST           search result for test
   --list                Display internal data
+  --json                Display data in json format
   --table               Result represented in tables
+  --save SAVE           Save output to file. Only valid for --list and --json
   --all-results         Display all test cases results. Default table view (Only valid with --table)
   --by-host             Provides summary of test results per device (Only valid with --table)
   --by-test             Provides summary of test results per test case (Only valid with --table)

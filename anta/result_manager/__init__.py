@@ -10,6 +10,7 @@ import json
 from typing import List, Any
 
 from anta.result_manager.models import ListResult, TestResult
+from anta.tools import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +108,7 @@ class ResultManager:
             return list(self._result_entries)
 
         if output_format == "json":
-            return json.loads(str([result.json() for result in self._result_entries]))
+            return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
 
         # Default return for native format.
         return self._result_entries
