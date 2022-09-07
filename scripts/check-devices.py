@@ -71,7 +71,7 @@ def cli_manager() -> argparse.Namespace:
                         default='examples/inventory.yml', help='ANTA Inventory file')
 
     parser.add_argument('--catalog', '-c', required=False,
-                        default='examples/tests_custom.yaml', help='ANTA Tests cagtalog')
+                        default='examples/tests_custom.yaml', help='ANTA Tests catalog')
 
     #############################
     # Device connectivity
