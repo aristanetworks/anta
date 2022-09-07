@@ -20,7 +20,7 @@ from yaml.loader import SafeLoader
 
 from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
                          InventoryUnknownFormat)
-from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
+from .models import AntaInventoryInput, InventoryDevice, InventoryDevices, DEFAULT_TAG
 
 # pylint: disable=W1309
 
@@ -288,7 +288,7 @@ class AntaInventory():
             device.session = connection
         return device
 
-    def _add_device_to_inventory(self, host_ip: str) -> None:
+    def _add_device_to_inventory(self, host_ip: str, tags: List[str] = List(DEFAULT_TAG)) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -308,7 +308,8 @@ class AntaInventory():
                 host=host_ip,
                 username=self._username,
                 password=self._password
-            )
+            ),
+            tags=tags
         )
         self._inventory.append(device)
 
@@ -319,7 +320,7 @@ class AntaInventory():
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host_ip=str(host.host))
+            self._add_device_to_inventory(host_ip=str(host.host), tags=host.tags)
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
@@ -329,7 +330,7 @@ class AntaInventory():
         assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                self._add_device_to_inventory(host_ip=host_ip)
+                self._add_device_to_inventory(host_ip=host_ip, tags=network.tags)
 
     def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
@@ -341,7 +342,8 @@ class AntaInventory():
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._add_device_to_inventory(host_ip=str(range_increment))
+                self._add_device_to_inventory(
+                    host_ip=str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
     def _inventory_rebuild(self, list_devices: List[InventoryDevice]) -> InventoryDevices:

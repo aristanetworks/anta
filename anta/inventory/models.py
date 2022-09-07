@@ -7,6 +7,11 @@ from typing import List, Optional, Any, Iterator
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
 
 
+# Default values
+
+DEFAULT_TAG = 'default'
+DEFAULT_HW_MODEL = 'unset'
+
 # Pydantic models for input validation
 
 
@@ -19,6 +24,7 @@ class AntaInventoryHost(BaseModel):
     """
 
     host: IPvAnyAddress
+    tags: List[str] = [DEFAULT_TAG]
 
 
 class AntaInventoryNetwork(BaseModel):
@@ -30,6 +36,7 @@ class AntaInventoryNetwork(BaseModel):
     """
 
     network: IPvAnyNetwork
+    tags: List[str] = [DEFAULT_TAG]
 
 
 class AntaInventoryRange(BaseModel):
@@ -43,6 +50,7 @@ class AntaInventoryRange(BaseModel):
 
     start: IPvAnyAddress
     end: IPvAnyAddress
+    tags: List[str] = [DEFAULT_TAG]
 
 
 class AntaInventoryInput(BaseModel):
@@ -86,8 +94,9 @@ class InventoryDevice(BaseModel):
     session: Any
     established = False
     is_online = False
-    hw_model: str = "unset"
+    hw_model: str = DEFAULT_HW_MODEL
     url: str
+    tags: List[str] = [DEFAULT_TAG]
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """
