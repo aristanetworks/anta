@@ -51,12 +51,15 @@ class AntaInventory():
               hosts:
                 - hosts: 1.1.1.1
                 - host: 2.2.2.2
+                  tags: ['dc1', 'spine', 'pod01']
               networks:
                 - network: 10.0.0.0/8
                 - network: 192.168.0.0/16
+                  tags: ['dc1', 'spine', 'pod01']
               ranges:
                 - start: 10.0.0.1
                   end: 10.0.0.11
+                  tags: ['dc1', 'spine', 'pod01']
 
         Inventory result:
 
@@ -83,6 +86,7 @@ class AntaInventory():
                     "url='https://ansible:ansible@192.168.0.2/command-api'",
                     "established=False"
                     "is_online=False",
+                    "tags": ['dc1', 'spine', 'pod01'],
                     "hw_model=unset",
                 ]
 
