@@ -840,10 +840,7 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
@@ -852,7 +849,10 @@
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryInput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryInput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    User&#39;s inventory model.</span>
 
@@ -917,6 +917,13 @@
           </td>
           <td><p>IPv4 or IPv6 address of the device</p></td>
         </tr>
+        <tr>
+          <td><code>tags</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td><p>List of attached tags read from inventory file.</p></td>
+        </tr>
     </tbody>
   </table>
 
@@ -932,12 +939,14 @@
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryHost</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryHost</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Host definition for user&#39;s inventory.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        host (IPvAnyAddress): IPv4 or IPv6 address of the device</span>
+<span class="sd">        tags (List[str]): List of attached tags read from inventory file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">host</span><span class="p">:</span> <span class="n">IPvAnyAddress</span>
@@ -993,14 +1002,20 @@
           </td>
           <td><p>Subnet to use for testing.</p></td>
         </tr>
+        <tr>
+          <td><code>tags</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td><p>List of attached tags read from inventory file.</p></td>
+        </tr>
     </tbody>
   </table>
 
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
-<span class="normal">31</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
@@ -1008,12 +1023,15 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryNetwork</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryNetwork</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Network definition for user&#39;s inventory.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        network (IPvAnyNetwork): Subnet to use for testing.</span>
+<span class="sd">        tags (List[str]): List of attached tags read from inventory file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">network</span><span class="p">:</span> <span class="n">IPvAnyNetwork</span>
@@ -1076,15 +1094,20 @@
           </td>
           <td><p>IPv4 or IPv6 address for the end of the range.</p></td>
         </tr>
+        <tr>
+          <td><code>tags</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td><p>List of attached tags read from inventory file.</p></td>
+        </tr>
     </tbody>
   </table>
 
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
@@ -1093,13 +1116,17 @@
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryRange</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventoryRange</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    IP Range definition for user&#39;s inventory.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.</span>
 <span class="sd">        stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.</span>
+<span class="sd">        tags (List[str]): List of attached tags read from inventory file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">start</span><span class="p">:</span> <span class="n">IPvAnyAddress</span>

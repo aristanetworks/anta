@@ -994,12 +994,15 @@
 <span class="w">  </span><span class="nv">hosts</span>:<span class="w"></span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">hosts</span>:<span class="w"> </span><span class="mi">1</span>.<span class="mi">1</span>.<span class="mi">1</span>.<span class="mi">1</span><span class="w"></span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">host</span>:<span class="w"> </span><span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">2</span><span class="w"></span>
+<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]<span class="w"></span>
 <span class="w">  </span><span class="nv">networks</span>:<span class="w"></span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">network</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">8</span><span class="w"></span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">network</span>:<span class="w"> </span><span class="mi">192</span>.<span class="mi">168</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span><span class="w"></span>
+<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]<span class="w"></span>
 <span class="w">  </span><span class="nv">ranges</span>:<span class="w"></span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">start</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span><span class="w"></span>
 <span class="w">      </span><span class="k">end</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">11</span><span class="w"></span>
+<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]<span class="w"></span>
 </code></pre></div>
 
 <p>Inventory result:</p>
@@ -1026,6 +1029,7 @@
 <span class="w">        </span><span class="s">&quot;url=&#39;https://ansible:ansible@192.168.0.2/command-api&#39;&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="s">&quot;established=False&quot;</span><span class="w"></span>
 <span class="w">        </span><span class="s">&quot;is_online=False&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s">&quot;tags&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">dc1</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">spine</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">pod01</span><span class="err">&#39;</span><span class="p">],</span><span class="w"></span>
 <span class="w">        </span><span class="s">&quot;hw_model=unset&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="p">]</span><span class="w"></span>
 </code></pre></div>
@@ -1568,7 +1572,11 @@
 <span class="normal">536</span>
 <span class="normal">537</span>
 <span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">():</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inventory Abstraction for ANTA framework.</span>
 
@@ -1588,12 +1596,15 @@
 <span class="sd">              hosts:</span>
 <span class="sd">                - hosts: 1.1.1.1</span>
 <span class="sd">                - host: 2.2.2.2</span>
+<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
 <span class="sd">              networks:</span>
 <span class="sd">                - network: 10.0.0.0/8</span>
 <span class="sd">                - network: 192.168.0.0/16</span>
+<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
 <span class="sd">              ranges:</span>
 <span class="sd">                - start: 10.0.0.1</span>
 <span class="sd">                  end: 10.0.0.11</span>
+<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
 
 <span class="sd">        Inventory result:</span>
 
@@ -1620,6 +1631,7 @@
 <span class="sd">                    &quot;url=&#39;https://ansible:ansible@192.168.0.2/command-api&#39;&quot;,</span>
 <span class="sd">                    &quot;established=False&quot;</span>
 <span class="sd">                    &quot;is_online=False&quot;,</span>
+<span class="sd">                    &quot;tags&quot;: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;],</span>
 <span class="sd">                    &quot;hw_model=unset&quot;,</span>
 <span class="sd">                ]</span>
 
@@ -2169,11 +2181,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
@@ -2213,7 +2221,11 @@
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">auto_connect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
              <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class constructor.</span>
@@ -2280,13 +2292,13 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">523</span>
 <span class="normal">524</span>
-<span class="normal">525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;connect_inventory Helper to prepare inventory with network data.&quot;&quot;&quot;</span>
     <span class="c1"># Check if devices are online &amp; update is_online flag</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">refresh_device_facts</span><span class="p">()</span>
@@ -2339,18 +2351,18 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">473</span>
 <span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
 <span class="normal">479</span>
-<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_all_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refresh_online_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_all_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refresh_online_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Helper to build RPC sessions to all devices.</span>
 
 <span class="sd">     Args:</span>
@@ -2427,11 +2439,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
@@ -2451,7 +2459,11 @@
 <span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
-<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_device_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_device_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get session of a device.</span>
 
 <span class="sd">    If device has already a session, function only returns active session, if not, try to build a new session</span>
@@ -2540,18 +2552,18 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
 <span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
 <span class="normal">446</span>
 <span class="normal">447</span>
-<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get device information from a given IP.</span>
 
 <span class="sd">    Args:</span>
@@ -2628,11 +2640,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">454</span>
 <span class="normal">455</span>
 <span class="normal">456</span>
 <span class="normal">457</span>
@@ -2642,7 +2650,11 @@
 <span class="normal">461</span>
 <span class="normal">462</span>
 <span class="normal">463</span>
-<span class="normal">464</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_device_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Server</span><span class="p">:</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_device_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Server</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Expose RPC session of a given host from our inventory.</span>
 
 <span class="sd">    Provide RPC session if the session exists, if not, it returns None</span>
@@ -2742,11 +2754,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
 <span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span>
@@ -2773,7 +2781,11 @@
 <span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">format_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;native&#39;</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">InventoryDevices</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;get_inventory Expose device inventory.</span>
@@ -2828,11 +2840,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">531</span>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
@@ -2840,7 +2848,11 @@
 <span class="normal">536</span>
 <span class="normal">537</span>
 <span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">refresh_device_facts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">refresh_device_facts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    refresh_online_flag_inventory Update is_online flag for all devices.</span>
 
@@ -2875,13 +2887,13 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
 <span class="normal">516</span>
-<span class="normal">517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the credentials for the Inventory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
