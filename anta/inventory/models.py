@@ -21,6 +21,7 @@ class AntaInventoryHost(BaseModel):
 
     Attributes:
         host (IPvAnyAddress): IPv4 or IPv6 address of the device
+        tags (List[str]): List of attached tags read from inventory file.
     """
 
     host: IPvAnyAddress
@@ -33,6 +34,7 @@ class AntaInventoryNetwork(BaseModel):
 
     Attributes:
         network (IPvAnyNetwork): Subnet to use for testing.
+        tags (List[str]): List of attached tags read from inventory file.
     """
 
     network: IPvAnyNetwork
@@ -46,6 +48,7 @@ class AntaInventoryRange(BaseModel):
     Attributes:
         start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
+        tags (List[str]): List of attached tags read from inventory file.
     """
 
     start: IPvAnyAddress
@@ -85,6 +88,7 @@ class InventoryDevice(BaseModel):
         is_online (bool): Flag to mark if host is alive (True) or not (False). Default: False.
         hw_model (str): HW name gathered during device discovery.
         url (str): eAPI URL to use to build session.
+        tags (List[str]): List of attached tags read from inventory file.
     """
 
     host: IPvAnyAddress

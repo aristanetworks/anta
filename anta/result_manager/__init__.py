@@ -93,9 +93,9 @@ class ResultManager:
         Expose list of all test results in different format
 
         Support multiple format:
-        - native: ListResults format
-        - list: a list of TestResult
-        - json: a native JSON format
+          - native: ListResults format
+          - list: a list of TestResult
+          - json: a native JSON format
 
         Args:
             output_format (str, optional): format selector. Can be either native/list/json. Defaults to 'native'.
