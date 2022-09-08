@@ -32,6 +32,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.pretty import pprint
+from rich import print_json
 
 import anta.loader
 from anta.inventory import AntaInventory
@@ -71,7 +72,7 @@ def cli_manager() -> argparse.Namespace:
                         default='examples/inventory.yml', help='ANTA Inventory file')
 
     parser.add_argument('--catalog', '-c', required=False,
-                        default='examples/tests_custom.yaml', help='ANTA Tests cagtalog')
+                        default='examples/tests_custom.yaml', help='ANTA Tests catalog')
 
     #############################
     # Device connectivity
@@ -106,9 +107,17 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--list', required=False, action='store_true',
                         help='Display internal data')
 
+    parser.add_argument('--json', required=False, action='store_true',
+                        help='Display data in json format')
+
     # Display result using a table (default is TRUE)
     parser.add_argument('--table', required=False, action='store_true',
                         help='Result represented in tables')
+
+    #############################
+    # Options for saving outputs
+    parser.add_argument('--save', required=False,
+                        default=None, help='Save output to file. Only valid for --list and --json')
 
     #############################
     # Options for table report
@@ -181,12 +190,23 @@ if __name__ == '__main__':
     if cli_options.list:
         console.print(Panel('List results of all tests', style='cyan'))
         pprint(manager.get_results(output_format="list"))
+        if cli_options.save is not None:
+            with open(cli_options.save, 'w', encoding='utf-8') as fout:
+                fout.write(str(manager.get_results(output_format="list")))
+
+    if cli_options.json:
+        console.print(Panel('JSON results of all tests', style='cyan'))
+        print_json(manager.get_results(output_format="json"))
+        if cli_options.save is not None:
+            with open(cli_options.save, 'w', encoding='utf-8') as fout:
+                fout.write(manager.get_results(output_format="json"))
 
     if cli_options.table:
         reporter = ReportTable()
         if cli_options.all_results or (not cli_options.by_test and not cli_options.by_host):
             console.print(reporter.report_all(result_manager=manager,
                           host=cli_options.hostip, testcase=cli_options.test))
+
         # To print only report per Test case
         if cli_options.by_test:
             console.print(reporter.report_summary_tests(

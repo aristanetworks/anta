@@ -172,7 +172,9 @@ optional arguments:
   --test TEST           search result for test
   --tags TAGS           List of device tags to limit scope of testing
   --list                Display internal data
+  --json                Display data in json format
   --table               Result represented in tables
+  --save SAVE           Save output to file. Only valid for --list and --json
   --all-results         Display all test cases results. Default table view (Only valid with --table)
   --by-host             Provides summary of test results per device (Only valid with --table)
   --by-test             Provides summary of test results per test case (Only valid with --table)
