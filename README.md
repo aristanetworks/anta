@@ -223,7 +223,6 @@ $ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --tabl
 └──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
 ````
 
-
 You can find more information about usage in the following [docs](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
 
 # Contribution guide
