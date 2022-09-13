@@ -107,8 +107,7 @@ nav:
   - Getting Started: getting-started.md
   - Requirements and installation: requirements-and-installation.md
   - Usage: usage.md
-  - User Documentation: user-documentation.md
-  - Tests Catalog:
+  - Tests Catalog Documentation:
     - Configuration: api/tests.configuration.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md

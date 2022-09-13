@@ -1,12 +1,12 @@
 # Repository usage
 
-Once you are done with the installation, you can use the the [scripts](../scripts) or the [ANTA](../anta) package.
+Once you are done with the installation, you can use the the [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) or the [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) package.
 
-## How to use the [scripts](../scripts)
+## How to use the scripts
 
 ### How to create an inventory from CVP
 
-The python script [create-devices-inventory-from-cvp.py](../scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
+The python script [create-devices-inventory-from-cvp.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/create-devices-inventory-from-cvp.py) create an inventory text file using CVP.
 
 Run these commands to get an inventory with all devices IP address.
 
@@ -26,11 +26,11 @@ cat inventory/Spine.yml
 
 ### How to check devices state
 
-The python script [check-devices.py](../scripts/check-devices.py) uses the python functions defined in the package [ANTA](api/README.md) to test devices:
+The python script [check-devices.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/check-devices.py) uses the python functions defined in the package [ANTA](api/README.md) to test devices:
 
-- Update the devices [inventory](../examples/inventory.yml)
-- Update the file [tests.yaml](../examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
-- Execute the script [check-devices.py](../scripts/check-devices.py)
+- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
+- Update the file [tests.yaml](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
+- Execute the script [check-devices.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/check-devices.py)
 - Check the tests result in the output file
 
 ```shell
@@ -42,11 +42,11 @@ vi tests.yaml
 
 ### How to collect commands output
 
-The python script [collect-eos-commands.py](../scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
+The python script [collect-eos-commands.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
 
-- Update the devices [inventory](../examples/inventory.yml)
-- Update the [EOS commands list](../examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
-- Run the python script [collect-eos-commands.py](../scripts/collect-eos-commands.py)
+- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
+- Update the [EOS commands list](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/eos-commands.yaml) you would like to collect from the devices in text or JSON format
+- Run the python script [collect-eos-commands.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-eos-commands.py)
 - The commands output is saved in the output directory
 
 ```shell
@@ -59,10 +59,10 @@ ls outdir
 
 ### How to collect the scheduled show tech-support files
 
-The python script [collect-sheduled-show-tech.py](../scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
+The python script [collect-sheduled-show-tech.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
 
-- Update the devices [inventory](../examples/inventory.yml)
-- Run the python script [collect-sheduled-show-tech.py](../scripts/collect-sheduled-show-tech.py)
+- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
+- Run the python script [collect-sheduled-show-tech.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-sheduled-show-tech.py)
 - The files are saved in the output directory
 
 ```shell
@@ -74,10 +74,10 @@ ls outdir
 
 ### How to clear counters
 
-The python script [clear-counters.py](../scripts/clear-counters.py) clears counters:
+The python script [clear-counters.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/clear-counters.py) clears counters:
 
-- Update the devices [inventory](../examples/inventory.yml)
-- Run the python script [clear-counters.py](../scripts/clear-counters.py)
+- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
+- Run the python script [clear-counters.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/clear-counters.py)
 
 ```shell
 vi inventory.yml
@@ -87,10 +87,10 @@ vi inventory.yml
 
 ### How to clear the MAC addresses which are blacklisted in EVPN
 
-The python script [evpn-blacklist-recovery.py](../scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
+The python script [evpn-blacklist-recovery.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
 
-- Update the devices [inventory](../examples/inventory.yml)
-- Run the python script [evpn-blacklist-recovery.py](../scripts/evpn-blacklist-recovery.py)
+- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
+- Run the python script [evpn-blacklist-recovery.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/evpn-blacklist-recovery.py)
 
 ```shell
 vi inventory.yml
@@ -98,7 +98,7 @@ vi inventory.yml
 ./evpn-blacklist-recovery.py -i inventory.yml -u username
 ```
 
-## How to use the [ANTA](../anta/) package
+## How to use the ANTA package
 
 ### How to instantiate the class `Server` of `jsonrpclib` for an EOS device
 
@@ -150,4 +150,5 @@ for device in devices:
 >>> from anta.tests.system import *
 >>> dir()
 >>> help(verify_ntp)
+>>> exit()
 ```

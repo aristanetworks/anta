@@ -1,2 +1,0 @@
-- [requirements-and-installation.md](requirements-and-installation.md): This file provides instructions about the requirements and installation procedure.
-- [usage.md](usage.md): Command usages

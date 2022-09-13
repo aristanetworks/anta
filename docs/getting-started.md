@@ -63,7 +63,7 @@ anta_inventory:
     end: 10.0.0.101
 ```
 
-Or you can use `create-devices-inventory-from-cvp.py` script to generate from Cloudvision
+Or you can use [create-devices-inventory-from-cvp.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
 
 ```bash
 # Available options

@@ -145,7 +145,7 @@ which check-devices-reachability.py
 
 ### Clone the repository and use the `pip install -r requirements.txt` command
 
-Run these commands to install the packages indicated in the [requirements.txt](../requirements.txt) file.
+Run these commands to install the packages indicated in the [requirements.txt](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt) file.
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -248,9 +248,8 @@ print(result[0]['uptime'])
 Run these python commands to validate you can import and use the [ANTA](anta) package
 
 ```python
-from anta.tests import *
+from anta.tests.system import *
 dir()
-help(verify_bgp_ipv4_unicast_state)
-verify_bgp_ipv4_unicast_state(switch, ENABLE_PASSWORD)
+help(verify_ntp)
 exit()
 ```
