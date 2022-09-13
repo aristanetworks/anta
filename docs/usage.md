@@ -2,7 +2,7 @@
 
 Once you are done with the installation, you can use the the [scripts](../scripts) or the [ANTA](../anta) package.
 
-## How to use the [scripts](scripts)
+## How to use the [scripts](../scripts)
 
 ### How to create an inventory from CVP
 

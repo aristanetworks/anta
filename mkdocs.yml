@@ -104,7 +104,8 @@ markdown_extensions:
 docs_dir: docs/
 nav:
   - Home: README.md
-  # - Getting Started: getting-started.md
+  - Getting Started: getting-started.md
+  - User Documentation: user-documentation.md
   - Tests Catalog:
     - Configuration: api/tests.configuration.md
     - Hardware: api/tests.hardware.md
