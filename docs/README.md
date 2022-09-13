@@ -6,13 +6,13 @@ This website provides generic documentation related to the Arista Network Test A
 
 This repository is a Python package to automate tests on Arista devices.
 
-- The package name is [ANTA](./../anta/), which stands for **Arista Network Test Automation**.
+- The package name is [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/), which stands for **Arista Network Test Automation**.
 - This package provides a set of tests to validate the state of your network.
 - This package can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
 
-This repository comes with a set of [scripts](./../scripts/) to run __Arista Network Test Automation__ (ANTA) framework
+This repository comes with a set of [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/) to run __Arista Network Test Automation__ (ANTA) framework
 
 - `check-devices.py` is an easy to use script to test your network with ANTA.
 - `collect-eos-commands.py` to collect commands output from devices

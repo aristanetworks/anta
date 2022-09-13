@@ -1,6 +1,16 @@
 # Getting Started
 
-This section shows how to use ANTA with basic configuration. For more information, please refer to this [page](./docs/usage.md).
+This section shows how to use ANTA with basic configuration.
+
+## Installation
+
+The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip package to install:
+
+```bash
+pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+```
+
+For more details about how to install package, please see the [requirements and intallation](./requirements-and-installation.md) section.
 
 ## Configure Arista EOS devices
 
@@ -53,7 +63,7 @@ anta_inventory:
     end: 10.0.0.101
 ```
 
-Or you can use [`create-devices-inventory-from-cvp.py`](scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
+Or you can use `create-devices-inventory-from-cvp.py` script to generate from Cloudvision
 
 ```bash
 # Available options
@@ -74,7 +84,7 @@ $ create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -
 ```
 ## Test Catalog
 
-To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by [`anta.loader.parse_catalog`](anta/loader.py)
+To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by anta.loader.py
 
 The structure to follow is like:
 
@@ -183,5 +193,3 @@ $ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --tabl
 │ 10.73.252.21 │ 0            │ 1            │ 0            │ 0           │ []                         │
 └──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
 ```
-
-You can find more information about usage in the following [docs](./docs/usage.md). Also a demo page is available in the [repository](./docs/demo.md) with full outputs.
