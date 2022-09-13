@@ -1,0 +1,95 @@
+---
+software:
+  - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
+      versions: # List of allowed EOS versions.
+        - 4.25.4M
+        - 4.26.1F
+  - verify_terminattr_version: # Verifies the device is running one of the allowed TerminAttr version.
+      versions: # List of allowed TerminAttr versions.
+        - v1.13.6
+        - v1.8.0
+  - verify_eos_extensions: # Verifies all EOS extensions installed on the device are enabled for boot persistence.
+  - verify_field_notice_44_resolution: # Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+system:
+  - verify_uptime: # Verifies the device uptime is higher than a value.
+      minimum: 86400 # Minimum uptime in seconds.
+  - verify_reload_cause: # Verifies the last reload of the device was requested by a user.
+  - verify_coredump: # Verifies there is no core file.
+  - verify_agent_logs: # Verifies there is no agent crash reported on the device.
+  - verify_syslog: # Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days.
+  - verify_cpu_utilization: # Verifies the CPU utilization is less than 75%.
+  - verify_memory_utilization: # Verifies the memory utilization is less than 75%.
+  - verify_filesystem_utilization: # Verifies each partition on the disk is used less than 75%.
+  - verify_ntp: # Verifies NTP is synchronised.
+hardware:
+  - verify_transceivers_manufacturers: # Verifies the device is only using transceivers from supported manufacturers.
+      manufacturers: # List of allowed transceivers manufacturers.
+        - Not Present
+        - Arista Networks
+        - Arastra, Inc.
+  - verify_system_temperature: # Verifies the device temperature is currently OK and the device did not report any temperature alarm in the past.
+  - verify_transceiver_temperature: # Verifies the transceivers temperature is currently OK and the device did not report any alarm in the past for its transceivers temperature.
+  - verify_environment_cooling: # Verifies the fans status is OK.
+  - verify_environment_power: # Verifies the power supplies status is OK.
+  - verify_adverse_drops: # Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
+configuration:
+  - verify_zerotouch: # Verifies ZeroTouch is disabled.
+  - verify_running_config_diffs: # Verifies there is no difference between the running-config and the startup-config.
+profiles:
+  - verify_unified_forwarding_table_mode: # Verifies the device is using the expected Unified Forwarding Table mode.
+      mode: 3 # Expected UFT mode.
+  - verify_tcam_profile: # Verifies the configured TCAM profile is the expected one.
+      profile: vxlan-routing # Expected TCAM profile.
+interfaces:
+  - verify_interface_utilization: # Verifies interfaces utilization are below 75%.
+  - verify_interface_errors: # Verifies interfaces error counters are equal to zero.
+  - verify_interface_discards: # Verifies interfaces packet discard counters are equal to zero.
+  - verify_interface_errdisabled: # Verifies there is no interface in error disable state.
+  - verify_interfaces_status: # Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+      minimum: 4 # Expected minimum number of Ethernet interfaces up/up.
+  - verify_storm_control_drops: # Verifies the device did not drop packets due its to storm-control configuration.
+  - verify_portchannels: # Verifies there is no inactive port in port channels.
+  - verify_illegal_lacp: # Verifies there is no illegal LACP packets received.
+  - verify_loopback_count: # Verifies the number of loopback interfaces on the device is the one we expect. And if none of the loopback is down.
+      number: 3 # Number of loopback interfaces expected to be present.
+  - verify_svi: # Verifies there is no interface vlan down.
+  - verify_spanning_tree_blocked_ports: # Verifies there is no spanning-tree blocked ports.
+mlag:
+  - verify_mlag_status: # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
+  - verify_mlag_interfaces: # Verifies there is no inactive or active-partial MLAG interfaces.
+  - verify_mlag_config_sanity: # Verifies there are no mlag config-sanity warnings
+vxlan:
+ - verify_vxlan: # Verifies the interface vxlan 1 status is up/up.
+ - verify_vxlan_config_sanity: # Verifies there is no VXLAN config-sanity warnings.
+routing:
+  generic:
+    - verify_routing_protocol_model: # Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.
+        model: multi-agent # Expected routing protocol model (multi-agent or ribd).
+    - verify_routing_table_size: # Verifies the size of the IP routing table (default VRF) (should be between the two provided thresholds).
+        minimum: 2 # Expected minimum number of IP routes in default VRF
+        maximum: 20 # Expected maximum number of IP routes in default VRF
+    - verify_bfd: # Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
+  bgp:
+    - verify_bgp_ipv4_unicast_state: # Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
+    - verify_bgp_ipv4_unicast_count: # Verifies all IPv4 unicast BGP sessions are established and all BGP messages queues for these sessions are empty and the actual number of BGP IPv4 unicast neighbors is the one we expect.
+        number: 2 # The expected number of BGP IPv4 unicast neighbors.
+        vrf: default # VRF to verify.
+    - verify_bgp_ipv6_unicast_state: # Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF).
+    - verify_bgp_evpn_state: # Verifies all EVPN BGP sessions are established (default VRF).
+    - verify_bgp_evpn_count: # Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
+        number: 2 # The expected number of BGP EVPN neighbors in the default VRF.
+    - verify_bgp_rtc_state: # Verifies all RTC BGP sessions are established (default VRF).
+    - verify_bgp_rtc_count: # Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).
+        number: 2 # The expected number of BGP RTC neighbors (default VRF).
+  ospf:
+    - verify_ospf_state: # Verifies all OSPF neighbors are in FULL state.
+    - verify_ospf_count: # Verifies the number of OSPF neighbors in FULL state is the one we expect.
+        number: 3 # The expected number of OSPF neighbors in FULL state.
+multicast:
+  - verify_igmp_snooping_vlans: # Verifies the IGMP snooping configuration for some VLANs.
+      configuration: disabled # Expected IGMP configuration (enabled or disabled) for these VLANs.
+      vlans: # List of VLANs.
+        - 10
+        - 12
+  - verify_igmp_snooping_global: # Verifies the IGMP snooping global configuration.
+      configuration: enabled # Expected global IGMP configuration (enabled or disabled).
