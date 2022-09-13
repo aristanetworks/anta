@@ -116,6 +116,32 @@ vi inventory.yml
 
 ### How to import and use the inventory
 
+```python
+from anta.inventory import AntaInventory
+
+inventory = AntaInventory(
+    inventory_file="inventory.yml",
+    username="username",
+    password="password",
+    enable_password="enable",
+    auto_connect=True,
+    timeout=1,
+)
+
+devices = inventory.get_inventory(established_only=False)
+for device in devices:
+    if device.established is False:
+        host = str(device.host)
+        print(f"Could not connect to device {host}")
+
+devices = inventory.get_inventory(established_only=True)
+for device in devices:
+    switch = device.session
+    switch.runCmds(
+        1, ["show version"]
+    )
+```
+
 ### How to import and use the tests functions
 
 ```python
