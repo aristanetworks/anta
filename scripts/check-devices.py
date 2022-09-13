@@ -147,9 +147,8 @@ if __name__ == '__main__':
     console = Console()
     cli_options = cli_manager()
 
-    if cli_options.loglevel.upper() != 'CRITICAL':
-        logging.getLogger('anta.inventory').setLevel(cli_options.loglevel.upper())
-        logging.getLogger('anta.result_manager').setLevel(cli_options.loglevel.upper())
+    logging.getLogger('anta.inventory').setLevel(cli_options.loglevel.upper())
+    logging.getLogger('anta.result_manager').setLevel(cli_options.loglevel.upper())
 
     inventory_anta = AntaInventory(
         inventory_file=cli_options.inventory,
