@@ -86,8 +86,8 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--enable_password', '-e', required=False,
                         default='ansible', help='EOS Enable Password')
 
-    parser.add_argument('--timeout', '-t', required=False,
-                        default=0.5, help='eAPI connection timeout')
+    parser.add_argument('--timeout', '-t', required=False, type=float,
+                        default=1, help='eAPI connection timeout')
 
     #############################
     # Search options
@@ -134,6 +134,11 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--by-test', required=False, action='store_true',
                         help='Provides summary of test results per test case (Only valid with --table)')
 
+    # Logging option
+
+    parser.add_argument('-log', '--loglevel', default='critical',
+                        help='Provide logging level. Example --loglevel debug, default=critical')
+
     return parser.parse_args()
 
 
@@ -141,6 +146,10 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     console = Console()
     cli_options = cli_manager()
+
+    if cli_options.loglevel.upper() != 'CRITICAL':
+        logging.getLogger('anta.inventory').setLevel(cli_options.loglevel.upper())
+        logging.getLogger('anta.result_manager').setLevel(cli_options.loglevel.upper())
 
     inventory_anta = AntaInventory(
         inventory_file=cli_options.inventory,

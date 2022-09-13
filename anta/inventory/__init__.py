@@ -7,6 +7,7 @@ Inventory Module for ANTA.
 
 import logging
 import ssl
+import socket
 from multiprocessing import cpu_count, Pool
 from socket import setdefaulttimeout
 from typing import List, Optional, Union
@@ -190,6 +191,10 @@ class AntaInventory():
             setdefaulttimeout(timeout)
             connection.runCmds(1, ['show version'])
         # pylint: disable=W0703
+        except (socket.timeout) as exp:
+            logger.warning(f'Service not running on device {device.host}')
+            logger.warning(f'connection return: f{exp}')
+            return False
         except Exception:
             logger.warning(f'Service not running on device {device.host}')
             return False
