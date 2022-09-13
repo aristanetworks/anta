@@ -37,7 +37,7 @@ The python script [check-devices.py](../scripts/check-devices.py) uses the pytho
 vi inventory.yml
 vi tests.yaml
 ./check-devices.py --help
-./check-devices.py -i inventory.yml -c tests.yaml --table -u username
+./check-devices.py -i inventory.yml -c tests.yaml --table -u username -p password
 ```
 
 ### How to collect commands output
@@ -128,17 +128,19 @@ inventory = AntaInventory(
     timeout=1,
 )
 
+# print the non reachable devices
 devices = inventory.get_inventory(established_only=False)
 for device in devices:
     if device.established is False:
         host = str(device.host)
         print(f"Could not connect to device {host}")
 
+# run an EOS commands list on the reachable devices from the inventory
 devices = inventory.get_inventory(established_only=True)
 for device in devices:
     switch = device.session
     switch.runCmds(
-        1, ["show version"]
+        1, ["show version", "show ip bgp summary"]
     )
 ```
 
