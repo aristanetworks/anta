@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "check-devices debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/check-devices.py",
+            "args": [
+                "-u",
+                "admin",
+                "-p",
+                "admin123",
+                "-log",
+                "INFO",
+                "-i",
+                "${workspaceFolder}/.personal/avd-lab.yml",
+                "-c",
+                "${workspaceFolder}/.personal/ceos-catalog.yml",
+                "--table",
+                "--timeout",
+                "1"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}
