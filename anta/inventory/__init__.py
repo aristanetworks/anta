@@ -7,10 +7,9 @@ Inventory Module for ANTA.
 
 import logging
 import ssl
-import socket
-from multiprocessing import cpu_count, Pool
+from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any, Iterator
 
 import yaml
 from jinja2 import Template
@@ -124,9 +123,6 @@ class AntaInventory():
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
-        # Max number of thread to launch for discovery
-        self.max_multiprocessing_thread = cpu_count() + 30
-
         with open(inventory_file, 'r', encoding='utf8') as fd:
             data = yaml.load(fd, Loader=SafeLoader)
 
@@ -191,12 +187,9 @@ class AntaInventory():
             setdefaulttimeout(timeout)
             connection.runCmds(1, ['show version'])
         # pylint: disable=W0703
-        except (socket.timeout) as exp:
-            logger.warning(f'Service not running on device {device.host}')
+        except Exception as exp:
+            logger.warning(f'Service not running on device {device.host} with: ')
             logger.warning(f'connection return: f{exp}')
-            return False
-        except Exception:
-            logger.warning(f'Service not running on device {device.host}')
             return False
         else:
             return True
@@ -358,7 +351,7 @@ class AntaInventory():
                     host_ip=str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _inventory_rebuild(self, list_devices: List[InventoryDevice]) -> InventoryDevices:
+    def _inventory_rebuild(self, list_devices: Iterator[Any]) -> InventoryDevices:
         """
         _inventory_rebuild Transform a list of InventoryDevice into a InventoryDevices object.
 
@@ -499,8 +492,7 @@ class AntaInventory():
         Returns:
             bool: True if update succeed, False if not
         """
-        logger.debug(
-            f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
+        logger.debug(f'Searching for device {host_ip}')
         if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)]) > 0:
             device = [dev for dev in self._inventory if str(
                 dev.host) == str(host_ip)][0]
@@ -540,9 +532,9 @@ class AntaInventory():
         Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
         """
         logger.debug('Refreshing facts for current inventory')
-        with Pool(processes=self.max_multiprocessing_thread) as pool:
+        with ThreadPoolExecutor() as executor:
             logger.debug('Check devices using multiprocessing')
-            results_map = pool.map(
+            future = executor.map(
                 self._get_from_device,  self._inventory)
             logger.debug('Update inventory with updated data')
-            self._inventory = self._inventory_rebuild(results_map)
+            self._inventory = self._inventory_rebuild(future)
