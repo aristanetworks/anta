@@ -492,7 +492,7 @@ class AntaInventory():
         Returns:
             bool: True if update succeed, False if not
         """
-        logger.debug(f'Searching for device {host_ip}')
+        logger.debug(f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
         if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)]) > 0:
             device = [dev for dev in self._inventory if str(
                 dev.host) == str(host_ip)][0]
