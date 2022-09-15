@@ -110,6 +110,7 @@ class AntaInventory():
     def __init__(self, inventory_file: str, username: str, password: str,
                  enable_password: str = None, auto_connect: bool = True,
                  timeout: float = 5) -> None:
+        # sourcery skip: remove-unnecessary-cast, simplify-len-comparison
         """Class constructor.
 
         Args:
@@ -183,8 +184,8 @@ class AntaInventory():
         logger.debug(f'Checking if device {device.host} is online')
         connection = Server(device.url)
         # Check connectivity
+        setdefaulttimeout(timeout)
         try:
-            setdefaulttimeout(timeout)
             connection.runCmds(1, ['show version'])
         # pylint: disable=W0703
         except Exception as exp:
@@ -533,8 +534,6 @@ class AntaInventory():
         """
         logger.debug('Refreshing facts for current inventory')
         with ThreadPoolExecutor() as executor:
-            logger.debug('Check devices using multiprocessing')
-            future = executor.map(
+            results_map = executor.map(
                 self._get_from_device,  self._inventory)
-            logger.debug('Update inventory with updated data')
-            self._inventory = self._inventory_rebuild(future)
+            self._inventory = self._inventory_rebuild(results_map)
