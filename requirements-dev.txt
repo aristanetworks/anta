@@ -1,4 +1,4 @@
-lazydocs
+bump2version==1.0.1
 pytest
 pylint
 pytest-cov>=2.11.1
