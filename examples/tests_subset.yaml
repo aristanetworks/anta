@@ -1,0 +1,17 @@
+---
+# Load anta.tests.software
+software:
+  - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
+      versions: # List of allowed EOS versions.
+        - 4.25.4M
+        - 4.26.1F
+
+# Load anta.tests.system
+system:
+  - verify_uptime: # Verifies the device uptime is higher than a value.
+      minimum: 1
+
+# Load anta.tests.configuration
+configuration:
+  - verify_zerotouch: # Verifies ZeroTouch is disabled.
+  - verify_running_config_diffs:
