@@ -12,17 +12,26 @@ logger = logging.getLogger(__name__)
 
 
 def parse_catalog(
-    test_catalog: Dict[Any, Any], package: str = "anta.tests"
+    test_catalog: Dict[Any, Any], package: str = None
 ) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
     Function to pase the catalog and return a list of tests
+
+    Args:
+        test_catalog (Dict[Any, Any]): List of tests defined in catalog YAML file
+
+    Returns:
+        List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
     """
     tests = []
     for key, value in test_catalog.items():
+        # Reauired to manage iteration within a tests module
+        if package is not None:
+            key = ".".join([package, key])
         try:
-            module = importlib.import_module(f"{package}.{key}")
+            module = importlib.import_module(f"{key}")
         except ModuleNotFoundError:
-            logger.error(f"No test module named '{key}' in package '{package}'")
+            logger.error(f"No test module named '{key}")
             sys.exit(1)
         if isinstance(value, list):
             # This is a list of tests
