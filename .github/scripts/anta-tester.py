@@ -20,11 +20,13 @@
 
 """Internal ANTA Test script - should not be used in a production environment."""
 
+import asyncio
 import argparse
 import logging
 import sys
 import itertools
 from yaml import safe_load
+from typing import Callable, List, Tuple, Dict, Any
 
 from rich.console import Console
 from rich.logging import RichHandler
@@ -33,7 +35,7 @@ from rich.pretty import Pretty, pprint
 
 import anta.loader
 from anta.inventory import AntaInventory
-from anta.result_manager import ResultManager
+from anta.result_manager import ResultManager, TestResult
 from anta.reporter import ReportTable
 
 
@@ -57,6 +59,22 @@ logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
 
+async def main(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]):
+    await inventory_anta.connect_inventory()
+    return await run_tests(inventory_anta, tests_catalog)
+
+async def run_tests(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> ResultManager:
+    """
+    Schedule test runs concurrently
+    """
+    manager = ResultManager()
+    tests = itertools.product(inventory_anta.get_inventory(), tests_catalog)
+    results = await asyncio.gather(*(test[0](device, **test[1]) for device, test in tests), return_exceptions=False)
+    for r in results:
+        if isinstance(r, Exception):
+            logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
+    manager.add_test_results(results)
+    return manager
 
 def cli_manager() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
@@ -88,7 +106,7 @@ def cli_manager() -> argparse.Namespace:
     #############################
     # Search options
 
-    parser.add_argument('--search_ip', '--hostip', required=False,
+    parser.add_argument('--search_host', '--host', required=False,
                         default=None, help='search result for host')
 
     parser.add_argument('--search_test', '--test', required=False,
@@ -190,8 +208,8 @@ if __name__ == '__main__':
         password=cli_options.password,
         enable_password=cli_options.enable_password,
         timeout=0.5,
-        auto_connect=True
-    )
+        filter_hosts=cli_options.search_host
+        )
     logger.info(f'Inventory {cli_options.inventory} loaded')
     if cli_options.verbose:
         output = Pretty(
@@ -201,8 +219,8 @@ if __name__ == '__main__':
             Panel('Current Inventory (active devices only)', style='cyan'))
         console.print(output)
 
-    if cli_options.search_ip is not None:
-        logger.info(f'starting running test on device {cli_options.search_ip} ...')
+    if cli_options.search_host is not None:
+        logger.info(f'starting running test on device {cli_options.search_host} ...')
     else:
         logger.info('starting running test on devices ...')
 
@@ -220,18 +238,14 @@ if __name__ == '__main__':
     # Test Execution
     ############################################################################
 
-    manager = ResultManager()
-    list_tests = []
-    for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
-        if (cli_options.search_ip is None or cli_options.search_ip == str(device.host)) and \
-           (cli_options.search_test is None or cli_options.search_test == str(test[0].__name__)):
-            list_tests.append(str(test[0]))
-            manager.add_test_result(
-                test[0](
-                    device,
-                    **test[1]
-                )
-            )
+    if cli_options.search_test:
+        all_tests = tests_catalog
+        tests_catalog = []
+        for test in all_tests:
+            if test[0].__name__ == cli_options.search_test:
+                tests_catalog = [test]
+
+    manager = asyncio.run(main(inventory_anta, tests_catalog), debug=False)
 
     ############################################################################
     # Test Reporting
