@@ -112,14 +112,16 @@ class AntaInventory:
 
     # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: str = None, timeout: float = 5.0) -> None:
+                 enable_password: str = None, timeout: float = 10.0,
+                 filter_hosts: List[str] = None) -> None:
         """Class constructor.
 
         Args:
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
-            timeout (float, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
+            timeout (float, optional): timeout in seconds for every API call. Defaults to 10sec.
+            filter_hosts (str, optional): create inventory only with matching host name in this list. Empty list disable the filter.
         """
         self.set_credentials(username, password, enable_password)
         self.timeout = timeout
@@ -147,6 +149,11 @@ class AntaInventory:
             self._inventory_read_networks()
         if self._read_inventory.dict()["ranges"] is not None:
             self._inventory_read_ranges()
+
+        if filter_hosts:
+            for device in self._inventory:
+                if device.url.host not in filter_hosts:
+                    del device
 
         for device in self._inventory:
             device.session = Device(host=device.url.host, port=device.url.port,
