@@ -73,6 +73,45 @@ class AntaInventoryInput(BaseModel):
 
 # Pydantic models for inventory output structures
 
+class eAPIUrl(AnyHttpUrl):
+    """
+    eAPI URL field type
+    The build method has been overriden to provide default value of a eAPI endpoint when using it.
+
+    Examples:
+    In : eAPIUrl.build()
+    Out: 'http://localhost:8080/command-api'
+
+    In : eAPIUrl.build(host='1.1.1.1')
+    Out: 'https://1.1.1.1:443/command-api'
+
+    In : eAPIUrl.build(host='1.1.1.1', port='80')
+    Out: 'http://1.1.1.1:80/command-api'
+    """
+    allowed_schemes = {'http', 'https'}
+    host_required = True
+
+    @staticmethod
+    def get_default_parts(parts: 'Parts') -> 'Parts':
+        return {
+            'scheme': 'http' if ((parts.get('port') in ['80', '8080']) or parts.get('host') is None) else 'https',
+            'domain': 'localhost' if (parts.get('port') == '8080') else '',
+            'port': '8080' if (parts.get('host') is None) else '443',
+            'path': '/command-api',
+        }
+
+    @classmethod
+    def build(cls, **kwargs):
+        """
+        Include default path and port when building an eAPI URL
+        """
+        parts = Parts(**kwargs)
+        default = cls.get_default_parts(parts)
+        for field in default:
+            if field not in kwargs:
+                kwargs.update({field: default.get(field)})
+        return super().build(**kwargs)
+
 
 class InventoryDevice(BaseModel):
     """
