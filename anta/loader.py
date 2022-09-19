@@ -24,6 +24,8 @@ def parse_catalog(
         List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
     """
     tests = []
+    if not test_catalog:
+        return tests
     for key, value in test_catalog.items():
         # Reauired to manage iteration within a tests module
         if package is not None:
