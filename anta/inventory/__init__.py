@@ -12,7 +12,6 @@ from socket import setdefaulttimeout
 from typing import List, Optional, Union, Any, Iterator
 
 import yaml
-from jinja2 import Template
 from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
@@ -99,8 +98,6 @@ class AntaInventory():
 
     # Root key of inventory part of the inventory file
     INVENTORY_ROOT_KEY = 'anta_inventory'
-    # Template to build eAPI connection URL
-    EAPI_SESSION_TPL = 'https://{{device_username}}:{{device_password}}@{{device}}/command-api'
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ['native', 'json']
     # HW model definition in show version
@@ -155,7 +152,7 @@ class AntaInventory():
     # Boolean methods
     ###########################################################################
 
-    def _is_ip_exist(self, ip: str) -> bool:
+    def _is_ip_exist(self, ip: str) -> bool:  # TODO mtache: unused, remove this ?
         """Check if an IP is part of the current inventory.
 
         Args:
@@ -245,26 +242,6 @@ class AntaInventory():
         if device.is_online and hw_model:
             device.hw_model = hw_model
         return device
-
-    def _build_device_session_path(self, host: str, username: str, password: str) -> str:
-        """Construct URL to reach device using eAPI.
-
-        Jinja2 render to build URL to use for eAPI session.
-
-        Args:
-            host (str): IP Address of the device to target in the eAPI session
-            username (str): Username for authentication
-            password (str): Password for authentication
-
-        Returns:
-            str: String to use to create eAPI session
-        """
-        session_template = Template(self.EAPI_SESSION_TPL)
-        return session_template.render(
-            device=host,
-            device_username=username,
-            device_password=password
-        )
 
     def _build_device_session(self, device: InventoryDevice, timeout: float = 5) -> InventoryDevice:
         """Create eAPI RPC session to Arista EOS devices.
@@ -432,7 +409,7 @@ class AntaInventory():
 
         return inventory
 
-    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:
+    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:  # TODO mtache: unused, remove this ?
         """Get device information from a given IP.
 
         Args:
@@ -445,7 +422,7 @@ class AntaInventory():
             return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
         return None
 
-    def get_device_session(self, host_ip: str) -> Server:
+    def get_device_session(self, host_ip: str) -> Server:  # TODO mtache: unused, remove this ?
         """Expose RPC session of a given host from our inventory.
 
         Provide RPC session if the session exists, if not, it returns None
