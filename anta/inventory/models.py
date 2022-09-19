@@ -4,7 +4,8 @@
 """Models related to inventory management."""
 
 from typing import List, Optional, Any, Iterator
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
+from pydantic.networks import Parts
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, AnyHttpUrl, conint, root_validator
 
 
 # Default values
@@ -24,7 +25,9 @@ class AntaInventoryHost(BaseModel):
         tags (List[str]): List of attached tags read from inventory file.
     """
 
-    host: IPvAnyAddress
+    name: Optional[str]
+    host: str
+    port: Optional[conint(gt=1, lt=65535)]
     tags: List[str] = [DEFAULT_TAG]
 
 
@@ -118,7 +121,7 @@ class InventoryDevice(BaseModel):
     Inventory model exposed by Inventory class.
 
     Attributes:
-        host (IPvAnyAddress): IPv4 or IPv6 address of the device.
+        name (str): Device name
         username (str): Username to use for connection.
         password (password): Password to use for connection.
         enable_password (Optional[str]): enable_password to use on the device, required for some tests
@@ -130,16 +133,44 @@ class InventoryDevice(BaseModel):
         tags (List[str]): List of attached tags read from inventory file.
     """
 
-    host: IPvAnyAddress
-    username: str
-    password: str
+    name: str
+    user: str  # TODO: duplicate with url.user
+    password: str  # TODO: duplicate with url.password
     enable_password: Optional[str]
     session: Any
     established = False
     is_online = False
     hw_model: str = DEFAULT_HW_MODEL
-    url: str
+    url: eAPIUrl
     tags: List[str] = [DEFAULT_TAG]
+
+    @root_validator(pre=True)
+    def build_name(cls, values):
+        """ Build name attribute """
+        if values.get('name') is None:
+            assert 'host' in values, 'host required if name is not provided'
+            values['name'] = f"{values.get('host')}:{values.get('url').get('port')}"
+        return values
+
+    @root_validator(pre=True)
+    def build_eapi_url(cls, values):
+        """ Build url attribute """
+        if values.get('url') is None:
+            if values.get('host') is not None:
+                # Ensure the host field is a string
+                values.update(host=str(values['host']))
+            if values.get('port') is not None:
+                # Ensure the port field is a string
+                values.update(port=str(values['port']))
+            values['url'] = eAPIUrl.build(**values)
+        return values
+
+    def __eq__(self, other):
+        """
+            Two InventoryDevice objects are equal if the hostname and the port are the same.
+            This covers the use case of port forwarding when the host is localhost and the devices have different ports.
+        """
+        return self.url.host == other.url.host and self.url.port == other.url.port
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """
