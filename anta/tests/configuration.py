@@ -28,8 +28,8 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     try:
         response = device.session.runCmds(1, ["show zerotouch"], "json")
         logger.debug(f'query result is: {response}')
@@ -41,7 +41,7 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
 
     return result
@@ -64,8 +64,8 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     try:
         device.assert_enable_password_is_not_none("verify_running_config_diffs")
 
@@ -89,7 +89,7 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
 
     except (ValueError, jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
 
     return result

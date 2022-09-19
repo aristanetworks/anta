@@ -33,8 +33,8 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(
@@ -73,7 +73,7 @@ def verify_bgp_ipv4_unicast_state(device: InventoryDevice) -> TestResult:
             result.is_failure(f"Some IPv4 Unicast BGP Peer are not up: {state_issue}")
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
@@ -104,8 +104,8 @@ def verify_bgp_ipv4_unicast_count(
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     if not number or not vrf:
         result.is_skipped(
@@ -147,7 +147,7 @@ def verify_bgp_ipv4_unicast_count(
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -171,8 +171,8 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(
@@ -212,7 +212,7 @@ def verify_bgp_ipv6_unicast_state(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -236,8 +236,8 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
@@ -259,7 +259,7 @@ def verify_bgp_evpn_state(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -285,8 +285,8 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     if not number:
         result.is_skipped(
@@ -310,7 +310,7 @@ def verify_bgp_evpn_count(device: InventoryDevice, number: int) -> TestResult:
                 )
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+        logger.error(f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
@@ -334,8 +334,8 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
@@ -355,7 +355,7 @@ def verify_bgp_rtc_state(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -381,8 +381,8 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     if not number:
         result.is_skipped(
@@ -410,6 +410,6 @@ def verify_bgp_rtc_count(device: InventoryDevice, number: int) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result

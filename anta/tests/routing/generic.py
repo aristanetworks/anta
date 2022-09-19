@@ -33,8 +33,8 @@ def verify_routing_protocol_model(
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     if not model:
         result.is_skipped(
@@ -57,7 +57,7 @@ def verify_routing_protocol_model(
             )
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
@@ -84,8 +84,8 @@ def verify_routing_table_size(
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     if not minimum or not maximum:
         result.is_skipped(
@@ -107,7 +107,7 @@ def verify_routing_table_size(
             )
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
@@ -128,8 +128,8 @@ def verify_bfd(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show bfd peers"], "json")
@@ -160,7 +160,7 @@ def verify_bfd(device: InventoryDevice) -> TestResult:
             result.is_success()
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result

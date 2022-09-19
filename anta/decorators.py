@@ -71,7 +71,7 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
             eapi_command = "show bgp evpn summary" if family == "evpn" else eapi_command
             eapi_command = "show bgp rt-membership summary" if family == "rtc" else eapi_command
 
-            result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
+            result = TestResult(name=str(device.name), test=function.__name__)  # type: ignore
             try:
                 response = device.session.runCmds(  # type: ignore
                     1, [eapi_command], "json")  # type: ignore

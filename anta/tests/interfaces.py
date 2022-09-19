@@ -25,7 +25,7 @@ def verify_interface_utilization(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_interface_utilization")
+    result = TestResult(name=device.name, test="verify_interface_utilization")
     try:
         # TODO make it JSON - bad news it seems percentages are not in the json payload
         response = device.session.runCmds(1, ["show interfaces counters rates"], "text")
@@ -69,7 +69,7 @@ def verify_interface_errors(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_interface_errors")
+    result = TestResult(name=device.name, test="verify_interface_errors")
 
     try:
         response = device.session.runCmds(
@@ -109,7 +109,7 @@ def verify_interface_discards(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_interface_discards")
+    result = TestResult(name=device.name, test="verify_interface_discards")
 
     try:
         response = device.session.runCmds(
@@ -149,7 +149,7 @@ def verify_interface_errdisabled(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_interface_errdisabled")
+    result = TestResult(name=device.name, test="verify_interface_errdisabled")
 
     try:
         response = device.session.runCmds(1, ["show interfaces status"], "json")
@@ -192,7 +192,7 @@ def verify_interfaces_status(
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_interfaces_status")
+    result = TestResult(name=device.name, test="verify_interfaces_status")
     if not minimum:
         result.result = "skipped"
         result.messages.append(
@@ -247,7 +247,7 @@ def verify_storm_control_drops(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_storm_control_drops")
+    result = TestResult(name=device.name, test="verify_storm_control_drops")
 
     try:
         response = device.session.runCmds(1, ["show storm-control"], "json")
@@ -293,7 +293,7 @@ def verify_portchannels(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_portchannels")
+    result = TestResult(name=device.name, test="verify_portchannels")
 
     try:
         response = device.session.runCmds(1, ["show port-channel"], "json")
@@ -334,7 +334,7 @@ def verify_illegal_lacp(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_illegal_lacp")
+    result = TestResult(name=device.name, test="verify_illegal_lacp")
 
     try:
         response = device.session.runCmds(1, ["show lacp counters all-ports"], "json")
@@ -380,7 +380,7 @@ def verify_loopback_count(device: InventoryDevice, number: int = None) -> TestRe
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_loopback_count")
+    result = TestResult(name=device.name, test="verify_loopback_count")
 
     if not number:
         result.is_skipped(
@@ -438,7 +438,7 @@ def verify_svi(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    result = TestResult(host=str(device.host), test="verify_svi")
+    result = TestResult(name=device.name, test="verify_svi")
 
     try:
         response = device.session.runCmds(1, ["show ip interface brief"], "json")
@@ -482,7 +482,7 @@ def verify_spanning_tree_blocked_ports(device: InventoryDevice) -> TestResult:
 
     """
     result = TestResult(
-        host=str(device.host), test="verify_spanning_tree_blocked_ports"
+        name=str(device.name), test="verify_spanning_tree_blocked_ports"
     )
 
     try:

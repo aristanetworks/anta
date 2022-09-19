@@ -34,8 +34,8 @@ def verify_unified_forwarding_table_mode(
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     if not mode:
         result.is_skipped(
             "verify_unified_forwarding_table_mode was not run as no mode was given"
@@ -55,7 +55,7 @@ def verify_unified_forwarding_table_mode(
             )
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
         result.is_error(str(e))
     return result
 
@@ -79,8 +79,8 @@ def verify_tcam_profile(device: InventoryDevice, profile: str) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     if not profile:
         result.is_skipped("verify_tcam_profile was not run as no profile was given")
         return result
@@ -98,6 +98,6 @@ def verify_tcam_profile(device: InventoryDevice, profile: str) -> TestResult:
             )
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {e.__class__.__name__} - {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {e.__class__.__name__} - {str(e)}')
         result.is_error(str(e))
     return result

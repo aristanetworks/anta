@@ -36,8 +36,8 @@ def verify_transceivers_manufacturers(
     """
 
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     if not manufacturers:
         result.is_skipped(
             "verify_transceivers_manufacturers was not run as no "
@@ -63,7 +63,7 @@ def verify_transceivers_manufacturers(
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 
@@ -89,8 +89,8 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(
@@ -107,7 +107,7 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 
@@ -134,8 +134,8 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(
@@ -164,7 +164,7 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 
@@ -189,8 +189,8 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(
@@ -207,7 +207,7 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 
@@ -232,8 +232,8 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show system environment power"], "json")
@@ -252,7 +252,7 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 
@@ -277,8 +277,8 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
 
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
 
     try:
         response = device.session.runCmds(1, ["show hardware counter drop"], "json")
@@ -293,7 +293,7 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
 
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+            f"exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}"
         )
         result.is_error(str(e))
 

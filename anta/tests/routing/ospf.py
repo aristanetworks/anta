@@ -27,8 +27,8 @@ def verify_ospf_state(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     try:
         response = device.session.runCmds(
             1, ["show ip ospf neighbor | exclude FULL|Address"], "text"
@@ -43,7 +43,7 @@ def verify_ospf_state(device: InventoryDevice) -> TestResult:
             result.is_failure("Some neighbors are not correctly configured.")
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
@@ -66,8 +66,8 @@ def verify_ospf_count(device: InventoryDevice, number: int) -> TestResult:
         * result = "error" if any exception is caught
     """
     function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    logger.debug(f"Start {function_name} check for host {device.name}")
+    result = TestResult(name=device.name, test=function_name)
     if not number:
         result.is_skipped(
             "verify_igmp_snooping_vlans was not run as no number was given"
@@ -90,7 +90,7 @@ def verify_ospf_count(device: InventoryDevice, number: int) -> TestResult:
             )
     except (jsonrpc.AppError, KeyError, socket.timeout) as e:
         logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
+            f'exception raised for {inspect.stack()[0][3]} -  {device.name}: {str(e)}')
 
         result.is_error(str(e))
     return result
