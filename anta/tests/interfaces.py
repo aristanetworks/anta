@@ -77,8 +77,8 @@ def verify_interface_errors(device: InventoryDevice) -> TestResult:
         )
 
         wrong_interfaces = {
-            interface: {counter: value for counter, value in outer_v.items if value > 0}
-            for interface, outer_v in response[0]["interfaceErrorCounters"]
+            interface: {counter: value for counter, value in outer_v.items() if value > 0}
+            for interface, outer_v in response[0]["interfaceErrorCounters"].items()
         }
         if len(wrong_interfaces) == 0:
             result.is_success()
@@ -117,8 +117,8 @@ def verify_interface_discards(device: InventoryDevice) -> TestResult:
         )
 
         wrong_interfaces = {
-            interface: {counter: value for counter, value in outer_v.items if value > 0}
-            for interface, outer_v in response[0]["interfaces"]
+            interface: {counter: value for counter, value in outer_v.items() if value > 0}
+            for interface, outer_v in response[0]["interfaces"].items()
         }
         if len(wrong_interfaces) == 0:
             result.is_success()
