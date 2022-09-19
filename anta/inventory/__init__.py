@@ -533,4 +533,4 @@ class AntaInventory():
         with ThreadPoolExecutor() as executor:
             results_map = executor.map(
                 self._get_from_device,  self._inventory)
-            self._inventory = self._inventory_rebuild(results_map)
+        self._inventory = self._inventory_rebuild(results_map)
