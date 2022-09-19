@@ -193,7 +193,7 @@ class AntaInventory:
         Returns:
             bool: True if device ready, False by default.
         """
-        logger.debug(f"Checking if device {device.host} is online")
+        logger.debug(f'Checking if device {device.name} is online')
         connection = Server(device.url)
         # Check connectivity
         setdefaulttimeout(timeout)
@@ -201,7 +201,7 @@ class AntaInventory:
             connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception as exp:
-            logger.warning(f"Service not running on device {device.host} with: f{exp}")
+            logger.warning(f'Service not running on device {device.name} with: f{exp}')
             return False
         else:
             return True
@@ -226,14 +226,14 @@ class AntaInventory:
         Returns:
             str: HW value read from the device using show version.
         """
-        logger.debug(f"Reading HW information for {device.host}")
+        logger.debug(f'Reading HW information for {device.name}')
         connection = Server(device.url)
         try:
             setdefaulttimeout(timeout)
             response = connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception:
-            logger.warning(f"Service not running on device {device.host}")
+            logger.warning(f'Service not running on device {device.name}')
             return None
         else:
             return (
@@ -256,8 +256,9 @@ class AntaInventory:
         Returns:
             InventoryDevice: Updated structure with devices information (is_online, HW model)
         """
-        logger.debug(f"Refreshing is_online flag for device {device.host}")
-        device.is_online = self._is_device_online(device=device, timeout=self.timeout)
+        logger.debug(f'Refreshing is_online flag for device {device.name}')
+        device.is_online = self._is_device_online(
+            device=device, timeout=self.timeout)
         hw_model = self._read_device_hw(device=device, timeout=self.timeout)
         if device.is_online and hw_model:
             device.hw_model = hw_model
@@ -302,38 +303,35 @@ class AntaInventory:
             connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception:
-            logger.warning(f"Service not running on device {device.host}")
+            logger.warning(f'Service not running on device {device.name}')
             device.session = None
         else:
             device.established = True
             device.session = connection
         return device
 
-    def _add_device_to_inventory(
-        self, host_ip: str, tags: Optional[List[str]] = None
-    ) -> None:
+    def _add_device_to_inventory(self, host: str, port: int = None, name: str = None, tags: List[str] = None) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
 
         Args:
-            host_ip (str): IP address of the host
+            host (str): IP address or hostname of the device
+            port (int): eAPI port of the device
+            name (str): Optional name of the device
         """
-        assert self._username is not None
-        assert self._password is not None
 
         if tags is None:
             tags = [DEFAULT_TAG]
 
         device = InventoryDevice(
-            host=host_ip,
-            username=self._username,
+            name=name,
+            host=host,
+            port=port,
+            user=self._username,
             password=self._password,
             enable_password=self._enable_password,
-            url=self._build_device_session_path(
-                host=host_ip, username=self._username, password=self._password
-            ),
-            tags=tags,
+            tags=tags
         )
         self._inventory.append(device)
 
@@ -344,7 +342,7 @@ class AntaInventory:
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host_ip=str(host.host), tags=host.tags)
+            self._add_device_to_inventory(host.host, host.port, host.name, tags=host.tags)
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
@@ -354,7 +352,7 @@ class AntaInventory:
         assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                self._add_device_to_inventory(host_ip=host_ip, tags=network.tags)
+                self._add_device_to_inventory(host_ip, tags=network.tags)
 
     def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
@@ -366,9 +364,7 @@ class AntaInventory:
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._add_device_to_inventory(
-                    host_ip=str(range_increment), tags=range_def.tags
-                )
+                self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
     def _inventory_rebuild(self, list_devices: Iterator[Any]) -> InventoryDevices:
@@ -505,29 +501,29 @@ class AntaInventory:
             self.refresh_device_facts()
 
         for device in self._inventory:
-            self.create_device_session(host_ip=str(device.host))
+            self.create_device_session(device=device)
 
-    def create_device_session(self, host_ip: str) -> bool:
+    def create_device_session(self, device: InventoryDevice) -> bool:
         """Get session of a device.
 
         If device has already a session, function only returns active session, if not, try to build a new session
 
         Args:
-            host_ip (str): IP address of the device
+            device (InventoryDevice): Device object to use
 
         Returns:
             bool: True if update succeed, False if not
         """
-        logger.debug(f"Searching for device {host_ip} in {self._inventory}")
-        device = [dev for dev in self._inventory if str(dev.host) == host_ip][:1][
-            0
-        ] or None
+        logger.debug(
+            f"Searching for device {device.name} in {[ dev.name for dev in self._inventory]}")
+        device = [dev for dev in self._inventory if dev == device][0] or None
         if device is None:
             return False
-        logger.debug(f"Search result is: {device}")
-        if device.is_online and not device.established and self._is_ip_exist(host_ip):
-            logger.debug(f"Trying to connect to device {str(device.host)}")
-            device = self._build_device_session(device=device, timeout=self.timeout)
+        logger.debug(f'Search result is: {device}')
+        if device.is_online and not device.established:
+            logger.debug(f'Trying to connect to device {str(device.name)}')
+            device = self._build_device_session(
+                device=device, timeout=self.timeout)
             return True
         return False
 

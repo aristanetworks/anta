@@ -3,9 +3,8 @@
 
 """Models related to anta.result_manager module."""
 
-from typing import Iterator, List
-
-from pydantic import BaseModel, IPvAnyAddress, validator
+from typing import List, Iterator
+from pydantic import BaseModel, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
 
@@ -15,12 +14,12 @@ class TestResult(BaseModel):
     Describe result of a test from a single device.
 
     Attributes:
-        host (IPvAnyAddress): IPv4 or IPv6 address of the device where the test has run.
+        name (str): Device name where the test has run.
         test (str): Test name runs on the device.
         results (str): Result of the test. Can be one of unset / failure / success.
         message (str, optional): Message to report after the test.
     """
-    host: IPvAnyAddress
+    name: str
     test: str
     result: str = 'unset'
     messages: List[str] = []
