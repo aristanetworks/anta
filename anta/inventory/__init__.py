@@ -7,9 +7,10 @@ Inventory Module for ANTA.
 
 import logging
 import ssl
-from concurrent.futures import ThreadPoolExecutor
-from socket import setdefaulttimeout
-from typing import Iterator, List, Optional, Union
+import asyncio
+from typing import List, Optional, Union
+from aioeapi import Device
+from aioeapi.errors import EapiCommandError
 
 import yaml
 from jinja2 import Template
@@ -110,23 +111,14 @@ class AntaInventory:
     HW_MODEL_KEY = "modelName"
 
     # pylint: disable=R0913
-    def __init__(
-        self,
-        inventory_file: str,
-        username: str,
-        password: str,
-        enable_password: Optional[str] = None,
-        auto_connect: bool = True,
-        timeout: float = 5,
-    ) -> None:
-        # sourcery skip: remove-unnecessary-cast, simplify-len-comparison
+    def __init__(self, inventory_file: str, username: str, password: str,
+                 enable_password: str = None, timeout: float = 5.0) -> None:
         """Class constructor.
 
         Args:
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
-            auto_connect (bool, optional): Automatically build eAPI context for every devices. Defaults to True.
             timeout (float, optional): Timeout in second to wait before marking device down. Defaults to 5sec.
         """
         self.set_credentials(username, password, enable_password)
@@ -156,9 +148,10 @@ class AntaInventory:
         if self._read_inventory.dict()["ranges"] is not None:
             self._inventory_read_ranges()
 
-        # Create RPC connection for all devices
-        if auto_connect:
-            self.connect_inventory()
+        for device in self._inventory:
+            device.session = Device(host=device.url.host, port=device.url.port,
+                                    username=device.url.user, password=device.url.password,
+                                    proto=device.url.scheme, timeout=self.timeout)
 
     ###########################################################################
     # Boolean methods
@@ -179,29 +172,26 @@ class AntaInventory:
             == 1
         )
 
-    def _is_device_online(self, device: InventoryDevice, timeout: float = 5) -> bool:
+    async def _is_device_online(self, device: InventoryDevice) -> bool:
         """
         _is_device_online Check if device is online.
 
-        Execute an eAPI call to check if device is online and has eAPI working as expected
+        Checks the target device to ensure that the eAPI port is
+        open and accepting connections.
         If device is ready to serve request, method returns True, else return False.
 
         Args:
             device (InventoryDevice): InventoryDevice structure to test
-            timeout (float, optional): Request timeout. Defaults to 5.
 
         Returns:
             bool: True if device ready, False by default.
         """
-        logger.debug(f'Checking if device {device.name} is online')
-        connection = Server(device.url)
+        logger.debug(f'Checking connection to device {device.name}')
         # Check connectivity
-        setdefaulttimeout(timeout)
-        try:
-            connection.runCmds(1, ["show version"])
+        online = await device.session.check_connection()
         # pylint: disable=W0703
-        except Exception as exp:
-            logger.warning(f'Service not running on device {device.name} with: f{exp}')
+        if not online:
+            logger.warning(f'Cannot open port to {device.name}')
             return False
         else:
             return True
@@ -210,9 +200,7 @@ class AntaInventory:
     # Internal methods
     ###########################################################################
 
-    def _read_device_hw(
-        self, device: InventoryDevice, timeout: float = 5
-    ) -> Optional[str]:
+    async def _read_device_hw(self, device: InventoryDevice) -> Optional[str]:
         """
         _read_device_hw Read HW model from the device and update entry with correct value.
 
@@ -221,94 +209,44 @@ class AntaInventory:
 
         Args:
             device (InventoryDevice): Device to update
-            timeout (float, optional): Connection timeout. Defaults to 5.
 
         Returns:
             str: HW value read from the device using show version.
         """
         logger.debug(f'Reading HW information for {device.name}')
-        connection = Server(device.url)
         try:
-            setdefaulttimeout(timeout)
-            response = connection.runCmds(1, ["show version"])
+            response = await device.session.cli(command='show version')
         # pylint: disable=W0703
-        except Exception:
-            logger.warning(f'Service not running on device {device.name}')
+        except EapiCommandError as e:
+            logger.warning(f'Cannot run CLI commands on device {device.name}: {str(e)}')
             return None
         else:
-            return (
-                response[0][self.HW_MODEL_KEY]
-                if self.HW_MODEL_KEY in response[0]
-                else None
-            )
+            return response[self.HW_MODEL_KEY] if self.HW_MODEL_KEY in response else None
 
-    def _get_from_device(self, device: InventoryDevice) -> InventoryDevice:
+    async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
-        _get_from_device Update online flag for InventoryDevice.
+        _get_from_device Update the is_online and established flags for InventoryDevice.
 
         It updates following keys:
-        - is_online
-        - hw_model
+        - is_online: When a device IP is reachable and a port can be open
+        - established: When a CLI command in EXEC mode succeed using eAPI
+        - hw_model: The hardware model string of the device
 
         Args:
             device (InventoryDevice): Device to check using InventoryDevice structure.
 
         Returns:
-            InventoryDevice: Updated structure with devices information (is_online, HW model)
+            InventoryDevice: Updated structure with devices information
         """
-        logger.debug(f'Refreshing is_online flag for device {device.name}')
-        device.is_online = self._is_device_online(
-            device=device, timeout=self.timeout)
-        hw_model = self._read_device_hw(device=device, timeout=self.timeout)
+        logger.debug(f'Refreshing device {device.name}')
+        device.is_online, hw_model = await asyncio.gather(self._is_device_online(device=device), self._read_device_hw(device=device))
+        # device.is_online = await self._is_device_online(device=device)
+        # hw_model = await self._read_device_hw(device=device)
         if device.is_online and hw_model:
-            device.hw_model = hw_model
-        return device
-
-    def _build_device_session_path(
-        self, host: str, username: str, password: str
-    ) -> str:
-        """Construct URL to reach device using eAPI.
-
-        Jinja2 render to build URL to use for eAPI session.
-
-        Args:
-            host (str): IP Address of the device to target in the eAPI session
-            username (str): Username for authentication
-            password (str): Password for authentication
-
-        Returns:
-            str: String to use to create eAPI session
-        """
-        session_template = Template(self.EAPI_SESSION_TPL)
-        return session_template.render(
-            device=host, device_username=username, device_password=password
-        )
-
-    def _build_device_session(
-        self, device: InventoryDevice, timeout: float = 5
-    ) -> InventoryDevice:
-        """Create eAPI RPC session to Arista EOS devices.
-
-        Args:
-            device (InventoryDevice): Device information based on InventoryDevice structure
-            timeout (int, optional): Device timeout to declare host as down. Defaults to 5.
-
-        Returns:
-            InventoryDevice: Updated device structure with its RPC connection
-        """
-        connection = Server(device.url)
-        # Check connectivity
-        try:
-            setdefaulttimeout(timeout)
-            connection.runCmds(1, ["show version"])
-        # pylint: disable=W0703
-        except Exception:
-            logger.warning(f'Service not running on device {device.name}')
-            device.session = None
-        else:
             device.established = True
-            device.session = connection
-        return device
+            device.hw_model = hw_model
+        else:
+            device.established = False
 
     def _add_device_to_inventory(self, host: str, port: int = None, name: str = None, tags: List[str] = None) -> None:
         """Add a InventoryDevice to final inventory.
@@ -367,25 +305,7 @@ class AntaInventory:
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _inventory_rebuild(self, list_devices: Iterator[InventoryDevice]) -> InventoryDevices:
-        """
-        _inventory_rebuild Transform a list of InventoryDevice into a InventoryDevices object.
-
-        Args:
-            list_devices (List[InventoryDevice]): List of devices to add into InventoryDevices
-
-        Returns:
-            InventoryDevices: An object with all the devices.
-        """
-        logger.debug("Create a new version of InventoryDevices")
-        inventory = InventoryDevices()
-        for device in list_devices:
-            inventory.append(device)
-        return inventory
-
-    def _filtered_inventory(
-        self, established_only: bool = False, tags: Optional[List[str]] = None
-    ) -> InventoryDevices:
+    def _filtered_inventory(self, established_only: bool = False, tags: List[str] = None) -> InventoryDevices:
         """
         _filtered_inventory Generate a temporary inventory filtered.
 
@@ -419,6 +339,7 @@ class AntaInventory:
 
     ###########################################################################
     # GET methods
+    ###########################################################################
 
     # TODO refactor this to avoid having a union of return of types ..
     def get_inventory(
@@ -488,49 +409,8 @@ class AntaInventory:
         return device.session
 
     ###########################################################################
-    # CREATE methods
-
-    def create_all_sessions(self, refresh_online_first: bool = False) -> None:
-        """Helper to build RPC sessions to all devices.
-
-        Args:
-           refresh_online_first (bool): Run  a refresh of is_online flag for all devices.
-        """
-        if refresh_online_first:
-            logger.debug("Running a refresh for devices online")
-            self.refresh_device_facts()
-
-        for device in self._inventory:
-            self.create_device_session(device=device)
-
-    def create_device_session(self, device: InventoryDevice) -> bool:
-        """Get session of a device.
-
-        If device has already a session, function only returns active session, if not, try to build a new session
-
-        Args:
-            device (InventoryDevice): Device object to use
-
-        Returns:
-            bool: True if update succeed, False if not
-        """
-        logger.debug(
-            f"Searching for device {device.name} in {[ dev.name for dev in self._inventory]}")
-        devices = [dev for dev in self._inventory if dev == device]
-        if len(devices) == 1:
-            device = devices[0]
-        else:
-            return False
-        logger.debug(f'Search result is: {device}')
-        if device.is_online and not device.established:
-            logger.debug(f'Trying to connect to device {str(device.name)}')
-            device = self._build_device_session(
-                device=device, timeout=self.timeout)
-            return True
-        return False
-
-    ###########################################################################
     # MISC methods
+    ###########################################################################
 
     def set_credentials(
         self,
@@ -545,21 +425,10 @@ class AntaInventory:
         self._password = password
         self._enable_password = enable_password
 
-    def connect_inventory(self) -> None:
+    async def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
-        # Check if devices are online & update is_online flag
-        self.refresh_device_facts()
-
-        # Create eAPI session for all online devices
-        self.create_all_sessions()
-
-    def refresh_device_facts(self) -> None:
-        """
-        refresh_online_flag_inventory Update is_online flag for all devices.
-
-        Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
-        """
-        logger.debug("Refreshing facts for current inventory")
-        with ThreadPoolExecutor() as executor:
-            results_map = executor.map(self._get_from_device, self._inventory)
-            self._inventory = self._inventory_rebuild(results_map)
+        logger.debug('Refreshing facts for current inventory')
+        results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=False)
+        for r in results:
+            if isinstance(r, Exception):
+                logger.error(f"Error when connecting to device: {r.__class__.__name__}: {r}")

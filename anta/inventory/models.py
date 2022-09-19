@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Any, Iterator, Type
 from pydantic.networks import Parts
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, AnyHttpUrl, conint, root_validator
+from aioeapi import Device
 
 # Default values
 
@@ -132,12 +133,14 @@ class InventoryDevice(BaseModel):
         url (str): eAPI URL to use to build session.
         tags (List[str]): List of attached tags read from inventory file.
     """
+    class Config:
+        arbitrary_types_allowed = True
 
     name: str
     user: str  # TODO: duplicate with url.user
     password: str  # TODO: duplicate with url.password
     enable_password: Optional[str]
-    session: Any
+    session: Optional[Device]
     established = False
     is_online = False
     hw_model: str = DEFAULT_HW_MODEL
