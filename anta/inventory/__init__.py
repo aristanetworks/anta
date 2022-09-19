@@ -6,14 +6,12 @@ Inventory Module for ANTA.
 """
 
 import logging
-import ssl
 import asyncio
 from typing import List, Optional, Union
 from aioeapi import Device
 from aioeapi.errors import EapiCommandError
 
 import yaml
-from jinja2 import Template
 from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
@@ -25,9 +23,6 @@ from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
                      InventoryDevices)
 
 # pylint: disable=W1309
-
-# pylint: disable=W0212
-ssl._create_default_https_context = ssl._create_unverified_context
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -100,11 +95,7 @@ class AntaInventory:
     """
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = "anta_inventory"
-    # Template to build eAPI connection URL
-    EAPI_SESSION_TPL = (
-        "https://{{device_username}}:{{device_password}}@{{device}}/command-api"
-    )
+    INVENTORY_ROOT_KEY = 'anta_inventory'
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ["native", "json"]
     # HW model definition in show version
@@ -164,7 +155,7 @@ class AntaInventory:
     # Boolean methods
     ###########################################################################
 
-    def _is_ip_exist(self, ip: str) -> bool:
+    def _is_ip_exist(self, ip: str) -> bool:  # TODO mtache: unused, remove this ?
         """Check if an IP is part of the current inventory.
 
         Args:
@@ -247,8 +238,6 @@ class AntaInventory:
         """
         logger.debug(f'Refreshing device {device.name}')
         device.is_online, hw_model = await asyncio.gather(self._is_device_online(device=device), self._read_device_hw(device=device))
-        # device.is_online = await self._is_device_online(device=device)
-        # hw_model = await self._read_device_hw(device=device)
         if device.is_online and hw_model:
             device.established = True
             device.hw_model = hw_model
@@ -386,7 +375,7 @@ class AntaInventory:
 
         return inventory
 
-    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:
+    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:  # TODO mtache: unused, remove this ?
         """Get device information from a given IP.
 
         Args:
@@ -399,7 +388,7 @@ class AntaInventory:
             return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
         return None
 
-    def get_device_session(self, host_ip: str) -> Server:
+    def get_device_session(self, host_ip: str) -> Server:  # TODO mtache: unused, remove this ?
         """Expose RPC session of a given host from our inventory.
 
         Provide RPC session if the session exists, if not, it returns None
