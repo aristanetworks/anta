@@ -31,7 +31,6 @@ class AntaInventoryHost(BaseModel):
     port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     tags: List[str] = [DEFAULT_TAG]
 
-
 class AntaInventoryNetwork(BaseModel):
     """
     Network definition for user's inventory.
