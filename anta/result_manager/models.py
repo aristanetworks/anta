@@ -120,6 +120,10 @@ class ListResult(BaseModel):
 
     __root__: List[TestResult] = []
 
+    def extend(self, values: List[TestResult]) -> None:
+        """Add support for extend method."""
+        self.__root__.extend(values)
+
     def append(self, value: TestResult) -> None:
         """Add support for append method."""
         self.__root__.append(value)

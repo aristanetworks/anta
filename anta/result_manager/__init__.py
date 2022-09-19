@@ -88,6 +88,15 @@ class ResultManager:
         logger.info(f'add new test result to manager: {entry}')
         self._result_entries.append(entry)
 
+    def add_test_results(self, entries: List[TestResult]) -> None:
+        """Add a list of results to the list
+
+        Args:
+            entries (List[TestResult]): list of TestResult data to add to the report
+        """
+        logger.info(f'add new list of results to manager: {[str(r) for r in entries]}')
+        self._result_entries.extend(entries)
+
     def get_results(self, output_format: str = "native") -> Any:
         """
         Expose list of all test results in different format
