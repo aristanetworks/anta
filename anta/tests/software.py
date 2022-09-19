@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_eos_version(
-    device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None
-) -> TestResult:
+async def verify_eos_version(device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None) -> TestResult:
     """
     Verifies the device is running one of the allowed EOS version.
 
@@ -36,10 +34,10 @@ def verify_eos_version(
         result.is_skipped("verify_eos_version was not run as no versions were given")
         return result
 
-    response = device.session.runCmds(1, ["show version"], "json")
+    response = await device.session.cli(command="show version", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    if response[0]["version"] in versions:
+    if response["version"] in versions:
         result.is_success()
     else:
         result.is_failure(

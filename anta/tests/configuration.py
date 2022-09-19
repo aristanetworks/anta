@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies ZeroTouch is disabled.
@@ -27,10 +27,10 @@ def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show zerotouch"], "json")
+    response = await device.session.cli(command="show zerotouch", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    if response[0]["mode"] == "disabled":
+    if response["mode"] == "disabled":
         result.is_success()
     else:
         result.is_failure("ZTP is NOT disabled")
@@ -39,7 +39,7 @@ def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-def verify_running_config_diffs(
+async def verify_running_config_diffs(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -59,22 +59,21 @@ def verify_running_config_diffs(
     """
     device.assert_enable_password_is_not_none("verify_running_config_diffs")
 
-    response = device.session.runCmds(
-        1,
-        [
+    response = await device.session.cli(
+        commands=[
             {"cmd": "enable", "input": str(device.enable_password)},
             "show running-config diffs",
         ],
-        "text",
+        ofmt="text"
     )
     logger.debug(f"query result is: {response}")
 
-    if len(response[1]["output"]) == 0:
+    if len(response[1]) == 0:
         result.is_success()
 
     else:
         result.is_failure()
-        for line in response[1]["output"]:
+        for line in response[1].splitlines():
             result.is_failure(line)
 
     return result

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_uptime(
+async def verify_uptime(
     device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
 ) -> TestResult:
     """
@@ -35,10 +35,10 @@ def verify_uptime(
         result.is_skipped("verify_uptime was not run as no minimum were given")
         return result
 
-    response = device.session.runCmds(1, ["show uptime"], "json")
+    response = await device.session.cli(command="show uptime", ofmt="json")
     logger.debug(f"query result is: {response}")
-    response_data = response[0]["upTime"]
-    if response[0]["upTime"] > minimum:
+    response_data = response["upTime"]
+    if response["upTime"] > minimum:
         result.is_success()
     else:
         result.is_failure(f"Uptime is {response_data}")
