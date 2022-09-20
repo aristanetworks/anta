@@ -419,7 +419,7 @@ class AntaInventory:
     async def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
         logger.debug('Refreshing facts for current inventory')
-        results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=False)
+        results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=True)
         for r in results:
             if isinstance(r, Exception):
                 logger.error(f"Error when connecting to device: {r.__class__.__name__}: {r}")

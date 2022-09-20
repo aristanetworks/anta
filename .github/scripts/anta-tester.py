@@ -59,7 +59,7 @@ logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
 
-async def main(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]):
+async def main(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
     await inventory_anta.connect_inventory()
     return await run_tests(inventory_anta, tests_catalog)
 
@@ -69,7 +69,7 @@ async def run_tests(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Cal
     """
     manager = ResultManager()
     tests = itertools.product(inventory_anta.get_inventory(), tests_catalog)
-    results = await asyncio.gather(*(test[0](device, **test[1]) for device, test in tests), return_exceptions=False)
+    results = await asyncio.gather(*(test[0](device, **test[1]) for device, test in tests), return_exceptions=True)
     for r in results:
         if isinstance(r, Exception):
             logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
