@@ -3,11 +3,9 @@
 
 """Models related to inventory management."""
 
-from __future__ import annotations
+from typing import List, Optional, Iterator
 
-from typing import Dict, List, Optional, Any, Iterator, Type
-from pydantic.networks import Parts
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, AnyHttpUrl, conint, root_validator
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint
 from aioeapi import Device
 
 # Default values
@@ -31,6 +29,7 @@ class AntaInventoryHost(BaseModel):
     host: str
     port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     tags: List[str] = [DEFAULT_TAG]
+
 
 class AntaInventoryNetwork(BaseModel):
     """
@@ -77,46 +76,6 @@ class AntaInventoryInput(BaseModel):
 
 # Pydantic models for inventory output structures
 
-class eAPIUrl(AnyHttpUrl):
-    """
-    eAPI URL field type
-    The build method has been overriden to provide default value of a eAPI endpoint when using it.
-
-    Examples:
-    In : eAPIUrl.build()
-    Out: 'http://localhost:8080/command-api'
-
-    In : eAPIUrl.build(host='1.1.1.1')
-    Out: 'https://1.1.1.1:443/command-api'
-
-    In : eAPIUrl.build(host='1.1.1.1', port='80')
-    Out: 'http://1.1.1.1:80/command-api'
-    """
-    allowed_schemes = {'http', 'https'}
-    host_required = True
-
-    @staticmethod
-    def get_default_parts(parts: Parts) -> Parts:
-        return {
-            'scheme': 'http' if ((parts.get('port') in ['80', '8080']) or parts.get('host') is None) else 'https',
-            'domain': 'localhost' if (parts.get('port') == '8080') else '',
-            'port': '8080' if (parts.get('host') is None) else '443',
-            'path': '/command-api',
-        }
-
-    @classmethod
-    def build(cls: Type[eAPIUrl], **kwargs: Any) -> eAPIUrl:
-        """
-        Include default path and port when building an eAPI URL
-        """
-        parts = Parts(**kwargs)
-        default = cls.get_default_parts(parts)
-        for field in default:
-            if field not in kwargs:
-                kwargs.update({field: default.get(field)})
-        return super().build(**kwargs)
-
-
 class InventoryDevice(BaseModel):
     """
     Inventory model exposed by Inventory class.
@@ -137,35 +96,30 @@ class InventoryDevice(BaseModel):
         arbitrary_types_allowed = True
 
     name: str
-    user: str  # TODO: duplicate with url.user
-    password: str  # TODO: duplicate with url.password
+    username: str
+    password: str
     enable_password: Optional[str]
-    session: Optional[Device]
+    session: Device
     established = False
     is_online = False
     hw_model: str = DEFAULT_HW_MODEL
-    url: eAPIUrl
     tags: List[str] = [DEFAULT_TAG]
+    timeout: float = 10.0
 
-    @root_validator(pre=True)
-    def build_name(cls: Type[InventoryDevice], values: Dict[str, Any]) -> Dict[str, Any]:
-        """ Build name attribute """
+    def build_device(cls, values):
+        if values.get('session') is None:
+            host = values.get('host')
+            if not host:
+                host = 'localhost'
+            port = values.get('port')
+            if not port:
+                port = '8080' if host == 'localhost' else '443'
+            proto = 'http' if port in ['80', '8080'] else 'https'
+            values['session'] = Device(host=host, port=port,
+                                       username=values.get('username'), password=values.get('password'),
+                                       proto=proto, timeout=values.get('timeout'))
         if values.get('name') is None:
-            assert 'host' in values, 'host required if name is not provided'
-            values['name'] = f"{values.get('host')}:{values['url'].get('port')}"
-        return values
-
-    @root_validator(pre=True)
-    def build_eapi_url(cls: Type[InventoryDevice], values: Dict[str, Any]) -> Dict[str, Any]:
-        """ Build url attribute """
-        if values.get('url') is None:
-            if values.get('host') is not None:
-                # Ensure the host field is a string
-                values.update(host=str(values['host']))
-            if values.get('port') is not None:
-                # Ensure the port field is a string
-                values.update(port=str(values['port']))
-            values['url'] = eAPIUrl.build(**values)
+            values['name'] = f"{host}:{port}"
         return values
 
     def __eq__(self, other: BaseModel) -> bool:
@@ -173,7 +127,7 @@ class InventoryDevice(BaseModel):
             Two InventoryDevice objects are equal if the hostname and the port are the same.
             This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return self.url.host == other.url.host and self.url.port == other.url.port
+        return self.session.host == other.session.host and self.session.port == other.session.port
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """

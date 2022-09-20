@@ -8,7 +8,6 @@ Inventory Module for ANTA.
 import logging
 import asyncio
 from typing import List, Optional, Union
-from aioeapi import Device
 from aioeapi.errors import EapiCommandError
 
 import yaml
@@ -103,7 +102,7 @@ class AntaInventory:
 
     # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: str = None, timeout: float = 10.0,
+                 enable_password: str = None, timeout: float = None,
                  filter_hosts: List[str] = None) -> None:
         """Class constructor.
 
@@ -111,8 +110,8 @@ class AntaInventory:
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
-            timeout (float, optional): timeout in seconds for every API call. Defaults to 10sec.
-            filter_hosts (str, optional): create inventory only with matching host name in this list. Empty list disable the filter.
+            timeout (float, optional): timeout in seconds for every API call.
+            filter_hosts (str, optional): create inventory only with matching host name in this list.
         """
         self.set_credentials(username, password, enable_password)
         self.timeout = timeout
@@ -145,11 +144,6 @@ class AntaInventory:
             for device in self._inventory:
                 if device.url.host not in filter_hosts:
                     del device
-
-        for device in self._inventory:
-            device.session = Device(host=device.url.host, port=device.url.port,
-                                    username=device.url.user, password=device.url.password,
-                                    proto=device.url.scheme, timeout=self.timeout)
 
     ###########################################################################
     # Boolean methods
@@ -262,10 +256,11 @@ class AntaInventory:
             name=name,
             host=host,
             port=port,
-            user=self._username,
+            username=self._username,
             password=self._password,
             enable_password=self._enable_password,
-            tags=tags
+            tags=tags,
+            timeout=self.timeout
         )
         self._inventory.append(device)
 
