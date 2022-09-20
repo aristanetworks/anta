@@ -189,8 +189,7 @@ class AntaInventory():
             connection.runCmds(1, ['show version'])
         # pylint: disable=W0703
         except Exception as exp:
-            logger.warning(f'Service not running on device {device.host} with: ')
-            logger.warning(f'connection return: f{exp}')
+            logger.warning(f'Service not running on device {device.host} with: f{exp}')
             return False
         else:
             return True
@@ -493,18 +492,16 @@ class AntaInventory():
         Returns:
             bool: True if update succeed, False if not
         """
-        logger.debug(f'Searching for device {host_ip} in {[str(dev.host) for dev in self._inventory]}')
-        if len([dev for dev in self._inventory if str(dev.host) == str(host_ip)]) > 0:
-            device = [dev for dev in self._inventory if str(
-                dev.host) == str(host_ip)][0]
-            logger.debug(f'Search result is: {device}')
-            if device.is_online and not device.established and self._is_ip_exist(host_ip):
-                logger.debug(f'Trying to connect to device {str(device.host)}')
-                device = self._build_device_session(
-                    device=device, timeout=self.timeout)
-                # pylint: disable=W0104
-                [device if dev.host == device.host else dev for dev in self._inventory]
-                return True
+        logger.debug(f'Searching for device {host_ip} in {self._inventory}')
+        device = [dev for dev in self._inventory if str(dev.host) == host_ip][:1][0] or None
+        if device is None:
+            return False
+        logger.debug(f'Search result is: {device}')
+        if device.is_online and not device.established and self._is_ip_exist(host_ip):
+            logger.debug(f'Trying to connect to device {str(device.host)}')
+            device = self._build_device_session(
+                device=device, timeout=self.timeout)
+            return True
         return False
 
     ###########################################################################
