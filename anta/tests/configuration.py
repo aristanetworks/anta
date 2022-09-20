@@ -1,17 +1,16 @@
 """
 Test functions related to the device configuration
 """
-import inspect
-import socket
 import logging
-from jsonrpclib import jsonrpc
+from anta.tests import anta_test
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
-def verify_zerotouch(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies ZeroTouch is disabled.
@@ -27,27 +26,21 @@ def verify_zerotouch(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
-    try:
-        response = device.session.runCmds(1, ["show zerotouch"], "json")
-        logger.debug(f'query result is: {response}')
+    response = device.session.runCmds(1, ["show zerotouch"], "json")
+    logger.debug(f"query result is: {response}")
 
-        if response[0]["mode"] == "disabled":
-            result.is_success()
-        else:
-            result.is_failure("ZTP is NOT disabled")
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
-        result.is_error(str(e))
+    if response[0]["mode"] == "disabled":
+        result.is_success()
+    else:
+        result.is_failure("ZTP is NOT disabled")
 
     return result
 
 
-def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_running_config_diffs(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
 
     """
     Verifies there is no difference between the running-config and the startup-config.
@@ -63,33 +56,24 @@ def verify_running_config_diffs(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
-    try:
-        device.assert_enable_password_is_not_none("verify_running_config_diffs")
+    device.assert_enable_password_is_not_none("verify_running_config_diffs")
 
-        response = device.session.runCmds(
-            1,
-            [
-                {"cmd": "enable", "input": str(device.enable_password)},
-                "show running-config diffs",
-            ],
-            "text",
-        )
-        logger.debug(f'query result is: {response}')
+    response = device.session.runCmds(
+        1,
+        [
+            {"cmd": "enable", "input": str(device.enable_password)},
+            "show running-config diffs",
+        ],
+        "text",
+    )
+    logger.debug(f"query result is: {response}")
 
-        if len(response[1]["output"]) == 0:
-            result.is_success()
+    if len(response[1]["output"]) == 0:
+        result.is_success()
 
-        else:
-            result.is_failure()
-            for line in response[1]["output"]:
-                result.is_failure(line)
-
-    except (ValueError, jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f'exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
-        result.is_error(str(e))
+    else:
+        result.is_failure()
+        for line in response[1]["output"]:
+            result.is_failure(line)
 
     return result
