@@ -106,8 +106,12 @@ nav:
   - Home: README.md
   - Getting Started: getting-started.md
   - Requirements and installation: requirements-and-installation.md
-  - Usage: usage.md
+  - Usage:
+    - Generic: usage.md
+    - Inventory & Tests catalog: usage-inventory-catalog.md
+    - Check Devices: usage-check-devices.md
   - Tests Catalog Documentation:
+    - Overview: api/tests.md
     - Configuration: api/tests.configuration.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
