@@ -28,7 +28,7 @@ In addition you have also some useful scripts to help around testing:
 
 # Documentation
 
-The documentation is published on https://arista-netdevops-community.github.io/network-test-automation/
+The documentation is published on [ANTA package website](https://arista-netdevops-community.github.io/network-test-automation/)
 
 # Contribution guide
 
