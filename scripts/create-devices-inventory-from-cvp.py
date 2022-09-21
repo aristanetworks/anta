@@ -4,8 +4,8 @@
 This script:
 - uses CVP REST API to generate a token
 - uses cvprac with this token to get the device inventory
-- creates a text file with the devices IP address under the container passed in argument
-- if we dont provide the argument `c` it creates a text file with all the devices IP address from the CVP inventory.
+- creates a YAML file with the devices IP address under the container passed in argument
+- if we dont provide the argument `c` it creates a YAML file with all the devices IP address from the CVP inventory.
 
 usage: ./create-devices-inventory-from-cvp.py --help
 requirement: pip install cvprac==1.2.0

@@ -19,18 +19,19 @@ Python 3 (at least 3.3) is required:
 ```shell
 python -V
 ```
+
 ## Install the package ANTA and the scripts and the requirements
 
-[ANTA](../anta) and these [scripts](../scripts) require some packages that are not part of the Python standard library. They are indicated in the [requirements.txt](../requirements.txt) file
+The ANTA package and the scripts require some packages that are not part of the Python standard library. They are indicated in the [requirements.txt](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt) file
 
-There are several ways to installt the [ANTA](../anta) and the [scripts](../scripts) and the [requirements](../requirements.txt). This is described below.
+There are several ways to installt the [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and the [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the [requirements](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt). This is described below.
 
 ### Use the `pip install` command with the Git URL
 
 Run this command to install:
 
-- The package [ANTA](../anta) and its dependencies
-- These [scripts](../scripts) and the packages they required
+- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the packages they required
 
 ```shell
 pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
@@ -65,8 +66,8 @@ cd network-test-automation
 
 Run this command to install:
 
-- The package [ANTA](../anta) and its dependencies
-- These [scripts](../scripts) and the packages they required
+- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the packages they required
 
 ```shell
 pip install .
@@ -82,7 +83,7 @@ which check-devices-reachability.py
 
 #### Using `python setup.py` commands
 
-Run this command to build the package [ANTA](../anta):
+Run this command to build the package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta):
 
 ```shell
 python setup.py build
@@ -90,8 +91,8 @@ python setup.py build
 
 Run this command to install:
 
-- The package [ANTA](../anta) and its dependencies
-- These [scripts](../scripts) and the packages they required
+- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the packages they required
 
 ```shell
 python setup.py install
@@ -116,8 +117,8 @@ The `-e` flag specifies that we want to install in editable mode, which means th
 
 Run these commands to install:
 
-- The package [ANTA](../anta) and its dependencies
-- These [scripts](../scripts) and the packages they required
+- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the packages they required
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -144,7 +145,7 @@ which check-devices-reachability.py
 
 ### Clone the repository and use the `pip install -r requirements.txt` command
 
-Run these commands to install the packages indicated in the [requirements.txt](../requirements.txt) file.
+Run these commands to install the packages indicated in the [requirements.txt](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt) file.
 
 ```shell
 git clone https://github.com/arista-netdevops-community/network-test-automation.git
@@ -154,13 +155,13 @@ pip install -r requirements.txt
 
 These packages are required by:
 
-- These [scripts](../scripts)
-- The package [ANTA](../anta)
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts)
+- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta)
 
 But this will **not** install:
 
-- The [ANTA](../anta) package
-- These [scripts](../scripts)
+- The [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) package
+- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts)
 
 Run this command to verify:
 
@@ -247,9 +248,8 @@ print(result[0]['uptime'])
 Run these python commands to validate you can import and use the [ANTA](anta) package
 
 ```python
-from anta.tests import *
+from anta.tests.system import *
 dir()
-help(verify_bgp_ipv4_unicast_state)
-verify_bgp_ipv4_unicast_state(switch, ENABLE_PASSWORD)
+help(verify_ntp)
 exit()
 ```
