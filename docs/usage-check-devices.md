@@ -2,7 +2,7 @@
 
 ANTA comes with some scripts to leverage network testing immediatly or if you don't want to create your own application. This page describes how to use `check-devices.py` script to run your network testing.
 
-!!! info
+??? note "Create inventory & tests catalog"
     Please visit this [dedicated section](./usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 ## Check devices script
@@ -78,7 +78,7 @@ check-devices.py -i .personal/avd-lab.yml \
                  --(table|list|json)
 
 # Display saved results
-head -n 7 demo.json
+head -n 8 demo.json
 [
     {
         "host": "10.73.252.11",
