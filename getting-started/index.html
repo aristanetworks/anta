@@ -375,7 +375,7 @@
   
     <li class="md-nav__item">
       <a href="../requirements-and-installation/" class="md-nav__link">
-        Requirements and installation
+        Installation
       </a>
     </li>
   
@@ -388,10 +388,85 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Usage" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage-inventory-catalog/" class="md-nav__link">
+        Inventory & Tests catalog
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage-check-devices/" class="md-nav__link">
+        Check Devices
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage-as-python-lib/" class="md-nav__link">
+        ANTA as python lib
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../usage/" class="md-nav__link">
-        Usage
+        Other scripts
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -423,6 +498,20 @@
           Tests Catalog Documentation
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/tests/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -545,18 +634,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_9" type="checkbox" id="__nav_5_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_10" type="checkbox" id="__nav_5_10" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_5_9">
+        <label class="md-nav__link" for="__nav_5_10">
           Routing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Routing" data-md-level="2">
-        <label class="md-nav__title" for="__nav_5_9">
+        <label class="md-nav__title" for="__nav_5_10">
           <span class="md-nav__icon md-icon"></span>
           Routing
         </label>
@@ -754,6 +843,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribution/" class="md-nav__link">
+        Contributions
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -879,18 +983,23 @@
 <p>This section shows how to use ANTA with basic configuration.</p>
 <h4 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h4>
 <p>The easiest way to intall ANTA package is to run Python (<code>&gt;=3.7</code>) and its pip package to install:</p>
-<div class="highlight"><pre><span></span><code>pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+<div class="highlight"><pre><span></span><code>pip install <span class="se">\</span>
+  git+https://github.com/arista-netdevops-community/network-test-automation.git
 </code></pre></div>
 <p>For more details about how to install package, please see the <a href="../requirements-and-installation/">requirements and intallation</a> section.</p>
 <h4 id="configure-arista-eos-devices">Configure Arista EOS devices<a class="headerlink" href="#configure-arista-eos-devices" title="Permanent link">&para;</a></h4>
 <p>First, you need to configure your management interface</p>
-<div class="highlight"><pre><span></span><code>interface Management1
+<div class="highlight"><pre><span></span><code>vrf instance MGMT
+!
+interface Management1
    description oob_management
    vrf MGMT
    ip address 10.73.1.105/24
+!
 </code></pre></div>
 <p>Then, configure access to eAPI:</p>
-<div class="highlight"><pre><span></span><code>management api http-commands
+<div class="highlight"><pre><span></span><code>!
+management api http-commands
    protocol https port 443
    no shutdown
    vrf MGMT
@@ -902,42 +1011,7 @@
 <p>First, we need to list devices we want to test. You can create a file manually with this format:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.10</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.11</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Optional tag to assign to this device</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;tag01&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tag02&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.12</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.13</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.14</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.15</span><span class="w"></span>
-<span class="w">  </span><span class="nt">networks</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;192.168.110.0/24&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Optional tag to assign to all devices in this subnet</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;tag01&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tag02&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.9</span><span class="w"></span>
-<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.11</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Optional tag to assign to all devices in this range</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;tag01&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tag02&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.100</span><span class="w"></span>
-<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.101</span><span class="w"></span>
-</code></pre></div>
-<p>Or you can use <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/create-devices-inventory-from-cvp.py">create-devices-inventory-from-cvp.py</a> script to generate from Cloudvision</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Available options</span>
-create-devices-inventory-from-cvp.py -h
-usage: create-devices-inventory-from-cvp.py <span class="o">[</span>-h<span class="o">]</span> -cvp CVP -u USERNAME <span class="o">[</span>-c CONTAINER<span class="o">]</span> -o OUTPUT_DIRECTORY
-
-Create devices inventory based on CVP containers
-
-optional arguments:
-  -h, --help           show this <span class="nb">help</span> message and <span class="nb">exit</span>
-  -cvp CVP             CVP address
-  -u USERNAME          CVP username
-  -c CONTAINER         CVP container
-  -o OUTPUT_DIRECTORY  Output directory
-
-<span class="c1"># Example</span>
-$ create-devices-inventory-from-cvp.py -cvp <span class="m">192</span>.168.0.5 -u arista -o inventory -c Spine
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.1.105</span><span class="w"></span>
 </code></pre></div>
 <h4 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h4>
 <p>To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by anta.loader.py</p>
@@ -1028,13 +1102,14 @@ optional arguments:
 │ <span class="m">10</span>.73.252.21 │ <span class="m">0</span>            │ <span class="m">1</span>            │ <span class="m">0</span>            │ <span class="m">0</span>           │ <span class="o">[]</span>                         │
 └──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
 </code></pre></div>
+<p>You can find more information under the <strong>usage</strong> section of the website</p>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 21, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 22, 2022</span>
       
     
   </small>
@@ -1080,13 +1155,13 @@ optional arguments:
       
       
         
-        <a href="../requirements-and-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Requirements and installation" rel="next">
+        <a href="../requirements-and-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Requirements and installation
+              Installation
             </div>
           </div>
           <div class="md-footer__button md-icon">
