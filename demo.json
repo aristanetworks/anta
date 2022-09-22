@@ -1,0 +1,62 @@
+[
+    {
+        "host": "10.73.252.11",
+        "test": "verify_eos_version",
+        "result": "failure",
+        "messages": "[\"device is running version 4.27.2F-26069621.4272F (engineering build) not in expected versions: ['4.25.4M', '4.26.1F']\"]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_field_notice_44_resolution",
+        "result": "skipped",
+        "messages": "['verify_field_notice_44_resolution test is not supported on cEOSLab.']"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_uptime",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_zerotouch",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_running_config_diffs",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_mlag_status",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_mlag_interfaces",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_mlag_config_sanity",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_routing_protocol_model",
+        "result": "success",
+        "messages": "[]"
+    },
+    {
+        "host": "10.73.252.11",
+        "test": "verify_bgp_ipv4_unicast_state",
+        "result": "success",
+        "messages": "[]"
+    }
+]

@@ -2,6 +2,8 @@
 
 This website provides generic documentation related to the Arista Network Test Automation framework (ANTA)
 
+<img src="./imgs/anta-getting-started.png" class="img_center"></img>
+
 # Arista Network Test Automation (ANTA) Framework
 
 This repository is a Python package to automate tests on Arista devices.

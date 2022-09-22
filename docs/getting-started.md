@@ -7,7 +7,8 @@ This section shows how to use ANTA with basic configuration.
 The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip package to install:
 
 ```bash
-pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+pip install \
+  git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
 For more details about how to install package, please see the [requirements and intallation](./requirements-and-installation.md) section.
@@ -17,15 +18,19 @@ For more details about how to install package, please see the [requirements and 
 First, you need to configure your management interface
 
 ```eos
+vrf instance MGMT
+!
 interface Management1
    description oob_management
    vrf MGMT
    ip address 10.73.1.105/24
+!
 ```
 
 Then, configure access to eAPI:
 
 ```eos
+!
 management api http-commands
    protocol https port 443
    no shutdown
@@ -42,46 +47,9 @@ First, we need to list devices we want to test. You can create a file manually w
 ```yaml
 anta_inventory:
   hosts:
-  - host: 192.168.0.10
-  - host: 192.168.0.11
-    # Optional tag to assign to this device
-    tags: ['tag01', 'tag02']
-  - host: 192.168.0.12
-  - host: 192.168.0.13
-  - host: 192.168.0.14
-  - host: 192.168.0.15
-  networks:
-  - network: '192.168.110.0/24'
-    # Optional tag to assign to all devices in this subnet
-    tags: ['tag01', 'tag02']
-  ranges:
-  - start: 10.0.0.9
-    end: 10.0.0.11
-    # Optional tag to assign to all devices in this range
-    tags: ['tag01', 'tag02']
-  - start: 10.0.0.100
-    end: 10.0.0.101
+  - host: 10.73.1.105
 ```
 
-Or you can use [create-devices-inventory-from-cvp.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/create-devices-inventory-from-cvp.py) script to generate from Cloudvision
-
-```bash
-# Available options
-create-devices-inventory-from-cvp.py -h
-usage: create-devices-inventory-from-cvp.py [-h] -cvp CVP -u USERNAME [-c CONTAINER] -o OUTPUT_DIRECTORY
-
-Create devices inventory based on CVP containers
-
-optional arguments:
-  -h, --help           show this help message and exit
-  -cvp CVP             CVP address
-  -u USERNAME          CVP username
-  -c CONTAINER         CVP container
-  -o OUTPUT_DIRECTORY  Output directory
-
-# Example
-$ create-devices-inventory-from-cvp.py -cvp 192.168.0.5 -u arista -o inventory -c Spine
-```
 ## Test Catalog
 
 To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by anta.loader.py
@@ -193,3 +161,5 @@ $ check-devices.py -i .personal/avd-lab.yml -c .personal/ceos-catalog.yml --tabl
 │ 10.73.252.21 │ 0            │ 1            │ 0            │ 0           │ []                         │
 └──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────┘
 ```
+
+You can find more information under the __usage__ section of the website

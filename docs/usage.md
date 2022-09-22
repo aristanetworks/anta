@@ -26,21 +26,13 @@ cat inventory/Spine.yml
 
 ### How to check devices state
 
-The python script [check-devices.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/check-devices.py) uses the python functions defined in the package [ANTA](api/README.md) to test devices:
-
-- Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
-- Update the file [tests.yaml](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/tests.yaml) to indicate the tests you would like to run. Some tests require an argument. In that case, provide it using the same YAML file
-- Execute the script [check-devices.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/check-devices.py)
-- Check the tests result in the output file
-
-```shell
-vi inventory.yml
-vi tests.yaml
-./check-devices.py --help
-./check-devices.py -i inventory.yml -c tests.yaml --table -u username -p password
-```
+!!! info
+    Please visit this [dedicated section](./usage-check-devices.md) for __check-devices.py__ script
 
 ### How to collect commands output
+
+!!! info
+    Please visit this [dedicated section](./usage-inventory-catalog.md) for how to use inventory file.
 
 The python script [collect-eos-commands.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-eos-commands.py) runs show commands on devices and collects the output:
 
@@ -59,6 +51,9 @@ ls outdir
 
 ### How to collect the scheduled show tech-support files
 
+!!! info
+    Please visit this [dedicated section](./usage-inventory-catalog.md) for how to use inventory file.
+
 The python script [collect-sheduled-show-tech.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/collect-sheduled-show-tech.py) collects the scheduled show tech-support files:
 
 - Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
@@ -76,6 +71,9 @@ ls outdir
 
 The python script [clear-counters.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/clear-counters.py) clears counters:
 
+!!! info
+    Please visit this [dedicated section](./usage-inventory-catalog.md) for how to use inventory file.
+
 - Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
 - Run the python script [clear-counters.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/clear-counters.py)
 
@@ -89,6 +87,9 @@ vi inventory.yml
 
 The python script [evpn-blacklist-recovery.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/evpn-blacklist-recovery.py) clears the MAC addresses which are blacklisted in EVPN:
 
+!!! info
+    Please visit this [dedicated section](./usage-inventory-catalog.md) for how to use inventory file.
+
 - Update the devices [inventory](https://github.com/arista-netdevops-community/network-test-automation/blob/master/examples/inventory.yml)
 - Run the python script [evpn-blacklist-recovery.py](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/evpn-blacklist-recovery.py)
 
@@ -96,59 +97,4 @@ The python script [evpn-blacklist-recovery.py](https://github.com/arista-netdevo
 vi inventory.yml
 ./evpn-blacklist-recovery.py --help
 ./evpn-blacklist-recovery.py -i inventory.yml -u username
-```
-
-## How to use the ANTA package
-
-### How to instantiate the class `Server` of `jsonrpclib` for an EOS device
-
-```python
->>> import ssl
->>> from jsonrpclib import Server
->>> ssl._create_default_https_context = ssl._create_unverified_context
->>> USERNAME = "arista"
->>> PASSWORD = "aristatwfn"
->>> ENABLE_PASSWORD = "aristatwfn"
->>> IP = "192.168.0.12"
->>> URL=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
->>> switch = Server(URL)
-```
-
-### How to import and use the inventory
-
-```python
-from anta.inventory import AntaInventory
-
-inventory = AntaInventory(
-    inventory_file="inventory.yml",
-    username="username",
-    password="password",
-    enable_password="enable",
-    auto_connect=True,
-    timeout=1,
-)
-
-# print the non reachable devices
-devices = inventory.get_inventory(established_only=False)
-for device in devices:
-    if device.established is False:
-        host = str(device.host)
-        print(f"Could not connect to device {host}")
-
-# run an EOS commands list on the reachable devices from the inventory
-devices = inventory.get_inventory(established_only=True)
-for device in devices:
-    switch = device.session
-    switch.runCmds(
-        1, ["show version", "show ip bgp summary"]
-    )
-```
-
-### How to import and use the tests functions
-
-```python
->>> from anta.tests.system import *
->>> dir()
->>> help(verify_ntp)
->>> exit()
 ```

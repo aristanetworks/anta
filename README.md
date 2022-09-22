@@ -18,6 +18,8 @@ This repository comes with a set of [scripts](./scripts) to run __Arista Network
 - `collect-eos-commands.py` to collect commands output from devices
 - `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
 
+<img src="./docs/imgs/anta-getting-started.png" width="500px"></img>
+
 In addition you have also some useful scripts to help around testing:
 
 - `clear-counters.py` to clear counters on devices
@@ -28,7 +30,7 @@ In addition you have also some useful scripts to help around testing:
 
 # Documentation
 
-The documentation is published on https://arista-netdevops-community.github.io/network-test-automation/
+The documentation is published on [ANTA package website](https://arista-netdevops-community.github.io/network-test-automation/)
 
 # Contribution guide
 
