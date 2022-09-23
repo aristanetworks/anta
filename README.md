@@ -18,7 +18,7 @@ This repository comes with a set of [scripts](./scripts) to run __Arista Network
 - `collect-eos-commands.py` to collect commands output from devices
 - `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
 
-<img src="./docs/imgs/anta-getting-started.png" width="500px"></img>
+<img src="./docs/imgs/anta-getting-started.png"></img>
 
 In addition you have also some useful scripts to help around testing:
 
