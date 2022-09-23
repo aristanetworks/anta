@@ -26,6 +26,7 @@ import argparse
 import logging
 import sys
 import itertools
+from typing import Any
 from yaml import safe_load
 
 from rich.console import Console
@@ -41,25 +42,50 @@ from anta.result_manager import ResultManager
 from anta.reporter import ReportTable
 
 
-FORMAT = "%(message)s"
-logging.basicConfig(
-    level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
-)
-logging.getLogger('anta.inventory').setLevel(logging.CRITICAL)
-logging.getLogger('anta.result_manager').setLevel(logging.CRITICAL)
-logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
-logging.getLogger('anta.tests.configuration').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.hardware').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.interfaces').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.mlag').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.multicast').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.profiles').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.software').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
-logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
+def setup_logging(level: str = 'critical') -> Any:
+    """
+    Configure logging for check-devices execution
+
+    Helpers to set logging for
+    * anta.inventory
+    * anta.result_manager
+    * check-devices
+
+    Args:
+        level (str, optional): level name to configure. Defaults to 'critical'.
+
+    Returns:
+        logging: Logger for script
+    """
+    loglevel = getattr(logging, level.upper())
+
+    # FORMAT = "%(asctime)s:%(levelname)s:%(message)s"
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+    )
+    logging.getLogger('anta.inventory').setLevel(loglevel)
+    logging.getLogger('anta.result_manager').setLevel(loglevel)
+
+    logging.getLogger('anta.reporter').setLevel(logging.CRITICAL)
+    logging.getLogger('anta.tests').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.configuration').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.hardware').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.interfaces').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.mlag').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.multicast').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.profiles').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.system').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.software').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
+    logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
+
+    # pylint: disable=W0621
+    logger = logging.getLogger(__name__)
+    logger.setLevel(loglevel)
+    return logger
 
 
 def cli_manager() -> argparse.Namespace:
@@ -86,8 +112,8 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--enable_password', '-e', required=False,
                         default='ansible', help='EOS Enable Password')
 
-    parser.add_argument('--timeout', '-t', required=False,
-                        default=0.5, help='eAPI connection timeout')
+    parser.add_argument('--timeout', '-t', required=False, type=float,
+                        default=1, help='eAPI connection timeout')
 
     #############################
     # Search options
@@ -134,13 +160,24 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--by-test', required=False, action='store_true',
                         help='Provides summary of test results per test case (Only valid with --table)')
 
+    # Logging option
+
+    parser.add_argument('-log', '--loglevel', default='critical',
+                        help='Provide logging level. Example --loglevel debug, default=critical')
+
     return parser.parse_args()
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger(__name__)
     console = Console()
     cli_options = cli_manager()
+    logger = setup_logging(level=cli_options.loglevel)
+
+    console.print(
+        Panel.fit(f'Running check-devices with:\n\
+              - Inventory: {cli_options.inventory}\n\
+              - Tests catalog: {cli_options.catalog}', title="[green]Settings")
+    )
 
     inventory_anta = AntaInventory(
         inventory_file=cli_options.inventory,
@@ -188,7 +225,7 @@ if __name__ == '__main__':
 
     logger.info('testing done !')
     if cli_options.list:
-        console.print(Panel('List results of all tests', style='cyan'))
+        console.print(Panel.fit('List results of all tests', style='cyan'))
         pprint(manager.get_results(output_format="list"))
         if cli_options.save is not None:
             with open(cli_options.save, 'w', encoding='utf-8') as fout:

@@ -94,5 +94,6 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# vscode settings
+# VScode settings
+.vscode/settings.json
 .vscode/
