@@ -70,6 +70,10 @@ plugins:
   #     minify_js: true
 
 markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - mdx_truly_sane_lists
   - smarty
   - pymdownx.arithmatex
@@ -104,8 +108,15 @@ markdown_extensions:
 docs_dir: docs/
 nav:
   - Home: README.md
-  # - Getting Started: getting-started.md
-  - Tests Catalog:
+  - Getting Started: getting-started.md
+  - Installation: requirements-and-installation.md
+  - Usage:
+    - Inventory & Tests catalog: usage-inventory-catalog.md
+    - Check Devices: usage-check-devices.md
+    - ANTA as python lib: usage-as-python-lib.md
+    - Other scripts: usage.md
+  - Tests Catalog Documentation:
+    - Overview: api/tests.md
     - Configuration: api/tests.configuration.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
@@ -125,3 +136,4 @@ nav:
       - Generated Inventory data model: api/inventory.models.md
     - Result Manager module: api/result_manager.md
     - Result Manager models: api/result_manager.models.md
+  - Contributions: contribution.md

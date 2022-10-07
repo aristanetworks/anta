@@ -1,16 +1,18 @@
-<!-- markdownlint-disable -->
+# ANTA Tests landing page
 
-<a href="../../anta/tests/__init__.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
-
-# <kbd>module</kbd> `tests`
+This section describes all the available tests provided by ANTA package.
 
 
+- [Configuration](tests.configuration.md)
+- [Hardware](tests.hardware.md)
+- [interfaces](tests.interfaces.md)
+- [MLAG](tests.mlag.md)
+- [Multicast](tests.multicast.md)
+- [Profiles](tests.profiles.md)
+- [System](tests.system.md)
+- [Software](tests.software.md)
+- [Routing Generic](tests.routing.generic.md)
+- [Routing BGP](tests.routing.bgp.md)
+- [Routing OSPF](tests.routing.ospf.md)
 
-
-
-
-
-
----
-
-_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._
+Al these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [`check-devices.py`](../usage-check-devices.md) script.

@@ -29,9 +29,9 @@ setup(
     install_requires=required,
     include_package_data=True,
     url="https://github.com/arista-netdevops-community/network-test-automation",
-    license="APACHE",
+    license=f"{anta.__license__.upper()}",
     author=f"{anta.__author__}",
-    author_email=f"{anta.__author_email__}",
+    author_email=f"{anta.__email__}",
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
