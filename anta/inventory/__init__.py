@@ -9,7 +9,7 @@ import logging
 import ssl
 from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
-from typing import List, Optional, Union, Any, Iterator
+from typing import List, Optional, Union, Iterator
 
 import yaml
 from jsonrpclib import Server
@@ -324,7 +324,7 @@ class AntaInventory():
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _inventory_rebuild(self, list_devices: Iterator[Any]) -> InventoryDevices:
+    def _inventory_rebuild(self, list_devices: Iterator[InventoryDevice]) -> InventoryDevices:
         """
         _inventory_rebuild Transform a list of InventoryDevice into a InventoryDevices object.
 
