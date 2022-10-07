@@ -1,5 +1,5 @@
 ---
-software:
+anta.tests.anta.tests.software:
   - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
       versions: # List of allowed EOS versions.
         - 4.25.4M
@@ -10,7 +10,7 @@ software:
   #       - v1.8.0
   # - verify_eos_extensions: # Verifies all EOS extensions installed on the device are enabled for boot persistence.
   # - verify_field_notice_44_resolution: # Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
-system:
+anta.tests.system:
   - verify_uptime: # Verifies the device uptime is higher than a value.
       minimum: 86400 # Minimum uptime in seconds.
   - verify_reload_cause: # Verifies the last reload of the device was requested by a user.

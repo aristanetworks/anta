@@ -1,5 +1,5 @@
 ---
-software:
+anta.tests.software:
   - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
       versions: # List of allowed EOS versions.
         - 4.25.4M
@@ -10,7 +10,8 @@ software:
         - v1.8.0
   - verify_eos_extensions: # Verifies all EOS extensions installed on the device are enabled for boot persistence.
   - verify_field_notice_44_resolution: # Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization).
-system:
+
+anta.tests.system:
   - verify_uptime: # Verifies the device uptime is higher than a value.
       minimum: 86400 # Minimum uptime in seconds.
   - verify_reload_cause: # Verifies the last reload of the device was requested by a user.
@@ -21,7 +22,8 @@ system:
   - verify_memory_utilization: # Verifies the memory utilization is less than 75%.
   - verify_filesystem_utilization: # Verifies each partition on the disk is used less than 75%.
   - verify_ntp: # Verifies NTP is synchronised.
-hardware:
+
+anta.tests.hardware:
   - verify_transceivers_manufacturers: # Verifies the device is only using transceivers from supported manufacturers.
       manufacturers: # List of allowed transceivers manufacturers.
         - Not Present
@@ -32,15 +34,18 @@ hardware:
   - verify_environment_cooling: # Verifies the fans status is OK.
   - verify_environment_power: # Verifies the power supplies status is OK.
   - verify_adverse_drops: # Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
-configuration:
+
+anta.tests.configuration:
   - verify_zerotouch: # Verifies ZeroTouch is disabled.
   - verify_running_config_diffs: # Verifies there is no difference between the running-config and the startup-config.
-profiles:
+
+anta.tests.profiles:
   - verify_unified_forwarding_table_mode: # Verifies the device is using the expected Unified Forwarding Table mode.
       mode: 3 # Expected UFT mode.
   - verify_tcam_profile: # Verifies the configured TCAM profile is the expected one.
       profile: vxlan-routing # Expected TCAM profile.
-interfaces:
+
+anta.tests.interfaces:
   - verify_interface_utilization: # Verifies interfaces utilization are below 75%.
   - verify_interface_errors: # Verifies interfaces error counters are equal to zero.
   - verify_interface_discards: # Verifies interfaces packet discard counters are equal to zero.
@@ -54,14 +59,17 @@ interfaces:
       number: 3 # Number of loopback interfaces expected to be present.
   - verify_svi: # Verifies there is no interface vlan down.
   - verify_spanning_tree_blocked_ports: # Verifies there is no spanning-tree blocked ports.
-mlag:
+
+anta.tests.mlag:
   - verify_mlag_status: # Verifies MLAG status: state is active, negotiation status is connected, local int is up, peer link is up.
   - verify_mlag_interfaces: # Verifies there is no inactive or active-partial MLAG interfaces.
   - verify_mlag_config_sanity: # Verifies there are no mlag config-sanity warnings
-vxlan:
+
+anta.tests.vxlan:
  - verify_vxlan: # Verifies the interface vxlan 1 status is up/up.
  - verify_vxlan_config_sanity: # Verifies there is no VXLAN config-sanity warnings.
-routing:
+
+anta.tests.routing:
   generic:
     - verify_routing_protocol_model: # Verifies the configured routing protocol model is the one we expect. And if there is no mismatch between the configured and operating routing protocol model.
         model: multi-agent # Expected routing protocol model (multi-agent or ribd).
@@ -85,7 +93,8 @@ routing:
     - verify_ospf_state: # Verifies all OSPF neighbors are in FULL state.
     - verify_ospf_count: # Verifies the number of OSPF neighbors in FULL state is the one we expect.
         number: 3 # The expected number of OSPF neighbors in FULL state.
-multicast:
+
+anta.tests.multicast:
   - verify_igmp_snooping_vlans: # Verifies the IGMP snooping configuration for some VLANs.
       configuration: disabled # Expected IGMP configuration (enabled or disabled) for these VLANs.
       vlans: # List of VLANs.
