@@ -467,8 +467,10 @@ class AntaInventory():
         """
         logger.debug(
             f"Searching for device {device.name} in {[ dev.name for dev in self._inventory]}")
-        device = [dev for dev in self._inventory if dev == device][0] or None
-        if device is None:
+        devices = [dev for dev in self._inventory if dev == device]
+        if len(devices) == 1:
+            device = devices[0]
+        else:
             return False
         logger.debug(f'Search result is: {device}')
         if device.is_online and not device.established:
