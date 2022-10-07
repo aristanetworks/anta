@@ -3,7 +3,9 @@
 
 """Models related to inventory management."""
 
-from typing import List, Optional, Any, Iterator
+from __future__ import annotations
+
+from typing import Dict, List, Optional, Any, Iterator, Type
 from pydantic.networks import Parts
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, AnyHttpUrl, conint, root_validator
 
@@ -26,7 +28,7 @@ class AntaInventoryHost(BaseModel):
 
     name: Optional[str]
     host: str
-    port: Optional[conint(gt=1, lt=65535)]
+    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     tags: List[str] = [DEFAULT_TAG]
 
 
@@ -94,7 +96,7 @@ class eAPIUrl(AnyHttpUrl):
     host_required = True
 
     @staticmethod
-    def get_default_parts(parts: 'Parts') -> 'Parts':
+    def get_default_parts(parts: Parts) -> Parts:
         return {
             'scheme': 'http' if ((parts.get('port') in ['80', '8080']) or parts.get('host') is None) else 'https',
             'domain': 'localhost' if (parts.get('port') == '8080') else '',
@@ -103,7 +105,7 @@ class eAPIUrl(AnyHttpUrl):
         }
 
     @classmethod
-    def build(cls, **kwargs):
+    def build(cls: Type[eAPIUrl], **kwargs: Any) -> eAPIUrl:
         """
         Include default path and port when building an eAPI URL
         """
@@ -144,15 +146,15 @@ class InventoryDevice(BaseModel):
     tags: List[str] = [DEFAULT_TAG]
 
     @root_validator(pre=True)
-    def build_name(cls, values):
+    def build_name(cls: Type[InventoryDevice], values: Dict[str, Any]) -> Dict[str, Any]:
         """ Build name attribute """
         if values.get('name') is None:
             assert 'host' in values, 'host required if name is not provided'
-            values['name'] = f"{values.get('host')}:{values.get('url').get('port')}"
+            values['name'] = f"{values.get('host')}:{values['url'].get('port')}"
         return values
 
     @root_validator(pre=True)
-    def build_eapi_url(cls, values):
+    def build_eapi_url(cls: Type[InventoryDevice], values: Dict[str, Any]) -> Dict[str, Any]:
         """ Build url attribute """
         if values.get('url') is None:
             if values.get('host') is not None:
@@ -164,7 +166,7 @@ class InventoryDevice(BaseModel):
             values['url'] = eAPIUrl.build(**values)
         return values
 
-    def __eq__(self, other):
+    def __eq__(self, other: BaseModel) -> bool:
         """
             Two InventoryDevice objects are equal if the hostname and the port are the same.
             This covers the use case of port forwarding when the host is localhost and the devices have different ports.

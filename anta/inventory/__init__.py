@@ -9,7 +9,7 @@ import logging
 import ssl
 from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
-from typing import Any, Iterator, List, Optional, Union
+from typing import Iterator, List, Optional, Union
 
 import yaml
 from jinja2 import Template
@@ -367,7 +367,7 @@ class AntaInventory:
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _inventory_rebuild(self, list_devices: Iterator[Any]) -> InventoryDevices:
+    def _inventory_rebuild(self, list_devices: Iterator[InventoryDevice]) -> InventoryDevices:
         """
         _inventory_rebuild Transform a list of InventoryDevice into a InventoryDevices object.
 
@@ -516,8 +516,10 @@ class AntaInventory:
         """
         logger.debug(
             f"Searching for device {device.name} in {[ dev.name for dev in self._inventory]}")
-        device = [dev for dev in self._inventory if dev == device][0] or None
-        if device is None:
+        devices = [dev for dev in self._inventory if dev == device]
+        if len(devices) == 1:
+            device = devices[0]
+        else:
             return False
         logger.debug(f'Search result is: {device}')
         if device.is_online and not device.established:
