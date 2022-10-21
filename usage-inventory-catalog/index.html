@@ -13,7 +13,7 @@
       
       
       <link rel="icon" href="../docs/_media/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.3">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.6">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7a952b86.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
@@ -360,6 +360,26 @@
   <a href="#test-catalog" class="md-nav__link">
     Test Catalog
   </a>
+  
+    <nav class="md-nav" aria-label="Test Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-tests-catalog" class="md-nav__link">
+    Default tests catalog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-tests-catalog" class="md-nav__link">
+    Custom tests catalog
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -856,6 +876,26 @@
     Test Catalog
   </a>
   
+    <nav class="md-nav" aria-label="Test Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-tests-catalog" class="md-nav__link">
+    Default tests catalog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-tests-catalog" class="md-nav__link">
+    Custom tests catalog
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -922,12 +962,17 @@
 <h4 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h4>
 <p>In addition to your inventory file, you also have to define a catalog of tests to execute against all your devices. This catalogue list all your tests and their parameters.</p>
 <p>Its format is a YAML file and keys are tests functions inherited from the python path. Let&rsquo;s take an example below:</p>
+<h5 id="default-tests-catalog">Default tests catalog<a class="headerlink" href="#default-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>All tests are located under <code>anta.tests</code> module and are categorised per family (one submodule). So to run test for software version, you can do:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">software</span><span class="p">:</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
 </code></pre></div>
+<div class="admonition information">
+<p class="admonition-title">Information</p>
+<p>With this approach, it means you can load your own tests collection as described in the next section.</p>
+</div>
 <p>It will load the test <code>verify_eos_version</code> located in <code>anta.tests.software</code>. But since this function has parameters, we will create a catalog with the following structure:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">software</span><span class="p">:</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span><span class="w"></span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span><span class="w"></span>
@@ -938,7 +983,7 @@
 <p>The following example gives a very minimal tests catalog you can use in almost any situation</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
 <span class="c1"># Load anta.tests.software</span><span class="w"></span>
-<span class="nt">software</span><span class="p">:</span><span class="w"></span>
+<span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span><span class="w"></span>
@@ -947,24 +992,38 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span><span class="w"></span>
 
 <span class="c1"># Load anta.tests.system</span><span class="w"></span>
-<span class="nt">system</span><span class="p">:</span><span class="w"></span>
+<span class="nt">anta.tests.system</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Verifies the device uptime is higher than a value.</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_uptime</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
 
 <span class="c1"># Load anta.tests.configuration</span><span class="w"></span>
-<span class="nt">configuration</span><span class="p">:</span><span class="w"></span>
+<span class="nt">anta.tests.configuration</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Verifies ZeroTouch is disabled.</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_zerotouch</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_running_config_diffs</span><span class="p">:</span><span class="w"></span>
 </code></pre></div>
+<h5 id="custom-tests-catalog">Custom tests catalog<a class="headerlink" href="#custom-tests-catalog" title="Permanent link">&para;</a></h5>
+<p>In case you want to leverage your own tests collection, you can use the following syntax:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;your package name&gt;</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;your test in your package name&gt;</span><span class="p">:</span><span class="w"></span>
+</code></pre></div>
+<p>So for instance, it could be:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">titom73.tests.system</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_platform</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;cEOS-LAB&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">How to create custom tests</p>
+<p>To create your custom tests, you should refer to this <a href="../usage-as-python-lib/#test-structure">following documentation</a></p>
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 23, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 21, 2022</span>
       
     
   </small>
@@ -1054,7 +1113,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.37e9125f.min.js"></script>
+      <script src="../assets/javascripts/bundle.078830c0.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
