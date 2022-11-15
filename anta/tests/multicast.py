@@ -1,20 +1,19 @@
 """
 Test functions related to multicast
 """
-import inspect
 import logging
 from typing import List
-import socket
 
-from jsonrpclib import jsonrpc
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 
 
+@anta_test
 def verify_igmp_snooping_vlans(
-    device: InventoryDevice, vlans: List[str], configuration: str
+    device: InventoryDevice, result: TestResult, vlans: List[str], configuration: str
 ) -> TestResult:
     """
     Verifies the IGMP snooping configuration for some VLANs.
@@ -32,10 +31,6 @@ def verify_igmp_snooping_vlans(
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
-
     if not vlans or not configuration:
         result.result = "skipped"
         result.messages.append(
@@ -43,32 +38,26 @@ def verify_igmp_snooping_vlans(
             "vlans or configuration was given"
         )
         return result
-    try:
-        response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
-        logger.debug(f"query result is: {response}")
+    response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+    logger.debug(f"query result is: {response}")
 
-        result.is_success()
-        for vlan in vlans:
-            if vlan not in response[0]["vlans"]:
-                result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
-                continue
+    result.is_success()
+    for vlan in vlans:
+        if vlan not in response[0]["vlans"]:
+            result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
+            continue
 
-            igmp_state = response[0]["vlans"][str(vlan)]["igmpSnoopingState"]
-            if igmp_state != configuration:
-                result.is_failure()
-                result.messages.append(f"IGMP state for vlan {vlan} is {igmp_state}")
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
-        )
-        result.is_error(str(e))
+        igmp_state = response[0]["vlans"][str(vlan)]["igmpSnoopingState"]
+        if igmp_state != configuration:
+            result.is_failure()
+            result.messages.append(f"IGMP state for vlan {vlan} is {igmp_state}")
 
     return result
 
 
+@anta_test
 def verify_igmp_snooping_global(
-    device: InventoryDevice, configuration: str
+    device: InventoryDevice, result: TestResult, configuration: str
 ) -> TestResult:
     """
     Verifies the IGMP snooping global configuration.
@@ -85,29 +74,19 @@ def verify_igmp_snooping_global(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
-
     if not configuration:
         result.is_skipped(
             "verify_igmp_snooping_global was not run as no configuration was given"
         )
         return result
-    try:
-        response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
-        logger.debug(f"query result is: {response}")
 
-        igmp_state = response[0]["igmpSnoopingState"]
-        if igmp_state == configuration:
-            result.is_success()
-        else:
-            result.is_failure(f"IGMP state is not valid: {igmp_state}")
+    response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+    logger.debug(f"query result is: {response}")
 
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
-        )
-        result.is_error(str(e))
+    igmp_state = response[0]["igmpSnoopingState"]
+    if igmp_state == configuration:
+        result.is_success()
+    else:
+        result.is_failure(f"IGMP state is not valid: {igmp_state}")
 
     return result

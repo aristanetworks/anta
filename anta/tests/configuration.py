@@ -2,6 +2,7 @@
 Test functions related to the device configuration
 """
 import logging
+
 from anta.tests import anta_test
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
