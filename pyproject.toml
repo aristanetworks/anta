@@ -41,7 +41,7 @@ python =
 
 [testenv]
 deps =
-  tets: pytest
+  test: pytest
   test: pytest-cov
   lint: flake8
   lint: pylint

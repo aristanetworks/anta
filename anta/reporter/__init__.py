@@ -6,7 +6,7 @@ Report management for ANTA.
 """
 
 import logging
-from typing import Any, List
+from typing import Any, List, Optional
 
 from rich.table import Table
 
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # pylint: disable=R0903
 class RICH_COLOR_THEME:
     """Color code for text rendering."""
+
     FAILURE = "orange3"
     ERROR = "red3"
     SUCCESS = "green"
@@ -28,7 +29,7 @@ class RICH_COLOR_THEME:
     HEADER = "cyan"
 
 
-class ReportTable():
+class ReportTable:
     """TableReport Generate a Table based on tabulate and TestResult."""
 
     def __init__(self) -> None:
@@ -36,16 +37,20 @@ class ReportTable():
         __init__ Class constructor
         """
         self.colors = []
-        self.colors.append(ColorManager(
-            level='success', color=RICH_COLOR_THEME.SUCCESS))
-        self.colors.append(ColorManager(
-            level='failure', color=RICH_COLOR_THEME.FAILURE))
-        self.colors.append(ColorManager(
-            level='error', color=RICH_COLOR_THEME.ERROR))
-        self.colors.append(ColorManager(
-            level='skipped', color=RICH_COLOR_THEME.SKIPPED))
+        self.colors.append(
+            ColorManager(level="success", color=RICH_COLOR_THEME.SUCCESS)
+        )
+        self.colors.append(
+            ColorManager(level="failure", color=RICH_COLOR_THEME.FAILURE)
+        )
+        self.colors.append(ColorManager(level="error", color=RICH_COLOR_THEME.ERROR))
+        self.colors.append(
+            ColorManager(level="skipped", color=RICH_COLOR_THEME.SKIPPED)
+        )
 
-    def _split_list_to_txt_list(self, usr_list: List[str], delimiter: str = None) -> str:
+    def _split_list_to_txt_list(
+        self, usr_list: List[str], delimiter: Optional[str] = None
+    ) -> str:
         """
         Split list to multi-lines string
 
@@ -75,12 +80,14 @@ class ReportTable():
         """
         for idx, header in enumerate(headers):
             if idx == 0:
-                table.add_column(header, justify="left", style=RICH_COLOR_THEME.HEADER, no_wrap=True)
+                table.add_column(
+                    header, justify="left", style=RICH_COLOR_THEME.HEADER, no_wrap=True
+                )
             else:
                 table.add_column(header, justify="left")
         return table
 
-    def _color_result(self, status: str, output_type: str = 'Text') -> Any:
+    def _color_result(self, status: str, output_type: str = "Text") -> Any:
         """
         Helper to implement color based on test status.
 
@@ -93,13 +100,31 @@ class ReportTable():
         Returns:
             Any: Can be either str or Text with Style
         """
-        if len([result for result in self.colors if str(result.level).upper() == status.upper()]) == 1:
-            code: ColorManager = [result for result in self.colors if str(
-                result.level).upper() == status.upper()][0]
-            return code.style_rich() if output_type == 'Text' else code.string()
+        if (
+            len(
+                [
+                    result
+                    for result in self.colors
+                    if str(result.level).upper() == status.upper()
+                ]
+            )
+            == 1
+        ):
+            code: ColorManager = [
+                result
+                for result in self.colors
+                if str(result.level).upper() == status.upper()
+            ][0]
+            return code.style_rich() if output_type == "Text" else code.string()
         return None
 
-    def report_all(self, result_manager: ResultManager, host: str = None, testcase: str = None, title: str = 'All tests results') -> Table:
+    def report_all(
+        self,
+        result_manager: ResultManager,
+        host: Optional[str] = None,
+        testcase: Optional[str] = None,
+        title: str = "All tests results",
+    ) -> Table:
         """
         Create a table report with all tests for one or all devices.
 
@@ -115,28 +140,34 @@ class ReportTable():
             Table: A fully populated rich Table
         """
         table = Table(title=title)
-        headers = ['Device IP', 'Test Name', 'Test Status', 'Message(s)']
+        headers = ["Device IP", "Test Name", "Test Status", "Message(s)"]
         table = self._build_headers(headers=headers, table=table)
 
-        for result in result_manager.get_results(output_format='list'):
+        for result in result_manager.get_results(output_format="list"):
             # pylint: disable=R0916
-            if (host is None and testcase is None) \
-                    or (host is not None and str(result.host) == host) \
-                    or (testcase is not None and testcase == str(result.test)):
-                logger.debug(f'adding new entry in table: {result.host} / {result.test} / {result.result}')
-                state = self._color_result(status=str(
-                    result.result), output_type='str')
-                message = self._split_list_to_txt_list(
-                    result.messages) if len(result.messages) > 0 else ''
-                table.add_row(
-                    str(result.host),
-                    result.test,
-                    state,
-                    message
+            if (
+                (host is None and testcase is None)
+                or (host is not None and str(result.host) == host)
+                or (testcase is not None and testcase == str(result.test))
+            ):
+                logger.debug(
+                    f"adding new entry in table: {result.host} / {result.test} / {result.result}"
                 )
+                state = self._color_result(status=str(result.result), output_type="str")
+                message = (
+                    self._split_list_to_txt_list(result.messages)
+                    if len(result.messages) > 0
+                    else ""
+                )
+                table.add_row(str(result.host), result.test, state, message)
         return table
 
-    def report_summary_tests(self, result_manager: ResultManager, testcase: str = None, title: str = 'Summary per test case') -> Table:
+    def report_summary_tests(
+        self,
+        result_manager: ResultManager,
+        testcase: Optional[str] = None,
+        title: str = "Summary per test case",
+    ) -> Table:
         """
         Create a table report with result agregated per test.
 
@@ -152,32 +183,51 @@ class ReportTable():
         """
         # sourcery skip: class-extract-method
         table = Table(title=title)
-        headers = ['Test Case', '# of success', '# of skipped', '# of failure', '# of errors', 'List of failed or error nodes']
+        headers = [
+            "Test Case",
+            "# of success",
+            "# of skipped",
+            "# of failure",
+            "# of errors",
+            "List of failed or error nodes",
+        ]
         table = self._build_headers(headers=headers, table=table)
         for testcase_read in result_manager.get_testcases():
             if testcase is None or str(testcase_read) == testcase:
                 results = result_manager.get_result_by_test(testcase_read)
                 nb_failure = len(
-                    [result for result in results if result.result == 'failure'])
+                    [result for result in results if result.result == "failure"]
+                )
                 nb_error = len(
-                    [result for result in results if result.result == 'error'])
+                    [result for result in results if result.result == "error"]
+                )
                 list_failure = [
-                    str(result.host) for result in results if result.result in ['failure', 'error']]
+                    str(result.host)
+                    for result in results
+                    if result.result in ["failure", "error"]
+                ]
                 nb_success = len(
-                    [result for result in results if result.result == 'success'])
+                    [result for result in results if result.result == "success"]
+                )
                 nb_skipped = len(
-                    [result for result in results if result.result == 'skipped'])
+                    [result for result in results if result.result == "skipped"]
+                )
                 table.add_row(
                     testcase_read,
                     str(nb_success),
                     str(nb_skipped),
                     str(nb_failure),
                     str(nb_error),
-                    str(list_failure)
+                    str(list_failure),
                 )
         return table
 
-    def report_summary_hosts(self, result_manager: ResultManager, host: str = None, title: str = 'Summary per host') -> Table:
+    def report_summary_hosts(
+        self,
+        result_manager: ResultManager,
+        host: Optional[str] = None,
+        title: str = "Summary per host",
+    ) -> Table:
         """
         Create a table report with result agregated per host.
 
@@ -192,30 +242,43 @@ class ReportTable():
             Table: A fully populated rich Table
         """
         table = Table(title=title)
-        headers = ['Host IP', '# of success', '# of skipped', '# of failure',
-                   '# of errors', 'List of failed ortest case']
+        headers = [
+            "Host IP",
+            "# of success",
+            "# of skipped",
+            "# of failure",
+            "# of errors",
+            "List of failed ortest case",
+        ]
         table = self._build_headers(headers=headers, table=table)
         for host_read in result_manager.get_hosts():
             if host is None or str(host_read) == host:
                 results = result_manager.get_result_by_host(host_read)
-                logger.debug('data to use for computation')
-                logger.debug(f'{host}: {results}')
+                logger.debug("data to use for computation")
+                logger.debug(f"{host}: {results}")
                 nb_failure = len(
-                    [result for result in results if result.result == 'failure'])
+                    [result for result in results if result.result == "failure"]
+                )
                 nb_error = len(
-                    [result for result in results if result.result == 'error'])
+                    [result for result in results if result.result == "error"]
+                )
                 list_failure = [
-                    str(result.test) for result in results if result.result in ['failure', 'error']]
+                    str(result.test)
+                    for result in results
+                    if result.result in ["failure", "error"]
+                ]
                 nb_success = len(
-                    [result for result in results if result.result == 'success'])
+                    [result for result in results if result.result == "success"]
+                )
                 nb_skipped = len(
-                    [result for result in results if result.result == 'skipped'])
+                    [result for result in results if result.result == "skipped"]
+                )
                 table.add_row(
                     str(host_read),
                     str(nb_success),
                     str(nb_skipped),
                     str(nb_failure),
                     str(nb_error),
-                    str(list_failure)
+                    str(list_failure),
                 )
         return table

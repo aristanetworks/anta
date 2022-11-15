@@ -2,7 +2,7 @@
 Test functions related to the EOS software
 """
 import logging
-from typing import List
+from typing import List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @anta_test
 def verify_eos_version(
-    device: InventoryDevice, result: TestResult, versions: List[str] = None
+    device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None
 ) -> TestResult:
     """
     Verifies the device is running one of the allowed EOS version.
@@ -51,7 +51,7 @@ def verify_eos_version(
 
 @anta_test
 def verify_terminattr_version(
-    device: InventoryDevice, result: TestResult, versions: List[str] = None
+    device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None
 ) -> TestResult:
     """
     Verifies the device is running one of the allowed TerminAttr version.

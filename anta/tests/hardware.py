@@ -2,7 +2,7 @@
 Test functions related to the hardware or environement
 """
 import logging
-from typing import List
+from typing import List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
 def verify_transceivers_manufacturers(
-    device: InventoryDevice, result: TestResult, manufacturers: List[str] = None
+    device: InventoryDevice,
+    result: TestResult,
+    manufacturers: Optional[List[str]] = None,
 ) -> TestResult:
     """
     Verifies the device is only using transceivers from supported manufacturers.

@@ -2,6 +2,7 @@
 Test functions related to system-level features and protocols
 """
 import logging
+from typing import Optional
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 @anta_test
 def verify_uptime(
-    device: InventoryDevice, result: TestResult, minimum: int = None
+    device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
 ) -> TestResult:
     """
     Verifies the device uptime is higher than a value.

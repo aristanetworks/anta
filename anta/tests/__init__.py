@@ -6,7 +6,7 @@ Test decorator from which tests can derive
 
 import logging
 from functools import wraps
-from typing import Any, Callable, List, Dict
+from typing import Any, Callable, Dict, List
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult

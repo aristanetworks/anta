@@ -1,7 +1,7 @@
 """
 Test functions related to the device interfaces
 """
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -159,7 +159,7 @@ def verify_interface_errdisabled(
 
 @anta_test
 def verify_interfaces_status(
-    device: InventoryDevice, result: TestResult, minimum: int = None
+    device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
 ) -> TestResult:
     """
     Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
@@ -332,7 +332,7 @@ def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResu
 
 @anta_test
 def verify_loopback_count(
-    device: InventoryDevice, result: TestResult, number: int = None
+    device: InventoryDevice, result: TestResult, number: Optional[int] = None
 ) -> TestResult:
     """
     Verifies the number of loopback interfaces on the device is the one we expect.
