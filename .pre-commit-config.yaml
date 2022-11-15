@@ -21,6 +21,12 @@ repos:
           - --config=/dev/null
           - --max-line-length=165
 
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: Check for changes when running isort on all python files
+
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
       - id: pylint

@@ -4,9 +4,9 @@
 Test decorator from which tests can derive
 """
 
-from functools import wraps
 import logging
-from typing import Callable, Any, Dict
+from functools import wraps
+from typing import Any, Callable, List, Dict
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -21,7 +21,9 @@ def anta_test(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
     """
 
     @wraps(function)
-    def wrapper(device: InventoryDevice, **kwargs: Dict[str, Any]) -> TestResult:
+    def wrapper(
+        device: InventoryDevice, *args: List[Any], **kwargs: Dict[str, Any]
+    ) -> TestResult:
         """
         wrapper for func
         Args:
@@ -35,10 +37,10 @@ def anta_test(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
             * result = "error" if any exception is caught
         """
         result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
-        logger.debug(f"Start {function.__name__} check for host {device.host}")
+        logger.debug(f"Start {function.__name__} test for host {device.host}")
 
         try:
-            return function(device, result, **kwargs)
+            return function(device, result, *args, **kwargs)
 
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except

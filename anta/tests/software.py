@@ -4,10 +4,10 @@ Test functions related to the EOS software
 import logging
 from typing import List
 
-from anta.tests import anta_test
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 

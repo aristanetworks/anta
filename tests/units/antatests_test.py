@@ -11,7 +11,9 @@ It requires the installation of the package pytest that is indicated in the file
 
 import ast
 from unittest.mock import Mock
+
 import pytest
+
 import anta
 
 

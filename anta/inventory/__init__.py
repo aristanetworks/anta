@@ -9,7 +9,6 @@ import logging
 import ssl
 from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
-from typing import List, Optional, Union, Any, Iterator
 
 import yaml
 from jinja2 import Template
@@ -20,7 +19,8 @@ from yaml.loader import SafeLoader
 
 from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
                          InventoryUnknownFormat)
-from .models import AntaInventoryInput, InventoryDevice, InventoryDevices, DEFAULT_TAG
+from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
+                     InventoryDevices)
 
 # pylint: disable=W1309
 

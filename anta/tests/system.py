@@ -3,9 +3,9 @@ Test functions related to system-level features and protocols
 """
 import logging
 
-from anta.tests import anta_test
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@
 """
 tests.data.utils
 """
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def generate_test_ids_dict(val: Dict[str, Any]) -> str:

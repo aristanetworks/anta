@@ -6,10 +6,12 @@ Report management for ANTA.
 """
 
 import logging
-from typing import List, Any
+from typing import Any, List
 
 from rich.table import Table
+
 from anta.result_manager import ResultManager
+
 from .models import ColorManager
 
 logger = logging.getLogger(__name__)

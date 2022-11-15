@@ -2,9 +2,9 @@
 Loader that parses a YAML test catalog and imports corresponding Python functions
 """
 import importlib
-from typing import Callable, List, Tuple, Dict, Any
-import sys
 import logging
+import sys
+from typing import Any, Callable, Dict, List, Tuple
 
 from anta.result_manager.models import TestResult
 

@@ -5,11 +5,10 @@ rich.py test
 """
 
 import argparse
+import itertools
 import logging
 import sys
-import itertools
 from typing import List, Union
-from yaml import safe_load
 
 # rich is not nice as it does not expose most of its module in __init__.py
 # from rich import print
@@ -21,12 +20,12 @@ from rich.style import Style  # pylint: disable=E0401,E0611
 from rich.table import Table  # pylint: disable=E0401,E0611
 from rich.text import Text  # pylint: disable=E0401,E0611
 from rich.tree import Tree  # pylint: disable=E0401,E0611
+from yaml import safe_load
 
 import anta.loader
 from anta.inventory import AntaInventory
-from anta.result_manager import ResultManager
 from anta.reporter import ReportTable
-
+from anta.result_manager import ResultManager
 
 # logging.basicConfig(level=logging.DEBUG)
 # logging.disable(sys.maxsize)

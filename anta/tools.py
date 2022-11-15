@@ -6,7 +6,8 @@ Toolkit for ANTA.
 """
 
 import logging
-from typing import Union, Any
+from typing import Any, Union
+
 from .inventory.models import InventoryDevices
 from .result_manager.models import ListResult
 

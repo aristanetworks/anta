@@ -23,24 +23,25 @@ Arista NRFU test runner script
 """
 
 import argparse
+import itertools
 import logging
 import sys
 import itertools
 from typing import Any
 from yaml import safe_load
 
+from rich import print_json
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.pretty import pprint
-from rich import print_json
+from yaml import safe_load
 
 import anta.loader
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
-from anta.result_manager import ResultManager
 from anta.reporter import ReportTable
-
+from anta.result_manager import ResultManager
 
 def setup_logging(level: str = 'critical') -> Any:
     """

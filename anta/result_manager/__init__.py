@@ -5,9 +5,9 @@
 Result Manager Module for ANTA.
 """
 
-import logging
 import json
-from typing import List, Any
+import logging
+from typing import Any, List
 
 from anta.result_manager.models import ListResult, TestResult
 from anta.tools import pydantic_to_dict

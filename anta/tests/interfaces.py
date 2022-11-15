@@ -1,7 +1,8 @@
 """
 Test functions related to the device interfaces
 """
-from typing import Dict, Any
+from typing import Any, Dict
+
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 from anta.tests import anta_test

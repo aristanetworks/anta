@@ -2,12 +2,12 @@
 BGP test functions
 """
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
-from anta.tests import anta_test
 from anta.decorators import check_bgp_family_enable
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 
