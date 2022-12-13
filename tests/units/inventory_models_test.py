@@ -336,16 +336,12 @@ class Test_InventoryDeviceModel:
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  },
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  }
              ],
              "expected_result": "valid"
@@ -377,16 +373,12 @@ class Test_InventoryDeviceModel:
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  },
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  }
              ],
              "expected_result": "valid"
@@ -419,16 +411,12 @@ class Test_InventoryDeviceModel:
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  },
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  }
              ],
              "expected_result": "valid"
@@ -457,16 +445,12 @@ class Test_InventoryDeviceModel:
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  },
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  }
              ],
              "expected_result": "valid"
@@ -478,7 +462,7 @@ class Test_InventoryDeviceModel:
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
             inventory_devices.append(InventoryDevice(**entry))
-        if str(inventory_devices[0].host) == test_definition["input"][0]["host"]:
+        if str(inventory_devices[0].session.host) == test_definition["input"][0]["host"]:
             logging.info("__getitem__ function is valid")
         else:
             logging.error("__getitem__ is not working as expected")
@@ -499,16 +483,12 @@ class Test_InventoryDeviceModel:
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  },
                  {
                      'host': '1.1.1.1',
                      'username': 'arista',
-                     'password': 'arista123!',
-                     'established': False,
-                     'url': 'https://demo.io/fake/url'
+                     'password': 'arista123!'
                  }
              ],
              "expected_result": "valid"
@@ -521,7 +501,7 @@ class Test_InventoryDeviceModel:
         for entry in test_definition["input"]:
             inventory_devices.append(InventoryDevice(**entry))
         for idx, device in enumerate(inventory_devices):
-            if str(device.host) == test_definition["input"][idx]["host"]:
+            if str(device.session.host) == test_definition["input"][idx]["host"]:
                 logging.info("__iter__ function is valid")
             else:
                 logging.error("__iter__ is not working as expected")

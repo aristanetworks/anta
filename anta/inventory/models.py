@@ -3,9 +3,9 @@
 
 """Models related to inventory management."""
 
-from typing import Dict, List, Optional, Any, Iterator, Type
+from typing import Dict, List, Optional, Any, Iterator, Type, Union
 
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, root_validator
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 from aioeapi import Device
 
 # Default values
@@ -14,6 +14,8 @@ DEFAULT_TAG = 'default'
 DEFAULT_HW_MODEL = 'unset'
 
 # Pydantic models for input validation
+
+RFC_1123_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
 
 
 class AntaInventoryHost(BaseModel):
@@ -26,7 +28,7 @@ class AntaInventoryHost(BaseModel):
     """
 
     name: Optional[str]
-    host: str
+    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     tags: List[str] = [DEFAULT_TAG]
 
@@ -98,8 +100,10 @@ class InventoryDevice(BaseModel):
         arbitrary_types_allowed = True
 
     name: str
+    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     username: str
     password: str
+    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     enable_password: Optional[str]
     session: Device
     established = False

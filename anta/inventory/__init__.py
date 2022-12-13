@@ -7,7 +7,7 @@ Inventory Module for ANTA.
 
 import logging
 import asyncio
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any, Dict
 from aioeapi.errors import EapiCommandError
 
 import yaml
@@ -251,16 +251,18 @@ class AntaInventory:
         if tags is None:
             tags = [DEFAULT_TAG]
 
-        device = InventoryDevice(
-            name=name,
-            host=host,
-            port=port,
-            username=self._username,
-            password=self._password,
-            enable_password=self._enable_password,
-            tags=tags,
-            timeout=self.timeout
-        )
+        kwargs: Dict[str, Any] = {
+            'name': name,
+            'host': host,
+            'port': port,
+            'username': self._username,
+            'password': self._password,
+            'enable_password': self._enable_password,
+            'tags': tags
+        }
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+        device = InventoryDevice(**kwargs)
         self._inventory.append(device)
 
     def _inventory_read_hosts(self) -> None:
@@ -364,8 +366,8 @@ class AntaInventory:
             # pylint: disable=R1721
             return [dev for dev in inventory]
 
-        if format_out == "json":
-            return inventory.json()
+        if format_out == 'json':
+            return inventory.json(exclude={'__root__': {'__all__': {'session'}}})
 
         return inventory
 
