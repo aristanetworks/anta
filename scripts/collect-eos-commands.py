@@ -96,8 +96,7 @@ def main() -> None:
         inventory_file=args.file,
         username=args.username,
         password=args.password,
-        auto_connect=True,
-        timeout=2,
+        timeout=2
     )
 
     devices = inventory.get_inventory(established_only=True)

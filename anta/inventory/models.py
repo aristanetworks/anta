@@ -3,9 +3,9 @@
 
 """Models related to inventory management."""
 
-from typing import List, Optional, Iterator
+from typing import Dict, List, Optional, Any, Iterator, Type
 
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, root_validator
 from aioeapi import Device
 
 # Default values
@@ -92,7 +92,9 @@ class InventoryDevice(BaseModel):
         url (str): eAPI URL to use to build session.
         tags (List[str]): List of attached tags read from inventory file.
     """
-    class Config:
+
+    class Config:  # pylint: disable=too-few-public-methods
+        """ Pydantic model configuration """
         arbitrary_types_allowed = True
 
     name: str
@@ -106,7 +108,9 @@ class InventoryDevice(BaseModel):
     tags: List[str] = [DEFAULT_TAG]
     timeout: float = 10.0
 
-    def build_device(cls, values):
+    @root_validator(pre=True)
+    def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
+        """ Build the device session object """
         if values.get('session') is None:
             host = values.get('host')
             if not host:

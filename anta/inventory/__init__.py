@@ -185,8 +185,7 @@ class AntaInventory:
         if not online:
             logger.warning(f'Cannot open port to {device.name}')
             return False
-        else:
-            return True
+        return True
 
     ###########################################################################
     # Internal methods

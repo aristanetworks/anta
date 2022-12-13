@@ -25,9 +25,9 @@ import argparse
 import logging
 import sys
 import itertools
-from yaml import safe_load
 from typing import Callable, List, Tuple, Dict, Any
 
+from yaml import safe_load
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -59,22 +59,15 @@ logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
 
-async def main(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
-    await inventory_anta.connect_inventory()
-    return await run_tests(inventory_anta, tests_catalog)
 
-async def run_tests(inventory_anta: AntaInventory, tests_catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> ResultManager:
-    """
-    Schedule test runs concurrently
-    """
-    manager = ResultManager()
-    tests = itertools.product(inventory_anta.get_inventory(), tests_catalog)
-    results = await asyncio.gather(*(test[0](device, **test[1]) for device, test in tests), return_exceptions=True)
-    for r in results:
+async def main(manager: ResultManager, inventory: AntaInventory, tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
+    await inventory.connect_inventory()
+    res = await asyncio.gather(*(test[0](device, **test[1]) for device, test in itertools.product(inventory.get_inventory(), tests)), return_exceptions=True)
+    for r in res:
         if isinstance(r, Exception):
             logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
-    manager.add_test_results(results)
-    return manager
+    manager.add_test_results(res)
+
 
 def cli_manager() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='ANTA test & demo script')
@@ -124,15 +117,15 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--table', required=False, action='store_true',
                         help='Result represented in tables')
 
-    ## List of all tests per device -- REQUIRE --table option
+    # List of all tests per device -- REQUIRE --table option
     parser.add_argument('--full', required=False, action='store_true',
                         help='Display all test cases results')
 
-    ## Summary of tests results per device -- REQUIRE --table option
+    # Summary of tests results per device -- REQUIRE --table option
     parser.add_argument('--devices', required=False, action='store_true',
                         help='Provides summary of test results per device')
 
-    ## Summary of tests results per test-case -- REQUIRE --table option
+    # Summary of tests results per test-case -- REQUIRE --table option
     parser.add_argument('--testcases', required=False, action='store_true',
                         help='Provides summary of test results per test case')
 
@@ -193,7 +186,7 @@ if __name__ == '__main__':
         console.print(Panel('Active logger for testing', style='orange3'))
         # pylint: disable=E1101
         loggers = [logging.getLogger(name)
-               for name in logging.root.manager.loggerDict]
+                   for name in logging.root.manager.loggerDict]
         pprint(loggers)
 
     logger.info('ANTA testing program started')
@@ -224,7 +217,6 @@ if __name__ == '__main__':
     else:
         logger.info('starting running test on devices ...')
 
-
     ############################################################################
     # Test loader
     ############################################################################
@@ -245,7 +237,8 @@ if __name__ == '__main__':
             if test[0].__name__ == cli_options.search_test:
                 tests_catalog = [test]
 
-    manager = asyncio.run(main(inventory_anta, tests_catalog), debug=False)
+    results = ResultManager()
+    asyncio.run(main(results, inventory_anta, tests_catalog), debug=False)
 
     ############################################################################
     # Test Reporting
@@ -256,32 +249,32 @@ if __name__ == '__main__':
         console.print(Panel('Raw inventory for active device', style='cyan'))
         pprint(inventory_anta.get_inventory(format_out='list'))
         console.print(Panel('Raw results of all tests', style='cyan'))
-        pprint(manager.get_results(output_format="list"))
+        pprint(results.get_results(output_format="list"))
 
     if cli_options.table:
         reporter = ReportTable()
         if cli_options.full:
-            console.print(reporter.report_all(result_manager=manager,
+            console.print(reporter.report_all(result_manager=results,
                           host=cli_options.search_ip, testcase=cli_options.search_test))
         if cli_options.testcases:
             console.print(reporter.report_summary_tests(
-                result_manager=manager, testcase=cli_options.search_test))
+                result_manager=results, testcase=cli_options.search_test))
         if cli_options.devices:
             console.print(reporter.report_summary_hosts(
-                result_manager=manager, host=cli_options.search_ip))
+                result_manager=results, host=cli_options.search_ip))
 
     if cli_options.save:
         reporter = ReportTable()
         with open(cli_options.save_file, "wt", encoding="utf-8") as report_file:
-            output = reporter.report_summary_hosts(result_manager=manager)
+            output = reporter.report_summary_hosts(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 
-            output = reporter.report_summary_tests(result_manager=manager)
+            output = reporter.report_summary_tests(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 
-            output = reporter.report_all(result_manager=manager)
+            output = reporter.report_all(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 

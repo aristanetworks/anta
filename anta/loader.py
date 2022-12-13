@@ -23,7 +23,7 @@ def parse_catalog(
     Returns:
         List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
     """
-    tests = []
+    tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]] = []
     if not test_catalog:
         return tests
     for key, value in test_catalog.items():
