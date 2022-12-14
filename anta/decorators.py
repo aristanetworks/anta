@@ -67,14 +67,21 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
             """
             device = args[0]
             eapi_command = "show bgp ipv4 unicast summary vrf all"
-            eapi_command = "show bgp ipv6 unicast summary vrf all" if family == "ipv6" else eapi_command
+            eapi_command = (
+                "show bgp ipv6 unicast summary vrf all"
+                if family == "ipv6"
+                else eapi_command
+            )
             eapi_command = "show bgp evpn summary" if family == "evpn" else eapi_command
-            eapi_command = "show bgp rt-membership summary" if family == "rtc" else eapi_command
+            eapi_command = (
+                "show bgp rt-membership summary" if family == "rtc" else eapi_command
+            )
 
             result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
             try:
                 response = device.session.runCmds(  # type: ignore
-                    1, [eapi_command], "json")  # type: ignore
+                    1, [eapi_command], "json"
+                )  # type: ignore
 
                 if "vrfs" not in response[0].keys():
                     result.is_skipped(
@@ -83,7 +90,10 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
                     )
                     return result
                 bgp_vrfs = response[0]["vrfs"]
-                if len(bgp_vrfs) == 0 or len(response[0]["vrfs"]["default"]["peers"]) == 0:
+                if (
+                    len(bgp_vrfs) == 0
+                    or len(response[0]["vrfs"]["default"]["peers"]) == 0
+                ):
                     # No VRF
                     result.is_skipped(
                         # type: ignore

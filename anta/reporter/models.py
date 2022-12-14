@@ -4,8 +4,9 @@
 
 """Models related to anta.result_manager module."""
 
-from rich.text import Text
 from pydantic import BaseModel, validator
+from rich.text import Text
+
 from ..result_manager.models import RESULT_OPTIONS
 
 

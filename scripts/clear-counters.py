@@ -13,6 +13,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 
 from jsonrpclib import jsonrpc
+
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access

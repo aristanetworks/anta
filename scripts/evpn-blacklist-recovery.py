@@ -7,11 +7,13 @@ This script clears on devices the list of MAC addresses which are blacklisted in
 # disabling duplicate-code for scripts as this is expected between scripts
 # pylint: disable=R0801
 
+import logging
+import ssl
 from argparse import ArgumentParser
 from getpass import getpass
-import ssl
-import logging
+
 from jsonrpclib import jsonrpc
+
 from anta.inventory import AntaInventory
 
 # pylint: disable=protected-access

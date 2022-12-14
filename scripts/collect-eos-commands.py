@@ -15,8 +15,10 @@ from argparse import ArgumentParser
 from getpass import getpass
 from socket import setdefaulttimeout
 from typing import Tuple
+
 from jsonrpclib import jsonrpc
 from yaml import safe_load
+
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
 

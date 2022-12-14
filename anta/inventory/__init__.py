@@ -9,7 +9,7 @@ import logging
 import ssl
 from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
-from typing import List, Optional, Union, Any, Iterator
+from typing import Any, Iterator, List, Optional, Union
 
 import yaml
 from jinja2 import Template
@@ -20,7 +20,8 @@ from yaml.loader import SafeLoader
 
 from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
                          InventoryUnknownFormat)
-from .models import AntaInventoryInput, InventoryDevice, InventoryDevices, DEFAULT_TAG
+from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
+                     InventoryDevices)
 
 # pylint: disable=W1309
 
@@ -31,7 +32,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class AntaInventory():
+class AntaInventory:
     """
     Inventory Abstraction for ANTA framework.
 
@@ -98,18 +99,26 @@ class AntaInventory():
     """
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = 'anta_inventory'
+    INVENTORY_ROOT_KEY = "anta_inventory"
     # Template to build eAPI connection URL
-    EAPI_SESSION_TPL = 'https://{{device_username}}:{{device_password}}@{{device}}/command-api'
+    EAPI_SESSION_TPL = (
+        "https://{{device_username}}:{{device_password}}@{{device}}/command-api"
+    )
     # Supported Output format
-    INVENTORY_OUTPUT_FORMAT = ['native', 'json']
+    INVENTORY_OUTPUT_FORMAT = ["native", "json"]
     # HW model definition in show version
-    HW_MODEL_KEY = 'modelName'
+    HW_MODEL_KEY = "modelName"
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: str = None, auto_connect: bool = True,
-                 timeout: float = 5) -> None:
+    def __init__(
+        self,
+        inventory_file: str,
+        username: str,
+        password: str,
+        enable_password: Optional[str] = None,
+        auto_connect: bool = True,
+        timeout: float = 5,
+    ) -> None:
         # sourcery skip: remove-unnecessary-cast, simplify-len-comparison
         """Class constructor.
 
@@ -124,27 +133,27 @@ class AntaInventory():
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
-        with open(inventory_file, 'r', encoding='utf8') as fd:
+        with open(inventory_file, "r", encoding="utf8") as fd:
             data = yaml.load(fd, Loader=SafeLoader)
 
         # Load data using Pydantic
         try:
             self._read_inventory = AntaInventoryInput(**data[self.INVENTORY_ROOT_KEY])
         except KeyError as exc:
-            logger.error(f'Inventory root key is missing: {self.INVENTORY_ROOT_KEY}')
+            logger.error(f"Inventory root key is missing: {self.INVENTORY_ROOT_KEY}")
             raise InventoryRootKeyErrors(
-                f'Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory') from exc
+                f"Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory"
+            ) from exc
         except ValidationError as exc:
-            logger.error('Inventory data are not compliant with inventory models')
-            raise InventoryIncorrectSchema(
-                'Inventory is not following schema') from exc
+            logger.error("Inventory data are not compliant with inventory models")
+            raise InventoryIncorrectSchema("Inventory is not following schema") from exc
 
         # Read data from input
-        if self._read_inventory.dict()['hosts'] is not None:
+        if self._read_inventory.dict()["hosts"] is not None:
             self._inventory_read_hosts()
-        if self._read_inventory.dict()['networks'] is not None:
+        if self._read_inventory.dict()["networks"] is not None:
             self._inventory_read_networks()
-        if self._read_inventory.dict()['ranges'] is not None:
+        if self._read_inventory.dict()["ranges"] is not None:
             self._inventory_read_ranges()
 
         # Create RPC connection for all devices
@@ -164,8 +173,11 @@ class AntaInventory():
         Returns:
             bool: True if device is in our inventory, False if not
         """
-        logger.debug(f'Checking if device {ip} is in our inventory')
-        return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
+        logger.debug(f"Checking if device {ip} is in our inventory")
+        return (
+            len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)])
+            == 1
+        )
 
     def _is_device_online(self, device: InventoryDevice, timeout: float = 5) -> bool:
         """
@@ -181,15 +193,15 @@ class AntaInventory():
         Returns:
             bool: True if device ready, False by default.
         """
-        logger.debug(f'Checking if device {device.host} is online')
+        logger.debug(f"Checking if device {device.host} is online")
         connection = Server(device.url)
         # Check connectivity
         setdefaulttimeout(timeout)
         try:
-            connection.runCmds(1, ['show version'])
+            connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception as exp:
-            logger.warning(f'Service not running on device {device.host} with: f{exp}')
+            logger.warning(f"Service not running on device {device.host} with: f{exp}")
             return False
         else:
             return True
@@ -198,7 +210,9 @@ class AntaInventory():
     # Internal methods
     ###########################################################################
 
-    def _read_device_hw(self, device: InventoryDevice, timeout: float = 5) -> Optional[str]:
+    def _read_device_hw(
+        self, device: InventoryDevice, timeout: float = 5
+    ) -> Optional[str]:
         """
         _read_device_hw Read HW model from the device and update entry with correct value.
 
@@ -212,17 +226,21 @@ class AntaInventory():
         Returns:
             str: HW value read from the device using show version.
         """
-        logger.debug(f'Reading HW information for {device.host}')
+        logger.debug(f"Reading HW information for {device.host}")
         connection = Server(device.url)
         try:
             setdefaulttimeout(timeout)
-            response = connection.runCmds(1, ['show version'])
+            response = connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception:
-            logger.warning(f'Service not running on device {device.host}')
+            logger.warning(f"Service not running on device {device.host}")
             return None
         else:
-            return response[0][self.HW_MODEL_KEY] if self.HW_MODEL_KEY in response[0] else None
+            return (
+                response[0][self.HW_MODEL_KEY]
+                if self.HW_MODEL_KEY in response[0]
+                else None
+            )
 
     def _get_from_device(self, device: InventoryDevice) -> InventoryDevice:
         """
@@ -238,15 +256,16 @@ class AntaInventory():
         Returns:
             InventoryDevice: Updated structure with devices information (is_online, HW model)
         """
-        logger.debug(f'Refreshing is_online flag for device {device.host}')
-        device.is_online = self._is_device_online(
-            device=device, timeout=self.timeout)
+        logger.debug(f"Refreshing is_online flag for device {device.host}")
+        device.is_online = self._is_device_online(device=device, timeout=self.timeout)
         hw_model = self._read_device_hw(device=device, timeout=self.timeout)
         if device.is_online and hw_model:
             device.hw_model = hw_model
         return device
 
-    def _build_device_session_path(self, host: str, username: str, password: str) -> str:
+    def _build_device_session_path(
+        self, host: str, username: str, password: str
+    ) -> str:
         """Construct URL to reach device using eAPI.
 
         Jinja2 render to build URL to use for eAPI session.
@@ -261,12 +280,12 @@ class AntaInventory():
         """
         session_template = Template(self.EAPI_SESSION_TPL)
         return session_template.render(
-            device=host,
-            device_username=username,
-            device_password=password
+            device=host, device_username=username, device_password=password
         )
 
-    def _build_device_session(self, device: InventoryDevice, timeout: float = 5) -> InventoryDevice:
+    def _build_device_session(
+        self, device: InventoryDevice, timeout: float = 5
+    ) -> InventoryDevice:
         """Create eAPI RPC session to Arista EOS devices.
 
         Args:
@@ -280,17 +299,19 @@ class AntaInventory():
         # Check connectivity
         try:
             setdefaulttimeout(timeout)
-            connection.runCmds(1, ['show version'])
+            connection.runCmds(1, ["show version"])
         # pylint: disable=W0703
         except Exception:
-            logger.warning(f'Service not running on device {device.host}')
+            logger.warning(f"Service not running on device {device.host}")
             device.session = None
         else:
             device.established = True
             device.session = connection
         return device
 
-    def _add_device_to_inventory(self, host_ip: str, tags: List[str] = None) -> None:
+    def _add_device_to_inventory(
+        self, host_ip: str, tags: Optional[List[str]] = None
+    ) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -310,11 +331,9 @@ class AntaInventory():
             password=self._password,
             enable_password=self._enable_password,
             url=self._build_device_session_path(
-                host=host_ip,
-                username=self._username,
-                password=self._password
+                host=host_ip, username=self._username, password=self._password
             ),
-            tags=tags
+            tags=tags,
         )
         self._inventory.append(device)
 
@@ -348,7 +367,8 @@ class AntaInventory():
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
                 self._add_device_to_inventory(
-                    host_ip=str(range_increment), tags=range_def.tags)
+                    host_ip=str(range_increment), tags=range_def.tags
+                )
                 range_increment += 1
 
     def _inventory_rebuild(self, list_devices: Iterator[Any]) -> InventoryDevices:
@@ -361,13 +381,15 @@ class AntaInventory():
         Returns:
             InventoryDevices: An object with all the devices.
         """
-        logger.debug('Create a new version of InventoryDevices')
+        logger.debug("Create a new version of InventoryDevices")
         inventory = InventoryDevices()
         for device in list_devices:
             inventory.append(device)
         return inventory
 
-    def _filtered_inventory(self, established_only: bool = False, tags: List[str] = None) -> InventoryDevices:
+    def _filtered_inventory(
+        self, established_only: bool = False, tags: Optional[List[str]] = None
+    ) -> InventoryDevices:
         """
         _filtered_inventory Generate a temporary inventory filtered.
 
@@ -404,7 +426,10 @@ class AntaInventory():
 
     # TODO refactor this to avoid having a union of return of types ..
     def get_inventory(
-        self, format_out: str = 'native', established_only: bool = True, tags: List[str] = None
+        self,
+        format_out: str = "native",
+        established_only: bool = True,
+        tags: Optional[List[str]] = None,
     ) -> Union[List[InventoryDevice], str, InventoryDevices]:
         """get_inventory Expose device inventory.
 
@@ -421,17 +446,18 @@ class AntaInventory():
         if tags is None:
             tags = [DEFAULT_TAG]
 
-        if format_out not in ['native', 'json', 'list']:
+        if format_out not in ["native", "json", "list"]:
             raise InventoryUnknownFormat(
-                f'Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}')
+                f"Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}"
+            )
 
         inventory = self._filtered_inventory(established_only, tags)
 
-        if format_out == 'list':
+        if format_out == "list":
             # pylint: disable=R1721
             return [dev for dev in inventory]
 
-        if format_out == 'json':
+        if format_out == "json":
             return inventory.json()
 
         return inventory
@@ -471,11 +497,11 @@ class AntaInventory():
     def create_all_sessions(self, refresh_online_first: bool = False) -> None:
         """Helper to build RPC sessions to all devices.
 
-         Args:
-            refresh_online_first (bool): Run  a refresh of is_online flag for all devices.
+        Args:
+           refresh_online_first (bool): Run  a refresh of is_online flag for all devices.
         """
         if refresh_online_first:
-            logger.debug('Running a refresh for devices online')
+            logger.debug("Running a refresh for devices online")
             self.refresh_device_facts()
 
         for device in self._inventory:
@@ -492,22 +518,28 @@ class AntaInventory():
         Returns:
             bool: True if update succeed, False if not
         """
-        logger.debug(f'Searching for device {host_ip} in {self._inventory}')
-        device = [dev for dev in self._inventory if str(dev.host) == host_ip][:1][0] or None
+        logger.debug(f"Searching for device {host_ip} in {self._inventory}")
+        device = [dev for dev in self._inventory if str(dev.host) == host_ip][:1][
+            0
+        ] or None
         if device is None:
             return False
-        logger.debug(f'Search result is: {device}')
+        logger.debug(f"Search result is: {device}")
         if device.is_online and not device.established and self._is_ip_exist(host_ip):
-            logger.debug(f'Trying to connect to device {str(device.host)}')
-            device = self._build_device_session(
-                device=device, timeout=self.timeout)
+            logger.debug(f"Trying to connect to device {str(device.host)}")
+            device = self._build_device_session(device=device, timeout=self.timeout)
             return True
         return False
 
     ###########################################################################
     # MISC methods
 
-    def set_credentials(self, username: str = None, password: str = None, enable_password: str = None) -> None:
+    def set_credentials(
+        self,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        enable_password: Optional[str] = None,
+    ) -> None:
         """
         Set the credentials for the Inventory
         """
@@ -529,8 +561,7 @@ class AntaInventory():
 
         Execute in parallel a call to _refresh_online_flag_device to test device connectivity.
         """
-        logger.debug('Refreshing facts for current inventory')
+        logger.debug("Refreshing facts for current inventory")
         with ThreadPoolExecutor() as executor:
-            results_map = executor.map(
-                self._get_from_device,  self._inventory)
+            results_map = executor.map(self._get_from_device, self._inventory)
             self._inventory = self._inventory_rebuild(results_map)

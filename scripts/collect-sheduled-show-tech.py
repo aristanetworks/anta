@@ -7,16 +7,18 @@ This script collects all the tech-support files stored on Arista switches flash
 # pylint: disable=R0801
 
 import logging
-import ssl
-from getpass import getpass
-from time import strftime, gmtime
-from argparse import ArgumentParser
 import os
+import ssl
+from argparse import ArgumentParser
+from getpass import getpass
+from time import gmtime, strftime
 from typing import Tuple
+
 import paramiko
 from jsonrpclib import jsonrpc
 from scp import SCPClient
 from tqdm import tqdm
+
 from anta.inventory import AntaInventory
 
 PORT = 22

@@ -4,8 +4,10 @@ conftest.py
 used to store anta specific fixtures used for tests
 """
 import functools
-from unittest.mock import create_autospec, MagicMock
+from unittest.mock import MagicMock, create_autospec
+
 import pytest
+
 from anta.inventory.models import InventoryDevice
 
 

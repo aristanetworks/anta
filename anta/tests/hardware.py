@@ -1,22 +1,23 @@
 """
 Test functions related to the hardware or environement
 """
-import inspect
 import logging
-from typing import List
-import socket
+from typing import List, Optional
 
-from jsonrpclib import jsonrpc
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
+from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+@anta_test
 def verify_transceivers_manufacturers(
-    device: InventoryDevice, manufacturers: List[str] = None
+    device: InventoryDevice,
+    result: TestResult,
+    manufacturers: Optional[List[str]] = None,
 ) -> TestResult:
     """
     Verifies the device is only using transceivers from supported manufacturers.
@@ -35,43 +36,38 @@ def verify_transceivers_manufacturers(
 
     """
 
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
     if not manufacturers:
         result.is_skipped(
             "verify_transceivers_manufacturers was not run as no "
             "manufacturers were given"
         )
         return result
-    try:
-        response = device.session.runCmds(1, ["show inventory"], "json")
-        logger.debug(f"query result is: {response}")
 
-        wrong_manufacturers = {
-            interface: value["mfgName"]
-            for interface, value in response[0]["xcvrSlots"].items()
-            if value["mfgName"] not in manufacturers
-        }
-        if len(wrong_manufacturers) == 0:
-            result.is_success()
-        else:
-            result.is_failure(
-                "The following interfaces have transceivers from unauthorized manufacturers"
-            )
-            result.messages.append(str(wrong_manufacturers))
+    response = device.session.runCmds(1, ["show inventory"], "json")
+    logger.debug(f"query result is: {response}")
 
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+    wrong_manufacturers = {
+        interface: value["mfgName"]
+        for interface, value in response[0]["xcvrSlots"].items()
+        if value["mfgName"] not in manufacturers
+    }
+
+    if not wrong_manufacturers:
+        result.is_success()
+    else:
+        result.is_failure(
+            "The following interfaces have transceivers from unauthorized manufacturers"
         )
-        result.is_error(str(e))
+        result.messages.append(str(wrong_manufacturers))
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-def verify_system_temperature(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_system_temperature(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
 
     """
     Verifies the device temperature is currently OK
@@ -88,34 +84,26 @@ def verify_system_temperature(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    response = device.session.runCmds(
+        1, ["show system environment temperature"], "json"
+    )
+    logger.debug(f"query result is: {response}")
 
-    try:
-        response = device.session.runCmds(
-            1, ["show system environment temperature"], "json"
+    if response[0]["systemStatus"] == "temperatureOk":
+        result.is_success()
+    else:
+        result.is_failure(
+            f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
         )
-        logger.debug(f"query result is: {response}")
-
-        if response[0]["systemStatus"] == "temperatureOk":
-            result.is_success()
-        else:
-            result.is_failure(
-                f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
-            )
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
-        )
-        result.is_error(str(e))
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_transceiver_temperature(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
 
     """
     Verifies the transceivers temperature is currently OK
@@ -133,46 +121,38 @@ def verify_transceiver_temperature(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    response = device.session.runCmds(
+        1, ["show system environment temperature transceiver"], "json"
+    )
+    logger.debug(f"query result is: {response}")
 
-    try:
-        response = device.session.runCmds(
-            1, ["show system environment temperature transceiver"], "json"
-        )
-        logger.debug(f"query result is: {response}")
+    # Get the list of sensors
+    sensors = response[0]["tempSensors"]
 
-        # Get the list of sensors
-        sensors = response[0]["tempSensors"]
-
-        wrong_sensors = {
-            sensor["name"]: {
-                "hwStatus": sensor["hwStatus"],
-                "alertCount": sensor["alertCount"],
-            }
-            for sensor in sensors
-            if sensor["hwStatus"] != "ok" or sensor["alertCount"] != 0
+    wrong_sensors = {
+        sensor["name"]: {
+            "hwStatus": sensor["hwStatus"],
+            "alertCount": sensor["alertCount"],
         }
-        if len(wrong_sensors) == 0:
-            result.is_success()
-        else:
-            result.is_failure(
-                "The following sensors do not have the correct temperature or had alarms in the past:"
-            )
-            result.messages.append(str(wrong_sensors))
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+        for sensor in sensors
+        if sensor["hwStatus"] != "ok" or sensor["alertCount"] != 0
+    }
+    if not wrong_sensors:
+        result.is_success()
+    else:
+        result.is_failure(
+            "The following sensors do not have the correct temperature or had alarms in the past:"
         )
-        result.is_error(str(e))
+        result.messages.append(str(wrong_sensors))
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-def verify_environment_cooling(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_environment_cooling(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
 
     """
     Verifies the fans status is OK.
@@ -188,34 +168,22 @@ def verify_environment_cooling(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    response = device.session.runCmds(1, ["show system environment cooling"], "json")
+    logger.debug(f"query result is: {response}")
 
-    try:
-        response = device.session.runCmds(
-            1, ["show system environment cooling"], "json"
+    if response[0]["systemStatus"] == "coolingOk":
+        result.is_success()
+    else:
+        result.is_failure(
+            f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
         )
-        logger.debug(f"query result is: {response}")
-
-        if response[0]["systemStatus"] == "coolingOk":
-            result.is_success()
-        else:
-            result.is_failure(
-                f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
-            )
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
-        )
-        result.is_error(str(e))
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-def verify_environment_power(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_environment_power(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies the power supplies status is OK.
@@ -231,36 +199,26 @@ def verify_environment_power(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    response = device.session.runCmds(1, ["show system environment power"], "json")
+    logger.debug(f"query result is: {response}")
 
-    try:
-        response = device.session.runCmds(1, ["show system environment power"], "json")
-        logger.debug(f"query result is: {response}")
-
-        wrong_power_supplies = {
-            powersupply: {"state": value["state"]}
-            for powersupply, value in response[0]["powerSupplies"].items()
-            if value["state"] != "ok"
-        }
-        if len(wrong_power_supplies) == 0:
-            result.is_success()
-        else:
-            result.is_failure("The following power suppliers are not ok:")
-            result.messages.append(str(wrong_power_supplies))
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
-        )
-        result.is_error(str(e))
+    wrong_power_supplies = {
+        powersupply: {"state": value["state"]}
+        for powersupply, value in response[0]["powerSupplies"].items()
+        if value["state"] != "ok"
+    }
+    if not wrong_power_supplies:
+        result.is_success()
+    else:
+        result.is_failure("The following power suppliers are not ok:")
+        result.messages.append(str(wrong_power_supplies))
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-def verify_adverse_drops(device: InventoryDevice) -> TestResult:
+@anta_test
+def verify_adverse_drops(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
@@ -276,25 +234,14 @@ def verify_adverse_drops(device: InventoryDevice) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-    logger.debug(f"Start {function_name} check for host {device.host}")
-    result = TestResult(host=str(device.host), test=function_name)
+    response = device.session.runCmds(1, ["show hardware counter drop"], "json")
+    logger.debug(f"query result is: {response}")
 
-    try:
-        response = device.session.runCmds(1, ["show hardware counter drop"], "json")
-        logger.debug(f"query result is: {response}")
-
-        if response[0]["totalAdverseDrops"] == 0:
-            result.is_success()
-        else:
-            result.is_failure(
-                f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."
-            )
-
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f"exception raised for {inspect.stack()[0][3]} -  {device.host}: {str(e)}"
+    if response[0]["totalAdverseDrops"] == 0:
+        result.is_success()
+    else:
+        result.is_failure(
+            f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."
         )
-        result.is_error(str(e))
 
     return result

@@ -5,11 +5,14 @@
 """
 Tests for anta.tests.configuration.py
 """
+from typing import Any, Dict, List
 from unittest.mock import MagicMock
-from typing import List, Any, Dict
-from jsonrpclib.jsonrpc import AppError
+
 import pytest
-from anta.tests.configuration import verify_zerotouch, verify_running_config_diffs
+from jsonrpclib.jsonrpc import AppError
+
+from anta.tests.configuration import (verify_running_config_diffs,
+                                      verify_zerotouch)
 
 
 @pytest.mark.parametrize(

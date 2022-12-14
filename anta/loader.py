@@ -2,9 +2,9 @@
 Loader that parses a YAML test catalog and imports corresponding Python functions
 """
 import importlib
-from typing import Callable, List, Tuple, Dict, Any
-import sys
 import logging
+import sys
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from anta.result_manager.models import TestResult
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_catalog(
-    test_catalog: Dict[Any, Any], package: str = None
+    test_catalog: Dict[Any, Any], package: Optional[str] = None
 ) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
     Function to pase the catalog and return a list of tests

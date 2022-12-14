@@ -3,9 +3,9 @@
 
 """Models related to inventory management."""
 
-from typing import List, Optional, Any, Iterator
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
+from typing import Any, Iterator, List, Optional
 
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
 
 # Default values
 

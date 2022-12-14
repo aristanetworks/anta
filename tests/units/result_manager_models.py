@@ -4,11 +4,13 @@
 """ANTA Result Manager models unit tests."""
 
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
+
 import pytest
+
 from anta.result_manager.models import TestResult
-from tests.data.utils import generate_test_ids_dict
 from tests.data.json_data import TEST_RESULT_UNIT
+from tests.data.utils import generate_test_ids_dict
 
 
 class Test_InventoryUnitModels():

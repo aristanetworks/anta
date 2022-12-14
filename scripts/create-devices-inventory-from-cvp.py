@@ -18,11 +18,13 @@ import json
 import os
 from argparse import ArgumentParser
 from getpass import getpass
-from typing import Dict, Any, List
-import yaml
+from typing import Any, Dict, List
+
 import requests
 import urllib3
+import yaml
 from cvprac.cvp_client import CvpClient
+
 from anta.inventory import AntaInventory
 
 # Ignore certificate warnings

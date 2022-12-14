@@ -10,7 +10,7 @@
 """
 parametrize.py - Retrieves the mock data from the json_data file
 """
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 def generate_list_from_dict(data: Dict[str, Any]) -> List[Any]:
