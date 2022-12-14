@@ -6,7 +6,7 @@ Test decorator from which tests can derive
 
 import logging
 from functools import wraps
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Coroutine
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -14,14 +14,14 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 
-def anta_test(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
+def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Callable[..., Coroutine[Any, Any, Coroutine[Any, Any, TestResult]]]:
     """
     Decorator to generate the structure for a test
     * func (Callable): the test to be decorated
     """
 
     @wraps(function)
-    def wrapper(
+    async def wrapper(
         device: InventoryDevice, *args: List[Any], **kwargs: Dict[str, Any]
     ) -> TestResult:
         """
@@ -36,11 +36,11 @@ def anta_test(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
             * result = "failure" otherwise.
             * result = "error" if any exception is caught
         """
-        result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
-        logger.debug(f"Start {function.__name__} test for host {device.host}")
+        result = TestResult(name=str(device.host), test=function.__name__)
+        logger.debug(f"Start {function.__name__} check for host {device.host}")
 
         try:
-            return function(device, result, *args, **kwargs)
+            return await function(device, result, *args, **kwargs)
 
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except

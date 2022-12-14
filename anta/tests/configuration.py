@@ -61,10 +61,10 @@ async def verify_running_config_diffs(
 
     response = await device.session.cli(
         commands=[
-            {"cmd": "enable", "input": str(device.enable_password)},
-            "show running-config diffs",
-        ],
-        ofmt="text"
+                  {"cmd": "enable", "input": str(device.enable_password)},
+                  "show running-config diffs",
+                 ],
+        ofmt="text",
     )
     logger.debug(f"query result is: {response}")
 

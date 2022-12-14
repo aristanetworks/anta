@@ -7,7 +7,7 @@ import functools
 from unittest.mock import MagicMock, create_autospec
 
 import pytest
-
+from aioeapi import Device
 from anta.inventory.models import InventoryDevice
 
 
@@ -21,11 +21,10 @@ def mocked_device() -> MagicMock:
     mock.username = "toto"
     mock.password = "mysuperdupersecret"
     mock.enable_password = "mysuperduperenablesecret"
-    mock.session = MagicMock()
+    mock.session = create_autospec(Device)
     mock.is_online = True
     mock.established = True
     mock.hw_model = "unset"
-    mock.url = "https://42.42.42.42:666"
 
     # keeping the original assert_enable_password_is_not_none() method
     mock.assert_enable_password_is_not_none = functools.partial(
