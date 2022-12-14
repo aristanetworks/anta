@@ -7,9 +7,9 @@ Inventory Module for ANTA.
 
 import logging
 import ssl
-from type import Optional
 from concurrent.futures import ThreadPoolExecutor
 from socket import setdefaulttimeout
+from typing import Any, Iterator, List, Optional, Union
 
 import yaml
 from jinja2 import Template
@@ -18,12 +18,10 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from .exceptions import (
-    InventoryIncorrectSchema,
-    InventoryRootKeyErrors,
-    InventoryUnknownFormat,
-)
-from .models import DEFAULT_TAG, AntaInventoryInput, InventoryDevice, InventoryDevices
+from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
+                         InventoryUnknownFormat)
+from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
+                     InventoryDevices)
 
 # pylint: disable=W1309
 
@@ -117,7 +115,7 @@ class AntaInventory:
         inventory_file: str,
         username: str,
         password: str,
-        enable_password: str = None,
+        enable_password: Optional[str] = None,
         auto_connect: bool = True,
         timeout: float = 5,
     ) -> None:

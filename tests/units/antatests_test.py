@@ -75,6 +75,7 @@ def test_verify_eos_version(mock_device, versions, expected):
     """
     Legacy tests verify_eos_version
     """
+    # pylint: disable=E1120
     check = anta.tests.software.verify_eos_version(
         device=mock_device, versions=versions
     )
@@ -89,6 +90,7 @@ def test_verify_uptime(mock_device, uptime, expected):
     """
     Legacy tests verify_uptime
     """
+    # pylint: disable=E1120
     check = anta.tests.system.verify_uptime(device=mock_device, minimum=uptime)
     assert check == expected
 
@@ -98,5 +100,6 @@ def test_verify_ntp(mock_device):
     """
     Legacy tests verify_ntp
     """
+    # pylint: disable=E1120
     check = anta.tests.system.verify_ntp(device=mock_device)
     assert check is True
