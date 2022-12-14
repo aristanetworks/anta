@@ -3,7 +3,8 @@
 
 """Models related to anta.result_manager module."""
 
-from typing import List, Iterator
+from typing import Iterator, List
+
 from pydantic import BaseModel, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']

@@ -5,12 +5,12 @@
 Inventory Module for ANTA.
 """
 
-import logging
 import asyncio
-from typing import List, Optional, Union, Any, Dict
-from aioeapi.errors import EapiCommandError
+import logging
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
+from aioeapi.errors import EapiCommandError
 from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError

@@ -3,10 +3,11 @@
 
 """Models related to inventory management."""
 
-from typing import Dict, List, Optional, Any, Iterator, Type, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 from aioeapi import Device
+from pydantic import (BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr,
+                      root_validator)
 
 # Default values
 

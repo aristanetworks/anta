@@ -5,13 +5,15 @@
 """
 Tests for anta.tests.configuration.py
 """
+import asyncio
 from typing import Any, Dict, List
 from unittest.mock import MagicMock
 
 import pytest
 from jsonrpclib.jsonrpc import AppError
-import asyncio
-from anta.tests.configuration import verify_zerotouch, verify_running_config_diffs
+
+from anta.tests.configuration import (verify_running_config_diffs,
+                                      verify_zerotouch)
 
 
 @pytest.mark.parametrize(
