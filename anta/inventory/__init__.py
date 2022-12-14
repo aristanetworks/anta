@@ -102,8 +102,8 @@ class AntaInventory:
 
     # pylint: disable=R0913
     def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: str = None, timeout: float = None,
-                 filter_hosts: List[str] = None) -> None:
+                 enable_password: Optional[str] = None, timeout: Optional[float] = None,
+                 filter_hosts: Optional[List[str]] = None) -> None:
         """Class constructor.
 
         Args:
@@ -113,7 +113,9 @@ class AntaInventory:
             timeout (float, optional): timeout in seconds for every API call.
             filter_hosts (str, optional): create inventory only with matching host name in this list.
         """
-        self.set_credentials(username, password, enable_password)
+        self._username = username
+        self._password = password
+        self._enable_password = enable_password
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
@@ -237,7 +239,7 @@ class AntaInventory:
         else:
             device.established = False
 
-    def _add_device_to_inventory(self, host: str, port: int = None, name: str = None, tags: List[str] = None) -> None:
+    def _add_device_to_inventory(self, host: str, port: Optional[int] = None, name: Optional[str] = None, tags: Optional[List[str]] = None) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -247,19 +249,19 @@ class AntaInventory:
             port (int): eAPI port of the device
             name (str): Optional name of the device
         """
-
-        if tags is None:
-            tags = [DEFAULT_TAG]
-
         kwargs: Dict[str, Any] = {
-            'name': name,
             'host': host,
-            'port': port,
             'username': self._username,
             'password': self._password,
-            'enable_password': self._enable_password,
-            'tags': tags
         }
+        if name:
+            kwargs['name'] = name
+        if port:
+            kwargs['port'] = port
+        if self._enable_password:
+            kwargs['enable_password'] = self._enable_password
+        if tags:
+            kwargs['tags'] = tags
         if self.timeout:
             kwargs['timeout'] = self.timeout
         device = InventoryDevice(**kwargs)
@@ -297,7 +299,7 @@ class AntaInventory:
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _filtered_inventory(self, established_only: bool = False, tags: List[str] = None) -> InventoryDevices:
+    def _filtered_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
         """
         _filtered_inventory Generate a temporary inventory filtered.
 
@@ -308,14 +310,10 @@ class AntaInventory:
         Returns:
             InventoryDevices: A inventory with concerned devices
         """
-        if tags is None:
-            tags = [DEFAULT_TAG]
-
         inventory_filtered_tags = InventoryDevices()
         for device in self._inventory:
-            if any(tag in tags for tag in device.tags):
+            if tags and any(tag in tags for tag in device.tags):
                 inventory_filtered_tags.append(device)
-
         if not established_only:
             return inventory_filtered_tags
 
@@ -403,19 +401,6 @@ class AntaInventory:
     ###########################################################################
     # MISC methods
     ###########################################################################
-
-    def set_credentials(
-        self,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        enable_password: Optional[str] = None,
-    ) -> None:
-        """
-        Set the credentials for the Inventory
-        """
-        self._username = username
-        self._password = password
-        self._enable_password = enable_password
 
     async def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
