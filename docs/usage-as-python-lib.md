@@ -97,12 +97,18 @@ All tests return a TestResult structure with the following elements:
 All tests are based on this structure:
 
 ```python
-def <test name>(device: InventoryDevice, <list of args>) -> TestResult:
+from anta.test import anta_test
+
+# Use the decorator that wraps the function and inject result argument
+@anta_test
+async def <test name>(device: InventoryDevice, result: TestResut, <list of args>) -> TestResult:
     """
     dosctring desccription
 
     Args:
         device (InventoryDevice): InventoryDevice instance containing all devices information.
+        result (TestResult): TestResult instance for the test, injected
+                             automatically by the anta_test decorator.
 
     Returns:
         TestResult instance with
@@ -113,26 +119,19 @@ def <test name>(device: InventoryDevice, <list of args>) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    function_name = inspect.stack()[0][3]
-
     # Test if options are valid (optional)
     if not minimum:
         result.is_skipped("verify_uptime was not run as no minimum were given")
         return result
-    # Try to connect and execute command on device
-    try:
-        response = device.session.runCmds(1, ["show uptime"], "json")
-        logger.debug(f'query result is: {response}')
-        response_data = response[0]["upTime"]
-        # Check conditions
-        # ...
 
-    # Capture any exception to return failure reason
-    except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-        logger.error(
-            f'exception raised for \
-                {inspect.stack()[0][3]} -  {device.host}: {str(e)}')
-        result.is_error(str(e))
+    # Use await for the remote device call
+    response = await device.session.cli(command="show uptime", ofmt="json")
+    # Add a debug log entry
+    logger.debug(f'query result is: {response}')
+
+    response_data = response["upTime"]
+    # Check conditions on response_data
+    # ...
 
     # Return data to caller
     return result
