@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_catalog(
-    test_catalog: Dict[Any, Any], package: Optional[str] = 'anta.tests'
+    test_catalog: Dict[Any, Any], package: Optional[str] = None
 ) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
     Function to pase the catalog and return a list of tests
