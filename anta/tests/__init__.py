@@ -7,6 +7,7 @@ Test decorator from which tests can derive
 import logging
 from functools import wraps
 from typing import Any, Callable, Coroutine, Dict, List
+import traceback
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
@@ -45,9 +46,10 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(
-                f"exception raised for {function.__name__} -  {device.host}: {str(e)}"
+                f"Exception raised for test {function.__name__} (on device {device.host}) - {type(e).__name__}: {str(e)}"
             )
-            result.is_error(str(e))
+            logger.debug(traceback.format_exc())
+            result.is_error(f'{type(e).__name__}: {str(e)}')
             return result
 
     return wrapper

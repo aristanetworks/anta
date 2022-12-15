@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_catalog(
-    test_catalog: Dict[Any, Any], package: Optional[str] = None
+    test_catalog: Dict[Any, Any], package: Optional[str] = 'anta.tests'
 ) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
     Function to pase the catalog and return a list of tests
@@ -33,7 +33,7 @@ def parse_catalog(
         try:
             module = importlib.import_module(f"{key}")
         except ModuleNotFoundError:
-            logger.error(f"No test module named '{key}")
+            logger.error(f"No test module named '{key}'")
             sys.exit(1)
         if isinstance(value, list):
             # This is a list of tests
