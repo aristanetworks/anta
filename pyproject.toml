@@ -53,7 +53,7 @@ commands =
   lint: pylint scripts
   type: mypy --config-file=pyproject.toml anta
   type: mypy --config-file=pyproject.toml scripts
-  test: pytest
+  test: pytest {tty:--color=yes}
 
 [testenv:clean]
 deps = coverage[toml]

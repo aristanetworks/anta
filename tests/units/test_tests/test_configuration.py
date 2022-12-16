@@ -12,8 +12,7 @@ from unittest.mock import MagicMock
 import pytest
 from jsonrpclib.jsonrpc import AppError
 
-from anta.tests.configuration import (verify_running_config_diffs,
-                                      verify_zerotouch)
+from anta.tests.configuration import verify_running_config_diffs, verify_zerotouch
 
 
 @pytest.mark.parametrize(
@@ -28,8 +27,12 @@ from anta.tests.configuration import (verify_running_config_diffs,
             id="failure",
         ),
         # Hmmmm both errors do not return the same string ...
-        pytest.param(None, AppError("dummy"), "error", ["dummy"], id="JSON RPC error"),
-        pytest.param(None, KeyError("dummy"), "error", ["'dummy'"], id="Key error"),
+        pytest.param(
+            None, AppError("dummy"), "error", ["AppError: dummy"], id="JSON RPC error"
+        ),
+        pytest.param(
+            None, KeyError("dummy"), "error", ["KeyError: 'dummy'"], id="Key error"
+        ),
     ],
 )
 def test_verify_zerotouch(
@@ -65,22 +68,34 @@ def test_verify_zerotouch(
             None,
             False,
             "failure",
-            ['blah', 'blah'],
+            ["blah", "blah"],
             id="failure",
         ),
         # Hmmmm both errors do not return the same string ...
         pytest.param(
-            None, AppError("dummy"), False, "error", ["dummy"], id="JSON RPC error"
+            None,
+            AppError("dummy"),
+            False,
+            "error",
+            ["AppError: dummy"],
+            id="JSON RPC error",
         ),
         pytest.param(
-            None, KeyError("dummy"), False, "error", ["'dummy'"], id="Key error"
+            None,
+            KeyError("dummy"),
+            False,
+            "error",
+            ["KeyError: 'dummy'"],
+            id="Key error",
         ),
         pytest.param(
             None,
             None,
             True,
             "error",
-            ["verify_running_config_diffs requires `enable_password` to be set"],
+            [
+                "ValueError: verify_running_config_diffs requires `enable_password` to be set"
+            ],
             id="Missing enable password",
         ),
     ],
