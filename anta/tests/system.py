@@ -37,17 +37,18 @@ async def verify_uptime(
 
     response = await device.session.cli(command="show uptime", ofmt="json")
     logger.debug(f"query result is: {response}")
-    response_data = response["upTime"]
     if response["upTime"] > minimum:
         result.is_success()
     else:
-        result.is_failure(f"Uptime is {response_data}")
+        result.is_failure(f"Uptime is {response['upTime']}")
 
     return result
 
 
 @anta_test
-async def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_reload_cause(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
     """
     Verifies the last reload of the device was requested by a user.
 
@@ -105,9 +106,9 @@ async def verify_coredump(device: InventoryDevice, result: TestResult) -> TestRe
     response = await device.session.cli(
         commands=[
             {"cmd": "enable", "input": str(device.enable_password)},
-             "bash timeout 10 ls /var/core",
+            "bash timeout 10 ls /var/core",
         ],
-        ofmt="text"
+        ofmt="text",
     )
     logger.debug(f"query result is: {response}")
     response_data = response[1]
@@ -161,7 +162,9 @@ async def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResu
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = await device.session.cli(command="show logging last 7 days threshold warnings", ofmt="text")
+    response = await device.session.cli(
+        command="show logging last 7 days threshold warnings", ofmt="text"
+    )
     logger.debug(f"query result is: {response}")
     if len(response) == 0:
         result.is_success()
@@ -174,7 +177,9 @@ async def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResu
 
 
 @anta_test
-async def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_cpu_utilization(
+    device: InventoryDevice, result: TestResult
+) -> TestResult:
     """
     Verifies the CPU utilization is less than 75%.
 
@@ -245,12 +250,12 @@ async def verify_filesystem_utilization(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = await device.session.cli(commands=
-        [
+    response = await device.session.cli(
+        commands=[
             {"cmd": "enable", "input": device.enable_password},
             "bash timeout 10 df -h",
         ],
-        ofmt="text"
+        ofmt="text",
     )
     logger.debug(f"query result is: {response}")
     result.is_success()
