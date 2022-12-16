@@ -47,7 +47,7 @@ async def verify_uptime(
 
 
 @anta_test
-def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the last reload of the device was requested by a user.
 
@@ -66,13 +66,13 @@ def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResu
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show reload cause"], "json")
+    response = await device.session.cli(command="show reload cause", ofmt="json")
     logger.debug(f"query result is: {response}")
-    if "resetCauses" not in response[0].keys() or len(response[0]["resetCauses"]) == 0:
+    if "resetCauses" not in response.keys() or len(response["resetCauses"]) == 0:
         result.is_error("no reload cause available")
         return result
 
-    response_data = response[0].get("resetCauses")[0].get("description")
+    response_data = response.get("resetCauses")[0].get("description")
     if response_data in [
         "Reload requested by the user.",
         "Reload requested after FPGA upgrade",
@@ -85,7 +85,7 @@ def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResu
 
 
 @anta_test
-def verify_coredump(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_coredump(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no core file.
 
@@ -102,16 +102,15 @@ def verify_coredump(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     device.assert_enable_password_is_not_none("verify_coredump")
 
-    response = device.session.runCmds(
-        1,
-        [
+    response = await device.session.cli(
+        commands=[
             {"cmd": "enable", "input": str(device.enable_password)},
-            "bash timeout 10 ls /var/core",
+             "bash timeout 10 ls /var/core",
         ],
-        "text",
+        ofmt="text"
     )
     logger.debug(f"query result is: {response}")
-    response_data = response[1]["output"]
+    response_data = response[1]
     if len(response_data) == 0:
         result.is_success()
     else:
@@ -121,7 +120,7 @@ def verify_coredump(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-def verify_agent_logs(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_agent_logs(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no agent crash reported on the device.
 
@@ -136,19 +135,18 @@ def verify_agent_logs(device: InventoryDevice, result: TestResult) -> TestResult
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show agent logs crash"], "text")
+    response = await device.session.cli(command="show agent logs crash", ofmt="text")
     logger.debug(f"query result is: {response}")
-    response_data = response[0]["output"]
-    if len(response_data) == 0:
+    if len(response) == 0:
         result.is_success()
     else:
-        result.is_failure(f"device reported some agent crashes: {response_data}")
+        result.is_failure(f"device reported some agent crashes: {response}")
 
     return result
 
 
 @anta_test
-def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the device had no syslog message with a severity of warning (or a more severe message)
     during the last 7 days.
@@ -163,12 +161,9 @@ def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(
-        1, ["show logging last 7 days threshold warnings"], "text"
-    )
+    response = await device.session.cli(command="show logging last 7 days threshold warnings", ofmt="text")
     logger.debug(f"query result is: {response}")
-    response_data = response[0]["output"]
-    if len(response_data) == 0:
+    if len(response) == 0:
         result.is_success()
     else:
         result.is_failure(
@@ -179,7 +174,7 @@ def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the CPU utilization is less than 75%.
 
@@ -193,9 +188,9 @@ def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestR
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show processes top once"], "json")
+    response = await device.session.cli(command="show processes top once", ofmt="json")
     logger.debug(f"query result is: {response}")
-    response_data = response[0]["cpuInfo"]["%Cpu(s)"]["idle"]
+    response_data = response["cpuInfo"]["%Cpu(s)"]["idle"]
     if response_data > 25:
         result.is_success()
     else:
@@ -205,7 +200,7 @@ def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestR
 
 
 @anta_test
-def verify_memory_utilization(
+async def verify_memory_utilization(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -221,9 +216,9 @@ def verify_memory_utilization(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show version"], "json")
+    response = await device.session.cli(command="show version", ofmt="json")
     logger.debug(f"query result is: {response}")
-    memory_usage = float(response[0]["memFree"]) / float(response[0]["memTotal"])
+    memory_usage = float(response["memFree"]) / float(response["memTotal"])
     if memory_usage > 0.25:
         result.is_success()
     else:
@@ -233,7 +228,7 @@ def verify_memory_utilization(
 
 
 @anta_test
-def verify_filesystem_utilization(
+async def verify_filesystem_utilization(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -250,17 +245,16 @@ def verify_filesystem_utilization(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(
-        1,
+    response = await device.session.cli(commands=
         [
             {"cmd": "enable", "input": device.enable_password},
             "bash timeout 10 df -h",
         ],
-        "text",
+        ofmt="text"
     )
     logger.debug(f"query result is: {response}")
     result.is_success()
-    for line in response[1]["output"].split("\n")[1:]:
+    for line in response[1].split("\n")[1:]:
         if (
             "loop" not in line
             and len(line) > 0
@@ -274,7 +268,7 @@ def verify_filesystem_utilization(
 
 
 @anta_test
-def verify_ntp(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_ntp(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies NTP is synchronised.
@@ -289,12 +283,12 @@ def verify_ntp(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show ntp status"], "text")
+    response = await device.session.cli(command="show ntp status", ofmt="text")
     logger.debug(f"query result is: {response}")
-    if response[0]["output"].split("\n")[0].split(" ")[0] == "synchronised":
+    if response.split("\n")[0].split(" ")[0] == "synchronised":
         result.is_success()
     else:
-        data = response[0]["output"].split("\n")[0]
+        data = response.split("\n")[0]
         result.is_failure(f"not sync with NTP server ({data})")
 
     return result

@@ -2,10 +2,9 @@
 Test functions related to the device configuration
 """
 import logging
-
+from anta.tests import anta_test
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
-from anta.tests import anta_test
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +60,10 @@ async def verify_running_config_diffs(
 
     response = await device.session.cli(
         commands=[
-                  {"cmd": "enable", "input": str(device.enable_password)},
-                  "show running-config diffs",
-                 ],
-        ofmt="text",
+            {"cmd": "enable", "input": str(device.enable_password)},
+            "show running-config diffs",
+        ],
+        ofmt="text"
     )
     logger.debug(f"query result is: {response}")
 

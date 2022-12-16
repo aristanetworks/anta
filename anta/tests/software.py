@@ -41,14 +41,14 @@ async def verify_eos_version(device: InventoryDevice, result: TestResult, versio
         result.is_success()
     else:
         result.is_failure(
-            f'device is running version {response[0]["version"]} not in expected versions: {versions}'
+            f'device is running version {response["version"]} not in expected versions: {versions}'
         )
 
     return result
 
 
 @anta_test
-def verify_terminattr_version(
+async def verify_terminattr_version(
     device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None
 ) -> TestResult:
     """
@@ -73,10 +73,10 @@ def verify_terminattr_version(
         )
         return result
 
-    response = device.session.runCmds(1, ["show version detail"], "json")
+    response = await device.session.cli(command="show version detail", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    response_data = response[0]["details"]["packages"]["TerminAttr-core"]["version"]
+    response_data = response["details"]["packages"]["TerminAttr-core"]["version"]
     if response_data in versions:
         result.is_success()
     else:
@@ -88,7 +88,7 @@ def verify_terminattr_version(
 
 
 @anta_test
-def verify_eos_extensions(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_eos_extensions(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies all EOS extensions installed on the device are enabled for boot persistence.
 
@@ -103,9 +103,7 @@ def verify_eos_extensions(device: InventoryDevice, result: TestResult) -> TestRe
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(
-        1, ["show extensions", "show boot-extensions"], "json"
-    )
+    response = await device.session.cli(commands=["show extensions", "show boot-extensions"], ofmt="json")
     logger.debug(f"query result is: {response}")
 
     installed_extensions = []
@@ -133,7 +131,7 @@ def verify_eos_extensions(device: InventoryDevice, result: TestResult) -> TestRe
 
 @skip_on_platforms(["cEOSLab"])
 @anta_test
-def verify_field_notice_44_resolution(
+async def verify_field_notice_44_resolution(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -152,7 +150,7 @@ def verify_field_notice_44_resolution(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show version detail"], "json")
+    response = await device.session.cli(command="show version detail", ofmt="json")
     logger.debug(f"query result is: {response}")
 
     devices = [
@@ -203,14 +201,14 @@ def verify_field_notice_44_resolution(
     ]
     variants = ["-SSD-F", "-SSD-R", "-M-F", "-M-R", "-F", "-R"]
 
-    model = response[0]["modelName"]
+    model = response["modelName"]
     for variant in variants:
         model = model.replace(variant, "")
     if model not in devices:
         result.is_skipped("device is not impacted by FN044")
         return result
 
-    for component in response[0]["details"]["components"]:
+    for component in response["details"]["components"]:
         if component["name"] == "Aboot":
             aboot_version = component["version"].split("-")[2]
     result.is_success()
