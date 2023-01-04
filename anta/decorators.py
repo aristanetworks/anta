@@ -2,12 +2,12 @@
 decorators for tests
 """
 from functools import wraps
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Coroutine, Dict, List
 
 from anta.result_manager.models import TestResult
 
 
-def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestResult]]:
+def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
     """
     Decorator factory to skip a test on a list of platforms
 
@@ -16,14 +16,14 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestR
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
+    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
         """
 
         @wraps(function)
-        async def wrapper(*args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
@@ -43,7 +43,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestR
     return decorator
 
 
-def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResult]]:
+def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
     """
     Decorator factory to skip a test if BGP is enabled
 
@@ -52,14 +52,14 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
+    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
         """
 
         @wraps(function)
-        async def wrapper(*args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
@@ -85,7 +85,7 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
                 )
                 return result
             if (len(bgp_vrfs := response["vrfs"]) == 0
-                or len(bgp_vrfs["default"]["peers"]) == 0):
+               or len(bgp_vrfs["default"]["peers"]) == 0):
                 # No VRF
                 result.is_skipped(
                     f"no {family} peer on this device"
