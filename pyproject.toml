@@ -31,10 +31,9 @@ warn_untyped_fields = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = clean,py{37,38,39,310}-{lint,type,test},report
+envlist = clean,py{38,39,310}-{lint,type,test},report
 [gh-actions]
 python =
-  3.7: py37
   3.8: py38
   3.9: py39
   3.10: py310, coverage
@@ -54,7 +53,7 @@ commands =
   lint: pylint scripts
   type: mypy --config-file=pyproject.toml anta
   type: mypy --config-file=pyproject.toml scripts
-  test: pytest
+  test: pytest {tty:--color=yes}
 
 [testenv:clean]
 deps = coverage[toml]

@@ -23,7 +23,9 @@ def parse_catalog(
     Returns:
         List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
     """
-    tests = []
+    tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]] = []
+    if not test_catalog:
+        return tests
     for key, value in test_catalog.items():
         # Reauired to manage iteration within a tests module
         if package is not None:
@@ -31,7 +33,7 @@ def parse_catalog(
         try:
             module = importlib.import_module(f"{key}")
         except ModuleNotFoundError:
-            logger.error(f"No test module named '{key}")
+            logger.error(f"No test module named '{key}'")
             sys.exit(1)
         if isinstance(value, list):
             # This is a list of tests

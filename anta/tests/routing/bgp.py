@@ -12,9 +12,9 @@ from anta.tests import anta_test
 logger = logging.getLogger(__name__)
 
 
-@check_bgp_family_enable("ipv4")
 @anta_test
-def verify_bgp_ipv4_unicast_state(
+@check_bgp_family_enable("ipv4")
+async def verify_bgp_ipv4_unicast_state(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -33,12 +33,12 @@ def verify_bgp_ipv4_unicast_state(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(
-        1, ["show bgp ipv4 unicast summary vrf all"], "json"
+    response = await device.session.cli(
+        command="show bgp ipv4 unicast summary vrf all", ofmt="json"
     )
     logger.debug(f"query result is: {response}")
 
-    bgp_vrfs = response[0]["vrfs"]
+    bgp_vrfs = response["vrfs"]
 
     state_issue: Dict[str, Any] = {}
     for vrf in bgp_vrfs:
@@ -67,9 +67,9 @@ def verify_bgp_ipv4_unicast_state(
     return result
 
 
-@check_bgp_family_enable("ipv4")
 @anta_test
-def verify_bgp_ipv4_unicast_count(
+@check_bgp_family_enable("ipv4")
+async def verify_bgp_ipv4_unicast_count(
     device: InventoryDevice, result: TestResult, number: int, vrf: str = "default"
 ) -> TestResult:
     """
@@ -98,12 +98,12 @@ def verify_bgp_ipv4_unicast_count(
         )
         return result
 
-    response = device.session.runCmds(
-        1, [f"show bgp ipv4 unicast summary vrf {vrf}"], "json"
+    response = await device.session.cli(
+        command=f"show bgp ipv4 unicast summary vrf {vrf}", ofmt="json"
     )
     logger.debug(f"query result is: {response}")
 
-    bgp_vrfs = response[0]["vrfs"]
+    bgp_vrfs = response["vrfs"]
 
     peer_state_issue = {}
     peer_number = len(bgp_vrfs[vrf]["peers"])
@@ -132,9 +132,9 @@ def verify_bgp_ipv4_unicast_count(
     return result
 
 
-@check_bgp_family_enable("ipv6")
 @anta_test
-def verify_bgp_ipv6_unicast_state(
+@check_bgp_family_enable("ipv6")
+async def verify_bgp_ipv6_unicast_state(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -153,12 +153,12 @@ def verify_bgp_ipv6_unicast_state(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(
-        1, ["show bgp ipv6 unicast summary vrf all"], "json"
+    response = await device.session.cli(
+        command="show bgp ipv6 unicast summary vrf all", ofmt="json"
     )
 
     logger.debug(f"query result is: {response}")
-    bgp_vrfs = response[0]["vrfs"]
+    bgp_vrfs = response["vrfs"]
 
     state_issue: Dict[str, Any] = {}
     for vrf in bgp_vrfs:
@@ -187,9 +187,9 @@ def verify_bgp_ipv6_unicast_state(
     return result
 
 
-@check_bgp_family_enable("evpn")
 @anta_test
-def verify_bgp_evpn_state(device: InventoryDevice, result: TestResult) -> TestResult:
+@check_bgp_family_enable("evpn")
+async def verify_bgp_evpn_state(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies all EVPN BGP sessions are established (default VRF).
@@ -206,10 +206,10 @@ def verify_bgp_evpn_state(device: InventoryDevice, result: TestResult) -> TestRe
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
+    response = await device.session.cli(command="show bgp evpn summary", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    bgp_vrfs = response[0]["vrfs"]
+    bgp_vrfs = response["vrfs"]
 
     peers = bgp_vrfs["default"]["peers"]
     non_established_peers = [
@@ -228,9 +228,9 @@ def verify_bgp_evpn_state(device: InventoryDevice, result: TestResult) -> TestRe
     return result
 
 
-@check_bgp_family_enable("evpn")
 @anta_test
-def verify_bgp_evpn_count(
+@check_bgp_family_enable("evpn")
+async def verify_bgp_evpn_count(
     device: InventoryDevice, result: TestResult, number: int
 ) -> TestResult:
     """
@@ -257,10 +257,10 @@ def verify_bgp_evpn_count(
         )
         return result
 
-    response = device.session.runCmds(1, ["show bgp evpn summary"], "json")
+    response = await device.session.cli(command="show bgp evpn summary", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    peers = response[0]["vrfs"]["default"]["peers"]
+    peers = response["vrfs"]["default"]["peers"]
 
     if len(peers) == number:
         result.is_success()
@@ -274,9 +274,9 @@ def verify_bgp_evpn_count(
     return result
 
 
-@check_bgp_family_enable("rtc")
 @anta_test
-def verify_bgp_rtc_state(device: InventoryDevice, result: TestResult) -> TestResult:
+@check_bgp_family_enable("rtc")
+async def verify_bgp_rtc_state(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies all RTC BGP sessions are established (default VRF).
 
@@ -292,10 +292,10 @@ def verify_bgp_rtc_state(device: InventoryDevice, result: TestResult) -> TestRes
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
+    response = await device.session.cli(command="show bgp rt-membership summary", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    peers = response[0]["vrfs"]["default"]["peers"]
+    peers = response["vrfs"]["default"]["peers"]
     non_established_peers = [
         peer
         for peer, peer_dict in peers.items()
@@ -312,9 +312,9 @@ def verify_bgp_rtc_state(device: InventoryDevice, result: TestResult) -> TestRes
     return result
 
 
-@check_bgp_family_enable("rtc")
 @anta_test
-def verify_bgp_rtc_count(
+@check_bgp_family_enable("rtc")
+async def verify_bgp_rtc_count(
     device: InventoryDevice, result: TestResult, number: int
 ) -> TestResult:
     """
@@ -341,10 +341,10 @@ def verify_bgp_rtc_count(
         )
         return result
 
-    response = device.session.runCmds(1, ["show bgp rt-membership summary"], "json")
+    response = await device.session.cli(command="show bgp rt-membership summary", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    peers = response[0]["vrfs"]["default"]["peers"]
+    peers = response["vrfs"]["default"]["peers"]
     non_established_peers = [
         peer
         for peer, peer_dict in peers.items()

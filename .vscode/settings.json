@@ -1,0 +1,16 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+      "--config=/dev/null",
+      "--max-line-length=165"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+      "--rcfile=pylintrc"
+    ],
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyArgs": [
+      "--config-file=pyproject.toml"
+    ],
+}

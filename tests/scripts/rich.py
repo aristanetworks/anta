@@ -290,8 +290,7 @@ if __name__ == "__main__":
         inventory_file=cli_options.inventory,
         username=cli_options.username,
         password=cli_options.password,
-        timeout=0.5,
-        auto_connect=True,
+        timeout=0.5
     )
     logger.info(f"Inventory {cli_options.inventory} loaded")
     if cli_options.verbose:

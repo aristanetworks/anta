@@ -72,8 +72,7 @@ def main() -> None:
         inventory_file=args.file,
         username=args.username,
         password=args.password,
-        auto_connect=True,
-        timeout=1,
+        timeout=1
     )
     clear_evpn_blacklisted_mac_addresses(inventory, args.enable_pass)
     report_unreachable_devices(inventory)

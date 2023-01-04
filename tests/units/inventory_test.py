@@ -71,8 +71,7 @@ class Test_AntaInventory:
             AntaInventory(
                 inventory_file=inventory_file,
                 username="arista",
-                password="arista123",
-                auto_connect=False,
+                password="arista123"
             )
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
@@ -113,8 +112,7 @@ class Test_AntaInventory:
             AntaInventory(
                 inventory_file=inventory_file,
                 username="arista",
-                password="arista123",
-                auto_connect=False,
+                password="arista123"
             )
         except InventoryIncorrectSchema as exc:
             logging.warning("Exception is: %s", exc)
@@ -162,8 +160,7 @@ class Test_AntaInventory:
         inventory_test = AntaInventory(
             inventory_file=inventory_file,
             username="arista",
-            password="arista123",
-            auto_connect=False,
+            password="arista123"
         )
         logging.info(
             "Checking if %s is in inventory",
@@ -209,8 +206,7 @@ class Test_AntaInventory:
         inventory_test = AntaInventory(
             inventory_file=inventory_file,
             username="arista",
-            password="arista123",
-            auto_connect=False,
+            password="arista123"
         )
         logging.info(
             "Checking if %s is in inventory",
@@ -254,8 +250,7 @@ class Test_AntaInventory:
         inventory_test = AntaInventory(
             inventory_file=inventory_file,
             username="arista",
-            password="arista123",
-            auto_connect=False,
+            password="arista123"
         )
         logging.info(
             "Getting if %s from inventory",
@@ -310,8 +305,7 @@ class Test_AntaInventory:
         inventory_test = AntaInventory(
             inventory_file=inventory_file,
             username="arista",
-            password="arista123",
-            auto_connect=False,
+            password="arista123"
         )
         inventory_json = json.loads(
             str(inventory_test.get_inventory(format_out="json", established_only=False))

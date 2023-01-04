@@ -3,9 +3,11 @@
 
 """Models related to inventory management."""
 
-from typing import Any, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork
+from aioeapi import Device
+from pydantic import (BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr,
+                      root_validator)
 
 # Default values
 
@@ -13,6 +15,8 @@ DEFAULT_TAG = 'default'
 DEFAULT_HW_MODEL = 'unset'
 
 # Pydantic models for input validation
+
+RFC_1123_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
 
 
 class AntaInventoryHost(BaseModel):
@@ -24,7 +28,9 @@ class AntaInventoryHost(BaseModel):
         tags (List[str]): List of attached tags read from inventory file.
     """
 
-    host: IPvAnyAddress
+    name: Optional[str]
+    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
+    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     tags: List[str] = [DEFAULT_TAG]
 
 
@@ -73,13 +79,12 @@ class AntaInventoryInput(BaseModel):
 
 # Pydantic models for inventory output structures
 
-
 class InventoryDevice(BaseModel):
     """
     Inventory model exposed by Inventory class.
 
     Attributes:
-        host (IPvAnyAddress): IPv4 or IPv6 address of the device.
+        name (str): Device name
         username (str): Username to use for connection.
         password (password): Password to use for connection.
         enable_password (Optional[str]): enable_password to use on the device, required for some tests
@@ -91,16 +96,47 @@ class InventoryDevice(BaseModel):
         tags (List[str]): List of attached tags read from inventory file.
     """
 
-    host: IPvAnyAddress
+    class Config:  # pylint: disable=too-few-public-methods
+        """ Pydantic model configuration """
+        arbitrary_types_allowed = True
+
+    name: str
+    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     username: str
     password: str
+    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
     enable_password: Optional[str]
-    session: Any
+    session: Device
     established = False
     is_online = False
     hw_model: str = DEFAULT_HW_MODEL
-    url: str
     tags: List[str] = [DEFAULT_TAG]
+    timeout: float = 10.0
+
+    @root_validator(pre=True)
+    def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
+        """ Build the device session object """
+        if values.get('session') is None:
+            host = values.get('host')
+            if not host:
+                host = 'localhost'
+            port = values.get('port')
+            if not port:
+                port = '8080' if host == 'localhost' else '443'
+            proto = 'http' if port in ['80', '8080'] else 'https'
+            values['session'] = Device(host=host, port=port,
+                                       username=values.get('username'), password=values.get('password'),
+                                       proto=proto, timeout=values.get('timeout'))
+        if values.get('name') is None:
+            values['name'] = f"{host}:{port}"
+        return values
+
+    def __eq__(self, other: BaseModel) -> bool:
+        """
+            Two InventoryDevice objects are equal if the hostname and the port are the same.
+            This covers the use case of port forwarding when the host is localhost and the devices have different ports.
+        """
+        return self.session.host == other.session.host and self.session.port == other.session.port
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """

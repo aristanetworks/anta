@@ -16,11 +16,11 @@ INVENTORY_MODEL_HOST = [
         "expected_result": "invalid",
     },
     {
-        "name": "invalidIPv6_wit_netmask",
+        "name": "invalidIPv6_with_netmask",
         "input": "fe80::cc62:a9ff:feef:932a/128",
         "expected_result": "invalid",
     },
-    {"name": "invalidIPv4_format", "input": "1.1.1.1.1", "expected_result": "invalid"},
+    {"name": "invalidHost_format", "input": "@", "expected_result": "invalid"},
     {
         "name": "invalidIPv6_format",
         "input": "fe80::cc62:a9ff:feef:",
@@ -84,16 +84,12 @@ INVENTORY_DEVICE_MODEL = [
             {
                 "host": "1.1.1.1",
                 "username": "arista",
-                "password": "arista123!",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "password": "arista123!"
             },
             {
                 "host": "1.1.1.2",
                 "username": "arista",
-                "password": "arista123!",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "password": "arista123!"
             },
         ],
         "expected_result": "valid",
@@ -103,34 +99,25 @@ INVENTORY_DEVICE_MODEL = [
         "input": [
             {
                 "host": "1.1.1.1",
-                "password": "arista123!",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "password": "arista123!"
             },
             {
                 "host": "1.1.1.1",
-                "username": "arista",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "username": "arista"
             },
             {
                 "username": "arista",
-                "password": "arista123!",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "password": "arista123!"
             },
             {
-                "host": "1.1.1.1",
+                "host": "@",
                 "username": "arista",
-                "password": "arista123!",
-                "established": False,
+                "password": "arista123!"
             },
             {
                 "host": "1.1.1.1/32",
                 "username": "arista",
-                "password": "arista123!",
-                "established": False,
-                "url": "https://demo.io/fake/url",
+                "password": "arista123!"
             },
         ],
         "expected_result": "invalid",

@@ -5,7 +5,7 @@
 
 from typing import Iterator, List
 
-from pydantic import BaseModel, IPvAnyAddress, validator
+from pydantic import BaseModel, validator
 
 RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
 
@@ -15,12 +15,12 @@ class TestResult(BaseModel):
     Describe result of a test from a single device.
 
     Attributes:
-        host (IPvAnyAddress): IPv4 or IPv6 address of the device where the test has run.
+        name (str): Device name where the test has run.
         test (str): Test name runs on the device.
         results (str): Result of the test. Can be one of unset / failure / success.
         message (str, optional): Message to report after the test.
     """
-    host: IPvAnyAddress
+    name: str
     test: str
     result: str = 'unset'
     messages: List[str] = []
@@ -120,6 +120,10 @@ class ListResult(BaseModel):
     # pylint: disable=R0801
 
     __root__: List[TestResult] = []
+
+    def extend(self, values: List[TestResult]) -> None:
+        """Add support for extend method."""
+        self.__root__.extend(values)
 
     def append(self, value: TestResult) -> None:
         """Add support for append method."""

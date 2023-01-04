@@ -1,16 +1,13 @@
 """
 decorators for tests
 """
-import socket
 from functools import wraps
-from typing import Any, Callable, Dict, List
-
-from jsonrpclib import jsonrpc
+from typing import Any, Callable, Coroutine, Dict, List
 
 from anta.result_manager.models import TestResult
 
 
-def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestResult]]:
+def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
     """
     Decorator factory to skip a test on a list of platforms
 
@@ -19,33 +16,34 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., TestR
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
+    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
         """
 
         @wraps(function)
-        def wrapper(*args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
             device = args[0]
-            if device.hw_model in platforms:  # type:ignore
-                result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
+            if device.hw_model in platforms:
+                result = TestResult(
+                    name=device.name, test=function.__name__)
                 result.is_skipped(
-                    f"{wrapper.__name__} test is not supported on {device.hw_model}."  # type: ignore
+                    f"{wrapper.__name__} test is not supported on {device.hw_model}."
                 )
                 return result
 
-            return function(*args, **kwargs)
+            return await function(*args, **kwargs)
 
         return wrapper
 
     return decorator
 
 
-def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResult]]:
+def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
     """
     Decorator factory to skip a test if BGP is enabled
 
@@ -54,14 +52,14 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., TestResult]:
+    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
         """
 
         @wraps(function)
-        def wrapper(*args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
@@ -77,34 +75,24 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., TestResu
                 "show bgp rt-membership summary" if family == "rtc" else eapi_command
             )
 
-            result = TestResult(host=str(device.host), test=function.__name__)  # type: ignore
-            try:
-                response = device.session.runCmds(  # type: ignore
-                    1, [eapi_command], "json"
-                )  # type: ignore
+            result = TestResult(name=str(device.name), test=function.__name__)
+            response = await device.session.cli(
+                command=eapi_command, ofmt="json")
 
-                if "vrfs" not in response[0].keys():
-                    result.is_skipped(
-                        # type: ignore
-                        f"no BGP configuration for {family} on this device"
-                    )
-                    return result
-                bgp_vrfs = response[0]["vrfs"]
-                if (
-                    len(bgp_vrfs) == 0
-                    or len(response[0]["vrfs"]["default"]["peers"]) == 0
-                ):
-                    # No VRF
-                    result.is_skipped(
-                        # type: ignore
-                        f"no {family} peer on this device"
-                    )
-                    return result
-            except (jsonrpc.AppError, KeyError, socket.timeout) as e:
-                result.is_error(str(e))
+            if "vrfs" not in response.keys():
+                result.is_skipped(
+                    f"no BGP configuration for {family} on this device"
+                )
+                return result
+            if (len(bgp_vrfs := response["vrfs"]) == 0
+               or len(bgp_vrfs["default"]["peers"]) == 0):
+                # No VRF
+                result.is_skipped(
+                    f"no {family} peer on this device"
+                )
                 return result
 
-            return function(*args, **kwargs)
+            return await function(*args, **kwargs)
 
         return wrapper
 

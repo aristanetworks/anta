@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_ospf_state(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_ospf_state(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies all OSPF neighbors are in FULL state.
 
@@ -25,14 +25,14 @@ def verify_ospf_state(device: InventoryDevice, result: TestResult) -> TestResult
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(
-        1, ["show ip ospf neighbor | exclude FULL|Address"], "text"
+    response = await device.session.cli(
+        command="show ip ospf neighbor | exclude FULL|Address", ofmt="text"
     )
     logger.debug(f"query result is: {response}")
-    if len(response[0]["output"]) == 0:
+    if len(response) == 0:
         result.is_skipped("no OSPF neighbor found")
         return result
-    if response[0]["output"].count("\n") == 0:
+    if response.count("\n") == 0:
         result.is_success()
     else:
         result.is_failure("Some neighbors are not correctly configured.")
@@ -41,7 +41,7 @@ def verify_ospf_state(device: InventoryDevice, result: TestResult) -> TestResult
 
 
 @anta_test
-def verify_ospf_count(
+async def verify_ospf_count(
     device: InventoryDevice, result: TestResult, number: int
 ) -> TestResult:
     """
@@ -65,14 +65,14 @@ def verify_ospf_count(
         )
         return result
 
-    response = device.session.runCmds(
-        1, ["show ip ospf neighbor | exclude  Address"], "text"
+    response = await device.session.cli(
+        command="show ip ospf neighbor | exclude  Address", ofmt="text"
     )
     logger.debug(f"query result is: {response}")
-    if len(response[0]["output"]) == 0:
+    if len(response) == 0:
         result.is_skipped("no OSPF neighbor found")
         return result
-    response_data = response[0]["output"].count("FULL")
+    response_data = response.count("FULL")
     if response_data.count("FULL") == number:
         result.is_success()
     else:

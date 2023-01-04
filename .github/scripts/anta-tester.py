@@ -20,12 +20,14 @@
 
 """Internal ANTA Test script - should not be used in a production environment."""
 
+import asyncio
 import argparse
 import logging
 import sys
 import itertools
-from yaml import safe_load
+from typing import Callable, List, Tuple, Dict, Any
 
+from yaml import safe_load
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -33,7 +35,7 @@ from rich.pretty import Pretty, pprint
 
 import anta.loader
 from anta.inventory import AntaInventory
-from anta.result_manager import ResultManager
+from anta.result_manager import ResultManager, TestResult
 from anta.reporter import ReportTable
 
 
@@ -56,6 +58,15 @@ logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
+
+
+async def main(manager: ResultManager, inventory: AntaInventory, tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
+    await inventory.connect_inventory()
+    res = await asyncio.gather(*(test[0](device, **test[1]) for device, test in itertools.product(inventory.get_inventory(), tests)), return_exceptions=True)
+    for r in res:
+        if isinstance(r, Exception):
+            logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
+    manager.add_test_results(res)
 
 
 def cli_manager() -> argparse.Namespace:
@@ -82,13 +93,13 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--enable_password', '-e', required=False,
                         default='ansible', help='EOS Enable Password')
 
-    parser.add_argument('--timeout', required=False,
+    parser.add_argument('--timeout', required=False, type=float,
                         default=0.5, help='eAPI connection timeout')
 
     #############################
     # Search options
 
-    parser.add_argument('--search_ip', '--hostip', required=False,
+    parser.add_argument('--search_host', '--host', required=False,
                         default=None, help='search result for host')
 
     parser.add_argument('--search_test', '--test', required=False,
@@ -106,15 +117,15 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--table', required=False, action='store_true',
                         help='Result represented in tables')
 
-    ## List of all tests per device -- REQUIRE --table option
+    # List of all tests per device -- REQUIRE --table option
     parser.add_argument('--full', required=False, action='store_true',
                         help='Display all test cases results')
 
-    ## Summary of tests results per device -- REQUIRE --table option
+    # Summary of tests results per device -- REQUIRE --table option
     parser.add_argument('--devices', required=False, action='store_true',
                         help='Provides summary of test results per device')
 
-    ## Summary of tests results per test-case -- REQUIRE --table option
+    # Summary of tests results per test-case -- REQUIRE --table option
     parser.add_argument('--testcases', required=False, action='store_true',
                         help='Provides summary of test results per test case')
 
@@ -175,7 +186,7 @@ if __name__ == '__main__':
         console.print(Panel('Active logger for testing', style='orange3'))
         # pylint: disable=E1101
         loggers = [logging.getLogger(name)
-               for name in logging.root.manager.loggerDict]
+                   for name in logging.root.manager.loggerDict]
         pprint(loggers)
 
     logger.info('ANTA testing program started')
@@ -189,9 +200,9 @@ if __name__ == '__main__':
         username=cli_options.username,
         password=cli_options.password,
         enable_password=cli_options.enable_password,
-        timeout=0.5,
-        auto_connect=True
-    )
+        timeout=cli_options.timeout,
+        filter_hosts=cli_options.search_host
+        )
     logger.info(f'Inventory {cli_options.inventory} loaded')
     if cli_options.verbose:
         output = Pretty(
@@ -201,11 +212,10 @@ if __name__ == '__main__':
             Panel('Current Inventory (active devices only)', style='cyan'))
         console.print(output)
 
-    if cli_options.search_ip is not None:
-        logger.info(f'starting running test on device {cli_options.search_ip} ...')
+    if cli_options.search_host is not None:
+        logger.info(f'starting running test on device {cli_options.search_host} ...')
     else:
         logger.info('starting running test on devices ...')
-
 
     ############################################################################
     # Test loader
@@ -220,18 +230,15 @@ if __name__ == '__main__':
     # Test Execution
     ############################################################################
 
-    manager = ResultManager()
-    list_tests = []
-    for device, test in itertools.product(inventory_anta.get_inventory(), tests_catalog):
-        if (cli_options.search_ip is None or cli_options.search_ip == str(device.host)) and \
-           (cli_options.search_test is None or cli_options.search_test == str(test[0].__name__)):
-            list_tests.append(str(test[0]))
-            manager.add_test_result(
-                test[0](
-                    device,
-                    **test[1]
-                )
-            )
+    if cli_options.search_test:
+        all_tests = tests_catalog
+        tests_catalog = []
+        for test in all_tests:
+            if test[0].__name__ == cli_options.search_test:
+                tests_catalog = [test]
+
+    results = ResultManager()
+    asyncio.run(main(results, inventory_anta, tests_catalog), debug=False)
 
     ############################################################################
     # Test Reporting
@@ -242,32 +249,32 @@ if __name__ == '__main__':
         console.print(Panel('Raw inventory for active device', style='cyan'))
         pprint(inventory_anta.get_inventory(format_out='list'))
         console.print(Panel('Raw results of all tests', style='cyan'))
-        pprint(manager.get_results(output_format="list"))
+        pprint(results.get_results(output_format="list"))
 
     if cli_options.table:
         reporter = ReportTable()
         if cli_options.full:
-            console.print(reporter.report_all(result_manager=manager,
+            console.print(reporter.report_all(result_manager=results,
                           host=cli_options.search_ip, testcase=cli_options.search_test))
         if cli_options.testcases:
             console.print(reporter.report_summary_tests(
-                result_manager=manager, testcase=cli_options.search_test))
+                result_manager=results, testcase=cli_options.search_test))
         if cli_options.devices:
             console.print(reporter.report_summary_hosts(
-                result_manager=manager, host=cli_options.search_ip))
+                result_manager=results, host=cli_options.search_ip))
 
     if cli_options.save:
         reporter = ReportTable()
         with open(cli_options.save_file, "wt", encoding="utf-8") as report_file:
-            output = reporter.report_summary_hosts(result_manager=manager)
+            output = reporter.report_summary_hosts(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 
-            output = reporter.report_summary_tests(result_manager=manager)
+            output = reporter.report_summary_tests(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 
-            output = reporter.report_all(result_manager=manager)
+            output = reporter.report_all(result_manager=results)
             console = Console(file=report_file)
             console.rule(console.print(output))
 

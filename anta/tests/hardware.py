@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_transceivers_manufacturers(
+async def verify_transceivers_manufacturers(
     device: InventoryDevice,
     result: TestResult,
     manufacturers: Optional[List[str]] = None,
@@ -43,12 +43,12 @@ def verify_transceivers_manufacturers(
         )
         return result
 
-    response = device.session.runCmds(1, ["show inventory"], "json")
+    response = await device.session.cli(command="show inventory", ofmt="json")
     logger.debug(f"query result is: {response}")
 
     wrong_manufacturers = {
         interface: value["mfgName"]
-        for interface, value in response[0]["xcvrSlots"].items()
+        for interface, value in response["xcvrSlots"].items()
         if value["mfgName"] not in manufacturers
     }
 
@@ -65,7 +65,7 @@ def verify_transceivers_manufacturers(
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_system_temperature(
+async def verify_system_temperature(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -84,16 +84,16 @@ def verify_system_temperature(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(
-        1, ["show system environment temperature"], "json"
+    response = await device.session.cli(
+        command="show system environment temperature", ofmt="json"
     )
     logger.debug(f"query result is: {response}")
 
-    if response[0]["systemStatus"] == "temperatureOk":
+    if response["systemStatus"] == "temperatureOk":
         result.is_success()
     else:
         result.is_failure(
-            f"Device temperature is not OK, systemStatus: {response[0]['systemStatus'] }"
+            f"Device temperature is not OK, systemStatus: {response['systemStatus'] }"
         )
 
     return result
@@ -101,7 +101,7 @@ def verify_system_temperature(
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_transceiver_temperature(
+async def verify_transceiver_temperature(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -121,13 +121,13 @@ def verify_transceiver_temperature(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(
-        1, ["show system environment temperature transceiver"], "json"
+    response = await device.session.cli(
+        command="show system environment temperature transceiver", ofmt="json"
     )
     logger.debug(f"query result is: {response}")
 
     # Get the list of sensors
-    sensors = response[0]["tempSensors"]
+    sensors = response["tempSensors"]
 
     wrong_sensors = {
         sensor["name"]: {
@@ -150,7 +150,7 @@ def verify_transceiver_temperature(
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_environment_cooling(
+async def verify_environment_cooling(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -168,14 +168,14 @@ def verify_environment_cooling(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show system environment cooling"], "json")
+    response = await device.session.cli(command="show system environment cooling", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    if response[0]["systemStatus"] == "coolingOk":
+    if response["systemStatus"] == "coolingOk":
         result.is_success()
     else:
         result.is_failure(
-            f"Device cooling is not OK, systemStatus: {response[0]['systemStatus'] }"
+            f"Device cooling is not OK, systemStatus: {response['systemStatus'] }"
         )
 
     return result
@@ -183,7 +183,7 @@ def verify_environment_cooling(
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_environment_power(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_environment_power(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies the power supplies status is OK.
@@ -199,12 +199,12 @@ def verify_environment_power(device: InventoryDevice, result: TestResult) -> Tes
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show system environment power"], "json")
+    response = await device.session.cli(command="show system environment power", ofmt="json")
     logger.debug(f"query result is: {response}")
 
     wrong_power_supplies = {
         powersupply: {"state": value["state"]}
-        for powersupply, value in response[0]["powerSupplies"].items()
+        for powersupply, value in response["powerSupplies"].items()
         if value["state"] != "ok"
     }
     if not wrong_power_supplies:
@@ -218,7 +218,7 @@ def verify_environment_power(device: InventoryDevice, result: TestResult) -> Tes
 
 @skip_on_platforms(["cEOSLab", "vEOS-lab"])
 @anta_test
-def verify_adverse_drops(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_adverse_drops(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
@@ -234,14 +234,14 @@ def verify_adverse_drops(device: InventoryDevice, result: TestResult) -> TestRes
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show hardware counter drop"], "json")
+    response = await device.session.cli(command="show hardware counter drop", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    if response[0]["totalAdverseDrops"] == 0:
+    if response["totalAdverseDrops"] == 0:
         result.is_success()
     else:
         result.is_failure(
-            f"Device TotalAdverseDrops counter is {response[0]['totalAdverseDrops']}."
+            f"Device TotalAdverseDrops counter is {response['totalAdverseDrops']}."
         )
 
     return result

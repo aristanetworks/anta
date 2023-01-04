@@ -245,8 +245,7 @@ if __name__ == "__main__":
         username=cli_options.username,
         password=cli_options.password,
         enable_password=cli_options.enable_password,
-        timeout=cli_options.timeout,
-        auto_connect=True,
+        timeout=cli_options.timeout
     )
 
     scope_tags = (

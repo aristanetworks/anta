@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_routing_protocol_model(
+async def verify_routing_protocol_model(
     device: InventoryDevice, result: TestResult, model: str = "multi-agent"
 ) -> TestResult:
 
@@ -37,12 +37,12 @@ def verify_routing_protocol_model(
         )
         return result
 
-    response = device.session.runCmds(
-        1, [{"cmd": "show ip route summary", "revision": 3}], "json"
+    response = await device.session.cli(
+        command={"cmd": "show ip route summary", "revision": 3}, ofmt="json"
     )
     logger.debug(f"query result is: {response}")
-    configured_model = response[0]["protoModelStatus"]["configuredProtoModel"]
-    operating_model = response[0]["protoModelStatus"]["operatingProtoModel"]
+    configured_model = response["protoModelStatus"]["configuredProtoModel"]
+    operating_model = response["protoModelStatus"]["operatingProtoModel"]
     if configured_model == operating_model == model:
         result.is_success()
     else:
@@ -55,7 +55,7 @@ def verify_routing_protocol_model(
 
 
 @anta_test
-def verify_routing_table_size(
+async def verify_routing_table_size(
     device: InventoryDevice, result: TestResult, minimum: int, maximum: int
 ) -> TestResult:
     """
@@ -81,11 +81,11 @@ def verify_routing_table_size(
             "minimum or maximum were given"
         )
         return result
-    response = device.session.runCmds(
-        1, [{"cmd": "show ip route summary", "revision": 3}], "json"
+    response = await device.session.cli(
+        command={"cmd": "show ip route summary", "revision": 3}, ofmt="json"
     )
     logger.debug(f"query result is: {response}")
-    total_routes = int(response[0]["vrfs"]["default"]["totalRoutes"])
+    total_routes = int(response["vrfs"]["default"]["totalRoutes"])
     if minimum <= total_routes <= maximum:
         result.is_success()
     else:
@@ -97,7 +97,7 @@ def verify_routing_table_size(
 
 
 @anta_test
-def verify_bfd(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_bfd(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
 
@@ -111,24 +111,24 @@ def verify_bfd(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show bfd peers"], "json")
+    response = await device.session.cli(command="show bfd peers", ofmt="json")
     logger.debug(f"query result is: {response}")
     has_failed: bool = False
-    for vrf in response[0]["vrfs"]:
-        for neighbor in response[0]["vrfs"][vrf]["ipv4Neighbors"]:
-            for interface in response[0]["vrfs"][vrf]["ipv4Neighbors"][neighbor][
+    for vrf in response["vrfs"]:
+        for neighbor in response["vrfs"][vrf]["ipv4Neighbors"]:
+            for interface in response["vrfs"][vrf]["ipv4Neighbors"][neighbor][
                 "peerStats"
             ]:
                 if (
-                    response[0]["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"][
+                    response["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"][
                         interface
                     ]["status"]
                     != "up"
                 ):
-                    intf_state = response[0]["vrfs"][vrf]["ipv4Neighbors"][neighbor][
+                    intf_state = response["vrfs"][vrf]["ipv4Neighbors"][neighbor][
                         "peerStats"
                     ][interface]["status"]
-                    intf_name = response[0]["vrfs"][vrf]["ipv4Neighbors"][neighbor][
+                    intf_name = response["vrfs"][vrf]["ipv4Neighbors"][neighbor][
                         "peerStats"
                     ][interface]
                     has_failed = True
