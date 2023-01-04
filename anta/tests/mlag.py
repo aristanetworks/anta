@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the MLAG status:
     state is active, negotiation status is connected, local int is up, peer link is up.
@@ -27,17 +27,17 @@ def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResul
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show mlag"], "json")
+    response = await device.session.cli(command="show mlag", ofmt="json")
 
-    if response[0]["state"] == "disabled":
+    if response["state"] == "disabled":
         result.is_skipped("MLAG is disabled")
     elif (
-        response[0]["state"] != "active"
-        or response[0]["negStatus"] != "connected"
-        or response[0]["localIntfStatus"] != "up"
-        or response[0]["peerLinkStatus"] != "up"
+        response["state"] != "active"
+        or response["negStatus"] != "connected"
+        or response["localIntfStatus"] != "up"
+        or response["peerLinkStatus"] != "up"
     ):
-        result.is_failure(f"MLAG status is not OK: {response[0]}")
+        result.is_failure(f"MLAG status is not OK: {response}")
     else:
         result.is_success()
 
@@ -45,7 +45,7 @@ def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResul
 
 
 @anta_test
-def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no inactive or active-partial MLAG interfaces.
 
@@ -60,15 +60,15 @@ def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestR
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show mlag"], "json")
+    response = await device.session.cli(command="show mlag", ofmt="json")
 
-    if response[0]["state"] == "disabled":
+    if response["state"] == "disabled":
         result.is_skipped("MLAG is disabled")
     elif (
-        response[0]["mlagPorts"]["Inactive"] != 0
-        or response[0]["mlagPorts"]["Active-partial"] != 0
+        response["mlagPorts"]["Inactive"] != 0
+        or response["mlagPorts"]["Active-partial"] != 0
     ):
-        result.is_failure(f"MLAG status is not OK: {response[0]['mlagPorts']}")
+        result.is_failure(f"MLAG status is not OK: {response['mlagPorts']}")
     else:
         result.is_success()
 
@@ -76,7 +76,7 @@ def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestR
 
 
 @anta_test
-def verify_mlag_config_sanity(
+async def verify_mlag_config_sanity(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -93,27 +93,27 @@ def verify_mlag_config_sanity(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show mlag config-sanity"], "json")
+    response = await device.session.cli(command="show mlag config-sanity", ofmt="json")
 
-    if "mlagActive" not in response[0].keys():
+    if "mlagActive" not in response.keys():
         result.is_error("incorrect JSON response")
-    elif response[0]["mlagActive"] is False:
+    elif response["mlagActive"] is False:
         # MLAG is not running
         result.is_skipped("MLAG is disabled")
     elif (
-        len(response[0]["globalConfiguration"]) > 0
-        or len(response[0]["interfaceConfiguration"]) > 0
+        len(response["globalConfiguration"]) > 0
+        or len(response["interfaceConfiguration"]) > 0
     ):
         result.is_failure()
-        if len(response[0]["globalConfiguration"]) > 0:
+        if len(response["globalConfiguration"]) > 0:
             result.is_failure(
                 "MLAG config-sanity returned some Global inconsistencies: "
-                f"{response[0]['response']['globalConfiguration']}"
+                f"{response['response']['globalConfiguration']}"
             )
-        if len(response[0]["interfaceConfiguration"]) > 0:
+        if len(response["interfaceConfiguration"]) > 0:
             result.is_failure(
                 "MLAG config-sanity returned some Interface inconsistencies: "
-                f"{response[0]['response']['interfaceConfiguration']}"
+                f"{response['response']['interfaceConfiguration']}"
             )
     else:
         result.is_success()

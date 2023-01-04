@@ -54,7 +54,7 @@ async def verify_unified_forwarding_table_mode(
 @skip_on_platforms(["cEOSLab", "VEOS-LAB"])
 @anta_test
 async def verify_tcam_profile(
-    device: InventoryDevice, profile: str, result: TestResult
+    device: InventoryDevice, result: TestResult, profile: str = None
 ) -> TestResult:
 
     """

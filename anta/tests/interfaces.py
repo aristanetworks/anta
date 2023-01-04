@@ -11,7 +11,7 @@ from anta.tests import anta_test
 
 
 @anta_test
-def verify_interface_utilization(
+async def verify_interface_utilization(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -30,10 +30,10 @@ def verify_interface_utilization(
 
     """
     # TODO make it JSON - bad news it seems percentages are not in the json payload
-    response = device.session.runCmds(1, ["show interfaces counters rates"], "text")
+    response = await device.session.cli(command="show interfaces counters rates", ofmt="text")
 
     wrong_interfaces = {}
-    for line in response[0]["output"].split("\n")[1:]:
+    for line in response.split("\n")[1:]:
         if len(line) > 0:
             if line.split()[-5] == "-" or line.split()[-2] == "-":
                 pass
@@ -53,7 +53,7 @@ def verify_interface_utilization(
 
 
 @anta_test
-def verify_interface_errors(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_interface_errors(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies interfaces error counters are equal to zero.
@@ -69,7 +69,7 @@ def verify_interface_errors(device: InventoryDevice, result: TestResult) -> Test
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show interfaces counters errors"], "json")
+    response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
     wrong_interfaces = {
         interface: {counter: value for counter, value in outer_v.items if value > 0}
@@ -86,7 +86,7 @@ def verify_interface_errors(device: InventoryDevice, result: TestResult) -> Test
 
 
 @anta_test
-def verify_interface_discards(
+async def verify_interface_discards(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -104,7 +104,7 @@ def verify_interface_discards(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show interfaces counters discards"], "json")
+    response = await device.session.cli(command="show interfaces counters discards", ofmt="json")
 
     wrong_interfaces = {
         interface: {counter: value for counter, value in outer_v.items if value > 0}
@@ -121,7 +121,7 @@ def verify_interface_discards(
 
 
 @anta_test
-def verify_interface_errdisabled(
+async def verify_interface_errdisabled(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -139,11 +139,11 @@ def verify_interface_errdisabled(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show interfaces status"], "json")
+    response = await device.session.cli(command="show interfaces status", ofmt="json")
 
     errdisabled_interfaces = [
         interface
-        for interface, value in response[0]["interfaceStatuses"].items()
+        for interface, value in response["interfaceStatuses"].items()
         if value["linkStatus"] == "errdisabled"
     ]
 
@@ -158,7 +158,7 @@ def verify_interface_errdisabled(
 
 
 @anta_test
-def verify_interfaces_status(
+async def verify_interfaces_status(
     device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
 ) -> TestResult:
     """
@@ -184,13 +184,13 @@ def verify_interfaces_status(
         )
         return result
 
-    response = device.session.runCmds(1, ["show interfaces description"], "json")
+    response = await device.session.cli(command="show interfaces description", ofmt="json")
 
     count_up_up = 0
     other_ethernet_interfaces = []
 
-    for interface in response[0]["interfaceDescriptions"]:
-        interface_dict = response[0]["interfaceDescriptions"][interface]
+    for interface in response["interfaceDescriptions"]:
+        interface_dict = response["interfaceDescriptions"][interface]
         if "Ethernet" in interface:
             if (
                 interface_dict["lineProtocolStatus"] == "up"
@@ -214,7 +214,7 @@ def verify_interfaces_status(
 
 
 @anta_test
-def verify_storm_control_drops(
+async def verify_storm_control_drops(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -231,10 +231,10 @@ def verify_storm_control_drops(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show storm-control"], "json")
+    response = await device.session.cli(command="show storm-control", ofmt="json")
 
     storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
-    for interface, interface_dict in response[0]["interfaces"].items():
+    for interface, interface_dict in response["interfaces"].items():
         for traffic_type, traffic_type_dict in interface_dict["trafficTypes"]:
             if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
                 storm_controlled_interface_dict = (
@@ -255,7 +255,7 @@ def verify_storm_control_drops(
 
 
 @anta_test
-def verify_portchannels(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_portchannels(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies there is no inactive port in port channels.
@@ -272,11 +272,11 @@ def verify_portchannels(device: InventoryDevice, result: TestResult) -> TestResu
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show port-channel"], "json")
+    response = await device.session.cli(command="show port-channel", ofmt="json")
 
     po_with_invactive_ports = {
         portchannel: {"inactivePorts": portchannel_dict["inactivePorts"]}
-        for portchannel, portchannel_dict in response[0]["portChannels"].items()
+        for portchannel, portchannel_dict in response["portChannels"].items()
         if len(portchannel_dict["inactivePorts"]) != 0
     }
 
@@ -291,7 +291,7 @@ def verify_portchannels(device: InventoryDevice, result: TestResult) -> TestResu
 
 
 @anta_test
-def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResult:
 
     """
     Verifies there is no illegal LACP packets received.
@@ -308,7 +308,7 @@ def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResu
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show lacp counters all-ports"], "json")
+    response = await device.session.cli(command="show lacp counters all-ports", ofmt="json")
 
     po_with_illegal_lacp = {
         portchannel: [
@@ -316,7 +316,7 @@ def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResu
             for interface, interface_dict in portchannel_dict["interfaces"].items()
             if interface_dict["illegalRxCount"] != 0
         ]
-        for portchannel, portchannel_dict in response[0]["portChannels"].items()
+        for portchannel, portchannel_dict in response["portChannels"].items()
     }
 
     if len(po_with_illegal_lacp) == 0:
@@ -331,7 +331,7 @@ def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResu
 
 
 @anta_test
-def verify_loopback_count(
+async def verify_loopback_count(
     device: InventoryDevice, result: TestResult, number: Optional[int] = None
 ) -> TestResult:
     """
@@ -357,7 +357,7 @@ def verify_loopback_count(
         )
         return result
 
-    response = device.session.runCmds(1, ["show ip interface brief "], "json")
+    response = await device.session.cli(command="show ip interface brief ", ofmt="json")
 
     loopback_count = 0
     down_loopback_interfaces = []
@@ -389,7 +389,7 @@ def verify_loopback_count(
 
 
 @anta_test
-def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no interface vlan down.
 
@@ -404,7 +404,7 @@ def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show ip interface brief"], "json")
+    response = await device.session.cli(command="show ip interface brief", ofmt="json")
 
     down_svis = []
 
@@ -426,7 +426,7 @@ def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-def verify_spanning_tree_blocked_ports(
+async def verify_spanning_tree_blocked_ports(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
 
@@ -444,15 +444,15 @@ def verify_spanning_tree_blocked_ports(
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show spanning-tree blockedports"], "json")
+    response = await device.session.cli(command="show spanning-tree blockedports", ofmt="json")
 
-    if len(response[0]["spanningTreeInstances"]) == 0:
+    if len(response["spanningTreeInstances"]) == 0:
         result.is_success()
     else:
         result.is_failure()
         # TODO: a bit lazy would need a real output for this
         result.messages.append(
-            f"The following ports are spanning-tree blocked {response[0]['spanningTreeInstances']}"
+            f"The following ports are spanning-tree blocked {response['spanningTreeInstances']}"
         )
 
     return result

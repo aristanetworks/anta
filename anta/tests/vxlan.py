@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_vxlan(device: InventoryDevice, result: TestResult) -> TestResult:
+async def verify_vxlan(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the interface vxlan 1 status is up/up.
 
@@ -26,16 +26,16 @@ def verify_vxlan(device: InventoryDevice, result: TestResult) -> TestResult:
         * result = "error" if any exception is caught
 
     """
-    response = device.session.runCmds(1, ["show interfaces description"], "json")
+    response = await device.session.cli(command="show interfaces description", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    response_data = response[0]["interfaceDescriptions"]
+    response_data = response["interfaceDescriptions"]
 
     if "Vxlan1" not in response_data:
         result.is_failure("No interface VXLAN 1 detected.")
     else:
         protocol_status = response_data["Vxlan1"]["lineProtocolStatus"]
-        interface_status = response_data["Vxlan1"]["intefraceStatus"]
+        interface_status = response_data["Vxlan1"]["interfaceStatus"]
         if protocol_status == "up" and interface_status == "up":
             result.is_success()
         else:
@@ -47,7 +47,7 @@ def verify_vxlan(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-def verify_vxlan_config_sanity(
+async def verify_vxlan_config_sanity(
     device: InventoryDevice, result: TestResult
 ) -> TestResult:
     """
@@ -63,9 +63,9 @@ def verify_vxlan_config_sanity(
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = device.session.runCmds(1, ["show vxlan config-sanity"], "json")
+    response = await device.session.cli(command="show vxlan config-sanity", ofmt="json")
     logger.debug(f"query result is: {response}")
-    response_data = response[0]["categories"]
+    response_data = response["categories"]
 
     if len(response_data) == 0:
         result.is_skipped("Vxlan is not enabled on this device")

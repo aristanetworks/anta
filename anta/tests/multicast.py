@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-def verify_igmp_snooping_vlans(
+async def verify_igmp_snooping_vlans(
     device: InventoryDevice, result: TestResult, vlans: List[str], configuration: str
 ) -> TestResult:
     """
@@ -38,16 +38,16 @@ def verify_igmp_snooping_vlans(
             "vlans or configuration was given"
         )
         return result
-    response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+    response = await device.session.cli(command="show ip igmp snooping", ofmt="json")
     logger.debug(f"query result is: {response}")
 
     result.is_success()
     for vlan in vlans:
-        if vlan not in response[0]["vlans"]:
+        if vlan not in response["vlans"]:
             result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
             continue
 
-        igmp_state = response[0]["vlans"][str(vlan)]["igmpSnoopingState"]
+        igmp_state = response["vlans"][str(vlan)]["igmpSnoopingState"]
         if igmp_state != configuration:
             result.is_failure()
             result.messages.append(f"IGMP state for vlan {vlan} is {igmp_state}")
@@ -56,7 +56,7 @@ def verify_igmp_snooping_vlans(
 
 
 @anta_test
-def verify_igmp_snooping_global(
+async def verify_igmp_snooping_global(
     device: InventoryDevice, result: TestResult, configuration: str
 ) -> TestResult:
     """
@@ -80,10 +80,10 @@ def verify_igmp_snooping_global(
         )
         return result
 
-    response = device.session.runCmds(1, ["show ip igmp snooping"], "json")
+    response = await device.session.cli(command="show ip igmp snooping", ofmt="json")
     logger.debug(f"query result is: {response}")
 
-    igmp_state = response[0]["igmpSnoopingState"]
+    igmp_state = response["igmpSnoopingState"]
     if igmp_state == configuration:
         result.is_success()
     else:
