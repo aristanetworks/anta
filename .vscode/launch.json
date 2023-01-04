@@ -26,6 +26,7 @@
         "name": "ANTA Tester - All tests",
         "type": "python",
         "request": "launch",
+        "justMyCode": false,
         "program": "${workspaceFolder}/.github/scripts/anta-tester.py",
         "args": [
             "-u", "admin",
@@ -34,7 +35,9 @@
             "-l",
             "--very-verbose",
             "-i", "${workspaceFolder}/.personal/inventory.yaml",
-            "-c", "${workspaceFolder}/examples/tests_all.yaml"
+            "-c", "${workspaceFolder}/examples/tests_all.yaml",
+            "--timeout",
+            "1"
         ],
         "console": "integratedTerminal"
     },
@@ -42,6 +45,7 @@
         "name": "ANTA Tester - Test subset",
         "type": "python",
         "request": "launch",
+        "justMyCode": false,
         "program": "${workspaceFolder}/.github/scripts/anta-tester.py",
         "args": [
             "-u", "admin",
@@ -50,7 +54,9 @@
             "-l",
             "--very-verbose",
             "-i", "${workspaceFolder}/.personal/inventory.yaml",
-            "-c", "${workspaceFolder}/examples/tests_subset.yaml"
+            "-c", "${workspaceFolder}/examples/tests_subset.yaml",
+            "--timeout",
+            "1"
         ],
         "console": "integratedTerminal"
     }
