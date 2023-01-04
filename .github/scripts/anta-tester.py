@@ -93,7 +93,7 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument('--enable_password', '-e', required=False,
                         default='ansible', help='EOS Enable Password')
 
-    parser.add_argument('--timeout', required=False,
+    parser.add_argument('--timeout', required=False, type=float,
                         default=0.5, help='eAPI connection timeout')
 
     #############################
@@ -200,7 +200,7 @@ if __name__ == '__main__':
         username=cli_options.username,
         password=cli_options.password,
         enable_password=cli_options.enable_password,
-        timeout=0.5,
+        timeout=cli_options.timeout,
         filter_hosts=cli_options.search_host
         )
     logger.info(f'Inventory {cli_options.inventory} loaded')
