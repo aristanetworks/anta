@@ -5,9 +5,9 @@ Test decorator from which tests can derive
 """
 
 import logging
+import traceback
 from functools import wraps
 from typing import Any, Callable, Coroutine, Dict, List
-import traceback
 
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult

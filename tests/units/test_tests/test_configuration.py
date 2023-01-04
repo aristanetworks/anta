@@ -12,7 +12,8 @@ from unittest.mock import MagicMock
 import pytest
 from jsonrpclib.jsonrpc import AppError
 
-from anta.tests.configuration import verify_running_config_diffs, verify_zerotouch
+from anta.tests.configuration import (verify_running_config_diffs,
+                                      verify_zerotouch)
 
 
 @pytest.mark.parametrize(
