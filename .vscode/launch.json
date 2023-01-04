@@ -19,7 +19,7 @@
         "${workspaceFolder}/.personal/ceos-catalog.yml",
         "--table",
         "--timeout",
-        "1"
+        "5"
       ]
     },  
     {
@@ -37,7 +37,7 @@
             "-i", "${workspaceFolder}/.personal/inventory.yaml",
             "-c", "${workspaceFolder}/examples/tests_all.yaml",
             "--timeout",
-            "1"
+            "5"
         ],
         "console": "integratedTerminal"
     },
@@ -56,7 +56,7 @@
             "-i", "${workspaceFolder}/.personal/inventory.yaml",
             "-c", "${workspaceFolder}/examples/tests_subset.yaml",
             "--timeout",
-            "1"
+            "5"
         ],
         "console": "integratedTerminal"
     }
