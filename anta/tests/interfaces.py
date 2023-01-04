@@ -3,6 +3,7 @@ Test functions related to the device interfaces
 """
 from typing import Any, Dict, Optional
 
+from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 from anta.tests import anta_test
@@ -72,8 +73,8 @@ async def verify_interface_errors(device: InventoryDevice, result: TestResult) -
     response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
     wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items if value > 0}
-        for interface, outer_v in response[0]["interfaceErrorCounters"]
+        interface: {counter: value for counter, value in outer_v.items() if value > 0}
+        for interface, outer_v in response["interfaceErrorCounters"].items()
     }
     if len(wrong_interfaces) == 0:
         result.is_success()
@@ -107,8 +108,8 @@ async def verify_interface_discards(
     response = await device.session.cli(command="show interfaces counters discards", ofmt="json")
 
     wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items if value > 0}
-        for interface, outer_v in response[0]["interfaces"]
+        interface: {counter: value for counter, value in outer_v.items() if value > 0}
+        for interface, outer_v in response["interfaces"].items()
     }
     if len(wrong_interfaces) == 0:
         result.is_success()
@@ -194,7 +195,7 @@ async def verify_interfaces_status(
         if "Ethernet" in interface:
             if (
                 interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "up"
+                and interface_dict["interfaceStatus"] == "connected"
             ):
                 count_up_up += 1
             else:
@@ -213,6 +214,7 @@ async def verify_interfaces_status(
     return result
 
 
+@skip_on_platforms(["cEOSLab", "VEOS-LAB"])
 @anta_test
 async def verify_storm_control_drops(
     device: InventoryDevice, result: TestResult
@@ -362,13 +364,13 @@ async def verify_loopback_count(
     loopback_count = 0
     down_loopback_interfaces = []
 
-    for interface in response[0]["interfaceDescriptions"]:
-        interface_dict = response[0]["interfaceDescriptions"][interface]
+    for interface in response["interfaces"]:
+        interface_dict = response["interfaces"][interface]
         if "Loopback" in interface:
             loopback_count += 1
             if not (
                 interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "up"
+                and interface_dict["interfaceStatus"] == "connected"
             ):
                 down_loopback_interfaces.append(interface)
 
@@ -408,12 +410,12 @@ async def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
 
     down_svis = []
 
-    for interface in response[0]["interfaceDescriptions"]:
-        interface_dict = response[0]["interfaceDescriptions"][interface]
+    for interface in response["interfaces"]:
+        interface_dict = response["interfaces"][interface]
         if "Vlan" in interface:
             if not (
                 interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "up"
+                and interface_dict["interfaceStatus"] == "connected"
             ):
                 down_svis.append(interface)
 
