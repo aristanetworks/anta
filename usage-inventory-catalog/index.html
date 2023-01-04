@@ -12,8 +12,14 @@
         <meta name="author" content="Khelil Sator">
       
       
+      
+        <link rel="prev" href="../requirements-and-installation/">
+      
+      
+        <link rel="next" href="../usage-check-devices/">
+      
       <link rel="icon" href="../docs/_media/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.2">
     
     
       
@@ -21,11 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.f56500e0.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
-        
       
       
 
@@ -117,8 +122,6 @@
       <form class="md-header__option" data-md-component="palette">
         
           
-          
-          
           <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
           
             <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
@@ -126,8 +129,6 @@
             </label>
           
         
-          
-          
           
           <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
           
@@ -919,10 +920,9 @@
                 
                   
 
-  <a href="https://github.com/arista-netdevops-community/network-test-automation/edit/master/docs/usage-inventory-catalog.md" title="Edit this page" class="md-content__button md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
-  </a>
+  
+  
+
 
 
   <h1>Inventory & Tests catalog</h1>
@@ -931,14 +931,14 @@
 <p>This page describes how to create an inventory and a tests catalog.</p>
 <h4 id="create-an-inventory-file">Create an inventory file<a class="headerlink" href="#create-an-inventory-file" title="Permanent link">&para;</a></h4>
 <p><code>check-devices</code> needs an inventory file to list all devices to tests. This inventory is a YAML file with the folowing keys:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">networks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1.2.0/24&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.10</span><span class="w"></span>
-<span class="w">      </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.21</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
+<span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1.2.0/24&#39;</span>
+<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.10</span>
+<span class="w">      </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.21</span>
 </code></pre></div>
 <p>In this configuration file, you can use different device definitions:</p>
 <ul>
@@ -948,17 +948,17 @@
 </ul>
 <p>Your inventory file can be based on any of these 3 keys and shall start with <code>anta_inventory</code> key.</p>
 <p>Besides this standard definition, you can also define some tags to target a subset of devices during your tests exeution. it can be useful to only run test about VXLAN on leaf only and skip underlay devices.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;border&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">networks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1.2.0/24&#39;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.10</span><span class="w"></span>
-<span class="w">      </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.21</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;spines&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;border&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1.2.0/24&#39;</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.10</span>
+<span class="w">      </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.3.21</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;spines&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>Tag definition is a list of string you defined according your own setup. If not defined, a default tag (<code>default</code>) is generated during script execution.</p>
 <h4 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h4>
@@ -966,54 +966,54 @@
 <p>Its format is a YAML file and keys are tests functions inherited from the python path. Let&rsquo;s take an example below:</p>
 <h5 id="default-tests-catalog">Default tests catalog<a class="headerlink" href="#default-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>All tests are located under <code>anta.tests</code> module and are categorised per family (one submodule). So to run test for software version, you can do:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
 </code></pre></div>
 <div class="admonition information">
 <p class="admonition-title">Information</p>
 <p>With this approach, it means you can load your own tests collection as described in the next section.</p>
 </div>
 <p>It will load the test <code>verify_eos_version</code> located in <code>anta.tests.software</code>. But since this function has parameters, we will create a catalog with the following structure:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="c1"># List of allowed EOS versions.</span><span class="w"></span>
-<span class="w">      </span><span class="nt">versions</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
+<span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span>
 </code></pre></div>
 <p>To get a list of all available tests and their respective parameters, you can read the <a href="../api/tests/">tests section</a> of this website.</p>
 <p>The following example gives a very minimal tests catalog you can use in almost any situation</p>
-<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
-<span class="c1"># Load anta.tests.software</span><span class="w"></span>
-<span class="nt">anta.tests.software</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="c1"># List of allowed EOS versions.</span><span class="w"></span>
-<span class="w">      </span><span class="nt">versions</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nn">---</span>
+<span class="c1"># Load anta.tests.software</span>
+<span class="nt">anta.tests.software</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
+<span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span>
 
-<span class="c1"># Load anta.tests.system</span><span class="w"></span>
-<span class="nt">anta.tests.system</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Verifies the device uptime is higher than a value.</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_uptime</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="c1"># Load anta.tests.system</span>
+<span class="nt">anta.tests.system</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Verifies the device uptime is higher than a value.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_uptime</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
-<span class="c1"># Load anta.tests.configuration</span><span class="w"></span>
-<span class="nt">anta.tests.configuration</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Verifies ZeroTouch is disabled.</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_zerotouch</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_running_config_diffs</span><span class="p">:</span><span class="w"></span>
+<span class="c1"># Load anta.tests.configuration</span>
+<span class="nt">anta.tests.configuration</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_zerotouch</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_running_config_diffs</span><span class="p">:</span>
 </code></pre></div>
 <h5 id="custom-tests-catalog">Custom tests catalog<a class="headerlink" href="#custom-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>In case you want to leverage your own tests collection, you can use the following syntax:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;your package name&gt;</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;your test in your package name&gt;</span><span class="p">:</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;your package name&gt;</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;your test in your package name&gt;</span><span class="p">:</span>
 </code></pre></div>
 <p>So for instance, it could be:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">titom73.tests.system</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_platform</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;cEOS-LAB&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">titom73.tests.system</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_platform</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;cEOS-LAB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">How to create custom tests</p>
@@ -1025,7 +1025,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 14, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 4, 2023</span>
       
     
   </small>
@@ -1050,42 +1050,6 @@
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../requirements-and-installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Installation
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../usage-check-devices/" class="md-footer__link md-footer__link--next" aria-label="Next: Check Devices" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Check Devices
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -1112,10 +1076,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
@@ -1125,7 +1089,6 @@
       
         <script src="../docs/stylesheets/highlight.js"></script>
       
-    
     
   </body>
 </html>

@@ -12,8 +12,14 @@
         <meta name="author" content="Khelil Sator">
       
       
+      
+        <link rel="prev" href="../tests.hardware/">
+      
+      
+        <link rel="next" href="../tests.mlag/">
+      
       <link rel="icon" href="../../docs/_media/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.2">
     
     
       
@@ -21,11 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f56500e0.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
-        
       
       
 
@@ -117,8 +122,6 @@
       <form class="md-header__option" data-md-component="palette">
         
           
-          
-          
           <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
           
             <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
@@ -126,8 +129,6 @@
             </label>
           
         
-          
-          
           
           <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
           
@@ -1019,10 +1020,9 @@
                 
                   
 
-  <a href="https://github.com/arista-netdevops-community/network-test-automation/edit/master/docs/api/tests.interfaces.md" title="Edit this page" class="md-content__button md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
-  </a>
+  
+  
+
 
 
   <h1>Interfaces</h1>
@@ -1056,6 +1056,10 @@
 
 <h2 id="anta.tests.interfaces.verify_illegal_lacp" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_illegal_lacp</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_illegal_lacp" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1141,9 +1145,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
@@ -1178,10 +1180,12 @@
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
-<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_illegal_lacp</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_illegal_lacp</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no illegal LACP packets received.</span>
 
 <span class="sd">    Args:</span>
@@ -1196,7 +1200,7 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show lacp counters all-ports&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show lacp counters all-ports&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">po_with_illegal_lacp</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">portchannel</span><span class="p">:</span> <span class="p">[</span>
@@ -1204,7 +1208,7 @@
             <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">interface_dict</span> <span class="ow">in</span> <span class="n">portchannel_dict</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;illegalRxCount&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
         <span class="p">]</span>
-        <span class="k">for</span> <span class="n">portchannel</span><span class="p">,</span> <span class="n">portchannel_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;portChannels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">portchannel</span><span class="p">,</span> <span class="n">portchannel_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;portChannels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">po_with_illegal_lacp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1228,6 +1232,10 @@
 
 <h2 id="anta.tests.interfaces.verify_interface_discards" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_interface_discards</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_interface_discards" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1312,8 +1320,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -1344,12 +1351,13 @@
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_interface_discards</span><span class="p">(</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_interface_discards</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies interfaces packet discard counters are equal to zero.</span>
 
 <span class="sd">    Args:</span>
@@ -1363,11 +1371,11 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show interfaces counters discards&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces counters discards&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">wrong_interfaces</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">interface</span><span class="p">:</span> <span class="p">{</span><span class="n">counter</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">counter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">outer_v</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">outer_v</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+        <span class="n">interface</span><span class="p">:</span> <span class="p">{</span><span class="n">counter</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">counter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">outer_v</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">outer_v</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wrong_interfaces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -1389,6 +1397,10 @@
 
 <h2 id="anta.tests.interfaces.verify_interface_errdisabled" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_interface_errdisabled</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_interface_errdisabled" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1473,8 +1485,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
@@ -1507,12 +1518,13 @@
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
-<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_interface_errdisabled</span><span class="p">(</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_interface_errdisabled</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no interface in error disable state.</span>
 
 <span class="sd">    Args:</span>
@@ -1526,11 +1538,11 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show interfaces status&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces status&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">errdisabled_interfaces</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">interface</span>
-        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceStatuses&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceStatuses&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;linkStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;errdisabled&quot;</span>
     <span class="p">]</span>
 
@@ -1554,6 +1566,10 @@
 
 <h2 id="anta.tests.interfaces.verify_interface_errors" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_interface_errors</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_interface_errors" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1638,8 +1654,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -1668,10 +1683,11 @@
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_interface_errors</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_interface_errors</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies interfaces error counters are equal to zero.</span>
 
 <span class="sd">    Args:</span>
@@ -1685,11 +1701,11 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show interfaces counters errors&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces counters errors&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">wrong_interfaces</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">interface</span><span class="p">:</span> <span class="p">{</span><span class="n">counter</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">counter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">outer_v</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">outer_v</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceErrorCounters&quot;</span><span class="p">]</span>
+        <span class="n">interface</span><span class="p">:</span> <span class="p">{</span><span class="n">counter</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">counter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">outer_v</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">outer_v</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceErrorCounters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wrong_interfaces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -1711,6 +1727,10 @@
 
 <h2 id="anta.tests.interfaces.verify_interface_utilization" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_interface_utilization</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_interface_utilization" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1795,8 +1815,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1834,12 +1853,13 @@
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_interface_utilization</span><span class="p">(</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_interface_utilization</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies interfaces utilization is below 75%.</span>
 
 <span class="sd">    Args:</span>
@@ -1854,10 +1874,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO make it JSON - bad news it seems percentages are not in the json payload</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show interfaces counters rates&quot;</span><span class="p">],</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces counters rates&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
 
     <span class="n">wrong_interfaces</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
                 <span class="k">pass</span>
@@ -1886,6 +1906,10 @@
 
 <h2 id="anta.tests.interfaces.verify_interfaces_status" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_interfaces_status</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_interfaces_status" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1988,8 +2012,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
-<span class="normal">161</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
@@ -2041,11 +2064,12 @@
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_interfaces_status</span><span class="p">(</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_interfaces_status</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.</span>
 
 <span class="sd">    Args:</span>
@@ -2068,17 +2092,17 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show interfaces description&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces description&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">count_up_up</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">other_ethernet_interfaces</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]:</span>
-        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]:</span>
+        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;Ethernet&quot;</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;lineProtocolStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
-                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
+                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span>
             <span class="p">):</span>
                 <span class="n">count_up_up</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
@@ -2107,6 +2131,10 @@
 
 <h2 id="anta.tests.interfaces.verify_loopback_count" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_loopback_count</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_loopback_count" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2203,9 +2231,7 @@ And if none of the loopback is down.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
@@ -2258,11 +2284,13 @@ And if none of the loopback is down.</p>
 <span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
-<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_loopback_count</span><span class="p">(</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_loopback_count</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the number of loopback interfaces on the device is the one we expect.</span>
 <span class="sd">    And if none of the loopback is down.</span>
 
@@ -2285,18 +2313,18 @@ And if none of the loopback is down.</p>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show ip interface brief &quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip interface brief &quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">loopback_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">down_loopback_interfaces</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]:</span>
-        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]:</span>
+        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;Loopback&quot;</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">:</span>
             <span class="n">loopback_count</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
                 <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;lineProtocolStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
-                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
+                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span>
             <span class="p">):</span>
                 <span class="n">down_loopback_interfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
 
@@ -2326,6 +2354,10 @@ And if none of the loopback is down.</p>
 
 <h2 id="anta.tests.interfaces.verify_portchannels" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_portchannels</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_portchannels" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2411,9 +2443,7 @@ And if none of the loopback is down.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
@@ -2444,10 +2474,12 @@ And if none of the loopback is down.</p>
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
-<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_portchannels</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_portchannels</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no inactive port in port channels.</span>
 
 <span class="sd">    Args:</span>
@@ -2462,11 +2494,11 @@ And if none of the loopback is down.</p>
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show port-channel&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show port-channel&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">po_with_invactive_ports</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">portchannel</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;inactivePorts&quot;</span><span class="p">:</span> <span class="n">portchannel_dict</span><span class="p">[</span><span class="s2">&quot;inactivePorts&quot;</span><span class="p">]}</span>
-        <span class="k">for</span> <span class="n">portchannel</span><span class="p">,</span> <span class="n">portchannel_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;portChannels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">portchannel</span><span class="p">,</span> <span class="n">portchannel_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;portChannels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">portchannel_dict</span><span class="p">[</span><span class="s2">&quot;inactivePorts&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span>
     <span class="p">}</span>
 
@@ -2490,6 +2522,10 @@ And if none of the loopback is down.</p>
 
 <h2 id="anta.tests.interfaces.verify_spanning_tree_blocked_ports" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_spanning_tree_blocked_ports</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_spanning_tree_blocked_ports" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2574,9 +2610,7 @@ And if none of the loopback is down.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">430</span>
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
@@ -2604,12 +2638,14 @@ And if none of the loopback is down.</p>
 <span class="normal">455</span>
 <span class="normal">456</span>
 <span class="normal">457</span>
-<span class="normal">458</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_spanning_tree_blocked_ports</span><span class="p">(</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_spanning_tree_blocked_ports</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no spanning-tree blocked ports.</span>
 
 <span class="sd">    Args:</span>
@@ -2623,15 +2659,15 @@ And if none of the loopback is down.</p>
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show spanning-tree blockedports&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show spanning-tree blockedports&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;spanningTreeInstances&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;spanningTreeInstances&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">()</span>
         <span class="c1"># TODO: a bit lazy would need a real output for this</span>
         <span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The following ports are spanning-tree blocked </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;spanningTreeInstances&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The following ports are spanning-tree blocked </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;spanningTreeInstances&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
@@ -2647,6 +2683,10 @@ And if none of the loopback is down.</p>
 
 <h2 id="anta.tests.interfaces.verify_storm_control_drops" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_storm_control_drops</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_storm_control_drops" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2731,8 +2771,7 @@ And if none of the loopback is down.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
@@ -2769,11 +2808,14 @@ And if none of the loopback is down.</p>
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_storm_control_drops</span><span class="p">(</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
+<span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_storm_control_drops</span><span class="p">(</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the device did not drop packets due its to storm-control configuration.</span>
 
 <span class="sd">    Args:</span>
@@ -2787,10 +2829,10 @@ And if none of the loopback is down.</p>
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show storm-control&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show storm-control&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">storm_controlled_interfaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">interface_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">interface_dict</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">traffic_type</span><span class="p">,</span> <span class="n">traffic_type_dict</span> <span class="ow">in</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;trafficTypes&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="s2">&quot;drop&quot;</span> <span class="ow">in</span> <span class="n">traffic_type_dict</span> <span class="ow">and</span> <span class="n">traffic_type_dict</span><span class="p">[</span><span class="s2">&quot;drop&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">storm_controlled_interface_dict</span> <span class="o">=</span> <span class="p">(</span>
@@ -2820,6 +2862,10 @@ And if none of the loopback is down.</p>
 
 <h2 id="anta.tests.interfaces.verify_svi" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">verify_svi</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
 
 <a href="#anta.tests.interfaces.verify_svi" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2904,9 +2950,7 @@ And if none of the loopback is down.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">393</span>
 <span class="normal">394</span>
 <span class="normal">395</span>
 <span class="normal">396</span>
@@ -2938,9 +2982,11 @@ And if none of the loopback is down.</p>
 <span class="normal">422</span>
 <span class="normal">423</span>
 <span class="normal">424</span>
-<span class="normal">425</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">def</span> <span class="nf">verify_svi</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_svi</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no interface vlan down.</span>
 
 <span class="sd">    Args:</span>
@@ -2954,16 +3000,16 @@ And if none of the loopback is down.</p>
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show ip interface brief&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip interface brief&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
     <span class="n">down_svis</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]:</span>
-        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]:</span>
+        <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">interface</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;Vlan&quot;</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
                 <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;lineProtocolStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
-                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
+                <span class="ow">and</span> <span class="n">interface_dict</span><span class="p">[</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span>
             <span class="p">):</span>
                 <span class="n">down_svis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
 
@@ -2992,7 +3038,7 @@ And if none of the loopback is down.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 14, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 4, 2023</span>
       
     
   </small>
@@ -3017,42 +3063,6 @@ And if none of the loopback is down.</p>
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../tests.hardware/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Hardware" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Hardware
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../tests.mlag/" class="md-footer__link md-footer__link--next" aria-label="Next: MLAG" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              MLAG
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -3079,10 +3089,10 @@ And if none of the loopback is down.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top"], "search": "../../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cf534bf.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
@@ -3092,7 +3102,6 @@ And if none of the loopback is down.</p>
       
         <script src="../../docs/stylesheets/highlight.js"></script>
       
-    
     
   </body>
 </html>
