@@ -1,7 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # coding: utf-8 -*-
-# pylint: disable=W0622
-# pylint: disable=C0116
 #
 # Copyright 2022 Arista Networks Thomas Grimonet
 #
@@ -23,10 +21,9 @@ Arista NRFU test runner script
 """
 
 import argparse
-import itertools
+import asyncio
 import logging
 import sys
-from typing import Any
 
 from rich import print_json
 from rich.console import Console
@@ -35,14 +32,17 @@ from rich.panel import Panel
 from rich.pretty import pprint
 from yaml import safe_load
 
-import anta.loader
+import anta
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
+from anta.loader import parse_catalog
 from anta.reporter import ReportTable
 from anta.result_manager import ResultManager
 
+logger = logging.getLogger(__name__)
 
-def setup_logging(level: str = "critical") -> Any:
+
+def setup_logging(level: str = "info") -> None:
     """
     Configure logging for check-devices execution
 
@@ -53,16 +53,13 @@ def setup_logging(level: str = "critical") -> Any:
 
     Args:
         level (str, optional): level name to configure. Defaults to 'critical'.
-
-    Returns:
-        logging: Logger for script
     """
     loglevel = getattr(logging, level.upper())
 
     # FORMAT = "%(asctime)s:%(levelname)s:%(message)s"
     FORMAT = "%(message)s"
     logging.basicConfig(
-        level=logging.DEBUG, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
     )
     logging.getLogger("anta.inventory").setLevel(loglevel)
     logging.getLogger("anta.result_manager").setLevel(loglevel)
@@ -82,13 +79,13 @@ def setup_logging(level: str = "critical") -> Any:
     logging.getLogger("anta.tests.routing.bgp").setLevel(logging.ERROR)
     logging.getLogger("anta.tests.routing.ospf").setLevel(logging.ERROR)
 
-    # pylint: disable=W0621
-    logger = logging.getLogger(__name__)
     logger.setLevel(loglevel)
-    return logger
 
 
 def cli_manager() -> argparse.Namespace:
+    """
+    Define CLI arguments and options
+    """
     parser = argparse.ArgumentParser(description="Arista NRFU runner")
 
     #############################
@@ -134,7 +131,7 @@ def cli_manager() -> argparse.Namespace:
         "-t",
         required=False,
         type=float,
-        default=1,
+        default=10,
         help="eAPI connection timeout",
     )
 
@@ -219,8 +216,8 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument(
         "-log",
         "--loglevel",
-        default="critical",
-        help="Provide logging level. Example --loglevel debug, default=critical",
+        default="info",
+        help="Provide logging level. Example --loglevel debug, default=info",
     )
 
     return parser.parse_args()
@@ -229,7 +226,7 @@ def cli_manager() -> argparse.Namespace:
 if __name__ == "__main__":
     console = Console()
     cli_options = cli_manager()
-    logger = setup_logging(level=cli_options.loglevel)
+    setup_logging(level=cli_options.loglevel)
 
     console.print(
         Panel.fit(
@@ -247,10 +244,7 @@ if __name__ == "__main__":
         enable_password=cli_options.enable_password,
         timeout=cli_options.timeout
     )
-
-    scope_tags = (
-        cli_options.tags.split(",") if "," in cli_options.tags else [cli_options.tags]
-    )
+    logger.info(f"Inventory {cli_options.inventory} loaded")
 
     ############################################################################
     # Test loader
@@ -259,24 +253,20 @@ if __name__ == "__main__":
     with open(cli_options.catalog, "r", encoding="utf8") as file:
         test_catalog_input = safe_load(file)
 
-    tests_catalog = anta.loader.parse_catalog(test_catalog_input)
-    logger.info(f"Inventory {cli_options.inventory} loaded")
+    tests_catalog = parse_catalog(test_catalog_input)
 
     ############################################################################
     # Test Execution
     ############################################################################
 
     logger.info("starting running test on inventory ...")
-    manager = ResultManager()
-    list_tests = []
-    for device, test in itertools.product(
-        inventory_anta.get_inventory(tags=scope_tags), tests_catalog
-    ):
-        if (cli_options.hostip is None or cli_options.hostip == str(device.host)) and (
-            cli_options.test is None or cli_options.test == str(test[0].__name__)
-        ):
-            list_tests.append(str(test[0]))
-            manager.add_test_result(test[0](device, **test[1]))
+
+    tags = (
+        cli_options.tags.split(",") if "," in cli_options.tags else [cli_options.tags]
+    )
+
+    results = ResultManager()
+    asyncio.run(anta.main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
 
     ############################################################################
     # Test Reporting
@@ -285,17 +275,17 @@ if __name__ == "__main__":
     logger.info("testing done !")
     if cli_options.list:
         console.print(Panel.fit("List results of all tests", style="cyan"))
-        pprint(manager.get_results(output_format="list"))
+        pprint(results.get_results(output_format="list"))
         if cli_options.save is not None:
             with open(cli_options.save, "w", encoding="utf-8") as fout:
-                fout.write(str(manager.get_results(output_format="list")))
+                fout.write(str(results.get_results(output_format="list")))
 
     if cli_options.json:
         console.print(Panel("JSON results of all tests", style="cyan"))
-        print_json(manager.get_results(output_format="json"))
+        print_json(results.get_results(output_format="json"))
         if cli_options.save is not None:
             with open(cli_options.save, "w", encoding="utf-8") as fout:
-                fout.write(manager.get_results(output_format="json"))
+                fout.write(results.get_results(output_format="json"))
 
     if cli_options.table:
         reporter = ReportTable()
@@ -304,7 +294,7 @@ if __name__ == "__main__":
         ):
             console.print(
                 reporter.report_all(
-                    result_manager=manager,
+                    result_manager=results,
                     host=cli_options.hostip,
                     testcase=cli_options.test,
                 )
@@ -314,7 +304,7 @@ if __name__ == "__main__":
         if cli_options.by_test:
             console.print(
                 reporter.report_summary_tests(
-                    result_manager=manager, testcase=cli_options.test
+                    result_manager=results, testcase=cli_options.test
                 )
             )
 
@@ -322,7 +312,7 @@ if __name__ == "__main__":
         if cli_options.by_host:
             console.print(
                 reporter.report_summary_hosts(
-                    result_manager=manager, host=cli_options.hostip
+                    result_manager=results, host=cli_options.hostip
                 )
             )
 
