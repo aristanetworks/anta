@@ -40,12 +40,12 @@ def setup_logging(level: str = "info") -> None:
     logger.setLevel(loglevel)
 
 
-async def clear_counters(inventory: AntaInventory, enable_pass: str) -> None:
+async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
-    await inventory.connect_inventory()
-    devices = inventory.get_inventory(established_only=True)
+    await inv.connect_inventory()
+    devices = inv.get_inventory(established_only=True)
     for device in devices:
         try:
             if device.hw_model in ["cEOSLab", "vEOS-lab"]:
@@ -71,21 +71,17 @@ async def clear_counters(inventory: AntaInventory, enable_pass: str) -> None:
             logger.debug(traceback.format_exc())
 
 
-def report_unreachable_devices(inventory: AntaInventory) -> None:
+def report_unreachable_devices(inv: AntaInventory) -> None:
     """
     report unreachable devices
     """
-    devices = inventory.get_inventory(established_only=False)
+    devices = inv.get_inventory(established_only=False)
     for device in devices:
         if device.established is False:
             logger.info(f"Could not connect to device {device.name}")
 
 
-def main() -> None:
-    """
-    Main.
-    """
-
+if __name__ == "__main__":
     parser = ArgumentParser(description="Clear counters on EOS devices")
     parser.add_argument(
         "-i", help="Text file containing switches inventory", dest="file", required=True
@@ -111,7 +107,3 @@ def main() -> None:
     )
     asyncio.run(clear_counters(inventory, args.enable_pass))
     report_unreachable_devices(inventory)
-
-
-if __name__ == "__main__":
-    main()

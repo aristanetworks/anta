@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """
 Toolkit for ANTA.
 """
@@ -11,10 +8,7 @@ from typing import Any, Union
 from .inventory.models import InventoryDevices
 from .result_manager.models import ListResult
 
-# pylint: disable=W1309
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def pydantic_to_dict(pydantic_list: Union[InventoryDevices, ListResult]) -> Any:

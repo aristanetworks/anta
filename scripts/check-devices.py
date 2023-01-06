@@ -32,12 +32,12 @@ from rich.panel import Panel
 from rich.pretty import pprint
 from yaml import safe_load
 
-import anta
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
 from anta.loader import parse_catalog
 from anta.reporter import ReportTable
 from anta.result_manager import ResultManager
+from anta.runner import main
 
 logger = logging.getLogger(__name__)
 
@@ -266,7 +266,7 @@ if __name__ == "__main__":
     )
 
     results = ResultManager()
-    asyncio.run(anta.main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
+    asyncio.run(main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
 
     ############################################################################
     # Test Reporting

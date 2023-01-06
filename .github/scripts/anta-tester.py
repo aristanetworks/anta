@@ -31,7 +31,7 @@ from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.pretty import Pretty, pprint
 
-import anta
+from anta.runner import main
 from anta.loader import parse_catalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
@@ -172,13 +172,6 @@ if __name__ == '__main__':
         logging.getLogger('anta.tests.routing.bgp').setLevel(logging.DEBUG)
         logging.getLogger('anta.tests.routing.ospf').setLevel(logging.DEBUG)
 
-    if cli_options.verbose or cli_options.verbose_test:
-        console.print(Panel('Active logger for testing', style='orange3'))
-        # pylint: disable=E1101
-        loggers = [logging.getLogger(name)
-                   for name in logging.root.manager.loggerDict]
-        pprint(loggers)
-
     logger.info('ANTA testing program started')
 
     ############################################################################
@@ -196,7 +189,7 @@ if __name__ == '__main__':
     logger.info(f'Inventory {cli_options.inventory} loaded')
     if cli_options.verbose:
         output = Pretty(
-            inventory_anta.get_inventory(format_out="list"),
+            list(inventory_anta.get_inventory),
         )
         console.print(
             Panel('Current Inventory (active devices only)', style='cyan'))
@@ -228,7 +221,7 @@ if __name__ == '__main__':
         logger.info('starting running test on devices ...')
 
     results = ResultManager()
-    asyncio.run(anta.main(results, inventory_anta, tests_catalog), debug=False)
+    asyncio.run(main(results, inventory_anta, tests_catalog), debug=False)
 
     ############################################################################
     # Test Reporting
@@ -237,7 +230,7 @@ if __name__ == '__main__':
     logger.info('testing done !')
     if cli_options.list:
         console.print(Panel('Raw inventory for active device', style='cyan'))
-        pprint(inventory_anta.get_inventory(format_out='list'))
+        pprint(list(inventory_anta))
         console.print(Panel('Raw results of all tests', style='cyan'))
         pprint(results.get_results(output_format="list"))
 
