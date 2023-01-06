@@ -10,7 +10,3 @@ class InventoryRootKeyErrors(Exception):
 
 class InventoryIncorrectSchema(Exception):
     """Error when user data does not follow ANTA schema."""
-
-
-class InventoryUnknownFormat(Exception):
-    """Error when inventory format output is not a supported one."""

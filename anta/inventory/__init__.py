@@ -7,7 +7,7 @@ Inventory Module for ANTA.
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import yaml
 from aioeapi.errors import EapiCommandError
@@ -16,15 +16,11 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
-                         InventoryUnknownFormat)
+from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
 from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
                      InventoryDevices)
 
-# pylint: disable=W1309
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class AntaInventory:
@@ -299,9 +295,17 @@ class AntaInventory:
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _filtered_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
+    ###########################################################################
+    # Public methods
+    ###########################################################################
+
+    ###########################################################################
+    # GET methods
+    ###########################################################################
+
+    def get_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
         """
-        _filtered_inventory Generate a temporary inventory filtered.
+        get_inventory Returns a new filtered inventory.
 
         Args:
             established_only (bool, optional): Do we have to include non-established devices. Defaults to False.
@@ -310,6 +314,9 @@ class AntaInventory:
         Returns:
             InventoryDevices: A inventory with concerned devices
         """
+        if tags is None:
+            tags = [DEFAULT_TAG]
+
         inventory_filtered_tags = InventoryDevices()
         for device in self._inventory:
             if tags and any(tag in tags for tag in device.tags):
@@ -322,52 +329,6 @@ class AntaInventory:
             if device.established:
                 inventory_final.append(device)
         return inventory_final
-
-    ###########################################################################
-    # Public methods
-    ###########################################################################
-
-    ###########################################################################
-    # GET methods
-    ###########################################################################
-
-    # TODO refactor this to avoid having a union of return of types ..
-    def get_inventory(
-        self,
-        format_out: str = "native",
-        established_only: bool = True,
-        tags: Optional[List[str]] = None,
-    ) -> Union[List[InventoryDevice], str, InventoryDevices]:
-        """get_inventory Expose device inventory.
-
-        Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
-
-        Args:
-            format (str, optional): Format output, can be native, list or JSON. Defaults to 'native'.
-            established_only (bool, optional): Allow to expose also unreachable devices. Defaults to True.
-            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
-
-        Returns:
-            InventoryDevices: List of InventoryDevice
-        """
-        if tags is None:
-            tags = [DEFAULT_TAG]
-
-        if format_out not in ["native", "json", "list"]:
-            raise InventoryUnknownFormat(
-                f"Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}"
-            )
-
-        inventory = self._filtered_inventory(established_only, tags)
-
-        if format_out == "list":
-            # pylint: disable=R1721
-            return [dev for dev in inventory]
-
-        if format_out == 'json':
-            return inventory.json(exclude={'__root__': {'__all__': {'session'}}})
-
-        return inventory
 
     def get_device(self, host_ip: str) -> Optional[InventoryDevice]:  # TODO mtache: unused, remove this ?
         """Get device information from a given IP.

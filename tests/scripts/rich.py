@@ -295,7 +295,7 @@ if __name__ == "__main__":
     logger.info(f"Inventory {cli_options.inventory} loaded")
     if cli_options.verbose:
         output = Pretty(
-            inventory.get_inventory(format_out="list"),
+            list(inventory.get_inventory()),
             # expand_all=True,
             max_string=5,
         )

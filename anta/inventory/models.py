@@ -176,3 +176,7 @@ class InventoryDevices(BaseModel):
     def __len__(self) -> int:
         """Support for length of __root__"""
         return len(self.__root__)
+
+    def json(self) -> str:
+        """Returns a JSON representation of the devices"""
+        return super().json(exclude={'__root__': {'__all__': {'session'}}})

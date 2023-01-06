@@ -308,7 +308,7 @@ class Test_AntaInventory:
             password="arista123"
         )
         inventory_json = json.loads(
-            str(inventory_test.get_inventory(format_out="json", established_only=False))
+            inventory_test.get_inventory(established_only=False).json()
         )
         assert test_definition["parameters"]["ipaddress_in_scope"] in [
             d["host"] for d in inventory_json
