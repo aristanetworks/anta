@@ -24,8 +24,6 @@ import asyncio
 import argparse
 import logging
 import sys
-import itertools
-from typing import Callable, List, Tuple, Dict, Any
 
 from yaml import safe_load
 from rich.console import Console
@@ -33,9 +31,10 @@ from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.pretty import Pretty, pprint
 
-import anta.loader
+import anta
+from anta.loader import parse_catalog
 from anta.inventory import AntaInventory
-from anta.result_manager import ResultManager, TestResult
+from anta.result_manager import ResultManager
 from anta.reporter import ReportTable
 
 
@@ -58,15 +57,6 @@ logging.getLogger('anta.tests.vxlan').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.generic').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.bgp').setLevel(logging.ERROR)
 logging.getLogger('anta.tests.routing.ospf').setLevel(logging.ERROR)
-
-
-async def main(manager: ResultManager, inventory: AntaInventory, tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
-    await inventory.connect_inventory()
-    res = await asyncio.gather(*(test[0](device, **test[1]) for device, test in itertools.product(inventory.get_inventory(), tests)), return_exceptions=True)
-    for r in res:
-        if isinstance(r, Exception):
-            logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
-    manager.add_test_results(res)
 
 
 def cli_manager() -> argparse.Namespace:
@@ -212,11 +202,6 @@ if __name__ == '__main__':
             Panel('Current Inventory (active devices only)', style='cyan'))
         console.print(output)
 
-    if cli_options.search_host is not None:
-        logger.info(f'starting running test on device {cli_options.search_host} ...')
-    else:
-        logger.info('starting running test on devices ...')
-
     ############################################################################
     # Test loader
     ############################################################################
@@ -224,11 +209,7 @@ if __name__ == '__main__':
     with open(cli_options.catalog, 'r', encoding='utf8') as file:
         test_catalog_input = safe_load(file)
 
-    tests_catalog = anta.loader.parse_catalog(test_catalog_input)
-
-    ############################################################################
-    # Test Execution
-    ############################################################################
+    tests_catalog = parse_catalog(test_catalog_input)
 
     if cli_options.search_test:
         all_tests = tests_catalog
@@ -237,8 +218,17 @@ if __name__ == '__main__':
             if test[0].__name__ == cli_options.search_test:
                 tests_catalog = [test]
 
+    ############################################################################
+    # Test Execution
+    ############################################################################
+
+    if cli_options.search_host is not None:
+        logger.info(f'starting running test on device {cli_options.search_host} ...')
+    else:
+        logger.info('starting running test on devices ...')
+
     results = ResultManager()
-    asyncio.run(main(results, inventory_anta, tests_catalog), debug=False)
+    asyncio.run(anta.main(results, inventory_anta, tests_catalog), debug=False)
 
     ############################################################################
     # Test Reporting
