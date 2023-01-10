@@ -26,10 +26,10 @@ from anta.tests.configuration import (verify_running_config_diffs,
         ),
         # Hmmmm both errors do not return the same string ...
         pytest.param(
-            None, AppError("dummy"), "error", ["AppError: dummy"], id="JSON RPC error"
+            None, AppError("dummy"), "error", ["AppError (dummy)"], id="JSON RPC error"
         ),
         pytest.param(
-            None, KeyError("dummy"), "error", ["KeyError: 'dummy'"], id="Key error"
+            None, KeyError("dummy"), "error", ["KeyError ('dummy')"], id="Key error"
         ),
     ],
 )
@@ -75,7 +75,7 @@ def test_verify_zerotouch(
             AppError("dummy"),
             False,
             "error",
-            ["AppError: dummy"],
+            ["AppError (dummy)"],
             id="JSON RPC error",
         ),
         pytest.param(
@@ -83,7 +83,7 @@ def test_verify_zerotouch(
             KeyError("dummy"),
             False,
             "error",
-            ["KeyError: 'dummy'"],
+            ["KeyError ('dummy')"],
             id="Key error",
         ),
         pytest.param(
@@ -92,7 +92,7 @@ def test_verify_zerotouch(
             True,
             "error",
             [
-                "ValueError: verify_running_config_diffs requires `enable_password` to be set"
+                "ValueError (verify_running_config_diffs requires `enable_password` to be set)"
             ],
             id="Missing enable password",
         ),

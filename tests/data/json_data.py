@@ -88,6 +88,10 @@ INVENTORY_DEVICE_MODEL = [
                 "username": "arista",
                 "password": "arista123!"
             },
+            {
+                "username": "arista",
+                "password": "arista123!"
+            },
         ],
         "expected_result": "valid",
     },
@@ -101,10 +105,6 @@ INVENTORY_DEVICE_MODEL = [
             {
                 "host": "1.1.1.1",
                 "username": "arista"
-            },
-            {
-                "username": "arista",
-                "password": "arista123!"
             },
             {
                 "host": "@",

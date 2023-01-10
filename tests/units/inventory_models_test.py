@@ -388,7 +388,7 @@ class Test_InventoryDeviceModel:
             try:
                 InventoryDevice(**entity)
             except ValidationError as exc:
-                logging.warning("Error: %s", str(exc))
+                logging.info("Error: %s", str(exc))
             else:
                 assert False
 
@@ -497,7 +497,7 @@ class Test_InventoryDeviceModel:
         for entry in test_definition["input"]:
             inventory_devices.append(InventoryDevice(**entry))
         for idx, device in enumerate(inventory_devices):
-            if str(device.session.host) == test_definition["input"][idx]["host"]:
+            if str(device.host) == test_definition["input"][idx].get('host', 'localhost'):
                 logging.info("__iter__ function is valid")
             else:
                 logging.error("__iter__ is not working as expected")
