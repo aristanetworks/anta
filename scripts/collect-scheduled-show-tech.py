@@ -11,7 +11,7 @@ import traceback
 from argparse import ArgumentParser
 from getpass import getpass
 from time import gmtime, strftime
-from typing import Optional, Tuple
+from typing import Tuple
 
 import paramiko
 from aioeapi import EapiCommandError
@@ -61,7 +61,7 @@ def device_directories(dev: str, root_dir: str) -> Tuple[str, str]:
 
 
 def create_ssh_client(
-    dev: str, port: Optional[int], username: str, password: str
+    dev: str, port: int, username: str, password: str
 ) -> paramiko.SSHClient:
     """
     return a connected ssh client

@@ -12,7 +12,8 @@ from getpass import getpass
 
 from rich.logging import RichHandler
 
-from anta.inventory import AntaInventory, InventoryDevice
+from anta.inventory import AntaInventory
+from anta.inventory.models import InventoryDevice
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
-    async def clear(dev: InventoryDevice):
+    async def clear(dev: InventoryDevice) -> None:
         commands = [{"cmd": "enable", "input": enable_pass}, "clear counters"]
         if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
             commands.append("clear hardware counter drop")

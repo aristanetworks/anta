@@ -101,7 +101,7 @@ class InventoryDevice(BaseModel):
     host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     username: str
     password: str
-    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
+    port: conint(gt=1, lt=65535)  # type: ignore
     enable_password: Optional[str]
     session: Device
     established = False
@@ -116,12 +116,12 @@ class InventoryDevice(BaseModel):
         if values.get('session') is None:
             host = values.get('host')
             if not host:
-                host = 'localhost'
+                values['host'] = 'localhost'
             port = values.get('port')
             if not port:
-                port = '8080' if host == 'localhost' else '443'
+                values['port'] = '8080' if values['host'] == 'localhost' else '443'
             proto = 'http' if port in ['80', '8080'] else 'https'
-            values['session'] = Device(host=host, port=port,
+            values['session'] = Device(host=values['host'], port=values['port'],
                                        username=values.get('username'), password=values.get('password'),
                                        proto=proto, timeout=values.get('timeout'))
         if values.get('name') is None:
