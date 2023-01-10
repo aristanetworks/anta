@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """Models related to inventory management."""
 
 from typing import Any, Dict, Iterator, List, Optional, Type, Union

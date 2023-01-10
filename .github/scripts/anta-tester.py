@@ -1,7 +1,4 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-# pylint: disable=W0622
-# pylint: disable=C0116
+#!/usr/bin/env python3
 #
 # Copyright 2022 Arista Networks Thomas Grimonet
 #

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8 -*-
 #
 # Copyright 2022 Arista Networks Thomas Grimonet
 #
@@ -56,7 +55,6 @@ def setup_logging(level: str = "info") -> None:
     """
     loglevel = getattr(logging, level.upper())
 
-    # FORMAT = "%(asctime)s:%(levelname)s:%(message)s"
     FORMAT = "%(message)s"
     logging.basicConfig(
         level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]

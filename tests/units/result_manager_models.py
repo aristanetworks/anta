@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """ANTA Result Manager models unit tests."""
 
 import logging

@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """Models related to anta.result_manager module."""
 
 from typing import Iterator, List

@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """ANTA Inventory unit tests."""
 
 import json

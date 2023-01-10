@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
 """
 Test decorator from which tests can derive
 """

@@ -1,7 +1,4 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
 # pylint: skip-file
-
 
 INVENTORY_MODEL_HOST = [
     {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},

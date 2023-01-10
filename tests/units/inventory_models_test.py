@@ -1,7 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-# pylint: skip-file
-
 """ANTA Inventory models unit tests."""
 
 import logging
