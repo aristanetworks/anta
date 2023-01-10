@@ -31,12 +31,10 @@ def setup_logging(level: str = "info") -> None:
     """
     loglevel = getattr(logging, level.upper())
 
-    # FORMAT = "%(asctime)s:%(levelname)s:%(message)s"
     FORMAT = "%(message)s"
     logging.basicConfig(
         level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
     )
-    logging.getLogger("anta.inventory").setLevel(loglevel)
     logger.setLevel(loglevel)
 
 
@@ -44,6 +42,7 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
+    logger.info("Clearing counters on devices .... please be patient ... ")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True)
     for device in devices:
@@ -71,16 +70,6 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
             logger.debug(traceback.format_exc())
 
 
-def report_unreachable_devices(inv: AntaInventory) -> None:
-    """
-    report unreachable devices
-    """
-    devices = inv.get_inventory(established_only=False)
-    for device in devices:
-        if device.established is False:
-            logger.info(f"Could not connect to device {device.name}")
-
-
 if __name__ == "__main__":
     parser = ArgumentParser(description="Clear counters on EOS devices")
     parser.add_argument(
@@ -98,7 +87,6 @@ if __name__ == "__main__":
     args.password = getpass(prompt="Device password: ")
     args.enable_pass = getpass(prompt="Enable password (if any): ")
     setup_logging(level=args.loglevel)
-    logger.info("Clearing counters on devices .... please be patient ... ")
     inventory = AntaInventory(
         inventory_file=args.file,
         username=args.username,
@@ -106,4 +94,3 @@ if __name__ == "__main__":
         timeout=10
     )
     asyncio.run(clear_counters(inventory, args.enable_pass))
-    report_unreachable_devices(inventory)
