@@ -19,7 +19,7 @@
         <link rel="next" href="../usage-inventory-catalog/">
       
       <link rel="icon" href="../docs/_media/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.2">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.3">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.f56500e0.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6b71719e.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
@@ -330,13 +330,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#check-eapi-and-anta" class="md-nav__link">
-    Check eAPI and ANTA
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -361,12 +354,13 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_4" tabindex="0" aria-expanded="false">
           Usage
           <span class="md-nav__icon md-icon"></span>
         </label>
@@ -451,12 +445,13 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_5" tabindex="0" aria-expanded="false">
           Tests Catalog Documentation
           <span class="md-nav__icon md-icon"></span>
         </label>
@@ -603,12 +598,13 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_10" type="checkbox" id="__nav_5_10" >
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_5_10" type="checkbox" id="__nav_5_10" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_5_10">
+        <label class="md-nav__link" for="__nav_5_10" tabindex="0" aria-expanded="false">
           Routing
           <span class="md-nav__icon md-icon"></span>
         </label>
@@ -686,12 +682,13 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_6">
+        <label class="md-nav__link" for="__nav_6" tabindex="0" aria-expanded="false">
           API Documentation
           <span class="md-nav__icon md-icon"></span>
         </label>
@@ -726,12 +723,13 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_2" type="checkbox" id="__nav_6_2" >
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_6_2" type="checkbox" id="__nav_6_2" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_6_2">
+        <label class="md-nav__link" for="__nav_6_2" tabindex="0" aria-expanded="false">
           Inventory models
           <span class="md-nav__icon md-icon"></span>
         </label>
@@ -880,13 +878,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#check-eapi-and-anta" class="md-nav__link">
-    Check eAPI and ANTA
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -973,44 +964,13 @@ end
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>switch1#show management api http-commands
 </code></pre></div>
-<h4 id="check-eapi-and-anta">Check eAPI and ANTA<a class="headerlink" href="#check-eapi-and-anta" title="Permanent link">&para;</a></h4>
-<p>Execute this python script to validate:</p>
-<ul>
-<li>You can import the jsonrpclib library</li>
-<li>The device reachability using eAPI
-Use your device credentials and IP address.</li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ssl</span>
-<span class="kn">from</span> <span class="nn">jsonrpclib</span> <span class="kn">import</span> <span class="n">Server</span>
-<span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="n">verify_ntp</span>
-
-<span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span>
-
-<span class="c1"># Update credentials accordingly</span>
-<span class="n">USERNAME</span> <span class="o">=</span> <span class="s2">&quot;arista&quot;</span>
-<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;aristatwfn&quot;</span>
-<span class="n">ENABLE_PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;aristatwfn&quot;</span>
-
-<span class="c1"># Change IP address with an Arista EOS device</span>
-<span class="n">IP</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.12&quot;</span>
-
-<span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;https://</span><span class="si">{</span><span class="n">USERNAME</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PASSWORD</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="n">IP</span><span class="si">}</span><span class="s1">/command-api&#39;</span>
-<span class="n">switch</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="n">result</span><span class="o">=</span><span class="n">switch</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="s1">&#39;show version&#39;</span><span class="p">],</span> <span class="s1">&#39;json&#39;</span><span class="p">)</span>
-
-<span class="c1"># Check eAPI is reachable</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;uptime&#39;</span><span class="p">])</span>
-
-<span class="c1"># Check ANTA package is correctly installed</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">verify_ntp</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-</code></pre></div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 4, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 10, 2023</span>
       
     
   </small>
@@ -1061,10 +1021,10 @@ Use your device credentials and IP address.</li>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5cf534bf.min.js"></script>
+      <script src="../assets/javascripts/bundle.ba449ae6.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
