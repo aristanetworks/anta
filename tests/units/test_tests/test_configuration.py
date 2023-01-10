@@ -5,9 +5,9 @@ Tests for anta.tests.configuration.py
 import asyncio
 from typing import Any, Dict, List
 from unittest.mock import MagicMock
+from httpx import HTTPError
 
 import pytest
-from jsonrpclib.jsonrpc import AppError
 
 from anta.tests.configuration import (verify_running_config_diffs,
                                       verify_zerotouch)
@@ -25,8 +25,9 @@ from anta.tests.configuration import (verify_running_config_diffs,
             id="failure",
         ),
         # Hmmmm both errors do not return the same string ...
+        # TODO: need to cover other exceptions like EapiCommandError
         pytest.param(
-            None, AppError("dummy"), "error", ["AppError (dummy)"], id="JSON RPC error"
+            None, HTTPError("dummy"), "error", ["HTTPError (dummy)"], id="HTTP error"
         ),
         pytest.param(
             None, KeyError("dummy"), "error", ["KeyError ('dummy')"], id="Key error"
@@ -72,11 +73,11 @@ def test_verify_zerotouch(
         # Hmmmm both errors do not return the same string ...
         pytest.param(
             None,
-            AppError("dummy"),
+            HTTPError("dummy"),
             False,
             "error",
-            ["AppError (dummy)"],
-            id="JSON RPC error",
+            ["HTTPError (dummy)"],
+            id="HTTP error",
         ),
         pytest.param(
             None,

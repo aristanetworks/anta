@@ -88,37 +88,3 @@ switch1#show management http-server
 ```eos
 switch1#show management api http-commands
 ```
-
-## Check eAPI and ANTA
-
-Execute this python script to validate:
-
-- You can import the jsonrpclib library
-- The device reachability using eAPI
-Use your device credentials and IP address.
-
-```python
-import ssl
-from jsonrpclib import Server
-from anta.tests.system import verify_ntp
-
-ssl._create_default_https_context = ssl._create_unverified_context
-
-# Update credentials accordingly
-USERNAME = "arista"
-PASSWORD = "aristatwfn"
-ENABLE_PASSWORD = "aristatwfn"
-
-# Change IP address with an Arista EOS device
-IP = "192.168.0.12"
-
-url=f'https://{USERNAME}:{PASSWORD}@{IP}/command-api'
-switch = Server(url)
-result=switch.runCmds(1,['show version'], 'json')
-
-# Check eAPI is reachable
-print(result[0]['uptime'])
-
-# Check ANTA package is correctly installed
-print(verify_ntp.__doc__)
-```
