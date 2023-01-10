@@ -22,7 +22,7 @@ setup(
         "scripts/check-devices.py",
         "scripts/collect-eos-commands.py",
         "scripts/clear-counters.py",
-        "scripts/collect-sheduled-show-tech.py",
+        "scripts/collect-scheduled-show-tech.py",
         "scripts/evpn-blacklist-recovery.py",
         "scripts/create-devices-inventory-from-cvp.py"
     ],
