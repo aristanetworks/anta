@@ -35,9 +35,6 @@ repos:
         name: Check for Linting error on Python files
         description: This hook runs pylint.
         types: [python]
-        additional_dependencies:
-          - rich
-          - lazydocs
         args:
           - -rn                # Only display messages
           - -sn                # Don't display the score

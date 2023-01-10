@@ -27,7 +27,7 @@ class RICH_COLOR_THEME:
 
 
 class ReportTable:
-    """TableReport Generate a Table based on tabulate and TestResult."""
+    """TableReport Generate a Table based on TestResult."""
 
     def __init__(self) -> None:
         """

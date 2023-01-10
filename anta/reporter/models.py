@@ -1,10 +1,3 @@
-# pylint: disable=E0401
-# pylint: disable=E0611
-# Pylint reports the following error, seems to be a false positive
-# ************* Module anta.reporter.models
-# anta/reporter/models.py:4:0: E0401: Unable to import 'rich.text' (import-error)
-# anta/reporter/models.py:4:0: E0611: No name 'text' in module 'rich' (no-name-in-module)
-
 """Models related to anta.result_manager module."""
 
 from pydantic import BaseModel, validator
