@@ -280,7 +280,8 @@ class AntaInventory:
         get_inventory Returns a new filtered inventory.
 
         Args:
-            established_only (bool, optional): Do we have to include non-established devices. Defaults to False.
+            established_only (bool, optional): Whether or not including non-established devices in the Inventory.
+                                               Default False.
             tags (List[str], optional): List of tags to use to filter devices. Default is [default].
 
         Returns:
