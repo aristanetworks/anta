@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional
 import yaml
 from aioeapi.errors import EapiCommandError
 from httpx import ConnectError, HTTPError
-from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
@@ -88,16 +87,22 @@ class AntaInventory:
     """
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = 'anta_inventory'
+    INVENTORY_ROOT_KEY = "anta_inventory"
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ["native", "json"]
     # HW model definition in show version
     HW_MODEL_KEY = "modelName"
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: Optional[str] = None, timeout: Optional[float] = None,
-                 filter_hosts: Optional[List[str]] = None) -> None:
+    def __init__(
+        self,
+        inventory_file: str,
+        username: str,
+        password: str,
+        enable_password: Optional[str] = None,
+        timeout: Optional[float] = None,
+        filter_hosts: Optional[List[str]] = None,
+    ) -> None:
         """Class constructor.
 
         Args:
@@ -171,18 +176,24 @@ class AntaInventory:
         Args:
             device (InventoryDevice): Device to update
         """
-        logger.debug(f'Reading HW information for {device.name}')
+        logger.debug(f"Reading HW information for {device.name}")
         try:
-            response = await device.session.cli(command='show version')
+            response = await device.session.cli(command="show version")
         except EapiCommandError as e:
-            logger.warning(f"Cannot get HW information from device {device.name}: {e.errmsg}")
+            logger.warning(
+                f"Cannot get HW information from device {device.name}: {e.errmsg}"
+            )
         except (HTTPError, ConnectError) as e:
-            logger.warning(f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
+            logger.warning(
+                f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}"
+            )
         else:
             if self.HW_MODEL_KEY in response:
                 device.hw_model = response[self.HW_MODEL_KEY]
             else:
-                logger.warning(f"Cannot get HW information from device {device.name}: cannot parse 'show version'")
+                logger.warning(
+                    f"Cannot get HW information from device {device.name}: cannot parse 'show version'"
+                )
 
     async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
@@ -199,15 +210,23 @@ class AntaInventory:
         Returns:
             InventoryDevice: Updated structure with devices information
         """
-        logger.debug(f'Refreshing device {device.name}')
+        logger.debug(f"Refreshing device {device.name}")
         device.is_online = await device.session.check_connection()
         if device.is_online:
             await self._read_device_hw(device=device)
         else:
-            logger.warning(f"Could not connect to device {device.name}: cannot open eAPI port")
+            logger.warning(
+                f"Could not connect to device {device.name}: cannot open eAPI port"
+            )
         device.established = bool(device.is_online and device.hw_model)
 
-    def _add_device_to_inventory(self, host: str, port: Optional[int] = None, name: Optional[str] = None, tags: Optional[List[str]] = None) -> None:
+    def _add_device_to_inventory(
+        self,
+        host: str,
+        port: Optional[int] = None,
+        name: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -218,20 +237,20 @@ class AntaInventory:
             name (str): Optional name of the device
         """
         kwargs: Dict[str, Any] = {
-            'host': host,
-            'username': self._username,
-            'password': self._password,
+            "host": host,
+            "username": self._username,
+            "password": self._password,
         }
         if name:
-            kwargs['name'] = name
+            kwargs["name"] = name
         if port:
-            kwargs['port'] = port
+            kwargs["port"] = port
         if self._enable_password:
-            kwargs['enable_password'] = self._enable_password
+            kwargs["enable_password"] = self._enable_password
         if tags:
-            kwargs['tags'] = tags
+            kwargs["tags"] = tags
         if self.timeout:
-            kwargs['timeout'] = self.timeout
+            kwargs["timeout"] = self.timeout
         device = InventoryDevice(**kwargs)
         self._inventory.append(device)
 
@@ -242,7 +261,9 @@ class AntaInventory:
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host.host, host.port, host.name, tags=host.tags)
+            self._add_device_to_inventory(
+                host.host, host.port, host.name, tags=host.tags
+            )
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
@@ -275,7 +296,9 @@ class AntaInventory:
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
+    def get_inventory(
+        self, established_only: bool = False, tags: Optional[List[str]] = None
+    ) -> InventoryDevices:
         """
         get_inventory Returns a new filtered inventory.
 
@@ -303,43 +326,19 @@ class AntaInventory:
                 inventory_final.append(device)
         return inventory_final
 
-    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:  # TODO mtache: unused, remove this ?
-        """Get device information from a given IP.
-
-        Args:
-            host_ip (str): IP address of the device
-
-        Returns:
-            InventoryDevice: Device information
-        """
-        if self._is_ip_exist(host_ip):
-            return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
-        return None
-
-    def get_device_session(self, host_ip: str) -> Server:  # TODO mtache: unused, remove this ?
-        """Expose RPC session of a given host from our inventory.
-
-        Provide RPC session if the session exists, if not, it returns None
-
-        Args:
-            host_ip (str): IP address of the host to match
-
-        Returns:
-            jsonrpclib.Server: Instance to the device. None if session does not exist
-        """
-        device = self.get_device(host_ip=host_ip)
-        if device is None:
-            return None
-        return device.session
-
     ###########################################################################
     # MISC methods
     ###########################################################################
 
     async def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
-        logger.debug('Refreshing facts for current inventory')
-        results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=True)
+        logger.debug("Refreshing facts for current inventory")
+        results = await asyncio.gather(
+            *(self._refresh_device_fact(device) for device in self._inventory),
+            return_exceptions=True,
+        )
         for r in results:
             if isinstance(r, Exception):
-                logger.error(f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")
+                logger.error(
+                    f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}"
+                )

@@ -12,7 +12,6 @@ from pydantic import ValidationError
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import (InventoryIncorrectSchema,
                                        InventoryRootKeyErrors)
-from anta.inventory.models import InventoryDevice
 from tests.data.json_data import ANTA_INVENTORY_TESTS
 from tests.data.utils import generate_test_ids_dict
 
@@ -211,54 +210,6 @@ class Test_AntaInventory:
         )
         assert not inventory_test._is_ip_exist(  # pylint: disable=protected-access
             ip=test_definition["parameters"]["ipaddress_out_of_scope"]
-        )
-
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
-    def test_device_get(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
-        """Test device_get function.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidInventory_with_host_only',
-            'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
-            'expected_result': 'valid',
-            'parameters': {
-                'ipaddress_in_scope': '192.168.0.17',
-                'ipaddress_out_of_scope': '192.168.1.1',
-            }
-        }
-
-        """
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
-        if not self.check_parameter(
-            parameter="ipaddress_in_scope", test_definition=test_definition
-        ):
-            pytest.skip("Test data has no ipaddress parameter configured")
-
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
-        inventory_test = AntaInventory(
-            inventory_file=inventory_file,
-            username="arista",
-            password="arista123"
-        )
-        logging.info(
-            "Getting if %s from inventory",
-            str(test_definition["parameters"]["ipaddress_in_scope"]),
-        )
-        device = inventory_test.get_device(
-            host_ip=str(test_definition["parameters"]["ipaddress_in_scope"])
-        )
-        assert isinstance(device, InventoryDevice)
-        assert str(device.host) == str(
-            test_definition["parameters"]["ipaddress_in_scope"]
         )
 
     @pytest.mark.parametrize(
