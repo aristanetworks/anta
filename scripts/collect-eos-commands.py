@@ -13,6 +13,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 from typing import Dict, Tuple
 
+from aioeapi import EapiCommandError
 from rich.logging import RichHandler
 from yaml import safe_load
 
@@ -70,10 +71,10 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
     """
     Collect EOS commands
     """
-    logger.info("Connecting to devices .... please be patient ... ")
+    logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True)
-    for device in devices:
+    for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         logger.info(f"Collecting show commands output to device {device.name}")
         output_dir = device_directories(device, root_dir)
         try:
@@ -87,7 +88,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                     with open(outfile, "w", encoding="utf8") as out_fd:
                         out_fd.write(str(result[1]))
                     logger.info(f"Collected command '{command}' on {device.name}")
-            elif "text_format" in commands:
+            if "text_format" in commands:
                 for command in commands["text_format"]:
                     result = await device.session.cli(
                         commands=[{"cmd": "enable", "input": enable_pass}, command],
@@ -97,11 +98,13 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                     with open(outfile, "w", encoding="utf8") as out_fd:
                         out_fd.write(result[1])
                     logger.info(f"Collected command '{command}' on {device.name}")
+        except EapiCommandError as e:
+            logger.error(f"Command failed on {device.name}: {e.errmsg}")
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
-            logger.error(f"Could not clear counters on device {device.name}")
+            logger.error(f"Could not collect commands on device {device.name}")
             logger.debug(
-                f"Exception raised for device {device.name}) - {type(e).__name__}: {str(e)}"
+                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
             logger.debug(traceback.format_exc())
 

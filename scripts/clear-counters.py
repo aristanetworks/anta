@@ -42,10 +42,10 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
-    logger.info("Clearing counters on devices .... please be patient ... ")
+    logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True)
-    for device in devices:
+    for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         try:
             if device.hw_model in ["cEOSLab", "vEOS-lab"]:
                 await device.session.cli(
@@ -65,7 +65,7 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Could not clear counters on device {device.name}")
             logger.debug(
-                f"Exception raised for device {device.name}) - {type(e).__name__}: {str(e)}"
+                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
             logger.debug(traceback.format_exc())
 
@@ -87,10 +87,10 @@ if __name__ == "__main__":
     args.password = getpass(prompt="Device password: ")
     args.enable_pass = getpass(prompt="Enable password (if any): ")
     setup_logging(level=args.loglevel)
+
     inventory = AntaInventory(
         inventory_file=args.file,
         username=args.username,
-        password=args.password,
-        timeout=10
+        password=args.password
     )
     asyncio.run(clear_counters(inventory, args.enable_pass))

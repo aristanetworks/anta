@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# disabling duplicate-code for scripts as this is expected between scripts
+# pylint: disable=R0801
+
 """
 This script clears on devices the list of MAC addresses which are blacklisted in EVPN
 """
@@ -44,10 +47,10 @@ async def clear_evpn_blacklisted_mac_addresses(
     """
     clear EVPN blacklisted mac addresses
     """
-    logger.info("Connecting to devices .... please be patient ... ")
+    logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True)
-    for device in devices:
+    for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         try:
             await device.session.cli(
                 commands=[{"cmd": "enable", "input": enable_pass},  "clear bgp evpn host-flap"],
@@ -58,7 +61,7 @@ async def clear_evpn_blacklisted_mac_addresses(
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Could not clear the EVPN blacklisted mac addresses on device {device.name}")
             logger.debug(
-                f"Exception raised for device {device.name}) - {type(e).__name__}: {str(e)}"
+                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
             logger.debug(traceback.format_exc())
 
