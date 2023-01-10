@@ -97,6 +97,8 @@ All tests return a TestResult structure with the following elements:
 All tests are based on this structure:
 
 ```python
+from anta.inventory.models import InventoryDevice
+from anta.result_manager.models import TestResult
 from anta.test import anta_test
 
 # Use the decorator that wraps the function and inject result argument
