@@ -4,26 +4,44 @@
 This script collects show commands output from devices
 """
 
-# disabling duplicate-code for scripts as this is expected between scripts
-# pylint: disable=R0801
-
+import asyncio
 import logging
 import os
-import ssl
 import sys
+import traceback
 from argparse import ArgumentParser
 from getpass import getpass
-from socket import setdefaulttimeout
-from typing import Tuple
+from typing import Dict, Tuple
 
-from jsonrpclib import jsonrpc
+from aioeapi import EapiCommandError
+from rich.logging import RichHandler
 from yaml import safe_load
 
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
 
-# pylint: disable=protected-access
-ssl._create_default_https_context = ssl._create_unverified_context
+logger = logging.getLogger(__name__)
+
+
+def setup_logging(level: str = "info") -> None:
+    """
+    Configure logging for check-devices execution
+
+    Helpers to set logging for
+    * anta.inventory
+    * anta.result_manager
+    * check-devices
+
+    Args:
+        level (str, optional): level name to configure. Defaults to 'critical'.
+    """
+    loglevel = getattr(logging, level.upper())
+
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+    )
+    logger.setLevel(loglevel)
 
 
 def device_directories(
@@ -49,21 +67,49 @@ def device_directories(
     return result
 
 
-def report_unreachable_devices(inventory: AntaInventory) -> None:
+async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict[str, str], root_dir: str) -> None:
     """
-    report unreachable devices
+    Collect EOS commands
     """
-    devices = inventory.get_inventory(established_only=False)
-    for device in devices:
-        if device.established is False:  # type: ignore
-            print(f"Could not connect to device {device.host}")  # type: ignore
+    logger.info("Connecting to devices...")
+    await inv.connect_inventory()
+    devices = inv.get_inventory(established_only=True)
+    for device in devices:  # TODO: should use asyncio.gather instead of a loop.
+        logger.info(f"Collecting show commands output to device {device.name}")
+        output_dir = device_directories(device, root_dir)
+        try:
+            if "json_format" in commands:
+                for command in commands["json_format"]:
+                    result = await device.session.cli(
+                        commands=[{"cmd": "enable", "input": enable_pass}, command],
+                        ofmt='json'
+                    )
+                    outfile = output_dir[2] + "/" + command
+                    with open(outfile, "w", encoding="utf8") as out_fd:
+                        out_fd.write(str(result[1]))
+                    logger.info(f"Collected command '{command}' on {device.name}")
+            if "text_format" in commands:
+                for command in commands["text_format"]:
+                    result = await device.session.cli(
+                        commands=[{"cmd": "enable", "input": enable_pass}, command],
+                        ofmt='text'
+                    )
+                    outfile = output_dir[3] + "/" + command
+                    with open(outfile, "w", encoding="utf8") as out_fd:
+                        out_fd.write(result[1])
+                    logger.info(f"Collected command '{command}' on {device.name}")
+        except EapiCommandError as e:
+            logger.error(f"Command failed on {device.name}: {e.errmsg}")
+        # In this case we want to catch all exceptions
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error(f"Could not collect commands on device {device.name}")
+            logger.debug(
+                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
+            )
+            logger.debug(traceback.format_exc())
 
 
-def main() -> None:
-    """
-    Main
-    """
-    logging.disable(level=logging.WARNING)
+if __name__ == "__main__":
     parser = ArgumentParser(description="Collect output of EOS commands")
     parser.add_argument(
         "-i", help="Text file containing a list of switches", dest="file", required=True
@@ -78,65 +124,29 @@ def main() -> None:
     parser.add_argument(
         "-o", help="Output directory", dest="output_directory", required=True
     )
+    parser.add_argument(
+        "-log",
+        "--loglevel",
+        default="info",
+        help="Provide logging level. Example --loglevel debug, default=info",
+    )
     args = parser.parse_args()
     args.password = getpass(prompt="Device password: ")
     args.enable_pass = getpass(prompt="Enable password (if any): ")
+    setup_logging(level=args.loglevel)
 
     try:
         with open(args.eos_commands_file, "r", encoding="utf8") as file:
             file_content = file.read()
             eos_commands = safe_load(file_content)
     except FileNotFoundError:
-        print(f"Error reading {args.eos_commands}")
+        logger.error(f"Error reading {args.eos_commands}")
         sys.exit(1)
-
-    print("Connecting to devices .... please be patient ... ")
 
     inventory = AntaInventory(
         inventory_file=args.file,
         username=args.username,
-        password=args.password,
-        timeout=2
+        password=args.password
     )
 
-    devices = inventory.get_inventory(established_only=True)
-    for device in devices:
-        switch = device.session  # type: ignore
-        host = str(device.host)  # type: ignore
-        print("\n")
-        print(f"Collecting show commands output to device {host}")
-        output_dir = device_directories(device, args.output_directory)  # type: ignore
-        if "json_format" in eos_commands:
-            for eos_command in eos_commands["json_format"]:
-                setdefaulttimeout(10)
-                try:
-                    result = switch.runCmds(
-                        1,
-                        [{"cmd": "enable", "input": args.enable_pass}, eos_command],
-                        "json",
-                    )
-                    outfile = output_dir[2] + "/" + eos_command
-                    with open(outfile, "w", encoding="utf8") as out_fd:
-                        out_fd.write(str(result[1]))
-                except jsonrpc.AppError:
-                    print(f"Unable to collect and save the json command {eos_command}")
-        if "text_format" in eos_commands:
-            for eos_command in eos_commands["text_format"]:
-                setdefaulttimeout(10)
-                try:
-                    result = switch.runCmds(
-                        1,
-                        [{"cmd": "enable", "input": args.enable_pass}, eos_command],
-                        "text",
-                    )
-                    outfile = output_dir[3] + "/" + eos_command
-                    with open(outfile, "w", encoding="utf8") as out_fd:
-                        out_fd.write(result[1]["output"])
-                except jsonrpc.AppError:
-                    print(f"Unable to collect and save the text command {eos_command}")
-
-    report_unreachable_devices(inventory)
-
-
-if __name__ == "__main__":
-    main()
+    asyncio.run(collect_commands(inventory, args.enable_pass, eos_commands, args.output_directory))

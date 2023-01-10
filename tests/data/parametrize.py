@@ -1,12 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-# pylint: disable=logging-format-interpolation
-# pylint: disable=dangerous-default-value
-# pylint:disable=duplicate-code
-# flake8: noqa: W503
-# flake8: noqa: W1202
-# flake8: noqa: R0801
-
 """
 parametrize.py - Retrieves the mock data from the json_data file
 """

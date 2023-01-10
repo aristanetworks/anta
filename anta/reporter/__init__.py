@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """
 Report management for ANTA.
 """
@@ -30,7 +27,7 @@ class RICH_COLOR_THEME:
 
 
 class ReportTable:
-    """TableReport Generate a Table based on tabulate and TestResult."""
+    """TableReport Generate a Table based on TestResult."""
 
     def __init__(self) -> None:
         """
@@ -147,11 +144,11 @@ class ReportTable:
             # pylint: disable=R0916
             if (
                 (host is None and testcase is None)
-                or (host is not None and str(result.host) == host)
+                or (host is not None and str(result.name) == host)
                 or (testcase is not None and testcase == str(result.test))
             ):
                 logger.debug(
-                    f"adding new entry in table: {result.host} / {result.test} / {result.result}"
+                    f"adding new entry in table: {result.name} / {result.test} / {result.result}"
                 )
                 state = self._color_result(status=str(result.result), output_type="str")
                 message = (
@@ -159,7 +156,7 @@ class ReportTable:
                     if len(result.messages) > 0
                     else ""
                 )
-                table.add_row(str(result.host), result.test, state, message)
+                table.add_row(str(result.name), result.test, state, message)
         return table
 
     def report_summary_tests(
@@ -202,7 +199,7 @@ class ReportTable:
                     [result for result in results if result.result == "error"]
                 )
                 list_failure = [
-                    str(result.host)
+                    str(result.name)
                     for result in results
                     if result.result in ["failure", "error"]
                 ]

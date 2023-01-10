@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """
 Result Manager Module for ANTA.
 """

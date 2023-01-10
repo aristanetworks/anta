@@ -1,7 +1,4 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
 # pylint: skip-file
-
 
 INVENTORY_MODEL_HOST = [
     {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},
@@ -91,6 +88,10 @@ INVENTORY_DEVICE_MODEL = [
                 "username": "arista",
                 "password": "arista123!"
             },
+            {
+                "username": "arista",
+                "password": "arista123!"
+            },
         ],
         "expected_result": "valid",
     },
@@ -104,10 +105,6 @@ INVENTORY_DEVICE_MODEL = [
             {
                 "host": "1.1.1.1",
                 "username": "arista"
-            },
-            {
-                "username": "arista",
-                "password": "arista123!"
             },
             {
                 "host": "@",

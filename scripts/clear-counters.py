@@ -4,87 +4,87 @@
 This script clear counters on devices
 """
 
-# disabling duplicate-code for scripts as this is expected between scripts
-# pylint: disable=R0801
-
+import asyncio
 import logging
-import ssl
+import traceback
 from argparse import ArgumentParser
 from getpass import getpass
 
-from jsonrpclib import jsonrpc
+from rich.logging import RichHandler
 
 from anta.inventory import AntaInventory
+from anta.inventory.models import InventoryDevice
 
-# pylint: disable=protected-access
-ssl._create_default_https_context = ssl._create_unverified_context
+logger = logging.getLogger(__name__)
 
 
-def clear_counters(inventory: AntaInventory, enable_pass: str) -> None:
+def setup_logging(level: str = "info") -> None:
+    """
+    Configure logging for check-devices execution
+
+    Helpers to set logging for
+    * anta.inventory
+    * anta.result_manager
+    * check-devices
+
+    Args:
+        level (str, optional): level name to configure. Defaults to 'critical'.
+    """
+    loglevel = getattr(logging, level.upper())
+
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+    )
+    logger.setLevel(loglevel)
+
+
+async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
-    devices = inventory.get_inventory(established_only=True)
-    for device in devices:
-        switch = device.session  # type: ignore
-        host = str(device.host)  # type: ignore
+    async def clear(dev: InventoryDevice) -> None:
+        commands = [{"cmd": "enable", "input": enable_pass}, "clear counters"]
+        if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
+            commands.append("clear hardware counter drop")
         try:
-            if device.hw_model in ["cEOSLab", "vEOS-lab"]:  # type: ignore
-                switch.runCmds(
-                    1, [{"cmd": "enable", "input": enable_pass}, "clear counters"]
-                )
-                print(f"Cleared counters on {host}")
-            else:
-                switch.runCmds(
-                    1,
-                    [
-                        {"cmd": "enable", "input": enable_pass},
-                        "clear counters",
-                        "clear hardware counter drop",
-                    ],
-                )
-                print(f"Cleared counters on {host}")
-        except jsonrpc.AppError:
-            print(f"Could not clear counters on device {host}")
-        except KeyError:
-            print(f"Could not clear counters on device {host}")
+            await dev.session.cli(commands=commands)
+            logger.info(f"Cleared counters on {dev.name}")
+        # In this case we want to catch all exceptions
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error(f"Could not clear counters on device {dev.name}")
+            logger.debug(
+                f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}"
+            )
+            logger.debug(traceback.format_exc())
+
+    logger.info("Connecting to devices...")
+    await inv.connect_inventory()
+    devices = inv.get_inventory(established_only=True)
+    await asyncio.gather(*(clear(device) for device in devices))
 
 
-def report_unreachable_devices(inventory: AntaInventory) -> None:
-    """
-    report unreachable devices
-    """
-    devices = inventory.get_inventory(established_only=False)
-    for device in devices:
-        if device.established is False:  # type: ignore
-            print(f"Could not connect to device {str(device.host)}")  # type: ignore
-
-
-def main() -> None:
-    """
-    Main.
-    """
-    logging.disable(level=logging.WARNING)
-
+if __name__ == "__main__":
     parser = ArgumentParser(description="Clear counters on EOS devices")
     parser.add_argument(
         "-i", help="Text file containing switches inventory", dest="file", required=True
+    )
+    parser.add_argument(
+        "-log",
+        "--loglevel",
+        default="info",
+        help="Provide logging level. Example --loglevel debug, default=info",
     )
     parser.add_argument("-u", help="Devices username", dest="username", required=True)
 
     args = parser.parse_args()
     args.password = getpass(prompt="Device password: ")
     args.enable_pass = getpass(prompt="Enable password (if any): ")
-    print("Clearing counters on devices .... please be patient ... ")
+    setup_logging(level=args.loglevel)
+
     inventory = AntaInventory(
         inventory_file=args.file,
         username=args.username,
-        password=args.password,
-        timeout=2
+        password=args.password
     )
-    clear_counters(inventory, args.enable_pass)
-    report_unreachable_devices(inventory)
-
-
-if __name__ == "__main__":
-    main()
+    asyncio.run(clear_counters(inventory, args.enable_pass))

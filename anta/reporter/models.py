@@ -1,7 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# pylint: skip-file
-
 """Models related to anta.result_manager module."""
 
 from pydantic import BaseModel, validator

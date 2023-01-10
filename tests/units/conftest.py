@@ -19,6 +19,7 @@ def mocked_device() -> MagicMock:
     """
     mock = create_autospec(InventoryDevice)
     mock.host = "42.42.42.42"
+    mock.name = 'testdevice'
     mock.username = "toto"
     mock.password = "mysuperdupersecret"
     mock.enable_password = "mysuperduperenablesecret"

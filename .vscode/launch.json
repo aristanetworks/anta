@@ -11,15 +11,11 @@
         "admin",
         "-p",
         "admin123",
-        "-log",
-        "INFO",
         "-i",
         "${workspaceFolder}/.personal/avd-lab.yml",
         "-c",
         "${workspaceFolder}/.personal/ceos-catalog.yml",
-        "--table",
-        "--timeout",
-        "5"
+        "--table"
       ]
     },  
     {

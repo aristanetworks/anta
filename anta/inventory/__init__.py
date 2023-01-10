@@ -1,30 +1,23 @@
-#!/usr/bin/python
-# coding: utf-8 -*-
-
 """
 Inventory Module for ANTA.
 """
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import yaml
 from aioeapi.errors import EapiCommandError
-from jsonrpclib import Server
+from httpx import ConnectError, HTTPError
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from .exceptions import (InventoryIncorrectSchema, InventoryRootKeyErrors,
-                         InventoryUnknownFormat)
+from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
 from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
                      InventoryDevices)
 
-# pylint: disable=W1309
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class AntaInventory:
@@ -94,16 +87,22 @@ class AntaInventory:
     """
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = 'anta_inventory'
+    INVENTORY_ROOT_KEY = "anta_inventory"
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ["native", "json"]
     # HW model definition in show version
     HW_MODEL_KEY = "modelName"
 
     # pylint: disable=R0913
-    def __init__(self, inventory_file: str, username: str, password: str,
-                 enable_password: Optional[str] = None, timeout: Optional[float] = None,
-                 filter_hosts: Optional[List[str]] = None) -> None:
+    def __init__(
+        self,
+        inventory_file: str,
+        username: str,
+        password: str,
+        enable_password: Optional[str] = None,
+        timeout: Optional[float] = None,
+        filter_hosts: Optional[List[str]] = None,
+    ) -> None:
         """Class constructor.
 
         Args:
@@ -166,55 +165,35 @@ class AntaInventory:
             == 1
         )
 
-    async def _is_device_online(self, device: InventoryDevice) -> bool:
-        """
-        _is_device_online Check if device is online.
-
-        Checks the target device to ensure that the eAPI port is
-        open and accepting connections.
-        If device is ready to serve request, method returns True, else return False.
-
-        Args:
-            device (InventoryDevice): InventoryDevice structure to test
-
-        Returns:
-            bool: True if device ready, False by default.
-        """
-        logger.debug(f'Checking connection to device {device.name}')
-        # Check connectivity
-        online = await device.session.check_connection()
-        # pylint: disable=W0703
-        if not online:
-            logger.warning(f'Cannot open port to {device.name}')
-            return False
-        return True
-
     ###########################################################################
     # Internal methods
     ###########################################################################
 
-    async def _read_device_hw(self, device: InventoryDevice) -> Optional[str]:
+    async def _read_device_hw(self, device: InventoryDevice) -> None:
         """
-        _read_device_hw Read HW model from the device and update entry with correct value.
-
-        It returns HW model name from show version or None if device is not reachable
-        or if it cannot find the modelName key
+        _read_device_hw Get HW model name from show version and update the hw_model attribute.
 
         Args:
             device (InventoryDevice): Device to update
-
-        Returns:
-            str: HW value read from the device using show version.
         """
-        logger.debug(f'Reading HW information for {device.name}')
+        logger.debug(f"Reading HW information for {device.name}")
         try:
-            response = await device.session.cli(command='show version')
-        # pylint: disable=W0703
+            response = await device.session.cli(command="show version")
         except EapiCommandError as e:
-            logger.warning(f'Cannot run CLI commands on device {device.name}: {str(e)}')
-            return None
+            logger.warning(
+                f"Cannot get HW information from device {device.name}: {e.errmsg}"
+            )
+        except (HTTPError, ConnectError) as e:
+            logger.warning(
+                f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}"
+            )
         else:
-            return response[self.HW_MODEL_KEY] if self.HW_MODEL_KEY in response else None
+            if self.HW_MODEL_KEY in response:
+                device.hw_model = response[self.HW_MODEL_KEY]
+            else:
+                logger.warning(
+                    f"Cannot get HW information from device {device.name}: cannot parse 'show version'"
+                )
 
     async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
@@ -231,15 +210,23 @@ class AntaInventory:
         Returns:
             InventoryDevice: Updated structure with devices information
         """
-        logger.debug(f'Refreshing device {device.name}')
-        device.is_online, hw_model = await asyncio.gather(self._is_device_online(device=device), self._read_device_hw(device=device))
-        if device.is_online and hw_model:
-            device.established = True
-            device.hw_model = hw_model
+        logger.debug(f"Refreshing device {device.name}")
+        device.is_online = await device.session.check_connection()
+        if device.is_online:
+            await self._read_device_hw(device=device)
         else:
-            device.established = False
+            logger.warning(
+                f"Could not connect to device {device.name}: cannot open eAPI port"
+            )
+        device.established = bool(device.is_online and device.hw_model)
 
-    def _add_device_to_inventory(self, host: str, port: Optional[int] = None, name: Optional[str] = None, tags: Optional[List[str]] = None) -> None:
+    def _add_device_to_inventory(
+        self,
+        host: str,
+        port: Optional[int] = None,
+        name: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ) -> None:
         """Add a InventoryDevice to final inventory.
 
         Create InventoryDevice and append to existing inventory
@@ -250,20 +237,20 @@ class AntaInventory:
             name (str): Optional name of the device
         """
         kwargs: Dict[str, Any] = {
-            'host': host,
-            'username': self._username,
-            'password': self._password,
+            "host": host,
+            "username": self._username,
+            "password": self._password,
         }
         if name:
-            kwargs['name'] = name
+            kwargs["name"] = name
         if port:
-            kwargs['port'] = port
+            kwargs["port"] = port
         if self._enable_password:
-            kwargs['enable_password'] = self._enable_password
+            kwargs["enable_password"] = self._enable_password
         if tags:
-            kwargs['tags'] = tags
+            kwargs["tags"] = tags
         if self.timeout:
-            kwargs['timeout'] = self.timeout
+            kwargs["timeout"] = self.timeout
         device = InventoryDevice(**kwargs)
         self._inventory.append(device)
 
@@ -274,7 +261,9 @@ class AntaInventory:
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host.host, host.port, host.name, tags=host.tags)
+            self._add_device_to_inventory(
+                host.host, host.port, host.name, tags=host.tags
+            )
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
@@ -299,17 +288,31 @@ class AntaInventory:
                 self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
-    def _filtered_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
+    ###########################################################################
+    # Public methods
+    ###########################################################################
+
+    ###########################################################################
+    # GET methods
+    ###########################################################################
+
+    def get_inventory(
+        self, established_only: bool = False, tags: Optional[List[str]] = None
+    ) -> InventoryDevices:
         """
-        _filtered_inventory Generate a temporary inventory filtered.
+        get_inventory Returns a new filtered inventory.
 
         Args:
-            established_only (bool, optional): Do we have to include non-established devices. Defaults to False.
+            established_only (bool, optional): Whether or not including non-established devices in the Inventory.
+                                               Default False.
             tags (List[str], optional): List of tags to use to filter devices. Default is [default].
 
         Returns:
-            InventoryDevices: A inventory with concerned devices
+            InventoryDevices: An inventory with concerned devices
         """
+        if tags is None:
+            tags = [DEFAULT_TAG]
+
         inventory_filtered_tags = InventoryDevices()
         for device in self._inventory:
             if tags and any(tag in tags for tag in device.tags):
@@ -324,88 +327,18 @@ class AntaInventory:
         return inventory_final
 
     ###########################################################################
-    # Public methods
-    ###########################################################################
-
-    ###########################################################################
-    # GET methods
-    ###########################################################################
-
-    # TODO refactor this to avoid having a union of return of types ..
-    def get_inventory(
-        self,
-        format_out: str = "native",
-        established_only: bool = True,
-        tags: Optional[List[str]] = None,
-    ) -> Union[List[InventoryDevice], str, InventoryDevices]:
-        """get_inventory Expose device inventory.
-
-        Provides inventory has a list of InventoryDevice objects. If requried, it can be exposed in JSON format. Also, by default expose only active devices.
-
-        Args:
-            format (str, optional): Format output, can be native, list or JSON. Defaults to 'native'.
-            established_only (bool, optional): Allow to expose also unreachable devices. Defaults to True.
-            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
-
-        Returns:
-            InventoryDevices: List of InventoryDevice
-        """
-        if tags is None:
-            tags = [DEFAULT_TAG]
-
-        if format_out not in ["native", "json", "list"]:
-            raise InventoryUnknownFormat(
-                f"Unsupported inventory format: {format_out}. Only supported format are: {self.INVENTORY_OUTPUT_FORMAT}"
-            )
-
-        inventory = self._filtered_inventory(established_only, tags)
-
-        if format_out == "list":
-            # pylint: disable=R1721
-            return [dev for dev in inventory]
-
-        if format_out == 'json':
-            return inventory.json(exclude={'__root__': {'__all__': {'session'}}})
-
-        return inventory
-
-    def get_device(self, host_ip: str) -> Optional[InventoryDevice]:  # TODO mtache: unused, remove this ?
-        """Get device information from a given IP.
-
-        Args:
-            host_ip (str): IP address of the device
-
-        Returns:
-            InventoryDevice: Device information
-        """
-        if self._is_ip_exist(host_ip):
-            return [dev for dev in self._inventory if str(dev.host) == str(host_ip)][0]
-        return None
-
-    def get_device_session(self, host_ip: str) -> Server:  # TODO mtache: unused, remove this ?
-        """Expose RPC session of a given host from our inventory.
-
-        Provide RPC session if the session exists, if not, it returns None
-
-        Args:
-            host_ip (str): IP address of the host to match
-
-        Returns:
-            jsonrpclib.Server: Instance to the device. None if session does not exist
-        """
-        device = self.get_device(host_ip=host_ip)
-        if device is None:
-            return None
-        return device.session
-
-    ###########################################################################
     # MISC methods
     ###########################################################################
 
     async def connect_inventory(self) -> None:
         """connect_inventory Helper to prepare inventory with network data."""
-        logger.debug('Refreshing facts for current inventory')
-        results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=True)
+        logger.debug("Refreshing facts for current inventory")
+        results = await asyncio.gather(
+            *(self._refresh_device_fact(device) for device in self._inventory),
+            return_exceptions=True,
+        )
         for r in results:
             if isinstance(r, Exception):
-                logger.error(f"Error when connecting to device: {r.__class__.__name__}: {r}")
+                logger.error(
+                    f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}"
+                )

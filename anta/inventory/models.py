@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """Models related to inventory management."""
 
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
@@ -101,10 +98,10 @@ class InventoryDevice(BaseModel):
         arbitrary_types_allowed = True
 
     name: str
-    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
+    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore[valid-type]
     username: str
     password: str
-    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
+    port: conint(gt=1, lt=65535)  # type: ignore[valid-type]
     enable_password: Optional[str]
     session: Device
     established = False
@@ -116,19 +113,17 @@ class InventoryDevice(BaseModel):
     @root_validator(pre=True)
     def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
         """ Build the device session object """
+        if not values.get('host'):
+            values['host'] = 'localhost'
+        if not values.get('port'):
+            values['port'] = '8080' if values['host'] == 'localhost' else '443'
         if values.get('session') is None:
-            host = values.get('host')
-            if not host:
-                host = 'localhost'
-            port = values.get('port')
-            if not port:
-                port = '8080' if host == 'localhost' else '443'
-            proto = 'http' if port in ['80', '8080'] else 'https'
-            values['session'] = Device(host=host, port=port,
+            proto = 'http' if values['port'] in ['80', '8080'] else 'https'
+            values['session'] = Device(host=values['host'], port=values['port'],
                                        username=values.get('username'), password=values.get('password'),
                                        proto=proto, timeout=values.get('timeout'))
         if values.get('name') is None:
-            values['name'] = f"{host}:{port}"
+            values['name'] = f"{values['host']}:{values['port']}"
         return values
 
     def __eq__(self, other: BaseModel) -> bool:
@@ -176,3 +171,7 @@ class InventoryDevices(BaseModel):
     def __len__(self) -> int:
         """Support for length of __root__"""
         return len(self.__root__)
+
+    def json(self) -> str:
+        """Returns a JSON representation of the devices"""
+        return super().json(exclude={'__root__': {'__all__': {'session'}}})

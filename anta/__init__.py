@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 anta init
 """
@@ -12,7 +10,7 @@ __credits__ = [
     "Angélique Phillipps",
     "Colin MacGiollaEáin",
     "Khelil Sator",
-    "Matthieu Tache",
+    "Matthieu Tâche",
     "Onur Gashi",
     "Paul Lavelle",
     "Guillaume Mulocher",
