@@ -284,7 +284,7 @@ class AntaInventory:
             tags (List[str], optional): List of tags to use to filter devices. Default is [default].
 
         Returns:
-            InventoryDevices: A inventory with concerned devices
+            InventoryDevices: An inventory with concerned devices
         """
         if tags is None:
             tags = [DEFAULT_TAG]
