@@ -12,7 +12,7 @@ from getpass import getpass
 
 from rich.logging import RichHandler
 
-from anta.inventory import AntaInventory
+from anta.inventory import AntaInventory, InventoryDevice
 
 logger = logging.getLogger(__name__)
 
@@ -42,32 +42,25 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
+    async def clear(dev: InventoryDevice):
+        commands = [{"cmd": "enable", "input": enable_pass}, "clear counters"]
+        if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
+            commands.append("clear hardware counter drop")
+        try:
+            await dev.session.cli(commands=commands)
+            logger.info(f"Cleared counters on {dev.name}")
+        # In this case we want to catch all exceptions
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error(f"Could not clear counters on device {dev.name}")
+            logger.debug(
+                f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}"
+            )
+            logger.debug(traceback.format_exc())
+
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True)
-    for device in devices:  # TODO: should use asyncio.gather instead of a loop.
-        try:
-            if device.hw_model in ["cEOSLab", "vEOS-lab"]:
-                await device.session.cli(
-                    commands=[{"cmd": "enable", "input": enable_pass}, "clear counters"]
-                )
-                logger.info(f"Cleared counters on {device.name}")
-            else:
-                await device.session.cli(
-                    commands=[
-                        {"cmd": "enable", "input": enable_pass},
-                        "clear counters",
-                        "clear hardware counter drop",
-                    ],
-                )
-                logger.info(f"Cleared counters on {device.name}")
-        # In this case we want to catch all exceptions
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error(f"Could not clear counters on device {device.name}")
-            logger.debug(
-                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
-            )
-            logger.debug(traceback.format_exc())
+    await asyncio.gather(*(clear(device) for device in devices))
 
 
 if __name__ == "__main__":
