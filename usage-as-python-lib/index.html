@@ -1035,12 +1035,21 @@
 </ul>
 <h5 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h5>
 <p>All tests are based on this structure:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="o">&lt;</span><span class="n">test</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">list</span> <span class="n">of</span> <span class="n">args</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
+<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
+<span class="kn">from</span> <span class="nn">anta.test</span> <span class="kn">import</span> <span class="n">anta_test</span>
+
+<span class="c1"># Use the decorator that wraps the function and inject result argument</span>
+<span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="o">&lt;</span><span class="n">test</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResut</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">list</span> <span class="n">of</span> <span class="n">args</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    dosctring desccription</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+<span class="sd">        result (TestResult): TestResult instance for the test, injected</span>
+<span class="sd">                             automatically by the anta_test decorator.</span>
+<span class="sd">        minimum (int): example of test with int parameter</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        TestResult instance with</span>
@@ -1051,26 +1060,19 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">function_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
-
     <span class="c1"># Test if options are valid (optional)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_uptime was not run as no minimum were given&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
-    <span class="c1"># Try to connect and execute command on device</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">runCmds</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;show uptime&quot;</span><span class="p">],</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;upTime&quot;</span><span class="p">]</span>
-        <span class="c1"># Check conditions</span>
-        <span class="c1"># ...</span>
 
-    <span class="c1"># Capture any exception to return failure reason</span>
-    <span class="k">except</span> <span class="p">(</span><span class="n">jsonrpc</span><span class="o">.</span><span class="n">AppError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;exception raised for </span><span class="se">\</span>
-<span class="s1">                </span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1"> -  </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="c1"># Use await for the remote device call</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show uptime&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="c1"># Add a debug log entry</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;upTime&quot;</span><span class="p">]</span>
+    <span class="c1"># Check conditions on response_data</span>
+    <span class="c1"># ...</span>
 
     <span class="c1"># Return data to caller</span>
     <span class="k">return</span> <span class="n">result</span>
