@@ -103,7 +103,7 @@ from anta.test import anta_test
 
 # Use the decorator that wraps the function and inject result argument
 @anta_test
-async def <test name>(device: InventoryDevice, result: TestResut, <list of args>) -> TestResult:
+async def <test name>(device: InventoryDevice, result: TestResut, <list of args>, minimum: int) -> TestResult:
     """
     dosctring desccription
 
@@ -111,6 +111,7 @@ async def <test name>(device: InventoryDevice, result: TestResut, <list of args>
         device (InventoryDevice): InventoryDevice instance containing all devices information.
         result (TestResult): TestResult instance for the test, injected
                              automatically by the anta_test decorator.
+        minimum (int): example of test with int parameter
 
     Returns:
         TestResult instance with
