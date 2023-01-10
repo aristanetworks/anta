@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 from aioeapi.errors import EapiCommandError
-from httpx import ConnectError
+from httpx import ConnectError, HTTPError
 from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
@@ -174,11 +174,15 @@ class AntaInventory:
         logger.debug(f'Reading HW information for {device.name}')
         try:
             response = await device.session.cli(command='show version')
-        except (EapiCommandError, ConnectError) as e:
+        except EapiCommandError as e:
+            logger.warning(f"Cannot get HW information from device {device.name}: {e.errmsg}")
+        except (HTTPError, ConnectError) as e:
             logger.warning(f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         else:
             if self.HW_MODEL_KEY in response:
                 device.hw_model = response[self.HW_MODEL_KEY]
+            else:
+                logger.warning(f"Cannot get HW information from device {device.name}: cannot parse 'show version'")
 
     async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
@@ -199,10 +203,9 @@ class AntaInventory:
         device.is_online = await device.session.check_connection()
         if device.is_online:
             await self._read_device_hw(device=device)
-        if device.is_online and device.hw_model:
-            device.established = True
         else:
-            device.established = False
+            logger.warning(f"Could not connect to device {device.name}: cannot open eAPI port")
+        device.established = bool(device.is_online and device.hw_model)
 
     def _add_device_to_inventory(self, host: str, port: Optional[int] = None, name: Optional[str] = None, tags: Optional[List[str]] = None) -> None:
         """Add a InventoryDevice to final inventory.

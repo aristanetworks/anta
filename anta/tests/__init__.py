@@ -7,6 +7,9 @@ import traceback
 from functools import wraps
 from typing import Any, Callable, Coroutine, Dict, List
 
+from aioeapi import EapiCommandError
+from httpx import ConnectError, HTTPError
+
 from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 
@@ -40,7 +43,12 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
 
         try:
             return await function(device, result, *args, **kwargs)
-
+        except EapiCommandError as e:
+            logger.error(f"Command failed on {device.name}: {e.errmsg}")
+            result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
+        except (HTTPError, ConnectError) as e:
+            logger.warning(f"Cannot connect to device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
+            result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(
@@ -48,6 +56,6 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
             )
             logger.debug(traceback.format_exc())
             result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
-            return result
+        return result
 
     return wrapper
