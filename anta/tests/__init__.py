@@ -44,10 +44,10 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(
-                f"Exception raised for test {function.__name__} (on device {device.host}) - {type(e).__name__}: {str(e)}"
+                f"Exception raised for test {function.__name__} (on device {device.host}) - {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}"
             )
             logger.debug(traceback.format_exc())
-            result.is_error(f'{type(e).__name__}: {str(e)}')
+            result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
             return result
 
     return wrapper

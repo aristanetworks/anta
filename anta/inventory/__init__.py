@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 from aioeapi.errors import EapiCommandError
+from httpx import ConnectError
 from jsonrpclib import Server
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
@@ -159,55 +160,25 @@ class AntaInventory:
             == 1
         )
 
-    async def _is_device_online(self, device: InventoryDevice) -> bool:
-        """
-        _is_device_online Check if device is online.
-
-        Checks the target device to ensure that the eAPI port is
-        open and accepting connections.
-        If device is ready to serve request, method returns True, else return False.
-
-        Args:
-            device (InventoryDevice): InventoryDevice structure to test
-
-        Returns:
-            bool: True if device ready, False by default.
-        """
-        logger.debug(f'Checking connection to device {device.name}')
-        # Check connectivity
-        online = await device.session.check_connection()
-        # pylint: disable=W0703
-        if not online:
-            logger.warning(f'Cannot open port to {device.name}')
-            return False
-        return True
-
     ###########################################################################
     # Internal methods
     ###########################################################################
 
-    async def _read_device_hw(self, device: InventoryDevice) -> Optional[str]:
+    async def _read_device_hw(self, device: InventoryDevice) -> None:
         """
-        _read_device_hw Read HW model from the device and update entry with correct value.
-
-        It returns HW model name from show version or None if device is not reachable
-        or if it cannot find the modelName key
+        _read_device_hw Get HW model name from show version and update the hw_model attribute.
 
         Args:
             device (InventoryDevice): Device to update
-
-        Returns:
-            str: HW value read from the device using show version.
         """
         logger.debug(f'Reading HW information for {device.name}')
         try:
             response = await device.session.cli(command='show version')
-        # pylint: disable=W0703
-        except EapiCommandError as e:
-            logger.warning(f'Cannot run CLI commands on device {device.name}: {str(e)}')
-            return None
+        except (EapiCommandError, ConnectError) as e:
+            logger.warning(f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         else:
-            return response[self.HW_MODEL_KEY] if self.HW_MODEL_KEY in response else None
+            if self.HW_MODEL_KEY in response:
+                device.hw_model = response[self.HW_MODEL_KEY]
 
     async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
@@ -225,10 +196,11 @@ class AntaInventory:
             InventoryDevice: Updated structure with devices information
         """
         logger.debug(f'Refreshing device {device.name}')
-        device.is_online, hw_model = await asyncio.gather(self._is_device_online(device=device), self._read_device_hw(device=device))
-        if device.is_online and hw_model:
+        device.is_online = await device.session.check_connection()
+        if device.is_online:
+            await self._read_device_hw(device=device)
+        if device.is_online and device.hw_model:
             device.established = True
-            device.hw_model = hw_model
         else:
             device.established = False
 
@@ -366,4 +338,4 @@ class AntaInventory:
         results = await asyncio.gather(*(self._refresh_device_fact(device) for device in self._inventory), return_exceptions=True)
         for r in results:
             if isinstance(r, Exception):
-                logger.error(f"Error when connecting to device: {r.__class__.__name__}: {r}")
+                logger.error(f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")
