@@ -38,7 +38,7 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
             * result = "failure" otherwise.
             * result = "error" if any exception is caught
         """
-        result = TestResult(name=str(device.host), test=function.__name__)
+        result = TestResult(name=device.name, test=function.__name__)
         logger.debug(f"Start {function.__name__} check for host {device.host}")
 
         try:
