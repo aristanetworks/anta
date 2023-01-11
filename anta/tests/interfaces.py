@@ -287,13 +287,14 @@ async def verify_portchannels(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show port-channel", ofmt="json")
 
-    po_with_invactive_ports = {
-        portchannel: {"inactivePorts": portchannel_dict["inactivePorts"]}
-        for portchannel, portchannel_dict in response["portChannels"].items()
-        if len(portchannel_dict["inactivePorts"]) != 0
-    }
+    po_with_invactive_ports = []
+    for portchannel, portchannel_dict in response["portChannels"].items():
+        if len(portchannel_dict["inactivePorts"]) != 0:
+            po_with_invactive_ports.extend(
+                {portchannel: portchannel_dict["inactivePorts"]}
+            )
 
-    if len(po_with_invactive_ports) == 0:
+    if not po_with_invactive_ports:
         result.is_success()
     else:
         result.is_failure(
