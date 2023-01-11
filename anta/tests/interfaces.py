@@ -1,6 +1,7 @@
 """
 Test functions related to the device interfaces
 """
+import re
 from typing import Any, Dict, Optional
 
 from anta.decorators import skip_on_platforms
@@ -72,11 +73,14 @@ async def verify_interface_errors(device: InventoryDevice, result: TestResult) -
     """
     response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
-    wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items() if value > 0}
-        for interface, outer_v in response["interfaceErrorCounters"].items()
-    }
-    if len(wrong_interfaces) == 0:
+    wrong_interfaces = []
+    for interface, outer_v in response["interfaceErrorCounters"].items():
+        wrong_interfaces.extend(
+            {interface: outer_v}
+            for counter, value in outer_v.items()
+            if value > 0
+        )
+    if not wrong_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -194,8 +198,8 @@ async def verify_interfaces_status(
         interface_dict = response["interfaceDescriptions"][interface]
         if "Ethernet" in interface:
             if (
-                interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "connected"
+                re.match( r"connected|up", interface_dict["lineProtocolStatus"])
+                and re.match( r"connected|up", interface_dict["interfaceStatus"])
             ):
                 count_up_up += 1
             else:
