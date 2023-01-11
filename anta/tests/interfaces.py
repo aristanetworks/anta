@@ -2,7 +2,7 @@
 Test functions related to the device interfaces
 """
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
@@ -73,7 +73,7 @@ async def verify_interface_errors(device: InventoryDevice, result: TestResult) -
     """
     response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
-    wrong_interfaces = []
+    wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
     for interface, outer_v in response["interfaceErrorCounters"].items():
         wrong_interfaces.extend(
             {interface: outer_v}
@@ -111,11 +111,7 @@ async def verify_interface_discards(
     """
     response = await device.session.cli(command="show interfaces counters discards", ofmt="json")
 
-    # wrong_interfaces = {
-    #     interface: {counter: value for counter, value in outer_v.items() if value > 0}
-    #     for interface, outer_v in response["interfaces"].items()
-    # }
-    wrong_interfaces = []
+    wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
     for interface, outer_v in response["interfaces"].items():
         wrong_interfaces.extend(
             {interface: outer_v}
@@ -159,7 +155,7 @@ async def verify_interface_errdisabled(
         if value["linkStatus"] == "errdisabled"
     ]
 
-    if len(errdisabled_interfaces) == 0:
+    if not errdisabled_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -205,8 +201,8 @@ async def verify_interfaces_status(
         interface_dict = response["interfaceDescriptions"][interface]
         if "Ethernet" in interface:
             if (
-                re.match( r"connected|up", interface_dict["lineProtocolStatus"])
-                and re.match( r"connected|up", interface_dict["interfaceStatus"])
+                re.match(r"connected|up", interface_dict["lineProtocolStatus"])
+                and re.match(r"connected|up", interface_dict["interfaceStatus"])
             ):
                 count_up_up += 1
             else:
@@ -287,7 +283,7 @@ async def verify_portchannels(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show port-channel", ofmt="json")
 
-    po_with_invactive_ports = []
+    po_with_invactive_ports: List[Dict[str, str]] = []
     for portchannel, portchannel_dict in response["portChannels"].items():
         if len(portchannel_dict["inactivePorts"]) != 0:
             po_with_invactive_ports.extend(
@@ -324,10 +320,10 @@ async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show lacp counters all-ports", ofmt="json")
 
-    po_with_illegal_lacp = []
+    po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
     for portchannel, portchannel_dict in response["portChannels"].items():
         po_with_illegal_lacp.extend(
-            {interface: interface_dict}
+            {portchannel: interface}
             for interface, interface_dict in portchannel_dict["interfaces"].items()
             if interface_dict["illegalRxCount"] != 0
         )

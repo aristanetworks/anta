@@ -5,9 +5,9 @@ Tests for anta.tests.configuration.py
 import asyncio
 from typing import Any, Dict, List
 from unittest.mock import MagicMock
-from httpx import HTTPError
 
 import pytest
+from httpx import HTTPError
 
 from anta.tests.configuration import (verify_running_config_diffs,
                                       verify_zerotouch)
