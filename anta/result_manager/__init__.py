@@ -160,12 +160,12 @@ class ResultManager:
             f'retrieve list of result using output_format {output_format} for host {host_ip}')
         if output_format == "list":
             return [
-                result for result in self._result_entries if str(result.host) == host_ip
+                result for result in self._result_entries if str(result.name) == host_ip
             ]
 
         result_manager_filtered = ListResult()
         for result in self._result_entries:
-            if str(result.host) == host_ip:
+            if str(result.name) == host_ip:
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
@@ -194,7 +194,7 @@ class ResultManager:
         logger.info('build list of host ip registered in result-manager')
         result_list = []
         for testcase in self._result_entries:
-            if str(testcase.host) not in result_list:
-                result_list.append(str(testcase.host))
+            if str(testcase.name) not in result_list:
+                result_list.append(str(testcase.name))
         logger.debug(f'list of tests name: {result_list}')
         return result_list
