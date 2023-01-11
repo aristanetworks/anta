@@ -9,8 +9,7 @@ from httpx import HTTPError
 
 import pytest
 
-from anta.tests.configuration import (verify_running_config_diffs,
-                                      verify_zerotouch)
+from anta.tests.configuration import verify_running_config_diffs, verify_zerotouch
 
 
 @pytest.mark.parametrize(
@@ -46,7 +45,7 @@ def test_verify_zerotouch(
     result = asyncio.run(verify_zerotouch(mocked_device))
 
     assert result.test == "verify_zerotouch"
-    assert str(result.name) == "42.42.42.42"
+    assert str(result.name) == mocked_device.name
     assert result.result == expected_result
     assert result.messages == expected_messages
 
@@ -114,6 +113,6 @@ def test_verify_running_config_diffs(
     result = asyncio.run(verify_running_config_diffs(mocked_device))
 
     assert result.test == "verify_running_config_diffs"
-    assert str(result.name) == "42.42.42.42"
+    assert str(result.name) == mocked_device.name
     assert result.result == expected_result
     assert result.messages == expected_messages
