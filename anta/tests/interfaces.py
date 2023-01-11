@@ -111,11 +111,18 @@ async def verify_interface_discards(
     """
     response = await device.session.cli(command="show interfaces counters discards", ofmt="json")
 
-    wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items() if value > 0}
-        for interface, outer_v in response["interfaces"].items()
-    }
-    if len(wrong_interfaces) == 0:
+    # wrong_interfaces = {
+    #     interface: {counter: value for counter, value in outer_v.items() if value > 0}
+    #     for interface, outer_v in response["interfaces"].items()
+    # }
+    wrong_interfaces = []
+    for interface, outer_v in response["interfaces"].items():
+        wrong_interfaces.extend(
+            {interface: outer_v}
+            for counter, value in outer_v.items()
+            if value > 0
+        )
+    if not wrong_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -316,16 +323,15 @@ async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show lacp counters all-ports", ofmt="json")
 
-    po_with_illegal_lacp = {
-        portchannel: [
-            interface
+    po_with_illegal_lacp = []
+    for portchannel, portchannel_dict in response["portChannels"].items():
+        po_with_illegal_lacp.extend(
+            {interface: interface_dict}
             for interface, interface_dict in portchannel_dict["interfaces"].items()
             if interface_dict["illegalRxCount"] != 0
-        ]
-        for portchannel, portchannel_dict in response["portChannels"].items()
-    }
+        )
 
-    if len(po_with_illegal_lacp) == 0:
+    if not po_with_illegal_lacp:
         result.is_success()
     else:
         result.is_failure(
