@@ -53,7 +53,11 @@ def setup_logging(level: str = "info") -> None:
     Args:
         level (str, optional): level name to configure. Defaults to 'critical'.
     """
-    loglevel = getattr(logging, level.upper())
+
+    if level.upper() != 'UNSET':
+        loglevel = getattr(logging, level.upper())
+    else:
+        loglevel = getattr(logging, 'WARNING')
 
     FORMAT = "%(message)s"
     logging.basicConfig(
@@ -78,6 +82,10 @@ def setup_logging(level: str = "info") -> None:
     logging.getLogger("anta.tests.routing.ospf").setLevel(logging.ERROR)
 
     logger.setLevel(loglevel)
+
+    # Set default logging
+    if level.upper() == "UNSET":
+        logger.setLevel(logging.INFO)
 
 
 def cli_manager() -> argparse.Namespace:
@@ -214,7 +222,7 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument(
         "-log",
         "--loglevel",
-        default="info",
+        default="unset",
         help="Provide logging level. Example --loglevel debug, default=info",
     )
 
