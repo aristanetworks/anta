@@ -1,7 +1,8 @@
 """
 Test functions related to the device interfaces
 """
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
@@ -72,11 +73,14 @@ async def verify_interface_errors(device: InventoryDevice, result: TestResult) -
     """
     response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
-    wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items() if value > 0}
-        for interface, outer_v in response["interfaceErrorCounters"].items()
-    }
-    if len(wrong_interfaces) == 0:
+    wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
+    for interface, outer_v in response["interfaceErrorCounters"].items():
+        wrong_interfaces.extend(
+            {interface: outer_v}
+            for counter, value in outer_v.items()
+            if value > 0
+        )
+    if not wrong_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -107,11 +111,14 @@ async def verify_interface_discards(
     """
     response = await device.session.cli(command="show interfaces counters discards", ofmt="json")
 
-    wrong_interfaces = {
-        interface: {counter: value for counter, value in outer_v.items() if value > 0}
-        for interface, outer_v in response["interfaces"].items()
-    }
-    if len(wrong_interfaces) == 0:
+    wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
+    for interface, outer_v in response["interfaces"].items():
+        wrong_interfaces.extend(
+            {interface: outer_v}
+            for counter, value in outer_v.items()
+            if value > 0
+        )
+    if not wrong_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -148,7 +155,7 @@ async def verify_interface_errdisabled(
         if value["linkStatus"] == "errdisabled"
     ]
 
-    if len(errdisabled_interfaces) == 0:
+    if not errdisabled_interfaces:
         result.is_success()
     else:
         result.is_failure(
@@ -194,8 +201,8 @@ async def verify_interfaces_status(
         interface_dict = response["interfaceDescriptions"][interface]
         if "Ethernet" in interface:
             if (
-                interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "connected"
+                re.match(r"connected|up", interface_dict["lineProtocolStatus"])
+                and re.match(r"connected|up", interface_dict["interfaceStatus"])
             ):
                 count_up_up += 1
             else:
@@ -276,13 +283,14 @@ async def verify_portchannels(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show port-channel", ofmt="json")
 
-    po_with_invactive_ports = {
-        portchannel: {"inactivePorts": portchannel_dict["inactivePorts"]}
-        for portchannel, portchannel_dict in response["portChannels"].items()
-        if len(portchannel_dict["inactivePorts"]) != 0
-    }
+    po_with_invactive_ports: List[Dict[str, str]] = []
+    for portchannel, portchannel_dict in response["portChannels"].items():
+        if len(portchannel_dict["inactivePorts"]) != 0:
+            po_with_invactive_ports.extend(
+                {portchannel: portchannel_dict["inactivePorts"]}
+            )
 
-    if len(po_with_invactive_ports) == 0:
+    if not po_with_invactive_ports:
         result.is_success()
     else:
         result.is_failure(
@@ -312,16 +320,15 @@ async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> Te
     """
     response = await device.session.cli(command="show lacp counters all-ports", ofmt="json")
 
-    po_with_illegal_lacp = {
-        portchannel: [
-            interface
+    po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
+    for portchannel, portchannel_dict in response["portChannels"].items():
+        po_with_illegal_lacp.extend(
+            {portchannel: interface}
             for interface, interface_dict in portchannel_dict["interfaces"].items()
             if interface_dict["illegalRxCount"] != 0
-        ]
-        for portchannel, portchannel_dict in response["portChannels"].items()
-    }
+        )
 
-    if len(po_with_illegal_lacp) == 0:
+    if not po_with_illegal_lacp:
         result.is_success()
     else:
         result.is_failure(
