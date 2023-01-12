@@ -50,8 +50,12 @@ def setup_logging(level: str) -> None:
     * anta.result_manager
     * check-devices
 
+    By default, configure INFO for the script,
+    WARNING for anta.inventory and anta.report_manager
+    and CRITICAL for others
+
     Args:
-        level (str, optional): level name to configure. Defaults to 'critical'.
+        level (str): level name to configure.
     """
 
     if level is not None:
@@ -222,7 +226,7 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument(
         "-log",
         "--loglevel",
-        help="Provide logging level. Example --loglevel debug, default=none",
+        help="Provide logging level. Example --loglevel debug, By default INFO only for the script, others are configured to WARNING and CRITICAL",
     )
 
     return parser.parse_args()
