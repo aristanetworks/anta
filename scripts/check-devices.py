@@ -41,7 +41,7 @@ from anta.runner import main
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = "info") -> None:
+def setup_logging(level: str) -> None:
     """
     Configure logging for check-devices execution
 
@@ -54,7 +54,7 @@ def setup_logging(level: str = "info") -> None:
         level (str, optional): level name to configure. Defaults to 'critical'.
     """
 
-    if level.upper() != 'UNSET':
+    if level is not None:
         loglevel = getattr(logging, level.upper())
     else:
         loglevel = getattr(logging, 'WARNING')
@@ -84,7 +84,7 @@ def setup_logging(level: str = "info") -> None:
     logger.setLevel(loglevel)
 
     # Set default logging
-    if level.upper() == "UNSET":
+    if level is None:
         logger.setLevel(logging.INFO)
 
 
@@ -222,8 +222,7 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument(
         "-log",
         "--loglevel",
-        default="unset",
-        help="Provide logging level. Example --loglevel debug, default=info",
+        help="Provide logging level. Example --loglevel debug, default=none",
     )
 
     return parser.parse_args()
