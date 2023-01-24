@@ -16,9 +16,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: install requirements
         run: |
-          python setup.py install
+          pip install .
       - name: install dev requirements
-        run: pip install -r requirements-dev.txt
+        run: pip install .[dev]
       - name: validate the syntax of python scripts
         run: python -m py_compile $(git ls-files '*.py')
   linting:

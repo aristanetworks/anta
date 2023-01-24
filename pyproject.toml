@@ -1,5 +1,86 @@
 # content of pyproject.toml
 
+[build-system]
+requires = ["setuptools>=61.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anta"
+version = "v0.4.0"
+readme = "README.md"
+authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
+maintainers = [
+  { name = "Khelil Sator", email = "ksator@arista.com" },
+  { name = "Matthieu Tâche", email = "mtache@arista.com" },
+  { name = "Khelil Sator", email = "ksator@arista.com" },
+  { name = "Guillaume Mulocher", email = "gmulocher@arista.com" },
+]
+description = "Arista Network Test Automation (ANTA) Framework"
+license = { file = "LICENSE" }
+dependencies = [
+  "aio-eapi==0.3.0",
+  "click==8.1.3",
+  "click-help-colors==0.9.1",
+  "cvprac>=1.2.0",
+  "netaddr>=0.8.0",
+  "paramiko",
+  "pydantic>=1.9.1",
+  "PyYAML>=6.0",
+  "requests",
+  "rich>=12.5.1",
+  "scp",
+]
+keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Networking",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+  "bump2version==1.0.1",
+  "flake8==6.0.0",
+  "isort==5.10.1",
+  "mypy==0.991",
+  "mypy-extensions>=0.4.3",
+  "pre-commit>=2.20.0",
+  "pylint>=2.16.1",
+  "pytest>=7.1.2",
+  "pytest-cov>=2.11.1",
+  "pytest-dependency",
+  "pytest-html>=3.1.1",
+  "pytest-metadata>=1.11.0",
+  "pylint-pydantic>=0.1.4",
+  "tox==4.0.11",
+  "types-PyYAML",
+  "types-paramiko",
+  "types-requests",
+  "typing-extensions",
+  "yamllint",
+]
+
+[project.urls]
+Homepage = "https://arista-netdevops-community.github.io/network-test-automation/"
+"Bug Tracker" = "https://github.com/arista-netdevops-community/network-test-automation/issues"
+Contributing = "https://github.com/arista-netdevops-community/network-test-automation/blob/master/CONTRIBUTING.md"
+
+[project.scripts]
+anta = "anta.cli.cli:cli"
+
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 [tool.mypy]
 plugins = [
@@ -31,29 +112,39 @@ warn_untyped_fields = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = clean,py{38,39,310}-{lint,type,test},report
+envlist = 
+  clean,
+  py{38,39,310},
+  lint,
+  type,
+  report
+
 [gh-actions]
 python =
   3.8: py38
   3.9: py39
-  3.10: py310, coverage
+  3.10: py310, lint, type, coverage
 
 [testenv]
-deps =
-  test: pytest
-  test: pytest-cov
-  lint: flake8
-  lint: pylint>=2.16.1
-  lint,type: -r requirements-dev.txt
+description = run the test driver with {basepython}
+extras = dev
 commands =
-  lint: flake8 --max-line-length=165 --config=/dev/null anta
-  lint: flake8 --max-line-length=165 --config=/dev/null scripts
-  lint: flake8 --max-line-length=165 --config=/dev/null tests
-  lint: pylint anta
-  lint: pylint scripts
+   pytest  {tty:--color=yes}
+
+[testenv:lint]
+description = check the code style
+commands =
+  flake8 --max-line-length=165 --config=/dev/null anta
+  flake8 --max-line-length=165 --config=/dev/null scripts
+  flake8 --max-line-length=165 --config=/dev/null tests
+  pylint anta
+  pylint scripts
+
+[testenv:type]
+description = check typing
+commands =
   type: mypy --config-file=pyproject.toml anta
   type: mypy --config-file=pyproject.toml scripts
-  test: pytest {tty:--color=yes}
 
 [testenv:clean]
 deps = coverage[toml]

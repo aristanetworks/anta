@@ -43,6 +43,7 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear counters
     """
+
     async def clear(dev: InventoryDevice) -> None:
         commands = [{"cmd": "enable", "input": enable_pass}, "clear counters"]
         if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
@@ -64,7 +65,8 @@ async def clear_counters(inv: AntaInventory, enable_pass: str) -> None:
     await asyncio.gather(*(clear(device) for device in devices))
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """main"""
     parser = ArgumentParser(description="Clear counters on EOS devices")
     parser.add_argument(
         "-i", help="Text file containing switches inventory", dest="file", required=True
@@ -83,8 +85,10 @@ if __name__ == "__main__":
     setup_logging(level=args.loglevel)
 
     inventory = AntaInventory(
-        inventory_file=args.file,
-        username=args.username,
-        password=args.password
+        inventory_file=args.file, username=args.username, password=args.password
     )
     asyncio.run(clear_counters(inventory, args.enable_pass))
+
+
+if __name__ == "__main__":
+    main()
