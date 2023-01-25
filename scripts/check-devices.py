@@ -41,7 +41,7 @@ from anta.runner import main
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = "info") -> None:
+def setup_logging(level: str) -> None:
     """
     Configure logging for check-devices execution
 
@@ -50,10 +50,18 @@ def setup_logging(level: str = "info") -> None:
     * anta.result_manager
     * check-devices
 
+    By default, configure INFO for the script,
+    WARNING for anta.inventory and anta.report_manager
+    and CRITICAL for others
+
     Args:
-        level (str, optional): level name to configure. Defaults to 'critical'.
+        level (str): level name to configure.
     """
-    loglevel = getattr(logging, level.upper())
+
+    if level is not None:
+        loglevel = getattr(logging, level.upper())
+    else:
+        loglevel = getattr(logging, 'WARNING')
 
     FORMAT = "%(message)s"
     logging.basicConfig(
@@ -78,6 +86,10 @@ def setup_logging(level: str = "info") -> None:
     logging.getLogger("anta.tests.routing.ospf").setLevel(logging.ERROR)
 
     logger.setLevel(loglevel)
+
+    # Set default logging
+    if level is None:
+        logger.setLevel(logging.INFO)
 
 
 def cli_manager() -> argparse.Namespace:
@@ -214,8 +226,7 @@ def cli_manager() -> argparse.Namespace:
     parser.add_argument(
         "-log",
         "--loglevel",
-        default="info",
-        help="Provide logging level. Example --loglevel debug, default=info",
+        help="Provide logging level. Example --loglevel debug, By default INFO only for the script, others are configured to WARNING and CRITICAL",
     )
 
     return parser.parse_args()
