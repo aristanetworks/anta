@@ -9,7 +9,7 @@ from rich.panel import Panel
 
 from anta.reporter import ReportTable
 from anta.cli.cli import anta as anta
-from .utils import check_run
+from .utils import check_run, display_table, display_json, display_list
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +52,19 @@ logger = logging.getLogger(__name__)
 
 @anta.command()
 @click.pass_context
+# Generic options
 @click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.Path())
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
-@click.option('--tags', '-t', default='all', help='List of tags using coma as separator', type=str)
-@click.option('--search', default=None, help='Value to search in result', type=str)
-@click.option('--group-by', default='none', type=click.Choice(['none', 'host', 'test'], case_sensitive=False),help='Group result by test or host. default no grouping')
+@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
+@click.option('--display', default='table', type=click.Choice(['table', 'json', 'list'], case_sensitive=False), help='output format selection. default is table')
+# Options valid with --display table
+@click.option('--search', default=None, help='Value to search in result. Can be test name or host name', type=str)
+@click.option('--group-by', default='none', type=click.Choice(['none', 'host', 'test'], case_sensitive=False),help='Group result by test or host. default none')
+# Options valid with --display json
+@click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.Path())
+# Debug stuf
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def check(ctx, inventory, catalog, tags, group_by, search, log_level):
+def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_level):
     """ANTA command to check network states"""
     console = Console()
 
@@ -81,22 +87,9 @@ def check(ctx, inventory, catalog, tags, group_by, search, log_level):
         tags=tags,
         loglevel=log_level
     )
-
-    reporter = ReportTable()
-    if group_by == 'none':
-        console.print(
-            reporter.report_all(result_manager=results)
-        )
-    elif group_by == 'host':
-        console.print(
-            reporter.report_summary_hosts(
-                result_manager=results,
-                host=search
-            )
-        )
-    elif group_by == 'test':
-        console.print(
-            reporter.report_summary_tests(
-                result_manager=results, testcase=search
-            )
-        )
+    if display == 'table':
+        display_table(console=console, results=results, group_by=group_by, search=search)
+    elif display == 'json':
+        display_json(console=console, results=results, output_file=output)
+    elif display == 'list':
+        display_list(console=console, results=results, output_file=output)
