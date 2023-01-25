@@ -5,6 +5,7 @@ import logging
 import click
 
 from rich.console import Console
+from rich.theme import Theme
 from rich.panel import Panel
 
 from anta.reporter import ReportTable
@@ -93,3 +94,36 @@ def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_
         display_json(console=console, results=results, output_file=output)
     elif display == 'list':
         display_list(console=console, results=results, output_file=output)
+
+
+@anta.command()
+@click.pass_context
+@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.Path())
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
+@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
+@click.option('--search', default=None, help='Value to search in result. Can be test name or host name', type=str)
+@click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+def ci(ctx, inventory, catalog, tags, search, log_level):
+    """Execute network testing in context of CI by mimicing Pytest output"""
+    custom_theme = Theme({
+        "success": "green4",
+        "skipped": "orange3",
+        "failure": "bold red"
+    })
+    console = Console(theme=custom_theme)
+    results = check_run(
+        inventory=inventory,
+        catalog=catalog,
+        username=ctx.obj['username'],
+        password=ctx.obj['password'],
+        timeout=ctx.obj['timeout'],
+        enable_password='unset',
+        tags=tags,
+        loglevel=log_level
+    )
+    console.print(f'searching for {search}')
+    for line in results.get_results(output_format="list"):
+        if search in [line.test, line.name, None]:
+            message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ''
+            console.print(
+                f'{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}', highlight=False)

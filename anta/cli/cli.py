@@ -27,6 +27,7 @@ def anta(ctx,username, password, enable_password, timeout):
 if __name__ == '__main__':
     # Load group commands
     anta.add_command(check_commands.check)
+    anta.add_command(check_commands.ci)
     # Load CLI
     anta(
         obj={},
