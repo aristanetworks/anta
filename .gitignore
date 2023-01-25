@@ -97,3 +97,4 @@ venv.bak/
 # VScode settings
 .vscode/settings.json
 .vscode/
+test.env
