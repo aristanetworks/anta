@@ -9,8 +9,8 @@ from rich.console import Console
 from rich.theme import Theme
 from rich.panel import Panel
 
-from anta.reporter import ReportTable
-from anta.cli.cli import anta as anta
+from anta import RICH_COLOR_THEME
+from anta.cli.cli import anta
 from .utils import check_run, display_table, display_json, display_list
 
 logger = logging.getLogger(__name__)
@@ -70,12 +70,7 @@ def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def ci(ctx, inventory, catalog, tags, search, skip_error, log_level):
     """Execute network testing in context of CI by mimicing Pytest output"""
-    custom_theme = Theme({
-        "success": "green4",
-        "skipped": "orange3",
-        "failure": "bold red",
-        "error": "dark_red"
-    })
+    custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
     results = check_run(
         inventory=inventory,

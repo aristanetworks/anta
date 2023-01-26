@@ -7,23 +7,12 @@ from typing import Any, List, Optional
 
 from rich.table import Table
 
+from anta import RICH_COLOR_PALETTE
 from anta.result_manager import ResultManager
 
 from .models import ColorManager
 
 logger = logging.getLogger(__name__)
-
-
-# Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
-# pylint: disable=R0903
-class RICH_COLOR_THEME:
-    """Color code for text rendering."""
-
-    FAILURE = "orange3"
-    ERROR = "red3"
-    SUCCESS = "green"
-    SKIPPED = "orange4"
-    HEADER = "cyan"
 
 
 class ReportTable:
@@ -35,14 +24,14 @@ class ReportTable:
         """
         self.colors = []
         self.colors.append(
-            ColorManager(level="success", color=RICH_COLOR_THEME.SUCCESS)
+            ColorManager(level="success", color=RICH_COLOR_PALETTE.SUCCESS)
         )
         self.colors.append(
-            ColorManager(level="failure", color=RICH_COLOR_THEME.FAILURE)
+            ColorManager(level="failure", color=RICH_COLOR_PALETTE.FAILURE)
         )
-        self.colors.append(ColorManager(level="error", color=RICH_COLOR_THEME.ERROR))
+        self.colors.append(ColorManager(level="error", color=RICH_COLOR_PALETTE.ERROR))
         self.colors.append(
-            ColorManager(level="skipped", color=RICH_COLOR_THEME.SKIPPED)
+            ColorManager(level="skipped", color=RICH_COLOR_PALETTE.SKIPPED)
         )
 
     def _split_list_to_txt_list(
@@ -66,7 +55,7 @@ class ReportTable:
         """
         Create headers for a table.
 
-        First key is considered as header and is colored using RICH_COLOR_THEME.HEADER
+        First key is considered as header and is colored using RICH_COLOR_PALETTE.HEADER
 
         Args:
             headers (List[str]): List of headers
@@ -78,7 +67,7 @@ class ReportTable:
         for idx, header in enumerate(headers):
             if idx == 0:
                 table.add_column(
-                    header, justify="left", style=RICH_COLOR_THEME.HEADER, no_wrap=True
+                    header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True
                 )
             else:
                 table.add_column(header, justify="left")
