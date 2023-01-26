@@ -1,9 +1,15 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: disable=no-value-for-parameter
+# pylint: disable=too-many-arguments
 
+"""
+Commands for Anta CLI to run check commands.
+"""
+
+import re
 import logging
 import click
-import re
 
 from rich.console import Console
 from rich.theme import Theme
@@ -15,6 +21,7 @@ from .utils import check_run, display_table, display_json, display_list
 
 logger = logging.getLogger(__name__)
 
+
 @anta.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
@@ -24,12 +31,12 @@ logger = logging.getLogger(__name__)
 @click.option('--display', default='table', type=click.Choice(['table', 'json', 'list'], case_sensitive=False), help='output format selection. default is table')
 # Options valid with --display table
 @click.option('--search', default=None, help='Value to search in result. Can be test name or host name', type=str)
-@click.option('--group-by', default='none', type=click.Choice(['none', 'host', 'test'], case_sensitive=False),help='Group result by test or host. default none')
+@click.option('--group-by', default='none', type=click.Choice(['none', 'host', 'test'], case_sensitive=False), help='Group result by test or host. default none')
 # Options valid with --display json
 @click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.Path())
 # Debug stuf
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_level):
+def check(ctx: click.Context, inventory: str, catalog: str, display: str, tags: str, group_by: str, search: str, output: str, log_level: str) -> bool:
     """ANTA command to check network states"""
     console = Console()
 
@@ -59,6 +66,8 @@ def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_
     elif display == 'list':
         display_list(console=console, results=results, output_file=output)
 
+    return True
+
 
 @anta.command()
 @click.pass_context
@@ -68,7 +77,7 @@ def check(ctx, inventory, catalog, display, tags, group_by, search, output, log_
 @click.option('--search', default=".*", help='Regular expression to search in both name and test', type=str)
 @click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def ci(ctx, inventory, catalog, tags, search, skip_error, log_level):
+def ci(ctx: click.Context, inventory: str, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
     """Execute network testing in context of CI by mimicing Pytest output"""
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
@@ -90,3 +99,4 @@ def ci(ctx, inventory, catalog, tags, search, skip_error, log_level):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ''
             console.print(
                 f'{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}', highlight=False)
+    return True

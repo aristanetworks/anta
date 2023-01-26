@@ -31,6 +31,7 @@ class RICH_COLOR_PALETTE:
     SKIPPED = "bold orange4"
     HEADER = "cyan"
 
+
 # Dictionary to use in a Rich.Theme: custom_theme = Theme(RICH_COLOR_THEME)
 RICH_COLOR_THEME = {
     "success": RICH_COLOR_PALETTE.SUCCESS,

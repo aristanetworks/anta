@@ -1,9 +1,16 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
+# pylint: disable=too-many-arguments
+# pylint: disable=cyclic-import
+# pylint: disable=R0401
+
+"""
+Utils functions to use with anta.cli.check.commands module.
+"""
 
 import asyncio
 import logging
-import sys
+from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
@@ -13,7 +20,6 @@ from yaml import safe_load
 
 from anta.inventory import AntaInventory
 from anta.reporter import ReportTable
-from anta.inventory.models import DEFAULT_TAG
 from anta.loader import parse_catalog
 from anta.result_manager import ResultManager
 from anta.runner import main
@@ -22,8 +28,8 @@ from anta.cli.utils import setup_logging
 logger = logging.getLogger(__name__)
 
 
-def check_run(inventory, catalog, username, password, enable_password, timeout, tags, loglevel):
-    console = Console()
+def check_run(inventory: str, catalog: str, username: str, password: str, enable_password: str, timeout: int, tags: Any, loglevel: str) -> ResultManager:
+    """Execute a run of all tests against inventory."""
     setup_logging(level=loglevel)
 
     inventory_anta = AntaInventory(
@@ -61,7 +67,8 @@ def check_run(inventory, catalog, username, password, enable_password, timeout, 
     return results
 
 
-def display_table(console: Console, results: ResultManager, group_by: str = 'none', search: str = None):
+def display_table(console: Console, results: ResultManager, group_by: str = 'none', search: str = '') -> None:
+    """Display result in a table"""
     reporter = ReportTable()
     if group_by == 'none':
         console.print(
@@ -82,17 +89,19 @@ def display_table(console: Console, results: ResultManager, group_by: str = 'non
         )
 
 
-def display_json(console: Console, results: ResultManager, output_file: str = None):
+def display_json(console: Console, results: ResultManager, output_file: str = '') -> None:
+    """Display result in a json format"""
     console.print(Panel("JSON results of all tests", style="cyan"))
     print_json(results.get_results(output_format="json"))
-    if output_file is not None:
+    if output_file != '':
         with open(output_file, "w", encoding="utf-8") as fout:
             fout.write(results.get_results(output_format="json"))
 
 
-def display_list(console: Console, results: ResultManager, output_file: str = None):
+def display_list(console: Console, results: ResultManager, output_file: str = '') -> None:
+    """Display result in a list"""
     console.print(Panel.fit("List results of all tests", style="cyan"))
     pprint(results.get_results(output_format="list"))
-    if output_file is not None:
+    if output_file != '':
         with open(output_file, "w", encoding="utf-8") as fout:
             fout.write(str(results.get_results(output_format="list")))

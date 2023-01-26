@@ -1,10 +1,15 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
 
+"""
+Utils functions to use with anta.cli.cli module.
+"""
+
 import logging
 from rich.logging import RichHandler
 
 logger = logging.getLogger(__name__)
+
 
 def setup_logging(level: str = "info") -> None:
     """
