@@ -3,6 +3,7 @@
 # pylint: disable=no-value-for-parameter
 # pylint: disable=cyclic-import
 # pylint: disable=redefined-builtin
+# pylint: disable=too-many-arguments
 
 
 """
@@ -23,9 +24,11 @@ from anta.cli.exec import commands as exec_commands
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS')
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
 @click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect')
-def anta(ctx: click.Context, username: str, password: str, enable_password: str, timeout: int) -> None:
+@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.Path())
+def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
     ctx.ensure_object(dict)
+    ctx.obj['inventory'] = inventory
     ctx.obj['username'] = username
     ctx.obj['password'] = password
     ctx.obj['timeout'] = timeout

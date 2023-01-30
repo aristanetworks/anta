@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 @anta.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
-@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.Path())
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 @click.option('--display', default='table', type=click.Choice(['table', 'json', 'list'], case_sensitive=False), help='output format selection. default is table')
@@ -36,9 +35,10 @@ logger = logging.getLogger(__name__)
 @click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.Path())
 # Debug stuf
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def check(ctx: click.Context, inventory: str, catalog: str, display: str, tags: str, group_by: str, search: str, output: str, log_level: str) -> bool:
+def check(ctx: click.Context, catalog: str, display: str, tags: str, group_by: str, search: str, output: str, log_level: str) -> bool:
     """ANTA command to check network states"""
     console = Console()
+    inventory = ctx.obj['inventory']
 
     console.print(
         Panel.fit(
@@ -71,18 +71,17 @@ def check(ctx: click.Context, inventory: str, catalog: str, display: str, tags: 
 
 @anta.command()
 @click.pass_context
-@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.Path())
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 @click.option('--search', default=".*", help='Regular expression to search in both name and test', type=str)
 @click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)
 @click.option('--log-level', '--log', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def ci(ctx: click.Context, inventory: str, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
+def ci(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
     """Execute network testing in context of CI by mimicing Pytest output"""
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
     results = check_run(
-        inventory=inventory,
+        inventory=ctx.obj['inventory'],
         catalog=catalog,
         username=ctx.obj['username'],
         password=ctx.obj['password'],
@@ -94,7 +93,7 @@ def ci(ctx: click.Context, inventory: str, catalog: str, tags: str, search: str,
     regexp = re.compile(search)
     for line in results.get_results(output_format="list"):
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (
-            skip_error is False or line.result != 'error'
+            not skip_error or line.result != 'error'
         ):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ''
             console.print(
