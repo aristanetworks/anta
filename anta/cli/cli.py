@@ -2,7 +2,6 @@
 # coding: utf-8 -*-
 # pylint: disable=no-value-for-parameter
 # pylint: disable=cyclic-import
-# pylint: disable=redefined-builtin
 # pylint: disable=too-many-arguments
 
 
@@ -24,7 +23,8 @@ from anta.cli.exec import commands as exec_commands
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS')
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
 @click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect')
-@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=click.File())
+@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=str)
+@click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
     ctx.ensure_object(dict)
@@ -33,15 +33,18 @@ def anta(ctx: click.Context, username: str, password: str, enable_password: str,
     ctx.obj['password'] = password
     ctx.obj['timeout'] = timeout
     ctx.obj['enable_password'] = enable_password
+    ctx.obj['timeout'] = timeout
 
 
 @anta.group()
-@click.pass_context
-@click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
-def exec(ctx: click.Context, timeout: int) -> None:
+def check() -> None:
+    """Run NRFU against inventory devices"""
+
+
+@anta.group()
+def exec() -> None:
+    # pylint: disable=redefined-builtin
     """Execute commands to inventory devices"""
-    ctx.ensure_object(dict)
-    ctx.obj['timeout'] = timeout
 
 # ANTA CLI Execution
 
@@ -50,8 +53,10 @@ if __name__ == '__main__':
     # Load group commands
     exec.add_command(exec_commands.clear_counters)
     exec.add_command(exec_commands.snapshot)
-    anta.add_command(check_commands.check)  # type: ignore
-    anta.add_command(check_commands.ci)  # type: ignore
+    check.add_command(check_commands.table)  # type: ignore
+    check.add_command(check_commands.json)  # type: ignore
+    check.add_command(check_commands.list)  # type: ignore
+    check.add_command(check_commands.ci)  # type: ignore
     # Load CLI
     anta(
         obj={},
