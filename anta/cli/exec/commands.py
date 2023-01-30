@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8 -*-
 # pylint: disable=no-value-for-parameter
 # pylint: disable=too-many-arguments

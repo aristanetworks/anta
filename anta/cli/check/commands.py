@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8 -*-
 # pylint: disable=no-value-for-parameter
 # pylint: disable=too-many-arguments
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 @anta.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.File())
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 @click.option('--display', default='table', type=click.Choice(['table', 'json', 'list'], case_sensitive=False), help='output format selection. default is table')
 # Options valid with --display table
@@ -55,7 +55,7 @@ def check(ctx: click.Context, catalog: str, display: str, tags: str, group_by: s
         username=ctx.obj['username'],
         password=ctx.obj['password'],
         timeout=ctx.obj['timeout'],
-        enable_password='unset',
+        enable_password=ctx.obj['enable_password'],
         tags=tags,
         loglevel=log_level
     )
@@ -71,7 +71,7 @@ def check(ctx: click.Context, catalog: str, display: str, tags: str, group_by: s
 
 @anta.command()
 @click.pass_context
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.File())
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 @click.option('--search', default=".*", help='Regular expression to search in both name and test', type=str)
 @click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)

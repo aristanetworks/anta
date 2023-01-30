@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8 -*-
 
 """
@@ -67,7 +67,7 @@ def device_directories(
     return output_directory, device_directory, json_directory, text_directory
 
 
-async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict[str, str], root_dir: str, tags: str) -> None:
+async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict[str, str], root_dir: str, tags: List[str]) -> None:
     """
     Collect EOS commands
     """

@@ -1,8 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8 -*-
-# pylint: disable=too-many-arguments
-# pylint: disable=cyclic-import
-# pylint: disable=R0401
 
 """
 Utils functions to use with anta.cli.check.commands module.
@@ -10,7 +7,7 @@ Utils functions to use with anta.cli.check.commands module.
 
 import asyncio
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -29,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def check_run(inventory: str, catalog: str, username: str, password: str, enable_password: str, timeout: int, tags: Any, loglevel: str) -> ResultManager:
+    # pylint: disable=too-many-arguments
     """Execute a run of all tests against inventory."""
     setup_logging(level=loglevel)
 
@@ -41,18 +39,14 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
     )
     logger.info(f"Inventory {inventory} loaded")
 
-    ############################################################################
     # Test loader
-    ############################################################################
 
     with open(catalog, "r", encoding="utf8") as file:
         test_catalog_input = safe_load(file)
 
     tests_catalog = parse_catalog(test_catalog_input)
 
-    ############################################################################
     # Test Execution
-    ############################################################################
 
     logger.info("starting running test on inventory ...")
 
@@ -67,10 +61,10 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
     return results
 
 
-def display_table(console: Console, results: ResultManager, group_by: str = 'none', search: str = '') -> None:
+def display_table(console: Console, results: ResultManager, group_by: Optional[str] = None, search: str = '') -> None:
     """Display result in a table"""
     reporter = ReportTable()
-    if group_by == 'none':
+    if group_by is None:
         console.print(
             reporter.report_all(result_manager=results)
         )
@@ -89,19 +83,19 @@ def display_table(console: Console, results: ResultManager, group_by: str = 'non
         )
 
 
-def display_json(console: Console, results: ResultManager, output_file: str = '') -> None:
+def display_json(console: Console, results: ResultManager, output_file: Optional[str] = None) -> None:
     """Display result in a json format"""
     console.print(Panel("JSON results of all tests", style="cyan"))
     print_json(results.get_results(output_format="json"))
-    if output_file != '':
+    if output_file is not None:
         with open(output_file, "w", encoding="utf-8") as fout:
             fout.write(results.get_results(output_format="json"))
 
 
-def display_list(console: Console, results: ResultManager, output_file: str = '') -> None:
+def display_list(console: Console, results: ResultManager, output_file: Optional[str] = None) -> None:
     """Display result in a list"""
     console.print(Panel.fit("List results of all tests", style="cyan"))
     pprint(results.get_results(output_format="list"))
-    if output_file != '':
+    if output_file is not None:
         with open(output_file, "w", encoding="utf-8") as fout:
             fout.write(str(results.get_results(output_format="list")))
