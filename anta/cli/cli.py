@@ -49,6 +49,7 @@ def exec(ctx: click.Context, timeout: int) -> None:
 if __name__ == '__main__':
     # Load group commands
     exec.add_command(exec_commands.clear_counters)
+    exec.add_command(exec_commands.snapshot)
     anta.add_command(check_commands.check)  # type: ignore
     anta.add_command(check_commands.ci)  # type: ignore
     # Load CLI
