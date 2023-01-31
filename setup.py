@@ -26,6 +26,9 @@ setup(
         "scripts/evpn-blacklist-recovery.py",
         "scripts/create-devices-inventory-from-cvp.py"
     ],
+    entry_points={
+        'console_scripts': ['anta=anta.cli.cli:cli']
+    },
     install_requires=required,
     include_package_data=True,
     url="https://github.com/arista-netdevops-community/network-test-automation",

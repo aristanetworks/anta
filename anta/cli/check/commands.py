@@ -16,13 +16,13 @@ from rich.theme import Theme
 from rich.panel import Panel
 
 from anta import RICH_COLOR_THEME
-from anta.cli.cli import anta
+# from anta.cli.cli import anta
 from .utils import check_run, display_table, display_json, display_list
 
 logger = logging.getLogger(__name__)
 
 
-@anta.command(no_args_is_help=True)
+@click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.File())
@@ -69,7 +69,7 @@ def check_default(ctx: click.Context, catalog: str, display: str, tags: str, gro
     return True
 
 
-@anta.command(no_args_is_help=True)
+@click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=str)
@@ -108,7 +108,7 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
     return True
 
 
-@anta.command(no_args_is_help=True)
+@click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=str)
@@ -147,7 +147,7 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: st
     return True
 
 
-@anta.command(no_args_is_help=True)
+@click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=str)
@@ -185,7 +185,7 @@ def list(ctx: click.Context, catalog: str, tags: str, output: str, log_level: st
     return True
 
 
-@anta.command()
+@click.command()
 @click.pass_context
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=str)
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)

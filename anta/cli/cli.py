@@ -24,7 +24,7 @@ from anta.cli.inventory import commands as inv_commands
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS')
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
 @click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect')
-@click.option('--inventory', '-i', show_envvar=True, prompt='Inventory path', help='Path to your inventory file', type=str)
+@click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=str)
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
@@ -55,7 +55,8 @@ def get() -> None:
 # ANTA CLI Execution
 
 
-if __name__ == '__main__':
+def cli() -> None:
+    """Load ANTA CLI"""
     # Load group commands
     exec.add_command(exec_commands.clear_counters)
     exec.add_command(exec_commands.snapshot)
@@ -63,9 +64,14 @@ if __name__ == '__main__':
     check.add_command(check_commands.table)  # type: ignore
     check.add_command(check_commands.json)  # type: ignore
     check.add_command(check_commands.list)  # type: ignore
-    check.add_command(check_commands.ci)  # type: ignore
+    check.add_command(check_commands.ci)    # type: ignore
     # Load CLI
     anta(
         obj={},
         auto_envvar_prefix='ANTA'
     )
+
+
+if __name__ == '__main__':
+    cli()
+
