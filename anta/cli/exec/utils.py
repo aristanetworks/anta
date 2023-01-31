@@ -75,6 +75,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags)
     for device in devices:  # TODO: should use asyncio.gather instead of a loop.
+        logger.info("----")
         logger.info(f"Collecting show commands output to device {device.name}")
         output_dir = device_directories(device, root_dir)
         try:
@@ -89,7 +90,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                     with open(outfile, "w", encoding="utf8") as out_fd:
                         out_fd.write(str(result[1]))
                     logger.info(
-                        f"Collected command '{command}' on {device.name}")
+                        f"  * Collected command '{command}' on {device.name}")
             if "text_format" in commands:
                 for command in commands["text_format"]:
                     result = await device.session.cli(
@@ -99,10 +100,10 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                     )
                     outfile = f"{output_dir[3]}/{command}"
                     with open(outfile, "w", encoding="utf8") as out_fd:
-                        out_fd.write(f'# {command}\n\r')
+                        out_fd.write(f'{device.name}# {command}\n\r')
                         out_fd.write(result[1])
                     logger.info(
-                        f"Collected command '{command}' on {device.name}")
+                        f"  * Collected command '{command}' on {device.name}")
         except EapiCommandError as e:
             logger.error(f"Command failed on {device.name}: {e.errmsg}")
         except Exception as e:  # pylint: disable=broad-except
