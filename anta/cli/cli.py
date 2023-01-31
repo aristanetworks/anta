@@ -13,6 +13,7 @@ import click
 
 from anta.cli.check import commands as check_commands
 from anta.cli.exec import commands as exec_commands
+from anta.cli.inventory import commands as inv_commands
 
 # Top level entrypoint
 
@@ -46,6 +47,11 @@ def exec() -> None:
     # pylint: disable=redefined-builtin
     """Execute commands to inventory devices"""
 
+
+@anta.group()
+def get() -> None:
+    """Get data from/to ANTA"""
+
 # ANTA CLI Execution
 
 
@@ -53,6 +59,7 @@ if __name__ == '__main__':
     # Load group commands
     exec.add_command(exec_commands.clear_counters)
     exec.add_command(exec_commands.snapshot)
+    get.add_command(inv_commands.from_cvp)
     check.add_command(check_commands.table)  # type: ignore
     check.add_command(check_commands.json)  # type: ignore
     check.add_command(check_commands.list)  # type: ignore
