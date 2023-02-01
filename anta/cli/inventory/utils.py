@@ -51,11 +51,7 @@ def create_inventory(
             }
         )
     # write the devices IP address in a file
-    inv_file: str
-    if container is None:
-        inv_file = 'inventory.yml'
-    else:
-        inv_file = f'inventory-{container}.yml'
+    inv_file = 'inventory' if container is None else f'inventory-{container}'
     out_file = f"{directory}/{inv_file}.yml"
     with open(out_file, "w", encoding="utf8") as out_fd:
         out_fd.write(yaml.dump(i))

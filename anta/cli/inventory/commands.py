@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 @click.option('--cvp-password', '-p', default=None, help='CVP Password / token', type=str)
 @click.option('--cvp-container', '-c', default=None, help='Container where devices are configured', type=str)
 @click.option('--inventory-directory', '-d', default=None, help='Path to save inventory file', type=click.Path())
-@click.option('--log-level', '--log', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str, log_level: str) -> bool:
+@click.option('--log-level', '--log', help='Logging level of the command', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+def from_cvp(inventory_directory: click.Path(), cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str, log_level: str) -> bool:
     """Build ANTA inventory from Cloudvision"""
     setup_logging(level=log_level)
     logger.info(f'Getting auth token from {cvp_ip} for user {cvp_username}')

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 # Generic options
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 # Debug stuf
-@click.option('--log-level', '--log', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+@click.option('--log-level', '--log', help='Logging level of the command', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
     """Clear counter statistics on EOS devices"""
 
@@ -48,11 +48,11 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 @click.pass_context
 # Generic options
 @click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
-@click.option('--commands-list', '-c', type=click.Path(), help='File with list of commands to grab')
-@click.option('--output-directory', '-outut', '-o',  show_envvar=True, type=click.Path(), help='Path where to save commands output')
+@click.option('--commands-list', '-c', show_envvar=True, type=click.Path(), help='File with list of commands to grab')
+@click.option('--output-directory', '-outut', '-o', show_envvar=True, type=click.Path(), help='Path where to save commands output')
 # Debug stuf
-@click.option('--log-level', '--log', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: str, tags: str) -> None:
+@click.option('--log-level', '--log', help='Logging level of the command', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: click.Path(), tags: str) -> None:
     """Collect commands output from devices in inventory"""
     setup_logging(level=log_level)
     try:
