@@ -2,6 +2,8 @@
 # coding: utf-8 -*-
 # pylint: disable=no-value-for-parameter
 # pylint: disable=too-many-arguments
+# pylint: disable=line-too-long
+# flake8: noqa E501
 
 """
 Commands for Anta CLI to run check commands.
@@ -32,7 +34,7 @@ logger = logging.getLogger(__name__)
 @click.option('--group-by', default=None, type=click.Choice(['none', 'host', 'test'], case_sensitive=False), help='Group result by test or host. default none')
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def table(ctx: click.Context, catalog: click.Path(), tags: str, group_by: str, search: str, log_level: str) -> bool:
+def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: str, log_level: str) -> bool:
     """ANTA command to check network states with table result"""
     console = Console()
     inventory = ctx.obj['inventory']
@@ -70,7 +72,7 @@ def table(ctx: click.Context, catalog: click.Path(), tags: str, group_by: str, s
 @click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.File())
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def json(ctx: click.Context, catalog: click.Path(), output: str, tags: str, log_level: str) -> bool:
+def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: str) -> bool:
     # pylint: disable=redefined-builtin
     """ANTA command to check network state with JSON result"""
     console = Console()
@@ -108,7 +110,7 @@ def json(ctx: click.Context, catalog: click.Path(), output: str, tags: str, log_
 @click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.File())
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def list(ctx: click.Context, catalog: click.Path(), tags: str, output: str, log_level: str) -> bool:
+def list(ctx: click.Context, catalog: str, tags: str, output: str, log_level: str) -> bool:
     # pylint: disable=redefined-builtin
     """ANTA command to check network states with list result"""
     console = Console()
@@ -145,7 +147,7 @@ def list(ctx: click.Context, catalog: click.Path(), tags: str, output: str, log_
 @click.option('--search', '-s', default=".*", help='Regular expression to search in both name and test', type=str)
 @click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def ci(ctx: click.Context, catalog: click.Path(), tags: str, search: str, skip_error: bool, log_level: str) -> bool:
+def ci(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
     """Execute network testing in context of CI by mimicing Pytest output"""
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)

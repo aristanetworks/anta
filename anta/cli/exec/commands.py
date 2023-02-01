@@ -2,6 +2,8 @@
 # coding: utf-8 -*-
 # pylint: disable=no-value-for-parameter
 # pylint: disable=too-many-arguments
+# pylint: disable=line-too-long
+# flake8: noqa E501
 
 """
 Commands for Anta CLI to execute EOS commands.
@@ -52,7 +54,7 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 @click.option('--output-directory', '-outut', '-o', show_envvar=True, type=click.Path(), help='Path where to save commands output')
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: click.Path(), tags: str) -> None:
+def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: str, tags: str) -> None:
     """Collect commands output from devices in inventory"""
     setup_logging(level=log_level)
     try:

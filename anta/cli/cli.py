@@ -26,7 +26,7 @@ from anta.cli.inventory import commands as inv_commands
 @click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect')
 @click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=click.Path())
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
-def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: click.Path(), timeout: int) -> None:
+def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
     ctx.ensure_object(dict)
     ctx.obj['inventory'] = inventory
