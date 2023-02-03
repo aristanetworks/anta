@@ -13,14 +13,10 @@ Usage: anta [OPTIONS] COMMAND [ARGS]...
 Options:
   --username TEXT         Username to connect to EOS  [env var: ANTA_USERNAME]
   --password TEXT         Password to connect to EOS  [env var: ANTA_PASSWORD]
-  --timeout INTEGER       Connection timeout (default 5)  [env var:
-                          ANTA_TIMEOUT]
-  --enable-password TEXT  Enable password if required to connect  [env var:
-                          ANTA_ENABLE_PASSWORD]
-  -i, --inventory PATH    Path to your inventory file  [env var:
-                          ANTA_INVENTORY]
-  --timeout INTEGER       Connection timeout (default 5)  [env var:
-                          ANTA_TIMEOUT]
+  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
+  --enable-password TEXT  Enable password if required to connect  [env var: ANTA_ENABLE_PASSWORD]
+  -i, --inventory PATH    Path to your inventory file  [env var: ANTA_INVENTORY]
+  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
   --help                  Show this message and exit.
 
 Commands:
