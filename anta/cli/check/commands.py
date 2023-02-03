@@ -18,8 +18,7 @@ from rich.theme import Theme
 from rich.panel import Panel
 
 from anta import RICH_COLOR_THEME
-# from anta.cli.cli import anta
-from .utils import check_run, display_table, display_json, display_list
+from .utils import check_run, display_table, display_json
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +26,11 @@ logger = logging.getLogger(__name__)
 @click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
-@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)
+@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str, required=False)
 # Options valid with --display table
-@click.option('--search', '-s', default=None, help='Value to search in result. Can be test name or host name', type=str)
-@click.option('--group-by', default=None, type=click.Choice(['none', 'host', 'test'], case_sensitive=False), help='Group result by test or host. default none')
+@click.option('--search', '-s', default=None, help='Value to search in result. Can be test name or host name', type=str, required=False)
+@click.option('--group-by', default=None, type=click.Choice(['none', 'host', 'test'], case_sensitive=False), help='Group result by test or host. default none', required=False)
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: str, log_level: str) -> bool:
@@ -66,10 +65,10 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
 @click.command(no_args_is_help=True)
 @click.pass_context
 # Generic options
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
-@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)
+@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str, required=False)
 # Options valid with --display json
-@click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.File())
+@click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.File(), required=False)
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: str) -> bool:
@@ -104,10 +103,10 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: st
 
 @click.command()
 @click.pass_context
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
-@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
-@click.option('--search', '-s', default=".*", help='Regular expression to search in both name and test', type=str)
-@click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)
+@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)
+@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str, required=False)
+@click.option('--search', '-s', default=".*", help='Regular expression to search in both name and test', type=str, required=False)
+@click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False, required=False)
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
     """ANTA command to check network states with text result"""

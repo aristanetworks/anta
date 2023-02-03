@@ -20,12 +20,11 @@ from anta.cli.inventory import commands as inv_commands
 
 @click.group()
 @click.pass_context
-@click.option('--username', show_envvar=True, default='arista', help='Username to connect to EOS')
-@click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS')
-@click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
-@click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect')
-@click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=click.Path())
-@click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)')
+@click.option('--username', show_envvar=True, default='arista', help='Username to connect to EOS', required=True)
+@click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS', required=True)
+@click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)', required=False)
+@click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect', required=False)
+@click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=click.Path(), required=True)
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
     ctx.ensure_object(dict)
@@ -63,7 +62,6 @@ def cli() -> None:
     get.add_command(inv_commands.from_cvp)
     nrfu.add_command(check_commands.table)  # type: ignore
     nrfu.add_command(check_commands.json)  # type: ignore
-    nrfu.add_command(check_commands.list)  # type: ignore
     nrfu.add_command(check_commands.text)    # type: ignore
     # Load CLI
     anta(

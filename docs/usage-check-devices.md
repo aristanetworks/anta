@@ -1,5 +1,10 @@
 # How to use ANTA scripts
 
+
+!!! warning "Scripts are now deprecated"
+    Please note with [anta cli availability](../usage-anta-cli/), scripts described on this page are now deprecated and will be removed in later release of this project.
+
+
 ANTA comes with some scripts to leverage network testing immediatly or if you don't want to create your own application. This page describes how to use `check-devices.py` script to run your network testing.
 
 ??? note "Create inventory & tests catalog"
