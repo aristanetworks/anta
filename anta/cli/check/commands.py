@@ -6,7 +6,7 @@
 # flake8: noqa E501
 
 """
-Commands for Anta CLI to run check commands.
+Commands for Anta CLI to run nrfu commands.
 """
 
 import re
@@ -102,44 +102,6 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: st
     return True
 
 
-@click.command(no_args_is_help=True)
-@click.pass_context
-# Generic options
-@click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
-@click.option('--tags', '-t', default='all', help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
-@click.option('--output', '-o', default=None, help='Path to save output in json or list', type=click.File())
-# Debug stuf
-@click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def list(ctx: click.Context, catalog: str, tags: str, output: str, log_level: str) -> bool:
-    # pylint: disable=redefined-builtin
-    """ANTA command to check network states with list result"""
-    console = Console()
-    inventory = ctx.obj['inventory']
-
-    console.print(
-        Panel.fit(
-            f"Running check-devices with:\n\
-              - Inventory: {inventory}\n\
-              - Tests catalog: {catalog}",
-            title="[green]Settings",
-        )
-    )
-
-    results = check_run(
-        inventory=inventory,
-        catalog=catalog,
-        username=ctx.obj['username'],
-        password=ctx.obj['password'],
-        timeout=ctx.obj['timeout'],
-        enable_password=ctx.obj['enable_password'],
-        tags=tags,
-        loglevel=log_level
-    )
-    display_list(console=console, results=results, output_file=output)
-
-    return True
-
-
 @click.command()
 @click.pass_context
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path())
@@ -147,8 +109,8 @@ def list(ctx: click.Context, catalog: str, tags: str, output: str, log_level: st
 @click.option('--search', '-s', default=".*", help='Regular expression to search in both name and test', type=str)
 @click.option('--skip-error/--no-skip-error', help='Hide tests in errors due to connectivity issue', default=False)
 @click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def ci(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
-    """Execute network testing in context of CI by mimicing Pytest output"""
+def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
+    """ANTA command to check network states with text result"""
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
     results = check_run(

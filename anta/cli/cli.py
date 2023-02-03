@@ -38,7 +38,7 @@ def anta(ctx: click.Context, username: str, password: str, enable_password: str,
 
 
 @anta.group()
-def check() -> None:
+def nrfu() -> None:
     """Run NRFU against inventory devices"""
 
 
@@ -61,10 +61,10 @@ def cli() -> None:
     exec.add_command(exec_commands.clear_counters)
     exec.add_command(exec_commands.snapshot)
     get.add_command(inv_commands.from_cvp)
-    check.add_command(check_commands.table)  # type: ignore
-    check.add_command(check_commands.json)  # type: ignore
-    check.add_command(check_commands.list)  # type: ignore
-    check.add_command(check_commands.ci)    # type: ignore
+    nrfu.add_command(check_commands.table)  # type: ignore
+    nrfu.add_command(check_commands.json)  # type: ignore
+    nrfu.add_command(check_commands.list)  # type: ignore
+    nrfu.add_command(check_commands.text)    # type: ignore
     # Load CLI
     anta(
         obj={},
