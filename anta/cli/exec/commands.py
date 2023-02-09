@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 @click.option('--log-level', '--log', help='Logging level of the command', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
-    """Clear counter statistics on EOS devices"""comma
+    """Clear counter statistics on EOS devices"""
 
     setup_logging(level=log_level)
 
