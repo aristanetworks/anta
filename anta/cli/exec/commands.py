@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 @click.option('--log-level', '--log', help='Logging level of the command', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
-    """Clear counter statistics on EOS devices"""comma
+    """Clear counter statistics on EOS devices"""
 
     setup_logging(level=log_level)
 
@@ -49,7 +49,7 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 @click.option('--commands-list', '-c', show_envvar=True, type=click.Path(), help='File with list of commands to grab', required=True)
 @click.option('--output-directory', '-outut', '-o', show_envvar=True, type=click.Path(), help='Path where to save commands output', required=False)
 # Debug stuf
-@click.option('--log-level', '--log', help='Logging level of the commacomma default='info',
+@click.option('--log-level', '--log', help='Logging level of the command', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: str, tags: str) -> None:
     """Collect commands output from devices in inventory"""
