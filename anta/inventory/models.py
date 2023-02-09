@@ -3,8 +3,7 @@
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 from aioeapi import Device
-from pydantic import (BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr,
-                      root_validator)
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 
 # Default values
 

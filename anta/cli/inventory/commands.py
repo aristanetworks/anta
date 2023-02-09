@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8 -*-
-# pylint: disable=no-value-for-parameter
-# pylint: disable=too-many-arguments
-# pylint: disable=line-too-long
-# flake8: noqa E501
 
 """
 Commands for Anta CLI to run check commands.
 """
 
-import os
 import logging
-import click
+import os
 
+import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
+
 from anta.cli.utils import setup_logging
-from .utils import get_cv_token, create_inventory
+
+from .utils import create_inventory, get_cv_token
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +25,11 @@ logger = logging.getLogger(__name__)
 @click.option('--cvp-password', '-p', default=None, help='CVP Password / token', type=str, required=True)
 @click.option('--cvp-container', '-c', default=None, help='Container where devices are configured', type=str, required=False)
 @click.option('--inventory-directory', '-d', default=None, help='Path to save inventory file', type=click.Path())
-@click.option('--log-level', '--log', help='Logging level of the command', default='info', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+@click.option('--log-level', '--log', help='Logging level of the command', default='info',
+              type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
 def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str, log_level: str) -> bool:
     """Build ANTA inventory from Cloudvision"""
+    # pylint: disable=too-many-arguments
     setup_logging(level=log_level)
     logger.info(f'Getting auth token from {cvp_ip} for user {cvp_username}')
     token = get_cv_token(cvp_ip=cvp_ip, cvp_username=cvp_username, cvp_password=cvp_password)

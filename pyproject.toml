@@ -43,7 +43,7 @@ deps =
   test: pytest
   test: pytest-cov
   lint: flake8
-  lint: pylint
+  lint: pylint>=2.16.1
   lint,type: -r requirements-dev.txt
 commands =
   lint: flake8 --max-line-length=165 --config=/dev/null anta
@@ -77,3 +77,7 @@ log_cli = "True"
 [tool.coverage.run]
 source = ['anta']
 # omit = []
+
+[tool.isort]
+profile = "black"
+line_length = 165

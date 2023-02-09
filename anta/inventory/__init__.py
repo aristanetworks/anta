@@ -14,8 +14,7 @@ from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
 from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
-from .models import (DEFAULT_TAG, AntaInventoryInput, InventoryDevice,
-                     InventoryDevices)
+from .models import DEFAULT_TAG, AntaInventoryInput, InventoryDevice, InventoryDevices
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +117,7 @@ class AntaInventory:
         self.timeout = timeout
         self._inventory = InventoryDevices()
 
-        with open(inventory_file, "r", encoding="utf8") as fd:
+        with open(inventory_file, "r", encoding="UTF-8") as fd:
             data = yaml.load(fd, Loader=SafeLoader)
 
         # Load data using Pydantic

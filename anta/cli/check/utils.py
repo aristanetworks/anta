@@ -9,18 +9,18 @@ import asyncio
 import logging
 from typing import Any, Optional
 
+from rich import print_json
 from rich.console import Console
 from rich.panel import Panel
-from rich import print_json
 from rich.pretty import pprint
 from yaml import safe_load
 
+from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
-from anta.reporter import ReportTable
 from anta.loader import parse_catalog
+from anta.reporter import ReportTable
 from anta.result_manager import ResultManager
 from anta.runner import main
-from anta.cli.utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
 
     # Test loader
 
-    with open(catalog, "r", encoding="utf8") as file:
+    with open(catalog, "r", encoding="UTF-8") as file:
         test_catalog_input = safe_load(file)
 
     tests_catalog = parse_catalog(test_catalog_input)

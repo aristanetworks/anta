@@ -5,11 +5,12 @@
 Exec CLI helpers
 """
 
-import os
 import asyncio
 import logging
+import os
 import traceback
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+
 from aioeapi import EapiCommandError
 
 from anta.inventory import AntaInventory
@@ -87,7 +88,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                         ofmt='json'
                     )
                     outfile = f"{output_dir[2]}/{command}"
-                    with open(outfile, "w", encoding="utf8") as out_fd:
+                    with open(outfile, "w", encoding="UTF-8") as out_fd:
                         out_fd.write(str(result[1]))
                     logger.info(
                         f"  * Collected command '{command}' on {device.name}")
@@ -99,7 +100,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                         ofmt='text'
                     )
                     outfile = f"{output_dir[3]}/{command}"
-                    with open(outfile, "w", encoding="utf8") as out_fd:
+                    with open(outfile, "w", encoding="UTF-8") as out_fd:
                         out_fd.write(f'{device.name}# {command}\n\r')
                         out_fd.write(result[1])
                     logger.info(

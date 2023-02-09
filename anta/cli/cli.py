@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8 -*-
-# pylint: disable=no-value-for-parameter
-# pylint: disable=cyclic-import
-# pylint: disable=too-many-arguments
 
 
 """
@@ -11,6 +8,7 @@ ANTA CLI Baseline.
 
 import click
 
+from anta import __version__
 from anta.cli.check import commands as check_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.inventory import commands as inv_commands
@@ -20,13 +18,16 @@ from anta.cli.inventory import commands as inv_commands
 
 @click.group()
 @click.pass_context
+@click.version_option(__version__)
 @click.option('--username', show_envvar=True, default='arista', help='Username to connect to EOS', required=True)
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS', required=True)
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)', required=False)
-@click.option('--enable-password', show_envvar=True, default='', help='Enable password if required to connect', required=False)
+@click.option('--enable-password', show_envvar=True, default='',
+              help='Enable password if required to connect', required=False)
 @click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=click.Path(), required=True)
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
+    # pylint: disable=too-many-arguments
     ctx.ensure_object(dict)
     ctx.obj['inventory'] = inventory
     ctx.obj['username'] = username
@@ -41,9 +42,8 @@ def nrfu() -> None:
     """Run NRFU against inventory devices"""
 
 
-@anta.group()
-def exec() -> None:
-    # pylint: disable=redefined-builtin
+@anta.group("exec")
+def _exec() -> None:
     """Execute commands to inventory devices"""
 
 
@@ -51,18 +51,17 @@ def exec() -> None:
 def get() -> None:
     """Get data from/to ANTA"""
 
+
 # ANTA CLI Execution
-
-
 def cli() -> None:
     """Load ANTA CLI"""
     # Load group commands
-    exec.add_command(exec_commands.clear_counters)
-    exec.add_command(exec_commands.snapshot)
+    _exec.add_command(exec_commands.clear_counters)
+    _exec.add_command(exec_commands.snapshot)
     get.add_command(inv_commands.from_cvp)
-    nrfu.add_command(check_commands.table)  # type: ignore
-    nrfu.add_command(check_commands.json)  # type: ignore
-    nrfu.add_command(check_commands.text)    # type: ignore
+    nrfu.add_command(check_commands.table)
+    nrfu.add_command(check_commands.json)
+    nrfu.add_command(check_commands.text)
     # Load CLI
     anta(
         obj={},

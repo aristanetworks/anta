@@ -8,9 +8,11 @@ Utils functions to use with anta.cli.get.commands module.
 import json
 import logging
 from typing import Any, Dict, List
+
 import requests
-import yaml
 import urllib3
+import yaml
+
 from ...inventory import AntaInventory
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -53,6 +55,6 @@ def create_inventory(
     # write the devices IP address in a file
     inv_file = 'inventory' if container is None else f'inventory-{container}'
     out_file = f"{directory}/{inv_file}.yml"
-    with open(out_file, "w", encoding="utf8") as out_fd:
+    with open(out_file, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump(i))
     logger.info(f'Inventory file has been created in {out_file}')

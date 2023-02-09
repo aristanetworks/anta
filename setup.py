@@ -4,7 +4,9 @@
 anta installation script
 """
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
 import anta
 
 this_directory = Path(__file__).parent

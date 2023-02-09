@@ -20,6 +20,10 @@ max-module-lines=1700
 # making similarity lines limit a bit higher than default 4
 min-similarity-lines=10
 
+[TYPECHECK]
+# https://stackoverflow.com/questions/49680191/click-and-pylint
+signature-mutators=click.decorators.option
+
 [MAIN]
 load-plugins=pylint_pydantic
 extension-pkg-whitelist=pydantic
