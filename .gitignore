@@ -29,6 +29,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.flake8
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -97,3 +98,4 @@ venv.bak/
 # VScode settings
 .vscode/settings.json
 .vscode/
+test.env

@@ -4,7 +4,9 @@
 anta installation script
 """
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
 import anta
 
 this_directory = Path(__file__).parent
@@ -26,6 +28,9 @@ setup(
         "scripts/evpn-blacklist-recovery.py",
         "scripts/create-devices-inventory-from-cvp.py"
     ],
+    entry_points={
+        'console_scripts': ['anta=anta.cli.cli:cli']
+    },
     install_requires=required,
     include_package_data=True,
     url="https://github.com/arista-netdevops-community/network-test-automation",

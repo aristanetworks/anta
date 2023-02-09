@@ -16,6 +16,7 @@ theme:
   features:
     - navigation.instant
     - navigation.top
+    - content.tabs.link
   highlightjs: true
   hljs_languages:
     - yaml
@@ -103,6 +104,9 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.snippets:
       base_path: 'docs/'
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 
 # TOC
 docs_dir: docs/
@@ -112,6 +116,7 @@ nav:
   - Installation: requirements-and-installation.md
   - Usage:
     - Inventory & Tests catalog: usage-inventory-catalog.md
+    - Arista Network Testing Automation CLI: usage-anta-cli.md
     - Check Devices: usage-check-devices.md
     - ANTA as python lib: usage-as-python-lib.md
     - Other scripts: usage.md
