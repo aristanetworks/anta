@@ -1,7 +1,7 @@
 # content of pyproject.toml
 
 [build-system]
-requires = ["setuptools>=61.1.0", "wheel"]
+requires = ["setuptools>=64.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -82,7 +82,15 @@ Contributing = "https://github.com/arista-netdevops-community/network-test-autom
 anta = "anta.cli.cli:cli"
 
 [tool.setuptools]
-packages=["anta", "scripts"]
+packages=[
+  "anta",
+  "anta.cli",
+  "anta.inventory",
+  "anta.reporter",
+  "anta.result_manager",
+  "anta.tests",
+  "scripts"
+]
 
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 [tool.mypy]
@@ -115,6 +123,7 @@ warn_untyped_fields = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
+min_version = 4.0
 envlist = 
   clean,
   py{38,39,310},
