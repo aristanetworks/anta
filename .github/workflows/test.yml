@@ -39,7 +39,7 @@ jobs:
   linting-testing:
     name: Run flake8, pylint and pytest for supported Python versions
     runs-on: ubuntu-20.04
-    needs: [linting]
+    needs: [yaml-linting]
     strategy:
       matrix:
         python: ["3.8", "3.9", "3.10"]
