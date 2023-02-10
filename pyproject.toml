@@ -82,7 +82,7 @@ Contributing = "https://github.com/arista-netdevops-community/network-test-autom
 anta = "anta.cli.cli:cli"
 
 [tool.setuptools]
-packages=["anta"]
+packages=["anta", "scripts"]
 
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 [tool.mypy]
