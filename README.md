@@ -12,7 +12,7 @@ This repository is a Python package to automate tests on Arista devices.
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
 
-This repository comes with a [cli](./anta/cli/) to run __Arista Network Test Automation__ (ANTA) framework using your prefered shell:
+This repository comes with a [cli](./anta/cli/) to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
 
 ```
 $ anta
