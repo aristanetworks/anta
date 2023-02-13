@@ -36,7 +36,7 @@ from anta.inventory.models import DEFAULT_TAG
 from anta.loader import parse_catalog
 from anta.reporter import ReportTable
 from anta.result_manager import ResultManager
-from anta.runner import main
+from anta.runner import main as runner_main
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +232,8 @@ def cli_manager() -> argparse.Namespace:
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """main"""
     console = Console()
     cli_options = cli_manager()
     setup_logging(level=cli_options.loglevel)
@@ -251,7 +252,7 @@ if __name__ == "__main__":
         username=cli_options.username,
         password=cli_options.password,
         enable_password=cli_options.enable_password,
-        timeout=cli_options.timeout
+        timeout=cli_options.timeout,
     )
     logger.info(f"Inventory {cli_options.inventory} loaded")
 
@@ -275,7 +276,9 @@ if __name__ == "__main__":
     )
 
     results = ResultManager()
-    asyncio.run(main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
+    asyncio.run(
+        runner_main(results, inventory_anta, tests_catalog, tags=tags), debug=False
+    )
 
     ############################################################################
     # Test Reporting
@@ -326,3 +329,7 @@ if __name__ == "__main__":
             )
 
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

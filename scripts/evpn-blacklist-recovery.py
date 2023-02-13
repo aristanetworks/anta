@@ -53,20 +53,28 @@ async def clear_evpn_blacklisted_mac_addresses(
     for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         try:
             await device.session.cli(
-                commands=[{"cmd": "enable", "input": enable_pass},  "clear bgp evpn host-flap"],
-                ofmt='json'
+                commands=[
+                    {"cmd": "enable", "input": enable_pass},
+                    "clear bgp evpn host-flap",
+                ],
+                ofmt="json",
             )
-            logger.info(f"Cleared the EVPN blacklisted mac addresses on device {device.name}")
+            logger.info(
+                f"Cleared the EVPN blacklisted mac addresses on device {device.name}"
+            )
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
-            logger.error(f"Could not clear the EVPN blacklisted mac addresses on device {device.name}")
+            logger.error(
+                f"Could not clear the EVPN blacklisted mac addresses on device {device.name}"
+            )
             logger.debug(
                 f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
             logger.debug(traceback.format_exc())
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """main"""
     parser = ArgumentParser(
         description="Clear the list of MAC addresses which are blacklisted in EVPN"
     )
@@ -89,9 +97,11 @@ if __name__ == "__main__":
         "Clearing on all the devices the list of MAC addresses which are blacklisted in EVPN ... please be patient ..."
     )
     inventory = AntaInventory(
-        inventory_file=args.file,
-        username=args.username,
-        password=args.password
+        inventory_file=args.file, username=args.username, password=args.password
     )
 
     asyncio.run(clear_evpn_blacklisted_mac_addresses(inventory, args.enable_pass))
+
+
+if __name__ == "__main__":
+    main()

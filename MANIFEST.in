@@ -1,1 +1,2 @@
-include requirements.txt
+include scripts/*.py
+include toto

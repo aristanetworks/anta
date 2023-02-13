@@ -1,11 +1,9 @@
 """
 anta init
 """
+import importlib.metadata
 
-__version__ = "0.3.0"
-__author__ = "Khelil Sator"
-__email__ = "ksator@arista.com"
-__maintainer__ = "Khelil Sator"
+__version__ = importlib.metadata.version("anta")
 __credits__ = [
     "Angélique Phillipps",
     "Colin MacGiollaEáin",
@@ -14,10 +12,9 @@ __credits__ = [
     "Onur Gashi",
     "Paul Lavelle",
     "Guillaume Mulocher",
-    "Thomas Grimonet"
+    "Thomas Grimonet",
 ]
 __copyright__ = "Copyright 2022, Arista EMEA AS"
-__license__ = "Apache"
 
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html

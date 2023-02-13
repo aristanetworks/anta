@@ -16,12 +16,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: install requirements
         run: |
-          python setup.py install
+          pip install .
       - name: install dev requirements
-        run: pip install -r requirements-dev.txt
+        run: pip install .[dev]
       - name: validate the syntax of python scripts
         run: python -m py_compile $(git ls-files '*.py')
-  linting:
+  yaml-linting:
     name: Run linting for yaml files
     runs-on: ubuntu-20.04
     needs: [compiling]
@@ -39,7 +39,7 @@ jobs:
   linting-testing:
     name: Run flake8, pylint and pytest for supported Python versions
     runs-on: ubuntu-20.04
-    needs: [linting]
+    needs: [yaml-linting]
     strategy:
       matrix:
         python: ["3.8", "3.9", "3.10"]

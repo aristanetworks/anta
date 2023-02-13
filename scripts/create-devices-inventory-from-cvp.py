@@ -49,24 +49,21 @@ def setup_logging(level: str = "info") -> None:
     logger.setLevel(loglevel)
 
 
-def create_inventory(
-    inv: List[Dict[str, Any]], directory: str, container: str
-) -> None:
+def create_inventory(inv: List[Dict[str, Any]], directory: str, container: str) -> None:
     """
     create an inventory file
     """
     i: Dict[str, Dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
     for dev in inv:
-        i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append(
-            {"host": dev["ipAddress"]}
-        )
+        i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append({"host": dev["ipAddress"]})
     # write the devices IP address in a file
     out_file = f"{directory}/{container}.yml"
     with open(out_file, "w", encoding="utf8") as out_fd:
         out_fd.write(yaml.dump(i))
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """main"""
     parser = ArgumentParser(
         description="Create devices inventory based on CVP containers"
     )
@@ -97,7 +94,7 @@ if __name__ == "__main__":
 
     # Create output directory
     cwd = os.getcwd()
-    out_dir = os.path.dirname(cwd + "/" + args.output_directory + "/")
+    out_dir = os.path.dirname(f"{cwd}/{args.output_directory}/")
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -117,3 +114,7 @@ if __name__ == "__main__":
         # Get devices under a container
         container_inventory = clnt.api.get_devices_in_container(args.container)
         create_inventory(container_inventory, out_dir, args.container)
+
+
+if __name__ == "__main__":
+    main()

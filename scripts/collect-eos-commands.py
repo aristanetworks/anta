@@ -67,7 +67,9 @@ def device_directories(
     return result
 
 
-async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict[str, str], root_dir: str) -> None:
+async def collect_commands(
+    inv: AntaInventory, enable_pass: str, commands: Dict[str, str], root_dir: str
+) -> None:
     """
     Collect EOS commands
     """
@@ -82,9 +84,9 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                 for command in commands["json_format"]:
                     result = await device.session.cli(
                         commands=[{"cmd": "enable", "input": enable_pass}, command],
-                        ofmt='json'
+                        ofmt="json",
                     )
-                    outfile = output_dir[2] + "/" + command
+                    outfile = f"{output_dir[2]}/{command}"
                     with open(outfile, "w", encoding="utf8") as out_fd:
                         out_fd.write(str(result[1]))
                     logger.info(f"Collected command '{command}' on {device.name}")
@@ -92,24 +94,27 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                 for command in commands["text_format"]:
                     result = await device.session.cli(
                         commands=[{"cmd": "enable", "input": enable_pass}, command],
-                        ofmt='text'
+                        ofmt="text",
                     )
-                    outfile = output_dir[3] + "/" + command
+                    outfile = f"{output_dir[3]}/{command}"
                     with open(outfile, "w", encoding="utf8") as out_fd:
                         out_fd.write(result[1])
                     logger.info(f"Collected command '{command}' on {device.name}")
         except EapiCommandError as e:
             logger.error(f"Command failed on {device.name}: {e.errmsg}")
-        # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Could not collect commands on device {device.name}")
             logger.debug(
                 f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
+
+            logger.debug(traceback.format_exc())
+
             logger.debug(traceback.format_exc())
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """main"""
     parser = ArgumentParser(description="Collect output of EOS commands")
     parser.add_argument(
         "-i", help="Text file containing a list of switches", dest="file", required=True
@@ -144,9 +149,15 @@ if __name__ == "__main__":
         sys.exit(1)
 
     inventory = AntaInventory(
-        inventory_file=args.file,
-        username=args.username,
-        password=args.password
+        inventory_file=args.file, username=args.username, password=args.password
     )
 
-    asyncio.run(collect_commands(inventory, args.enable_pass, eos_commands, args.output_directory))
+    asyncio.run(
+        collect_commands(
+            inventory, args.enable_pass, eos_commands, args.output_directory
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
