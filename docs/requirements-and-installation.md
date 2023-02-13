@@ -3,7 +3,7 @@
 
 ## Python version
 
-Python 3 (`>=3.7` and `=<3.10`) is required:
+Python 3 (`>=3.8` and `=<3.10`) is required:
 
 ```shell
 python --version

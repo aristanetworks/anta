@@ -4,7 +4,7 @@ This section shows how to use ANTA with basic configuration.
 
 ## Installation
 
-The easiest way to intall ANTA package is to run Python (`>=3.7`) and its pip package to install:
+The easiest way to intall ANTA package is to run Python (`>=3.8`) and its pip package to install:
 
 ```bash
 pip install \
