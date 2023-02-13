@@ -37,7 +37,7 @@ Commands:
 
 <img src="./docs/imgs/anta-nrfu-table-output.png"></img>
 
-In addition, previous scripts are now marked as __deprecated__ and will be removed in futur release:
+In addition, previous scripts are now marked as __deprecated__ and will be removed in a future release:
 
 - `check-devices.py` is an easy to use script to test your network with ANTA.
 - `collect-eos-commands.py` to collect commands output from devices
