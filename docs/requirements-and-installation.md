@@ -82,9 +82,6 @@ Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a l
 Run these EOS commands to verify:
 
 ```eos
-switch1#show management http-server
-```
-
-```eos
-switch1#show management api http-commands
+show management http-server
+show management api http-commands
 ```

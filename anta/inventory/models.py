@@ -21,6 +21,8 @@ class AntaInventoryHost(BaseModel):
 
     Attributes:
         host (IPvAnyAddress): IPv4 or IPv6 address of the device
+        port (int): (Optional) eAPI port to use Default is 443.
+        name (str): (Optional) Name to display during tests report. Default is hostname:port
         tags (List[str]): List of attached tags read from inventory file.
     """
 
