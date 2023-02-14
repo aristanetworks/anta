@@ -878,7 +878,7 @@
 
 <h3 id="anta-documentation">ANTA Documentation<a class="headerlink" href="#anta-documentation" title="Permanent link">&para;</a></h3>
 <p>This website provides generic documentation related to the Arista Network Test Automation framework (ANTA)</p>
-<p><img src="./imgs/anta-getting-started.png" class="img_center"></img></p>
+<p><img src="./imgs/anta-nrfu-table-output.png" class="img_center"></img></p>
 <h3 id="arista-network-test-automation-anta-framework">Arista Network Test Automation (ANTA) Framework<a class="headerlink" href="#arista-network-test-automation-anta-framework" title="Permanent link">&para;</a></h3>
 <p>This repository is a Python package to automate tests on Arista devices.</p>
 <ul>
@@ -890,14 +890,31 @@
 </ul>
 </li>
 </ul>
-<p>This repository comes with a set of <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/">scripts</a> to run <strong>Arista Network Test Automation</strong> (ANTA) framework</p>
+<p>This repository comes with a <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/cli/">cli</a> to run <strong>Arista Network Test Automation</strong> (ANTA) framework using your preferred shell:</p>
+<div class="highlight"><pre><span></span><code>$ anta
+Usage: anta [OPTIONS] COMMAND [ARGS]...
+
+  Arista Network Test CLI
+
+Options:
+  --username TEXT         Username to connect to EOS  [env var: ANTA_USERNAME]
+  --password TEXT         Password to connect to EOS  [env var: ANTA_PASSWORD]
+  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
+  --enable-password TEXT  Enable password if required to connect  [env var: ANTA_ENABLE_PASSWORD]
+  -i, --inventory PATH    Path to your inventory file  [env var: ANTA_INVENTORY]
+  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
+  --help                  Show this message and exit.
+
+Commands:
+  exec  Execute commands to inventory devices
+  get   Get data from/to ANTA
+  nrfu  Run NRFU against inventory devices
+</code></pre></div>
+<p>In addition, previous <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/">scripts</a> are now marked as <strong>deprecated</strong> and will be removed in a future release:</p>
 <ul>
 <li><code>check-devices.py</code> is an easy to use script to test your network with ANTA.</li>
 <li><code>collect-eos-commands.py</code> to collect commands output from devices</li>
 <li><code>collect-sheduled-show-tech.py</code> to collect the scheduled show tech-support files from devices</li>
-</ul>
-<p>In addition you have also some useful scripts to help around testing:</p>
-<ul>
 <li><code>clear-counters.py</code> to clear counters on devices</li>
 <li><code>evpn-blacklist-recovery.py</code> to clear the list of MAC addresses which are blacklisted in EVPN</li>
 <li><code>create-devices-inventory-from-cvp.py</code>: Build inventory for scripts from Arista Cloudvision (CVP)</li>
@@ -911,7 +928,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 13, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 14, 2023</span>
       
     
   </small>
