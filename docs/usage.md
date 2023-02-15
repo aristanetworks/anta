@@ -1,5 +1,11 @@
 # Repository usage
 
+
+!!! warning "Scripts are now deprecated"
+    Please note with [anta cli availability](../usage-anta-cli/), scripts described on this page are now deprecated and will be removed in later release of this project.
+
+
+
 Once you are done with the installation, you can use the the [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) or the [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) package.
 
 ## How to use the scripts

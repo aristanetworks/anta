@@ -60,9 +60,6 @@ anta.tests.software:
   - verify_eos_version:
 ```
 
-!!! information
-    With this approach, it means you can load your own tests collection as described in the next section.
-
 It will load the test `verify_eos_version` located in `anta.tests.software`. But since this function has parameters, we will create a catalog with the following structure:
 
 ```yaml
