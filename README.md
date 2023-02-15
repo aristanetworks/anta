@@ -6,15 +6,19 @@
 
 This repository is a Python package to automate tests on Arista devices.
 
-- The package name is [ANTA](./anta), which stands for **Arista Network Test Automation**.
+- The package name is ANTA, which stands for **Arista Network Test Automation**.
 - This package provides a set of tests to validate the state of your network.
 - This package can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
 
-This repository comes with a [cli](./anta/cli/) to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
+This repository comes with a cli to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
 
-```
+```bash
+# Install ANTA CLI
+$ pip install anta
+
+# Run ANTA CLI
 $ anta
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
@@ -35,7 +39,7 @@ Commands:
   nrfu  Run NRFU against inventory devices
 ```
 
-<img src="./docs/imgs/anta-nrfu-table-output.png"></img>
+<img src="https://github.com/arista-netdevops-community/network-test-automation/raw/master/docs/imgs/anta-nrfu-table-group-by-test-output.png"></img>
 
 In addition, previous scripts are now marked as __deprecated__ and will be removed in a future release:
 
@@ -54,7 +58,7 @@ The documentation is published on [ANTA package website](https://arista-netdevop
 
 # Contribution guide
 
-Contributions are welcome. Please refer to the [contribution guide](CONTRIBUTING.md)
+Contributions are welcome. Please refer to the [contribution guide](https://raw.githubusercontent.com/arista-netdevops-community/network-test-automation/master/docs/contribution.md)
 
 # Credits
 

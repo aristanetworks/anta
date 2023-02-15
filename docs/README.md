@@ -16,7 +16,11 @@ This repository is a Python package to automate tests on Arista devices.
 
 This repository comes with a [cli](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/cli/) to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
 
-```
+```bash
+# Install ANTA
+pip install anta
+
+# Run ANTA cli
 $ anta
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 

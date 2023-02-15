@@ -19,8 +19,9 @@ The ANTA package and the cli require some packages that are not part of the Pyth
 
 ### Install from Pypi server
 
-!!! warning Not yet supported
-    ANTA is not yet available on Pypi server, as it is a work in progress, please use installation guide for Github.
+```shell
+pip install anta
+```
 
 ### Install ANTA from github
 
