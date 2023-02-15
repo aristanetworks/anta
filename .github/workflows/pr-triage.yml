@@ -6,7 +6,6 @@ on:
       - opened
       - edited
       - synchronize
-      - ready_for_review
 
 jobs:
   assign_author:
@@ -17,3 +16,56 @@ jobs:
       - uses: toshimaru/auto-author-assign@v1.2.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  check_pr_semantic:
+    runs-on: ubuntu-latest
+    steps:
+      # Please look up the latest version from
+      # https://github.com/amannn/action-semantic-pull-request/releases
+      - uses: amannn/action-semantic-pull-request@v5.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure which types are allowed.
+          # Default: https://github.com/commitizen/conventional-commit-types
+          # Updated as part of PR 1930
+          types: |
+            feat
+            fix
+            cut
+            doc
+            ci
+            bump
+            test
+            refactor
+            revert
+          # Configure which scopes are allowed.
+          scopes: |
+            anta
+            anta.tests
+            anta.cli
+          # Configure that a scope must always be provided.
+          requireScope: false
+          # Configure additional validation for the subject based on a regex.
+          # This example ensures the subject doesn't start with an uppercase character.
+          # subjectPattern: ^(?![A-Z]).+$
+          # If `subjectPattern` is configured, you can use this property to override
+          # the default error message that is shown when the pattern doesn't match.
+          # The variables `subject` and `title` can be used within the message.
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+          # When using "Squash and merge" on a PR with only one commit, GitHub
+          # will suggest using that commit message instead of the PR title for the
+          # merge commit, and it's easy to commit this by mistake. Enable this option
+          # to also validate the commit message for one commit PRs.
+          # Update 13-Jul-2022 CH: GitHub now offers a toggle for this behavior.
+          # We have set that to always use the PR title, so this check is no longer needed.
+          validateSingleCommit: false
+          # Related to `validateSingleCommit` you can opt-in to validate that the PR
+          # title matches a single commit to avoid confusion.
+          validateSingleCommitMatchesPrTitle: true
+          ignoreLabels: |
+            bot
+            ignore-semantic-pull-request
