@@ -17,6 +17,9 @@ theme:
     - navigation.instant
     - navigation.top
     - content.tabs.link
+    - content.code.copy
+    - toc.follow
+    - navigation.indexes
   highlightjs: true
   hljs_languages:
     - yaml
@@ -24,7 +27,8 @@ theme:
     - shell
   icon:
     repo: fontawesome/brands/github
-    logo: fontawesome/solid/book
+    # logo: fontawesome/solid/list-check
+    logo: fontawesome/solid/network-wired
   favicon: docs/_media/favicon.ico
   font:
     code: Fira Mono
@@ -32,15 +36,21 @@ theme:
   include_search_page: false
   search_index_only: true
   palette:
+    # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: white
+      accent: blue
       toggle:
-        icon: material/weather-sunny
+        icon: material/toggle-switch-off-outline
         name: Switch to dark mode
+    # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: black
+      accent: blue
       toggle:
-        icon: material/weather-night
+        icon: material/toggle-switch
         name: Switch to light mode
 
 extra_css:
@@ -60,6 +70,8 @@ plugins:
           options:
             show_root_heading: false
             show_source: true
+      watch:
+        - anta
   - search:
       lang: en
   - git-revision-date-localized:

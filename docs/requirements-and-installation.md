@@ -14,20 +14,28 @@ Python 3.9.9
 
 This installation will deploy tests collection, scripts and all their Python requirements.
 
-The ANTA package and the scripts require some packages that are not part of the Python standard library. They are indicated in the [requirements.txt](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt) file
+The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/network-test-automation/blob/master/pyproject.toml#L20) file
 
-There are several ways to installt the [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and the [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and the [requirements](https://github.com/arista-netdevops-community/network-test-automation/blob/master/requirements.txt). This is described below.
 
-Run this command to install:
+### Install from Pypi server
 
-- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
-- These [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts) and packages they required
+!!! warning Not yet supported
+    ANTA is not yet available on Pypi server, as it is a work in progress, please use installation guide for Github.
+
+### Install ANTA from github
+
 
 ```shell
 pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
 ```
 
-You can even specify the commit you would like to install.
+You can even specify the branch, tag or commit:
+
+- `<anta-repository>@<cool-feature-branch>`
+- `<anta-repository>@<cool-tag>`
+- `<anta-repository>@<cool-hash>`
+
+### Check installation
 
 Run these commands to verify:
 
@@ -36,19 +44,18 @@ Run these commands to verify:
 pip list | grep anta
 
 # Check scripts are in your $PATH
-check-devices-reachability.py --help
+# Path may differ but it means CLI is in your path
+which anta
+/home/tom/.pyenv/shims/anta
 
-# Find where the script is located
-which check-devices-reachability.py
-```
-
-To update, simply run pip with `-U` option:
-
-```shell
-pip install -U git+https://github.com/arista-netdevops-community/network-test-automation.git
+# Chck ANTA version
+anta --version
+anta, version 0.4.0
 ```
 
 ## EOS Requirements
+
+To get ANTA working, your Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure
@@ -82,9 +89,6 @@ Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a l
 Run these EOS commands to verify:
 
 ```eos
-switch1#show management http-server
-```
-
-```eos
-switch1#show management api http-commands
+show management http-server
+show management api http-commands
 ```

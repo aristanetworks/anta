@@ -4,44 +4,46 @@ This page describes how to create an inventory and a tests catalog.
 
 ## Create an inventory file
 
-`check-devices` needs an inventory file to list all devices to tests. This inventory is a YAML file with the folowing keys:
+`anta` cli needs an inventory file to list all devices to tests. This inventory is a YAML file with the folowing keys:
 
 ```yaml
 anta_inventory:
   hosts:
-    - host: 1.1.1.1
+    - host: < ip address value >
+      port: < TCP port for eAPI. Default is 443 (Optional)>
+      name: < name to display in report. Default is host:port (Optional) >
+      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
   networks:
-    - network: '1.1.2.0/24'
+    - network: < network using CIDR notation >
+      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
   ranges:
-    - start: 1.1.3.10
-      end: 1.1.3.21
+    - start: < first ip address value of the range >
+      end: < last ip address value of the range >
+      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
 ```
 
-In this configuration file, you can use different device definitions:
+Your inventory file can be based on any of these 3 keys and shall start with `anta_inventory` key. A full description of inventory model is available in [API documentation](../api/inventory.models.input/)
 
-- __hosts__: is a list of single Arista EOS host to check.
-- __networks__: is a list of networks where check-devices.py will search for active EOS devices.
-- __ranges__: is a range of IP addresses where check-devices.py will search for active EOS devices.
-
-Your inventory file can be based on any of these 3 keys and shall start with `anta_inventory` key.
-
-Besides this standard definition, you can also define some tags to target a subset of devices during your tests exeution. it can be useful to only run test about VXLAN on leaf only and skip underlay devices.
+The next output is an inventory example:
 
 ```yaml
+---
 anta_inventory:
   hosts:
-    - host: 1.1.1.1
-      tags: ['leaf', 'border']
+  - host: 192.168.0.10
+    name: spine01
+    tags: ['fabric', 'spine']
+  - host: 192.168.0.11
+    name: spine02
+    tags: ['fabric', 'spine']
   networks:
-    - network: '1.1.2.0/24'
-      tags: ['leaf']
+  - network: '192.168.110.0/24'
+    tags: ['fabric', 'leaf']
   ranges:
-    - start: 1.1.3.10
-      end: 1.1.3.21
-      tags: ['spines']
+  - start: 10.0.0.9
+    end: 10.0.0.11
+    tags: ['fabric', 'l2leaf']
 ```
-
-Tag definition is a list of string you defined according your own setup. If not defined, a default tag (`default`) is generated during script execution.
 
 ## Test Catalog
 
@@ -57,9 +59,6 @@ All tests are located under `anta.tests` module and are categorised per family (
 anta.tests.software:
   - verify_eos_version:
 ```
-
-!!! information
-    With this approach, it means you can load your own tests collection as described in the next section.
 
 It will load the test `verify_eos_version` located in `anta.tests.software`. But since this function has parameters, we will create a catalog with the following structure:
 

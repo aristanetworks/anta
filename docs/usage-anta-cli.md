@@ -36,10 +36,12 @@ $ anta --username tom --password arista123 --inventory inventory.yml <anta cli>
 Or if you prefer to set ENV VAR:
 
 ```bash
-export ANTA_USERNAME=tom
-export ANTA_PASSWORD=arista123
-export ANTA_INVENTORY=inventory.yml
+# Save information for anta cli
+$ export ANTA_USERNAME=tom
+$ export ANTA_PASSWORD=arista123
+$ export ANTA_INVENTORY=inventory.yml
 
+# Run cli
 $ anta <anta cli>
 ```
 
@@ -185,7 +187,7 @@ Options:
 This command collects all commands you defined in a catalog. It can bei either `json` or `text`.
 
 ```bash
-anta exec snapshot --help
+$ anta exec snapshot --help
 Usage: anta exec snapshot [OPTIONS]
 
   Collect commands output from devices in inventory
@@ -219,7 +221,7 @@ text_format:
 In large setup, it can be useful to create your inventory based on CloudVision inventory.
 
 ```bash
-anta get from-cvp
+$ anta get from-cvp
 Usage: anta get from-cvp [OPTIONS]
 
   Build ANTA inventory from Cloudvision
