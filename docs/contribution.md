@@ -8,7 +8,7 @@
 Run these commands to install:
 
 - The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
-- ANTA cli object.
+- ANTA cli executable.
 
 ```shell
 # Clone repository
