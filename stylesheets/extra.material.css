@@ -113,9 +113,9 @@
   .md-typeset table:not([class]) th {
     min-width: 5rem;
     padding: .6rem .8rem;
-    color: var(--md-default-fg-color--lighter);
+    color: var(--md-default-fg-color);
     vertical-align: top;
-    background-color: var(--md-accent-bg-color);
+    /* background-color: var(--md-accent-bg-color); */
     text-align: left;
     /* min-width: 100%; */
     /* display: table; */
@@ -138,7 +138,8 @@
   }
   .highlight code {
     background-color: var(--md-code-bg-color);
-    /* border: 2px solid var(--md-code-border-color); */
+    font-size: 90%;
+    border-radius: 2%;
   }
   .md-typeset .admonition, .md-typeset details {
       margin: 1.5625em 0;
@@ -177,7 +178,8 @@
   .md-typeset table:not([class]) th {
       min-width: 5rem;
       padding: .6rem .8rem;
-      color: var(--md-primary-fg-color--light);
+      /* color: var(--md-primary-fg-color--light); */
+      bg: var(--md-footer-fg-color--lighter);
   }
 
   .md-footer-copyright {
@@ -192,6 +194,7 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 1%;
     /* width: 50%; */
   }
 }
