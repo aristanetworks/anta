@@ -85,10 +85,14 @@ anta = "anta.cli.cli:cli"
 packages=[
   "anta",
   "anta.cli",
+  "anta.cli.check",
+  "anta.cli.exec",
+  "anta.cli.inventory",
   "anta.inventory",
   "anta.reporter",
   "anta.result_manager",
   "anta.tests",
+  "anta.tests.routing",
   "scripts"
 ]
 
