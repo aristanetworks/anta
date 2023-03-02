@@ -47,7 +47,7 @@ def _exec() -> None:
     """Execute commands to inventory devices"""
 
 
-@anta.group()
+@anta.group("get")
 def get() -> None:
     """Get data from/to ANTA"""
 
@@ -58,7 +58,10 @@ def cli() -> None:
     # Load group commands
     _exec.add_command(exec_commands.clear_counters)
     _exec.add_command(exec_commands.snapshot)
+
     get.add_command(inv_commands.from_cvp)
+    get.add_command(inv_commands.inventory)
+
     nrfu.add_command(check_commands.table)
     nrfu.add_command(check_commands.json)
     nrfu.add_command(check_commands.text)
@@ -67,7 +70,6 @@ def cli() -> None:
         obj={},
         auto_envvar_prefix='ANTA'
     )
-
 
 if __name__ == '__main__':
     cli()

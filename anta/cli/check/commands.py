@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)
-@click.option('--tags', '-t', default='all', help='List of tags using comma as separator: tag1,tag2,tag3', type=str, required=False)
+@click.option('--tags', '-t', help='List of tags using comma as separator: tag1,tag2,tag3', type=str, required=False)
 # Options valid with --display table
 @click.option('--search', '-s', default=None, help='Value to search in result. Can be test name or host name',
               type=str, required=False)

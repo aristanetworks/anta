@@ -7,12 +7,20 @@ Commands for Anta CLI to run check commands.
 
 import logging
 import os
+import json
 
 import click
+from rich import print_json
+from rich.console import Console
+from rich.panel import Panel
+from rich.theme import Theme
+
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli.utils import setup_logging
+from anta.tools import pydantic_to_dict
+from anta.inventory import AntaInventory
 
 from .utils import create_inventory, get_cv_token
 
@@ -58,4 +66,33 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
         logger.info(f'Getting inventory for container {cvp_container} from {cvp_ip}')
         cvp_inventory = clnt.api.get_devices_in_container(cvp_container)
     create_inventory(cvp_inventory, out_dir, cvp_container)
+    return True
+
+
+@click.command()
+@click.pass_context
+@click.option('--tags', '-t', help='List of tags using comma as separator: tag1,tag2,tag3', type=str, required=False)
+@click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+def inventory(ctx: click.Context, tags: str, log_level: str) -> bool:
+    """Show inventory loaded in ANTA."""
+    console = Console()
+    setup_logging(level=log_level)
+
+    inventory_anta = AntaInventory(
+        inventory_file=ctx.obj['inventory'],
+        username=ctx.obj['username'],
+        password=ctx.obj['password'],
+        enable_password=ctx.obj['enable_password'],
+    )
+    logger.info(f"Inventory {ctx.obj['inventory']} loaded")
+
+    if tags is not None:
+        tags = (tags.split(",") if "," in tags else [tags])
+
+    logger.debug(f'Requesting devices for tags: {tags}')
+    console.print('Current inventory content is:', style="white on blue")
+
+    inventory_result = inventory_anta.get_inventory(tags=tags)
+    console.print(print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2)))
+
     return True
