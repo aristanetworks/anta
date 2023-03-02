@@ -7,8 +7,7 @@ This section shows how to use ANTA with basic configuration. All examples are ba
 The easiest way to intall ANTA package is to run Python (`>=3.8`) and its pip package to install:
 
 ```bash
-pip install \
-  git+https://github.com/arista-netdevops-community/network-test-automation.git
+pip install anta
 ```
 
 For more details about how to install package, please see the [requirements and intallation](./requirements-and-installation.md) section.
