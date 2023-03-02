@@ -7,7 +7,7 @@ from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, ro
 
 # Default values
 
-DEFAULT_TAG = 'default'
+DEFAULT_TAG = 'all'
 DEFAULT_HW_MODEL = 'unset'
 
 # Pydantic models for input validation

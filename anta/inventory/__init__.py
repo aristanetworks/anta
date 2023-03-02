@@ -261,7 +261,7 @@ class AntaInventory:
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
             self._add_device_to_inventory(
-                host.host, host.port, host.name, tags=host.tags
+                host.host, host.port, host.name, tags=host.tags+[DEFAULT_TAG]
             )
 
     def _inventory_read_networks(self) -> None:
@@ -272,7 +272,7 @@ class AntaInventory:
         assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                self._add_device_to_inventory(host_ip, tags=network.tags)
+                self._add_device_to_inventory(host_ip, tags=network.tags+[DEFAULT_TAG])
 
     def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
@@ -284,7 +284,8 @@ class AntaInventory:
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
+                self._add_device_to_inventory(
+                    str(range_increment), tags=range_def.tags+[DEFAULT_TAG])
                 range_increment += 1
 
     ###########################################################################
