@@ -71,5 +71,6 @@ def cli() -> None:
         auto_envvar_prefix='ANTA'
     )
 
+
 if __name__ == '__main__':
     cli()

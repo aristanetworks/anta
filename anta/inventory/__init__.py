@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
 from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
-from .models import DEFAULT_TAG, AntaInventoryInput, InventoryDevice, InventoryDevices
+from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
 
 logger = logging.getLogger(__name__)
 
@@ -311,21 +311,18 @@ class AntaInventory:
             InventoryDevices: An inventory with concerned devices
         """
 
-        inventory_filtered_tags = InventoryDevices()
-        if tags is None:
-            inventory_filtered_tags = self._inventory
-        else:
-            for device in self._inventory:
-                if tags and any(tag in tags for tag in device.tags):
-                    inventory_filtered_tags.append(device)
-        if not established_only:
-            return inventory_filtered_tags
+        def _filter_devices(device: InventoryDevice) -> bool:
+            """
+            Helper function to select the devices based on the input tags
+            and the requirement for an established connection.
+            """
+            if tags is not None and all(tag not in tags for tag in device.tags):
+                return False
+            return bool(not established_only or device.established)
 
-        inventory_final = InventoryDevices()
-        for device in inventory_filtered_tags:
-            if device.established:
-                inventory_final.append(device)
-        return inventory_final
+        result = InventoryDevices()
+        result.__root__ = list(filter(_filter_devices, self._inventory))
+        return result
 
     ###########################################################################
     # MISC methods

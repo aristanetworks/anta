@@ -6,14 +6,13 @@ Commands for Anta CLI to run check commands.
 """
 
 import logging
+from typing import Any
 import os
 import json
 
 import click
 from rich import print_json
 from rich.console import Console
-from rich.panel import Panel
-from rich.theme import Theme
 
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
@@ -72,8 +71,10 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 @click.command()
 @click.pass_context
 @click.option('--tags', '-t', help='List of tags using comma as separator: tag1,tag2,tag3', type=str, required=False)
-@click.option('--log-level', '--log', help='Logging level of the command', default='warning', type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def inventory(ctx: click.Context, tags: str, log_level: str) -> bool:
+@click.option('--log-level', '--log', help='Logging level of the command', default='warning',
+              type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+@click.option('--connected/--not-connected', help='Display inventory after connection has been created', default=False, required=False)
+def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) -> bool:
     """Show inventory loaded in ANTA."""
     console = Console()
     setup_logging(level=log_level)
@@ -91,6 +92,9 @@ def inventory(ctx: click.Context, tags: str, log_level: str) -> bool:
 
     logger.debug(f'Requesting devices for tags: {tags}')
     console.print('Current inventory content is:', style="white on blue")
+
+    if connected:
+        inventory_anta.connect_inventory()
 
     inventory_result = inventory_anta.get_inventory(tags=tags)
     console.print(print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2)))
