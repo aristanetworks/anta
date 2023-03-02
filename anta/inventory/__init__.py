@@ -261,7 +261,7 @@ class AntaInventory:
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
             self._add_device_to_inventory(
-                host.host, host.port, host.name, tags=host.tags+[DEFAULT_TAG]
+                host.host, host.port, host.name, tags=host.tags
             )
 
     def _inventory_read_networks(self) -> None:
@@ -272,7 +272,7 @@ class AntaInventory:
         assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
             for host_ip in IPNetwork(str(network.network)):
-                self._add_device_to_inventory(host_ip, tags=network.tags+[DEFAULT_TAG])
+                self._add_device_to_inventory(host_ip, tags=network.tags)
 
     def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
@@ -285,7 +285,7 @@ class AntaInventory:
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
                 self._add_device_to_inventory(
-                    str(range_increment), tags=range_def.tags+[DEFAULT_TAG])
+                    str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
     ###########################################################################
@@ -305,18 +305,19 @@ class AntaInventory:
         Args:
             established_only (bool, optional): Whether or not including non-established devices in the Inventory.
                                                Default False.
-            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
+            tags (List[str], optional): List of tags to use to filter devices.
 
         Returns:
             InventoryDevices: An inventory with concerned devices
         """
-        if tags is None:
-            tags = [DEFAULT_TAG]
 
         inventory_filtered_tags = InventoryDevices()
-        for device in self._inventory:
-            if tags and any(tag in tags for tag in device.tags):
-                inventory_filtered_tags.append(device)
+        if tags is None:
+            inventory_filtered_tags = self._inventory
+        else:
+            for device in self._inventory:
+                if tags and any(tag in tags for tag in device.tags):
+                    inventory_filtered_tags.append(device)
         if not established_only:
             return inventory_filtered_tags
 
