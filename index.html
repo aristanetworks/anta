@@ -950,24 +950,28 @@
 </li>
 </ul>
 <p>This repository comes with a <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/cli/">cli</a> to run <strong>Arista Network Test Automation</strong> (ANTA) framework using your preferred shell:</p>
-<div class="highlight"><pre><span></span><code>$ anta
-Usage: anta [OPTIONS] COMMAND [ARGS]...
+<div class="highlight"><pre><span></span><code><span class="c1"># Install ANTA</span>
+pip<span class="w"> </span>install<span class="w"> </span>anta
 
-  Arista Network Test CLI
+<span class="c1"># Run ANTA cli</span>
+$<span class="w"> </span>anta
+Usage:<span class="w"> </span>anta<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+
+<span class="w">  </span>Arista<span class="w"> </span>Network<span class="w"> </span>Test<span class="w"> </span>CLI
 
 Options:
-  --username TEXT         Username to connect to EOS  [env var: ANTA_USERNAME]
-  --password TEXT         Password to connect to EOS  [env var: ANTA_PASSWORD]
-  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
-  --enable-password TEXT  Enable password if required to connect  [env var: ANTA_ENABLE_PASSWORD]
-  -i, --inventory PATH    Path to your inventory file  [env var: ANTA_INVENTORY]
-  --timeout INTEGER       Connection timeout (default 5)  [env var: ANTA_TIMEOUT]
-  --help                  Show this message and exit.
+<span class="w">  </span>--username<span class="w"> </span>TEXT<span class="w">         </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_USERNAME<span class="o">]</span>
+<span class="w">  </span>--password<span class="w"> </span>TEXT<span class="w">         </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">       </span>Connection<span class="w"> </span>timeout<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="m">5</span><span class="o">)</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="o">]</span>
+<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">  </span>Enable<span class="w"> </span>password<span class="w"> </span><span class="k">if</span><span class="w"> </span>required<span class="w"> </span>to<span class="w"> </span>connect<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
+<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>PATH<span class="w">    </span>Path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>inventory<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_INVENTORY<span class="o">]</span>
+<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">       </span>Connection<span class="w"> </span>timeout<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="m">5</span><span class="o">)</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="o">]</span>
+<span class="w">  </span>--help<span class="w">                  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
-  exec  Execute commands to inventory devices
-  get   Get data from/to ANTA
-  nrfu  Run NRFU against inventory devices
+<span class="w">  </span><span class="nb">exec</span><span class="w">  </span>Execute<span class="w"> </span>commands<span class="w"> </span>to<span class="w"> </span>inventory<span class="w"> </span>devices
+<span class="w">  </span>get<span class="w">   </span>Get<span class="w"> </span>data<span class="w"> </span>from/to<span class="w"> </span>ANTA
+<span class="w">  </span>nrfu<span class="w">  </span>Run<span class="w"> </span>NRFU<span class="w"> </span>against<span class="w"> </span>inventory<span class="w"> </span>devices
 </code></pre></div>
 <p>In addition, previous <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/">scripts</a> are now marked as <strong>deprecated</strong> and will be removed in a future release:</p>
 <ul>
