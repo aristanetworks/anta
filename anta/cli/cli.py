@@ -61,6 +61,7 @@ def cli() -> None:
 
     get.add_command(get_commands.from_cvp)
     get.add_command(get_commands.inventory)
+    get.add_command(get_commands.tags)
 
     nrfu.add_command(check_commands.table)
     nrfu.add_command(check_commands.json)

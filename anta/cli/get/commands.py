@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8 -*-
+# pylint: disable = redefined-outer-name
 
 """
 Commands for Anta CLI to run check commands.
@@ -21,6 +22,7 @@ from cvprac.cvp_client_errors import CvpApiError
 from anta.cli.utils import setup_logging
 from anta.tools import pydantic_to_dict
 from anta.inventory import AntaInventory
+from anta.inventory.models import DEFAULT_TAG
 
 from .utils import create_inventory, get_cv_token
 
@@ -100,4 +102,29 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
     inventory_result = inventory_anta.get_inventory(tags=tags)
     console.print(print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2)))
 
+    return True
+
+
+@click.command()
+@click.pass_context
+@click.option('--log-level', '--log', help='Logging level of the command', default='warning',
+              type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
+def tags(ctx: click.Context, log_level: str) -> bool:
+    """Get list of configured tags in user inventory."""
+    console = Console()
+    setup_logging(level=log_level)
+
+    inventory_anta = AntaInventory(
+        inventory_file=ctx.obj['inventory'],
+        username=ctx.obj['username'],
+        password=ctx.obj['password'],
+        enable_password=ctx.obj['enable_password'],
+    )
+    tags_found = []
+    for device in inventory_anta.get_inventory():
+        tags_found += device.tags
+    tags_found = sorted(set(tags_found))
+    console.print('Tags found:')
+    console.print(print_json(json.dumps(tags_found, indent=2)))
+    console.print(f'\n* note that tag [green]{DEFAULT_TAG}[/green] has been added by anta')
     return True
