@@ -5,6 +5,7 @@
 Commands for Anta CLI to run check commands.
 """
 
+import asyncio
 import logging
 from typing import Any
 import os
@@ -94,7 +95,7 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
     console.print('Current inventory content is:', style="white on blue")
 
     if connected:
-        inventory_anta.connect_inventory()
+        asyncio.run(inventory_anta.connect_inventory())
 
     inventory_result = inventory_anta.get_inventory(tags=tags)
     console.print(print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2)))

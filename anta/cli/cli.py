@@ -11,7 +11,7 @@ import click
 from anta import __version__
 from anta.cli.check import commands as check_commands
 from anta.cli.exec import commands as exec_commands
-from anta.cli.inventory import commands as inv_commands
+from anta.cli.get import commands as get_commands
 
 # Top level entrypoint
 
@@ -59,8 +59,8 @@ def cli() -> None:
     _exec.add_command(exec_commands.clear_counters)
     _exec.add_command(exec_commands.snapshot)
 
-    get.add_command(inv_commands.from_cvp)
-    get.add_command(inv_commands.inventory)
+    get.add_command(get_commands.from_cvp)
+    get.add_command(get_commands.inventory)
 
     nrfu.add_command(check_commands.table)
     nrfu.add_command(check_commands.json)
