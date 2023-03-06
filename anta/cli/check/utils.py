@@ -50,9 +50,10 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
 
     logger.info("starting running test on inventory ...")
 
-    tags = (
-        tags.split(",") if "," in tags else [tags]
-    )
+    if tags is not None:
+        tags = (
+            tags.split(",") if "," in tags else [tags]
+        )
 
     results = ResultManager()
     asyncio.run(main(results, inventory_anta,

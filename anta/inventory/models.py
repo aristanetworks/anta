@@ -7,7 +7,7 @@ from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, ro
 
 # Default values
 
-DEFAULT_TAG = 'default'
+DEFAULT_TAG = 'all'
 DEFAULT_HW_MODEL = 'unset'
 
 # Pydantic models for input validation
@@ -118,6 +118,10 @@ class InventoryDevice(BaseModel):
             values['host'] = 'localhost'
         if not values.get('port'):
             values['port'] = '8080' if values['host'] == 'localhost' else '443'
+        if values.get('tags') is not None:
+            values['tags'].append(DEFAULT_TAG)
+        else:
+            values['tags'] = [DEFAULT_TAG]
         if values.get('session') is None:
             proto = 'http' if values['port'] in ['80', '8080'] else 'https'
             values['session'] = Device(host=values['host'], port=values['port'],

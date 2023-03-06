@@ -66,6 +66,7 @@ async def verify_running_config_diffs(
         ],
         ofmt="text"
     )
+
     logger.debug(f"query result is: {response}")
 
     if len(response[1]) == 0:

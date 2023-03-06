@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
 from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
-from .models import DEFAULT_TAG, AntaInventoryInput, InventoryDevice, InventoryDevices
+from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
 
 logger = logging.getLogger(__name__)
 
@@ -284,7 +284,8 @@ class AntaInventory:
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
+                self._add_device_to_inventory(
+                    str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
     ###########################################################################
@@ -304,26 +305,24 @@ class AntaInventory:
         Args:
             established_only (bool, optional): Whether or not including non-established devices in the Inventory.
                                                Default False.
-            tags (List[str], optional): List of tags to use to filter devices. Default is [default].
+            tags (List[str], optional): List of tags to use to filter devices.
 
         Returns:
             InventoryDevices: An inventory with concerned devices
         """
-        if tags is None:
-            tags = [DEFAULT_TAG]
 
-        inventory_filtered_tags = InventoryDevices()
-        for device in self._inventory:
-            if tags and any(tag in tags for tag in device.tags):
-                inventory_filtered_tags.append(device)
-        if not established_only:
-            return inventory_filtered_tags
+        def _filter_devices(device: InventoryDevice) -> bool:
+            """
+            Helper function to select the devices based on the input tags
+            and the requirement for an established connection.
+            """
+            if tags is not None and all(tag not in tags for tag in device.tags):
+                return False
+            return bool(not established_only or device.established)
 
-        inventory_final = InventoryDevices()
-        for device in inventory_filtered_tags:
-            if device.established:
-                inventory_final.append(device)
-        return inventory_final
+        result = InventoryDevices()
+        result.__root__ = list(filter(_filter_devices, self._inventory))
+        return result
 
     ###########################################################################
     # MISC methods

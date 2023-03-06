@@ -251,3 +251,6 @@ anta_inventory:
     tags:
     - pod2
 ```
+
+!!! warning 'Container lookup is not recursive'
+    Current implementation only takes devices directly attached to a specific container when using cli with `--cvp-container` option.
