@@ -19,7 +19,7 @@
         <link rel="next" href="../inventory.models.input/">
       
       <link rel="icon" href="../../docs/_media/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.1">
     
     
       
@@ -1521,8 +1521,7 @@
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">:</span>
+<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inventory Abstraction for ANTA framework.</span>
 
@@ -1787,7 +1786,8 @@
             <span class="n">range_increment</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
             <span class="n">range_stop</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
             <span class="k">while</span> <span class="n">range_increment</span> <span class="o">&lt;=</span> <span class="n">range_stop</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_add_device_to_inventory</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_device_to_inventory</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
                 <span class="n">range_increment</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="c1">###########################################################################</span>
@@ -1807,26 +1807,24 @@
 <span class="sd">        Args:</span>
 <span class="sd">            established_only (bool, optional): Whether or not including non-established devices in the Inventory.</span>
 <span class="sd">                                               Default False.</span>
-<span class="sd">            tags (List[str], optional): List of tags to use to filter devices. Default is [default].</span>
+<span class="sd">            tags (List[str], optional): List of tags to use to filter devices.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            InventoryDevices: An inventory with concerned devices</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
 
-        <span class="n">inventory_filtered_tags</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">tags</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
-                <span class="n">inventory_filtered_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">established_only</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">inventory_filtered_tags</span>
+        <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper function to select the devices based on the input tags</span>
+<span class="sd">            and the requirement for an established connection.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-        <span class="n">inventory_final</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">inventory_filtered_tags</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">:</span>
-                <span class="n">inventory_final</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">inventory_final</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">__root__</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
 
     <span class="c1">###########################################################################</span>
     <span class="c1"># MISC methods</span>
@@ -2066,7 +2064,8 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
+<span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
@@ -2076,8 +2075,7 @@
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;connect_inventory Helper to prepare inventory with network data.&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing facts for current inventory&quot;</span><span class="p">)</span>
     <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -2136,7 +2134,7 @@
           <td>
                 <code><span title="typing.List">List</span>[str]</code>
           </td>
-          <td><p>List of tags to use to filter devices. Default is [default].</p></td>
+          <td><p>List of tags to use to filter devices.</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -2164,8 +2162,7 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
-<span class="normal">299</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
@@ -2191,8 +2188,7 @@
 <span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InventoryDevices</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2201,26 +2197,24 @@
 <span class="sd">    Args:</span>
 <span class="sd">        established_only (bool, optional): Whether or not including non-established devices in the Inventory.</span>
 <span class="sd">                                           Default False.</span>
-<span class="sd">        tags (List[str], optional): List of tags to use to filter devices. Default is [default].</span>
+<span class="sd">        tags (List[str], optional): List of tags to use to filter devices.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        InventoryDevices: An inventory with concerned devices</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
 
-    <span class="n">inventory_filtered_tags</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">tags</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
-            <span class="n">inventory_filtered_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">established_only</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">inventory_filtered_tags</span>
+    <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to select the devices based on the input tags</span>
+<span class="sd">        and the requirement for an established connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-    <span class="n">inventory_final</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">inventory_filtered_tags</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">:</span>
-            <span class="n">inventory_final</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">inventory_final</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">__root__</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2331,7 +2325,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 2, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2023</span>
       
     
   </small>
@@ -2387,7 +2381,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ce72ebac.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b78d2936.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
