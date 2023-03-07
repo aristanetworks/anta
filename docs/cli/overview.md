@@ -27,7 +27,7 @@ Commands:
 
 ## ANTA parameters
 
-Some parameters are globally required and can be pass to anta via cli or via ENV VAR:
+Some parameters are globally required and can be passed to anta via cli or via ENV VAR:
 
 ```bash
 $ anta --username tom --password arista123 --inventory inventory.yml <anta cli>
