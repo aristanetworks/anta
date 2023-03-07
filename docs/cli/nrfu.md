@@ -56,7 +56,7 @@ leaf2 :: verify_svi :: SUCCESS
 
 ## NRFU with table report
 
-This rendering print results in a nice table suppoting grep filtering. It comes with its own set of options:
+This rendering prints results in a nice table supporting grep filtering. It comes with its own set of options:
 
 - Search (`--search`) for a pattern in hostname and test name.
 - Option to group (`--group-by`) and summarize results. You can group by `host` or `test`.
