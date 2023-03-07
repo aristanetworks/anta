@@ -19,7 +19,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-Output is an inventory with name of the container added as a tag for the host
+Output is an inventory with the name of the container added as a tag for the host:
 
 ```yaml
 anta_inventory:
