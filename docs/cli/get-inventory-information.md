@@ -91,7 +91,7 @@ Options:
 It will give you all information loaded in ANTA inventory from your [inventory file](../../usage-inventory-catalog/).
 
 !!! info Offline information only
-    By default information are only those not based on device connection. If you want to get information based on connection such as hardware, you should use `--connected` option.
+    By default only information not based on device connection is available. If you want to get information based on connection such as hardware model, you should use the `--connected` option.
 
 ### Example
 
