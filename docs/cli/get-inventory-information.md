@@ -47,7 +47,7 @@ anta_inventory:
     tags: ['fabric', 'leaf']
 ```
 
-To get list of all configured tags in your CLI, run the following command:
+To get the list of all configured tags in your CLI, run the following command:
 
 ```bash
 $ anta get tags
