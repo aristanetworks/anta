@@ -1,6 +1,6 @@
 # Execute NRFU testing
 
-All the NRFU testing commands are placed under `anta nrfu` and provides different rendering options:
+All the NRFU testing commands are placed under `anta nrfu` and provide different rendering options:
 
 - Table view
 - JSON view
