@@ -12,7 +12,6 @@ repo_url: https://github.com/arista-netdevops-community/network-test-automation
 use_directory_urls: true
 theme:
   name: material
-  # custom_dir: docs/_overrides
   features:
     - navigation.instant
     - navigation.top
@@ -27,7 +26,6 @@ theme:
     - shell
   icon:
     repo: fontawesome/brands/github
-    # logo: fontawesome/solid/list-check
     logo: fontawesome/solid/network-wired
   favicon: docs/_media/favicon.ico
   font:
@@ -58,9 +56,7 @@ extra_css:
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
-  - docs/stylesheets/tables.js
   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
-  # - docs/stylesheets/highlight.js
 
 plugins:
   - mkdocstrings:
@@ -76,11 +72,6 @@ plugins:
       lang: en
   - git-revision-date-localized:
       type: date
-  # Deactivated due to https://github.com/tikitu/jsmin/issues/33
-  # Issue in progress: https://github.com/byrnereese/mkdocs-minify-plugin/issues/15
-  # - minify:
-  #     minify_html: true
-  #     minify_js: true
 
 markdown_extensions:
   - attr_list
@@ -127,8 +118,6 @@ nav:
   - Getting Started: getting-started.md
   - Installation: requirements-and-installation.md
   - Inventory & Tests catalog: usage-inventory-catalog.md
-  # - Usage:
-    # - Arista Network Testing Automation CLI: usage-anta-cli.md
   - Anta CLI:
     - Overview: cli/overview.md
     - NRFU: cli/nrfu.md

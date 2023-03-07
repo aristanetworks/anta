@@ -36,3 +36,29 @@ anta_inventory:
 
 !!! warning Container lookup is not recursive
     Current implementation only takes devices directly attached to a specific container when using cli with `--cvp-container` option.
+
+If you want to build an inventory based on multiple containers, you can use a bash command as shown below and then manually concatenate files to create a single inventory file.
+
+```bash
+$ for container in pod01 pod02 spines; do anta get from-cvp -ip <cvp-ip> -u cvpadmin -p cvpadmin -c $container -d test-inventory; done
+
+[12:25:35] INFO     Getting auth token from cvp.as73.inetsix.net for user tom
+[12:25:36] INFO     Creating inventory folder /home/tom/Projects/arista/network-test-automation/test-inventory
+           WARNING  Using the new api_token parameter. This will override usage of the cvaas_token parameter if both are provided. This is because api_token and cvaas_token parameters
+                    are for the same use case and api_token is more generic
+           INFO     Connected to CVP cvp.as73.inetsix.net
+
+
+[12:25:37] INFO     Getting auth token from cvp.as73.inetsix.net for user tom
+[12:25:38] WARNING  Using the new api_token parameter. This will override usage of the cvaas_token parameter if both are provided. This is because api_token and cvaas_token parameters
+                    are for the same use case and api_token is more generic
+           INFO     Connected to CVP cvp.as73.inetsix.net
+
+
+[12:25:38] INFO     Getting auth token from cvp.as73.inetsix.net for user tom
+[12:25:39] WARNING  Using the new api_token parameter. This will override usage of the cvaas_token parameter if both are provided. This is because api_token and cvaas_token parameters
+                    are for the same use case and api_token is more generic
+           INFO     Connected to CVP cvp.as73.inetsix.net
+
+           INFO     Inventory file has been created in /home/tom/Projects/arista/network-test-automation/test-inventory/inventory-spines.yml
+```
