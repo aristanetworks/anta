@@ -14,7 +14,7 @@ This repository is a Python package to automate tests on Arista devices.
   - To automate NRFU (Network Ready For Use) test on a preproduction network
   - To automate tests on a live network (periodically or on demand)
 
-This repository comes with a [cli](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/cli/) to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
+This repository comes with a [cli](cli/overview.md) to run __Arista Network Test Automation__ (ANTA) framework using your preferred shell:
 
 ```bash
 # Install ANTA
@@ -41,7 +41,7 @@ Commands:
   nrfu  Run NRFU against inventory devices
 ```
 
-In addition, previous [scripts](https://github.com/arista-netdevops-community/network-test-automation/blob/master/scripts/) are now marked as __deprecated__ and will be removed in a future release:
+In addition, previous [scripts](./usage-check-devices/) are now marked as __deprecated__ and will be removed in a future release:
 
 - `check-devices.py` is an easy to use script to test your network with ANTA.
 - `collect-eos-commands.py` to collect commands output from devices
