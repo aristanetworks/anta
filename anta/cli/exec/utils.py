@@ -12,8 +12,6 @@ import traceback
 from time import gmtime, strftime
 from typing import Dict, List, Tuple
 
-import paramiko
-from paramiko.ssh_exception import AuthenticationException, SSHException
 from aioeapi import EapiCommandError
 from scp import SCPClient
 
@@ -132,31 +130,6 @@ def device_directories_show_tech_support(dev: str, root_dir: str) -> str:
     return device_directory
 
 
-def create_ssh_client(
-    dev: str, port: int, username: str, password: str, banner_timeout: int = 60
-) -> paramiko.SSHClient:
-    """
-    return a connected ssh client
-    """
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        client.connect(
-            hostname=dev,
-            port=port,
-            username=username,
-            password=password,
-            banner_timeout=banner_timeout
-        )
-    except AuthenticationException as error:
-        logger.error(f'Authentication error for device {dev}')
-        logger.error(error)
-    except SSHException as error:
-        logger.error(f'SSHException for device {dev}')
-        logger.error(error)
-    return client
-
-
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: List[str], ssh_port: int = 22) -> None:
     """
     Collect scheduled show-tech on devices
@@ -184,9 +157,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
                 device.name, root_dir)
 
             # Connect to the device using SSH
-            ssh = create_ssh_client(
-                device.host, ssh_port, device.username, device.password
-            )
+            ssh = device.create_ssh_socket(ssh_port=ssh_port)
 
             try:
                 # Get the zipped file all_files.zip using SCP and save it locally
