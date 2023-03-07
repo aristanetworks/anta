@@ -1,4 +1,4 @@
-# Gest Inventory Information
+# Get Inventory Information
 
 ANTA CLI provides a set of entrypoints to get data from your local inventory.
 
