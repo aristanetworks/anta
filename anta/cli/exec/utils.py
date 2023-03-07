@@ -9,19 +9,15 @@ import asyncio
 import logging
 import os
 import traceback
-from typing import Dict, List, Tuple
 from time import gmtime, strftime
-from aioeapi import EapiCommandError
-
-from anta.inventory import AntaInventory
-from anta.inventory.models import InventoryDevice
-
-from typing import Tuple
+from typing import Dict, List, Tuple
 
 import paramiko
 from aioeapi import EapiCommandError
 from scp import SCPClient
 
+from anta.inventory import AntaInventory
+from anta.inventory.models import InventoryDevice
 
 ZIP_FILE = "/mnt/flash/schedule/all_files.zip"
 
@@ -57,7 +53,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, enable_pass: str, 
     await asyncio.gather(*(clear(device) for device in devices))
 
 
-def device_directories(
+def device_directories_snapshot(
     device: InventoryDevice, root_dir: str
 ) -> Tuple[str, str, str, str]:
     """
@@ -89,7 +85,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
     for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         logger.info("----")
         logger.info(f"Collecting show commands output to device {device.name}")
-        output_dir = device_directories(device, root_dir)
+        output_dir = device_directories_snapshot(device, root_dir)
         try:
             if "json_format" in commands:
                 for command in commands["json_format"]:
@@ -126,7 +122,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
             logger.debug(traceback.format_exc())
 
 
-def device_directories(dev: str, root_dir: str) -> Tuple[str, str]:
+def device_directories_show_tech_support(dev: str, root_dir: str) -> Tuple[str, str]:
     """
     return a tuple containing the show_tech_directory and the device_directory
     """
@@ -174,7 +170,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
                 )
                 logger.info(f"Created {ZIP_FILE} on device {device.name}")
                 # Create directories
-                output_dir = device_directories(device.name, root_dir)
+                output_dir = device_directories_show_tech_support(
+                    device.name, root_dir)
                 # Connect to the dpreevice using SSH
                 ssh = create_ssh_client(
                     device.host, ssh_port, device.username, device.password
