@@ -22,7 +22,7 @@ Options:
 
 ## Collect a set of commands
 
-This command collects all commands you defined in a catalog. It can bei either `json` or `text`.
+This command collects all commands you defined in a catalog. It can be either `json` or `text`.
 
 ```bash
 $ anta exec snapshot --help
