@@ -70,7 +70,7 @@ None
 
 ### Command overview
 
-To get a list of all devices available in your inventory with ANTA information, you can simply use following command
+To get a list of all devices available in your inventory with ANTA, use the following command
 
 ```bash
 anta get inventory --help
