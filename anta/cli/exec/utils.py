@@ -13,13 +13,14 @@ from time import gmtime, strftime
 from typing import Dict, List, Tuple
 
 import paramiko
+from paramiko.ssh_exception import AuthenticationException, SSHException
 from aioeapi import EapiCommandError
 from scp import SCPClient
 
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
 
-ZIP_FILE = "/mnt/flash/schedule/all_files.zip"
+EOS_TECH_SUPPORT_ARCHIVE_ZIP = "/mnt/flash/schedule/all_files.zip"
 
 CURRENT_DATE = strftime("%d %b %Y %H:%M:%S", gmtime())
 
@@ -122,17 +123,13 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
             logger.debug(traceback.format_exc())
 
 
-def device_directories_show_tech_support(dev: str, root_dir: str) -> Tuple[str, str]:
+def device_directories_show_tech_support(dev: str, root_dir: str) -> str:
     """
     return a tuple containing the show_tech_directory and the device_directory
     """
-    cwd = os.getcwd()
-    show_tech_directory = f"{cwd}/{root_dir}"
-    device_directory = f"{show_tech_directory}/{dev}"
-    for directory in [show_tech_directory, device_directory]:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    return show_tech_directory, device_directory
+    device_directory = f"{os.getcwd()}/{root_dir}/{dev}"
+    os.makedirs(device_directory, exist_ok=True)
+    return device_directory
 
 
 def create_ssh_client(
@@ -143,13 +140,20 @@ def create_ssh_client(
     """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(
-        hostname=dev,
-        port=port,
-        username=username,
-        password=password,
-        banner_timeout=banner_timeout
-    )
+    try:
+        client.connect(
+            hostname=dev,
+            port=port,
+            username=username,
+            password=password,
+            banner_timeout=banner_timeout
+        )
+    except AuthenticationException as error:
+        logger.error(f'Authentication error for device {dev}')
+        logger.error(error)
+    except SSHException as error:
+        logger.error(f'SSHException for device {dev}')
+        logger.error(error)
     return client
 
 
@@ -157,6 +161,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
     """
     Collect scheduled show-tech on devices
     """
+    # Set date here so we have same timestamp for all devices.
+    date_current = strftime("%d %b %Y %H:%M:%S", gmtime())
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags)
@@ -166,26 +172,28 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
             try:
                 # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
                 await device.session.cli(
-                    command=f"bash timeout 30 zip {ZIP_FILE} /mnt/flash/schedule/tech-support/*"
+                    command=f"bash timeout 30 zip {EOS_TECH_SUPPORT_ARCHIVE_ZIP} /mnt/flash/schedule/tech-support/*"
                 )
-                logger.info(f"Created {ZIP_FILE} on device {device.name}")
-                # Create directories
-                output_dir = device_directories_show_tech_support(
-                    device.name, root_dir)
-                # Connect to the dpreevice using SSH
-                ssh = create_ssh_client(
-                    device.host, ssh_port, device.username, device.password
-                )
-                # Get the zipped file all_files.zip using SCP and save it locally
-                my_path = f"{output_dir[1]}/{CURRENT_DATE}_{device.name}.zip"
-                scp = SCPClient(ssh.get_transport())
-                scp.get(ZIP_FILE, local_path=my_path)
-                scp.close()
-                # Delete the created zip file on the device
-                await device.session.cli(command=f"bash timeout 30 rm {ZIP_FILE}")
-                logger.info(f"Deleted {ZIP_FILE} on {device.name}")
+                logger.info(f"Created {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on device {device.name}")
+
             except EapiCommandError as e:
-                logger.error(f"Command failed on {device.name}: {e.errmsg}")
+                logger.error(f"Unable to create tech-support archove on {device.name}: {e.errmsg}")
+
+            # Create directories
+            tech_support_root_local_path = device_directories_show_tech_support(
+                device.name, root_dir)
+
+            # Connect to the dpreevice using SSH
+            ssh = create_ssh_client(
+                device.host, ssh_port, device.username, device.password
+            )
+
+            try:
+                # Get the zipped file all_files.zip using SCP and save it locally
+                tech_support_device_local_path = f"{tech_support_root_local_path}/{date_current}_{device.name.lower()}.zip"
+                with SCPClient(ssh.get_transport()) as scp:
+                    scp.get(EOS_TECH_SUPPORT_ARCHIVE_ZIP, local_path=tech_support_device_local_path)
+
             except Exception as e:  # pylint: disable=broad-except
                 logger.error(
                     f"Could not collect show tech files on device {device.name}"
@@ -194,4 +202,12 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
                     f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
                 )
                 logger.debug(traceback.format_exc())
+
+            try:
+                # Delete the created zip file on the device
+                await device.session.cli(command=f"bash timeout 30 rm {EOS_TECH_SUPPORT_ARCHIVE_ZIP}")
+                logger.info(f"Deleted {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on {device.name}")
+            except EapiCommandError as e:
+                logger.error(f"Unable to delete tech-support archive on {device.name}: {e.errmsg}")
+
         logger.info("Done collecting scheduled show-tech")
