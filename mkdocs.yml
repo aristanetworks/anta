@@ -2,7 +2,7 @@
 site_name: ANTA
 site_author: Khelil Sator
 site_description: Arista Network Test Automation
-copyright: Copyright &copy; 2019 - 2022 Arista Networks
+copyright: Copyright &copy; 2019 - 2023 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
@@ -60,7 +60,7 @@ extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
   - docs/stylesheets/tables.js
   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
-  - docs/stylesheets/highlight.js
+  # - docs/stylesheets/highlight.js
 
 plugins:
   - mkdocstrings:
@@ -126,12 +126,15 @@ nav:
   - Home: README.md
   - Getting Started: getting-started.md
   - Installation: requirements-and-installation.md
-  - Usage:
-    - Inventory & Tests catalog: usage-inventory-catalog.md
-    - Arista Network Testing Automation CLI: usage-anta-cli.md
-    - Check Devices: usage-check-devices.md
-    - ANTA as python lib: usage-as-python-lib.md
-    - Other scripts: usage.md
+  - Inventory & Tests catalog: usage-inventory-catalog.md
+  # - Usage:
+    # - Arista Network Testing Automation CLI: usage-anta-cli.md
+  - Anta CLI:
+    - Overview: cli/overview.md
+    - NRFU: cli/nrfu.md
+    - Execute commands: cli/exec.md
+    - Inventory from CVP: cli/inv-from-cvp.md
+    - Get Inventory Information: cli/get-inventory-information.md
   - Tests Catalog Documentation:
     - Overview: api/tests.md
     - Configuration: api/tests.configuration.md
@@ -147,10 +150,14 @@ nav:
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
   - API Documentation:
+    - ANTA as python lib: usage-as-python-lib.md
     - Inventory module: api/inventory.md
     - Inventory models:
       - User Inventory data model: api/inventory.models.input.md
       - Generated Inventory data model: api/inventory.models.md
     - Result Manager module: api/result_manager.md
     - Result Manager models: api/result_manager.models.md
+  - Scripts (deprecated):
+    - Check Devices: usage-check-devices.md
+    - Other scripts: usage.md
   - Contributions: contribution.md
