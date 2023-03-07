@@ -22,7 +22,7 @@ Options:
 
 ### Example
 
-Let consider the following inventory:
+Let's consider the following inventory:
 
 ```yaml
 anta_inventory:
