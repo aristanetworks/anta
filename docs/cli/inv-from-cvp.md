@@ -1,6 +1,6 @@
 # Create inventory from CloudVision
 
-In large setup, it can be useful to create your inventory based on CloudVision inventory.
+In a large setup, it can be useful to create your inventory based on CloudVision inventory.
 
 ```bash
 $ anta get from-cvp
