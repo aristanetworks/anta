@@ -183,7 +183,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: L
             tech_support_root_local_path = device_directories_show_tech_support(
                 device.name, root_dir)
 
-            # Connect to the dpreevice using SSH
+            # Connect to the device using SSH
             ssh = create_ssh_client(
                 device.host, ssh_port, device.username, device.password
             )
