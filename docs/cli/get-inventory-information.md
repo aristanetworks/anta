@@ -120,7 +120,7 @@ anta_inventory:
     tags: ['fabric', 'leaf']
 ```
 
-You can get ANTA inventory with command:
+You can get ANTA inventory with the command:
 
 ```bash
 $ anta --username ansible --password ansible get inventory --tags spine
