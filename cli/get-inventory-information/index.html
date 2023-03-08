@@ -13,17 +13,17 @@
       
       
       
-        <link rel="prev" href="../../cli/get-inventory-information/">
+        <link rel="prev" href="../inv-from-cvp/">
       
       
-        <link rel="next" href="../tests.configuration/">
+        <link rel="next" href="../../api/tests/">
       
       <link rel="icon" href="../../docs/_media/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.1">
     
     
       
-        <title>Overview - Arista Network Test Automation - ANTA</title>
+        <title>Get Inventory Information - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-tests-landing-page" class="md-skip">
+        <a href="#get-inventory-information" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Get Inventory Information
             
           </span>
         </div>
@@ -302,14 +302,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
       
       
         
@@ -330,7 +332,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Anta CLI
@@ -343,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -357,7 +359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/nrfu/" class="md-nav__link">
+      <a href="../nrfu/" class="md-nav__link">
         NRFU
       </a>
     </li>
@@ -371,7 +373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/exec/" class="md-nav__link">
+      <a href="../exec/" class="md-nav__link">
         Execute commands
       </a>
     </li>
@@ -385,7 +387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../inv-from-cvp/" class="md-nav__link">
         Inventory from CVP
       </a>
     </li>
@@ -397,11 +399,108 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../cli/get-inventory-information/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Get Inventory Information
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Get Inventory Information
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#get-inventory-information" class="md-nav__link">
+    Get Inventory Information
+  </a>
+  
+    <nav class="md-nav" aria-label="Get Inventory Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-all-configured-tags" class="md-nav__link">
+    Get all configured tags
+  </a>
+  
+    <nav class="md-nav" aria-label="Get all configured tags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-devices-in-inventory" class="md-nav__link">
+    List devices in inventory
+  </a>
+  
+    <nav class="md-nav" aria-label="List devices in inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview_1" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -419,16 +518,14 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
       
       
         
@@ -459,7 +556,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           Tests Catalog Documentation
@@ -470,48 +567,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Overview
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../api/tests/" class="md-nav__link">
         Overview
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#anta-tests-landing-page" class="md-nav__link">
-    ANTA Tests landing page
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -523,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -537,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         Hardware
       </a>
     </li>
@@ -551,7 +611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         Interfaces
       </a>
     </li>
@@ -565,7 +625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         MLAG
       </a>
     </li>
@@ -579,7 +639,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.multicast/" class="md-nav__link">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         Multicast
       </a>
     </li>
@@ -593,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.profiles/" class="md-nav__link">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         Profiles
       </a>
     </li>
@@ -607,7 +667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         System
       </a>
     </li>
@@ -621,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         Software
       </a>
     </li>
@@ -670,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -684,7 +744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         BGP
       </a>
     </li>
@@ -698,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         OSPF
       </a>
     </li>
@@ -780,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         Inventory module
       </a>
     </li>
@@ -827,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -841,7 +901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models/" class="md-nav__link">
+      <a href="../../api/inventory.models/" class="md-nav__link">
         Generated Inventory data model
       </a>
     </li>
@@ -862,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         Result Manager module
       </a>
     </li>
@@ -876,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager.models.md" class="md-nav__link">
+      <a href="../../api/result_manager.models.md" class="md-nav__link">
         Result Manager models
       </a>
     </li>
@@ -999,9 +1059,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#anta-tests-landing-page" class="md-nav__link">
-    ANTA Tests landing page
+  <a href="#get-inventory-information" class="md-nav__link">
+    Get Inventory Information
   </a>
+  
+    <nav class="md-nav" aria-label="Get Inventory Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-all-configured-tags" class="md-nav__link">
+    Get all configured tags
+  </a>
+  
+    <nav class="md-nav" aria-label="Get all configured tags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-devices-in-inventory" class="md-nav__link">
+    List devices in inventory
+  </a>
+  
+    <nav class="md-nav" aria-label="List devices in inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview_1" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1023,24 +1143,143 @@
   
 
 
-  <h1>Overview</h1>
+  <h1>Get Inventory Information</h1>
 
-<h3 id="anta-tests-landing-page">ANTA Tests landing page<a class="headerlink" href="#anta-tests-landing-page" title="Permanent link">&para;</a></h3>
-<p>This section describes all the available tests provided by ANTA package.</p>
-<ul>
-<li><a href="../tests.configuration/">Configuration</a></li>
-<li><a href="../tests.hardware/">Hardware</a></li>
-<li><a href="../tests.interfaces/">interfaces</a></li>
-<li><a href="../tests.mlag/">MLAG</a></li>
-<li><a href="../tests.multicast/">Multicast</a></li>
-<li><a href="../tests.profiles/">Profiles</a></li>
-<li><a href="../tests.system/">System</a></li>
-<li><a href="../tests.software/">Software</a></li>
-<li><a href="../tests.routing.generic/">Routing Generic</a></li>
-<li><a href="../tests.routing.bgp/">Routing BGP</a></li>
-<li><a href="../tests.routing.ospf/">Routing OSPF</a></li>
-</ul>
-<p>Al these tests can be imported in a <a href="../../usage-inventory-catalog/">catalog</a> to be used by <a href="../../usage-check-devices/"><code>check-devices.py</code></a> script.</p>
+<h3 id="get-inventory-information">Get Inventory Information<a class="headerlink" href="#get-inventory-information" title="Permanent link">&para;</a></h3>
+<p>ANTA CLI provides a set of entrypoints to get data from your local inventory.</p>
+<h4 id="get-all-configured-tags">Get all configured tags<a class="headerlink" href="#get-all-configured-tags" title="Permanent link">&para;</a></h4>
+<p>Since most commands in anta support tags filtering, this command helps you list all available tags configured in your inventory.</p>
+<h5 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tags<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+
+<span class="w">  </span>Get<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>configured<span class="w"> </span>tags<span class="w"> </span><span class="k">in</span><span class="w"> </span>user<span class="w"> </span>inventory.
+
+Options:
+<span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>debug<span class="p">|</span>info<span class="p">|</span>warning<span class="p">|</span>critical<span class="o">]</span>
+<span class="w">                                  </span>Logging<span class="w"> </span>level<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span>
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</code></pre></div>
+<h5 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h5>
+<p>Let&rsquo;s consider the following inventory:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.10</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine01</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.11</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine02</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.12</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf01</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.13</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf02</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.14</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf03</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.15</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf04</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>To get the list of all configured tags in your CLI, run the following command:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags
+Tags<span class="w"> </span>found:
+<span class="o">[</span>
+<span class="w">  </span><span class="s2">&quot;all&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;fabric&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;leaf&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;spine&quot;</span>
+<span class="o">]</span>
+None
+
+*<span class="w"> </span>note<span class="w"> </span>that<span class="w"> </span>tag<span class="w"> </span>all<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>added<span class="w"> </span>by<span class="w"> </span>anta
+</code></pre></div>
+<div class="admonition info default tag">
+<p class="admonition-title">Info</p>
+<p>As you can see, the tag <code>all</code> has been added even if not explicitely configued in your inventory. This tag is the default tag added to all your devices to run commands against your inventory when you do not provide any specific tag.</p>
+</div>
+<h4 id="list-devices-in-inventory">List devices in inventory<a class="headerlink" href="#list-devices-in-inventory" title="Permanent link">&para;</a></h4>
+<h5 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h5>
+<p>To get a list of all devices available in your inventory with ANTA, use the following command</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+
+<span class="w">  </span>Show<span class="w"> </span>inventory<span class="w"> </span>loaded<span class="w"> </span><span class="k">in</span><span class="w"> </span>ANTA.
+
+Options:
+<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">                 </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
+<span class="w">                                  </span>tag1,tag2,tag3
+<span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>debug<span class="p">|</span>info<span class="p">|</span>warning<span class="p">|</span>critical<span class="o">]</span>
+<span class="w">                                  </span>Logging<span class="w"> </span>level<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span>
+<span class="w">  </span>--connected<span class="w"> </span>/<span class="w"> </span>--not-connected<span class="w">   </span>Display<span class="w"> </span>inventory<span class="w"> </span>after<span class="w"> </span>connection<span class="w"> </span>has<span class="w"> </span>been
+<span class="w">                                  </span>created
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</code></pre></div>
+<p>It will give you all information loaded in ANTA inventory from your <a href="../../usage-inventory-catalog/">inventory file</a>.</p>
+<div class="admonition info offline information only">
+<p class="admonition-title">Info</p>
+<p>By default only information not based on device connection is available. If you want to get information based on connection such as hardware model, you should use the <code>--connected</code> option.</p>
+</div>
+<h5 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h5>
+<p>Considering the following inventory file:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.10</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine01</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.11</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spine02</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;spine&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.12</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf01</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.13</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf02</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.14</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf03</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.15</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf04</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;leaf&#39;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>You can get ANTA inventory with the command:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>--username<span class="w"> </span>ansible<span class="w"> </span>--password<span class="w"> </span>ansible<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span>--tags<span class="w"> </span>spine
+Current<span class="w"> </span>inventory<span class="w"> </span>content<span class="w"> </span>is:
+<span class="o">[</span>
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;spine01&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;host&quot;</span>:<span class="w"> </span><span class="s2">&quot;192.168.0.10&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;username&quot;</span>:<span class="w"> </span><span class="s2">&quot;ansible&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;password&quot;</span>:<span class="w"> </span><span class="s2">&quot;ansible&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;port&quot;</span>:<span class="w"> </span><span class="s2">&quot;443&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;enable_password&quot;</span>:<span class="w"> </span><span class="s2">&quot;None&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;session&quot;</span>:<span class="w"> </span><span class="s2">&quot;&lt;aioeapi.device.Device object at 0x7fa98d0a2d30&gt;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;hw_model&quot;</span>:<span class="w"> </span><span class="s2">&quot;unset&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;tags&quot;</span>:<span class="w"> </span><span class="s2">&quot;[&#39;fabric&#39;, &#39;spine&#39;, &#39;all&#39;]&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;timeout&quot;</span>:<span class="w"> </span><span class="s2">&quot;10.0&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;established&quot;</span>:<span class="w"> </span><span class="s2">&quot;False&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;is_online&quot;</span>:<span class="w"> </span><span class="s2">&quot;False&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;spine02&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;host&quot;</span>:<span class="w"> </span><span class="s2">&quot;192.168.0.11&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;username&quot;</span>:<span class="w"> </span><span class="s2">&quot;ansible&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;password&quot;</span>:<span class="w"> </span><span class="s2">&quot;ansible&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;port&quot;</span>:<span class="w"> </span><span class="s2">&quot;443&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;enable_password&quot;</span>:<span class="w"> </span><span class="s2">&quot;None&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;session&quot;</span>:<span class="w"> </span><span class="s2">&quot;&lt;aioeapi.device.Device object at 0x7fa98d0a2ac0&gt;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;hw_model&quot;</span>:<span class="w"> </span><span class="s2">&quot;unset&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;tags&quot;</span>:<span class="w"> </span><span class="s2">&quot;[&#39;fabric&#39;, &#39;spine&#39;, &#39;all&#39;]&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;timeout&quot;</span>:<span class="w"> </span><span class="s2">&quot;10.0&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;established&quot;</span>:<span class="w"> </span><span class="s2">&quot;False&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;is_online&quot;</span>:<span class="w"> </span><span class="s2">&quot;False&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">]</span>
+None
+</code></pre></div>
 
   <hr>
 <div class="md-source-file">

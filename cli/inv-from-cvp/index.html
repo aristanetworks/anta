@@ -13,24 +13,24 @@
       
       
       
-        <link rel="prev" href="../getting-started/">
+        <link rel="prev" href="../exec/">
       
       
-        <link rel="next" href="../usage-inventory-catalog/">
+        <link rel="next" href="../get-inventory-information/">
       
-      <link rel="icon" href="../docs/_media/favicon.ico">
+      <link rel="icon" href="../../docs/_media/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.1">
     
     
       
-        <title>Installation - Arista Network Test Automation - ANTA</title>
+        <title>Inventory from CVP - Arista Network Test Automation - ANTA</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.402914a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -46,11 +46,11 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../stylesheets/extra.material.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.material.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-requirements" class="md-skip">
+        <a href="#create-inventory-from-cloudvision" class="md-skip">
           Skip to content
         </a>
       
@@ -95,7 +95,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              Inventory from CVP
             
           </span>
         </div>
@@ -213,7 +213,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -244,7 +244,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -259,7 +259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         Getting Started
       </a>
     </li>
@@ -272,102 +272,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Installation
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../requirements-and-installation/" class="md-nav__link">
         Installation
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#anta-requirements" class="md-nav__link">
-    ANTA Requirements
-  </a>
-  
-    <nav class="md-nav" aria-label="ANTA Requirements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#python-version" class="md-nav__link">
-    Python version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-package" class="md-nav__link">
-    Install ANTA package
-  </a>
-  
-    <nav class="md-nav" aria-label="Install ANTA package">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#install-from-pypi-server" class="md-nav__link">
-    Install from Pypi server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-from-github" class="md-nav__link">
-    Install ANTA from github
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#check-installation" class="md-nav__link">
-    Check installation
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#eos-requirements" class="md-nav__link">
-    EOS Requirements
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -380,7 +289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-inventory-catalog/" class="md-nav__link">
+      <a href="../../usage-inventory-catalog/" class="md-nav__link">
         Inventory & Tests catalog
       </a>
     </li>
@@ -393,14 +302,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
       
       
         
@@ -421,7 +332,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Anta CLI
@@ -434,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -448,7 +359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/nrfu/" class="md-nav__link">
+      <a href="../nrfu/" class="md-nav__link">
         NRFU
       </a>
     </li>
@@ -462,7 +373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/exec/" class="md-nav__link">
+      <a href="../exec/" class="md-nav__link">
         Execute commands
       </a>
     </li>
@@ -474,11 +385,48 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../cli/inv-from-cvp/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Inventory from CVP
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Inventory from CVP
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-inventory-from-cloudvision" class="md-nav__link">
+    Create inventory from CloudVision
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -490,7 +438,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/get-inventory-information/" class="md-nav__link">
+      <a href="../get-inventory-information/" class="md-nav__link">
         Get Inventory Information
       </a>
     </li>
@@ -561,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -575,7 +523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -589,7 +537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         Hardware
       </a>
     </li>
@@ -603,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         Interfaces
       </a>
     </li>
@@ -617,7 +565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         MLAG
       </a>
     </li>
@@ -631,7 +579,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.multicast/" class="md-nav__link">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         Multicast
       </a>
     </li>
@@ -645,7 +593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.profiles/" class="md-nav__link">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         Profiles
       </a>
     </li>
@@ -659,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         System
       </a>
     </li>
@@ -673,7 +621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         Software
       </a>
     </li>
@@ -722,7 +670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -736,7 +684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         BGP
       </a>
     </li>
@@ -750,7 +698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         OSPF
       </a>
     </li>
@@ -818,7 +766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-as-python-lib/" class="md-nav__link">
+      <a href="../../usage-as-python-lib/" class="md-nav__link">
         ANTA as python lib
       </a>
     </li>
@@ -832,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         Inventory module
       </a>
     </li>
@@ -879,7 +827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -893,7 +841,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory.models/" class="md-nav__link">
+      <a href="../../api/inventory.models/" class="md-nav__link">
         Generated Inventory data model
       </a>
     </li>
@@ -914,7 +862,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         Result Manager module
       </a>
     </li>
@@ -928,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/result_manager.models.md" class="md-nav__link">
+      <a href="../../api/result_manager.models.md" class="md-nav__link">
         Result Manager models
       </a>
     </li>
@@ -983,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-check-devices/" class="md-nav__link">
+      <a href="../../usage-check-devices/" class="md-nav__link">
         Check Devices
       </a>
     </li>
@@ -997,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/" class="md-nav__link">
+      <a href="../../usage/" class="md-nav__link">
         Other scripts
       </a>
     </li>
@@ -1019,7 +967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contribution/" class="md-nav__link">
+      <a href="../../contribution/" class="md-nav__link">
         Contributions
       </a>
     </li>
@@ -1051,63 +999,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#anta-requirements" class="md-nav__link">
-    ANTA Requirements
+  <a href="#create-inventory-from-cloudvision" class="md-nav__link">
+    Create inventory from CloudVision
   </a>
-  
-    <nav class="md-nav" aria-label="ANTA Requirements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#python-version" class="md-nav__link">
-    Python version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-package" class="md-nav__link">
-    Install ANTA package
-  </a>
-  
-    <nav class="md-nav" aria-label="Install ANTA package">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#install-from-pypi-server" class="md-nav__link">
-    Install from Pypi server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-from-github" class="md-nav__link">
-    Install ANTA from github
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#check-installation" class="md-nav__link">
-    Check installation
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#eos-requirements" class="md-nav__link">
-    EOS Requirements
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1129,71 +1023,63 @@
   
 
 
-  <h1>Installation</h1>
+  <h1>Inventory from CVP</h1>
 
-<h3 id="anta-requirements">ANTA Requirements<a class="headerlink" href="#anta-requirements" title="Permanent link">&para;</a></h3>
-<h4 id="python-version">Python version<a class="headerlink" href="#python-version" title="Permanent link">&para;</a></h4>
-<p>Python 3 (<code>&gt;=3.8</code> and <code>=&lt;3.10</code>) is required:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>--version
-Python<span class="w"> </span><span class="m">3</span>.9.9
-</code></pre></div>
-<h4 id="install-anta-package">Install ANTA package<a class="headerlink" href="#install-anta-package" title="Permanent link">&para;</a></h4>
-<p>This installation will deploy tests collection, scripts and all their Python requirements.</p>
-<p>The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/pyproject.toml#L20">pyproject.toml</a> file</p>
-<h5 id="install-from-pypi-server">Install from Pypi server<a class="headerlink" href="#install-from-pypi-server" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>anta
-</code></pre></div>
-<h5 id="install-anta-from-github">Install ANTA from github<a class="headerlink" href="#install-anta-from-github" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/arista-netdevops-community/network-test-automation.git
-</code></pre></div>
-<p>You can even specify the branch, tag or commit:</p>
-<ul>
-<li><code>&lt;anta-repository&gt;@&lt;cool-feature-branch&gt;</code></li>
-<li><code>&lt;anta-repository&gt;@&lt;cool-tag&gt;</code></li>
-<li><code>&lt;anta-repository&gt;@&lt;cool-hash&gt;</code></li>
-</ul>
-<h5 id="check-installation">Check installation<a class="headerlink" href="#check-installation" title="Permanent link">&para;</a></h5>
-<p>Run these commands to verify:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check ANTA has been installed in your python path</span>
-pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>anta
+<h3 id="create-inventory-from-cloudvision">Create inventory from CloudVision<a class="headerlink" href="#create-inventory-from-cloudvision" title="Permanent link">&para;</a></h3>
+<p>In a large setup, it can be useful to create your inventory based on CloudVision inventory.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-cvp
+Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-cvp<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="c1"># Check scripts are in your $PATH</span>
-<span class="c1"># Path may differ but it means CLI is in your path</span>
-which<span class="w"> </span>anta
-/home/tom/.pyenv/shims/anta
+<span class="w">  </span>Build<span class="w"> </span>ANTA<span class="w"> </span>inventory<span class="w"> </span>from<span class="w"> </span>Cloudvision
 
-<span class="c1"># Chck ANTA version</span>
-anta<span class="w"> </span>--version
-anta,<span class="w"> </span>version<span class="w"> </span><span class="m">0</span>.4.0
+Options:
+<span class="w">  </span>-ip,<span class="w"> </span>--cvp-ip<span class="w"> </span>TEXT<span class="w">              </span>CVP<span class="w"> </span>IP<span class="w"> </span>Address
+<span class="w">  </span>-u,<span class="w"> </span>--cvp-username<span class="w"> </span>TEXT<span class="w">         </span>CVP<span class="w"> </span>Username
+<span class="w">  </span>-p,<span class="w"> </span>--cvp-password<span class="w"> </span>TEXT<span class="w">         </span>CVP<span class="w"> </span>Password<span class="w"> </span>/<span class="w"> </span>token
+<span class="w">  </span>-c,<span class="w"> </span>--cvp-container<span class="w"> </span>TEXT<span class="w">        </span>Container<span class="w"> </span>where<span class="w"> </span>devices<span class="w"> </span>are<span class="w"> </span>configured
+<span class="w">  </span>-d,<span class="w"> </span>--inventory-directory<span class="w"> </span>PATH<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file
+<span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>debug<span class="p">|</span>info<span class="p">|</span>warning<span class="p">|</span>critical<span class="o">]</span>
+<span class="w">                                  </span>Logging<span class="w"> </span>level<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span>
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<h4 id="eos-requirements">EOS Requirements<a class="headerlink" href="#eos-requirements" title="Permanent link">&para;</a></h4>
-<p>To get ANTA working, your Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):</p>
-<div class="highlight"><pre><span></span><code>configure
-!
-vrf instance MGMT
-!
-interface Management1
-   description oob_management
-   vrf MGMT
-   ip address 10.73.1.105/24
-!
-end
+<p>Output is an inventory with the name of the container added as a tag for the host:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.13</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf2</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod1</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.15</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaf4</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod2</span>
 </code></pre></div>
-<p>Enable eAPI on the MGMT vrf:</p>
-<div class="highlight"><pre><span></span><code>configure
-!
-management api http-commands
-   protocol https port 443
-   no shutdown
-   vrf MGMT
-      no shutdown
-!
-end
-</code></pre></div>
-<p>Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.</p>
-<p>Run these EOS commands to verify:</p>
-<div class="highlight"><pre><span></span><code>show management http-server
-show management api http-commands
+<div class="admonition warning container lookup is not recursive">
+<p class="admonition-title">Warning</p>
+<p>Current implementation only takes devices directly attached to a specific container when using cli with <code>--cvp-container</code> option.</p>
+</div>
+<p>If you want to build an inventory based on multiple containers, you can use a bash command as shown below and then manually concatenate files to create a single inventory file.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="k">for</span><span class="w"> </span>container<span class="w"> </span><span class="k">in</span><span class="w"> </span>pod01<span class="w"> </span>pod02<span class="w"> </span>spines<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-cvp<span class="w"> </span>-ip<span class="w"> </span>&lt;cvp-ip&gt;<span class="w"> </span>-u<span class="w"> </span>cvpadmin<span class="w"> </span>-p<span class="w"> </span>cvpadmin<span class="w"> </span>-c<span class="w"> </span><span class="nv">$container</span><span class="w"> </span>-d<span class="w"> </span>test-inventory<span class="p">;</span><span class="w"> </span><span class="k">done</span>
+
+<span class="o">[</span><span class="m">12</span>:25:35<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Getting<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>from<span class="w"> </span>cvp.as73.inetsix.net<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span>tom
+<span class="o">[</span><span class="m">12</span>:25:36<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Creating<span class="w"> </span>inventory<span class="w"> </span>folder<span class="w"> </span>/home/tom/Projects/arista/network-test-automation/test-inventory
+<span class="w">           </span>WARNING<span class="w">  </span>Using<span class="w"> </span>the<span class="w"> </span>new<span class="w"> </span>api_token<span class="w"> </span>parameter.<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>override<span class="w"> </span>usage<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>cvaas_token<span class="w"> </span>parameter<span class="w"> </span><span class="k">if</span><span class="w"> </span>both<span class="w"> </span>are<span class="w"> </span>provided.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>because<span class="w"> </span>api_token<span class="w"> </span>and<span class="w"> </span>cvaas_token<span class="w"> </span>parameters
+<span class="w">                    </span>are<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>use<span class="w"> </span><span class="k">case</span><span class="w"> </span>and<span class="w"> </span>api_token<span class="w"> </span>is<span class="w"> </span>more<span class="w"> </span>generic
+<span class="w">           </span>INFO<span class="w">     </span>Connected<span class="w"> </span>to<span class="w"> </span>CVP<span class="w"> </span>cvp.as73.inetsix.net
+
+
+<span class="o">[</span><span class="m">12</span>:25:37<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Getting<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>from<span class="w"> </span>cvp.as73.inetsix.net<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span>tom
+<span class="o">[</span><span class="m">12</span>:25:38<span class="o">]</span><span class="w"> </span>WARNING<span class="w">  </span>Using<span class="w"> </span>the<span class="w"> </span>new<span class="w"> </span>api_token<span class="w"> </span>parameter.<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>override<span class="w"> </span>usage<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>cvaas_token<span class="w"> </span>parameter<span class="w"> </span><span class="k">if</span><span class="w"> </span>both<span class="w"> </span>are<span class="w"> </span>provided.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>because<span class="w"> </span>api_token<span class="w"> </span>and<span class="w"> </span>cvaas_token<span class="w"> </span>parameters
+<span class="w">                    </span>are<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>use<span class="w"> </span><span class="k">case</span><span class="w"> </span>and<span class="w"> </span>api_token<span class="w"> </span>is<span class="w"> </span>more<span class="w"> </span>generic
+<span class="w">           </span>INFO<span class="w">     </span>Connected<span class="w"> </span>to<span class="w"> </span>CVP<span class="w"> </span>cvp.as73.inetsix.net
+
+
+<span class="o">[</span><span class="m">12</span>:25:38<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Getting<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>from<span class="w"> </span>cvp.as73.inetsix.net<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span>tom
+<span class="o">[</span><span class="m">12</span>:25:39<span class="o">]</span><span class="w"> </span>WARNING<span class="w">  </span>Using<span class="w"> </span>the<span class="w"> </span>new<span class="w"> </span>api_token<span class="w"> </span>parameter.<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>override<span class="w"> </span>usage<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>cvaas_token<span class="w"> </span>parameter<span class="w"> </span><span class="k">if</span><span class="w"> </span>both<span class="w"> </span>are<span class="w"> </span>provided.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>because<span class="w"> </span>api_token<span class="w"> </span>and<span class="w"> </span>cvaas_token<span class="w"> </span>parameters
+<span class="w">                    </span>are<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>use<span class="w"> </span><span class="k">case</span><span class="w"> </span>and<span class="w"> </span>api_token<span class="w"> </span>is<span class="w"> </span>more<span class="w"> </span>generic
+<span class="w">           </span>INFO<span class="w">     </span>Connected<span class="w"> </span>to<span class="w"> </span>CVP<span class="w"> </span>cvp.as73.inetsix.net
+
+<span class="w">           </span>INFO<span class="w">     </span>Inventory<span class="w"> </span>file<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>/home/tom/Projects/arista/network-test-automation/test-inventory/inventory-spines.yml
 </code></pre></div>
 
   <hr>
@@ -1254,10 +1140,10 @@ show management api http-commands
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.b78d2936.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b78d2936.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

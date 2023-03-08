@@ -13,24 +13,24 @@
       
       
       
-        <link rel="prev" href="../getting-started/">
+        <link rel="prev" href="../overview/">
       
       
-        <link rel="next" href="../usage-inventory-catalog/">
+        <link rel="next" href="../exec/">
       
-      <link rel="icon" href="../docs/_media/favicon.ico">
+      <link rel="icon" href="../../docs/_media/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.1">
     
     
       
-        <title>Installation - Arista Network Test Automation - ANTA</title>
+        <title>NRFU - Arista Network Test Automation - ANTA</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.402914a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -46,11 +46,11 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../stylesheets/extra.material.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.material.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-requirements" class="md-skip">
+        <a href="#execute-nrfu-testing" class="md-skip">
           Skip to content
         </a>
       
@@ -95,7 +95,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              NRFU
             
           </span>
         </div>
@@ -213,7 +213,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -244,7 +244,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -259,7 +259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         Getting Started
       </a>
     </li>
@@ -272,102 +272,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Installation
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../requirements-and-installation/" class="md-nav__link">
         Installation
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#anta-requirements" class="md-nav__link">
-    ANTA Requirements
-  </a>
-  
-    <nav class="md-nav" aria-label="ANTA Requirements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#python-version" class="md-nav__link">
-    Python version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-package" class="md-nav__link">
-    Install ANTA package
-  </a>
-  
-    <nav class="md-nav" aria-label="Install ANTA package">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#install-from-pypi-server" class="md-nav__link">
-    Install from Pypi server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-anta-from-github" class="md-nav__link">
-    Install ANTA from github
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#check-installation" class="md-nav__link">
-    Check installation
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#eos-requirements" class="md-nav__link">
-    EOS Requirements
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -380,7 +289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-inventory-catalog/" class="md-nav__link">
+      <a href="../../usage-inventory-catalog/" class="md-nav__link">
         Inventory & Tests catalog
       </a>
     </li>
@@ -393,14 +302,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
       
       
         
@@ -421,7 +332,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Anta CLI
@@ -434,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -446,11 +357,75 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../cli/nrfu/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          NRFU
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         NRFU
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#execute-nrfu-testing" class="md-nav__link">
+    Execute NRFU testing
+  </a>
+  
+    <nav class="md-nav" aria-label="Execute NRFU testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nrfu-with-text-rendering" class="md-nav__link">
+    NRFU with text rendering
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nrfu-with-table-report" class="md-nav__link">
+    NRFU with table report
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nrfu-with-json-output" class="md-nav__link">
+    NRFU with JSON output
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -462,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/exec/" class="md-nav__link">
+      <a href="../exec/" class="md-nav__link">
         Execute commands
       </a>
     </li>
@@ -476,7 +451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../inv-from-cvp/" class="md-nav__link">
         Inventory from CVP
       </a>
     </li>
@@ -490,7 +465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/get-inventory-information/" class="md-nav__link">
+      <a href="../get-inventory-information/" class="md-nav__link">
         Get Inventory Information
       </a>
     </li>
@@ -561,7 +536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -575,7 +550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -589,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         Hardware
       </a>
     </li>
@@ -603,7 +578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         Interfaces
       </a>
     </li>
@@ -617,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         MLAG
       </a>
     </li>
@@ -631,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.multicast/" class="md-nav__link">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         Multicast
       </a>
     </li>
@@ -645,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.profiles/" class="md-nav__link">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         Profiles
       </a>
     </li>
@@ -659,7 +634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         System
       </a>
     </li>
@@ -673,7 +648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         Software
       </a>
     </li>
@@ -722,7 +697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -736,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         BGP
       </a>
     </li>
@@ -750,7 +725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         OSPF
       </a>
     </li>
@@ -818,7 +793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-as-python-lib/" class="md-nav__link">
+      <a href="../../usage-as-python-lib/" class="md-nav__link">
         ANTA as python lib
       </a>
     </li>
@@ -832,7 +807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         Inventory module
       </a>
     </li>
@@ -879,7 +854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -893,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/inventory.models/" class="md-nav__link">
+      <a href="../../api/inventory.models/" class="md-nav__link">
         Generated Inventory data model
       </a>
     </li>
@@ -914,7 +889,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         Result Manager module
       </a>
     </li>
@@ -928,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/result_manager.models.md" class="md-nav__link">
+      <a href="../../api/result_manager.models.md" class="md-nav__link">
         Result Manager models
       </a>
     </li>
@@ -983,7 +958,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage-check-devices/" class="md-nav__link">
+      <a href="../../usage-check-devices/" class="md-nav__link">
         Check Devices
       </a>
     </li>
@@ -997,7 +972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/" class="md-nav__link">
+      <a href="../../usage/" class="md-nav__link">
         Other scripts
       </a>
     </li>
@@ -1019,7 +994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contribution/" class="md-nav__link">
+      <a href="../../contribution/" class="md-nav__link">
         Contributions
       </a>
     </li>
@@ -1051,57 +1026,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#anta-requirements" class="md-nav__link">
-    ANTA Requirements
+  <a href="#execute-nrfu-testing" class="md-nav__link">
+    Execute NRFU testing
   </a>
   
-    <nav class="md-nav" aria-label="ANTA Requirements">
+    <nav class="md-nav" aria-label="Execute NRFU testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#python-version" class="md-nav__link">
-    Python version
+  <a href="#nrfu-with-text-rendering" class="md-nav__link">
+    NRFU with text rendering
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-anta-package" class="md-nav__link">
-    Install ANTA package
-  </a>
-  
-    <nav class="md-nav" aria-label="Install ANTA package">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#install-from-pypi-server" class="md-nav__link">
-    Install from Pypi server
+  <a href="#nrfu-with-table-report" class="md-nav__link">
+    NRFU with table report
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-anta-from-github" class="md-nav__link">
-    Install ANTA from github
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#check-installation" class="md-nav__link">
-    Check installation
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#eos-requirements" class="md-nav__link">
-    EOS Requirements
+  <a href="#nrfu-with-json-output" class="md-nav__link">
+    NRFU with JSON output
   </a>
   
 </li>
@@ -1129,71 +1077,84 @@
   
 
 
-  <h1>Installation</h1>
+  <h1>NRFU</h1>
 
-<h3 id="anta-requirements">ANTA Requirements<a class="headerlink" href="#anta-requirements" title="Permanent link">&para;</a></h3>
-<h4 id="python-version">Python version<a class="headerlink" href="#python-version" title="Permanent link">&para;</a></h4>
-<p>Python 3 (<code>&gt;=3.8</code> and <code>=&lt;3.10</code>) is required:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>--version
-Python<span class="w"> </span><span class="m">3</span>.9.9
-</code></pre></div>
-<h4 id="install-anta-package">Install ANTA package<a class="headerlink" href="#install-anta-package" title="Permanent link">&para;</a></h4>
-<p>This installation will deploy tests collection, scripts and all their Python requirements.</p>
-<p>The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/pyproject.toml#L20">pyproject.toml</a> file</p>
-<h5 id="install-from-pypi-server">Install from Pypi server<a class="headerlink" href="#install-from-pypi-server" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>anta
-</code></pre></div>
-<h5 id="install-anta-from-github">Install ANTA from github<a class="headerlink" href="#install-anta-from-github" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/arista-netdevops-community/network-test-automation.git
-</code></pre></div>
-<p>You can even specify the branch, tag or commit:</p>
+<h3 id="execute-nrfu-testing">Execute NRFU testing<a class="headerlink" href="#execute-nrfu-testing" title="Permanent link">&para;</a></h3>
+<p>All the NRFU testing commands are placed under <code>anta nrfu</code> and provide different rendering options:</p>
 <ul>
-<li><code>&lt;anta-repository&gt;@&lt;cool-feature-branch&gt;</code></li>
-<li><code>&lt;anta-repository&gt;@&lt;cool-tag&gt;</code></li>
-<li><code>&lt;anta-repository&gt;@&lt;cool-hash&gt;</code></li>
+<li>Table view</li>
+<li>JSON view</li>
+<li>Text view</li>
 </ul>
-<h5 id="check-installation">Check installation<a class="headerlink" href="#check-installation" title="Permanent link">&para;</a></h5>
-<p>Run these commands to verify:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check ANTA has been installed in your python path</span>
-pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>anta
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu
+Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
-<span class="c1"># Check scripts are in your $PATH</span>
-<span class="c1"># Path may differ but it means CLI is in your path</span>
-which<span class="w"> </span>anta
-/home/tom/.pyenv/shims/anta
+<span class="w">  </span>Run<span class="w"> </span>NRFU<span class="w"> </span>against<span class="w"> </span>inventory<span class="w"> </span>devices
 
-<span class="c1"># Chck ANTA version</span>
-anta<span class="w"> </span>--version
-anta,<span class="w"> </span>version<span class="w"> </span><span class="m">0</span>.4.0
+Options:
+<span class="w">  </span>--help<span class="w">  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+
+Commands:
+<span class="w">  </span>json<span class="w">   </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result
+<span class="w">  </span>table<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
+<span class="w">  </span>text<span class="w">   </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
 </code></pre></div>
-<h4 id="eos-requirements">EOS Requirements<a class="headerlink" href="#eos-requirements" title="Permanent link">&para;</a></h4>
-<p>To get ANTA working, your Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):</p>
-<div class="highlight"><pre><span></span><code>configure
-!
-vrf instance MGMT
-!
-interface Management1
-   description oob_management
-   vrf MGMT
-   ip address 10.73.1.105/24
-!
-end
+<p>All of these commands require the following input:</p>
+<ul>
+<li>A path to a catalog of tests to execute (<code>--catalog</code>)</li>
+<li>A list of tags if they are part of your inventory (<code>--tags</code>). List is comma separated</li>
+</ul>
+<h4 id="nrfu-with-text-rendering">NRFU with text rendering<a class="headerlink" href="#nrfu-with-text-rendering" title="Permanent link">&para;</a></h4>
+<p>This rendering is a pure text report for every test run on all devices. It comes with some options:</p>
+<ul>
+<li>Search (<code>--search</code>) for a regexp pattern in hostname and test name</li>
+<li>Option to skip (<code>--skip-error</code>) tests in error (not failure) because of a connectivity issue or unsupported command</li>
+</ul>
+<p>Example output</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--tags<span class="w"> </span>pod1<span class="w"> </span>--catalog<span class="w"> </span>nrfu/leaf.yml
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_status<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_interfaces<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_config_sanity<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_utilization<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_errors<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_discards<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_errdisabled<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_interfaces_status<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_storm_control_drops<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>verify_storm_control_drops<span class="w"> </span><span class="nb">test</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>supported<span class="w"> </span>on<span class="w"> </span>cEOSLab.<span class="o">)</span>
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_portchannels<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_illegal_lacp<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_loopback_count<span class="w"> </span>::<span class="w"> </span>FAILURE<span class="w"> </span><span class="o">(</span>Found<span class="w"> </span><span class="m">3</span><span class="w"> </span>Loopbacks<span class="w"> </span>when<span class="w"> </span>expecting<span class="w"> </span><span class="m">2</span><span class="o">)</span>
+leaf2<span class="w"> </span>::<span class="w"> </span>verify_svi<span class="w"> </span>::<span class="w"> </span>SUCCESS
+<span class="o">[</span>...<span class="o">]</span>
 </code></pre></div>
-<p>Enable eAPI on the MGMT vrf:</p>
-<div class="highlight"><pre><span></span><code>configure
-!
-management api http-commands
-   protocol https port 443
-   no shutdown
-   vrf MGMT
-      no shutdown
-!
-end
+<h4 id="nrfu-with-table-report">NRFU with table report<a class="headerlink" href="#nrfu-with-table-report" title="Permanent link">&para;</a></h4>
+<p>This rendering prints results in a nice table supporting grep filtering. It comes with its own set of options:</p>
+<ul>
+<li>Search (<code>--search</code>) for a pattern in hostname and test name.</li>
+<li>Option to group (<code>--group-by</code>) and summarize results. You can group by <code>host</code> or <code>test</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>check<span class="w"> </span>table<span class="w"> </span>-t<span class="w"> </span>pod1<span class="w"> </span>-c<span class="w"> </span>nrfu/cudi.yml
 </code></pre></div>
-<p>Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.</p>
-<p>Run these EOS commands to verify:</p>
-<div class="highlight"><pre><span></span><code>show management http-server
-show management api http-commands
+<p><img alt="anta nrfu table result" loading="lazy" src="../../imgs/anta-nrfu-table-output.png" width="800" /></p>
+<p>You can also group per host or per test to get a summary view in case of large setup</p>
+<p><img alt="anta nrfu table group-by result" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-test-output.png" width="800" /></p>
+<h4 id="nrfu-with-json-output">NRFU with JSON output<a class="headerlink" href="#nrfu-with-json-output" title="Permanent link">&para;</a></h4>
+<p>This command is helpful to generate a JSON and then pass it to another tool for reporting for instance. Only one option is available to save output to a file (<code>--output</code>)</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>check<span class="w"> </span>json<span class="w"> </span>-t<span class="w"> </span>pod1<span class="w"> </span>-c<span class="w"> </span>nrfu/leaf.yml
+<span class="o">[</span>
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_mlag_status&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_mlag_interfaces&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">]</span>
 </code></pre></div>
 
   <hr>
@@ -1254,10 +1215,10 @@ show management api http-commands
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.b78d2936.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b78d2936.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
