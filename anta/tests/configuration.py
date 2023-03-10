@@ -58,21 +58,14 @@ async def verify_running_config_diffs(
 
     """
     if device.enable_password is not None:
-        response = await device.session.cli(
-            commands=[
-                {"cmd": "enable", "input": str(device.enable_password)},
-                "show running-config diffs",
-            ],
-            ofmt="text"
-        )
+        enable_cmd = {"cmd": "enable", "input": str(device.enable_password)}
     else:
-        response = await device.session.cli(
-            commands=[
-                {"cmd": "enable"},
-                "show running-config diffs",
-            ],
-            ofmt="text"
-        )
+         enable_cmd = "enable"
+    commands = [enable_cmd, "show running-config diffs"]
+    response = await device.session.cli(
+        commands=commands,
+        ofmt="text",
+    )
 
     logger.debug(f"query result is: {response}")
 
