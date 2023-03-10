@@ -20,7 +20,6 @@ from anta.inventory.models import InventoryDevice
 
 EOS_TECH_SUPPORT_ARCHIVE_ZIP = "/mnt/flash/schedule/all_files.zip"
 
-CURRENT_DATE = strftime("%d %b %Y %H:%M:%S", gmtime())
 
 logger = logging.getLogger(__name__)
 
