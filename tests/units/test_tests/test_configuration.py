@@ -87,14 +87,12 @@ def test_verify_zerotouch(
             id="Key error",
         ),
         pytest.param(
+            [None, []],
             None,
-            None,
-            True,
-            "error",
-            [
-                "ValueError (verify_running_config_diffs requires `enable_password` to be set)"
-            ],
-            id="Missing enable password",
+            False,
+            "success",
+            [],
+            id="success",
         ),
     ],
 )
