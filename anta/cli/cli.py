@@ -8,7 +8,7 @@ ANTA CLI Baseline.
 
 import click
 
-from anta import __version__
+from anta.cli.utils import anta_ascii_art
 from anta.cli.check import commands as check_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
@@ -18,7 +18,7 @@ from anta.cli.get import commands as get_commands
 
 @click.group()
 @click.pass_context
-@click.version_option(__version__)
+@click.version_option(anta_ascii_art())
 @click.option('--username', show_envvar=True, default='arista', help='Username to connect to EOS', required=True)
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS', required=True)
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)', required=False)
