@@ -1,6 +1,10 @@
 """Models related to inventory management."""
 
+import logging
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
+
+import paramiko
+from paramiko.ssh_exception import AuthenticationException, SSHException
 
 from aioeapi import Device
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
@@ -148,6 +152,31 @@ class InventoryDevice(BaseModel):
             else:
                 message = "`enable_password` is not set"
             raise ValueError(message)
+
+    def create_ssh_socket(self, ssh_port: int = 22, banner_timeout: int = 60) -> paramiko.SSHClient:
+        """
+        Create SSH socket to send commend over SSH
+
+        Returns:
+            paramiko.SSHClient: SSH Socket created
+        """
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            client.connect(
+                hostname=self.host,
+                port=ssh_port,
+                username=self.username,
+                password=self.password,
+                banner_timeout=banner_timeout
+            )
+        except AuthenticationException as error:
+            logging.error(f'Authentication error for device {self.name}')
+            logging.error(error)
+        except SSHException as error:
+            logging.error(f'SSHException for device {self.name}')
+            logging.error(error)
+        return client
 
 
 class InventoryDevices(BaseModel):

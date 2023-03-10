@@ -9,12 +9,17 @@ import asyncio
 import logging
 import os
 import traceback
+from time import gmtime, strftime
 from typing import Dict, List, Tuple
 
 from aioeapi import EapiCommandError
+from scp import SCPClient
 
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
+
+EOS_TECH_SUPPORT_ARCHIVE_ZIP = "/mnt/flash/schedule/all_files.zip"
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +51,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, enable_pass: str, 
     await asyncio.gather(*(clear(device) for device in devices))
 
 
-def device_directories(
+def device_directories_snapshot(
     device: InventoryDevice, root_dir: str
 ) -> Tuple[str, str, str, str]:
     """
@@ -78,7 +83,7 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
     for device in devices:  # TODO: should use asyncio.gather instead of a loop.
         logger.info("----")
         logger.info(f"Collecting show commands output to device {device.name}")
-        output_dir = device_directories(device, root_dir)
+        output_dir = device_directories_snapshot(device, root_dir)
         try:
             if "json_format" in commands:
                 for command in commands["json_format"]:
@@ -113,3 +118,66 @@ async def collect_commands(inv: AntaInventory,  enable_pass: str, commands: Dict
                 f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
             )
             logger.debug(traceback.format_exc())
+
+
+def device_directories_show_tech_support(dev: str, root_dir: str) -> str:
+    """
+    return a tuple containing the show_tech_directory and the device_directory
+    """
+    device_directory = f"{os.getcwd()}/{root_dir}/{dev}"
+    os.makedirs(device_directory, exist_ok=True)
+    return device_directory
+
+
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: str, tags: List[str], ssh_port: int = 22) -> None:
+    """
+    Collect scheduled show-tech on devices
+    """
+    # Set date here so we have same timestamp for all devices.
+    date_current = strftime("%d %b %Y %H:%M:%S", gmtime())
+    logger.info("Connecting to devices...")
+    await inv.connect_inventory()
+    devices = inv.get_inventory(established_only=True, tags=tags)
+    if len(devices) > 0:
+        # Collect all the tech-support files stored on Arista switches flash and copy them locally
+        for device in devices:  # TODO: should use asyncio.gather instead of a loop.
+            try:
+                # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
+                await device.session.cli(
+                    command=f"bash timeout 30 zip {EOS_TECH_SUPPORT_ARCHIVE_ZIP} /mnt/flash/schedule/tech-support/*"
+                )
+                logger.info(f"Created {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on device {device.name}")
+
+            except EapiCommandError as e:
+                logger.error(f"Unable to create tech-support archove on {device.name}: {e.errmsg}")
+
+            # Create directories
+            tech_support_root_local_path = device_directories_show_tech_support(
+                device.name, root_dir)
+
+            # Connect to the device using SSH
+            ssh = device.create_ssh_socket(ssh_port=ssh_port)
+
+            try:
+                # Get the zipped file all_files.zip using SCP and save it locally
+                tech_support_device_local_path = f"{tech_support_root_local_path}/{date_current}_{device.name.lower()}.zip"
+                with SCPClient(ssh.get_transport()) as scp:
+                    scp.get(EOS_TECH_SUPPORT_ARCHIVE_ZIP, local_path=tech_support_device_local_path)
+
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error(
+                    f"Could not collect show tech files on device {device.name}"
+                )
+                logger.debug(
+                    f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
+                )
+                logger.debug(traceback.format_exc())
+
+            try:
+                # Delete the created zip file on the device
+                await device.session.cli(command=f"bash timeout 30 rm {EOS_TECH_SUPPORT_ARCHIVE_ZIP}")
+                logger.info(f"Deleted {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on {device.name}")
+            except EapiCommandError as e:
+                logger.error(f"Unable to delete tech-support archive on {device.name}: {e.errmsg}")
+
+        logger.info("Done collecting scheduled show-tech")

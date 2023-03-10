@@ -58,6 +58,7 @@ def cli() -> None:
     # Load group commands
     _exec.add_command(exec_commands.clear_counters)
     _exec.add_command(exec_commands.snapshot)
+    _exec.add_command(exec_commands.collect_tech_support)
 
     get.add_command(get_commands.from_cvp)
     get.add_command(get_commands.inventory)
