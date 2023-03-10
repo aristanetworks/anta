@@ -1254,14 +1254,14 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">device</span><span class="o">.</span><span class="n">assert_enable_password_is_not_none</span><span class="p">(</span><span class="s2">&quot;verify_running_config_diffs&quot;</span><span class="p">)</span>
-
+    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">enable_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">enable_cmd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;enable&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">enable_password</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">enable_cmd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;enable&quot;</span><span class="p">}</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">enable_cmd</span><span class="p">,</span> <span class="s2">&quot;show running-config diffs&quot;</span><span class="p">]</span>
     <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span>
-        <span class="n">commands</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;enable&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">enable_password</span><span class="p">)},</span>
-            <span class="s2">&quot;show running-config diffs&quot;</span><span class="p">,</span>
-        <span class="p">],</span>
-        <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span>
+        <span class="n">commands</span><span class="o">=</span><span class="n">commands</span><span class="p">,</span>
+        <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
