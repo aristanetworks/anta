@@ -6,7 +6,7 @@ copyright: Copyright &copy; 2019 - 2023 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
-repo_url: https://github.com/arista-netdevops-community/network-test-automation
+repo_url: https://www.anta.ninja
 
 # Configuration
 use_directory_urls: true
