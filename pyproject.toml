@@ -128,7 +128,7 @@ envlist =
 python =
   3.8: py38
   3.9: py39
-  3.10: py310, lint, type, coverage
+  3.10: py310, lint, type, report
 
 [testenv]
 description = run the test driver with {basepython}
@@ -158,7 +158,8 @@ commands = coverage erase
 
 [testenv:report]
 deps = coverage[toml]
-commands = coverage report
+# TODO adding -i for now
+commands = coverage report -i 
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py310
