@@ -38,22 +38,22 @@ changelog:
         - 'rn: bump!'
     - title: New features and enhancements
       labels:
-        - 'rn: Feat(anta)'
-        - 'rn: Feat(anta.tests)'
-        - 'rn: Feat(anta.cli)'
-        - 'rn: Feat'
+        - 'rn: feat(anta)'
+        - 'rn: feat(anta.tests)'
+        - 'rn: feat(anta.cli)'
+        - 'rn: feat'
     - title: Fixed issues
       labels:
-        - 'rn: Fix(anta)'
-        - 'rn: Fix(anta.tests)'
-        - 'rn: Fix(anta.cli)'
-        - 'rn: Fix'
+        - 'rn: fix(anta)'
+        - 'rn: fix(anta.tests)'
+        - 'rn: fix(anta.cli)'
+        - 'rn: fix'
     - title: Documentation
       labels:
-        - 'rn: Doc(anta)'
-        - 'rn: Doc(anta.tests)'
-        - 'rn: Doc(anta.cli)'
-        - 'rn: Doc'
+        - 'rn: doc(anta)'
+        - 'rn: doc(anta.tests)'
+        - 'rn: doc(anta.cli)'
+        - 'rn: doc'
     - title: Other Changes
       labels:
         - '*'
