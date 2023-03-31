@@ -6,7 +6,7 @@ copyright: Copyright &copy; 2019 - 2023 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
-repo_url: https://www.anta.ninja
+repo_url: https://github.com/arista-netdevops-community/anta
 
 # Configuration
 use_directory_urls: true
@@ -17,6 +17,7 @@ theme:
     - navigation.top
     - content.tabs.link
     - content.code.copy
+    # - toc.integrate
     - toc.follow
     - navigation.indexes
   highlightjs: true
@@ -40,7 +41,7 @@ theme:
       primary: white
       accent: blue
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/weather-night
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
@@ -48,8 +49,17 @@ theme:
       primary: black
       accent: blue
       toggle:
-        icon: material/toggle-switch
+        icon: material/weather-sunny
         name: Switch to light mode
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/arista-netdevops-community/anta
+    - icon: fontawesome/brands/docker
+      link: https://github.com/arista-netdevops-community/anta/pkgs/container/network-test-automation
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/anta/
 
 extra_css:
   - stylesheets/extra.material.css
