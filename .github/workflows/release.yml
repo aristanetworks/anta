@@ -20,7 +20,7 @@ jobs:
       - name: Build package
         run: |
           python -m build
-      - name: Publish package to TestPyPI
+      - name: Publish package to Pypi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__

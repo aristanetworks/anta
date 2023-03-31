@@ -39,6 +39,8 @@ jobs:
             test
             refactor
             revert
+            make
+            chore
           # Configure which scopes are allowed.
           scopes: |
             anta
