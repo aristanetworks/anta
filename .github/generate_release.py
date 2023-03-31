@@ -18,8 +18,8 @@ SCOPES = [
 CATEGORIES = {
     "feat": "Features",
     "fix": "Bug Fixes",
-    "fut": "Cut",
-    "foc": "Documentation",
+    "cut": "Cut",
+    "doc": "Documentation",
     # "CI": "CI",
     "bump": "Bump",
     # "test": "Test",
@@ -68,11 +68,8 @@ if __name__ == "__main__":
     )
 
     # Add new features
-    feat_labels = [
-        f"rn: Feat({scope})"
-        for scope in SCOPES
-    ]
-    feat_labels.append("rn: Feat")
+    feat_labels = [f"rn: feat({scope})" for scope in SCOPES]
+    feat_labels.append("rn: feat")
 
     categories_list.append(
         {
@@ -82,8 +79,8 @@ if __name__ == "__main__":
     )
 
     # Add fixes
-    fixes_labels = [f"rn: Fix({scope})" for scope in SCOPES]
-    fixes_labels.append("rn: Fix")
+    fixes_labels = [f"rn: fix({scope})" for scope in SCOPES]
+    fixes_labels.append("rn: fix")
 
     categories_list.append(
         {
@@ -93,8 +90,8 @@ if __name__ == "__main__":
     )
 
     # Add Documentation
-    doc_labels = [f"rn: Doc({scope})" for scope in SCOPES]
-    doc_labels.append("rn: Doc")
+    doc_labels = [f"rn: doc({scope})" for scope in SCOPES]
+    doc_labels.append("rn: doc")
 
     categories_list.append(
         {
