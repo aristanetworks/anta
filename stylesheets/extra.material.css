@@ -145,7 +145,7 @@
       margin: 1.5625em 0;
       padding: 0 .6rem;
       overflow: hidden;
-      font-size: 1.1em;
+      font-size: 90%;
       page-break-inside: avoid;
       border-left: .2rem solid var(--md-accent-bg-color);
       border-left-color: var(--md-accent-bg-color);
