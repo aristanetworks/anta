@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v0.4.0"
+version = "v0.5.0"
 readme = "README.md"
 authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
 maintainers = [
@@ -117,7 +117,7 @@ warn_untyped_fields = true
 legacy_tox_ini = """
 [tox]
 min_version = 4.0
-envlist = 
+envlist =
   clean,
   py{38,39,310},
   lint,
