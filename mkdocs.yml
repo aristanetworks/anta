@@ -58,6 +58,11 @@ extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
 
+watch:
+  # Watch src/ directory to reload on changes to docstrings for mkdocstrings
+  # plugin.
+  - docs
+
 plugins:
   - mkdocstrings:
       default_handler: python
@@ -94,7 +99,7 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
-  - fontawesome_markdown
+  # - fontawesome_markdown
   - admonition
   - codehilite:
       guess_lang: true
@@ -144,8 +149,12 @@ nav:
     - Inventory models:
       - User Inventory data model: api/inventory.models.input.md
       - Generated Inventory data model: api/inventory.models.md
-    - Result Manager module: api/result_manager.md
-    - Result Manager models: api/result_manager.models.md
+    - Result Manager:
+      - Result Manager module: api/result_manager.md
+      - Result Manager models: api/result_manager_models.md
+    - Report Manager:
+      - Report Manager module: api/report_manager.md
+      - Report Manager models: api/report_manager_models.md
   - Scripts (deprecated):
     - Check Devices: usage-check-devices.md
     - Other scripts: usage.md
