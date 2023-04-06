@@ -8,7 +8,7 @@ This website provides generic documentation related to the Arista Network Test A
 
 This repository is a Python package to automate tests on Arista devices.
 
-- The package name is [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta/), which stands for **Arista Network Test Automation**.
+- The package name is [ANTA](https://github.com/arista-netdevops-community/anta/blob/master/anta/), which stands for **Arista Network Test Automation**.
 - This package provides a set of tests to validate the state of your network.
 - This package can be imported in Python scripts:
   - To automate NRFU (Network Ready For Use) test on a preproduction network

@@ -1,6 +1,6 @@
-[![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/network-test-automation/blob/master/LICENSE)
-[![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/network-test-automation/actions)
-[![github release](https://img.shields.io/github/release/arista-netdevops-community/network-test-automation.svg)](https://github.com/arista-netdevops-community/network-test-automation/releases/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/anta/blob/master/LICENSE)
+[![CI](https://github.com/arista-netdevops-community/network-test-automation/actions/workflows/test.yml/badge.svg)](https://github.com/arista-netdevops-community/anta/actions)
+[![github release](https://img.shields.io/github/release/arista-netdevops-community/network-test-automation.svg)](https://github.com/arista-netdevops-community/anta/releases/)
 
 # Arista Network Test Automation (ANTA) Framework
 
@@ -39,7 +39,7 @@ Commands:
   nrfu  Run NRFU against inventory devices
 ```
 
-<img src="https://github.com/arista-netdevops-community/network-test-automation/raw/master/docs/imgs/anta-nrfu-table-group-by-test-output.png"></img>
+<img src="https://github.com/arista-netdevops-community/anta/raw/master/docs/imgs/anta-nrfu-table-group-by-test-output.png"></img>
 
 In addition, previous scripts are now marked as __deprecated__ and will be removed in a future release:
 
@@ -54,11 +54,11 @@ In addition, previous scripts are now marked as __deprecated__ and will be remov
 
 # Documentation
 
-The documentation is published on [ANTA package website](https://arista-netdevops-community.github.io/network-test-automation/)
+The documentation is published on [ANTA package website](https://www.anta.ninja)
 
 # Contribution guide
 
-Contributions are welcome. Please refer to the [contribution guide](https://raw.githubusercontent.com/arista-netdevops-community/network-test-automation/master/docs/contribution.md)
+Contributions are welcome. Please refer to the [contribution guide](https://raw.githubusercontent.com/arista-netdevops-community/anta/master/docs/contribution.md)
 
 # Credits
 
