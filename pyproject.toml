@@ -29,6 +29,7 @@ dependencies = [
   "requests",
   "rich>=12.5.1",
   "scp",
+  "asyncssh==2.13.1",
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [

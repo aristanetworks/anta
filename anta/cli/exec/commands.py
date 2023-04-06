@@ -81,13 +81,17 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
 
 @click.command()
 @click.pass_context
-@click.option('--output', '-o', default='./tech-support/', help='Path for tests catalog', type=click.Path(), required=False)
+@click.option('--output', '-o', default='./tech-support', help='Path for tests catalog', type=click.Path(), required=False)
 @click.option('--ssh-port', '-ssh', default=22, help='SSH port to use for connection', type=int, required=False)
+@click.option('--insecure/--secure', help='Disable SSH Host Key validation', default=False, required=False)
+@click.option('--configure/--not-configure', help="Ensure device has 'aaa authorization exec default local' configured (required for SCP)", default=False,
+              required=False)
 @click.option('--tags', '-t', default=DEFAULT_TAG, help='List of tags using coma as separator: tag1,tag2,tag3', type=str, required=False)
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
-def collect_tech_support(ctx: click.Context, output: str, ssh_port: int, log_level: str, tags: str) -> bool:
+def collect_tech_support(ctx: click.Context, output: str, ssh_port: int, insecure: bool,  # pylint: disable=too-many-arguments
+                         configure: bool, log_level: str, tags: str) -> bool:
     """Collect scheduled tech-support from eos devices."""
     setup_logging(level=log_level)
     inventory = AntaInventory(
@@ -96,5 +100,6 @@ def collect_tech_support(ctx: click.Context, output: str, ssh_port: int, log_lev
         password=ctx.obj['password'],
         enable_password=ctx.obj['enable_password']
     )
-    asyncio.run(collect_scheduled_show_tech(inventory, output, tags=tags.split(','), ssh_port=ssh_port))
+    asyncio.run(collect_scheduled_show_tech(inventory, ctx.obj['enable_password'], output, tags.split(','),
+                                            ssh_port, insecure, configure))
     return True
