@@ -139,6 +139,9 @@ nav:
     - Execute commands: cli/exec.md
     - Inventory from CVP: cli/inv-from-cvp.md
     - Get Inventory Information: cli/get-inventory-information.md
+  - Advanced Usages:
+    - Create your own Library: advanced_usages/custom-tests.md
+    - ANTA as python lib: advanced_usages/as-python-lib.md
   - Tests Catalog Documentation:
     - Overview: api/tests.md
     - Configuration: api/tests.configuration.md
@@ -154,7 +157,6 @@ nav:
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
   - API Documentation:
-    - ANTA as python lib: usage-as-python-lib.md
     - Inventory module: api/inventory.md
     - Inventory models:
       - User Inventory data model: api/inventory.models.input.md
