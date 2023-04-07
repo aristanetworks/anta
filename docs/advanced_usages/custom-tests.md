@@ -2,7 +2,7 @@
 
 ANTA is not only a CLI with a collection of built-in tests, it is also a framework you can extend by building your own tests library.
 
-For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect.
+For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be impartable by ANTA hence available in `$PYTHONPATH` by any method.
 
 ## Generic approach
 
@@ -215,4 +215,4 @@ leaf04 :: verify_dynamic_vlan :: SUCCESS
 ```
 
 !!! warning "Install your python package"
-    Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly.
+    Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly as explained at the begining of this page.
