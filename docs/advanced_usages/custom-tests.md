@@ -122,7 +122,7 @@ async def verify_dynamic_vlan(
 We recommend to add a docstring to document your test. As an example, the following syntax rendering for documentation is working pretty well:
 
 !!! info "docstring is optional"
-    Of course this section is optional, but we stringly believe in documentation to make the code easier to maintain over the time.
+    Of course this section is optional, but we strongly believe in documentation to make the code easier to maintain over time.
 
 ```python
 """
