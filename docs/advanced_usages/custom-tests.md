@@ -57,7 +57,7 @@ async def verify_dynamic_vlan(device: InventoryDevice,
 
 ### Mandatory imports
 
-You should import at least following elements:
+The following elements have to be imported:
 
 - [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.
 - [`TestResult`](../api/result_manager_models.md): Structure used to facilitate test result. It provides helpers like `is_success`, `is_failure`, `is_skipped` and also runs execption managment for you.
