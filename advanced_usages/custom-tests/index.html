@@ -13,17 +13,17 @@
       
       
       
-        <link rel="prev" href="../tests.mlag/">
+        <link rel="prev" href="../../cli/get-inventory-information/">
       
       
-        <link rel="next" href="../tests.profiles/">
+        <link rel="next" href="../as-python-lib/">
       
       <link rel="icon" href="../../docs/_media/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.5">
     
     
       
-        <title>Multicast - Arista Network Test Automation - ANTA</title>
+        <title>Create your own Library - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-catalog-for-multicast-tests" class="md-skip">
+        <a href="#create-your-own-custom-tests" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multicast
+              Create your own Library
             
           </span>
         </div>
@@ -419,14 +419,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
       
       
         
@@ -441,7 +443,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           Advanced Usages
@@ -452,11 +454,143 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Create your own Library
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Create your own Library
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-own-custom-tests" class="md-nav__link">
+    Create your own custom tests
+  </a>
+  
+    <nav class="md-nav" aria-label="Create your own custom tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generic-approach" class="md-nav__link">
+    Generic approach
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-imports" class="md-nav__link">
+    Python imports
+  </a>
+  
+    <nav class="md-nav" aria-label="Python imports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-imports" class="md-nav__link">
+    Mandatory imports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-anta-imports" class="md-nav__link">
+    Optional ANTA imports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-python-imports" class="md-nav__link">
+    Optional python imports
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-for-a-test" class="md-nav__link">
+    Code for a test
+  </a>
+  
+    <nav class="md-nav" aria-label="Code for a test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-definition" class="md-nav__link">
+    Function definition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-documentation" class="md-nav__link">
+    Function documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-inputs" class="md-nav__link">
+    Check inputs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-your-logic" class="md-nav__link">
+    Implement your logic
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-your-catalog" class="md-nav__link">
+    Create your catalog
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -468,7 +602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../as-python-lib/" class="md-nav__link">
         ANTA as python lib
       </a>
     </li>
@@ -488,16 +622,14 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
       
       
         
@@ -528,7 +660,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_7">
           <span class="md-nav__icon md-icon"></span>
           Tests Catalog Documentation
@@ -541,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -555,7 +687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -569,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         Hardware
       </a>
     </li>
@@ -583,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         Interfaces
       </a>
     </li>
@@ -597,7 +729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         MLAG
       </a>
     </li>
@@ -609,75 +741,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Multicast
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         Multicast
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#anta-catalog-for-multicast-tests" class="md-nav__link">
-    ANTA catalog for multicast tests
-  </a>
-  
-    <nav class="md-nav" aria-label="ANTA catalog for multicast tests">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.multicast" class="md-nav__link">
-    anta.tests.multicast
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.multicast.verify_igmp_snooping_global" class="md-nav__link">
-    verify_igmp_snooping_global()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.multicast.verify_igmp_snooping_vlans" class="md-nav__link">
-    verify_igmp_snooping_vlans()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -689,7 +757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.profiles/" class="md-nav__link">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         Profiles
       </a>
     </li>
@@ -703,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         System
       </a>
     </li>
@@ -717,7 +785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         Software
       </a>
     </li>
@@ -766,7 +834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -780,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         BGP
       </a>
     </li>
@@ -794,7 +862,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         OSPF
       </a>
     </li>
@@ -860,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         Inventory module
       </a>
     </li>
@@ -907,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         User Inventory data model
       </a>
     </li>
@@ -921,7 +989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models/" class="md-nav__link">
+      <a href="../../api/inventory.models/" class="md-nav__link">
         Generated Inventory data model
       </a>
     </li>
@@ -975,7 +1043,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         Result Manager module
       </a>
     </li>
@@ -989,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager_models/" class="md-nav__link">
+      <a href="../../api/result_manager_models/" class="md-nav__link">
         Result Manager models
       </a>
     </li>
@@ -1043,7 +1111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../../api/report_manager/" class="md-nav__link">
         Report Manager module
       </a>
     </li>
@@ -1057,7 +1125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report_manager_models/" class="md-nav__link">
+      <a href="../../api/report_manager_models/" class="md-nav__link">
         Report Manager models
       </a>
     </li>
@@ -1187,30 +1255,98 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#anta-catalog-for-multicast-tests" class="md-nav__link">
-    ANTA catalog for multicast tests
+  <a href="#create-your-own-custom-tests" class="md-nav__link">
+    Create your own custom tests
   </a>
   
-    <nav class="md-nav" aria-label="ANTA catalog for multicast tests">
+    <nav class="md-nav" aria-label="Create your own custom tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.multicast" class="md-nav__link">
-    anta.tests.multicast
+  <a href="#generic-approach" class="md-nav__link">
+    Generic approach
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.multicast.verify_igmp_snooping_global" class="md-nav__link">
-    verify_igmp_snooping_global()
+  <a href="#python-imports" class="md-nav__link">
+    Python imports
+  </a>
+  
+    <nav class="md-nav" aria-label="Python imports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-imports" class="md-nav__link">
+    Mandatory imports
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.multicast.verify_igmp_snooping_vlans" class="md-nav__link">
-    verify_igmp_snooping_vlans()
+  <a href="#optional-anta-imports" class="md-nav__link">
+    Optional ANTA imports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-python-imports" class="md-nav__link">
+    Optional python imports
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-for-a-test" class="md-nav__link">
+    Code for a test
+  </a>
+  
+    <nav class="md-nav" aria-label="Code for a test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-definition" class="md-nav__link">
+    Function definition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-documentation" class="md-nav__link">
+    Function documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-inputs" class="md-nav__link">
+    Check inputs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-your-logic" class="md-nav__link">
+    Implement your logic
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-your-catalog" class="md-nav__link">
+    Create your catalog
   </a>
   
 </li>
@@ -1238,427 +1374,185 @@
   
 
 
-  <h1>Multicast</h1>
+  <h1>Create your own Library</h1>
 
-<h3 id="anta-catalog-for-multicast-tests">ANTA catalog for multicast tests<a class="headerlink" href="#anta-catalog-for-multicast-tests" title="Permanent link">&para;</a></h3>
+<h3 id="create-your-own-custom-tests">Create your own custom tests<a class="headerlink" href="#create-your-own-custom-tests" title="Permanent link">&para;</a></h3>
+<p>ANTA is not only a CLI with a collection of built-in tests, it is also a framework you can extend by building your own tests library.</p>
+<p>For that, you need to create your own Python package as described in this <a href="https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/">hitchhiker&rsquo;s guide</a> to package Python code. We assume it is well known and we won&rsquo;t focus on this aspect. Thus, your package must be impartable by ANTA hence available in <code>$PYTHONPATH</code> by any method.</p>
+<h4 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h4>
+<p>To make it easier for everyone, it is recommended to apply always same structure to all code:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Optional for easy coding</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
+<span class="c1"># Import ANTA components</span>
+<span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
+<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
+<span class="kn">from</span> <span class="nn">anta.tests</span> <span class="kn">import</span> <span class="n">anta_test</span>
 
-<div class="doc doc-object doc-module">
+<span class="c1"># Instantiate logger</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># define a function with at least one decorator to mark as a test</span>
+<span class="nd">@anta</span><span class="o">.</span><span class="n">test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 
-<a id="anta.tests.multicast"></a>
-  <div class="doc doc-contents first">
-  
-      <p>Test functions related to multicast</p>
+    <span class="c1"># Create docstring</span>
+    <span class="c1"># [...]</span>
 
-  
+    <span class="c1"># Create your own logic</span>
 
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="anta.tests.multicast.verify_igmp_snooping_global" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">verify_igmp_snooping_global</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-async"><code>async</code></small>
-  </span>
-
-<a href="#anta.tests.multicast.verify_igmp_snooping_global" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Verifies the IGMP snooping global configuration.</p>
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>device</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
-          </td>
-          <td><p>InventoryDevice instance containing all devices information.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>configuration</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>Expected global IGMP snooping configuration (enabled or disabled).</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><p>TestResult instance with</p></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;skipped&rdquo; if the <code>configuration</code> parameter was missing</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;success&rdquo; if IGMP snooping is globally configured</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;failure&rdquo; otherwise.</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;error&rdquo; if any exception is caught</li>
-</ul></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_igmp_snooping_global</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the IGMP snooping global configuration.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">        configuration (str): Expected global IGMP snooping configuration (enabled or disabled).</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        TestResult instance with</span>
-<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">        * result = &quot;skipped&quot; if the `configuration` parameter was missing</span>
-<span class="sd">        * result = &quot;success&quot; if IGMP snooping is globally configured</span>
-<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">configuration</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span>
-            <span class="s2">&quot;verify_igmp_snooping_global was not run as no configuration was given&quot;</span>
-        <span class="p">)</span>
+    <span class="c1"># Check if test option is correct</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_dynamic_vlan was run without minimum value set&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="c1"># Send command to device</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Optionaly log response for futur debug</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">igmp_state</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;igmpSnoopingState&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">igmp_state</span> <span class="o">==</span> <span class="n">configuration</span><span class="p">:</span>
+    <span class="c1"># Do your test: In this example we count number of vlans with field dynamic set to true</span>
+    <span class="n">num_dyn_vlan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">vlan</span> <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;vlans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;dynamic&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">num_dyn_vlan</span> <span class="o">&gt;=</span> <span class="n">minimum</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;IGMP state is not valid: </span><span class="si">{</span><span class="n">igmp_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has </span><span class="si">{</span><span class="n">num_dyn_vlan</span><span class="si">}</span><span class="s2"> configured, we expect at least </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
+</code></pre></div>
+<h4 id="python-imports">Python imports<a class="headerlink" href="#python-imports" title="Permanent link">&para;</a></h4>
+<h5 id="mandatory-imports">Mandatory imports<a class="headerlink" href="#mandatory-imports" title="Permanent link">&para;</a></h5>
+<p>The following elements have to be imported:</p>
+<ul>
+<li><a href="../../api/inventory.models/"><code>InventoryDevice</code></a>: Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.</li>
+<li><a href="../../api/result_manager_models/"><code>TestResult</code></a>: Structure used to facilitate test result. It provides helpers like <code>is_success</code>, <code>is_failure</code>, <code>is_skipped</code>.</li>
+<li><code>anta_test</code>: A python decorator to mark function as a test and inject all the base requirements to run test and capture Exceptions.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
+<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
+<span class="kn">from</span> <span class="nn">anta.tests</span> <span class="kn">import</span> <span class="n">anta_test</span>
 
+
+<span class="nd">@anta</span><span class="o">.</span><span class="n">test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="optional-anta-imports">Optional ANTA imports<a class="headerlink" href="#optional-anta-imports" title="Permanent link">&para;</a></h5>
+<p>Besides these 3 main imports, anta provides some additional and optional decorators:</p>
+<ul>
+<li><code>anta.test.skip_on_platforms</code>: To skip a test for a function not available for some platform</li>
+<li><code>anta.tests.check_bgp_family_enable</code>: To run tests only if specific BGP family is active.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.decorators</span> <span class="kn">import</span> <span class="n">skip_on_platforms</span>
+
+
+<span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
+<span class="nd">@anta_test</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_unified_forwarding_table_mode</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="optional-python-imports">Optional python imports<a class="headerlink" href="#optional-python-imports" title="Permanent link">&para;</a></h5>
+<p>And finally, you are free to import any other python library you may want to use in your package.</p>
+<div class="admonition info">
+<p class="admonition-title">logging function</p>
+<p>It is strongly recommended to import <code>logging</code> to help development process and being able to log some outputs usefull for test development.</p>
 </div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="anta.tests.multicast.verify_igmp_snooping_vlans" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">verify_igmp_snooping_vlans</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">vlans</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-async"><code>async</code></small>
-  </span>
-
-<a href="#anta.tests.multicast.verify_igmp_snooping_vlans" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Verifies the IGMP snooping configuration for some VLANs.</p>
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>device</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
-          </td>
-          <td><p>InventoryDevice instance containing all devices information.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>vlans</code></td>
-          <td>
-                <code><span title="typing.List">List</span>[str]</code>
-          </td>
-          <td><p>A list of VLANs</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>configuration</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>Expected IGMP snooping configuration (enabled or disabled) for these VLANs.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><p>TestResult instance with</p></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;success&rdquo; if IGMP snooping is configured on these vlans</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;failure&rdquo; otherwise.</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;error&rdquo; if any exception is caught</li>
-</ul></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_igmp_snooping_vlans</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">vlans</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span>
+<h4 id="code-for-a-test">Code for a test<a class="headerlink" href="#code-for-a-test" title="Permanent link">&para;</a></h4>
+<h5 id="function-definition">Function definition<a class="headerlink" href="#function-definition" title="Permanent link">&para;</a></h5>
+<p>The code here can be very simple as well as very complex and will depend of what you expect to do. But in all situation, the same baseline can be leverage:</p>
+<ul>
+<li>Function parameters:<ul>
+<li><code>async</code> in front of the function the function signature defines it as a coroutine and enable parallel execution.</li>
+<li><code>device: InventoryDevice</code>: Device information (mandatory)</li>
+<li><code>result: TestResult</code>: A result structure to save test (mandatory)</li>
+<li>Any option your test may require. In our example, we use <code>minimum: Optional[int]</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span>
+    <span class="n">minimum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the IGMP snooping configuration for some VLANs.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">        vlans (List[str]): A list of VLANs</span>
-<span class="sd">        configuration (str): Expected IGMP snooping configuration (enabled or disabled) for these VLANs.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        TestResult instance with</span>
-<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">        * result = &quot;success&quot; if IGMP snooping is configured on these vlans</span>
-<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">vlans</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">configuration</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;skipped&quot;</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="s2">&quot;verify_igmp_snooping_vlans was not run as no &quot;</span>
-            <span class="s2">&quot;vlans or configuration was given&quot;</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">vlan</span> <span class="ow">in</span> <span class="n">vlans</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">vlan</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;vlans&quot;</span><span class="p">]:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Supplied vlan </span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> is not present on the device.&quot;</span><span class="p">)</span>
-            <span class="k">continue</span>
-
-        <span class="n">igmp_state</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;vlans&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">vlan</span><span class="p">)][</span><span class="s2">&quot;igmpSnoopingState&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">igmp_state</span> <span class="o">!=</span> <span class="n">configuration</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">()</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;IGMP state for vlan </span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">igmp_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">result</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
+</code></pre></div>
+<h5 id="function-documentation">Function documentation<a class="headerlink" href="#function-documentation" title="Permanent link">&para;</a></h5>
+<p>We recommend to add a docstring to document your test. As an example, the following syntax rendering for documentation is working pretty well:</p>
+<div class="admonition info">
+<p class="admonition-title">docstring is optional</p>
+<p>Of course this section is optional, but we strongly believe in documentation to make the code easier to maintain over time.</p>
 </div>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&lt; Short description &gt;</span>
 
+<span class="sd">&lt; Optional long description &gt;</span>
 
+<span class="sd">&lt; A list of inputs &gt;</span>
+<span class="sd">Args:</span>
+<span class="sd">    device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
+<span class="sd">    minimum (int): Minimum number of dynamic vlans expected.</span>
 
-  </div>
+<span class="sd">&lt; Description of returned values in TestResult object &gt;</span>
+<span class="sd">Returns:</span>
+<span class="sd">    TestResult instance with</span>
+<span class="sd">    * result = &quot;unset&quot; if the test has not been executed</span>
+<span class="sd">    * result = &quot;skipped&quot; if the `minimum` parameter is  missing</span>
+<span class="sd">    * result = &quot;success&quot; if device has more than minimum dynamic vlans</span>
+<span class="sd">    * result = &quot;failure&quot; otherwise.</span>
+<span class="sd">    * result = &quot;error&quot; if any exception is caught</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+<p>You can see output using <a href="https://mkdocstrings.github.io/python/">mkdocstring-python</a> here: <a href="../../api/tests.software/">tests.software.md</a></p>
+<h5 id="check-inputs">Check inputs<a class="headerlink" href="#check-inputs" title="Permanent link">&para;</a></h5>
+<p>If your test has some user inputs, you first have to validate the supplied values are valid. If it is not valid, we expect <code>TestResult</code> to return <code>skipped</code> with a custom message.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check if test option is correct</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_dynamic_vlan was run without minimum value set&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<h5 id="implement-your-logic">Implement your logic<a class="headerlink" href="#implement-your-logic" title="Permanent link">&para;</a></h5>
+<p>Here you implement your own logic. In general, the first action is to send command to devices and capture its response.</p>
+<p>In the example below, we request the list of vlans configured on device and then count all the vlans marked as dynamic</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Send command to device</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 
-  </div>
+<span class="c1"># Do your test: In this example we count number of vlans with field dynamic set to true</span>
+<span class="n">num_dyn_vlan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">vlan</span> <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;vlans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;dynamic&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">])</span>
+<span class="k">if</span> <span class="n">num_dyn_vlan</span> <span class="o">&gt;=</span> <span class="n">minimum</span><span class="p">:</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has </span><span class="si">{</span><span class="n">num_dyn_vlan</span><span class="si">}</span><span class="s2"> configured, we expect at least </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+<span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<p>As you can see there is no error management to do in your code. Everything is packaged in <code>anta_tests</code> and below is a simple example of error captured with an incorrect JSON key in the code above:</p>
+<div class="highlight"><pre><span></span><code>ERROR<span class="w">    </span>Exception<span class="w"> </span>raised<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>verify_dynamic_vlan<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>device<span class="w"> </span><span class="m">192</span>.168.0.10<span class="o">)</span><span class="w"> </span>-<span class="w"> </span>KeyError<span class="w"> </span><span class="o">(</span><span class="s1">&#39;vlans&#39;</span><span class="o">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Get stack trace for debugging</p>
+<p>If you want to access to the full exception stack, you can run your test with logging level set to <code>DEBUG</code>. With ANTA cli, it is available with following option:
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--catalog<span class="w"> </span>test_custom.yml<span class="w"> </span>--log-level<span class="w"> </span>debug
+</code></pre></div></p>
+</div>
+<h4 id="create-your-catalog">Create your catalog<a class="headerlink" href="#create-your-catalog" title="Permanent link">&para;</a></h4>
+<p>It is very similar to what is documented in <a href="../../usage-inventory-catalog/">catalog section</a> but you have to use your own package name.</p>
+<p>Let say the custom catalog is <code>anta_titom73</code> and the test is configured in <code>anta_titom73.dc_project</code>, the test catalog would look like:</p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">anta_titom73.dc_project</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_dynamic_vlan</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</code></pre></div>
+And now you can run your NRFU tests with the CLI:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--catalog<span class="w"> </span>test_custom.yml
+spine01<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>FAILURE<span class="w"> </span><span class="o">(</span>Device<span class="w"> </span>has<span class="w"> </span><span class="m">0</span><span class="w"> </span>configured,<span class="w"> </span>we<span class="w"> </span>expect<span class="w"> </span>at<span class="w"> </span>least<span class="w"> </span><span class="m">1</span><span class="o">)</span>
+spine02<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>FAILURE<span class="w"> </span><span class="o">(</span>Device<span class="w"> </span>has<span class="w"> </span><span class="m">0</span><span class="w"> </span>configured,<span class="w"> </span>we<span class="w"> </span>expect<span class="w"> </span>at<span class="w"> </span>least<span class="w"> </span><span class="m">1</span><span class="o">)</span>
+leaf01<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf02<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf03<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span class="w"> </span>::<span class="w"> </span>SUCCESS
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Install your python package</p>
+<p>Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly as explained at the begining of this page.</p>
 </div>
 
   <hr>
