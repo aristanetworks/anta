@@ -150,7 +150,7 @@ You can see output using [mkdocstring-python](https://mkdocstrings.github.io/pyt
 
 ### Check inputs
 
-If your test has some user's inputs, first you have to validate values are valid. If it is not valid, we expect `TestResult` to return `skipped` with a custom message
+If your test has some user inputs, you first have to validate the supplied values are valid. If it is not valid, we expect `TestResult` to return `skipped` with a custom message.
 
 ```python
 # Check if test option is correct
