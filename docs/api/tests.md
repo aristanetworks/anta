@@ -15,4 +15,4 @@ This section describes all the available tests provided by ANTA package.
 - [Routing BGP](tests.routing.bgp.md)
 - [Routing OSPF](tests.routing.ospf.md)
 
-Al these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the anta cli](../cli/nrfu.md) or in your [own framework](../usage-as-python-lib.md)
+All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the anta cli](../cli/nrfu.md) or in your [own framework](../usage-as-python-lib.md)
