@@ -163,7 +163,7 @@ if not minimum:
 
 Here you implement your own logic. In general, the first action is to send command to devices and capture its response.
 
-In the example below, we request list of vlans configured on device and then count all the vlans marked as dynamic
+In the example below, we request the list of vlans configured on device and then count all the vlans marked as dynamic
 
 ```python
 # Send command to device
