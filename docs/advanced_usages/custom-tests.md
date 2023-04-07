@@ -59,8 +59,8 @@ async def verify_dynamic_vlan(device: InventoryDevice,
 
 The following elements have to be imported:
 
-- [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands defined in your test over HTTP/HTTPS.
-- [`TestResult`](../api/result_manager_models.md): Structure used to facilitate test result. It provides helpers like `is_success`, `is_failure`, `is_skipped` and also runs execption managment for you.
+- [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.
+- [`TestResult`](../api/result_manager_models.md): Structure used to facilitate test result. It provides helpers like `is_success`, `is_failure`, `is_skipped`.
 - `anta_test`: A python decorator to mark function as a test and inject all the base requirements to run test and capture Exceptions.
 
 ```python
