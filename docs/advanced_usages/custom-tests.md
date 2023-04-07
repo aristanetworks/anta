@@ -195,7 +195,7 @@ ERROR    Exception raised for test verify_dynamic_vlan (on device 192.168.0.10) 
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
-Let say my custom catalog is `anta_titom73` and my test is configured in `anta_titom73.dc_project`, my test catalog should be:
+Let say the custom catalog is `anta_titom73` and the test is configured in `anta_titom73.dc_project`, the test catalog would look like:
 
 ```yaml
 anta_titom73.dc_project:
