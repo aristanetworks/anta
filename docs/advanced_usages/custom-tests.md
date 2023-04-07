@@ -94,7 +94,7 @@ async def verify_unified_forwarding_table_mode(...)
 
 And finally, you are free to import any other python library you may want to use in your package.
 
-!!! info logging function
+!!! info "logging function"
     It is strongly recommended to import `logging` to help development process and being able to log some outputs usefull for test development.
 
 ## Code for a test
@@ -104,7 +104,7 @@ And finally, you are free to import any other python library you may want to use
 The code here can be very simple as well as very complex and will depend of what you expect to do. But in all situation, the same baseline can be leverage:
 
 - Function parameters:
-  - `async` in front of the function definition to support async mechanism.
+  - `async` in front of the function the function signature defines it as a coroutine and enable parallel execution.
   - `device: InventoryDevice`: Device information (mandatory)
   - `result: TestResult`: A result structure to save test (mandatory)
   - Any option your test may require. In our example, we use `minimum: Optional[int]`
@@ -121,7 +121,7 @@ async def verify_dynamic_vlan(
 
 Then, a docstring to document your test. We recommend to use the following syntax rendering for documentation is working pretty well:
 
-!!! info docstring is optional
+!!! info "docstring is optional"
     Of course this section is optional, but we stringly believe in documentation to make the code easier to maintain over the time.
 
 ```python
@@ -185,6 +185,12 @@ As you can see there is no error management to do in your code. Everything is pa
 ERROR    Exception raised for test verify_dynamic_vlan (on device 192.168.0.10) - KeyError ('vlans')
 ```
 
+!!! info "Get stack trace for debugging"
+    If you want to access to the full exception stack, you can run your test with logging level set to `DEBUG`. With ANTA cli, it is available with following option:
+    ```bash
+    $ anta nrfu text --catalog test_custom.yml --log-level debug
+    ```
+
 ## Create your catalog
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
@@ -208,5 +214,5 @@ leaf03 :: verify_dynamic_vlan :: SUCCESS
 leaf04 :: verify_dynamic_vlan :: SUCCESS
 ```
 
-!!! warning Install your python package
+!!! warning "Install your python package"
     Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly.
