@@ -11,6 +11,11 @@ ENV PYTHONPATH=/local
 RUN pip --no-cache-dir install .
 
 # Opencontainer labels
+# Labels version and revision will be updating
+# during the CI with accurate information
+# To configure version and revision, you can use:
+# docker build --label org.opencontainers.image.version=<your version> -t ...
+# Doc: https://docs.docker.com/engine/reference/commandline/run/#label
 LABEL   "org.opencontainers.image.title"="anta" \
         "org.opencontainers.artifact.description"="network-test-automation in a Python package and Python scripts to test Arista devices." \
         "org.opencontainers.image.source"="https://github.com/arista-netdevops-community/anta" \
@@ -20,7 +25,7 @@ LABEL   "org.opencontainers.image.title"="anta" \
         "org.opencontainers.image.vendor"="The anta contributors." \
         "org.opencontainers.image.authors"="Khelil Sator, Angélique Phillipps, Colin MacGiollaEáin, Matthieu Tache, Onur Gashi, Paul Lavelle, Guillaume Mulocher, Thomas Grimonet" \
         "org.opencontainers.image.base.name"="python" \
-        "org.opencontainers.image.revision"="" \
-        "org.opencontainers.image.version"=""
+        "org.opencontainers.image.revision"="dev" \
+        "org.opencontainers.image.version"="dev"
 
 ENTRYPOINT [ "/usr/local/bin/anta" ]
