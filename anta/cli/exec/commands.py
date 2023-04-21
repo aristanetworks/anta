@@ -52,10 +52,10 @@ def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) ->
 @click.command()
 @click.pass_context
 # Generic options
-@click.option('--tags', '-t', default=DEFAULT_TAG, help='List of tags using coma as separator: tag1,tag2,tag3', type=str, required=False)
+@click.option('--tags', '-t', default=DEFAULT_TAG, help='List of tags using coma as separator: tag1,tag2,tag3', type=str)
 @click.option('--commands-list', '-c', show_envvar=True, type=click.Path(), help='File with list of commands to grab', required=True)
 @click.option('--output-directory', '-output', '-o', show_envvar=True, type=click.Path(), help='Path where to save commands output',
-              default='anta_snapshot', callback=_get_snapshot_dir, required=True)
+              default='anta_snapshot', callback=_get_snapshot_dir)
 # Debug stuf
 @click.option('--log-level', '--log', help='Logging level of the command', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'critical'], case_sensitive=False))
