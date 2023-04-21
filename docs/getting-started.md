@@ -115,9 +115,9 @@ anta.tests.configuration:
 
 ## Test your network
 
-To test EOS devices, this package comes with a generic script to run tests in your network. It requires an inventory file as well as a test catalog.
+To test EOS devices, this package comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
 
-This script has multiple options to manage test coverage and reporting.
+This entrypoint has multiple options to manage test coverage and reporting.
 
 ```bash
 # Generic ANTA options
