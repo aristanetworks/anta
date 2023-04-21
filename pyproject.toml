@@ -23,7 +23,6 @@ dependencies = [
   "click-help-colors==0.9.1",
   "cvprac>=1.2.0",
   "netaddr>=0.8.0",
-  "paramiko",
   "pydantic>=1.9.1",
   "PyYAML>=6.0",
   "requests",

@@ -1,21 +1,25 @@
 """Models related to inventory management."""
 
-import logging
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
-
-import paramiko
 from aioeapi import Device
 from paramiko.ssh_exception import AuthenticationException, SSHException
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
+from pydantic import (
+    BaseModel,
+    IPvAnyAddress,
+    IPvAnyNetwork,
+    conint,
+    constr,
+    root_validator,
+)
 
 # Default values
 
-DEFAULT_TAG = 'all'
-DEFAULT_HW_MODEL = 'unset'
+DEFAULT_TAG = "all"
+DEFAULT_HW_MODEL = "unset"
 
 # Pydantic models for input validation
 
-RFC_1123_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
+RFC_1123_REGEX = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 
 
 class AntaInventoryHost(BaseModel):
@@ -80,6 +84,7 @@ class AntaInventoryInput(BaseModel):
 
 # Pydantic models for inventory output structures
 
+
 class InventoryDevice(BaseModel):
     """
     Inventory model exposed by Inventory class.
@@ -98,7 +103,8 @@ class InventoryDevice(BaseModel):
     """
 
     class Config:  # pylint: disable=too-few-public-methods
-        """ Pydantic model configuration """
+        """Pydantic model configuration"""
+
         arbitrary_types_allowed = True
 
     name: str
@@ -116,32 +122,42 @@ class InventoryDevice(BaseModel):
 
     @root_validator(pre=True)
     def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
-        """ Build the device session object """
-        if not values.get('host'):
-            values['host'] = 'localhost'
-        if not values.get('port'):
-            values['port'] = '8080' if values['host'] == 'localhost' else '443'
-        if values.get('tags') is not None:
-            values['tags'].append(DEFAULT_TAG)
+        """Build the device session object"""
+        if not values.get("host"):
+            values["host"] = "localhost"
+        if not values.get("port"):
+            values["port"] = "8080" if values["host"] == "localhost" else "443"
+        if values.get("tags") is not None:
+            values["tags"].append(DEFAULT_TAG)
         else:
-            values['tags'] = [DEFAULT_TAG]
-        if values.get('session') is None:
-            proto = 'http' if values['port'] in ['80', '8080'] else 'https'
-            values['session'] = Device(host=values['host'], port=values['port'],
-                                       username=values.get('username'), password=values.get('password'),
-                                       proto=proto, timeout=values.get('timeout'))
-        if values.get('name') is None:
-            values['name'] = f"{values['host']}:{values['port']}"
+            values["tags"] = [DEFAULT_TAG]
+        if values.get("session") is None:
+            proto = "http" if values["port"] in ["80", "8080"] else "https"
+            values["session"] = Device(
+                host=values["host"],
+                port=values["port"],
+                username=values.get("username"),
+                password=values.get("password"),
+                proto=proto,
+                timeout=values.get("timeout"),
+            )
+        if values.get("name") is None:
+            values["name"] = f"{values['host']}:{values['port']}"
         return values
 
     def __eq__(self, other: BaseModel) -> bool:
         """
-            Two InventoryDevice objects are equal if the hostname and the port are the same.
-            This covers the use case of port forwarding when the host is localhost and the devices have different ports.
+        Two InventoryDevice objects are equal if the hostname and the port are the same.
+        This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return self.session.host == other.session.host and self.session.port == other.session.port
+        return (
+            self.session.host == other.session.host
+            and self.session.port == other.session.port
+        )
 
-    def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
+    def assert_enable_password_is_not_none(
+        self, test_name: Optional[str] = None
+    ) -> None:
         """
         raise ValueError is enable_password is None
         """
@@ -152,31 +168,6 @@ class InventoryDevice(BaseModel):
                 message = "`enable_password` is not set"
             raise ValueError(message)
 
-    def create_ssh_socket(self, ssh_port: int = 22, banner_timeout: int = 60) -> paramiko.SSHClient:
-        """
-        Create SSH socket to send commend over SSH
-
-        Returns:
-            paramiko.SSHClient: SSH Socket created
-        """
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            client.connect(
-                hostname=self.host,
-                port=ssh_port,
-                username=self.username,
-                password=self.password,
-                banner_timeout=banner_timeout
-            )
-        except AuthenticationException as error:
-            logging.error(f'Authentication error for device {self.name}')
-            logging.error(error)
-        except SSHException as error:
-            logging.error(f'SSHException for device {self.name}')
-            logging.error(error)
-        return client
-
 
 class InventoryDevices(BaseModel):
     """
@@ -185,6 +176,7 @@ class InventoryDevices(BaseModel):
     Attributes:
         __root__(List[InventoryDevice]): A list of InventoryDevice objects.
     """
+
     # pylint: disable=R0801
 
     __root__: List[InventoryDevice] = []
@@ -207,4 +199,4 @@ class InventoryDevices(BaseModel):
 
     def json(self) -> str:
         """Returns a JSON representation of the devices"""
-        return super().json(exclude={'__root__': {'__all__': {'session'}}})
+        return super().json(exclude={"__root__": {"__all__": {"session"}}})
