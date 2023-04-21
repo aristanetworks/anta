@@ -45,6 +45,7 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 
 
 def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) -> str:  # pylint: disable=unused-argument
+    """Build directory name for command snapshots, including current time"""
     return f"{value}_{datetime.today().strftime('%Y-%m-%d_%H%M%S')}"
 
 
