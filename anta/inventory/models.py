@@ -4,9 +4,8 @@ import logging
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import paramiko
-from paramiko.ssh_exception import AuthenticationException, SSHException
-
 from aioeapi import Device
+from paramiko.ssh_exception import AuthenticationException, SSHException
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 
 # Default values

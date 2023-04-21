@@ -7,22 +7,21 @@ Commands for Anta CLI to run check commands.
 """
 
 import asyncio
-import logging
-from typing import Any
-import os
 import json
+import logging
+import os
+from typing import Any
 
 import click
+from cvprac.cvp_client import CvpClient
+from cvprac.cvp_client_errors import CvpApiError
 from rich import print_json
 from rich.console import Console
 
-from cvprac.cvp_client import CvpClient
-from cvprac.cvp_client_errors import CvpApiError
-
 from anta.cli.utils import setup_logging
-from anta.tools import pydantic_to_dict
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
+from anta.tools import pydantic_to_dict
 
 from .utils import create_inventory, get_cv_token
 

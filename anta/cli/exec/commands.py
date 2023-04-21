@@ -13,7 +13,7 @@ from datetime import datetime
 import click
 from yaml import safe_load
 
-from anta.cli.exec.utils import clear_counters_utils, collect_scheduled_show_tech, collect_commands
+from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
 from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
