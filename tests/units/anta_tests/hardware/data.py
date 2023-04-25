@@ -1,6 +1,8 @@
 """Test inputs for anta.tests.hardware"""
 
-INPUT_MANUFACTURER = [
+from typing import Any, Dict, List
+
+INPUT_MANUFACTURER: List[Dict[str, Any]] = [
     {
         'name': 'success',
         'eos_data': [
@@ -23,7 +25,7 @@ INPUT_MANUFACTURER = [
         ],
         'side_effect': ['Arista Networks'],
         'expected_result': 'success',
-        'expected_message': []
+        'expected_messages': []
     },
     {
         "name": "failure",
@@ -47,6 +49,6 @@ INPUT_MANUFACTURER = [
         ],
         'side_effect': ['Arista'],
         'expected_result': 'failure',
-        'expected_message': ['The following interfaces have transceivers from unauthorized manufacturers', "{'1': 'Arista Networks', '2': 'Arista Networks'}"]
+        'expected_messages': ['The following interfaces have transceivers from unauthorized manufacturers', "{'1': 'Arista Networks', '2': 'Arista Networks'}"]
     },
 ]

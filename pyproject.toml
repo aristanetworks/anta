@@ -185,5 +185,7 @@ line_length = 165
 [tool.black]
 line-length = 165
 force-exclude = """
-tests/data
+(
+.*data.py
+)
 """
