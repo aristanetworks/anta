@@ -19,7 +19,7 @@ from .utils import check_run, display_json, display_table
 logger = logging.getLogger(__name__)
 
 
-@click.command(no_args_is_help=True)
+@click.command()
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)
@@ -62,7 +62,7 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
     return True
 
 
-@click.command(no_args_is_help=True)
+@click.command()
 @click.pass_context
 # Generic options
 @click.option('--catalog', '-c', show_envvar=True, prompt='Path for tests catalog', help='Path for tests catalog', type=click.Path(), required=True)

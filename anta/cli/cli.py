@@ -19,12 +19,12 @@ from anta.cli.get import commands as get_commands
 @click.group()
 @click.pass_context
 @click.version_option(__version__)
-@click.option('--username', show_envvar=True, default='arista', help='Username to connect to EOS', required=True)
+@click.option('--username', show_envvar=True, default='admin', help='Username to connect to EOS', required=True)
 @click.option('--password', show_envvar=True, default='arista123', help='Password to connect to EOS', required=True)
 @click.option('--timeout', show_envvar=True, default=5, help='Connection timeout (default 5)', required=False)
-@click.option('--enable-password', show_envvar=True, default='',
-              help='Enable password if required to connect', required=False)
-@click.option('--inventory', '-i', show_envvar=True, default='', help='Path to your inventory file', type=click.Path(), required=True)
+@click.option('--enable-password', show_envvar=True, help='Enable password if required to connect', required=False)
+@click.option('--inventory', '-i', show_envvar=True, required=True, help='Path to your inventory file', type=click.Path(file_okay=True, dir_okay=False,
+                                                                                                                        exists=True, readable=True))
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
     """Arista Network Test CLI """
     # pylint: disable=too-many-arguments
