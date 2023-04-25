@@ -937,13 +937,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#anta.inventory.models.InventoryDevice.create_ssh_socket" class="md-nav__link">
-    create_ssh_socket()
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1169,75 +1162,6 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
-      
-      
-        
-          
-        
-          
-        
-      
-      
-        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
-          Scripts (deprecated)
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_9">
-          <span class="md-nav__icon md-icon"></span>
-          Scripts (deprecated)
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../usage-check-devices/" class="md-nav__link">
-        Check Devices
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../usage/" class="md-nav__link">
-        Other scripts
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
     <li class="md-nav__item">
       <a href="../../contribution/" class="md-nav__link">
         Contributions
@@ -1309,13 +1233,6 @@
           <li class="md-nav__item">
   <a href="#anta.inventory.models.InventoryDevice.build_device" class="md-nav__link">
     build_device()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.inventory.models.InventoryDevice.create_ssh_socket" class="md-nav__link">
-    create_ssh_socket()
   </a>
   
 </li>
@@ -1500,7 +1417,9 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
 <span class="normal"> 86</span>
@@ -1579,23 +1498,7 @@
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InventoryDevice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InventoryDevice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inventory model exposed by Inventory class.</span>
 
@@ -1613,7 +1516,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Pydantic model configuration &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pydantic model configuration&quot;&quot;&quot;</span>
+
         <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -1631,32 +1535,42 @@
 
     <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">build_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Build the device session object &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">):</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">):</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;8080&#39;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;localhost&#39;</span> <span class="k">else</span> <span class="s1">&#39;443&#39;</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEFAULT_TAG</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the device session object&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">):</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">):</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;8080&quot;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span> <span class="k">else</span> <span class="s2">&quot;443&quot;</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEFAULT_TAG</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;http&#39;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;80&#39;</span><span class="p">,</span> <span class="s1">&#39;8080&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;https&#39;</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-                                       <span class="n">username</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">),</span> <span class="n">password</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span>
-                                       <span class="n">proto</span><span class="o">=</span><span class="n">proto</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">proto</span> <span class="o">=</span> <span class="s2">&quot;http&quot;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;80&quot;</span><span class="p">,</span> <span class="s2">&quot;8080&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;https&quot;</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">],</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">),</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">),</span>
+                <span class="n">proto</span><span class="o">=</span><span class="n">proto</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">values</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Two InventoryDevice objects are equal if the hostname and the port are the same.</span>
-<span class="sd">            This covers the use case of port forwarding when the host is localhost and the devices have different ports.</span>
+<span class="sd">        Two InventoryDevice objects are equal if the hostname and the port are the same.</span>
+<span class="sd">        This covers the use case of port forwarding when the host is localhost and the devices have different ports.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span>
+        <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">assert_enable_password_is_not_none</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">assert_enable_password_is_not_none</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        raise ValueError is enable_password is None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1666,31 +1580,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;`enable_password` is not set&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">create_ssh_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">banner_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create SSH socket to send commend over SSH</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            paramiko.SSHClient: SSH Socket created</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
-        <span class="n">client</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="n">hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-                <span class="n">port</span><span class="o">=</span><span class="n">ssh_port</span><span class="p">,</span>
-                <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-                <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
-                <span class="n">banner_timeout</span><span class="o">=</span><span class="n">banner_timeout</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="n">AuthenticationException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Authentication error for device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">SSHException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SSHException for device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">client</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1724,10 +1613,12 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Pydantic model configuration &quot;&quot;&quot;</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model configuration&quot;&quot;&quot;</span>
+
     <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -1770,17 +1661,23 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Two InventoryDevice objects are equal if the hostname and the port are the same.</span>
-<span class="sd">        This covers the use case of port forwarding when the host is localhost and the devices have different ports.</span>
+<span class="sd">    Two InventoryDevice objects are equal if the hostname and the port are the same.</span>
+<span class="sd">    This covers the use case of port forwarding when the host is localhost and the devices have different ports.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">host</span>
+        <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">port</span>
+    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1803,16 +1700,20 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assert_enable_password_is_not_none</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assert_enable_password_is_not_none</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    raise ValueError is enable_password is None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1844,7 +1745,8 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+<span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
@@ -1862,112 +1764,34 @@ This covers the use case of port forwarding when the host is localhost and the d
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">build_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Build the device session object &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">):</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">):</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;8080&#39;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;localhost&#39;</span> <span class="k">else</span> <span class="s1">&#39;443&#39;</span>
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEFAULT_TAG</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the device session object&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;8080&quot;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span> <span class="k">else</span> <span class="s2">&quot;443&quot;</span>
+    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEFAULT_TAG</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;http&#39;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;80&#39;</span><span class="p">,</span> <span class="s1">&#39;8080&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;https&#39;</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-                                   <span class="n">username</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">),</span> <span class="n">password</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span>
-                                   <span class="n">proto</span><span class="o">=</span><span class="n">proto</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;timeout&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">return</span> <span class="n">values</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="anta.inventory.models.InventoryDevice.create_ssh_socket" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">create_ssh_socket</span><span class="p">(</span><span class="n">ssh_port</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">banner_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span></code>
-
-<a href="#anta.inventory.models.InventoryDevice.create_ssh_socket" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Create SSH socket to send commend over SSH</p>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>paramiko.<span title="paramiko.SSHClient">SSHClient</span></code>
-          </td>
-          <td><p>paramiko.SSHClient: SSH Socket created</p></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_ssh_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">banner_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create SSH socket to send commend over SSH</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        paramiko.SSHClient: SSH Socket created</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="n">hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-            <span class="n">port</span><span class="o">=</span><span class="n">ssh_port</span><span class="p">,</span>
-            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-            <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
-            <span class="n">banner_timeout</span><span class="o">=</span><span class="n">banner_timeout</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_TAG</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">proto</span> <span class="o">=</span> <span class="s2">&quot;http&quot;</span> <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;80&quot;</span><span class="p">,</span> <span class="s2">&quot;8080&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;https&quot;</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">],</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">),</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">),</span>
+            <span class="n">proto</span><span class="o">=</span><span class="n">proto</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">),</span>
         <span class="p">)</span>
-    <span class="k">except</span> <span class="n">AuthenticationException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Authentication error for device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">SSHException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SSHException for device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">client</span>
+    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">values</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2016,7 +1840,23 @@ This covers the use case of port forwarding when the host is localhost and the d
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
@@ -2030,28 +1870,14 @@ This covers the use case of port forwarding when the host is localhost and the d
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InventoryDevices</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InventoryDevices</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inventory model to list all InventoryDevice entries.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        __root__(List[InventoryDevice]): A list of InventoryDevice objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># pylint: disable=R0801</span>
 
     <span class="n">__root__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2074,7 +1900,7 @@ This covers the use case of port forwarding when the host is localhost and the d
 
     <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a JSON representation of the devices&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;__root__&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;__all__&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;session&#39;</span><span class="p">}}})</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;__root__&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;__all__&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;session&quot;</span><span class="p">}}})</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -2106,9 +1932,9 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InventoryDevice</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InventoryDevice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use custom getitem method.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
@@ -2133,9 +1959,9 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use custom iter method.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2160,9 +1986,9 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Support for length of __root__&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2187,9 +2013,9 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add support for append method.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2214,11 +2040,11 @@ This covers the use case of port forwarding when the host is localhost and the d
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a JSON representation of the devices&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;__root__&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;__all__&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;session&#39;</span><span class="p">}}})</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;__root__&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;__all__&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;session&quot;</span><span class="p">}}})</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
