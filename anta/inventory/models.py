@@ -1,12 +1,10 @@
 """Models related to inventory management."""
 
 from __future__ import annotations
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
-
-from aioeapi import Device
 
 import logging
 import traceback
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 from aioeapi import Device, EapiCommandError
 from httpx import ConnectError, HTTPError

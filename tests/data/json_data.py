@@ -52,9 +52,7 @@ INVENTORY_MODEL = [
     },
     {
         "name": "Valid_Networks_Only",
-        "input": {
-            "networks": [{"network": "192.168.0.0/16"}, {"network": "192.168.1.0/24"}]
-        },
+        "input": {"networks": [{"network": "192.168.0.0/16"}, {"network": "192.168.1.0/24"}]},
         "expected_result": "valid",
     },
     {
@@ -78,44 +76,19 @@ INVENTORY_DEVICE_MODEL = [
     {
         "name": "Valid_Inventory",
         "input": [
-            {
-                "host": "1.1.1.1",
-                "username": "arista",
-                "password": "arista123!"
-            },
-            {
-                "host": "1.1.1.2",
-                "username": "arista",
-                "password": "arista123!"
-            },
-            {
-                "username": "arista",
-                "password": "arista123!"
-            },
+            {"host": "1.1.1.1", "username": "arista", "password": "arista123!"},
+            {"host": "1.1.1.2", "username": "arista", "password": "arista123!"},
+            {"username": "arista", "password": "arista123!"},
         ],
         "expected_result": "valid",
     },
     {
         "name": "Invalid_Inventory",
         "input": [
-            {
-                "host": "1.1.1.1",
-                "password": "arista123!"
-            },
-            {
-                "host": "1.1.1.1",
-                "username": "arista"
-            },
-            {
-                "host": "@",
-                "username": "arista",
-                "password": "arista123!"
-            },
-            {
-                "host": "1.1.1.1/32",
-                "username": "arista",
-                "password": "arista123!"
-            },
+            {"host": "1.1.1.1", "password": "arista123!"},
+            {"host": "1.1.1.1", "username": "arista"},
+            {"host": "@", "username": "arista", "password": "arista123!"},
+            {"host": "1.1.1.1/32", "username": "arista", "password": "arista123!"},
         ],
         "expected_result": "invalid",
     },
@@ -124,11 +97,7 @@ INVENTORY_DEVICE_MODEL = [
 ANTA_INVENTORY_TESTS = [
     {
         "name": "ValidInventory_with_host_only",
-        "input": {
-            "anta_inventory": {
-                "hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]
-            }
-        },
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]}},
         "expected_result": "valid",
         "parameters": {
             "ipaddress_in_scope": "192.168.0.17",
@@ -165,11 +134,7 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         "name": "InvalidInventory_with_host_only",
-        "input": {
-            "anta_inventory": {
-                "hosts": [{"host": "192.168.0.17/32"}, {"host": "192.168.0.2"}]
-            }
-        },
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17/32"}, {"host": "192.168.0.2"}]}},
         "expected_result": "invalid",
     },
     {

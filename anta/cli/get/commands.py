@@ -21,7 +21,7 @@ from rich.console import Console
 from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
-from anta.tools import pydantic_to_dict
+from anta.tools.pydantic import pydantic_to_dict
 
 from .utils import create_inventory, get_cv_token
 

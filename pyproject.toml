@@ -53,6 +53,7 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
   "bump2version==1.0.1",
+  "black==23.3.0",
   "flake8==6.0.0",
   "isort==5.10.1",
   "mypy==1.2.0",
@@ -139,6 +140,8 @@ commands =
 [testenv:lint]
 description = check the code style
 commands =
+  black --check --diff --color .
+  isort --check --diff --color .
   flake8 --max-line-length=165 --config=/dev/null anta
   flake8 --max-line-length=165 --config=/dev/null scripts
   flake8 --max-line-length=165 --config=/dev/null tests

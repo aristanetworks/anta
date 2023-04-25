@@ -43,9 +43,7 @@ def setup_logging(level: str = "info") -> None:
     loglevel = getattr(logging, level.upper())
 
     FORMAT = "%(message)s"
-    logging.basicConfig(
-        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
-    )
+    logging.basicConfig(level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
     logger.setLevel(loglevel)
 
 
@@ -64,15 +62,11 @@ def create_inventory(inv: List[Dict[str, Any]], directory: str, container: str) 
 
 def main() -> None:
     """main"""
-    parser = ArgumentParser(
-        description="Create devices inventory based on CVP containers"
-    )
+    parser = ArgumentParser(description="Create devices inventory based on CVP containers")
     parser.add_argument("-cvp", help="CVP address", dest="cvp", required=True)
     parser.add_argument("-u", help="CVP username", dest="username", required=True)
     parser.add_argument("-c", help="CVP container", dest="container", required=False)
-    parser.add_argument(
-        "-o", help="Output directory", dest="output_directory", required=True
-    )
+    parser.add_argument("-o", help="Output directory", dest="output_directory", required=True)
     parser.add_argument(
         "-log",
         "--loglevel",
@@ -87,9 +81,7 @@ def main() -> None:
     URL = f"https://{args.cvp}/cvpservice/login/authenticate.do"
     payload = json.dumps({"userId": args.username, "password": args.password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    response = requests.request(
-        "POST", URL, headers=headers, data=payload, verify=False, timeout=10
-    )
+    response = requests.request("POST", URL, headers=headers, data=payload, verify=False, timeout=10)
     token = response.json()["sessionId"]
 
     # Create output directory

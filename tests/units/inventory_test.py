@@ -28,16 +28,11 @@ class Test_AntaInventory:
 
     def check_parameter(self, parameter: str, test_definition: Dict[Any, Any]) -> bool:
         """Check if parameter is configured in testbed."""
-        if (
-            "parameters" not in test_definition.keys()
-            or parameter not in test_definition["parameters"].keys()
-        ):
+        if "parameters" not in test_definition.keys() or parameter not in test_definition["parameters"].keys():
             return False
         return True
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
     def test_init_valid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with valid data.
 
@@ -59,27 +54,17 @@ class Test_AntaInventory:
         if test_definition["expected_result"] == "invalid":
             pytest.skip("Not concerned by the test")
 
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory(
-                inventory_file=inventory_file,
-                username="arista",
-                password="arista123"
-            )
+            AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
             assert False
         else:
             assert True
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
-    def test_init_invalid(
-        self, test_definition: Dict[str, Any], tmp_path: Path
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    def test_init_invalid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with invalid data.
 
         Test structure:
@@ -100,15 +85,9 @@ class Test_AntaInventory:
         if test_definition["expected_result"] == "valid":
             pytest.skip("Not concerned by the test")
 
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory(
-                inventory_file=inventory_file,
-                username="arista",
-                password="arista123"
-            )
+            AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
         except InventoryIncorrectSchema as exc:
             logging.warning("Exception is: %s", exc)
             assert True
@@ -118,12 +97,8 @@ class Test_AntaInventory:
         else:
             assert False
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
-    def test_is_ip_exists(
-        self, test_definition: Dict[str, Any], tmp_path: Path
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    def test_is_ip_exists(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test _is_ip_exists with valid data.
 
         Test structure:
@@ -144,33 +119,19 @@ class Test_AntaInventory:
         if test_definition["expected_result"] == "invalid":
             pytest.skip("Not concerned by the test")
 
-        if not self.check_parameter(
-            parameter="ipaddress_in_scope", test_definition=test_definition
-        ):
+        if not self.check_parameter(parameter="ipaddress_in_scope", test_definition=test_definition):
             pytest.skip("Test data has no ipaddress parameter configured")
 
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
-        inventory_test = AntaInventory(
-            inventory_file=inventory_file,
-            username="arista",
-            password="arista123"
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
+        inventory_test = AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
         logging.info(
             "Checking if %s is in inventory",
             str(test_definition["parameters"]["ipaddress_in_scope"]),
         )
-        assert inventory_test._is_ip_exist(  # pylint: disable=protected-access
-            ip=test_definition["parameters"]["ipaddress_in_scope"]
-        )
+        assert inventory_test._is_ip_exist(ip=test_definition["parameters"]["ipaddress_in_scope"])  # pylint: disable=protected-access
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
-    def test_is_ip_exists_false(
-        self, test_definition: Dict[str, Any], tmp_path: Path
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    def test_is_ip_exists_false(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test _is_ip_exists with invalid data.
 
         Test structure:
@@ -190,33 +151,19 @@ class Test_AntaInventory:
         if test_definition["expected_result"] == "invalid":
             pytest.skip("Not concerned by the test")
 
-        if not self.check_parameter(
-            parameter="ipaddress_out_of_scope", test_definition=test_definition
-        ):
+        if not self.check_parameter(parameter="ipaddress_out_of_scope", test_definition=test_definition):
             pytest.skip("Test data has no ipaddress parameter configured")
 
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
-        inventory_test = AntaInventory(
-            inventory_file=inventory_file,
-            username="arista",
-            password="arista123"
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
+        inventory_test = AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
         logging.info(
             "Checking if %s is in inventory",
             str(test_definition["parameters"]["ipaddress_out_of_scope"]),
         )
-        assert not inventory_test._is_ip_exist(  # pylint: disable=protected-access
-            ip=test_definition["parameters"]["ipaddress_out_of_scope"]
-        )
+        assert not inventory_test._is_ip_exist(ip=test_definition["parameters"]["ipaddress_out_of_scope"])  # pylint: disable=protected-access
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict
-    )
-    def test_inventory_get_json(
-        self, test_definition: Dict[str, Any], tmp_path: Path
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    def test_inventory_get_json(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test device_get function.
 
         Test structure:
@@ -236,30 +183,14 @@ class Test_AntaInventory:
         if test_definition["expected_result"] == "invalid":
             pytest.skip("Not concerned by the test")
 
-        if not self.check_parameter(
-            parameter="ipaddress_in_scope", test_definition=test_definition
-        ):
+        if not self.check_parameter(parameter="ipaddress_in_scope", test_definition=test_definition):
             pytest.skip("Test data has no ipaddress_in_scope parameter configured")
 
-        if not self.check_parameter(
-            parameter="nb_hosts", test_definition=test_definition
-        ):
+        if not self.check_parameter(parameter="nb_hosts", test_definition=test_definition):
             pytest.skip("Test data has no nb_hosts parameter configured")
 
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
-        inventory_test = AntaInventory(
-            inventory_file=inventory_file,
-            username="arista",
-            password="arista123"
-        )
-        inventory_json = json.loads(
-            inventory_test.get_inventory(established_only=False).json()
-        )
-        assert test_definition["parameters"]["ipaddress_in_scope"] in [
-            d["host"] for d in inventory_json
-        ]
-        assert int(test_definition["parameters"]["nb_hosts"]) == len(
-            [d["host"] for d in inventory_json]
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
+        inventory_test = AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
+        inventory_json = json.loads(inventory_test.get_inventory(established_only=False).json())
+        assert test_definition["parameters"]["ipaddress_in_scope"] in [d["host"] for d in inventory_json]
+        assert int(test_definition["parameters"]["nb_hosts"]) == len([d["host"] for d in inventory_json])

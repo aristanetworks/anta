@@ -12,6 +12,18 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
 
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: Check for changes when running isort on all python files
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        name: Check for changes when running Black on all python files
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
@@ -20,12 +32,6 @@ repos:
         args:
           - --config=/dev/null
           - --max-line-length=165
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: Check for changes when running isort on all python files
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:

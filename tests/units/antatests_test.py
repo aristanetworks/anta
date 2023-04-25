@@ -24,21 +24,15 @@ def runCmds(version, commands, cmd_format):
     Mocked runCmds
     """
     if version == 1 and commands == ["show version"] and cmd_format == "json":
-        with open(
-            "mock_data/show_version_json_4.27.1.1F.out", encoding="utf8"
-        ) as data_string:
+        with open("mock_data/show_version_json_4.27.1.1F.out", encoding="utf8") as data_string:
             data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     elif version == 1 and commands == ["show uptime"] and cmd_format == "json":
-        with open(
-            "mock_data/show_uptime_json_1000000.out", encoding="utf8"
-        ) as data_string:
+        with open("mock_data/show_uptime_json_1000000.out", encoding="utf8") as data_string:
             data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     elif version == 1 and commands == ["show ntp status"] and cmd_format == "text":
-        with open(
-            "mock_data/show_ntp_status_text_synchronised.out", encoding="utf8"
-        ) as data_string:
+        with open("mock_data/show_ntp_status_text_synchronised.out", encoding="utf8") as data_string:
             data_string = data_string.read()
             data_list = ast.literal_eval(data_string)
     return data_list
@@ -71,16 +65,12 @@ def test_verify_eos_version(mock_device, versions, expected):
     Legacy tests verify_eos_version
     """
     # pylint: disable=E1120
-    check = anta.tests.software.verify_eos_version(
-        device=mock_device, versions=versions
-    )
+    check = anta.tests.software.verify_eos_version(device=mock_device, versions=versions)
     assert check == expected
 
 
 @pytest.mark.skip("Legacy syntax")
-@pytest.mark.parametrize(
-    "uptime,expected", [(100, True), (10000000, False), (None, None)]
-)
+@pytest.mark.parametrize("uptime,expected", [(100, True), (10000000, False), (None, None)])
 def test_verify_uptime(mock_device, uptime, expected):
     """
     Legacy tests verify_uptime

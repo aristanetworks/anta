@@ -35,15 +35,11 @@ def setup_logging(level: str = "info") -> None:
     loglevel = getattr(logging, level.upper())
 
     FORMAT = "%(message)s"
-    logging.basicConfig(
-        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
-    )
+    logging.basicConfig(level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
     logger.setLevel(loglevel)
 
 
-async def clear_evpn_blacklisted_mac_addresses(
-    inv: AntaInventory, enable_pass: str
-) -> None:
+async def clear_evpn_blacklisted_mac_addresses(inv: AntaInventory, enable_pass: str) -> None:
     """
     clear EVPN blacklisted mac addresses
     """
@@ -59,28 +55,18 @@ async def clear_evpn_blacklisted_mac_addresses(
                 ],
                 ofmt="json",
             )
-            logger.info(
-                f"Cleared the EVPN blacklisted mac addresses on device {device.name}"
-            )
+            logger.info(f"Cleared the EVPN blacklisted mac addresses on device {device.name}")
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
-            logger.error(
-                f"Could not clear the EVPN blacklisted mac addresses on device {device.name}"
-            )
-            logger.debug(
-                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
-            )
+            logger.error(f"Could not clear the EVPN blacklisted mac addresses on device {device.name}")
+            logger.debug(f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}")
             logger.debug(traceback.format_exc())
 
 
 def main() -> None:
     """main"""
-    parser = ArgumentParser(
-        description="Clear the list of MAC addresses which are blacklisted in EVPN"
-    )
-    parser.add_argument(
-        "-i", help="Text file containing a list of switches", dest="file", required=True
-    )
+    parser = ArgumentParser(description="Clear the list of MAC addresses which are blacklisted in EVPN")
+    parser.add_argument("-i", help="Text file containing a list of switches", dest="file", required=True)
     parser.add_argument(
         "-log",
         "--loglevel",
@@ -93,12 +79,8 @@ def main() -> None:
     args.enable_pass = getpass(prompt="Enable password (if any): ")
     setup_logging(level=args.loglevel)
 
-    logger.info(
-        "Clearing on all the devices the list of MAC addresses which are blacklisted in EVPN ... please be patient ..."
-    )
-    inventory = AntaInventory(
-        inventory_file=args.file, username=args.username, password=args.password
-    )
+    logger.info("Clearing on all the devices the list of MAC addresses which are blacklisted in EVPN ... please be patient ...")
+    inventory = AntaInventory(inventory_file=args.file, username=args.username, password=args.password)
 
     asyncio.run(clear_evpn_blacklisted_mac_addresses(inventory, args.enable_pass))
 

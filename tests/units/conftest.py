@@ -19,7 +19,7 @@ def mocked_device() -> MagicMock:
     """
     mock = create_autospec(InventoryDevice)
     mock.host = "42.42.42.42"
-    mock.name = 'testdevice'
+    mock.name = "testdevice"
     mock.username = "toto"
     mock.password = "mysuperdupersecret"
     mock.enable_password = "mysuperduperenablesecret"
@@ -29,7 +29,5 @@ def mocked_device() -> MagicMock:
     mock.hw_model = "unset"
 
     # keeping the original assert_enable_password_is_not_none() method
-    mock.assert_enable_password_is_not_none = functools.partial(
-        InventoryDevice.assert_enable_password_is_not_none, mock
-    )
+    mock.assert_enable_password_is_not_none = functools.partial(InventoryDevice.assert_enable_password_is_not_none, mock)
     return mock

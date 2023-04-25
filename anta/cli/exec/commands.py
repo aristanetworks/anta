@@ -42,7 +42,7 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 
 def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) -> str:  # pylint: disable=unused-argument
     """Build directory name for command snapshots, including current time"""
-    return f"{value}_{datetime.today().strftime('%Y-%m-%d_%H%M%S')}"
+    return f"{value}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}"
 
 
 @click.command()
@@ -93,8 +93,8 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
 @click.option(
     "--log-level", "--log", help="Logging level of the command", default="info", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
 )
-def collect_tech_support(
-    ctx: click.Context, output: str, ssh_port: int, insecure: bool, configure: bool, log_level: str, tags: str  # pylint: disable=too-many-arguments
+def collect_tech_support(  # pylint: disable=too-many-arguments
+    ctx: click.Context, output: str, ssh_port: int, insecure: bool, configure: bool, log_level: str, tags: str
 ) -> bool:
     """Collect scheduled tech-support from eos devices."""
     setup_logging(level=log_level)
