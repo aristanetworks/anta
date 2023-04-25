@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: 'Setup Python 3 on runner'
-        uses: actions/setup-python@v2.1.4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
