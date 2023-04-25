@@ -1,16 +1,9 @@
 """Models related to inventory management."""
 
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
+
 from aioeapi import Device
-from paramiko.ssh_exception import AuthenticationException, SSHException
-from pydantic import (
-    BaseModel,
-    IPvAnyAddress,
-    IPvAnyNetwork,
-    conint,
-    constr,
-    root_validator,
-)
+from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 
 # Default values
 
