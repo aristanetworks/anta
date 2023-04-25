@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
 from tests.data.json_data import ANTA_INVENTORY_TESTS
-from tests.data.utils import generate_test_ids_dict
+from tests.lib.utils import generate_test_ids_dict
 
 
 class Test_AntaInventory:

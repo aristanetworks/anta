@@ -2,115 +2,83 @@
 """
 Tests for anta.tests.configuration.py
 """
+from __future__ import annotations
+
 import asyncio
 from typing import Any, Dict, List
 from unittest.mock import MagicMock
 
 import pytest
-from httpx import HTTPError
 
-from anta.tests.configuration import verify_running_config_diffs, verify_zerotouch
+from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyZeroTouch
 
 
 @pytest.mark.parametrize(
-    "return_value, side_effect, expected_result, expected_messages",
+    "eos_data, side_effect, expected_result, expected_messages",
     [
-        pytest.param({"mode": "disabled"}, None, "success", [], id="success"),
+        pytest.param([{"mode": "disabled"}], None, "success", [], id="success"),
         pytest.param(
-            {"mode": "enabled"},
+            [{"mode": "enabled"}],
             None,
             "failure",
             ["ZTP is NOT disabled"],
             id="failure",
         ),
-        # Hmmmm both errors do not return the same string ...
         # TODO: need to cover other exceptions like EapiCommandError
-        pytest.param(
-            None, HTTPError("dummy"), "error", ["HTTPError (dummy)"], id="HTTP error"
-        ),
-        pytest.param(
-            None, KeyError("dummy"), "error", ["KeyError ('dummy')"], id="Key error"
-        ),
     ],
 )
-def test_verify_zerotouch(
+def test_VerifyZeroTouch(
     mocked_device: MagicMock,
-    return_value: List[Dict[str, str]],
+    eos_data: List[Dict[str, str]],
     side_effect: Any,
     expected_result: str,
     expected_messages: List[str],
 ) -> None:
-    mocked_device.session.cli.return_value = return_value
-    mocked_device.session.cli.side_effect = side_effect
-    result = asyncio.run(verify_zerotouch(mocked_device))
+    test = VerifyZeroTouch(mocked_device, eos_data=eos_data)
+    asyncio.run(test.test())
 
-    assert result.test == "verify_zerotouch"
-    assert str(result.name) == mocked_device.name
-    assert result.result == expected_result
-    assert result.messages == expected_messages
+    assert test.name == "verify_zerotouch"
+    assert test.categories == ["configuration"]
+    assert test.result.test == "verify_zerotouch"
+    assert str(test.result.name) == mocked_device.name
+    assert test.result.result == expected_result
+    assert test.result.messages == expected_messages
 
 
 @pytest.mark.parametrize(
-    "return_value, side_effect, remove_enable_password, expected_result, expected_messages",
+    "eos_data, side_effect, expected_result, expected_messages",
     [
         pytest.param(
-            [None, []],
+            "",
             None,
-            False,
+            # False,
             "success",
             [],
             id="success",
         ),
         pytest.param(
-            [None, "blah\nblah"],
+            ["blah blah"],
             None,
-            False,
+            # False,
             "failure",
-            ["blah", "blah"],
+            ["blah blah"],
             id="failure",
-        ),
-        # Hmmmm both errors do not return the same string ...
-        pytest.param(
-            None,
-            HTTPError("dummy"),
-            False,
-            "error",
-            ["HTTPError (dummy)"],
-            id="HTTP error",
-        ),
-        pytest.param(
-            None,
-            KeyError("dummy"),
-            False,
-            "error",
-            ["KeyError ('dummy')"],
-            id="Key error",
-        ),
-        pytest.param(
-            [None, []],
-            None,
-            False,
-            "success",
-            [],
-            id="success",
         ),
     ],
 )
-def test_verify_running_config_diffs(
+def test_VerifyRunningConfigDiffs(
     mocked_device: MagicMock,
-    return_value: List[Any],
+    eos_data: List[str],
     side_effect: Any,
-    remove_enable_password: str,
     expected_result: str,
     expected_messages: List[str],
 ) -> None:
-    if remove_enable_password:
-        mocked_device.enable_password = None
-    mocked_device.session.cli.return_value = return_value
-    mocked_device.session.cli.side_effect = side_effect
-    result = asyncio.run(verify_running_config_diffs(mocked_device))
+    test = VerifyRunningConfigDiffs(mocked_device, eos_data=eos_data)
+    asyncio.run(test.test())
 
-    assert result.test == "verify_running_config_diffs"
-    assert str(result.name) == mocked_device.name
-    assert result.result == expected_result
-    assert result.messages == expected_messages
+    assert test.name == "verify_running_config_diffs"
+    assert test.categories == ["configuration"]
+    assert test.result.test == "verify_running_config_diffs"
+    assert str(test.result.name) == mocked_device.name
+    assert test.result.result == expected_result
+    assert test.result.messages == expected_messages
