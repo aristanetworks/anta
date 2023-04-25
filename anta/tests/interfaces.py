@@ -2,80 +2,77 @@
 Test functions related to the device interfaces
 """
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.inventory.models import InventoryDevice
+from anta.models import AntaTest, AntaTestCommand
 from anta.result_manager.models import TestResult
+
+# TODO remove ocne wIP is done
 from anta.tests import anta_test
 
 # pylint: disable=W0511
 
 
-@anta_test
-async def verify_interface_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyInterfaceUtilization(AntaTest):
     """
     Verifies interfaces utilization is below 75%.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if interfaces utilization is below 75%
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
     """
-    # TODO make it JSON - bad news it seems percentages are not in the json payload
-    response = await device.session.cli(command="show interfaces counters rates", ofmt="text")
 
-    wrong_interfaces = {}
-    for line in response.split("\n")[1:]:
-        if len(line) > 0:
-            if line.split()[-5] == "-" or line.split()[-2] == "-":
-                pass
-            elif float(line.split()[-5].replace("%", "")) > 75.0:
-                wrong_interfaces[line.split()[0]] = line.split()[-5]
-            elif float(line.split()[-2].replace("%", "")) > 75.0:
-                wrong_interfaces[line.split()[0]] = line.split()[-2]
+    name = "verify_interface_utilization"
+    description = "Verifies interfaces utilization is below 75%."
+    categories = ["interfaces"]
+    # TODO - move from text to json if possible
+    commands = [AntaTestCommand(command="show interfaces counters rates", ofmt="text")]
 
-    if not wrong_interfaces:
-        result.is_success()
-    else:
-        result.is_failure(f"The following interfaces have a usage > 75%: {wrong_interfaces}")
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyInterfaceUtilization validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(str, self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
 
-    return result
+        wrong_interfaces = {}
+        for line in command_output.split("\n")[1:]:
+            if len(line) > 0:
+                if line.split()[-5] == "-" or line.split()[-2] == "-":
+                    pass
+                elif float(line.split()[-5].replace("%", "")) > 75.0:
+                    wrong_interfaces[line.split()[0]] = line.split()[-5]
+                elif float(line.split()[-2].replace("%", "")) > 75.0:
+                    wrong_interfaces[line.split()[0]] = line.split()[-2]
+
+        if not wrong_interfaces:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following interfaces have a usage > 75%: {wrong_interfaces}")
 
 
-@anta_test
-async def verify_interface_errors(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyInterfaceErrors(AntaTest):
     """
     Verifies interfaces error counters are equal to zero.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if interfaces error counters are equal to zero.
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
     """
-    response = await device.session.cli(command="show interfaces counters errors", ofmt="json")
 
-    wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
-    for interface, outer_v in response["interfaceErrorCounters"].items():
-        wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
-    if not wrong_interfaces:
-        result.is_success()
-    else:
-        result.is_failure(f"The following interfaces have non 0 error counter(s): {wrong_interfaces}")
+    name = "verify_interface_errors"
+    description = "Verifies interfaces error counters are equal to zero."
+    categories = ["interfaces"]
+    commands = [AntaTestCommand(command="show interfaces counters errors")]
 
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyInterfaceUtilization validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
+        for interface, outer_v in command_output["interfaceErrorCounters"].items():
+            wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
+        if not wrong_interfaces:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following interfaces have non 0 error counter(s): {wrong_interfaces}")
 
 
 @anta_test
