@@ -1,11 +1,22 @@
 """Models related to inventory management."""
 
+from __future__ import annotations
 from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 from aioeapi import Device
+
+import logging
+import traceback
+
+from aioeapi import Device, EapiCommandError
+from httpx import ConnectError, HTTPError
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 
+from anta.models import AntaTestCommand
+from anta.tools.misc import exc_to_str
+
 # Default values
+logger = logging.getLogger(__name__)
 
 DEFAULT_TAG = "all"
 DEFAULT_HW_MODEL = "unset"
@@ -143,14 +154,9 @@ class InventoryDevice(BaseModel):
         Two InventoryDevice objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return (
-            self.session.host == other.session.host
-            and self.session.port == other.session.port
-        )
+        return self.session.host == other.session.host and self.session.port == other.session.port
 
-    def assert_enable_password_is_not_none(
-        self, test_name: Optional[str] = None
-    ) -> None:
+    def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """
         raise ValueError is enable_password is None
         """
@@ -160,6 +166,47 @@ class InventoryDevice(BaseModel):
             else:
                 message = "`enable_password` is not set"
             raise ValueError(message)
+
+    async def collect(self, command: AntaTestCommand) -> Any:
+        """Collect device command result
+        FIXME: Under development / testing
+        TODO: Build documentation
+        """
+        logger.debug(f"run collect from device {self.name} for {command}")
+
+        try:
+            if self.enable_password is not None:
+                enable_cmd = {
+                    "cmd": "enable",
+                    "input": str(self.enable_password),
+                }
+            else:
+                enable_cmd = {"cmd": "enable"}
+            # FIXME: RuntimeError: Event loop is closed
+            # When sending commands over 2 asyncio.run, the first call
+            # of the second run fails
+            # Workaround in cli.debug.run_template
+            response = await self.session.cli(
+                commands=[enable_cmd, command.command],
+                ofmt=command.ofmt,
+            )
+            # remove first dict related to enable command
+            # only applicable to json output
+            if command.ofmt in ["json", "text"]:
+                # selecting only our command output
+                response = response[1]
+            command.output = response
+
+        except EapiCommandError as e:
+            logger.error(f"Command failed on {self.name}: {e.errmsg}")
+        except (HTTPError, ConnectError) as e:
+            logger.error(f"Cannot connect to device {self.name}: {type(e).__name__}{exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error(f"Exception raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+        else:
+            return command
 
 
 class InventoryDevices(BaseModel):

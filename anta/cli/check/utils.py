@@ -30,13 +30,7 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
     """Execute a run of all tests against inventory."""
     setup_logging(level=loglevel)
 
-    inventory_anta = AntaInventory(
-        inventory_file=inventory,
-        username=username,
-        password=password,
-        enable_password=enable_password,
-        timeout=timeout
-    )
+    inventory_anta = AntaInventory(inventory_file=inventory, username=username, password=password, enable_password=enable_password, timeout=timeout)
     logger.info(f"Inventory {inventory} loaded")
 
     # Test loader
@@ -51,37 +45,23 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
     logger.info("starting running test on inventory ...")
 
     if tags is not None:
-        tags = (
-            tags.split(",") if "," in tags else [tags]
-        )
+        tags = tags.split(",") if "," in tags else [tags]
 
     results = ResultManager()
-    asyncio.run(main(results, inventory_anta,
-                tests_catalog, tags=tags), debug=False)
+    asyncio.run(main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
 
     return results
 
 
-def display_table(console: Console, results: ResultManager, group_by: Optional[str] = None, search: str = '') -> None:
+def display_table(console: Console, results: ResultManager, group_by: Optional[str] = None, search: str = "") -> None:
     """Display result in a table"""
     reporter = ReportTable()
     if group_by is None:
-        console.print(
-            reporter.report_all(result_manager=results)
-        )
-    elif group_by == 'host':
-        console.print(
-            reporter.report_summary_hosts(
-                result_manager=results,
-                host=search
-            )
-        )
-    elif group_by == 'test':
-        console.print(
-            reporter.report_summary_tests(
-                result_manager=results, testcase=search
-            )
-        )
+        console.print(reporter.report_all(result_manager=results))
+    elif group_by == "host":
+        console.print(reporter.report_summary_hosts(result_manager=results, host=search))
+    elif group_by == "test":
+        console.print(reporter.report_summary_tests(result_manager=results, testcase=search))
 
 
 def display_json(console: Console, results: ResultManager, output_file: Optional[str] = None) -> None:

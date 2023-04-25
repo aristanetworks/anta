@@ -13,10 +13,7 @@ from anta.tests import anta_test
 
 
 @anta_test
-async def verify_interface_utilization(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+async def verify_interface_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies interfaces utilization is below 75%.
 
@@ -47,16 +44,13 @@ async def verify_interface_utilization(
     if not wrong_interfaces:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following interfaces have a usage > 75%: {wrong_interfaces}"
-        )
+        result.is_failure(f"The following interfaces have a usage > 75%: {wrong_interfaces}")
 
     return result
 
 
 @anta_test
 async def verify_interface_errors(device: InventoryDevice, result: TestResult) -> TestResult:
-
     """
     Verifies interfaces error counters are equal to zero.
 
@@ -75,26 +69,17 @@ async def verify_interface_errors(device: InventoryDevice, result: TestResult) -
 
     wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
     for interface, outer_v in response["interfaceErrorCounters"].items():
-        wrong_interfaces.extend(
-            {interface: outer_v}
-            for counter, value in outer_v.items()
-            if value > 0
-        )
+        wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
     if not wrong_interfaces:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following interfaces have non 0 error counter(s): {wrong_interfaces}"
-        )
+        result.is_failure(f"The following interfaces have non 0 error counter(s): {wrong_interfaces}")
 
     return result
 
 
 @anta_test
-async def verify_interface_discards(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+async def verify_interface_discards(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies interfaces packet discard counters are equal to zero.
 
@@ -113,26 +98,17 @@ async def verify_interface_discards(
 
     wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
     for interface, outer_v in response["interfaces"].items():
-        wrong_interfaces.extend(
-            {interface: outer_v}
-            for counter, value in outer_v.items()
-            if value > 0
-        )
+        wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
     if not wrong_interfaces:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following interfaces have non 0 discard counter(s): {wrong_interfaces}"
-        )
+        result.is_failure(f"The following interfaces have non 0 discard counter(s): {wrong_interfaces}")
 
     return result
 
 
 @anta_test
-async def verify_interface_errdisabled(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+async def verify_interface_errdisabled(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no interface in error disable state.
 
@@ -149,26 +125,18 @@ async def verify_interface_errdisabled(
     """
     response = await device.session.cli(command="show interfaces status", ofmt="json")
 
-    errdisabled_interfaces = [
-        interface
-        for interface, value in response["interfaceStatuses"].items()
-        if value["linkStatus"] == "errdisabled"
-    ]
+    errdisabled_interfaces = [interface for interface, value in response["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
 
     if not errdisabled_interfaces:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following interfaces are in error disabled state: {errdisabled_interfaces}"
-        )
+        result.is_failure(f"The following interfaces are in error disabled state: {errdisabled_interfaces}")
 
     return result
 
 
 @anta_test
-async def verify_interfaces_status(
-    device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
-) -> TestResult:
+async def verify_interfaces_status(device: InventoryDevice, result: TestResult, minimum: Optional[int] = None) -> TestResult:
     """
     Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
 
@@ -187,9 +155,7 @@ async def verify_interfaces_status(
     """
     if not minimum:
         result.result = "skipped"
-        result.messages.append(
-            "verify_interfaces_status was not run as no minimum value was given."
-        )
+        result.messages.append("verify_interfaces_status was not run as no minimum value was given.")
         return result
 
     response = await device.session.cli(command="show interfaces description", ofmt="json")
@@ -200,10 +166,7 @@ async def verify_interfaces_status(
     for interface in response["interfaceDescriptions"]:
         interface_dict = response["interfaceDescriptions"][interface]
         if "Ethernet" in interface:
-            if (
-                re.match(r"connected|up", interface_dict["lineProtocolStatus"])
-                and re.match(r"connected|up", interface_dict["interfaceStatus"])
-            ):
+            if re.match(r"connected|up", interface_dict["lineProtocolStatus"]) and re.match(r"connected|up", interface_dict["interfaceStatus"]):
                 count_up_up += 1
             else:
                 other_ethernet_interfaces.append(interface)
@@ -211,21 +174,15 @@ async def verify_interfaces_status(
     if count_up_up >= minimum:
         result.is_success()
     else:
-        result.is_failure(
-            f"Only {count_up_up}, less than {minimum} Ethernet interfaces are UP/UP"
-        )
-        result.messages.append(
-            f"The following Ethernet interfaces are not UP/UP: {other_ethernet_interfaces}"
-        )
+        result.is_failure(f"Only {count_up_up}, less than {minimum} Ethernet interfaces are UP/UP")
+        result.messages.append(f"The following Ethernet interfaces are not UP/UP: {other_ethernet_interfaces}")
 
     return result
 
 
 @skip_on_platforms(["cEOSLab", "VEOS-LAB"])
 @anta_test
-async def verify_storm_control_drops(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_storm_control_drops(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the device did not drop packets due its to storm-control configuration.
 
@@ -246,26 +203,19 @@ async def verify_storm_control_drops(
     for interface, interface_dict in response["interfaces"].items():
         for traffic_type, traffic_type_dict in interface_dict["trafficTypes"]:
             if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
-                storm_controlled_interface_dict = (
-                    storm_controlled_interfaces.setdefault(interface, {})
-                )
-                storm_controlled_interface_dict.update(
-                    {traffic_type: traffic_type_dict["drop"]}
-                )
+                storm_controlled_interface_dict = storm_controlled_interfaces.setdefault(interface, {})
+                storm_controlled_interface_dict.update({traffic_type: traffic_type_dict["drop"]})
 
     if len(storm_controlled_interfaces) == 0:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following interfaces have none 0 storm-control drop counters {storm_controlled_interfaces}"
-        )
+        result.is_failure(f"The following interfaces have none 0 storm-control drop counters {storm_controlled_interfaces}")
 
     return result
 
 
 @anta_test
 async def verify_portchannels(device: InventoryDevice, result: TestResult) -> TestResult:
-
     """
     Verifies there is no inactive port in port channels.
 
@@ -286,23 +236,18 @@ async def verify_portchannels(device: InventoryDevice, result: TestResult) -> Te
     po_with_invactive_ports: List[Dict[str, str]] = []
     for portchannel, portchannel_dict in response["portChannels"].items():
         if len(portchannel_dict["inactivePorts"]) != 0:
-            po_with_invactive_ports.extend(
-                {portchannel: portchannel_dict["inactivePorts"]}
-            )
+            po_with_invactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
 
     if not po_with_invactive_ports:
         result.is_success()
     else:
-        result.is_failure(
-            f"The following port-channels have inactive port(s): {po_with_invactive_ports}"
-        )
+        result.is_failure(f"The following port-channels have inactive port(s): {po_with_invactive_ports}")
 
     return result
 
 
 @anta_test
 async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> TestResult:
-
     """
     Verifies there is no illegal LACP packets received.
 
@@ -323,26 +268,19 @@ async def verify_illegal_lacp(device: InventoryDevice, result: TestResult) -> Te
     po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
     for portchannel, portchannel_dict in response["portChannels"].items():
         po_with_illegal_lacp.extend(
-            {portchannel: interface}
-            for interface, interface_dict in portchannel_dict["interfaces"].items()
-            if interface_dict["illegalRxCount"] != 0
+            {portchannel: interface} for interface, interface_dict in portchannel_dict["interfaces"].items() if interface_dict["illegalRxCount"] != 0
         )
 
     if not po_with_illegal_lacp:
         result.is_success()
     else:
-        result.is_failure(
-            "The following port-channels have recieved illegal lacp packets on the "
-            f"following ports: {po_with_illegal_lacp}"
-        )
+        result.is_failure("The following port-channels have recieved illegal lacp packets on the " f"following ports: {po_with_illegal_lacp}")
 
     return result
 
 
 @anta_test
-async def verify_loopback_count(
-    device: InventoryDevice, result: TestResult, number: Optional[int] = None
-) -> TestResult:
+async def verify_loopback_count(device: InventoryDevice, result: TestResult, number: Optional[int] = None) -> TestResult:
     """
     Verifies the number of loopback interfaces on the device is the one we expect.
     And if none of the loopback is down.
@@ -361,9 +299,7 @@ async def verify_loopback_count(
 
     """
     if not number:
-        result.is_skipped(
-            "verify_loopback_count was not run as no number value was given."
-        )
+        result.is_skipped("verify_loopback_count was not run as no number value was given.")
         return result
 
     response = await device.session.cli(command="show ip interface brief ", ofmt="json")
@@ -375,10 +311,7 @@ async def verify_loopback_count(
         interface_dict = response["interfaces"][interface]
         if "Loopback" in interface:
             loopback_count += 1
-            if not (
-                interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "connected"
-            ):
+            if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
                 down_loopback_interfaces.append(interface)
 
     if loopback_count == number and len(down_loopback_interfaces) == 0:
@@ -386,13 +319,9 @@ async def verify_loopback_count(
     else:
         result.is_failure()
         if loopback_count != number:
-            result.is_failure(
-                f"Found {loopback_count} Loopbacks when expecting {number}"
-            )
+            result.is_failure(f"Found {loopback_count} Loopbacks when expecting {number}")
         elif len(down_loopback_interfaces) != 0:
-            result.is_failure(
-                f"The following Loopbacks are not up: {down_loopback_interfaces}"
-            )
+            result.is_failure(f"The following Loopbacks are not up: {down_loopback_interfaces}")
 
     return result
 
@@ -420,10 +349,7 @@ async def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
     for interface in response["interfaces"]:
         interface_dict = response["interfaces"][interface]
         if "Vlan" in interface:
-            if not (
-                interface_dict["lineProtocolStatus"] == "up"
-                and interface_dict["interfaceStatus"] == "connected"
-            ):
+            if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
                 down_svis.append(interface)
 
     if len(down_svis) == 0:
@@ -435,10 +361,7 @@ async def verify_svi(device: InventoryDevice, result: TestResult) -> TestResult:
 
 
 @anta_test
-async def verify_spanning_tree_blocked_ports(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+async def verify_spanning_tree_blocked_ports(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no spanning-tree blocked ports.
 
@@ -460,8 +383,6 @@ async def verify_spanning_tree_blocked_ports(
     else:
         result.is_failure()
         # TODO: a bit lazy would need a real output for this
-        result.messages.append(
-            f"The following ports are spanning-tree blocked {response['spanningTreeInstances']}"
-        )
+        result.messages.append(f"The following ports are spanning-tree blocked {response['spanningTreeInstances']}")
 
     return result

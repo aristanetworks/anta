@@ -23,20 +23,12 @@ class ReportTable:
         __init__ Class constructor
         """
         self.colors = []
-        self.colors.append(
-            ColorManager(level="success", color=RICH_COLOR_PALETTE.SUCCESS)
-        )
-        self.colors.append(
-            ColorManager(level="failure", color=RICH_COLOR_PALETTE.FAILURE)
-        )
+        self.colors.append(ColorManager(level="success", color=RICH_COLOR_PALETTE.SUCCESS))
+        self.colors.append(ColorManager(level="failure", color=RICH_COLOR_PALETTE.FAILURE))
         self.colors.append(ColorManager(level="error", color=RICH_COLOR_PALETTE.ERROR))
-        self.colors.append(
-            ColorManager(level="skipped", color=RICH_COLOR_PALETTE.SKIPPED)
-        )
+        self.colors.append(ColorManager(level="skipped", color=RICH_COLOR_PALETTE.SKIPPED))
 
-    def _split_list_to_txt_list(
-        self, usr_list: List[str], delimiter: Optional[str] = None
-    ) -> str:
+    def _split_list_to_txt_list(self, usr_list: List[str], delimiter: Optional[str] = None) -> str:
         """
         Split list to multi-lines string
 
@@ -66,9 +58,7 @@ class ReportTable:
         """
         for idx, header in enumerate(headers):
             if idx == 0:
-                table.add_column(
-                    header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True
-                )
+                table.add_column(header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
             else:
                 table.add_column(header, justify="left")
         return table
@@ -86,21 +76,8 @@ class ReportTable:
         Returns:
             Any: Can be either str or Text with Style
         """
-        if (
-            len(
-                [
-                    result
-                    for result in self.colors
-                    if str(result.level).upper() == status.upper()
-                ]
-            )
-            == 1
-        ):
-            code: ColorManager = [
-                result
-                for result in self.colors
-                if str(result.level).upper() == status.upper()
-            ][0]
+        if len([result for result in self.colors if str(result.level).upper() == status.upper()]) == 1:
+            code: ColorManager = [result for result in self.colors if str(result.level).upper() == status.upper()][0]
             return code.style_rich() if output_type == "Text" else code.string()
         return None
 
@@ -131,20 +108,10 @@ class ReportTable:
 
         for result in result_manager.get_results(output_format="list"):
             # pylint: disable=R0916
-            if (
-                (host is None and testcase is None)
-                or (host is not None and str(result.name) == host)
-                or (testcase is not None and testcase == str(result.test))
-            ):
-                logger.debug(
-                    f"adding new entry in table: {result.name} / {result.test} / {result.result}"
-                )
+            if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
+                logger.debug(f"adding new entry in table: {result.name} / {result.test} / {result.result}")
                 state = self._color_result(status=str(result.result), output_type="str")
-                message = (
-                    self._split_list_to_txt_list(result.messages)
-                    if len(result.messages) > 0
-                    else ""
-                )
+                message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
                 table.add_row(str(result.name), result.test, state, message)
         return table
 
@@ -181,23 +148,11 @@ class ReportTable:
         for testcase_read in result_manager.get_testcases():
             if testcase is None or str(testcase_read) == testcase:
                 results = result_manager.get_result_by_test(testcase_read)
-                nb_failure = len(
-                    [result for result in results if result.result == "failure"]
-                )
-                nb_error = len(
-                    [result for result in results if result.result == "error"]
-                )
-                list_failure = [
-                    str(result.name)
-                    for result in results
-                    if result.result in ["failure", "error"]
-                ]
-                nb_success = len(
-                    [result for result in results if result.result == "success"]
-                )
-                nb_skipped = len(
-                    [result for result in results if result.result == "skipped"]
-                )
+                nb_failure = len([result for result in results if result.result == "failure"])
+                nb_error = len([result for result in results if result.result == "error"])
+                list_failure = [str(result.name) for result in results if result.result in ["failure", "error"]]
+                nb_success = len([result for result in results if result.result == "success"])
+                nb_skipped = len([result for result in results if result.result == "skipped"])
                 table.add_row(
                     testcase_read,
                     str(nb_success),
@@ -242,23 +197,11 @@ class ReportTable:
                 results = result_manager.get_result_by_host(host_read)
                 logger.debug("data to use for computation")
                 logger.debug(f"{host}: {results}")
-                nb_failure = len(
-                    [result for result in results if result.result == "failure"]
-                )
-                nb_error = len(
-                    [result for result in results if result.result == "error"]
-                )
-                list_failure = [
-                    str(result.test)
-                    for result in results
-                    if result.result in ["failure", "error"]
-                ]
-                nb_success = len(
-                    [result for result in results if result.result == "success"]
-                )
-                nb_skipped = len(
-                    [result for result in results if result.result == "skipped"]
-                )
+                nb_failure = len([result for result in results if result.result == "failure"])
+                nb_error = len([result for result in results if result.result == "error"])
+                list_failure = [str(result.test) for result in results if result.result in ["failure", "error"]]
+                nb_success = len([result for result in results if result.result == "success"])
+                nb_skipped = len([result for result in results if result.result == "skipped"])
                 table.add_row(
                     str(host_read),
                     str(nb_success),

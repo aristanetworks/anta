@@ -39,17 +39,13 @@ async def verify_vxlan(device: InventoryDevice, result: TestResult) -> TestResul
         if protocol_status == "up" and interface_status == "up":
             result.is_success()
         else:
-            result.messages.append(
-                f"Vxlan interface is {protocol_status}/{interface_status}."
-            )
+            result.messages.append(f"Vxlan interface is {protocol_status}/{interface_status}.")
 
     return result
 
 
 @anta_test
-async def verify_vxlan_config_sanity(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_vxlan_config_sanity(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies there is no VXLAN config-sanity warnings.
 
@@ -72,15 +68,11 @@ async def verify_vxlan_config_sanity(
         return result
 
     failed_categories = {
-        category: content
-        for category, content in response_data.items()
-        if category in ["localVtep", "mlag"] and content["allCheckPass"] is not True
+        category: content for category, content in response_data.items() if category in ["localVtep", "mlag"] and content["allCheckPass"] is not True
     }
 
     if len(failed_categories) > 0:
-        result.is_failure(
-            f"Vxlan config sanity check is not passing: {failed_categories}"
-        )
+        result.is_failure(f"Vxlan config sanity check is not passing: {failed_categories}")
     else:
         result.is_success()
 

@@ -7,16 +7,17 @@ from ..result_manager.models import RESULT_OPTIONS
 
 
 class ColorManager(BaseModel):
-    """Color mangement for status report.
+    """Color management for status report.
 
     Attributes:
         level (str): Test result value.
         color (str): Associated color.
     """
+
     level: str
     color: str
 
-    @validator('level', allow_reuse=True)
+    @validator("level", allow_reuse=True)
     def name_must_be_in(cls, v: str) -> str:
         """
         Status validator
@@ -33,7 +34,7 @@ class ColorManager(BaseModel):
             str: level value
         """
         if v not in RESULT_OPTIONS:
-            raise ValueError(f'must be one of {RESULT_OPTIONS}')
+            raise ValueError(f"must be one of {RESULT_OPTIONS}")
         return v
 
     def style_rich(self) -> Text:
@@ -52,4 +53,4 @@ class ColorManager(BaseModel):
         Returns:
             str: String with level and its associated color
         """
-        return f'[{self.color}]{self.level}'
+        return f"[{self.color}]{self.level}"
