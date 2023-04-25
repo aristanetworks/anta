@@ -15,4 +15,4 @@ def generate_test_ids_list(val: Dict[str, Any], key: str = "name") -> str:
     """
     generate_test_ids Helper to generate test ID for parametrize
     """
-    return [entry[key] if key in entry.keys() else 'unamed_test' for entry in val]
+    return [entry[key] if key in entry.keys() else "unamed_test" for entry in val]
