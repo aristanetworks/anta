@@ -171,7 +171,7 @@ depends = py310
 
 [tool.pytest.ini_options]
 addopts = "-ra -q -s -vv --capture=tee-sys --ignore=tests/scripts --cov --cov-append"
-log_level = "DEBUG"
+log_level = "INFO"
 log_cli = "True"
 
 [tool.coverage.run]
@@ -186,6 +186,6 @@ line_length = 165
 line-length = 165
 force-exclude = """
 (
-.*data.py
+.*data.py|
 )
 """
