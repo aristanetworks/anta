@@ -2,7 +2,7 @@
 decorators for tests
 """
 from functools import wraps
-from typing import Any, Callable, Coroutine, Dict, List, TypeVar
+from typing import Any, Callable, Coroutine, Dict, List, TypeVar, cast
 
 from anta.result_manager.models import TestResult
 
@@ -36,7 +36,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
 
             return await function(*args, **kwargs)
 
-        return wrapper
+        return cast(F, wrapper)
 
     return decorator
 
