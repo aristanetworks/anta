@@ -25,7 +25,7 @@ INPUT_ZEROTOUCH: List[Dict[str, Any]] = [
 INPUT_RUNNING_CONFIG: List[Dict[str, Any]] = [
     {
         "name": "success",
-        "eos_data": [],
+        "eos_data": [''],
         "side_effect": None,
         "expected_result": "success",
         "expected_messages": []

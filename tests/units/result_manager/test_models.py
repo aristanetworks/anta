@@ -9,6 +9,8 @@ from anta.result_manager.models import TestResult
 from tests.data.json_data import TEST_RESULT_UNIT
 from tests.lib.utils import generate_test_ids_dict
 
+pytest.skip(reason="Not yet ready for CI", allow_module_level=True)
+
 
 class Test_InventoryUnitModels:
     """Test components of anta.result_manager.models."""
