@@ -15,7 +15,6 @@ from typing import Any
 import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
-from rich import print_json
 from rich.console import Console
 
 from anta.cli.utils import setup_logging
@@ -101,7 +100,7 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
         asyncio.run(inventory_anta.connect_inventory())
 
     inventory_result = inventory_anta.get_inventory(tags=tags)
-    console.print(print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2)))
+    console.print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2))
 
     return True
 
@@ -127,6 +126,6 @@ def tags(ctx: click.Context, log_level: str) -> bool:
         tags_found += device.tags
     tags_found = sorted(set(tags_found))
     console.print("Tags found:")
-    console.print(print_json(json.dumps(tags_found, indent=2)))
+    console.print_json(json.dumps(tags_found, indent=2))
     console.print(f"\n* note that tag [green]{DEFAULT_TAG}[/green] has been added by anta")
     return True

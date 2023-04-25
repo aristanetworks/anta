@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Data for testing anta.tests.configuration"""
 
 from typing import Any, Dict, List

@@ -142,7 +142,9 @@ class AntaInventory:
 
         if filter_hosts:
             for device in self._inventory:
-                if device.url.host not in filter_hosts:
+                # TODO - @gmuloc - device does not have url anymore - does this work
+                # if device.url.host not in filter_hosts:
+                if str(device.host) not in filter_hosts:
                     del device
 
     ###########################################################################
@@ -249,7 +251,7 @@ class AntaInventory:
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(host.host, host.port, host.name, tags=host.tags)
+            self._add_device_to_inventory(str(host.host), host.port, host.name, tags=host.tags)
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.

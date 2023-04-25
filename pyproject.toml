@@ -91,6 +91,7 @@ namespaces = false
 plugins = [
   "pydantic.mypy",
   ]
+# Comment below for better type checking
 follow_imports = "skip"
 ignore_missing_imports = true
 warn_redundant_casts = true

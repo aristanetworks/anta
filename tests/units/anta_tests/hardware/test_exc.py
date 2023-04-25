@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# pylint: disable = unused-import
-# pylint: disable = import-error
-# pylint: disable = redefined-outer-name
-# flake8: noqa
-
 """
 Tests for anta.tests.hardware.py
 """
@@ -18,7 +11,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from anta.tests.hardware import VerifyTransceiversManufacturers
-from tests.lib.fixture import mocked_device
 from tests.lib.utils import generate_test_ids_list
 
 from .data import INPUT_MANUFACTURER

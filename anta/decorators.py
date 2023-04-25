@@ -6,6 +6,7 @@ from typing import Any, Callable, Coroutine, Dict, List, TypeVar, cast
 
 from anta.result_manager.models import TestResult
 
+# TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
 
 
@@ -50,7 +51,7 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutin
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def decorator(function: F) -> F:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
@@ -80,6 +81,6 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutin
 
             return await function(*args, **kwargs)
 
-        return wrapper
+        return cast(F, wrapper)
 
     return decorator

@@ -16,7 +16,7 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 
-def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Callable[..., Coroutine[Any, Any, Coroutine[Any, Any, TestResult]]]:
+def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
     """
     Decorator to generate the structure for a test
     * func (Callable): the test to be decorated

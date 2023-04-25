@@ -130,6 +130,8 @@ class ListResult(BaseModel):
 
     def __iter__(self) -> Iterator[TestResult]:
         """Use custom iter method."""
+        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
+        # return type and are breaking Liskov Substitution Principle.
         return iter(self.__root__)
 
     def __getitem__(self, item: int) -> TestResult:

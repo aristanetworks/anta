@@ -9,7 +9,7 @@ import traceback
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -168,7 +168,7 @@ class AntaTest(ABC):
             await self.device.collect(command=command)
 
     @staticmethod
-    def anta_test(function: F) -> F:
+    def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
         Decorator for anta_test that handles injecting test data if given and collecting it using asyncio if missing
         """
@@ -209,11 +209,19 @@ class AntaTest(ABC):
                 self.result.is_error(exc_to_str(e))
             return self.result
 
-        return cast(F, wrapper)
+        return wrapper
 
     @abstractmethod
-    def test(self) -> None:
+    def test(self) -> Coroutine[Any, Any, TestResult]:
         """
         This abstract method is the core of the test.
         It MUST set the correct status of self.result with the appropriate error messages
+
+        it must be implemented as follow
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+           '''
+           assert code
+           '''
         """

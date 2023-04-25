@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import traceback
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from aioeapi import Device, EapiCommandError
 from httpx import ConnectError, HTTPError
@@ -116,14 +116,14 @@ class InventoryDevice(BaseModel):
     port: conint(gt=1, lt=65535)  # type: ignore[valid-type]
     enable_password: Optional[str]
     session: Device
-    established = False
-    is_online = False
+    established: bool = False
+    is_online: bool = False
     hw_model: str = DEFAULT_HW_MODEL
     tags: List[str] = [DEFAULT_TAG]
     timeout: float = 10.0
 
     @root_validator(pre=True)
-    def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
+    def build_device(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
         """Build the device session object"""
         if not values.get("host"):
             values["host"] = "localhost"
@@ -147,11 +147,13 @@ class InventoryDevice(BaseModel):
             values["name"] = f"{values['host']}:{values['port']}"
         return values
 
-    def __eq__(self, other: BaseModel) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Two InventoryDevice objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
+        if not isinstance(other, InventoryDevice):
+            return False
         return self.session.host == other.session.host and self.session.port == other.session.port
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
@@ -225,6 +227,8 @@ class InventoryDevices(BaseModel):
 
     def __iter__(self) -> Iterator[InventoryDevice]:
         """Use custom iter method."""
+        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
+        # return type and are breaking Liskov Substitution Principle.
         return iter(self.__root__)
 
     def __getitem__(self, item: int) -> InventoryDevice:
@@ -235,6 +239,6 @@ class InventoryDevices(BaseModel):
         """Support for length of __root__"""
         return len(self.__root__)
 
-    def json(self) -> str:
+    def json(self, **kwargs: Any) -> str:
         """Returns a JSON representation of the devices"""
-        return super().json(exclude={"__root__": {"__all__": {"session"}}})
+        return super().json(exclude={"__root__": {"__all__": {"session"}}}, **kwargs)
