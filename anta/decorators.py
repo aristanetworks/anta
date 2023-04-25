@@ -2,12 +2,14 @@
 decorators for tests
 """
 from functools import wraps
-from typing import Any, Callable, Coroutine, Dict, List
+from typing import Any, Callable, Coroutine, Dict, List, TypeVar
 
 from anta.result_manager.models import TestResult
 
+F = TypeVar("F", bound=Callable[..., Any])
 
-def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
+
+def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
     """
     Decorator factory to skip a test on a list of platforms
 
@@ -16,7 +18,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Corou
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def decorator(function: F) -> F:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated

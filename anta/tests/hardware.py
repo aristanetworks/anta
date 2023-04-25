@@ -7,7 +7,7 @@ Test functions related to the hardware or environement
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
@@ -33,7 +33,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         if not manufacturers:
             self.result.is_skipped(f"{self.__class__.name} was not run as no manufacturers were given")
         else:
-            command_output = self.instance_commands[0].output
+            command_output = cast(dict[str, dict[Any, Any]], self.instance_commands[0].output)
             wrong_manufacturers = {interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in manufacturers}
             if not wrong_manufacturers:
                 self.result.is_success()

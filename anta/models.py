@@ -35,7 +35,7 @@ class AntaTestCommand(BaseModel):
     command: str
     version: str = "latest"
     ofmt: str = "json"
-    output: Optional[Union[Dict[Any, Any], str]]
+    output: Optional[Union[Dict[str, Any], str]]
     is_dynamic: bool = False
 
 
@@ -200,6 +200,8 @@ class AntaTest(ABC):
 
             self.logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
             try:
+                if not self.all_data_collected():
+                    raise ValueError("Some command output is missing")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 self.logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
