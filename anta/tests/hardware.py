@@ -39,33 +39,26 @@ class VerifyTransceiversManufacturers(AntaTest):
                 self.result.messages.append(str(wrong_manufacturers))
 
 
-# @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-# @anta_test
-# async def verify_system_temperature(device: InventoryDevice, result: TestResult) -> TestResult:
-#     """
-#     Verifies the device temperature is currently OK
-#     and the device did not report any temperature alarm in the past.
+class VerifyTemperature(AntaTest):
+    """
+    Verifies device temparture is currently OK.
+    """
 
-#     Args:
-#         device (InventoryDevice): InventoryDevice instance containing all devices information.
+    name = ""
+    description = ""
+    categories = ""
+    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
 
-#     Returns:
-#         TestResult instance with
-#         * result = "unset" if the test has not been executed
-#         * result = "success" if the device temperature is OK.
-#         * result = "failure" otherwise.
-#         * result = "error" if any exception is caught
-
-#     """
-#     response = await device.session.cli(command="show system environment temperature", ofmt="json")
-#     logger.debug(f"query result is: {response}")
-
-#     if response["systemStatus"] == "temperatureOk":
-#         result.is_success()
-#     else:
-#         result.is_failure(f"Device temperature is not OK, systemStatus: {response['systemStatus'] }")
-
-#     return result
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyTemperature validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        if temperature_status == "temperatureOk":
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Device temperature is not OK, systemStatus: {temperature_status }")
 
 
 # @skip_on_platforms(["cEOSLab", "vEOS-lab"])

@@ -52,3 +52,39 @@ INPUT_MANUFACTURER: List[Dict[str, Any]] = [
         'expected_messages': ['The following interfaces have transceivers from unauthorized manufacturers', "{'1': 'Arista Networks', '2': 'Arista Networks'}"]
     },
 ]
+
+
+INPUT_TEMPERATURE: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "powercycleOnOverheat": "False",
+                "ambientThreshold": 45,
+                "cardSlots": [],
+                "shutdownOnOverheat": "True",
+                "systemStatus": "temperatureOk",
+                "recoveryModeOnOverheat": "recoveryModeNA"
+            }
+        ],
+        "side_effect": "",
+        "expected_result": "success",
+        "expected_messages": []
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "powercycleOnOverheat": "False",
+                "ambientThreshold": 45,
+                "cardSlots": [],
+                "shutdownOnOverheat": "True",
+                "systemStatus": "temperatureKO",
+                "recoveryModeOnOverheat": "recoveryModeNA"
+            }
+        ],
+        "side_effect": "",
+        "expected_result": "failure",
+        "expected_messages": []
+    },
+]
