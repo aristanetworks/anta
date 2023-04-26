@@ -44,9 +44,9 @@ class VerifyTemperature(AntaTest):
     Verifies device temparture is currently OK.
     """
 
-    name = ""
-    description = ""
-    categories = ""
+    name = "VerifyTemperature"
+    description = "Verifies device temparture is currently OK"
+    categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -61,46 +61,34 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature is not OK, systemStatus: {temperature_status }")
 
 
-# @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-# @anta_test
-# async def verify_transceiver_temperature(device: InventoryDevice, result: TestResult) -> TestResult:
-#     """
-#     Verifies the transceivers temperature is currently OK
-#     and the device did not report any alarm in the past for its transceivers temperature.
+class VerifyTransceiversTemperature(AntaTest):
+    """
+    Verifies Transceivers temperature is currently OK.
+    """
 
-#     Args:
-#         device (InventoryDevice): InventoryDevice instance containing all devices information.
+    name = "VerifyTransceiversTemperature"
+    description = "Verifies Transceivers temperature is currently OK"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment temperature transceiver", ofmt="json")]
 
-#     Returns:
-#         TestResult instance with
-#         * result = "unset" if the test has not been executed
-#         * result = "success" if the device transceivers temperature of the device is currently OK
-#                              AND the device did not report any alarm in the past for its transceivers temperature.
-#         * result = "failure" otherwise,
-#         * result = "error" if any exception is caught
-
-#     """
-#     response = await device.session.cli(command="show system environment temperature transceiver", ofmt="json")
-#     logger.debug(f"query result is: {response}")
-
-#     # Get the list of sensors
-#     sensors = response["tempSensors"]
-
-#     wrong_sensors = {
-#         sensor["name"]: {
-#             "hwStatus": sensor["hwStatus"],
-#             "alertCount": sensor["alertCount"],
-#         }
-#         for sensor in sensors
-#         if sensor["hwStatus"] != "ok" or sensor["alertCount"] != 0
-#     }
-#     if not wrong_sensors:
-#         result.is_success()
-#     else:
-#         result.is_failure("The following sensors do not have the correct temperature or had alarms in the past:")
-#         result.messages.append(str(wrong_sensors))
-
-#     return result
+    @AntaTest.anta_test
+    def test(self) -> None:  # type: ignore[override]
+        """Run VerifyTransceiversTemperature validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
+        wrong_sensors = {
+            sensor["name"]: {
+                "hwStatus": sensor["hwStatus"],
+                "alertCount": sensor["alertCount"],
+            }
+            for sensor in sensors
+            if sensor["hwStatus"] != "ok" or sensor["alertCount"] != 0
+        }
+        if not wrong_sensors:
+            self.result.is_success()
+        else:
+            self.result.is_failure("The following sensors do not have the correct temperature or had alarms in the past:")
+            self.result.messages.append(str(wrong_sensors))
 
 
 # @skip_on_platforms(["cEOSLab", "vEOS-lab"])

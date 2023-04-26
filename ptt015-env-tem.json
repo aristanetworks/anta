@@ -1,0 +1,23 @@
+run command show system environment temperature transceiver on ptt015
+{
+    'tempSensors': [
+        {
+            'maxTemperature': 25.03125,
+            'maxTemperatureLastChange': 1682509618.2227974,
+            'hwStatus': 'ok',
+            'alertCount': 0,
+            'description': 'Xcvr54 temp sensor',
+            'overheatThreshold': 70.0,
+            'criticalThreshold': 70.0,
+            'inAlertState': False,
+            'targetTemperature': 62.0,
+            'relPos': '54',
+            'currentTemperature': 24.171875,
+            'setPointTemperature': 61.8,
+            'pidDriverCount': 0,
+            'isPidDriver': False,
+            'name': 'DomTemperatureSensor54'
+        }
+    ],
+    'cardSlots': []
+}
