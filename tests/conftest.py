@@ -1,20 +1,16 @@
+# -*- coding: utf-8 -*-
+
 """
-conftest.py
+conftest.py - used to store anta specific fixtures used for tests
 """
-from glob import glob
-from pathlib import Path
 
-CONFTEST_PARENT_DIR = f"{Path(__file__).parent}"
+# import logging
 
+# Load fixtures from dedicated file tests/lib/fixture.py
+pytest_plugins = [
+    "tests.lib.fixture",
+]
 
-def refactor(string: str) -> str:
-    """
-    Replace the absolute path by 'tests'
-    Then the various directory separators (windowx or linux) by '.'
-    Finally remove the file extension
-    """
-    string = string.replace(CONFTEST_PARENT_DIR, "tests")
-    return string.replace("/", ".").replace("\\", ".").replace(".py", "")
-
-
-pytest_plugins = [refactor(fixture) for fixture in glob(f"{CONFTEST_PARENT_DIR}/lib/fixture.py") if "__" not in fixture]
+# Placeholder to disable logging of some external libs
+# for _ in ("boto", "elasticsearch", "urllib3"):
+#     logging.getLogger(_).setLevel(logging.CRITICAL)
