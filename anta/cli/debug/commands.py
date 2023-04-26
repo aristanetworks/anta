@@ -11,14 +11,16 @@ import json
 import logging
 
 import click
+from rich import print_json
 from rich.console import Console
 
-from anta.cli.debug.utils import RunArbitraryCommand, RunArbitraryTemplateCommand
+from anta.cli.debug.utils import RunArbitraryCommand
 from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
-from anta.models import AntaTestCommand
+from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
+templater: str = ""
 
 
 @click.command()
@@ -70,11 +72,30 @@ def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_
     )
     device_anta = [inventory_device for inventory_device in inventory_anta.get_inventory() if inventory_device.name == device][0]
     logger.info(f"receive device from inventory: {device_anta}")
-    console.print(f"run dynmic command on [red]{device}[/red]")
-    console.print(f"[red]template option is not yet managed[/red]: {template}")
+    console.print(f"run dynmic command [blue]{template}[/blue] with [orange]{params}[/orange] on [red]{device}[/red]")
 
     params = json.loads(params)
     assert isinstance(params, list)
+
+    templater = template
+
+    class RunArbitraryTemplateCommand(AntaTest):
+        """
+        Run an EOS command and return result
+        Based on AntaTest to build relevant output for pytest
+        """
+
+        name = "Run aributrary EOS command"
+        description = "To be used only with anta debug commands"
+        template = AntaTestTemplate(template=templater)
+        categories = ["debug"]
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+            """
+            Fake test function
+            CLI should only call self.collect()
+            """
 
     async def internal_run() -> None:
         """Workaround for running potential multipple asyncio call without closing loop"""
@@ -84,7 +105,7 @@ def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_
         for cmd in run_command1.instance_commands:
             console.print(f"run_command = [green]{cmd.command}[/green] [red]{device}[/red]")
             await run_command1.collect()
-        result = run_command1.instance_commands
-        console.print(result)
+            result = run_command1.instance_commands
+            print_json(json.dumps(result[0].output))
 
     asyncio.run(internal_run())
