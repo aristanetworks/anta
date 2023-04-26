@@ -71,6 +71,7 @@ class VerifyTransceiversTemperature(AntaTest):
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment temperature transceiver", ofmt="json")]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:  # type: ignore[override]
         """Run VerifyTransceiversTemperature validation"""
@@ -91,87 +92,69 @@ class VerifyTransceiversTemperature(AntaTest):
             self.result.messages.append(str(wrong_sensors))
 
 
-# @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-# @anta_test
-# async def verify_environment_cooling(device: InventoryDevice, result: TestResult) -> TestResult:
-#     """
-#     Verifies the fans status is OK.
+class VerifyEnvironmentCooling(AntaTest):
+    """
+    Verifies the fans status is OK.
+    """
 
-#     Args:
-#         device (InventoryDevice): InventoryDevice instance containing all devices information.
+    name = "VerifyEnvironmentCooling"
+    description = "Verifies the fans status is OK"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
 
-#     Returns:
-#         TestResult instance with
-#         * result = "unset" if the test has not been executed
-#         * result = "success" if the fans status is OK.
-#         * result = "failure" otherwise.
-#         * result = "error" if any exception is caught
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self) -> None:  # type: ignore[override]
+        """Run VerifyEnvironmentCooling validation"""
 
-#     """
-#     response = await device.session.cli(command="show system environment cooling", ofmt="json")
-#     logger.debug(f"query result is: {response}")
-
-#     if response["systemStatus"] == "coolingOk":
-#         result.is_success()
-#     else:
-#         result.is_failure(f"Device cooling is not OK, systemStatus: {response['systemStatus'] }")
-
-#     return result
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        if sys_status == "coolingOk":
+            self.result.is_success()
+        else:
+            self.result.is_failure("Device cooling is not OK")
 
 
-# @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-# @anta_test
-# async def verify_environment_power(device: InventoryDevice, result: TestResult) -> TestResult:
-#     """
-#     Verifies the power supplies status is OK.
+class VerifyEnvironmentPower(AntaTest):
+    """
+    Verifies the power supplied status is OK.
+    """
 
-#     Args:
-#         device (InventoryDevice): InventoryDevice instance containing all devices information.
+    name = "VerifyEnvironmentPower"
+    description = "Verifies the power supplied status is OK"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment power", ofmt="json")]
 
-#     Returns:
-#         TestResult instance with
-#         * result = "unset" if the test has not been executed
-#         * result = "success" if the power supplies status is OK.
-#         * result = "failure" otherwise.
-#         * result = "error" if any exception is caught
-
-#     """
-#     response = await device.session.cli(command="show system environment power", ofmt="json")
-#     logger.debug(f"query result is: {response}")
-
-#     wrong_power_supplies = {powersupply: {"state": value["state"]} for powersupply, value in response["powerSupplies"].items() if value["state"] != "ok"}
-#     if not wrong_power_supplies:
-#         result.is_success()
-#     else:
-#         result.is_failure("The following power suppliers are not ok:")
-#         result.messages.append(str(wrong_power_supplies))
-
-#     return result
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self) -> None:  # type: ignore[override]
+        """Run VerifyEnvironmentPower validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
+        wrong_power_supplies = {powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] != "ok"}
+        if not wrong_power_supplies:
+            self.result.is_success()
+        else:
+            self.result.is_failure("The following power supplies are not OK")
+            self.result.messages.append(str(wrong_power_supplies))
 
 
-# @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-# @anta_test
-# async def verify_adverse_drops(device: InventoryDevice, result: TestResult) -> TestResult:
-#     """
-#     Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.
+class VerifyAdverseDrops(AntaTest):
+    """
+    Verifies there is no adverse drops on DCS7280E and DCS7500E.
+    """
 
-#     Args:
-#         device (InventoryDevice): InventoryDevice instance containing all devices information.
+    name = "VerifyAdverseDrops"
+    description = "Verifies there is no adverse drops on DCS7280E and DCS7500E"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
 
-#     Returns:
-#         TestResult instance with
-#         * result = "unset" if the test has not been executed
-#         * result = "success" if the device (DCS-7280E and DCS-7500E) doesnt reports adverse drops.
-#         * result = "failure" if the device (DCS-7280E and DCS-7500E) report adverse drops.
-#         * result = "error" if any exception is caught
-
-#     """
-#     response = await device.session.cli(command="show hardware counter drop", ofmt="json")
-#     logger.debug(f"query result is: {response}")
-
-#     if response["totalAdverseDrops"] == 0:
-#         result.is_success()
-#     else:
-#         result.is_failure(f"Device TotalAdverseDrops counter is {response['totalAdverseDrops']}.")
-
-#     return result
+    @AntaTest.anta_test
+    def test(self) -> None:  # type: ignore[override]
+        """Run VerifyAdverseDrops validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
+        if total_adverse_drop == 0:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Device TotalAdverseDrops counter is {total_adverse_drop}")
