@@ -161,6 +161,7 @@ nav:
     - Inventory models:
       - User Inventory data model: api/inventory.models.input.md
       - Generated Inventory data model: api/inventory.models.md
+    - Test models: api/models.md
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
