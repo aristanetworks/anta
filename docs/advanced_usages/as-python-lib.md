@@ -166,7 +166,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         pass
 ```
 
-The test itself does not return any value, but the result is directly availble from your object and expose a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages.
+The test itself does not return any value, but the result is directly availble from your object and exposes a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages.
 
 ```python
 from anta.tests.hardware import VerifyTemperature
