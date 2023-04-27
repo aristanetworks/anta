@@ -147,20 +147,20 @@ def test_<TEST_CASE>(mocked_device: MagicMock, test_data: Any) -> None:
 
 The `mocked_device` object is a fixture defined in Pytest to represent an InventoryDevice and the parametrize `test_data` is a list of dictionries with structure:
 
-```json
+```python
 INPUT_RUNNING_CONFIG: List[Dict[str, Any]] = [
-// Test Case #1
-{
-    "name": "failure",
-    "eos_data": ["blah blah"],
-    "side_effect": None,
-    "expected_result": "failure",
-    "expected_messages": ["blah blah"]
-},
-// Test Case #2
-{
-  ...
-},
+  # Test Case #1
+    {
+        "name": "failure",
+        "eos_data": ["blah blah"],
+        "side_effect": None,
+        "expected_result": "failure",
+        "expected_messages": ["blah blah"]
+    },
+    # Test Case #2
+    {
+      ...
+    },
 ]
 ```
 
