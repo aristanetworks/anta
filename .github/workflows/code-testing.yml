@@ -40,7 +40,6 @@ jobs:
   lint-python:
     name: Run isort, black, flake8 and pylint
     runs-on: ubuntu-20.04
-    needs: [check-requirements]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -54,7 +53,6 @@ jobs:
   type-python:
     name: Run mypy
     runs-on: ubuntu-20.04
-    needs: [check-requirements]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
