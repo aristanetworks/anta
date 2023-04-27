@@ -98,7 +98,7 @@ All tests are built on a class named `AntaTest` which provides a complete toolse
 
 - Object creation
 - Test definition
-- Result definition
+- TestResult definition
 - Abstracted method to collect data
 
 This approach means each time you create a test it will be based on this `AntaTest` class. Besides that, you will have to provide some elements:
