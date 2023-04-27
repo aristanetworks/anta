@@ -26,7 +26,6 @@ class VerifyTransceiversManufacturers(AntaTest):
     @AntaTest.anta_test
     def test(self, manufacturers: Optional[List[str]] = None) -> None:
         """Run VerifyTransceiversManufacturers validation"""
-        self.logger.setLevel(logging.DEBUG)
         if not manufacturers:
             self.result.is_skipped(f"{self.__class__.name} was not run as no manufacturers were given")
         else:

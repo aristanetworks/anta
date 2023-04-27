@@ -26,8 +26,6 @@ class VerifyZeroTouch(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyZeroTouch validation"""
-        self.logger.setLevel(logging.DEBUG)
-        # TODO - easier way to access output ?
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = self.instance_commands[0].output
         self.logger.debug(f"dataset is: {command_output}")
@@ -51,7 +49,6 @@ class VerifyRunningConfigDiffs(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyRunningConfigDiffs validation"""
-        self.logger.setLevel(logging.DEBUG)
         self.logger.debug(f"self.instance_commands is {self.instance_commands}")
         command_output = self.instance_commands[0].output
         self.logger.debug(f"command_output is {command_output}")
