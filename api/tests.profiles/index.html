@@ -1312,7 +1312,14 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
@@ -1336,25 +1343,9 @@
 <span class="normal">75</span>
 <span class="normal">76</span>
 <span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
 <span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_tcam_profile</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_tcam_profile</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the configured TCAM profile is the expected one.</span>
 
@@ -1376,15 +1367,12 @@
 
     <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
-        <span class="o">==</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
-    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">profile</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">profile</span>
+    <span class="p">):</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Incorrect profile configured on device: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Incorrect profile configured on device: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
@@ -1535,19 +1523,9 @@
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
 <span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_unified_forwarding_table_mode</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
-
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_unified_forwarding_table_mode</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the device is using the expected Unified Forwarding Table mode.</span>
 
@@ -1564,9 +1542,7 @@
 <span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mode</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span>
-            <span class="s2">&quot;verify_unified_forwarding_table_mode was not run as no mode was given&quot;</span>
-        <span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_unified_forwarding_table_mode was not run as no mode was given&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
@@ -1575,9 +1551,7 @@
     <span class="k">if</span> <span class="n">response_data</span> <span class="o">==</span> <span class="n">mode</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">)&quot;</span>
-        <span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
@@ -1599,7 +1573,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 25, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
       
     
   </small>
