@@ -52,7 +52,7 @@ jobs:
       - name: "Run tox for ${{ matrix.python }}"
         run: tox -e lint
   type-python:
-    name: Run isort, black, flake8 and pylint
+    name: Run mypy
     runs-on: ubuntu-20.04
     needs: [check-requirements]
     steps:
