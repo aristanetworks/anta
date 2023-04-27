@@ -152,6 +152,7 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["anta"]
+parallel = true
 # omit=anta/tests/*
 
 [tool.coverage.report]
@@ -199,14 +200,14 @@ envlist =
 python =
   3.8: py38
   3.9: py39
-  3.10: py310, report
+  3.10: erase, py310, report
   3.11: py311
 
 [testenv]
 description = run the test driver with {basepython}
 extras = dev
 commands =
-   pytest  {tty:--color=yes}
+   pytest
 
 [testenv:lint]
 description = check the code style
@@ -229,8 +230,9 @@ commands = coverage erase
 
 [testenv:report]
 deps = coverage[toml]
-# TODO adding -i for now
-commands = coverage report -i
+commands =
+  coverage --version
+  coverage report --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py310
