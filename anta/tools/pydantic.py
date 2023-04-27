@@ -1,12 +1,15 @@
 """
-Toolkit for ANTA.
+Toolkit for ANTA to play with Pydantic.
 """
 
-import logging
-from typing import Any, Union
+from __future__ import annotations
 
-from .inventory.models import InventoryDevices
-from .result_manager.models import ListResult
+import logging
+from typing import TYPE_CHECKING, Any, Union
+
+if TYPE_CHECKING:
+    from anta.inventory.models import InventoryDevices
+    from anta.result_manager.models import ListResult
 
 logger = logging.getLogger(__name__)
 

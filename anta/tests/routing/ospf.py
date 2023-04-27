@@ -25,9 +25,7 @@ async def verify_ospf_state(device: InventoryDevice, result: TestResult) -> Test
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = await device.session.cli(
-        command="show ip ospf neighbor | exclude FULL|Address", ofmt="text"
-    )
+    response = await device.session.cli(command="show ip ospf neighbor | exclude FULL|Address", ofmt="text")
     logger.debug(f"query result is: {response}")
     if len(response) == 0:
         result.is_skipped("no OSPF neighbor found")
@@ -41,9 +39,7 @@ async def verify_ospf_state(device: InventoryDevice, result: TestResult) -> Test
 
 
 @anta_test
-async def verify_ospf_count(
-    device: InventoryDevice, result: TestResult, number: int
-) -> TestResult:
+async def verify_ospf_count(device: InventoryDevice, result: TestResult, number: int) -> TestResult:
     """
     Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
@@ -60,14 +56,10 @@ async def verify_ospf_count(
         * result = "error" if any exception is caught
     """
     if not number:
-        result.is_skipped(
-            "verify_igmp_snooping_vlans was not run as no number was given"
-        )
+        result.is_skipped("verify_igmp_snooping_vlans was not run as no number was given")
         return result
 
-    response = await device.session.cli(
-        command="show ip ospf neighbor | exclude  Address", ofmt="text"
-    )
+    response = await device.session.cli(command="show ip ospf neighbor | exclude  Address", ofmt="text")
     logger.debug(f"query result is: {response}")
     if len(response) == 0:
         result.is_skipped("no OSPF neighbor found")
@@ -76,8 +68,6 @@ async def verify_ospf_count(
     if response_data.count("FULL") == number:
         result.is_success()
     else:
-        result.is_failure(
-            f'device has {response_data.count("FULL")} neighbors (expected {number}'
-        )
+        result.is_failure(f'device has {response_data.count("FULL")} neighbors (expected {number}')
 
     return result

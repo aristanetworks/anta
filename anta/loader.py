@@ -11,9 +11,7 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 
-def parse_catalog(
-    test_catalog: Dict[Any, Any], package: Optional[str] = None
-) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
+def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
     Function to pase the catalog and return a list of tests
 
@@ -42,14 +40,10 @@ def parse_catalog(
                     try:
                         func = getattr(module, func_name)
                     except AttributeError:
-                        logger.error(
-                            f"Wrong test function name '{func_name}' in '{module.__name__}'"
-                        )
+                        logger.error(f"Wrong test function name '{func_name}' in '{module.__name__}'")
                         sys.exit(1)
                     if not callable(func):
-                        logger.error(
-                            f"'{func.__module__}.{func.__name__}' is not a function"
-                        )
+                        logger.error(f"'{func.__module__}.{func.__name__}' is not a function")
                         sys.exit(1)
                     tests.append((func, args if args is not None else {}))
         if isinstance(value, dict):

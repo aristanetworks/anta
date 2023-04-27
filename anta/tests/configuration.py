@@ -1,80 +1,60 @@
 """
 Test functions related to the device configuration
 """
+
+# pylint: disable = too-few-public-methods
+
+from __future__ import annotations
+
 import logging
 
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
 logger = logging.getLogger(__name__)
 
 
-@anta_test
-async def verify_zerotouch(device: InventoryDevice, result: TestResult) -> TestResult:
-
+class VerifyZeroTouch(AntaTest):
     """
     Verifies ZeroTouch is disabled.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if ZTP is disabled
-        * result = "failure" if ZTP is enabled
-        * result = "error" if any exception is caught
-
     """
-    response = await device.session.cli(command="show zerotouch", ofmt="json")
-    logger.debug(f"query result is: {response}")
 
-    if response["mode"] == "disabled":
-        result.is_success()
-    else:
-        result.is_failure("ZTP is NOT disabled")
+    name = "verify_zerotouch"
+    description = "Verifies ZeroTouch is disabled."
+    categories = ["configuration"]
+    commands = [AntaTestCommand(command="show zerotouch")]
 
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyZeroTouch validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = self.instance_commands[0].output
+        self.logger.debug(f"dataset is: {command_output}")
+        assert isinstance(command_output, dict)
+        if command_output["mode"] == "disabled":
+            self.result.is_success()
+        else:
+            self.result.is_failure("ZTP is NOT disabled")
 
 
-@anta_test
-async def verify_running_config_diffs(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+class VerifyRunningConfigDiffs(AntaTest):
     """
     Verifies there is no difference between the running-config and the startup-config.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if there is no difference between the running-config and the startup-config
-        * result = "failure" if there are differences
-        * result = "error" if any exception is caught
-
     """
-    if device.enable_password is not None:
-        enable_cmd = {"cmd": "enable", "input": str(device.enable_password)}
-    else:
-        enable_cmd = {"cmd": "enable"}
-    commands = [enable_cmd, "show running-config diffs"]
-    response = await device.session.cli(
-        commands=commands,
-        ofmt="text",
-    )
 
-    logger.debug(f"query result is: {response}")
+    name = "verify_running_config_diffs"
+    description = ""
+    categories = ["configuration"]
+    commands = [AntaTestCommand(command="show running-config diffs", ofmt="text")]
 
-    if len(response[1]) == 0:
-        result.is_success()
-
-    else:
-        result.is_failure()
-        for line in response[1].splitlines():
-            result.is_failure(line)
-
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyRunningConfigDiffs validation"""
+        self.logger.debug(f"self.instance_commands is {self.instance_commands}")
+        command_output = self.instance_commands[0].output
+        self.logger.debug(f"command_output is {command_output}")
+        if command_output is None or command_output == "":
+            self.result.is_success()
+        else:
+            self.result.is_failure()
+            self.result.is_failure(str(command_output))
+        self.logger.debug(f"result is {self.result}")

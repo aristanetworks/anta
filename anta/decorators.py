@@ -2,12 +2,15 @@
 decorators for tests
 """
 from functools import wraps
-from typing import Any, Callable, Coroutine, Dict, List
+from typing import Any, Callable, Coroutine, Dict, List, TypeVar, cast
 
 from anta.result_manager.models import TestResult
 
+# TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
+F = TypeVar("F", bound=Callable[..., Any])
 
-def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Coroutine[Any, Any, TestResult]]]:
+
+def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
     """
     Decorator factory to skip a test on a list of platforms
 
@@ -16,7 +19,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Corou
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def decorator(function: F) -> F:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
@@ -27,18 +30,14 @@ def skip_on_platforms(platforms: List[str]) -> Callable[..., Callable[..., Corou
             """
             wrapper for func
             """
-            device = args[0]
-            if device.hw_model in platforms:
-                result = TestResult(
-                    name=device.name, test=function.__name__)
-                result.is_skipped(
-                    f"{wrapper.__name__} test is not supported on {device.hw_model}."
-                )
-                return result
+            anta_test = args[0]
+            if anta_test.device.hw_model in platforms:
+                anta_test.result.is_skipped(f"{wrapper.__name__} test is not supported on {anta_test.device.hw_model}.")
+                return anta_test.result
 
             return await function(*args, **kwargs)
 
-        return wrapper
+        return cast(F, wrapper)
 
     return decorator
 
@@ -52,7 +51,7 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutin
 
     """
 
-    def decorator(function: Callable[..., TestResult]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
+    def decorator(function: F) -> F:
         """
         Decorator to skip a test ona list of platform
         * func (Callable): the test to be decorated
@@ -65,35 +64,23 @@ def check_bgp_family_enable(family: str) -> Callable[..., Callable[..., Coroutin
             """
             device = args[0]
             eapi_command = "show bgp ipv4 unicast summary vrf all"
-            eapi_command = (
-                "show bgp ipv6 unicast summary vrf all"
-                if family == "ipv6"
-                else eapi_command
-            )
+            eapi_command = "show bgp ipv6 unicast summary vrf all" if family == "ipv6" else eapi_command
             eapi_command = "show bgp evpn summary" if family == "evpn" else eapi_command
-            eapi_command = (
-                "show bgp rt-membership summary" if family == "rtc" else eapi_command
-            )
+            eapi_command = "show bgp rt-membership summary" if family == "rtc" else eapi_command
 
             result = TestResult(name=str(device.name), test=function.__name__)
-            response = await device.session.cli(
-                command=eapi_command, ofmt="json")
+            response = await device.session.cli(command=eapi_command, ofmt="json")
 
             if "vrfs" not in response.keys():
-                result.is_skipped(
-                    f"no BGP configuration for {family} on this device"
-                )
+                result.is_skipped(f"no BGP configuration for {family} on this device")
                 return result
-            if (len(bgp_vrfs := response["vrfs"]) == 0
-               or len(bgp_vrfs["default"]["peers"]) == 0):
+            if len(bgp_vrfs := response["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
                 # No VRF
-                result.is_skipped(
-                    f"no {family} peer on this device"
-                )
+                result.is_skipped(f"no {family} peer on this device")
                 return result
 
             return await function(*args, **kwargs)
 
-        return wrapper
+        return cast(F, wrapper)
 
     return decorator

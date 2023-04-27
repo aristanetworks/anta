@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-async def verify_igmp_snooping_vlans(
-    device: InventoryDevice, result: TestResult, vlans: List[str], configuration: str
-) -> TestResult:
+async def verify_igmp_snooping_vlans(device: InventoryDevice, result: TestResult, vlans: List[str], configuration: str) -> TestResult:
     """
     Verifies the IGMP snooping configuration for some VLANs.
 
@@ -33,10 +31,7 @@ async def verify_igmp_snooping_vlans(
     """
     if not vlans or not configuration:
         result.result = "skipped"
-        result.messages.append(
-            "verify_igmp_snooping_vlans was not run as no "
-            "vlans or configuration was given"
-        )
+        result.messages.append("verify_igmp_snooping_vlans was not run as no vlans or configuration was given")
         return result
     response = await device.session.cli(command="show ip igmp snooping", ofmt="json")
     logger.debug(f"query result is: {response}")
@@ -56,9 +51,7 @@ async def verify_igmp_snooping_vlans(
 
 
 @anta_test
-async def verify_igmp_snooping_global(
-    device: InventoryDevice, result: TestResult, configuration: str
-) -> TestResult:
+async def verify_igmp_snooping_global(device: InventoryDevice, result: TestResult, configuration: str) -> TestResult:
     """
     Verifies the IGMP snooping global configuration.
 
@@ -75,9 +68,7 @@ async def verify_igmp_snooping_global(
         * result = "error" if any exception is caught
     """
     if not configuration:
-        result.is_skipped(
-            "verify_igmp_snooping_global was not run as no configuration was given"
-        )
+        result.is_skipped("verify_igmp_snooping_global was not run as no configuration was given")
         return result
 
     response = await device.session.cli(command="show ip igmp snooping", ofmt="json")

@@ -5,12 +5,24 @@ files: ^(anta|scripts|tests)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v4.4.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-added-large-files
       - id: check-merge-conflict
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: Check for changes when running isort on all python files
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        name: Check for changes when running Black on all python files
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
@@ -20,12 +32,6 @@ repos:
         args:
           - --config=/dev/null
           - --max-line-length=165
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: Check for changes when running isort on all python files
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
@@ -41,7 +47,7 @@ repos:
           - --rcfile=pylintrc  # Link to config file
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.991
+    rev: v1.2.0
     hooks:
       - id: mypy
         args:

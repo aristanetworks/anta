@@ -16,16 +16,14 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 
-def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Callable[..., Coroutine[Any, Any, Coroutine[Any, Any, TestResult]]]:
+def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Callable[..., Coroutine[Any, Any, TestResult]]:
     """
     Decorator to generate the structure for a test
     * func (Callable): the test to be decorated
     """
 
     @wraps(function)
-    async def wrapper(
-        device: InventoryDevice, *args: List[Any], **kwargs: Dict[str, Any]
-    ) -> TestResult:
+    async def wrapper(device: InventoryDevice, *args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
         """
         wrapper for func
         Args:
@@ -51,9 +49,7 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
             result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
-            logger.error(
-                f"Exception raised for test {function.__name__} (on device {device.host}) - {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}"
-            )
+            logger.error(f"Exception raised for test {function.__name__} (on device {device.host}) - {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
             logger.debug(traceback.format_exc())
             result.is_error(f"{type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         return result

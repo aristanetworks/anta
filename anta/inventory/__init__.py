@@ -2,6 +2,8 @@
 Inventory Module for ANTA.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 from typing import Any, Dict, List, Optional
@@ -13,8 +15,8 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from .exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
-from .models import AntaInventoryInput, InventoryDevice, InventoryDevices
+from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
+from anta.inventory.models import AntaInventoryInput, InventoryDevice, InventoryDevices
 
 logger = logging.getLogger(__name__)
 
@@ -125,9 +127,7 @@ class AntaInventory:
             self._read_inventory = AntaInventoryInput(**data[self.INVENTORY_ROOT_KEY])
         except KeyError as exc:
             logger.error(f"Inventory root key is missing: {self.INVENTORY_ROOT_KEY}")
-            raise InventoryRootKeyErrors(
-                f"Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory"
-            ) from exc
+            raise InventoryRootKeyErrors(f"Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
         except ValidationError as exc:
             logger.error("Inventory data are not compliant with inventory models")
             raise InventoryIncorrectSchema("Inventory is not following schema") from exc
@@ -142,7 +142,9 @@ class AntaInventory:
 
         if filter_hosts:
             for device in self._inventory:
-                if device.url.host not in filter_hosts:
+                # TODO - @gmuloc - device does not have url anymore - does this work
+                # if device.url.host not in filter_hosts:
+                if str(device.host) not in filter_hosts:
                     del device
 
     ###########################################################################
@@ -159,10 +161,7 @@ class AntaInventory:
             bool: True if device is in our inventory, False if not
         """
         logger.debug(f"Checking if device {ip} is in our inventory")
-        return (
-            len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)])
-            == 1
-        )
+        return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
 
     ###########################################################################
     # Internal methods
@@ -179,20 +178,14 @@ class AntaInventory:
         try:
             response = await device.session.cli(command="show version")
         except EapiCommandError as e:
-            logger.warning(
-                f"Cannot get HW information from device {device.name}: {e.errmsg}"
-            )
+            logger.warning(f"Cannot get HW information from device {device.name}: {e.errmsg}")
         except (HTTPError, ConnectError) as e:
-            logger.warning(
-                f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}"
-            )
+            logger.warning(f"Cannot get HW information from device {device.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
         else:
             if self.HW_MODEL_KEY in response:
                 device.hw_model = response[self.HW_MODEL_KEY]
             else:
-                logger.warning(
-                    f"Cannot get HW information from device {device.name}: cannot parse 'show version'"
-                )
+                logger.warning(f"Cannot get HW information from device {device.name}: cannot parse 'show version'")
 
     async def _refresh_device_fact(self, device: InventoryDevice) -> None:
         """
@@ -214,9 +207,7 @@ class AntaInventory:
         if device.is_online:
             await self._read_device_hw(device=device)
         else:
-            logger.warning(
-                f"Could not connect to device {device.name}: cannot open eAPI port"
-            )
+            logger.warning(f"Could not connect to device {device.name}: cannot open eAPI port")
         device.established = bool(device.is_online and device.hw_model)
 
     def _add_device_to_inventory(
@@ -260,9 +251,7 @@ class AntaInventory:
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(
-                host.host, host.port, host.name, tags=host.tags
-            )
+            self._add_device_to_inventory(str(host.host), host.port, host.name, tags=host.tags)
 
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
@@ -284,8 +273,7 @@ class AntaInventory:
             range_increment = IPAddress(str(range_def.start))
             range_stop = IPAddress(str(range_def.end))
             while range_increment <= range_stop:
-                self._add_device_to_inventory(
-                    str(range_increment), tags=range_def.tags)
+                self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
                 range_increment += 1
 
     ###########################################################################
@@ -296,9 +284,7 @@ class AntaInventory:
     # GET methods
     ###########################################################################
 
-    def get_inventory(
-        self, established_only: bool = False, tags: Optional[List[str]] = None
-    ) -> InventoryDevices:
+    def get_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> InventoryDevices:
         """
         get_inventory Returns a new filtered inventory.
 
@@ -337,6 +323,4 @@ class AntaInventory:
         )
         for r in results:
             if isinstance(r, Exception):
-                logger.error(
-                    f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}"
-                )
+                logger.error(f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")

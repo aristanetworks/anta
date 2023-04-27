@@ -53,11 +53,7 @@ if __name__ == "__main__":
     # Then add the categories
     # First add Breaking Changes
     breaking_label_categories = ["feat", "fix", "cut", "revert", "refactor", "bump"]
-    breaking_labels = [
-        f"rn: {cc_type}({scope})!"
-        for cc_type in breaking_label_categories
-        for scope in SCOPES
-    ]
+    breaking_labels = [f"rn: {cc_type}({scope})!" for cc_type in breaking_label_categories for scope in SCOPES]
     breaking_labels.extend([f"rn: {cc_type}!" for cc_type in breaking_label_categories])
 
     categories_list.append(

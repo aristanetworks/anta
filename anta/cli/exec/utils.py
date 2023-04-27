@@ -25,9 +25,7 @@ EOS_TECH_SUPPORT_ARCHIVE_ZIP = "/mnt/flash/schedule/all_files.zip"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(
-    anta_inventory: AntaInventory, enable_pass: str, tags: List[str]
-) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, enable_pass: str, tags: List[str]) -> None:
     """
     clear counters
     """
@@ -42,9 +40,7 @@ async def clear_counters_utils(
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Could not clear counters on device {dev.name}")
-            logger.debug(
-                f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}"
-            )
+            logger.debug(f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}")
             logger.debug(traceback.format_exc())
 
     logger.info("Connecting to devices...")
@@ -65,9 +61,7 @@ async def collect_commands(
     Collect EOS commands
     """
 
-    async def collect(
-        dev: InventoryDevice, command: str, outformat: Literal["json", "text"]
-    ) -> None:
+    async def collect(dev: InventoryDevice, command: str, outformat: Literal["json", "text"]) -> None:
         try:
             outdir = Path() / root_dir / dev.name / outformat
             outdir.mkdir(parents=True, exist_ok=True)
@@ -78,31 +72,21 @@ async def collect_commands(
             )
             with outfile.open(mode="w", encoding="UTF-8") as f:
                 f.write(str(result[1]))
-            logger.info(
-                f"Collected command '{command}' from device {dev.name} ({dev.hw_model})"
-            )
+            logger.info(f"Collected command '{command}' from device {dev.name} ({dev.hw_model})")
         except EapiCommandError as e:
             logger.error(f"Command failed on {dev.name}: {e.errmsg}")
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Could not collect commands on device {dev.name}")
-            logger.debug(
-                f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}"
-            )
+            logger.debug(f"Exception raised for device {dev.name} - {type(e).__name__}: {str(e)}")
             logger.debug(traceback.format_exc())
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags)
     logger.info("Collecting commands from remote devices")
-    coros = [
-        collect(device, command, "json")
-        for device, command in itertools.product(devices, commands["json_format"])
-    ]
-    coros += [
-        collect(device, command, "text")
-        for device, command in itertools.product(devices, commands["text_format"])
-    ]
+    coros = [collect(device, command, "json") for device, command in itertools.product(devices, commands["json_format"])]
+    coros += [collect(device, command, "text") for device, command in itertools.product(devices, commands["text_format"])]
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
@@ -133,17 +117,12 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
                 f"bash timeout 30 zip {EOS_TECH_SUPPORT_ARCHIVE_ZIP} /mnt/flash/schedule/tech-support/*",
             ]
             await device.session.cli(commands=commands)
-            logger.info(
-                f"Created {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on device {device.name}"
-            )
+            logger.info(f"Created {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on device {device.name}")
 
             # Create directories
             outdir = Path() / root_dir
             outdir.mkdir(parents=True, exist_ok=True)
-            outfile = (
-                outdir
-                / f"{device.name.lower()}_{datetime.today().strftime('%Y-%m-%d_%H%M%S')}.zip"
-            )
+            outfile = outdir / f"{device.name.lower()}_{datetime.today().strftime('%Y-%m-%d_%H%M%S')}.zip"
 
             # Check if 'aaa authorization exec default local' is present in the running-config
             commands = [
@@ -160,13 +139,9 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
                         "aaa authorization exec default local",
                     ]
                     await device.session.cli(commands=commands)
-                    logger.info(
-                        f"Configured 'aaa authorization exec default local' on device {device.name}"
-                    )
+                    logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
-                    logger.error(
-                        f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present"
-                    )
+                    logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")
                     return
 
             ssh_params = {
@@ -194,9 +169,7 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Unable to collect tech-support on device {device.name}")
-            logger.debug(
-                f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}"
-            )
+            logger.debug(f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}")
             logger.debug(traceback.format_exc())
 
     logger.info("Connecting to devices...")

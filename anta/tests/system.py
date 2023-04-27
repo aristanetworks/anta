@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-async def verify_uptime(
-    device: InventoryDevice, result: TestResult, minimum: Optional[int] = None
-) -> TestResult:
+async def verify_uptime(device: InventoryDevice, result: TestResult, minimum: Optional[int] = None) -> TestResult:
     """
     Verifies the device uptime is higher than a value.
 
@@ -46,9 +44,7 @@ async def verify_uptime(
 
 
 @anta_test
-async def verify_reload_cause(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_reload_cause(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the last reload of the device was requested by a user.
 
@@ -162,24 +158,18 @@ async def verify_syslog(device: InventoryDevice, result: TestResult) -> TestResu
         * result = "failure" otherwise.
         * result = "error" if any exception is caught
     """
-    response = await device.session.cli(
-        command="show logging last 7 days threshold warnings", ofmt="text"
-    )
+    response = await device.session.cli(command="show logging last 7 days threshold warnings", ofmt="text")
     logger.debug(f"query result is: {response}")
     if len(response) == 0:
         result.is_success()
     else:
-        result.is_failure(
-            "Device has some log messages with a severity WARNING or higher"
-        )
+        result.is_failure("Device has some log messages with a severity WARNING or higher")
 
     return result
 
 
 @anta_test
-async def verify_cpu_utilization(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_cpu_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the CPU utilization is less than 75%.
 
@@ -205,9 +195,7 @@ async def verify_cpu_utilization(
 
 
 @anta_test
-async def verify_memory_utilization(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_memory_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the memory utilization is less than 75%.
 
@@ -233,10 +221,7 @@ async def verify_memory_utilization(
 
 
 @anta_test
-async def verify_filesystem_utilization(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
-
+async def verify_filesystem_utilization(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies each partition on the disk is used less than 75%.
 
@@ -260,21 +245,14 @@ async def verify_filesystem_utilization(
     logger.debug(f"query result is: {response}")
     result.is_success()
     for line in response[1].split("\n")[1:]:
-        if (
-            "loop" not in line
-            and len(line) > 0
-            and int(line.split()[4].replace("%", "")) > 75
-        ):
-            result.is_failure(
-                f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})'
-            )
+        if "loop" not in line and len(line) > 0 and int(line.split()[4].replace("%", "")) > 75:
+            result.is_failure(f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})')
 
     return result
 
 
 @anta_test
 async def verify_ntp(device: InventoryDevice, result: TestResult) -> TestResult:
-
     """
     Verifies NTP is synchronised.
 
