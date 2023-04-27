@@ -23,12 +23,12 @@ dependencies = [
   "click-help-colors==0.9.1",
   "cvprac>=1.2.0",
   "netaddr>=0.8.0",
-  "paramiko",
   "pydantic>=1.9.1",
   "PyYAML>=6.0",
   "requests",
   "rich>=12.5.1",
   "scp",
+  "asyncssh==2.13.1",
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
@@ -53,9 +53,10 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
   "bump2version==1.0.1",
+  "black==23.3.0",
   "flake8==6.0.0",
   "isort==5.10.1",
-  "mypy==0.991",
+  "mypy==1.2.0",
   "mypy-extensions>=0.4.3",
   "pre-commit>=2.20.0",
   "pylint>=2.16.1",
@@ -90,6 +91,7 @@ namespaces = false
 plugins = [
   "pydantic.mypy",
   ]
+# Comment below for better type checking
 follow_imports = "skip"
 ignore_missing_imports = true
 warn_redundant_casts = true
@@ -139,17 +141,16 @@ commands =
 [testenv:lint]
 description = check the code style
 commands =
+  black --check --diff --color .
+  isort --check --diff --color .
   flake8 --max-line-length=165 --config=/dev/null anta
-  flake8 --max-line-length=165 --config=/dev/null scripts
   flake8 --max-line-length=165 --config=/dev/null tests
   pylint anta
-  pylint scripts
 
 [testenv:type]
 description = check typing
 commands =
   type: mypy --config-file=pyproject.toml anta
-  type: mypy --config-file=pyproject.toml scripts
 
 [testenv:clean]
 deps = coverage[toml]
@@ -159,7 +160,7 @@ commands = coverage erase
 [testenv:report]
 deps = coverage[toml]
 # TODO adding -i for now
-commands = coverage report -i 
+commands = coverage report -i
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py310
@@ -167,8 +168,8 @@ depends = py310
 """
 
 [tool.pytest.ini_options]
-addopts = "-ra -q -s -vv --capture=tee-sys --ignore=tests/scripts --cov --cov-append"
-log_level = "INFO"
+addopts = "-ra -q -s -vv --capture=tee-sys --cov --cov-append"
+log_level = "DEBUG"
 log_cli = "True"
 
 [tool.coverage.run]
@@ -178,3 +179,11 @@ source = ['anta']
 [tool.isort]
 profile = "black"
 line_length = 165
+
+[tool.black]
+line-length = 165
+force-exclude = """
+(
+.*data.py|
+)
+"""

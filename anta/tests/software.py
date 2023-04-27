@@ -40,17 +40,13 @@ async def verify_eos_version(device: InventoryDevice, result: TestResult, versio
     if response["version"] in versions:
         result.is_success()
     else:
-        result.is_failure(
-            f'device is running version {response["version"]} not in expected versions: {versions}'
-        )
+        result.is_failure(f'device is running version {response["version"]} not in expected versions: {versions}')
 
     return result
 
 
 @anta_test
-async def verify_terminattr_version(
-    device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None
-) -> TestResult:
+async def verify_terminattr_version(device: InventoryDevice, result: TestResult, versions: Optional[List[str]] = None) -> TestResult:
     """
     Verifies the device is running one of the allowed TerminAttr version.
 
@@ -68,9 +64,7 @@ async def verify_terminattr_version(
 
     """
     if not versions:
-        result.is_skipped(
-            "verify_terminattr_version was not run as no versions were given"
-        )
+        result.is_skipped("verify_terminattr_version was not run as no versions were given")
         return result
 
     response = await device.session.cli(command="show version detail", ofmt="json")
@@ -80,9 +74,7 @@ async def verify_terminattr_version(
     if response_data in versions:
         result.is_success()
     else:
-        result.is_failure(
-            f"device is running TerminAttr version {response_data} and is not in the allowed list: {versions}"
-        )
+        result.is_failure(f"device is running TerminAttr version {response_data} and is not in the allowed list: {versions}")
 
     return result
 
@@ -122,18 +114,14 @@ async def verify_eos_extensions(device: InventoryDevice, result: TestResult) -> 
     if installed_extensions == boot_extensions:
         result.is_success()
     else:
-        result.is_failure(
-            f"Missing EOS extensions: installed {installed_extensions} / configured: {boot_extensions}"
-        )
+        result.is_failure(f"Missing EOS extensions: installed {installed_extensions} / configured: {boot_extensions}")
 
     return result
 
 
 @skip_on_platforms(["cEOSLab"])
 @anta_test
-async def verify_field_notice_44_resolution(
-    device: InventoryDevice, result: TestResult
-) -> TestResult:
+async def verify_field_notice_44_resolution(device: InventoryDevice, result: TestResult) -> TestResult:
     """
     Verifies the device is using an Aboot version that fix the bug discussed
     in the field notice 44 (Aboot manages system settings prior to EOS initialization).
@@ -213,20 +201,12 @@ async def verify_field_notice_44_resolution(
             aboot_version = component["version"].split("-")[2]
     result.is_success()
     if aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7:
-        result.is_failure(
-            f"device is running incorrect version of aboot ({aboot_version})"
-        )
+        result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
     elif aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1:
-        result.is_failure(
-            f"device is running incorrect version of aboot ({aboot_version})"
-        )
+        result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
     elif aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9:
-        result.is_failure(
-            f"device is running incorrect version of aboot ({aboot_version})"
-        )
+        result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
     elif aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7:
-        result.is_failure(
-            f"device is running incorrect version of aboot ({aboot_version})"
-        )
+        result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
 
     return result

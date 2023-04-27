@@ -1,22 +1,27 @@
 """Models related to inventory management."""
 
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
+import traceback
+from typing import Any, Dict, Iterator, List, Optional, Union
 
-import paramiko
-from paramiko.ssh_exception import AuthenticationException, SSHException
-
-from aioeapi import Device
+from aioeapi import Device, EapiCommandError
+from httpx import ConnectError, HTTPError
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
 
-# Default values
+from anta.models import AntaTestCommand
+from anta.tools.misc import exc_to_str
 
-DEFAULT_TAG = 'all'
-DEFAULT_HW_MODEL = 'unset'
+# Default values
+logger = logging.getLogger(__name__)
+
+DEFAULT_TAG = "all"
+DEFAULT_HW_MODEL = "unset"
 
 # Pydantic models for input validation
 
-RFC_1123_REGEX = r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
+RFC_1123_REGEX = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 
 
 class AntaInventoryHost(BaseModel):
@@ -81,6 +86,7 @@ class AntaInventoryInput(BaseModel):
 
 # Pydantic models for inventory output structures
 
+
 class InventoryDevice(BaseModel):
     """
     Inventory model exposed by Inventory class.
@@ -99,7 +105,8 @@ class InventoryDevice(BaseModel):
     """
 
     class Config:  # pylint: disable=too-few-public-methods
-        """ Pydantic model configuration """
+        """Pydantic model configuration"""
+
         arbitrary_types_allowed = True
 
     name: str
@@ -109,37 +116,44 @@ class InventoryDevice(BaseModel):
     port: conint(gt=1, lt=65535)  # type: ignore[valid-type]
     enable_password: Optional[str]
     session: Device
-    established = False
-    is_online = False
+    established: bool = False
+    is_online: bool = False
     hw_model: str = DEFAULT_HW_MODEL
     tags: List[str] = [DEFAULT_TAG]
     timeout: float = 10.0
 
     @root_validator(pre=True)
-    def build_device(cls: Type[Any], values: Dict[str, Any]) -> Dict[str, Any]:
-        """ Build the device session object """
-        if not values.get('host'):
-            values['host'] = 'localhost'
-        if not values.get('port'):
-            values['port'] = '8080' if values['host'] == 'localhost' else '443'
-        if values.get('tags') is not None:
-            values['tags'].append(DEFAULT_TAG)
+    def build_device(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Build the device session object"""
+        if not values.get("host"):
+            values["host"] = "localhost"
+        if not values.get("port"):
+            values["port"] = "8080" if values["host"] == "localhost" else "443"
+        if values.get("tags") is not None:
+            values["tags"].append(DEFAULT_TAG)
         else:
-            values['tags'] = [DEFAULT_TAG]
-        if values.get('session') is None:
-            proto = 'http' if values['port'] in ['80', '8080'] else 'https'
-            values['session'] = Device(host=values['host'], port=values['port'],
-                                       username=values.get('username'), password=values.get('password'),
-                                       proto=proto, timeout=values.get('timeout'))
-        if values.get('name') is None:
-            values['name'] = f"{values['host']}:{values['port']}"
+            values["tags"] = [DEFAULT_TAG]
+        if values.get("session") is None:
+            proto = "http" if values["port"] in ["80", "8080"] else "https"
+            values["session"] = Device(
+                host=values["host"],
+                port=values["port"],
+                username=values.get("username"),
+                password=values.get("password"),
+                proto=proto,
+                timeout=values.get("timeout"),
+            )
+        if values.get("name") is None:
+            values["name"] = f"{values['host']}:{values['port']}"
         return values
 
-    def __eq__(self, other: BaseModel) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
-            Two InventoryDevice objects are equal if the hostname and the port are the same.
-            This covers the use case of port forwarding when the host is localhost and the devices have different ports.
+        Two InventoryDevice objects are equal if the hostname and the port are the same.
+        This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
+        if not isinstance(other, InventoryDevice):
+            return False
         return self.session.host == other.session.host and self.session.port == other.session.port
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
@@ -153,30 +167,46 @@ class InventoryDevice(BaseModel):
                 message = "`enable_password` is not set"
             raise ValueError(message)
 
-    def create_ssh_socket(self, ssh_port: int = 22, banner_timeout: int = 60) -> paramiko.SSHClient:
+    async def collect(self, command: AntaTestCommand) -> Any:
+        """Collect device command result
+        FIXME: Under development / testing
+        TODO: Build documentation
         """
-        Create SSH socket to send commend over SSH
+        logger.debug(f"run collect from device {self.name} for {command}")
 
-        Returns:
-            paramiko.SSHClient: SSH Socket created
-        """
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            client.connect(
-                hostname=self.host,
-                port=ssh_port,
-                username=self.username,
-                password=self.password,
-                banner_timeout=banner_timeout
+            if self.enable_password is not None:
+                enable_cmd = {
+                    "cmd": "enable",
+                    "input": str(self.enable_password),
+                }
+            else:
+                enable_cmd = {"cmd": "enable"}
+            # FIXME: RuntimeError: Event loop is closed
+            # When sending commands over 2 asyncio.run, the first call
+            # of the second run fails
+            # Workaround in cli.debug.run_template
+            response = await self.session.cli(
+                commands=[enable_cmd, command.command],
+                ofmt=command.ofmt,
             )
-        except AuthenticationException as error:
-            logging.error(f'Authentication error for device {self.name}')
-            logging.error(error)
-        except SSHException as error:
-            logging.error(f'SSHException for device {self.name}')
-            logging.error(error)
-        return client
+            # remove first dict related to enable command
+            # only applicable to json output
+            if command.ofmt in ["json", "text"]:
+                # selecting only our command output
+                response = response[1]
+            command.output = response
+
+        except EapiCommandError as e:
+            logger.error(f"Command failed on {self.name}: {e.errmsg}")
+        except (HTTPError, ConnectError) as e:
+            logger.error(f"Cannot connect to device {self.name}: {type(e).__name__}{exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error(f"Exception raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+        else:
+            return command
 
 
 class InventoryDevices(BaseModel):
@@ -186,6 +216,7 @@ class InventoryDevices(BaseModel):
     Attributes:
         __root__(List[InventoryDevice]): A list of InventoryDevice objects.
     """
+
     # pylint: disable=R0801
 
     __root__: List[InventoryDevice] = []
@@ -196,6 +227,8 @@ class InventoryDevices(BaseModel):
 
     def __iter__(self) -> Iterator[InventoryDevice]:
         """Use custom iter method."""
+        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
+        # return type and are breaking Liskov Substitution Principle.
         return iter(self.__root__)
 
     def __getitem__(self, item: int) -> InventoryDevice:
@@ -206,6 +239,6 @@ class InventoryDevices(BaseModel):
         """Support for length of __root__"""
         return len(self.__root__)
 
-    def json(self) -> str:
+    def json(self, **kwargs: Any) -> str:
         """Returns a JSON representation of the devices"""
-        return super().json(exclude={'__root__': {'__all__': {'session'}}})
+        return super().json(exclude={"__root__": {"__all__": {"session"}}}, **kwargs)

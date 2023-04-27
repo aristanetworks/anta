@@ -4,7 +4,7 @@ from typing import Iterator, List
 
 from pydantic import BaseModel, validator
 
-RESULT_OPTIONS = ['unset', 'success', 'failure', 'error', 'skipped']
+RESULT_OPTIONS = ["unset", "success", "failure", "error", "skipped"]
 
 
 class TestResult(BaseModel):
@@ -17,12 +17,13 @@ class TestResult(BaseModel):
         results (str): Result of the test. Can be one of unset / failure / success.
         message (str, optional): Message to report after the test.
     """
+
     name: str
     test: str
-    result: str = 'unset'
+    result: str = "unset"
     messages: List[str] = []
 
-    @validator('result', allow_reuse=True)
+    @validator("result", allow_reuse=True)
     def name_must_be_in(cls, v: str) -> str:
         """
         Status validator
@@ -39,10 +40,10 @@ class TestResult(BaseModel):
             str: status value
         """
         if v not in RESULT_OPTIONS:
-            raise ValueError(f'must be one of {RESULT_OPTIONS}')
+            raise ValueError(f"must be one of {RESULT_OPTIONS}")
         return v
 
-    def is_success(self, message: str = '') -> bool:
+    def is_success(self, message: str = "") -> bool:
         """
         Helper to set status to success
 
@@ -52,9 +53,9 @@ class TestResult(BaseModel):
         Returns:
             bool: Always true
         """
-        return self._set_status('success', message)
+        return self._set_status("success", message)
 
-    def is_failure(self, message: str = '') -> bool:
+    def is_failure(self, message: str = "") -> bool:
         """
         Helper to set status to failure
 
@@ -64,9 +65,9 @@ class TestResult(BaseModel):
         Returns:
             bool: Always true
         """
-        return self._set_status('failure', message)
+        return self._set_status("failure", message)
 
-    def is_skipped(self, message: str = '') -> bool:
+    def is_skipped(self, message: str = "") -> bool:
         """
         Helper to set status to skipped
 
@@ -76,9 +77,9 @@ class TestResult(BaseModel):
         Returns:
             bool: Always true
         """
-        return self._set_status('skipped', message)
+        return self._set_status("skipped", message)
 
-    def is_error(self, message: str = '') -> bool:
+    def is_error(self, message: str = "") -> bool:
         """
         Helper to set status to error
 
@@ -88,9 +89,9 @@ class TestResult(BaseModel):
         Returns:
             bool: Always true
         """
-        return self._set_status('error', message)
+        return self._set_status("error", message)
 
-    def _set_status(self, status: str, message: str = '') -> bool:
+    def _set_status(self, status: str, message: str = "") -> bool:
         """
         Set status and insert optional message
 
@@ -102,7 +103,7 @@ class TestResult(BaseModel):
             bool: Always true
         """
         self.result = status
-        if message != '':
+        if message != "":
             self.messages.append(message)
         return True
 
@@ -114,6 +115,7 @@ class ListResult(BaseModel):
     Attributes:
         __root__ (List[TestResult]): A list of TestResult objects.
     """
+
     # pylint: disable=R0801
 
     __root__: List[TestResult] = []
@@ -128,6 +130,8 @@ class ListResult(BaseModel):
 
     def __iter__(self) -> Iterator[TestResult]:
         """Use custom iter method."""
+        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
+        # return type and are breaking Liskov Substitution Principle.
         return iter(self.__root__)
 
     def __getitem__(self, item: int) -> TestResult:

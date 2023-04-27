@@ -27,9 +27,7 @@ def setup_logging(level: str = "info") -> None:
     loglevel = getattr(logging, level.upper())
 
     FORMAT = "%(message)s"
-    logging.basicConfig(
-        level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
-    )
+    logging.basicConfig(level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
     logging.getLogger("anta.inventory").setLevel(loglevel)
     logging.getLogger("anta.result_manager").setLevel(loglevel)
 

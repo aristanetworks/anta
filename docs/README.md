@@ -40,14 +40,3 @@ Commands:
   get   Get data from/to ANTA
   nrfu  Run NRFU against inventory devices
 ```
-
-In addition, previous [scripts](./usage-check-devices/) are now marked as __deprecated__ and will be removed in a future release:
-
-- `check-devices.py` is an easy to use script to test your network with ANTA.
-- `collect-eos-commands.py` to collect commands output from devices
-- `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
-- `clear-counters.py` to clear counters on devices
-- `evpn-blacklist-recovery.py` to clear the list of MAC addresses which are blacklisted in EVPN
-- `create-devices-inventory-from-cvp.py`: Build inventory for scripts from Arista Cloudvision (CVP)
-
-> Most of these scripts use eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).

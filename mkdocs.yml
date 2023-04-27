@@ -167,7 +167,4 @@ nav:
     - Report Manager:
       - Report Manager module: api/report_manager.md
       - Report Manager models: api/report_manager_models.md
-  - Scripts (deprecated):
-    - Check Devices: usage-check-devices.md
-    - Other scripts: usage.md
   - Contributions: contribution.md

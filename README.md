@@ -4,6 +4,8 @@
 
 # Arista Network Test Automation (ANTA) Framework
 
+__WARNING:__ A work is in progress to make test definition easier and more scalable starting with PR#173. As it is a breaking change, it is highly recommended to use version published on Pypi until we complete the work.
+
 This repository is a Python package to automate tests on Arista devices.
 
 - The package name is ANTA, which stands for **Arista Network Test Automation**.
@@ -40,17 +42,6 @@ Commands:
 ```
 
 <img src="https://github.com/arista-netdevops-community/anta/raw/master/docs/imgs/anta-nrfu-table-group-by-test-output.png"></img>
-
-In addition, previous scripts are now marked as __deprecated__ and will be removed in a future release:
-
-- `check-devices.py` is an easy to use script to test your network with ANTA.
-- `collect-eos-commands.py` to collect commands output from devices
-- `collect-sheduled-show-tech.py` to collect the scheduled show tech-support files from devices
-- `clear-counters.py` to clear counters on devices
-- `evpn-blacklist-recovery.py` to clear the list of MAC addresses which are blacklisted in EVPN
-- `create-devices-inventory-from-cvp.py`: Build inventory for scripts from Arista Cloudvision (CVP)
-
-> Most of these scripts use eAPI (EOS API). You can find examples of EOS automation with eAPI in this [repository](https://github.com/arista-netdevops-community/arista_eos_automation_with_eAPI).
 
 # Documentation
 

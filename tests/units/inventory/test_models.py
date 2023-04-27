@@ -8,15 +8,13 @@ from pydantic import ValidationError
 
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, InventoryDevice, InventoryDevices
 from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
-from tests.data.utils import generate_test_ids_dict
+from tests.lib.utils import generate_test_ids_dict
 
 
 class Test_InventoryUnitModels:
     """Test components of AntaInventoryInput model."""
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict)
     def test_anta_inventory_host_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test host input model.
 
@@ -41,9 +39,7 @@ class Test_InventoryUnitModels:
         else:
             assert test_definition["input"] == str(host_inventory.host)
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict)
     def test_anta_inventory_host_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test host input model.
 
@@ -63,12 +59,8 @@ class Test_InventoryUnitModels:
         with pytest.raises(ValidationError):
             AntaInventoryHost(host=test_definition["input"])
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict
-    )
-    def test_anta_inventory_network_valid(
-        self, test_definition: Dict[str, Any]
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict)
+    def test_anta_inventory_network_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test Network input model with valid data.
 
         Test structure:
@@ -92,12 +84,8 @@ class Test_InventoryUnitModels:
         else:
             assert test_definition["input"] == str(network_inventory.network)
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict
-    )
-    def test_anta_inventory_network_invalid(
-        self, test_definition: Dict[str, Any]
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict)
+    def test_anta_inventory_network_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test Network input model with invalid data.
 
         Test structure:
@@ -120,9 +108,7 @@ class Test_InventoryUnitModels:
         else:
             assert False
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict)
     def test_anta_inventory_range_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test range input model.
 
@@ -151,12 +137,8 @@ class Test_InventoryUnitModels:
             assert test_definition["input"]["start"] == str(range_inventory.start)
             assert test_definition["input"]["end"] == str(range_inventory.end)
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict
-    )
-    def test_anta_inventory_range_invalid(
-        self, test_definition: Dict[str, Any]
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict)
+    def test_anta_inventory_range_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test range input model.
 
         Test structure:
@@ -191,13 +173,9 @@ class Test_AntaInventoryInputModel:
 
         inventory = AntaInventoryInput()
         logging.info("Inventory keys are: %s", str(inventory.dict().keys()))
-        assert all(
-            elem in inventory.dict().keys() for elem in ["hosts", "networks", "ranges"]
-        )
+        assert all(elem in inventory.dict().keys() for elem in ["hosts", "networks", "ranges"])
 
-    @pytest.mark.parametrize(
-        "inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict)
     def test_anta_inventory_intput_valid(self, inventory_def: Dict[str, Any]) -> None:
         """Test loading valid data to inventory class.
 
@@ -249,14 +227,9 @@ class Test_AntaInventoryInputModel:
             assert False
         else:
             logging.info("Checking if all root keys are correctly lodaded")
-            assert all(
-                elem in inventory.dict().keys()
-                for elem in inventory_def["input"].keys()
-            )
+            assert all(elem in inventory.dict().keys() for elem in inventory_def["input"].keys())
 
-    @pytest.mark.parametrize(
-        "inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict)
     def test_anta_inventory_intput_invalid(self, inventory_def: Dict[str, Any]) -> None:
         """Test loading invalid data to inventory class.
 
@@ -312,9 +285,7 @@ class Test_AntaInventoryInputModel:
 class Test_InventoryDeviceModel:
     """Unit test of InventoryDevice model."""
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_device_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test loading valid data to InventoryDevice class.
 
@@ -349,9 +320,7 @@ class Test_InventoryDeviceModel:
                 logging.warning("Error: %s", str(exc))
                 assert False
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_device_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test loading invalid data to InventoryDevice class.
 
@@ -387,9 +356,7 @@ class Test_InventoryDeviceModel:
             else:
                 assert False
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_len(self, test_definition: Dict[str, Any]) -> None:
         """Test len & append methods for InventoryDevice class.
 
@@ -421,9 +388,7 @@ class Test_InventoryDeviceModel:
             inventory_devices.append(InventoryDevice(**entry))
         assert len(test_definition["input"]) == len(inventory_devices)
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_get_item(self, test_definition: Dict[str, Any]) -> None:
         """Test __iter__ method for InventoryDevice class.
 
@@ -459,9 +424,7 @@ class Test_InventoryDeviceModel:
             logging.error("__getitem__ is not working as expected")
             assert False
 
-    @pytest.mark.parametrize(
-        "test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_iter(self, test_definition: Dict[str, Any]) -> None:
         """Test __getitem__ method for InventoryDevice class.
 
@@ -492,7 +455,7 @@ class Test_InventoryDeviceModel:
         for entry in test_definition["input"]:
             inventory_devices.append(InventoryDevice(**entry))
         for idx, device in enumerate(inventory_devices):
-            if str(device.host) == test_definition["input"][idx].get('host', 'localhost'):
+            if str(device.host) == test_definition["input"][idx].get("host", "localhost"):
                 logging.info("__iter__ function is valid")
             else:
                 logging.error("__iter__ is not working as expected")
