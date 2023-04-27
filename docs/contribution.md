@@ -1,18 +1,19 @@
 # How to contribute to ANTA
 
-!!! note "Work in Progress"
-    Still a work in progress, feel free to reach out to the team.
+Contribution model is based on a fork-model. Don't push to arista-netdevops-community/anta directly. Always do a branch in your repository and create a PR.
+
+To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
 
 ## Install repository
 
 Run these commands to install:
 
-- The package [ANTA](https://github.com/arista-netdevops-community/network-test-automation/blob/master/anta) and its dependencies
+- The package [ANTA](https://github.com/arista-netdevops-community/anta/blob/master/anta) and its dependencies
 - ANTA cli executable.
 
 ```shell
 # Clone repository
-git clone https://github.com/arista-netdevops-community/network-test-automation.git
+git clone https://github.com/arista-netdevops-community/anta.git
 cd network-test-automation
 
 # Install module in editable mode
@@ -27,7 +28,7 @@ $ pip list
 
 # Check version using cli
 $ anta --version
-anta, version 0.4.0
+anta, version 0.5.0
 ```
 
 ### Install development requirements
@@ -96,6 +97,81 @@ Success: no issues found in 6 source files
   congratulations :) (28.89 seconds)
 ```
 
+## Unit tests
+
+To keep high quality code, we require to provide a Pytest for every tests implemented in ANTA.
+
+All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>`. In this directory, you should have 3 files:
+
+- `__init__.py`: Just because it is used as a python module
+- `data.py`: Where all your parametrize go. So all your test information should be located here
+- `test_exc.py`: Pytest file with test definition.
+
+A pytest definition should be similar to this template:
+
+```python
+# -*- coding: utf-8 -*-
+
+"""
+Tests for anta.tests.hardware.py
+"""
+from __future__ import annotations
+
+import asyncio
+import logging
+from typing import Any
+from unittest.mock import MagicMock
+
+import pytest
+
+from anta.tests.hardware import VerifyAdverseDrops
+from tests.lib.utils import generate_test_ids_list
+
+from .data import INPUT_<TEST_NAME>
+
+@pytest.mark.parametrize("test_data", INPUT_<TEST_NAME>, ids=generate_test_ids_list(INPUT_<TEST_NAME>))
+def test_<TEST_CASE>(mocked_device: MagicMock, test_data: Any) -> None:
+    """Check <TEST_CASE>."""
+
+    logging.info(f"Mocked device is: {mocked_device.host}")
+    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
+
+    test = <TEST_CASE>(mocked_device, eos_data=test_data["eos_data"])
+    asyncio.run(test.test())
+
+    logging.debug(f"test result is: {test.result}")
+
+    assert str(test.result.name) == mocked_device.name
+    assert test.result.result == test_data["expected_result"]
+```
+
+The `mocked_device` object is a fixture defined in Pytest to represent an InventoryDevice and the parametrize `test_data` is a list of dictionries with structure:
+
+```json
+INPUT_RUNNING_CONFIG: List[Dict[str, Any]] = [
+// Test Case #1
+{
+    "name": "failure",
+    "eos_data": ["blah blah"],
+    "side_effect": None,
+    "expected_result": "failure",
+    "expected_messages": ["blah blah"]
+},
+// Test Case #2
+{
+  ...
+},
+]
+```
+
+Where we have:
+
+- `name`: Name of the test displayed by Pytest
+- `eos_data`: a list of data coming from EOS
+- `side_effect`: defined for futur use.
+- `expected_result`: Result we expect for this test
+- `expected_messages`: Optional messages we expect for the test.
+
 ## Git Pre-commit hook
 
 ```bash
@@ -121,4 +197,4 @@ test.py:1:0: W0611: Unused import foobaz (unused-import)
 ## Continuous Integration
 
 GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](.github/workflows).
-We can view the result [here](https://github.com/arista-netdevops-community/network-test-automation/actions)
+We can view the result [here](https://github.com/arista-netdevops-community/anta/actions)
