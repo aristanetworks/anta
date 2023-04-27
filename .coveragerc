@@ -27,6 +27,7 @@ exclude_lines =
     @(abc\.)?abstractmethod
 
 ignore_errors = True
+skip_empty = true
 
 [html]
 directory = coverage_html_report
