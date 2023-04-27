@@ -94,83 +94,135 @@ All tests return a TestResult structure with the following elements:
 
 ### Test structure
 
-All tests are based on this structure:
+All tests are built on a class named `AntaTest` which provides a complete toolset for a test:
+
+- Object creation
+- Test definition
+- Result definition
+- Abstracted method to collect data
+
+This approach means each time you create a test it will be based on this `AntaTest` class. Besides that, you will have to provide some elements:
+
+- `name`: Name of the test
+- `description`: A human readable description of your test
+- `categories`: a list of categories to sort test.
+- `commands`: a list of command to run. This list _must_ be a list of `AntaTestCommand` which is described in the next part of this document.
+
+Here is an example of a hardware test related to device temperature:
 
 ```python
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.test import anta_test
+from __future__ import annotations
 
-# Use the decorator that wraps the function and inject result argument
-@anta_test
-async def <test name>(device: InventoryDevice, result: TestResut, <list of args>, minimum: int) -> TestResult:
+import logging
+from typing import Any, Dict, List, Optional, cast
+
+from anta.models import AntaTest, AntaTestCommand
+
+
+class VerifyTemperature(AntaTest):
     """
-    dosctring desccription
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-        result (TestResult): TestResult instance for the test, injected
-                             automatically by the anta_test decorator.
-        minimum (int): example of test with int parameter
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "skipped" if the `minimum` parameter is  missing
-        * result = "success" if uptime is greater than minimun
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
+    Verifies device temparture is currently OK.
     """
-    # Test if options are valid (optional)
-    if not minimum:
-        result.is_skipped("verify_uptime was not run as no minimum were given")
-        return result
 
-    # Use await for the remote device call
-    response = await device.session.cli(command="show uptime", ofmt="json")
-    # Add a debug log entry
-    logger.debug(f'query result is: {response}')
+    name = "VerifyTemperature"
+    description = "Verifies device temparture is currently OK"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
 
-    response_data = response["upTime"]
-    # Check conditions on response_data
-    # ...
-
-    # Return data to caller
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyTemperature validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        if temperature_status == "temperatureOk":
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Device temperature is not OK, systemStatus: {temperature_status }")
 ```
 
-## Get test function documentation
+When you run the test, object will automatically call its `anta.models.AntaTest.collect()` method to get device output. This method does a loop to call `anta.inventory.models.InventoryDevice.collect()` methods which is in charge of managing device connection and how to get data.
 
-Open an interactive python shell and run following commands:
+??? info "run test offline"
+    You can also pass eos data directly to your test if you want to validate data collected in a different workflow. An example is provided below just for information:
+
+    ```python
+    test = VerifyTemperature(mocked_device, eos_data=test_data["eos_data"])
+    asyncio.run(test.test())
+    ```
+
+test function is always the same and __must__ be defined with the `@AntaTest.anta_test` decorator. This function takes at least one argument which is a `anta.inventory.models.InventoryDevice` object and can have multiple parameters depending of your test definition.
 
 ```python
->>> from anta.tests.system import *
+class VerifyTemperature(AntaTest):
+    ...
+    @AntaTest.anta_test
+    def test(self) -> None:
+        pass
 
->>> help(verify_ntp)
-
-Help on function verify_ntp in module anta.tests.system:
-
-verify_ntp(device: anta.inventory.models.InventoryDevice) -> anta.result_manager.models.TestResult
-    Verifies NTP is synchronised.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if synchronized with NTP server
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
->>> exit()
+class VerifyTransceiversManufacturers(AntaTest):
+    ...
+    @AntaTest.anta_test
+    def test(self, manufacturers: Optional[List[str]] = None) -> None:
+        pass
 ```
 
-If you need to expose test description, you can use this workaround:
+The test itself does not return any value, but the result is directly availble from your object and expose a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages.
 
 ```python
-from anta.tests.system import *
+from anta.tests.hardware import VerifyTemperature
 
-print(f'{verify_ntp.__doc__.split("\n")[0]}')
+test = VerifyTemperature(mocked_device, eos_data=test_data["eos_data"])
+asyncio.run(test.test())
+assert test.result.result == "success"
 ```
+
+### Commands for test
+
+To make it easier to get data, ANTA defines 2 different classes to manage commands to send to device:
+
+#### `anta.models.AntaTestCommand`
+
+Abstract a command with following information:
+
+- Command to run,
+- Ouput format expected
+- eAPI version
+- Output of the command
+
+Usage example:
+
+```python
+from anta.models import AntaTestCommand
+
+cmd1 = AntaTestCommand(command="show zerotouch")
+cmd2 = AntaTestCommand(command="show running-config diffs", ofmt="text")
+```
+
+#### `anta.models.AntaTestTemplate`
+
+Because some command can require more dynamic than just a command with no parameter provided by user, ANTA supports command template: you define a template in your test class and user provide parameters when creating test object.
+
+```python
+
+class RunArbitraryTemplateCommand(AntaTest):
+    """
+    Run an EOS command and return result
+    Based on AntaTest to build relevant output for pytest
+    """
+
+    name = "Run aributrary EOS command"
+    description = "To be used only with anta debug commands"
+    template = AntaTestTemplate(template="show interfaces {ifd}")
+    categories = ["debug"]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        errdisabled_interfaces = [interface for interface, value in response["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
+        ...
+
+
+params = [{"ifd": "Ethernet2"}, {"ifd": "Ethernet49/1"}]
+run_command1 = RunArbitraryTemplateCommand(device_anta, params)
+```
+
+In this example, test waits for interfaces to check from user setup and will only check for interfaces in `params`

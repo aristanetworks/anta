@@ -38,19 +38,19 @@ Example output
 
 ```bash
 $ anta nrfu text --tags pod1 --catalog nrfu/leaf.yml
-leaf2 :: verify_mlag_status :: SUCCESS
-leaf2 :: verify_mlag_interfaces :: SUCCESS
-leaf2 :: verify_mlag_config_sanity :: SUCCESS
-leaf2 :: verify_interface_utilization :: SUCCESS
-leaf2 :: verify_interface_errors :: SUCCESS
-leaf2 :: verify_interface_discards :: SUCCESS
-leaf2 :: verify_interface_errdisabled :: SUCCESS
-leaf2 :: verify_interfaces_status :: SUCCESS
-leaf2 :: verify_storm_control_drops :: SKIPPED (verify_storm_control_drops test is not supported on cEOSLab.)
-leaf2 :: verify_portchannels :: SUCCESS
-leaf2 :: verify_illegal_lacp :: SUCCESS
-leaf2 :: verify_loopback_count :: FAILURE (Found 3 Loopbacks when expecting 2)
-leaf2 :: verify_svi :: SUCCESS
+leaf2 :: VerifyMlagStatus :: SUCCESS
+leaf2 :: VerifyMlagInterface :: SUCCESS
+leaf2 :: VerifyMlagConfigSanity :: SUCCESS
+leaf2 :: VerifyInterfaceUtilization :: SUCCESS
+leaf2 :: VerifyInterfaceErrors :: SUCCESS
+leaf2 :: VerifyInterfaceDiscards :: SUCCESS
+leaf2 :: VerifyInterfaceErrDisabled :: SUCCESS
+leaf2 :: VerifyInterfaceStatus :: SUCCESS
+leaf2 :: VerifyStormControlDrop :: SKIPPED (VerifyStormControlDrop test is not supported on cEOSLab.)
+leaf2 :: VerifyPortChannel :: SUCCESS
+leaf2 :: VerifyIllegalLacp :: SUCCESS
+leaf2 :: VerifyLoopbackCount :: FAILURE (Found 3 Loopbacks when expecting 2)
+leaf2 :: VerifySvi :: SUCCESS
 [...]
 ```
 
@@ -80,13 +80,13 @@ $ anta check json -t pod1 -c nrfu/leaf.yml
 [
   {
     "name": "leaf2",
-    "test": "verify_mlag_status",
+    "test": "VerifyMlagStatus",
     "result": "success",
     "messages": "[]"
   },
   {
     "name": "leaf2",
-    "test": "verify_mlag_interfaces",
+    "test": "VerifyMlagInterface",
     "result": "success",
     "messages": "[]"
   }
