@@ -26,6 +26,7 @@ async def verify_banner_motd(device: InventoryDevice, result: TestResult, banner
         * result = "failure" otherwise
         * result = "error" if any exception is caught
     """
+    # TODO: Check to fit banner in results
     if not banner:
         result.is_skipped(
             "verify_banner_motd was not run as no banner was given"
@@ -72,6 +73,7 @@ async def verify_banner_login(device: InventoryDevice, result: TestResult, banne
         * result = "failure" otherwise
         * result = "error" if any exception is caught
     """
+    # TODO: Check to fit banner in results
     if not banner:
         result.is_skipped(
             "verify_banner_login was not run as no banner was given"

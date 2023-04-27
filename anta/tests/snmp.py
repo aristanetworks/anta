@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @anta_test
-async def verify_snmp_agent(device: InventoryDevice, result: TestResult, vrf: str = "default") -> TestResult:
+async def verify_snmp_status(device: InventoryDevice, result: TestResult, vrf: str = "default") -> TestResult:
     """
     Verifies if the SNMP agent is enabled.
 
@@ -28,7 +28,7 @@ async def verify_snmp_agent(device: InventoryDevice, result: TestResult, vrf: st
     """
     if not vrf:
         result.is_skipped(
-            "verify_snmp_agent did not run because vrf was not supplied"
+            "verify_snmp_status did not run because vrf was not supplied"
         )
         return result
 
