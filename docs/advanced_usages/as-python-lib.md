@@ -150,7 +150,7 @@ When you run the test, object will automatically call its `anta.models.AntaTest.
     asyncio.run(test.test())
     ```
 
-test function is always the same and __must__ be defined with the `@AntaTest.anta_test` decorator. This function takes at least one argument which is a `anta.inventory.models.InventoryDevice` object and can have multiple parameters depending of your test definition.
+test function is always the same and __must__ be defined with the `@AntaTest.anta_test` decorator. This function takes at least one argument which is a `anta.inventory.models.InventoryDevice` object and can have multiple additional parameters depending of your test definition. All parameters __must__ come with a default value and the test function __should__ validate the parameters values.
 
 ```python
 class VerifyTemperature(AntaTest):
