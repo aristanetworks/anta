@@ -175,7 +175,7 @@ Where we have:
 - `expected_messages`: Optional messages we expect for the test.
 
 !!! info "Use Anta CLI to get test data"
-    To complete this block, you can use [`anta debug`](cli/debug.md) commands to get `AntaTestCommand` output to use in your test.
+    To complete this block, you can use [`anta debug`](./cli/debug.md) commands to get `AntaTestCommand` output to use in your test.
 
 ## Git Pre-commit hook
 
@@ -199,7 +199,15 @@ test.py:1:0: E0401: Unable to import 'foobaz' (import-error)
 test.py:1:0: W0611: Unused import foobaz (unused-import)
 ```
 
+## Test your documentation
+
+Writing documentation is crucial but managing links can be cumbersome. To be sure there is no 404, you can use [`muffet`](https://github.com/raviqqe/muffet) with this cli:
+
+```bash
+muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
+```
+
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](.github/workflows).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/81ec7f90246879217d713c9873fa485ddcb0955e/.github/workflows).
 We can view the result [here](https://github.com/arista-netdevops-community/anta/actions)
