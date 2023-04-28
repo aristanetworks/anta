@@ -134,7 +134,7 @@ class VerifyInterfacesStatus(AntaTest):
     def test(self, minimum: int = -1) -> None:  # type: ignore[override]
         """Run VerifyInterfacesStatus validation"""
 
-        if minimum < 0:
+        if minimum is None or minimum < 0:
             self.result.is_skipped(f"VerifyInterfacesStatus was not run as an invalid minimum value was given {minimum}.")
             return
 
@@ -177,7 +177,7 @@ class VerifyStormControlDrops(AntaTest):
 
         storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
         for interface, interface_dict in command_output["interfaces"].items():
-            for traffic_type, traffic_type_dict in interface_dict["trafficTypes"]:
+            for traffic_type, traffic_type_dict in interface_dict["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
                     storm_controlled_interface_dict = storm_controlled_interfaces.setdefault(interface, {})
                     storm_controlled_interface_dict.update({traffic_type: traffic_type_dict["drop"]})
@@ -258,7 +258,7 @@ class VerifyLoopbackCount(AntaTest):
     def test(self, number: int = -1) -> None:
         """Run VerifyLoopbackCount validation"""
 
-        if number < 0:
+        if number is None or number < 0:
             self.result.is_skipped("VerifyLoopbackCount was not run as no number value was given.")
             return
 

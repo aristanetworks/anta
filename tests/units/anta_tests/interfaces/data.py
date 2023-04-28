@@ -191,27 +191,46 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
     },
 ]
 
-# TODO
-# INPUT_STORM_CONTROL_DROPS: List[Dict[str, Any]] = [
-#    {
-#        "name": "success",
-#        "eos_data": [
-# DATA
-#        ],
-#        "side_effect": [],
-#        "expected_result": "success",
-#        "expected_messages": [],
-#    },
-#    {
-#        "name": "failure",
-#        "eos_data": [
-# DATA
-#        ],
-#        "side_effect": [],
-#        "expected_result": "failure",
-#        "expected_messages": ["TODO"],
-#    },
-# ]
+INPUT_STORM_CONTROL_DROPS: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 0, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    }
+                },
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "aggregateTrafficClasses": {},
+                "interfaces": {
+                    "Ethernet1": {
+                        "trafficTypes": {"broadcast": {"level": 100, "thresholdType": "packetsPerSecond", "rate": 0, "drop": 666, "dormant": False}},
+                        "active": True,
+                        "reason": "",
+                        "errdisabled": False,
+                    }
+                },
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"],
+    },
+]
 
 INPUT_PORT_CHANNELS: List[Dict[str, Any]] = [
     {
@@ -259,5 +278,223 @@ INPUT_PORT_CHANNELS: List[Dict[str, Any]] = [
         "side_effect": [],
         "expected_result": "failure",
         "expected_messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"],
+    },
+]
+
+INPUT_ILLEGAL_LACP: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 0,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 666,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+    },
+]
+
+
+INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Loopback42": {
+                        "name": "Loopback42",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 0, "address": "0.0.0.0"}, "unnumberedIntf": "Vlan42"},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 65535,
+                    },
+                    "Loopback666": {
+                        "name": "Loopback666",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 65535,
+                    },
+                }
+            }
+        ],
+        "side_effect": 2,
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure-loopback-down",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Loopback42": {
+                        "name": "Loopback42",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 0, "address": "0.0.0.0"}, "unnumberedIntf": "Vlan42"},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 65535,
+                    },
+                    "Loopback666": {
+                        "name": "Loopback666",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "down",
+                        "mtu": 65535,
+                    },
+                }
+            }
+        ],
+        "side_effect": 2,
+        "expected_result": "failure",
+        "expected_messages": ["The following Loopbacks are not up: ['Loopback666']"],
+    },
+    {
+        "name": "failure-count-loopback",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Loopback42": {
+                        "name": "Loopback42",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 0, "address": "0.0.0.0"}, "unnumberedIntf": "Vlan42"},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 65535,
+                    },
+                }
+            }
+        ],
+        "side_effect": 2,
+        "expected_result": "failure",
+        "expected_messages": ["Found 1 Loopbacks when expecting 2"],
+    },
+    {
+        "name": "skipped",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Loopback42": {
+                        "name": "Loopback42",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 0, "address": "0.0.0.0"}, "unnumberedIntf": "Vlan42"},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 65535,
+                    },
+                }
+            }
+        ],
+        "side_effect": None,
+        "expected_result": "skipped",
+        "expected_messages": ["VerifyLoopbackCount was not run as no number value was given."],
+    },
+]
+
+
+INPUT_SVI: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Vlan42": {
+                        "name": "Vlan42",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 24, "address": "11.11.11.11"}},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                        "mtu": 1500,
+                    }
+                }
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Vlan42": {
+                        "name": "Vlan42",
+                        "interfaceStatus": "notconnect",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 24, "address": "11.11.11.11"}},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "mtu": 1500,
+                    }
+                }
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["The following SVIs are not up: ['Vlan42']"],
+    },
+]
+
+INPUT_SPANNING_TREE_BLOCKED_PORTS: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [{"spanningTreeInstances": {}}],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure",
+        "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet1", "Ethernet7", "Ethernet8"]}}}],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["The following ports are spanning-tree blocked {'MST0': {'spanningTreeBlockedPorts': ['Ethernet1', 'Ethernet7', 'Ethernet8']}}"],
     },
 ]
