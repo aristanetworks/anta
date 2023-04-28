@@ -75,9 +75,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://arista-netdevops-community.github.io/network-test-automation/"
-"Bug Tracker" = "https://github.com/arista-netdevops-community/network-test-automation/issues"
-Contributing = "https://github.com/arista-netdevops-community/network-test-automation/blob/master/CONTRIBUTING.md"
+Homepage = "https://www.anta.ninja"
+"Bug Tracker" = "https://github.com/arista-netdevops-community/anta/issues"
+Contributing = "https://github.com/arista-netdevops-community/anta/blob/master/CONTRIBUTING.md"
 
 [project.scripts]
 anta = "anta.cli.cli:cli"

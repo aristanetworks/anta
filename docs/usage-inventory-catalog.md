@@ -57,14 +57,14 @@ All tests are located under `anta.tests` module and are categorised per family (
 
 ```yaml
 anta.tests.software:
-  - verify_eos_version:
+  - VerifyEosVersion:
 ```
 
-It will load the test `verify_eos_version` located in `anta.tests.software`. But since this function has parameters, we will create a catalog with the following structure:
+It will load the test `VerifyEosVersion` located in `anta.tests.software`. But since this function has parameters, we will create a catalog with the following structure:
 
 ```yaml
 anta.tests.software:
-  - verify_eos_version:
+  - VerifyEosVersion:
       # List of allowed EOS versions.
       versions:
         - 4.25.4M
@@ -80,7 +80,7 @@ The following example gives a very minimal tests catalog you can use in almost a
 # Load anta.tests.software
 anta.tests.software:
   # Verifies the device is running one of the allowed EOS version.
-  - verify_eos_version:
+  - VerifyEosVersion:
       # List of allowed EOS versions.
       versions:
         - 4.25.4M
@@ -89,14 +89,14 @@ anta.tests.software:
 # Load anta.tests.system
 anta.tests.system:
   # Verifies the device uptime is higher than a value.
-  - verify_uptime:
+  - VerifyUptime:
       minimum: 1
 
 # Load anta.tests.configuration
 anta.tests.configuration:
   # Verifies ZeroTouch is disabled.
-  - verify_zerotouch:
-  - verify_running_config_diffs:
+  - VerifyZeroTouch:
+  - VerifyRunningConfigDiffs:
 ```
 
 ### Custom tests catalog
@@ -112,7 +112,7 @@ So for instance, it could be:
 
 ```yaml
 titom73.tests.system:
-  - verify_platform:
+  - VerifyPlatform:
     type: ['cEOS-LAB']
 ```
 

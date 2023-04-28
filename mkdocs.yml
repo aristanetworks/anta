@@ -139,6 +139,7 @@ nav:
     - Execute commands: cli/exec.md
     - Inventory from CVP: cli/inv-from-cvp.md
     - Get Inventory Information: cli/get-inventory-information.md
+    - Helpers: cli/debug.md
   - Advanced Usages:
     - Create your own Library: advanced_usages/custom-tests.md
     - ANTA as python lib: advanced_usages/as-python-lib.md
@@ -161,6 +162,7 @@ nav:
     - Inventory models:
       - User Inventory data model: api/inventory.models.input.md
       - Generated Inventory data model: api/inventory.models.md
+    - Test models: api/models.md
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
