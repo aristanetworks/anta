@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 """
 conftest.py - used to store anta specific fixtures used for tests
 """
 
-# import logging
+import logging
 
 # Load fixtures from dedicated file tests/lib/fixture.py
 pytest_plugins = [
@@ -12,5 +10,5 @@ pytest_plugins = [
 ]
 
 # Placeholder to disable logging of some external libs
-# for _ in ("boto", "elasticsearch", "urllib3"):
-#     logging.getLogger(_).setLevel(logging.CRITICAL)
+for _ in ("asyncio", "httpx"):
+    logging.getLogger(_).setLevel(logging.CRITICAL)
