@@ -16,7 +16,7 @@
         <link rel="prev" href="../api/report_manager_models/">
       
       
-      <link rel="icon" href="../docs/_media/favicon.ico">
+      <link rel="icon" href="../imgs/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
     
     
@@ -1142,6 +1142,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#test-your-documentation" class="md-nav__link">
+    Test your documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#continuous-integration" class="md-nav__link">
     Continuous Integration
   </a>
@@ -1237,6 +1244,13 @@
           <li class="md-nav__item">
   <a href="#git-pre-commit-hook" class="md-nav__link">
     Git Pre-commit hook
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-your-documentation" class="md-nav__link">
+    Test your documentation
   </a>
   
 </li>
@@ -1440,8 +1454,12 @@ test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 test.py:1:0: E0401: Unable to import &#39;foobaz&#39; (import-error)
 test.py:1:0: W0611: Unused import foobaz (unused-import)
 </code></pre></div>
+<h4 id="test-your-documentation">Test your documentation<a class="headerlink" href="#test-your-documentation" title="Permanent link">&para;</a></h4>
+<p>Writing documentation is crucial but managing links can be cumbersome. To be sure there is no 404, you can use <a href="https://github.com/raviqqe/muffet"><code>muffet</code></a> with this cli:</p>
+<div class="highlight"><pre><span></span><code>muffet<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>--color<span class="o">=</span>always<span class="w"> </span>http://127.0.0.1:8000<span class="w"> </span>-e<span class="w"> </span>fonts.gstatic.com
+</code></pre></div>
 <h4 id="continuous-integration">Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permanent link">&para;</a></h4>
-<p>GitHub actions is used to test git pushes and pull requests. The workflows are defined in this <a href=".github/workflows">directory</a>.
+<p>GitHub actions is used to test git pushes and pull requests. The workflows are defined in this <a href="https://github.com/arista-netdevops-community/anta/tree/81ec7f90246879217d713c9873fa485ddcb0955e/.github/workflows">directory</a>.
 We can view the result <a href="https://github.com/arista-netdevops-community/anta/actions">here</a></p>
 
   <hr>
