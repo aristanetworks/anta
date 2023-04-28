@@ -78,7 +78,8 @@ lint: commands[4]> pylint scripts
 -------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 7.15/10, +2.85)
 
-.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/\
+pyproject_api/_backend.py True setuptools.build_meta
   lint: OK (28.37=setup[7.03]+cmd[0.38,0.23,0.25,11.07,9.41] seconds)
   congratulations :) (28.45 seconds)
 ```
@@ -92,7 +93,8 @@ type: commands[0]> mypy --config-file=pyproject.toml anta
 Success: no issues found in 38 source files
 type: commands[1]> mypy --config-file=pyproject.toml scripts
 Success: no issues found in 6 source files
-.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/\
+pyproject_api/_backend.py True setuptools.build_meta
   type: OK (28.80=setup[24.54]+cmd[3.35,0.90] seconds)
   congratulations :) (28.89 seconds)
 ```
@@ -167,10 +169,13 @@ INPUT_RUNNING_CONFIG: List[Dict[str, Any]] = [
 Where we have:
 
 - `name`: Name of the test displayed by Pytest
-- `eos_data`: a list of data coming from EOS
+- `eos_data`: a list of data coming from EOS.
 - `side_effect`: defined for futur use.
 - `expected_result`: Result we expect for this test
 - `expected_messages`: Optional messages we expect for the test.
+
+!!! info "Use Anta CLI to get test data"
+    To complete this block, you can use [`anta debug`](cli/debug.md) commands to get `AntaTestCommand` output to use in your test.
 
 ## Git Pre-commit hook
 
