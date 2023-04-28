@@ -1,6 +1,6 @@
 # CLI overview
 
-ANTA comes with a CLI to execute all the supported actions. If you want to build your own tool, you should visit [this page](../usage-as-python-lib/) where we describe how to use ANTA as a python library
+ANTA comes with a CLI to execute all the supported actions. If you want to build your own tool, you should visit [this page](../advanced_usages/as-python-lib.md) where we describe how to use ANTA as a python library
 
 To invoke anta, open a shell window and then enter `anta`
 
@@ -62,5 +62,5 @@ You can enable shell completion for the anta cli:
     With bash, add the following line in your `~/.bashrc`:
 
     ```bash
-    eval "$(_ANTA_COMPLETE=bash_source anta)"
+    eval "$(_ANTA_COMPLETE=bash_source anta)" > /dev/null
     ```

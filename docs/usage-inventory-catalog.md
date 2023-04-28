@@ -117,4 +117,4 @@ titom73.tests.system:
 ```
 
 !!! tip "How to create custom tests"
-    To create your custom tests, you should refer to this [following documentation](usage-as-python-lib.md#test-structure)
+    To create your custom tests, you should refer to this [following documentation](advanced_usages/as-python-lib.md)

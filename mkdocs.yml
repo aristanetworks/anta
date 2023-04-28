@@ -28,7 +28,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
     logo: fontawesome/solid/network-wired
-  favicon: docs/_media/favicon.ico
+  favicon: imgs/favicon.ico
   font:
     code: Fira Mono
   language: en
