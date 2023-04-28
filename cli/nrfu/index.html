@@ -331,6 +331,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -473,6 +475,20 @@
     <li class="md-nav__item">
       <a href="../get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -846,6 +862,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -947,13 +965,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -963,13 +995,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1021,7 +1053,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1031,13 +1063,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1210,19 +1242,19 @@ Commands:
 </ul>
 <p>Example output</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--tags<span class="w"> </span>pod1<span class="w"> </span>--catalog<span class="w"> </span>nrfu/leaf.yml
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_status<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_interfaces<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_mlag_config_sanity<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_utilization<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_errors<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_discards<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_interface_errdisabled<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_interfaces_status<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_storm_control_drops<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>verify_storm_control_drops<span class="w"> </span><span class="nb">test</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>supported<span class="w"> </span>on<span class="w"> </span>cEOSLab.<span class="o">)</span>
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_portchannels<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_illegal_lacp<span class="w"> </span>::<span class="w"> </span>SUCCESS
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_loopback_count<span class="w"> </span>::<span class="w"> </span>FAILURE<span class="w"> </span><span class="o">(</span>Found<span class="w"> </span><span class="m">3</span><span class="w"> </span>Loopbacks<span class="w"> </span>when<span class="w"> </span>expecting<span class="w"> </span><span class="m">2</span><span class="o">)</span>
-leaf2<span class="w"> </span>::<span class="w"> </span>verify_svi<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagInterface<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagConfigSanity<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyInterfaceErrors<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyInterfaceDiscards<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyInterfaceErrDisabled<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyInterfaceStatus<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyStormControlDrop<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>VerifyStormControlDrop<span class="w"> </span><span class="nb">test</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>supported<span class="w"> </span>on<span class="w"> </span>cEOSLab.<span class="o">)</span>
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyPortChannel<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyIllegalLacp<span class="w"> </span>::<span class="w"> </span>SUCCESS
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifyLoopbackCount<span class="w"> </span>::<span class="w"> </span>FAILURE<span class="w"> </span><span class="o">(</span>Found<span class="w"> </span><span class="m">3</span><span class="w"> </span>Loopbacks<span class="w"> </span>when<span class="w"> </span>expecting<span class="w"> </span><span class="m">2</span><span class="o">)</span>
+leaf2<span class="w"> </span>::<span class="w"> </span>VerifySvi<span class="w"> </span>::<span class="w"> </span>SUCCESS
 <span class="o">[</span>...<span class="o">]</span>
 </code></pre></div>
 <h4 id="nrfu-with-table-report">NRFU with table report<a class="headerlink" href="#nrfu-with-table-report" title="Permanent link">&para;</a></h4>
@@ -1242,13 +1274,13 @@ leaf2<span class="w"> </span>::<span class="w"> </span>verify_svi<span class="w"
 <span class="o">[</span>
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_mlag_status&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyMlagStatus&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
 <span class="w">  </span><span class="o">}</span>,
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_mlag_interfaces&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyMlagInterface&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
 <span class="w">  </span><span class="o">}</span>
@@ -1260,7 +1292,7 @@ leaf2<span class="w"> </span>::<span class="w"> </span>verify_svi<span class="w"
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>

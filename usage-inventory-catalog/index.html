@@ -406,6 +406,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -484,6 +486,20 @@
     <li class="md-nav__item">
       <a href="../cli/get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -857,6 +873,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -958,13 +976,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -974,13 +1006,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1032,7 +1064,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1042,13 +1074,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1244,11 +1276,11 @@
 <h5 id="default-tests-catalog">Default tests catalog<a class="headerlink" href="#default-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>All tests are located under <code>anta.tests</code> module and are categorised per family (one submodule). So to run test for software version, you can do:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
 </code></pre></div>
-<p>It will load the test <code>verify_eos_version</code> located in <code>anta.tests.software</code>. But since this function has parameters, we will create a catalog with the following structure:</p>
+<p>It will load the test <code>VerifyEosVersion</code> located in <code>anta.tests.software</code>. But since this function has parameters, we will create a catalog with the following structure:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
@@ -1260,7 +1292,7 @@
 <span class="c1"># Load anta.tests.software</span>
 <span class="nt">anta.tests.software</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
@@ -1269,14 +1301,14 @@
 <span class="c1"># Load anta.tests.system</span>
 <span class="nt">anta.tests.system</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Verifies the device uptime is higher than a value.</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_uptime</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
 <span class="c1"># Load anta.tests.configuration</span>
 <span class="nt">anta.tests.configuration</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_zerotouch</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_running_config_diffs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
 <h5 id="custom-tests-catalog">Custom tests catalog<a class="headerlink" href="#custom-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>In case you want to leverage your own tests collection, you can use the following syntax:</p>
@@ -1285,7 +1317,7 @@
 </code></pre></div>
 <p>So for instance, it could be:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">titom73.tests.system</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_platform</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyPlatform</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;cEOS-LAB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <div class="admonition tip">
@@ -1298,7 +1330,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>

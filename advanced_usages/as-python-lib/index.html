@@ -329,6 +329,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -407,6 +409,20 @@
     <li class="md-nav__item">
       <a href="../../cli/get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -549,15 +565,35 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#commands-for-test" class="md-nav__link">
+    Commands for test
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands for test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antamodelsantatestcommand" class="md-nav__link">
+    anta.models.AntaTestCommand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#antamodelsantatesttemplate" class="md-nav__link">
+    anta.models.AntaTestTemplate
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get-test-function-documentation" class="md-nav__link">
-    Get test function documentation
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
@@ -873,6 +909,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -974,13 +1012,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -990,13 +1042,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1048,7 +1100,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1058,13 +1110,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1194,15 +1246,35 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#commands-for-test" class="md-nav__link">
+    Commands for test
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands for test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antamodelsantatestcommand" class="md-nav__link">
+    anta.models.AntaTestCommand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#antamodelsantatesttemplate" class="md-nav__link">
+    anta.models.AntaTestTemplate
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get-test-function-documentation" class="md-nav__link">
-    Get test function documentation
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
@@ -1305,84 +1377,123 @@
 <li><code>message</code>: Optional message returned by the test.</li>
 </ul>
 <h5 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h5>
-<p>All tests are based on this structure:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
-<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
-<span class="kn">from</span> <span class="nn">anta.test</span> <span class="kn">import</span> <span class="n">anta_test</span>
+<p>All tests are built on a class named <code>AntaTest</code> which provides a complete toolset for a test:</p>
+<ul>
+<li>Object creation</li>
+<li>Test definition</li>
+<li>TestResult definition</li>
+<li>Abstracted method to collect data</li>
+</ul>
+<p>This approach means each time you create a test it will be based on this <code>AntaTest</code> class. Besides that, you will have to provide some elements:</p>
+<ul>
+<li><code>name</code>: Name of the test</li>
+<li><code>description</code>: A human readable description of your test</li>
+<li><code>categories</code>: a list of categories to sort test.</li>
+<li><code>commands</code>: a list of command to run. This list <em>must</em> be a list of <code>AntaTestCommand</code> which is described in the next part of this document.</li>
+</ul>
+<p>Here is an example of a hardware test related to device temperature:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="c1"># Use the decorator that wraps the function and inject result argument</span>
-<span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="o">&lt;</span><span class="n">test</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResut</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">list</span> <span class="n">of</span> <span class="n">args</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
+
+
+<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    dosctring desccription</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">        result (TestResult): TestResult instance for the test, injected</span>
-<span class="sd">                             automatically by the anta_test decorator.</span>
-<span class="sd">        minimum (int): example of test with int parameter</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        TestResult instance with</span>
-<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">        * result = &quot;skipped&quot; if the `minimum` parameter is  missing</span>
-<span class="sd">        * result = &quot;success&quot; if uptime is greater than minimun</span>
-<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
-
+<span class="sd">    Verifies device temparture is currently OK.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Test if options are valid (optional)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_uptime was not run as no minimum were given&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
 
-    <span class="c1"># Use await for the remote device call</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show uptime&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-    <span class="c1"># Add a debug log entry</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTemperature&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;upTime&quot;</span><span class="p">]</span>
-    <span class="c1"># Check conditions on response_data</span>
-    <span class="c1"># ...</span>
-
-    <span class="c1"># Return data to caller</span>
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyTemperature validation&quot;&quot;&quot;</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">&quot;temperatureOk&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature is not OK, systemStatus: </span><span class="si">{</span><span class="n">temperature_status</span><span class="w"> </span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h4 id="get-test-function-documentation">Get test function documentation<a class="headerlink" href="#get-test-function-documentation" title="Permanent link">&para;</a></h4>
-<p>Open an interactive python shell and run following commands:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">help</span><span class="p">(</span><span class="n">verify_ntp</span><span class="p">)</span>
-
-<span class="n">Help</span> <span class="n">on</span> <span class="n">function</span> <span class="n">verify_ntp</span> <span class="ow">in</span> <span class="n">module</span> <span class="n">anta</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">system</span><span class="p">:</span>
-
-<span class="n">verify_ntp</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">anta</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">anta</span><span class="o">.</span><span class="n">result_manager</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">TestResult</span>
-    <span class="n">Verifies</span> <span class="n">NTP</span> <span class="ow">is</span> <span class="n">synchronised</span><span class="o">.</span>
-
-    <span class="n">Args</span><span class="p">:</span>
-        <span class="n">device</span> <span class="p">(</span><span class="n">InventoryDevice</span><span class="p">):</span> <span class="n">InventoryDevice</span> <span class="n">instance</span> <span class="n">containing</span> <span class="nb">all</span> <span class="n">devices</span> <span class="n">information</span><span class="o">.</span>
-
-    <span class="n">Returns</span><span class="p">:</span>
-        <span class="n">TestResult</span> <span class="n">instance</span> <span class="k">with</span>
-        <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;unset&quot;</span> <span class="k">if</span> <span class="n">the</span> <span class="n">test</span> <span class="n">has</span> <span class="ow">not</span> <span class="n">been</span> <span class="n">executed</span>
-        <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span> <span class="k">if</span> <span class="n">synchronized</span> <span class="k">with</span> <span class="n">NTP</span> <span class="n">server</span>
-        <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;failure&quot;</span> <span class="n">otherwise</span><span class="o">.</span>
-        <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span> <span class="k">if</span> <span class="nb">any</span> <span class="n">exception</span> <span class="ow">is</span> <span class="n">caught</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">exit</span><span class="p">()</span>
+<p>When you run the test, object will automatically call its <code>anta.models.AntaTest.collect()</code> method to get device output. This method does a loop to call <code>anta.inventory.models.InventoryDevice.collect()</code> methods which is in charge of managing device connection and how to get data.</p>
+<details class="info">
+<summary>run test offline</summary>
+<p>You can also pass eos data directly to your test if you want to validate data collected in a different workflow. An example is provided below just for information:</p>
+<div class="highlight"><pre><span></span><code><span class="n">test</span> <span class="o">=</span> <span class="n">VerifyTemperature</span><span class="p">(</span><span class="n">mocked_device</span><span class="p">,</span> <span class="n">eos_data</span><span class="o">=</span><span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;eos_data&quot;</span><span class="p">])</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
 </code></pre></div>
-<p>If you need to expose test description, you can use this workaround:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="o">*</span>
+</details>
+<p>test function is always the same and <strong>must</strong> be defined with the <code>@AntaTest.anta_test</code> decorator. This function takes at least one argument which is a <code>anta.inventory.models.InventoryDevice</code> object and can have multiple additional parameters depending of your test definition. All parameters <strong>must</strong> come with a default value and the test function <strong>should</strong> validate the parameters values.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">verify_ntp</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manufacturers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 </code></pre></div>
+<p>The test itself does not return any value, but the result is directly availble from your object and exposes a <code>anta.result_manager.models.TestResult</code> object with result, name of the test and optional messages.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.tests.hardware</span> <span class="kn">import</span> <span class="n">VerifyTemperature</span>
+
+<span class="n">test</span> <span class="o">=</span> <span class="n">VerifyTemperature</span><span class="p">(</span><span class="n">mocked_device</span><span class="p">,</span> <span class="n">eos_data</span><span class="o">=</span><span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;eos_data&quot;</span><span class="p">])</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
+<span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span>
+</code></pre></div>
+<h5 id="commands-for-test">Commands for test<a class="headerlink" href="#commands-for-test" title="Permanent link">&para;</a></h5>
+<p>To make it easier to get data, ANTA defines 2 different classes to manage commands to send to device:</p>
+<h6 id="antamodelsantatestcommand"><code>anta.models.AntaTestCommand</code><a class="headerlink" href="#antamodelsantatestcommand" title="Permanent link">&para;</a></h6>
+<p>Abstract a command with following information:</p>
+<ul>
+<li>Command to run,</li>
+<li>Ouput format expected</li>
+<li>eAPI version</li>
+<li>Output of the command</li>
+</ul>
+<p>Usage example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTestCommand</span>
+
+<span class="n">cmd1</span> <span class="o">=</span> <span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show zerotouch&quot;</span><span class="p">)</span>
+<span class="n">cmd2</span> <span class="o">=</span> <span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show running-config diffs&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="antamodelsantatesttemplate"><code>anta.models.AntaTestTemplate</code><a class="headerlink" href="#antamodelsantatesttemplate" title="Permanent link">&para;</a></h6>
+<p>Because some command can require more dynamic than just a command with no parameter provided by user, ANTA supports command template: you define a template in your test class and user provide parameters when creating test object.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunArbitraryTemplateCommand</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run an EOS command and return result</span>
+<span class="sd">    Based on AntaTest to build relevant output for pytest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Run aributrary EOS command&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;To be used only with anta debug commands&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTestTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show interfaces </span><span class="si">{ifd}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errdisabled_interfaces</span> <span class="o">=</span> <span class="p">[</span><span class="n">interface</span> <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceStatuses&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;linkStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;errdisabled&quot;</span><span class="p">]</span>
+        <span class="o">...</span>
+
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;ifd&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet2&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;ifd&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet49/1&quot;</span><span class="p">}]</span>
+<span class="n">run_command1</span> <span class="o">=</span> <span class="n">RunArbitraryTemplateCommand</span><span class="p">(</span><span class="n">device_anta</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div>
+<p>In this example, test waits for interfaces to check from user setup and will only check for interfaces in <code>params</code></p>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>

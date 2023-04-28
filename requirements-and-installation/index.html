@@ -420,6 +420,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -498,6 +500,20 @@
     <li class="md-nav__item">
       <a href="../cli/get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -871,6 +887,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -972,13 +990,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -988,13 +1020,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1046,7 +1078,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1056,13 +1088,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1237,12 +1269,12 @@ Python<span class="w"> </span><span class="m">3</span>.9.9
 </code></pre></div>
 <h4 id="install-anta-package">Install ANTA package<a class="headerlink" href="#install-anta-package" title="Permanent link">&para;</a></h4>
 <p>This installation will deploy tests collection, scripts and all their Python requirements.</p>
-<p>The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the <a href="https://github.com/arista-netdevops-community/network-test-automation/blob/master/pyproject.toml#L20">pyproject.toml</a> file</p>
+<p>The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the <a href="https://github.com/arista-netdevops-community/anta/blob/master/pyproject.toml#L20">pyproject.toml</a> file</p>
 <h5 id="install-from-pypi-server">Install from Pypi server<a class="headerlink" href="#install-from-pypi-server" title="Permanent link">&para;</a></h5>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>anta
 </code></pre></div>
 <h5 id="install-anta-from-github">Install ANTA from github<a class="headerlink" href="#install-anta-from-github" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/arista-netdevops-community/network-test-automation.git
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/arista-netdevops-community/anta.git
 </code></pre></div>
 <p>You can even specify the branch, tag or commit:</p>
 <ul>
@@ -1262,7 +1294,7 @@ which<span class="w"> </span>anta
 
 <span class="c1"># Chck ANTA version</span>
 anta<span class="w"> </span>--version
-anta,<span class="w"> </span>version<span class="w"> </span><span class="m">0</span>.4.0
+anta,<span class="w"> </span>version<span class="w"> </span><span class="m">0</span>.5.0
 </code></pre></div>
 <h4 id="eos-requirements">EOS Requirements<a class="headerlink" href="#eos-requirements" title="Permanent link">&para;</a></h4>
 <p>To get ANTA working, your Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):</p>
@@ -1299,7 +1331,7 @@ show management api http-commands
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>

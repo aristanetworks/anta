@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../../cli/get-inventory-information/">
+        <link rel="prev" href="../../cli/debug/">
       
       
         <link rel="next" href="../as-python-lib/">
@@ -329,6 +329,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -407,6 +409,20 @@
     <li class="md-nav__item">
       <a href="../../cli/get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -549,15 +565,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-definition" class="md-nav__link">
-    Function definition
+  <a href="#create-test-class" class="md-nav__link">
+    Create Test Class
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-documentation" class="md-nav__link">
-    Function documentation
+  <a href="#function-definition" class="md-nav__link">
+    Function definition
   </a>
   
 </li>
@@ -914,6 +930,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -1015,13 +1033,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -1031,13 +1063,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1089,7 +1121,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1099,13 +1131,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1249,15 +1281,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-definition" class="md-nav__link">
-    Function definition
+  <a href="#create-test-class" class="md-nav__link">
+    Create Test Class
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-documentation" class="md-nav__link">
-    Function documentation
+  <a href="#function-definition" class="md-nav__link">
+    Function definition
   </a>
   
 </li>
@@ -1314,67 +1346,61 @@
   <h1>Create your own Library</h1>
 
 <h3 id="create-your-own-custom-tests">Create your own custom tests<a class="headerlink" href="#create-your-own-custom-tests" title="Permanent link">&para;</a></h3>
+<div class="admonition info">
+<p>This documentation applies for both create tests in ANTA package or your custom package.</p>
+</div>
 <p>ANTA is not only a CLI with a collection of built-in tests, it is also a framework you can extend by building your own tests library.</p>
 <p>For that, you need to create your own Python package as described in this <a href="https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/">hitchhiker&rsquo;s guide</a> to package Python code. We assume it is well known and we won&rsquo;t focus on this aspect. Thus, your package must be impartable by ANTA hence available in <code>$PYTHONPATH</code> by any method.</p>
 <h4 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h4>
-<p>To make it easier for everyone, it is recommended to apply always same structure to all code:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Optional for easy coding</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<p>ANTA comes with a class to use to build test. This class provides all the toolset required to define, collect and test data. The next code is an example of how to use ANTA to build a test</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="c1"># Import ANTA components</span>
-<span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
-<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
-<span class="kn">from</span> <span class="nn">anta.tests</span> <span class="kn">import</span> <span class="n">anta_test</span>
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
 
-<span class="c1"># Instantiate logger</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="c1"># define a function with at least one decorator to mark as a test</span>
-<span class="nd">@anta</span><span class="o">.</span><span class="n">test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
-    <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies device temparture is currently OK.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Create docstring</span>
-    <span class="c1"># [...]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTemperature&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="c1"># Create your own logic</span>
-
-    <span class="c1"># Check if test option is correct</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_dynamic_vlan was run without minimum value set&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="c1"># Send command to device</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Optionaly log response for futur debug</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Do your test: In this example we count number of vlans with field dynamic set to true</span>
-    <span class="n">num_dyn_vlan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">vlan</span> <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;vlans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;dynamic&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">num_dyn_vlan</span> <span class="o">&gt;=</span> <span class="n">minimum</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has </span><span class="si">{</span><span class="n">num_dyn_vlan</span><span class="si">}</span><span class="s2"> configured, we expect at least </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyTemperature validation&quot;&quot;&quot;</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">&quot;temperatureOk&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature is not OK, systemStatus: </span><span class="si">{</span><span class="n">temperature_status</span><span class="w"> </span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h4 id="python-imports">Python imports<a class="headerlink" href="#python-imports" title="Permanent link">&para;</a></h4>
 <h5 id="mandatory-imports">Mandatory imports<a class="headerlink" href="#mandatory-imports" title="Permanent link">&para;</a></h5>
 <p>The following elements have to be imported:</p>
 <ul>
 <li><a href="../../api/inventory.models/"><code>InventoryDevice</code></a>: Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.</li>
-<li><a href="../../api/result_manager_models/"><code>TestResult</code></a>: Structure used to facilitate test result. It provides helpers like <code>is_success</code>, <code>is_failure</code>, <code>is_skipped</code>.</li>
-<li><code>anta_test</code>: A python decorator to mark function as a test and inject all the base requirements to run test and capture Exceptions.</li>
+<li><code>anta.models.AntaTest</code>: class that gives you all the tooling for your test</li>
+<li><code>anta.models.AntaTestCommand</code>: A class to abstract an Arista EOS command</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.inventory.models</span> <span class="kn">import</span> <span class="n">InventoryDevice</span>
-<span class="kn">from</span> <span class="nn">anta.result_manager.models</span> <span class="kn">import</span> <span class="n">TestResult</span>
-<span class="kn">from</span> <span class="nn">anta.tests</span> <span class="kn">import</span> <span class="n">anta_test</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
 
 
-<span class="nd">@anta</span><span class="o">.</span><span class="n">test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies device temparture is currently OK.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 </code></pre></div>
 <h5 id="optional-anta-imports">Optional ANTA imports<a class="headerlink" href="#optional-anta-imports" title="Permanent link">&para;</a></h5>
 <p>Besides these 3 main imports, anta provides some additional and optional decorators:</p>
@@ -1385,9 +1411,12 @@
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.decorators</span> <span class="kn">import</span> <span class="n">skip_on_platforms</span>
 
 
-<span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
-<span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_unified_forwarding_table_mode</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manufacturers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 </code></pre></div>
 <h5 id="optional-python-imports">Optional python imports<a class="headerlink" href="#optional-python-imports" title="Permanent link">&para;</a></h5>
 <p>And finally, you are free to import any other python library you may want to use in your package.</p>
@@ -1395,72 +1424,89 @@
 <p class="admonition-title">logging function</p>
 <p>It is strongly recommended to import <code>logging</code> to help development process and being able to log some outputs usefull for test development.</p>
 </div>
+<p>If your test development is part of a pull request for ANTA, it is stringly advised to also import <code>typing</code> since our code testing requires to be compatible with Mypy.</p>
 <h4 id="code-for-a-test">Code for a test<a class="headerlink" href="#code-for-a-test" title="Permanent link">&para;</a></h4>
+<p>A test is a python class where a test function is defined and will be run by the framework. So first you need to declare your class and then define your test function.</p>
+<h5 id="create-test-class">Create Test Class<a class="headerlink" href="#create-test-class" title="Permanent link">&para;</a></h5>
+<p>To create class, you have to provide 4 elements:</p>
+<p><strong>Metadata information</strong></p>
+<ul>
+<li><code>name</code>: Name of the test</li>
+<li><code>description</code>: A human readable description of your test</li>
+<li><code>categories</code>: a list of categories to sort test.</li>
+</ul>
+<p><strong>Commands to run</strong></p>
+<ul>
+<li><code>commands</code>: a list of command to run. This list <em>must</em> be a list of <code>AntaTestCommand</code> which is described in the next part of this document.</li>
+<li><code>template</code>: a command template (<code>AntaTestTemplate</code>) to run where variables are provided during test execution.</li>
+</ul>
+<div class="admonition warning">
+<p>It is either <code>commands</code> or <code>template</code>. But not both.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
+
+
+<span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &lt;a docstring description of your test&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;YourTestName&quot;</span>                                           <span class="c1"># should be your class name</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&lt;test description in human reading format&gt;&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;a list of arbitrary categories&gt;&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaTestCommand</span><span class="p">(</span>
+            <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&lt;eos command to run&gt;&quot;</span><span class="p">,</span>
+            <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;&lt;command format output&gt;&quot;</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;&lt;eapi version to use&gt;&quot;</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+</code></pre></div>
+<p>This class will inherit methods from AntaTest and specfically the <code>__init__(self,...)</code> method to build your object. This function takes following arguments when you instantiate an object:</p>
+<ul>
+<li><code>device (InventoryDevice)</code>: Device object where to test happens.</li>
+<li><code>template_params</code>: If template is used in the test definition, then we provide data to build list of commands.</li>
+<li><code>eos_data</code>: Potential EOS data to pass if we don&rsquo;t want to connect to device to grab data.</li>
+<li><code>labels</code>: a list of labels. It is not used yet and it is for futur use.</li>
+</ul>
 <h5 id="function-definition">Function definition<a class="headerlink" href="#function-definition" title="Permanent link">&para;</a></h5>
 <p>The code here can be very simple as well as very complex and will depend of what you expect to do. But in all situation, the same baseline can be leverage:</p>
-<ul>
-<li>Function parameters:<ul>
-<li><code>async</code> in front of the function the function signature defines it as a coroutine and enable parallel execution.</li>
-<li><code>device: InventoryDevice</code>: Device information (mandatory)</li>
-<li><code>result: TestResult</code>: A result structure to save test (mandatory)</li>
-<li>Any option your test may require. In our example, we use <code>minimum: Optional[int]</code></li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">verify_dynamic_vlan</span><span class="p">(</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
-    <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span>
-    <span class="n">minimum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 </code></pre></div>
-<h5 id="function-documentation">Function documentation<a class="headerlink" href="#function-documentation" title="Permanent link">&para;</a></h5>
-<p>We recommend to add a docstring to document your test. As an example, the following syntax rendering for documentation is working pretty well:</p>
-<div class="admonition info">
-<p class="admonition-title">docstring is optional</p>
-<p>Of course this section is optional, but we strongly believe in documentation to make the code easier to maintain over time.</p>
-</div>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&lt; Short description &gt;</span>
-
-<span class="sd">&lt; Optional long description &gt;</span>
-
-<span class="sd">&lt; A list of inputs &gt;</span>
-<span class="sd">Args:</span>
-<span class="sd">    device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">    minimum (int): Minimum number of dynamic vlans expected.</span>
-
-<span class="sd">&lt; Description of returned values in TestResult object &gt;</span>
-<span class="sd">Returns:</span>
-<span class="sd">    TestResult instance with</span>
-<span class="sd">    * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">    * result = &quot;skipped&quot; if the `minimum` parameter is  missing</span>
-<span class="sd">    * result = &quot;success&quot; if device has more than minimum dynamic vlans</span>
-<span class="sd">    * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">    * result = &quot;error&quot; if any exception is caught</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<p>If you want to support option in your test, just declare your options in your test method:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_param1</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
 </code></pre></div>
-<p>You can see output using <a href="https://mkdocstrings.github.io/python/">mkdocstring-python</a> here: <a href="../../api/tests.software/">tests.software.md</a></p>
 <h5 id="check-inputs">Check inputs<a class="headerlink" href="#check-inputs" title="Permanent link">&para;</a></h5>
 <p>If your test has some user inputs, you first have to validate the supplied values are valid. If it is not valid, we expect <code>TestResult</code> to return <code>skipped</code> with a custom message.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Check if test option is correct</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">minimum</span><span class="p">:</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_dynamic_vlan was run without minimum value set&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_dynamic_vlan was run without minimum value set&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="o">...</span>
 </code></pre></div>
 <h5 id="implement-your-logic">Implement your logic<a class="headerlink" href="#implement-your-logic" title="Permanent link">&para;</a></h5>
 <p>Here you implement your own logic. In general, the first action is to send command to devices and capture its response.</p>
 <p>In the example below, we request the list of vlans configured on device and then count all the vlans marked as dynamic</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Send command to device</span>
-<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Grab data for your command</span>
+<span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
 <span class="c1"># Do your test: In this example we count number of vlans with field dynamic set to true</span>
-<span class="n">num_dyn_vlan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">vlan</span> <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;vlans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;dynamic&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">])</span>
+<span class="n">num_dyn_vlan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">vlan</span> <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;vlans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;dynamic&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">])</span>
 <span class="k">if</span> <span class="n">num_dyn_vlan</span> <span class="o">&gt;=</span> <span class="n">minimum</span><span class="p">:</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has </span><span class="si">{</span><span class="n">num_dyn_vlan</span><span class="si">}</span><span class="s2"> configured, we expect at least </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="k">return</span> <span class="n">result</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has </span><span class="si">{</span><span class="n">num_dyn_vlan</span><span class="si">}</span><span class="s2"> configured, we expect at least </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>As you can see there is no error management to do in your code. Everything is packaged in <code>anta_tests</code> and below is a simple example of error captured with an incorrect JSON key in the code above:</p>
 <div class="highlight"><pre><span></span><code>ERROR<span class="w">    </span>Exception<span class="w"> </span>raised<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>verify_dynamic_vlan<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>device<span class="w"> </span><span class="m">192</span>.168.0.10<span class="o">)</span><span class="w"> </span>-<span class="w"> </span>KeyError<span class="w"> </span><span class="o">(</span><span class="s1">&#39;vlans&#39;</span><span class="o">)</span>
@@ -1472,10 +1518,13 @@
 </code></pre></div></p>
 </div>
 <h4 id="create-your-catalog">Create your catalog<a class="headerlink" href="#create-your-catalog" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p>This section is required only if you are not merging your development into ANTA. Otherwise, just follow <a href="../../contribution/">contribution guide</a>.</p>
+</div>
 <p>It is very similar to what is documented in <a href="../../usage-inventory-catalog/">catalog section</a> but you have to use your own package name.</p>
 <p>Let say the custom catalog is <code>anta_titom73</code> and the test is configured in <code>anta_titom73.dc_project</code>, the test catalog would look like:</p>
 <p><div class="highlight"><pre><span></span><code><span class="nt">anta_titom73.dc_project</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_dynamic_vlan</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyFeatureX</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 </code></pre></div>
 And now you can run your NRFU tests with the CLI:</p>
@@ -1497,7 +1546,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>

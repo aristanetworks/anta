@@ -434,6 +434,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -512,6 +514,20 @@
     <li class="md-nav__item">
       <a href="../cli/get-inventory-information/" class="md-nav__link">
         Get Inventory Information
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/debug/" class="md-nav__link">
+        Helpers
       </a>
     </li>
   
@@ -885,6 +901,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -986,13 +1004,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../api/models/" class="md-nav__link">
+        Test models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
       
       
         
@@ -1002,13 +1034,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
           Result Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_4">
           <span class="md-nav__icon md-icon"></span>
           Result Manager
         </label>
@@ -1060,7 +1092,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
       
       
         
@@ -1070,13 +1102,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
           Report Manager
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_5">
           <span class="md-nav__icon md-icon"></span>
           Report Manager
         </label>
@@ -1324,29 +1356,29 @@ management api http-commands
 <p>Here is an example for basic things:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Load anta.tests.software</span>
 <span class="nt">anta.tests.software</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_eos_version</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span><span class="w"> </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;4.28.3M-28837868.4283M</span><span class="nv"> </span><span class="s">(engineering</span><span class="nv"> </span><span class="s">build)&#39;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_terminattr_version</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyTerminAttrVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.22.1</span>
 
 <span class="nt">anta.tests.system</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_uptime</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device uptime is higher than a value.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies the device uptime is higher than a value.</span>
 <span class="w">      </span><span class="nt">minimum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_ntp</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_syslog</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyNtp</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySyslog</span><span class="p">:</span>
 
 <span class="nt">anta.tests.mlag</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_mlag_status</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_mlag_interfaces</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_mlag_config_sanity</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagStatus</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagInterface</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMlagConfigSanity</span><span class="p">:</span>
 
 <span class="nt">anta.tests.configuration</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_zerotouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify_running_config_diffs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
 <h4 id="test-your-network">Test your network<a class="headerlink" href="#test-your-network" title="Permanent link">&para;</a></h4>
 <p>To test EOS devices, this package comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.</p>
@@ -1410,11 +1442,11 @@ Commands:
 ┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃<span class="w"> </span>Device<span class="w"> </span>IP<span class="w"> </span>┃<span class="w"> </span>Test<span class="w"> </span>Name<span class="w">                          </span>┃<span class="w"> </span>Test<span class="w"> </span>Status<span class="w"> </span>┃<span class="w"> </span>Message<span class="o">(</span>s<span class="o">)</span><span class="w">                                                     </span>┃
 ┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>verify_eos_version<span class="w">                 </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
-│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>verify_terminattr_version<span class="w">          </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
-│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>verify_uptime<span class="w">                      </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
-│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>verify_ntp<span class="w">                         </span>│<span class="w"> </span>failure<span class="w">     </span>│<span class="w"> </span>not<span class="w"> </span>sync<span class="w"> </span>with<span class="w"> </span>NTP<span class="w"> </span>server<span class="w"> </span><span class="o">(</span>NTP<span class="w"> </span>is<span class="w"> </span>disabled.<span class="o">)</span><span class="w">                    </span>│
-│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>verify_syslog<span class="w">                      </span>│<span class="w"> </span>failure<span class="w">     </span>│<span class="w"> </span>Device<span class="w"> </span>has<span class="w"> </span>some<span class="w"> </span>log<span class="w"> </span>messages<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>severity<span class="w"> </span>WARNING<span class="w"> </span>or<span class="w"> </span>higher<span class="w"> </span>│
+│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>VerifyEosVersion<span class="w">                   </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
+│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>VerifyTerminAttrVersion<span class="w">            </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
+│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>VerifyUptime<span class="w">                       </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">                                                                </span>│
+│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>VerifyNtp<span class="w">                          </span>│<span class="w"> </span>failure<span class="w">     </span>│<span class="w"> </span>not<span class="w"> </span>sync<span class="w"> </span>with<span class="w"> </span>NTP<span class="w"> </span>server<span class="w"> </span><span class="o">(</span>NTP<span class="w"> </span>is<span class="w"> </span>disabled.<span class="o">)</span><span class="w">                    </span>│
+│<span class="w"> </span>leaf01<span class="w">    </span>│<span class="w"> </span>VerifySyslog<span class="w">                       </span>│<span class="w"> </span>failure<span class="w">     </span>│<span class="w"> </span>Device<span class="w"> </span>has<span class="w"> </span>some<span class="w"> </span>log<span class="w"> </span>messages<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>severity<span class="w"> </span>WARNING<span class="w"> </span>or<span class="w"> </span>higher<span class="w"> </span>│
 └───────────┴────────────────────────────────────┴─────────────┴────────────────────────────────────────────────────────────────┘
 </code></pre></div>
 <h5 id="report-in-text-mode">Report in text mode<a class="headerlink" href="#report-in-text-mode" title="Permanent link">&para;</a></h5>
@@ -1425,22 +1457,11 @@ Commands:
     --inventory .personal/inventory_atd.yml \
     nrfu text --tags leaf --catalog .personal/tests-bases.yml
 
-leaf01 :: verify_eos_version :: SUCCESS
-leaf01 :: verify_terminattr_version :: SUCCESS
-leaf01 :: verify_uptime :: SUCCESS
-leaf01 :: verify_ntp :: FAILURE (not sync with NTP server (NTP is disabled.))
-leaf01 :: verify_syslog :: FAILURE (Device has some log messages with a severity WARNING or higher)
-leaf01 :: verify_mlag_status :: SUCCESS
-leaf01 :: verify_mlag_interfaces :: SUCCESS
-leaf01 :: verify_mlag_config_sanity :: SUCCESS
-leaf01 :: verify_zerotouch :: SUCCESS
-leaf01 :: verify_running_config_diffs :: SUCCESS
-leaf01 :: verify_interface_utilization :: SUCCESS
-leaf01 :: verify_interface_errors :: SUCCESS
-leaf01 :: verify_interface_discards :: SUCCESS
-leaf01 :: verify_interface_errdisabled :: SUCCESS
-leaf01 :: verify_interfaces_status :: SUCCESS
-leaf01 :: verify_storm_control_drops :: SKIPPED (verify_storm_control_drops test is not supported on cEOSLab.)
+leaf01 :: VerifyEosVersion :: SUCCESS
+leaf01 :: VerifyTerminAttrVersion :: SUCCESS
+leaf01 :: VerifyUptime :: SUCCESS
+leaf01 :: VerifyNtp :: FAILURE (not sync with NTP server (NTP is disabled.))
+leaf01 :: VerifySyslog :: FAILURE (Device has some log messages with a severity WARNING or higher)
 ...
 </code></pre></div>
 <h5 id="report-per-host">Report per host<a class="headerlink" href="#report-per-host" title="Permanent link">&para;</a></h5>
@@ -1457,13 +1478,13 @@ leaf01 :: verify_storm_control_drops :: SKIPPED (verify_storm_control_drops test
 <span class="o">[</span>
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_eos_version&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyEosVersion&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
 <span class="w">  </span><span class="o">}</span>,
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_terminattr_version&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyTerminAttrVersion&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
 <span class="w">  </span><span class="o">}</span>,
@@ -1477,7 +1498,7 @@ leaf01 :: verify_storm_control_drops :: SKIPPED (verify_storm_control_drops test
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 28, 2023</span>
       
     
   </small>
