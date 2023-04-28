@@ -114,8 +114,10 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
         errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
 
-        if not errdisabled_interfaces:
+        if errdisabled_interfaces:
             self.result.is_failure(f"The following interfaces are in error disabled state: {errdisabled_interfaces}")
+        else:
+            self.result.is_success()
 
 
 class VerifyInterfacesStatus(AntaTest):
