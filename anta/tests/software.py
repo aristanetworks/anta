@@ -10,19 +10,19 @@ from anta.models import AntaTest, AntaTestCommand
 logger = logging.getLogger(__name__)
 
 
-class VerifYEOSVersion(AntaTest):
+class VerifyEOSVersion(AntaTest):
     """
     Verifies the device is running one of the allowed EOS version.
     """
 
-    name = "VerifYEOSVersion"
+    name = "VerifyEOSVersion"
     description = "Verifies the device is running one of the allowed EOS version."
     categories = ["software"]
     commands = [AntaTestCommand(command="show version")]
 
     @AntaTest.anta_test
     def test(self, versions: Optional[List[str]] = None) -> None:
-        """Run VerifYEOSVersion validation
+        """Run VerifyEOSVersion validation
         versions (list): List of allowed EOS versions."""
         if not versions:
             self.result.is_skipped("VerifyEOSVersion was not run as no versions were given")
