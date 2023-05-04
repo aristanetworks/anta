@@ -15,7 +15,7 @@ import pytest
 from anta.tests.vxlan import VerifyVxlan, VerifyVxlanConfigSanity
 from tests.lib.utils import generate_test_ids_list
 
-from .data import INPUT_VXLAN_STATUS, INPUT_VXLAN_CONFIG_SANITY
+from .data import INPUT_VXLAN_CONFIG_SANITY, INPUT_VXLAN_STATUS
 
 
 @pytest.mark.parametrize("test_data", INPUT_VXLAN_STATUS, ids=generate_test_ids_list(INPUT_VXLAN_STATUS))
