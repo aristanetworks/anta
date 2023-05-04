@@ -4,7 +4,7 @@ Test functions related to system-level features and protocols
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, List, cast
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -30,8 +30,8 @@ class VerifyUptime(AntaTest):
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
-        if minimum < 0:
-            self.result.is_skipped("VerifyUptime was not run as no minimum were given")
+        if not (isinstance(minimum, (int, float))) or minimum < 0:
+            self.result.is_skipped("VerifyUptime was not run as no minimum uptime was given")
             return
 
         if cast(float, command_output["upTime"]) > minimum:
@@ -62,11 +62,16 @@ class VerifyReloadCause(AntaTest):
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
-        if "resetCauses" not in command_output.keys() or len(command_output["resetCauses"]) == 0:
+        if "resetCauses" not in command_output.keys():
             self.result.is_error("no reload cause available")
             return
 
-        reset_causes = cast(list[dict[str, Any]], command_output["resetCauses"])
+        if len(command_output["resetCauses"]) == 0:
+            # No reload causes
+            self.result.is_success()
+            return
+
+        reset_causes = cast(List[Dict[str, Any]], command_output["resetCauses"])
         command_output_data = reset_causes[0].get("description")
         if command_output_data in [
             "Reload requested by the user.",
@@ -167,7 +172,7 @@ class VerifyCPUUtilization(AntaTest):
         if command_output_data > 25:
             self.result.is_success()
         else:
-            self.result.is_failure(f"device reported a high CPU utilization ({command_output_data}%)")
+            self.result.is_failure(f"device reported a high CPU utilization ({100 - command_output_data}%)")
 
 
 class VerifyMemoryUtilization(AntaTest):
@@ -191,7 +196,7 @@ class VerifyMemoryUtilization(AntaTest):
         if memory_usage > 0.25:
             self.result.is_success()
         else:
-            self.result.is_failure(f"device report a high memory usage: {memory_usage*100}%")
+            self.result.is_failure(f"device report a high memory usage: {(1 - memory_usage)*100:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
@@ -200,9 +205,9 @@ class VerifyFileSystemUtilization(AntaTest):
     """
 
     name = "VerifyFileSystemUtilization"
-    description = "Verifies the Memory utilization is less than 75%."
+    description = "Verifies each partition on the disk is used less than 75%."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show processes top once", ofmt="text")]
+    commands = [AntaTestCommand(command="bash timeout 10 df -h", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -213,9 +218,9 @@ class VerifyFileSystemUtilization(AntaTest):
 
         self.result.is_success()
 
-        for line in command_output[1].split("\n")[1:]:
-            if "loop" not in line and len(line) > 0 and int(line.split()[4].replace("%", "")) > 75:
-                self.result.is_failure(f'mount point {line} is higher than 75% (reprted {int(line.split()[4].replace(" % ", ""))})')
+        for line in command_output.split("\n")[1:]:
+            if "loop" not in line and len(line) > 0 and (percentage := int(line.split()[4].replace("%", ""))) > 75:
+                self.result.is_failure(f"mount point {line} is higher than 75% (reported {percentage})")
 
 
 class VerifyNTP(AntaTest):
