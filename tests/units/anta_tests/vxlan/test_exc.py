@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Tests for anta.tests.mlag.py
+Tests for anta.tests.vxlan.py
 """
 from __future__ import annotations
 
