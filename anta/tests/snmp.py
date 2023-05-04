@@ -4,7 +4,7 @@ Test functions related to the EOS various SNMP settings
 from __future__ import annotations
 
 import logging
-from typing import Optional
+from typing import Any, Dict, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -28,7 +28,7 @@ class VerifySnmpStatus(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because vrf was not supplied")
         else:
             self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-            command_output = self.instance_commands[0].output
+            command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
             self.logger.debug(f"dataset is: {command_output}")
 
             if command_output["enabled"] and vrf in command_output["vrfs"]["snmpVrfs"]:
@@ -54,7 +54,7 @@ class VerifySnmpIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
         else:
             self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-            command_output = self.instance_commands[0].output
+            command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
             self.logger.debug(f"dataset is: {command_output}")
 
             ipv4_acl_list = command_output["ipAclList"]["aclList"]
@@ -92,7 +92,7 @@ class VerifySnmpIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
         else:
             self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-            command_output = self.instance_commands[0].output
+            command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
             self.logger.debug(f"dataset is: {command_output}")
 
             ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
