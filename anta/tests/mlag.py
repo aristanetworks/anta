@@ -3,13 +3,8 @@ Test functions related to Multi-Chassis LAG
 """
 import logging
 
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
-
-from anta.decorators import skip_on_platforms
+from typing import Any, Dict, cast
 from anta.models import AntaTest, AntaTestCommand
-from typing import Any, Dict, List, cast
 
 logger = logging.getLogger(__name__)
 
@@ -61,42 +56,6 @@ class VerifyMlagInterfaces(AntaTest):
             self.result.is_failure(f"MLAG status is not OK: {command_output['mlagPorts']}")
         else:
             self.result.is_success()
-
-
-
-@anta_test
-async def verify_mlag_config_sanity(device: InventoryDevice, result: TestResult) -> TestResult:
-    """
-    Verifies there is no MLAG config-sanity inconsistencies.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if there is no MLAG config-sanity inconsistencies
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
-    """
-    response = await device.session.cli(command="show mlag config-sanity", ofmt="json")
-
-    if "mlagActive" not in response.keys():
-        result.is_error("incorrect JSON response")
-    elif response["mlagActive"] is False:
-        # MLAG is not running
-        result.is_skipped("MLAG is disabled")
-    elif len(response["globalConfiguration"]) > 0 or len(response["interfaceConfiguration"]) > 0:
-        result.is_failure()
-        if len(response["globalConfiguration"]) > 0:
-            result.is_failure("MLAG config-sanity returned some Global inconsistencies: " f"{response['response']['globalConfiguration']}")
-        if len(response["interfaceConfiguration"]) > 0:
-            result.is_failure("MLAG config-sanity returned some Interface inconsistencies: " f"{response['response']['interfaceConfiguration']}")
-    else:
-        result.is_success()
-
-    return result
 
 
 class VerifyMlagConfigSanity(AntaTest):
