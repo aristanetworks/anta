@@ -2,101 +2,95 @@
 Test functions related to Multi-Chassis LAG
 """
 import logging
+from typing import Any, Dict, cast
 
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
 logger = logging.getLogger(__name__)
 
 
-@anta_test
-async def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyMlagStatus(AntaTest):
     """
-    Verifies the MLAG status:
+    Verifies if MLAG us running, and if the status is good
     state is active, negotiation status is connected, local int is up, peer link is up.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if the MLAG status is OK
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
     """
-    response = await device.session.cli(command="show mlag", ofmt="json")
 
-    if response["state"] == "disabled":
-        result.is_skipped("MLAG is disabled")
-    elif response["state"] != "active" or response["negStatus"] != "connected" or response["localIntfStatus"] != "up" or response["peerLinkStatus"] != "up":
-        result.is_failure(f"MLAG status is not OK: {response}")
-    else:
-        result.is_success()
+    name = "verify_mlag_status"
+    description = "Verifies MLAG status"
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
 
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagStatus validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+        elif (
+            command_output["state"] != "active"
+            or command_output["negStatus"] != "connected"
+            or command_output["localIntfStatus"] != "up"
+            or command_output["peerLinkStatus"] != "up"
+        ):
+            self.result.is_failure(f"MLAG status is not OK: {command_output}")
+        else:
+            self.result.is_success()
 
 
-@anta_test
-async def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyMlagInterfaces(AntaTest):
     """
-    Verifies there is no inactive or active-partial MLAG interfaces.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if there is no inactive or active-partial MLAG interfaces.
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
+    Verifies there are no inactive or active-partial MLAG interfaces.
     """
-    response = await device.session.cli(command="show mlag", ofmt="json")
 
-    if response["state"] == "disabled":
-        result.is_skipped("MLAG is disabled")
-    elif response["mlagPorts"]["Inactive"] != 0 or response["mlagPorts"]["Active-partial"] != 0:
-        result.is_failure(f"MLAG status is not OK: {response['mlagPorts']}")
-    else:
-        result.is_success()
+    name = "verify_mlag_interfaces"
+    description = "Verifies there are no inactive or active-partial MLAG interfaces."
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
 
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagInterfaces validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+        elif command_output["mlagPorts"]["Inactive"] != 0 or command_output["mlagPorts"]["Active-partial"] != 0:
+            self.result.is_failure(f"MLAG status is not OK: {command_output['mlagPorts']}")
+        else:
+            self.result.is_success()
 
 
-@anta_test
-async def verify_mlag_config_sanity(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyMlagConfigSanity(AntaTest):
     """
-    Verifies there is no MLAG config-sanity inconsistencies.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if there is no MLAG config-sanity inconsistencies
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
+    Verifies there are no MLAG config-sanity inconsistencies.
     """
-    response = await device.session.cli(command="show mlag config-sanity", ofmt="json")
 
-    if "mlagActive" not in response.keys():
-        result.is_error("incorrect JSON response")
-    elif response["mlagActive"] is False:
-        # MLAG is not running
-        result.is_skipped("MLAG is disabled")
-    elif len(response["globalConfiguration"]) > 0 or len(response["interfaceConfiguration"]) > 0:
-        result.is_failure()
-        if len(response["globalConfiguration"]) > 0:
-            result.is_failure("MLAG config-sanity returned some Global inconsistencies: " f"{response['response']['globalConfiguration']}")
-        if len(response["interfaceConfiguration"]) > 0:
-            result.is_failure("MLAG config-sanity returned some Interface inconsistencies: " f"{response['response']['interfaceConfiguration']}")
-    else:
-        result.is_success()
+    name = "verify_mlag_config_sanity"
+    description = "Verifies there are no MLAG config-sanity inconsistencies."
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag config-sanity", ofmt="json")]
 
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagConfigSanity validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        if "mlagActive" not in command_output.keys():
+            self.result.is_error("Incorrect JSON response - mlagActive state not found")
+        elif command_output["mlagActive"] is False:
+            self.result.is_skipped("MLAG is disabled")
+        elif len(command_output["globalConfiguration"]) > 0 or len(command_output["interfaceConfiguration"]) > 0:
+            self.result.is_failure()
+            if len(command_output["globalConfiguration"]) > 0:
+                self.result.is_failure("MLAG config-sanity returned Global inconsistancies: " f"{command_output['globalConfiguration']}")
+            if len(command_output["interfaceConfiguration"]) > 0:
+                self.result.is_failure("MLAG config-sanity returned Interface inconsistancies: " f"{command_output['interfaceConfiguration']}")
+        else:
+            self.result.is_success()
