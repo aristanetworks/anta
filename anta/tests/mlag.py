@@ -7,36 +7,36 @@ from anta.inventory.models import InventoryDevice
 from anta.result_manager.models import TestResult
 from anta.tests import anta_test
 
+from anta.decorators import skip_on_platforms
+from anta.models import AntaTest, AntaTestCommand
+from typing import Any, Dict, List, cast
+
 logger = logging.getLogger(__name__)
 
 
-@anta_test
-async def verify_mlag_status(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyMlagStatus(AntaTest):
     """
-    Verifies the MLAG status:
+    Verifies if MLAG us running, and if the status is good
     state is active, negotiation status is connected, local int is up, peer link is up.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if the MLAG status is OK
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
     """
-    response = await device.session.cli(command="show mlag", ofmt="json")
+    name = "verify_mlag_status"
+    description = "Verifies MLAG status"
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
 
-    if response["state"] == "disabled":
-        result.is_skipped("MLAG is disabled")
-    elif response["state"] != "active" or response["negStatus"] != "connected" or response["localIntfStatus"] != "up" or response["peerLinkStatus"] != "up":
-        result.is_failure(f"MLAG status is not OK: {response}")
-    else:
-        result.is_success()
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagStatus validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
 
-    return result
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+        elif command_output["state"] != "active" or command_output["negStatus"] != "connected" or command_output["localIntfStatus"] != "up" or command_output["peerLinkStatus"] != "up":
+            self.result.is_failure(f"MLAG status is not OK: {command_output}")
+        else:
+            self.result.is_success()
 
 
 @anta_test
