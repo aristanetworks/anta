@@ -4,6 +4,7 @@ Test functions related to the EOS various SNMP settings
 from __future__ import annotations
 
 import logging
+from typing import Optional
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -47,7 +48,7 @@ class VerifySnmpIPv4Acl(AntaTest):
     commands = [AntaTestCommand(command="show snmp ipv4 access-list summary")]
 
     @AntaTest.anta_test
-    def test(self, number: int, vrf: str = "default") -> None:
+    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
         """Run VerifySnmpIPv4Acl validation"""
         if not number or not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
@@ -85,7 +86,7 @@ class VerifySnmpIPv6Acl(AntaTest):
     commands = [AntaTestCommand(command="show snmp ipv6 access-list summary")]
 
     @AntaTest.anta_test
-    def test(self, number: int, vrf: str = "default") -> None:
+    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
         """Run VerifySnmpIPv6Acl validation"""
         if not number or not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
