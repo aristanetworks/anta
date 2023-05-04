@@ -1,4 +1,4 @@
-"""Test inputs for anta.tests.hardware"""
+"""Test inputs for anta.tests.system"""
 
 from typing import Any, Dict, List
 
