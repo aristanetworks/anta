@@ -88,29 +88,29 @@ Here is an example for basic things:
 ```yaml
 # Load anta.tests.software
 anta.tests.software:
-  - verify_eos_version: # Verifies the device is running one of the allowed EOS version.
+  - VerifyEosVersion: # Verifies the device is running one of the allowed EOS version.
       versions: # List of allowed EOS versions.
         - 4.25.4M
         - 4.26.1F
         - '4.28.3M-28837868.4283M (engineering build)'
-  - verify_terminattr_version:
+  - VerifyTerminAttrVersion:
       versions:
         - v1.22.1
 
 anta.tests.system:
-  - verify_uptime: # Verifies the device uptime is higher than a value.
+  - VerifyUptime: # Verifies the device uptime is higher than a value.
       minimum: 1
-  - verify_ntp:
-  - verify_syslog:
+  - VerifyNtp:
+  - VerifySyslog:
 
 anta.tests.mlag:
-  - verify_mlag_status:
-  - verify_mlag_interfaces:
-  - verify_mlag_config_sanity:
+  - VerifyMlagStatus:
+  - VerifyMlagInterface:
+  - VerifyMlagConfigSanity:
 
 anta.tests.configuration:
-  - verify_zerotouch: # Verifies ZeroTouch is disabled.
-  - verify_running_config_diffs:
+  - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
+  - VerifyRunningConfigDiffs:
 ```
 
 ## Test your network
@@ -183,11 +183,11 @@ anta \
 ┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Device IP ┃ Test Name                          ┃ Test Status ┃ Message(s)                                                     ┃
 ┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ leaf01    │ verify_eos_version                 │ success     │                                                                │
-│ leaf01    │ verify_terminattr_version          │ success     │                                                                │
-│ leaf01    │ verify_uptime                      │ success     │                                                                │
-│ leaf01    │ verify_ntp                         │ failure     │ not sync with NTP server (NTP is disabled.)                    │
-│ leaf01    │ verify_syslog                      │ failure     │ Device has some log messages with a severity WARNING or higher │
+│ leaf01    │ VerifyEosVersion                   │ success     │                                                                │
+│ leaf01    │ VerifyTerminAttrVersion            │ success     │                                                                │
+│ leaf01    │ VerifyUptime                       │ success     │                                                                │
+│ leaf01    │ VerifyNtp                          │ failure     │ not sync with NTP server (NTP is disabled.)                    │
+│ leaf01    │ VerifySyslog                       │ failure     │ Device has some log messages with a severity WARNING or higher │
 └───────────┴────────────────────────────────────┴─────────────┴────────────────────────────────────────────────────────────────┘
 ```
 
@@ -201,22 +201,11 @@ $ anta \
     --inventory .personal/inventory_atd.yml \
     nrfu text --tags leaf --catalog .personal/tests-bases.yml
 
-leaf01 :: verify_eos_version :: SUCCESS
-leaf01 :: verify_terminattr_version :: SUCCESS
-leaf01 :: verify_uptime :: SUCCESS
-leaf01 :: verify_ntp :: FAILURE (not sync with NTP server (NTP is disabled.))
-leaf01 :: verify_syslog :: FAILURE (Device has some log messages with a severity WARNING or higher)
-leaf01 :: verify_mlag_status :: SUCCESS
-leaf01 :: verify_mlag_interfaces :: SUCCESS
-leaf01 :: verify_mlag_config_sanity :: SUCCESS
-leaf01 :: verify_zerotouch :: SUCCESS
-leaf01 :: verify_running_config_diffs :: SUCCESS
-leaf01 :: verify_interface_utilization :: SUCCESS
-leaf01 :: verify_interface_errors :: SUCCESS
-leaf01 :: verify_interface_discards :: SUCCESS
-leaf01 :: verify_interface_errdisabled :: SUCCESS
-leaf01 :: verify_interfaces_status :: SUCCESS
-leaf01 :: verify_storm_control_drops :: SKIPPED (verify_storm_control_drops test is not supported on cEOSLab.)
+leaf01 :: VerifyEosVersion :: SUCCESS
+leaf01 :: VerifyTerminAttrVersion :: SUCCESS
+leaf01 :: VerifyUptime :: SUCCESS
+leaf01 :: VerifyNtp :: FAILURE (not sync with NTP server (NTP is disabled.))
+leaf01 :: VerifySyslog :: FAILURE (Device has some log messages with a severity WARNING or higher)
 ...
 ```
 
@@ -236,13 +225,13 @@ $ anta \
 [
   {
     "name": "leaf01",
-    "test": "verify_eos_version",
+    "test": "VerifyEosVersion",
     "result": "success",
     "messages": "[]"
   },
   {
     "name": "leaf01",
-    "test": "verify_terminattr_version",
+    "test": "VerifyTerminAttrVersion",
     "result": "success",
     "messages": "[]"
   },

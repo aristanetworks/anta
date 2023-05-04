@@ -1,5 +1,4 @@
 # content of pyproject.toml
-
 [build-system]
 requires = ["setuptools>=64.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -75,18 +74,40 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://arista-netdevops-community.github.io/network-test-automation/"
-"Bug Tracker" = "https://github.com/arista-netdevops-community/network-test-automation/issues"
-Contributing = "https://github.com/arista-netdevops-community/network-test-automation/blob/master/CONTRIBUTING.md"
+Homepage = "https://www.anta.ninja"
+"Bug Tracker" = "https://github.com/arista-netdevops-community/anta/issues"
+Contributing = "https://github.com/arista-netdevops-community/anta/blob/master/CONTRIBUTING.md"
 
 [project.scripts]
 anta = "anta.cli.cli:cli"
 
+
+################################
+# Tools
+################################
 [tool.setuptools.packages.find]
 include = ["anta*"]
 namespaces = false
 
+################################
+# Linting
+################################
+[tool.isort]
+profile = "black"
+line_length = 165
+
+[tool.black]
+line-length = 165
+force-exclude = """
+(
+.*data.py|
+)
+"""
+
+################################
+# Typing
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
+################################
 [tool.mypy]
 plugins = [
   "pydantic.mypy",
@@ -95,8 +116,8 @@ plugins = [
 follow_imports = "skip"
 ignore_missing_imports = true
 warn_redundant_casts = true
-# Note: tox find some unused type ignore which are required for pre-commit.. to
-# investigate
+# Note: tox find some unused type ignore which are required for pre-commit
+# To investigate
 # warn_unused_ignores = true
 disallow_any_generics = true
 check_untyped_defs = true
@@ -114,29 +135,79 @@ init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
+################################
+# Testing
+################################
+[tool.pytest.ini_options]
+# TODO - may need cov-append for Tox
+# When run from anta directory this will read cov-config from pyproject.toml
+addopts = "-ra -q -s -vv --capture=tee-sys --cov --cov-report term:skip-covered --color yes"
+log_level = "DEBUG"
+log_cli = true
+render_collapsed = true
+filterwarnings = [
+  "ignore::urllib3.exceptions.InsecureRequestWarning"
+]
 
+[tool.coverage.run]
+branch = true
+source = ["anta"]
+parallel = true
+# omit=anta/tests/*
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma = no cover",
+
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+]
+
+ignore_errors = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+
+################################
+# Tox
+################################
 [tool.tox]
 legacy_tox_ini = """
 [tox]
 min_version = 4.0
 envlist =
   clean,
-  py{38,39,310},
   lint,
   type,
+  py{38,39,310,311},
   report
 
 [gh-actions]
 python =
   3.8: py38
   3.9: py39
-  3.10: py310, lint, type, report
+  3.10: erase, py310, report
+  3.11: py311
 
 [testenv]
 description = run the test driver with {basepython}
 extras = dev
 commands =
-   pytest  {tty:--color=yes}
+   pytest
 
 [testenv:lint]
 description = check the code style
@@ -159,31 +230,10 @@ commands = coverage erase
 
 [testenv:report]
 deps = coverage[toml]
-# TODO adding -i for now
-commands = coverage report -i
+commands =
+  coverage --version
+  coverage report --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py310
-
-"""
-
-[tool.pytest.ini_options]
-addopts = "-ra -q -s -vv --capture=tee-sys --cov --cov-append"
-log_level = "DEBUG"
-log_cli = "True"
-
-[tool.coverage.run]
-source = ['anta']
-# omit = []
-
-[tool.isort]
-profile = "black"
-line_length = 165
-
-[tool.black]
-line-length = 165
-force-exclude = """
-(
-.*data.py|
-)
 """

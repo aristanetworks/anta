@@ -1,56 +1,44 @@
 # Create your own custom tests
 
+!!! info ""
+    This documentation applies for both create tests in ANTA package or your custom package.
+
 ANTA is not only a CLI with a collection of built-in tests, it is also a framework you can extend by building your own tests library.
 
 For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be impartable by ANTA hence available in `$PYTHONPATH` by any method.
 
 ## Generic approach
 
-To make it easier for everyone, it is recommended to apply always same structure to all code:
+ANTA comes with a class to use to build test. This class provides all the toolset required to define, collect and test data. The next code is an example of how to use ANTA to build a test
 
 ```python
+from __future__ import annotations
 
-# Optional for easy coding
-from typing import Optional
 import logging
+from typing import Any, Dict, List, Optional, cast
 
-# Import ANTA components
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
-# Instantiate logger
-logger = logging.getLogger(__name__)
 
-# define a function with at least one decorator to mark as a test
-@anta.test
-async def verify_dynamic_vlan(device: InventoryDevice,
-    result: TestResult, minimum: Optional[int] = None) -> TestResult:
+class VerifyTemperature(AntaTest):
+    """
+    Verifies device temparture is currently OK.
+    """
 
-    # Create docstring
-    # [...]
+    name = "VerifyTemperature"
+    description = "Verifies device temparture is currently OK"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
 
-    # Create your own logic
-
-    # Check if test option is correct
-    if not minimum:
-        result.is_skipped("verify_dynamic_vlan was run without minimum value set")
-        return result
-
-    # Send command to device
-    response = await device.session.cli(command="show vlan", ofmt="json")
-
-    # Optionaly log response for futur debug
-    logger.debug(f"query result is: {response}")
-
-    # Do your test: In this example we count number of vlans with field dynamic set to true
-    num_dyn_vlan = len([ vlan for vlan,data in response['vlans'].items() if data['dynamic'] is True])
-    if num_dyn_vlan >= minimum:
-        result.is_success()
-    else:
-        result.is_failure(f"Device has {num_dyn_vlan} configured, we expect at least {minimum}")
-
-    return result
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyTemperature validation"""
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        if temperature_status == "temperatureOk":
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Device temperature is not OK, systemStatus: {temperature_status }")
 ```
 
 ## Python imports
@@ -60,17 +48,22 @@ async def verify_dynamic_vlan(device: InventoryDevice,
 The following elements have to be imported:
 
 - [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.
-- [`TestResult`](../api/result_manager_models.md): Structure used to facilitate test result. It provides helpers like `is_success`, `is_failure`, `is_skipped`.
-- `anta_test`: A python decorator to mark function as a test and inject all the base requirements to run test and capture Exceptions.
+- `anta.models.AntaTest`: class that gives you all the tooling for your test
+- `anta.models.AntaTestCommand`: A class to abstract an Arista EOS command
 
 ```python
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
 
-@anta.test
-async def verify_dynamic_vlan(...)
+class VerifyTemperature(AntaTest):
+    """
+    Verifies device temparture is currently OK.
+    """
+    ...
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        pass
 ```
 
 ### Optional ANTA imports
@@ -85,9 +78,12 @@ Besides these 3 main imports, anta provides some additional and optional decorat
 from anta.decorators import skip_on_platforms
 
 
-@skip_on_platforms(["cEOSLab", "VEOS-LAB"])
-@anta_test
-async def verify_unified_forwarding_table_mode(...)
+class VerifyTransceiversManufacturers(AntaTest):
+    ...
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self, manufacturers: Optional[List[str]] = None) -> None:
+        pass
 ```
 
 ### Optional python imports
@@ -97,56 +93,82 @@ And finally, you are free to import any other python library you may want to use
 !!! info "logging function"
     It is strongly recommended to import `logging` to help development process and being able to log some outputs usefull for test development.
 
+If your test development is part of a pull request for ANTA, it is stringly advised to also import `typing` since our code testing requires to be compatible with Mypy.
+
 ## Code for a test
+
+A test is a python class where a test function is defined and will be run by the framework. So first you need to declare your class and then define your test function.
+
+### Create Test Class
+
+To create class, you have to provide 4 elements:
+
+__Metadata information__
+
+- `name`: Name of the test
+- `description`: A human readable description of your test
+- `categories`: a list of categories to sort test.
+
+__Commands to run__
+
+- `commands`: a list of command to run. This list _must_ be a list of `AntaTestCommand` which is described in the next part of this document.
+- `template`: a command template (`AntaTestTemplate`) to run where variables are provided during test execution.
+
+!!! warning ""
+    It is either `commands` or `template`. But not both.
+
+```python
+from __future__ import annotations
+
+import logging
+from typing import Any, Dict, List, Optional, cast
+
+from anta.models import AntaTest, AntaTestCommand
+
+
+class <YourTestName>(AntaTest):
+    """
+    <a docstring description of your test>
+    """
+
+    name = "YourTestName"                                           # should be your class name
+    description = "<test description in human reading format>"
+    categories = ["<a list of arbitrary categories>"]
+    commands = [
+        AntaTestCommand(
+            command="<eos command to run>",
+            ofmt="<command format output>",
+            version="<eapi version to use>"
+        )
+    ]
+```
+
+This class will inherit methods from AntaTest and specfically the `__init__(self,...)` method to build your object. This function takes following arguments when you instantiate an object:
+
+- `device (InventoryDevice)`: Device object where to test happens.
+- `template_params`: If template is used in the test definition, then we provide data to build list of commands.
+- `eos_data`: Potential EOS data to pass if we don't want to connect to device to grab data.
+- `labels`: a list of labels. It is not used yet and it is for futur use.
 
 ### Function definition
 
 The code here can be very simple as well as very complex and will depend of what you expect to do. But in all situation, the same baseline can be leverage:
 
-- Function parameters:
-  - `async` in front of the function the function signature defines it as a coroutine and enable parallel execution.
-  - `device: InventoryDevice`: Device information (mandatory)
-  - `result: TestResult`: A result structure to save test (mandatory)
-  - Any option your test may require. In our example, we use `minimum: Optional[int]`
-
 ```python
-async def verify_dynamic_vlan(
-    device: InventoryDevice,
-    result: TestResult,
-    minimum: Optional[int] = None
-) -> TestResult:
+class <YourTestName>(AntaTest):
+    ...
+    def test(self) -> None:
+        pass
 ```
 
-### Function documentation
-
-We recommend to add a docstring to document your test. As an example, the following syntax rendering for documentation is working pretty well:
-
-!!! info "docstring is optional"
-    Of course this section is optional, but we strongly believe in documentation to make the code easier to maintain over time.
+If you want to support option in your test, just declare your options in your test method:
 
 ```python
-"""
-< Short description >
-
-< Optional long description >
-
-< A list of inputs >
-Args:
-    device (InventoryDevice): InventoryDevice instance containing all devices information.
-    minimum (int): Minimum number of dynamic vlans expected.
-
-< Description of returned values in TestResult object >
-Returns:
-    TestResult instance with
-    * result = "unset" if the test has not been executed
-    * result = "skipped" if the `minimum` parameter is  missing
-    * result = "success" if device has more than minimum dynamic vlans
-    * result = "failure" otherwise.
-    * result = "error" if any exception is caught
-"""
+class <YourTestName>(AntaTest):
+    ...
+    def test(self, my_param1: str) -> None:
+        pass
 ```
-
-You can see output using [mkdocstring-python](https://mkdocstrings.github.io/python/) here: [tests.software.md](../api/tests.software.md)
 
 ### Check inputs
 
@@ -155,8 +177,9 @@ If your test has some user inputs, you first have to validate the supplied value
 ```python
 # Check if test option is correct
 if not minimum:
-    result.is_skipped("verify_dynamic_vlan was run without minimum value set")
-    return result
+    self.result.is_skipped("verify_dynamic_vlan was run without minimum value set")
+else:
+    ...
 ```
 
 ### Implement your logic
@@ -166,17 +189,15 @@ Here you implement your own logic. In general, the first action is to send comma
 In the example below, we request the list of vlans configured on device and then count all the vlans marked as dynamic
 
 ```python
-# Send command to device
-response = await device.session.cli(command="show vlan", ofmt="json")
+# Grab data for your command
+command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
 # Do your test: In this example we count number of vlans with field dynamic set to true
-num_dyn_vlan = len([ vlan for vlan,data in response['vlans'].items() if data['dynamic'] is True])
+num_dyn_vlan = len([ vlan for vlan,data in command_output['vlans'].items() if command_output['dynamic'] is True])
 if num_dyn_vlan >= minimum:
-    result.is_success()
+    self.result.is_success()
 else:
-    result.is_failure(f"Device has {num_dyn_vlan} configured, we expect at least {minimum}")
-
-return result
+    self.result.is_failure(f"Device has {num_dyn_vlan} configured, we expect at least {minimum}")
 ```
 
 As you can see there is no error management to do in your code. Everything is packaged in `anta_tests` and below is a simple example of error captured with an incorrect JSON key in the code above:
@@ -193,13 +214,16 @@ ERROR    Exception raised for test verify_dynamic_vlan (on device 192.168.0.10) 
 
 ## Create your catalog
 
+!!! warning ""
+    This section is required only if you are not merging your development into ANTA. Otherwise, just follow [contribution guide](../contribution.md).
+
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
 Let say the custom catalog is `anta_titom73` and the test is configured in `anta_titom73.dc_project`, the test catalog would look like:
 
 ```yaml
 anta_titom73.dc_project:
-  - verify_dynamic_vlan:
+  - VerifyFeatureX:
       minimum: 1
 ```
 And now you can run your NRFU tests with the CLI:

@@ -14,7 +14,7 @@ Python 3.9.9
 
 This installation will deploy tests collection, scripts and all their Python requirements.
 
-The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/network-test-automation/blob/master/pyproject.toml#L20) file
+The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/master/pyproject.toml#L20) file
 
 
 ### Install from Pypi server
@@ -27,7 +27,7 @@ pip install anta
 
 
 ```shell
-pip install git+https://github.com/arista-netdevops-community/network-test-automation.git
+pip install git+https://github.com/arista-netdevops-community/anta.git
 ```
 
 You can even specify the branch, tag or commit:
@@ -51,7 +51,7 @@ which anta
 
 # Chck ANTA version
 anta --version
-anta, version 0.4.0
+anta, version 0.5.0
 ```
 
 ## EOS Requirements
