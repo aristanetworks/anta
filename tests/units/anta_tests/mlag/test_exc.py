@@ -12,19 +12,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from anta.tests.mlag import (
-    VerifyMlagStatus,
-    VerifyMlagInterfaces,
-    VerifyMlagConfigSanity
-)
+from anta.tests.mlag import VerifyMlagStatus, VerifyMlagInterfaces, VerifyMlagConfigSanity
 
 from tests.lib.utils import generate_test_ids_list
 
-from .data import (
-    INPUT_MLAG_STATUS,
-    INPUT_MLAG_INTERFACES,
-    INPUT_MLAG_CONFIG_SANITY
-)
+from .data import INPUT_MLAG_STATUS, INPUT_MLAG_INTERFACES, INPUT_MLAG_CONFIG_SANITY
 
 @pytest.mark.parametrize("test_data", INPUT_MLAG_STATUS, ids=generate_test_ids_list(INPUT_MLAG_STATUS))
 def test_VerifyMlagStatus(mocked_device: MagicMock, test_data: Any) -> None:

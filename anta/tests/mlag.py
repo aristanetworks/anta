@@ -28,7 +28,10 @@ class VerifyMlagStatus(AntaTest):
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
-        elif command_output["state"] != "active" or command_output["negStatus"] != "connected" or command_output["localIntfStatus"] != "up" or command_output["peerLinkStatus"] != "up":
+        elif (command_output["state"] != "active" 
+              or command_output["negStatus"] != "connected" 
+              or command_output["localIntfStatus"] != "up" 
+              or command_output["peerLinkStatus"] != "up"):
             self.result.is_failure(f"MLAG status is not OK: {command_output}")
         else:
             self.result.is_success()
@@ -81,8 +84,8 @@ class VerifyMlagConfigSanity(AntaTest):
         elif len(command_output["globalConfiguration"]) > 0 or len(command_output['interfaceConfiguration']) > 0:
             self.result.is_failure()
             if len(command_output["globalConfiguration"]) > 0:
-                self.result.is_failure("MLAG config-sanity returned Global inconsistancies: "  f"{command_output['globalConfiguration']}" )
+                self.result.is_failure("MLAG config-sanity returned Global inconsistancies: " f"{command_output['globalConfiguration']}" )
             if len(command_output["interfaceConfiguration"]) > 0:
-                self.result.is_failure("MLAG config-sanity returned Interface inconsistancies: "  f"{command_output['interfaceConfiguration']}" )
+                self.result.is_failure("MLAG config-sanity returned Interface inconsistancies: " f"{command_output['interfaceConfiguration']}" )
         else:
             self.result.is_success()
