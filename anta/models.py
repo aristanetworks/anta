@@ -119,8 +119,9 @@ class AntaTest(ABC):
             self.instance_commands.extend(deepcopy(cmds))
         if hasattr(self.__class__, "template") and (tpl := self.__class__.template) is not None:
             if template_params is None:
-                # TODO nicer error message
-                raise ValueError("Command has template but no params were given")
+                self.result.is_error("Command has template but no params were given")
+                return
+            self.template_params = template_params
             self.instance_commands.extend(
                 AntaTestCommand(
                     command=tpl.template.format(**param),
@@ -137,6 +138,9 @@ class AntaTest(ABC):
 
     def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
         """Called at init or at test execution time"""
+        if len(eos_data) != len(self.instance_commands):
+            self.result.is_error("Test initialization error: Trying to save more data than there are commands for the test")
+            return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data
 
@@ -185,7 +189,10 @@ class AntaTest(ABC):
             Returns:
                 TestResult: self.result, populated with the correct exit status
             """
-            # TODO maybe_skip ?
+            if self.result.result != "unset":
+                return self.result
+
+            # TODO maybe_skip decorators
 
             # Data
             if eos_data is not None:
