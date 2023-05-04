@@ -1,144 +1,112 @@
 """
 Test functions related to the EOS various SNMP settings
 """
+from __future__ import annotations
+
 import logging
 
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
 logger = logging.getLogger(__name__)
 
 
-@anta_test
-async def verify_snmp_status(device: InventoryDevice, result: TestResult, vrf: str = "default") -> TestResult:
+class VerifySnmpStatus(AntaTest):
     """
     Verifies if the SNMP agent is enabled.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-        vrf(str): VRF to verify. Default is "default".
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if SNMP agent is enabled in the specified VRF
-        * result = "failure" otherwise
-        * result = "error" if any exception is caught
     """
-    if not vrf:
-        result.is_skipped(
-            "verify_snmp_status did not run because vrf was not supplied"
-        )
-        return result
 
-    response = await device.session.cli(command="show snmp", ofmt="json")
-    logger.debug(f"query result is: {response}")
+    name = "VerifySnmpStatus"
+    description = "Verifies if the SNMP agent is enabled."
+    categories = ["snmp"]
+    commands = [AntaTestCommand(command="show snmp")]
 
-    if response["enabled"] and vrf in response["vrfs"]["snmpVrfs"]:
-        result.is_success()
-    else:
-        result.is_failure(
-            "SNMP agent disabled: Either no communities and no users are configured, or no VRFs are configured."
-        )
-    return result
+    @AntaTest.anta_test
+    def test(self, vrf: str = "default") -> None:
+        """Run VerifySnmpStatus validation"""
+        if not vrf:
+            self.result.is_skipped(f"{self.__class__.name} did not run because vrf was not supplied")
+        else:
+            self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+            command_output = self.instance_commands[0].output
+            self.logger.debug(f"dataset is: {command_output}")
+
+            if command_output["enabled"] and vrf in command_output["vrfs"]["snmpVrfs"]:
+                self.result.is_success()
+            else:
+                self.result.is_failure(f"SNMP agent disabled in vrf {vrf}")
 
 
-@anta_test
-async def verify_snmp_ipv4_acl(device: InventoryDevice, result: TestResult, number: int, vrf: str = "default") -> TestResult:
+class VerifySnmpIPv4Acl(AntaTest):
     """
     Verifies if the SNMP agent has IPv4 ACL(s) configured.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-        number(int): Expected number of SNMP IPv4 ACL(s).
-        vrf(str): VRF to verify. Default is "default".
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if SNMP agent has IPv4 ACL(s) configured
-        * result = "failure" otherwise
-        * result = "error" if any exception is caught
     """
-    if not number or not vrf:
-        result.is_skipped(
-            "verify_snmp_ipv4_acl did not run because number or vrf was not supplied"
-        )
-        return result
 
-    response = await device.session.cli(command="show snmp ipv4 access-list summary", ofmt="json")
-    logger.debug(f"query result is: {response}")
+    name = "VerifySnmpIPv4Acl"
+    description = "Verifies if the SNMP agent has IPv4 ACL(s) configured."
+    categories = ["snmp"]
+    commands = [AntaTestCommand(command="show snmp ipv4 access-list summary")]
 
-    ipv4_acl_list = response["ipAclList"]["aclList"]
-    ipv4_acl_number = len(ipv4_acl_list)
-    not_configured_acl_list = []
+    @AntaTest.anta_test
+    def test(self, number: int, vrf: str = "default") -> None:
+        """Run VerifySnmpIPv4Acl validation"""
+        if not number or not vrf:
+            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
+        else:
+            self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+            command_output = self.instance_commands[0].output
+            self.logger.debug(f"dataset is: {command_output}")
 
-    if ipv4_acl_number != number:
-        result.is_failure(
-            f"Expected {number} SNMP IPv4 ACL(s) and got {ipv4_acl_number}"
-        )
-        return result
+            ipv4_acl_list = command_output["ipAclList"]["aclList"]
+            ipv4_acl_number = len(ipv4_acl_list)
+            not_configured_acl_list = []
 
-    for ipv4_acl in ipv4_acl_list:
-        if vrf not in ipv4_acl["configuredVrfs"] or vrf not in ipv4_acl["activeVrfs"]:
-            not_configured_acl_list.append(ipv4_acl["name"])
+            if ipv4_acl_number != number:
+                self.result.is_failure(f"Expected {number} SNMP IPv4 ACL(s) in vrf {vrf} but got {ipv4_acl_number}")
 
-    if not_configured_acl_list:
-        result.is_failure(
-            f"SNMP IPv4 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}"
-        )
+            else:
+                for ipv4_acl in ipv4_acl_list:
+                    if vrf not in ipv4_acl["configuredVrfs"] or vrf not in ipv4_acl["activeVrfs"]:
+                        not_configured_acl_list.append(ipv4_acl["name"])
 
-    else:
-        result.is_success()
-    return result
+                if not_configured_acl_list:
+                    self.result.is_failure(f"SNMP IPv4 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+                else:
+                    self.result.is_success()
 
 
-@anta_test
-async def verify_snmp_ipv6_acl(device: InventoryDevice, result: TestResult, number: int, vrf: str = "default") -> TestResult:
+class VerifySnmpIPv6Acl(AntaTest):
     """
     Verifies if the SNMP agent has IPv6 ACL(s) configured.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-        number(int): Expected number of SNMP IPv6 ACL(s).
-        vrf(str): VRF to verify. Default is "default".
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if SNMP agent has IPv6 ACL(s) configured
-        * result = "failure" otherwise
-        * result = "error" if any exception is caught
     """
-    if not number or not vrf:
-        result.is_skipped(
-            "verify_snmp_ipv6_acl did not run because number or vrf was not supplied"
-        )
-        return result
 
-    response = await device.session.cli(command="show snmp ipv6 access-list summary", ofmt="json")
-    logger.debug(f"query result is: {response}")
+    name = "VerifySnmpIPv6Acl"
+    description = "Verifies if the SNMP agent has IPv6 ACL(s) configured."
+    categories = ["snmp"]
+    commands = [AntaTestCommand(command="show snmp ipv6 access-list summary")]
 
-    ipv6_acl_list = response["ipv6AclList"]["aclList"]
-    ipv6_acl_number = len(ipv6_acl_list)
-    not_configured_acl_list = []
+    @AntaTest.anta_test
+    def test(self, number: int, vrf: str = "default") -> None:
+        """Run VerifySnmpIPv6Acl validation"""
+        if not number or not vrf:
+            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
+        else:
+            self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+            command_output = self.instance_commands[0].output
+            self.logger.debug(f"dataset is: {command_output}")
 
-    if ipv6_acl_number != number:
-        result.is_failure(
-            f"Expected {number} SNMP IPv6 ACL(s) and got {ipv6_acl_number}"
-        )
-        return result
+            ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
+            ipv6_acl_number = len(ipv6_acl_list)
+            not_configured_acl_list = []
 
-    for ipv6_acl in ipv6_acl_list:
-        if vrf not in ipv6_acl["configuredVrfs"] or vrf not in ipv6_acl["activeVrfs"]:
-            not_configured_acl_list.append(ipv6_acl["name"])
+            if ipv6_acl_number != number:
+                self.result.is_failure(f"Expected {number} SNMP IPv6 ACL(s) in vrf {vrf} but got {ipv6_acl_number}")
 
-    if not_configured_acl_list:
-        result.is_failure(
-            f"SNMP IPv6 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}"
-        )
+            else:
+                for ipv6_acl in ipv6_acl_list:
+                    if vrf not in ipv6_acl["configuredVrfs"] or vrf not in ipv6_acl["activeVrfs"]:
+                        not_configured_acl_list.append(ipv6_acl["name"])
 
-    else:
-        result.is_success()
-    return result
+                if not_configured_acl_list:
+                    self.result.is_failure(f"SNMP IPv6 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+                else:
+                    self.result.is_success()

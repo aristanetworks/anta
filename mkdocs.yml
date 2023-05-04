@@ -152,6 +152,7 @@ nav:
     - Profiles: api/tests.profiles.md
     - System: api/tests.system.md
     - Software: api/tests.software.md
+    - SNMP: api/tests.snmp.md
     - Routing:
       - Generic: api/tests.routing.generic.md
       - BGP: api/tests.routing.bgp.md
