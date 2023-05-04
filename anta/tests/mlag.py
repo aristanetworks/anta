@@ -39,32 +39,29 @@ class VerifyMlagStatus(AntaTest):
             self.result.is_success()
 
 
-@anta_test
-async def verify_mlag_interfaces(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyMlagInterfaces(AntaTest):
     """
-    Verifies there is no inactive or active-partial MLAG interfaces.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if there is no inactive or active-partial MLAG interfaces.
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
+    Verifies there are no inactive or active-partial MLAG interfaces.
     """
-    response = await device.session.cli(command="show mlag", ofmt="json")
+    name = "verify_mlag_interfaces"
+    description = "Verifies there are no inactive or active-partial MLAG interfaces."
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
 
-    if response["state"] == "disabled":
-        result.is_skipped("MLAG is disabled")
-    elif response["mlagPorts"]["Inactive"] != 0 or response["mlagPorts"]["Active-partial"] != 0:
-        result.is_failure(f"MLAG status is not OK: {response['mlagPorts']}")
-    else:
-        result.is_success()
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagInterfaces validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
 
-    return result
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+        elif command_output["mlagPorts"]["Inactive"] != 0 or command_output["mlagPorts"]["Active-partial"] != 0:
+            self.result.is_failure(f"MLAG status is not OK: {command_output['mlagPorts']}")
+        else:
+            self.result.is_success()
+
 
 
 @anta_test
