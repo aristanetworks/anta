@@ -97,3 +97,33 @@ async def verify_mlag_config_sanity(device: InventoryDevice, result: TestResult)
         result.is_success()
 
     return result
+
+
+class VerifyMlagConfigSanity(AntaTest):
+    """
+    Verifies there are no MLAG config-sanity inconsistencies.
+    """
+    name = "verify_mlag_config_sanity"
+    description = "Verifies there are no MLAG config-sanity inconsistencies."
+    categories = ["mlag"]
+    commands = [AntaTestCommand(command="show mlag config-sanity", ofmt="json")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyMlagConfigSanity validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        if "mlagActive" not in command_output.keys():
+            self.result.is_error("Incorrect JSON response - mlagActive state not found")
+        elif command_output["mlagActive"] is False:
+            self.result.is_skipped("MLAG is disabled")
+        elif len(command_output["globalConfiguration"]) > 0 or len(command_output['interfaceConfiguration']) > 0:
+            self.result.is_failure()
+            if len(command_output["globalConfiguration"]) > 0:
+                self.result.is_failure("MLAG config-sanity returned Global inconsistancies: "  f"{command_output['globalConfiguration']}" )
+            if len(command_output["interfaceConfiguration"]) > 0:
+                self.result.is_failure("MLAG config-sanity returned Interface inconsistancies: "  f"{command_output['interfaceConfiguration']}" )
+        else:
+            self.result.is_success()

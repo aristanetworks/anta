@@ -111,3 +111,90 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
         "expected_messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 1, 'Active-partial': 1, 'Active-full': 1}"]
     },
 ]
+
+INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "globalConfiguration": {},
+                "interfaceConfiguration": {},
+                "mlagActive": True,
+                "mlagConnected": True
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": []
+    },
+    {
+        "name": "skipped",
+        "eos_data": [
+            {
+                "mlagActive": False,
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "skipped",
+        "expected_messages": ["MLAG is disabled"]
+    },
+    {
+        "name": "error",
+        "eos_data": [
+            {
+                "dummy": False,
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "error",
+        "expected_messages": ["Incorrect JSON response - mlagActive state not found"]
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "globalConfiguration": {
+                    "bridging": {
+                        "globalParameters": {
+                            "admin-state vlan 33": {
+                                "localValue": "active"
+                            },
+                            "mac-learning vlan 33": {
+                                "localValue": "True"
+                            }
+                        }
+                    }
+                },
+                "interfaceConfiguration": {},
+                "mlagActive": True,
+                "mlagConnected": True
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["MLAG config-sanity returned Global inconsistancies: {'bridging': {'globalParameters': {'admin-state vlan 33': {'localValue': 'active'}, 'mac-learning vlan 33': {'localValue': 'True'}}}}"]
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "globalConfiguration": {},
+                "interfaceConfiguration": {
+                    "trunk-native-vlan mlag30": {
+                        "interface": {
+                            "Port-Channel30": {
+                                "localValue": "123",
+                                "peerValue": "3700"
+                            }
+                        }
+                    }
+                },
+                "mlagActive": True,
+                "mlagConnected": True
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["MLAG config-sanity returned Interface inconsistancies: {'trunk-native-vlan mlag30': {'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}"]
+    },
+]
