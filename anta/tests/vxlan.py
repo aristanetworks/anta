@@ -20,7 +20,7 @@ class VerifyVxlan(AntaTest):
 
     name = "verify_vxlan"
     description = "Verifies Vxlan1 status"
-    categories = ["mlag"]
+    categories = ["vxlan"]
     commands = [AntaTestCommand(command="show interfaces description", ofmt="json")]
 
     @AntaTest.anta_test
@@ -38,39 +38,34 @@ class VerifyVxlan(AntaTest):
         ):
             self.result.is_success()
         else:
-            self.result.is_failure(f"Vxlan1 interface is {command_output['interfaceDescriptions']['Vxlan1']['lineProtocolStatus']}/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}")
+            self.result.is_failure(f"Vxlan1 interface is {command_output['interfaceDescriptions']['Vxlan1']['lineProtocolStatus']}/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}")  # noqa: E501
 
 
-@anta_test
-async def verify_vxlan_config_sanity(device: InventoryDevice, result: TestResult) -> TestResult:
+class VerifyVxlanConfigSanity(AntaTest):
     """
-    Verifies there is no VXLAN config-sanity warnings.
-
-    Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if VXLAN config sanity is OK
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
+    Verifies that there are no VXLAN config-sanity issues flagged
     """
-    response = await device.session.cli(command="show vxlan config-sanity", ofmt="json")
-    logger.debug(f"query result is: {response}")
-    response_data = response["categories"]
 
-    if len(response_data) == 0:
-        result.is_skipped("Vxlan is not enabled on this device")
-        return result
+    name = "verify_vxlan"
+    description = "Verifies Vxlan1 status"
+    categories = ["vxlan"]
+    commands = [AntaTestCommand(command="show vxlan config-sanity", ofmt="json")]
 
-    failed_categories = {
-        category: content for category, content in response_data.items() if category in ["localVtep", "mlag"] and content["allCheckPass"] is not True
-    }
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Run VerifyVxlanConfigSanity validation"""
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
 
-    if len(failed_categories) > 0:
-        result.is_failure(f"Vxlan config sanity check is not passing: {failed_categories}")
-    else:
-        result.is_success()
+        failed_categories = {
+            category: content for category, content in command_output['categories'].items()  # noqa: E501
+            if category in ["localVtep", "mlag", "pd"] and content["allCheckPass"] is not True
+        }
 
-    return result
+        if len(command_output['categories']) == 0:
+            self.result.is_skipped("VXLAN is not configured on this device")
+        elif len(failed_categories) > 0:
+            self.result.is_failure(f"Vxlan config sanity check is not passing: {failed_categories}")
+        else:
+            self.result.is_success()
