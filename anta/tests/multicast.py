@@ -2,82 +2,80 @@
 Test functions related to multicast
 """
 import logging
-from typing import List
+from typing import Any, Dict, List, Optional, cast
 
-from anta.inventory.models import InventoryDevice
-from anta.result_manager.models import TestResult
-from anta.tests import anta_test
+from anta.models import AntaTest, AntaTestCommand
 
 logger = logging.getLogger(__name__)
 
 
-@anta_test
-async def verify_igmp_snooping_vlans(device: InventoryDevice, result: TestResult, vlans: List[str], configuration: str) -> TestResult:
+class VerifyIGMPSnoopingVlans(AntaTest):
     """
     Verifies the IGMP snooping configuration for some VLANs.
 
     Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
         vlans (List[str]): A list of VLANs
         configuration (str): Expected IGMP snooping configuration (enabled or disabled) for these VLANs.
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "success" if IGMP snooping is configured on these vlans
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
-
     """
-    if not vlans or not configuration:
-        result.result = "skipped"
-        result.messages.append("verify_igmp_snooping_vlans was not run as no vlans or configuration was given")
-        return result
-    response = await device.session.cli(command="show ip igmp snooping", ofmt="json")
-    logger.debug(f"query result is: {response}")
 
-    result.is_success()
-    for vlan in vlans:
-        if vlan not in response["vlans"]:
-            result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
-            continue
+    name = "VerifyIGMPSnoopingVlans"
+    description = "Verifies the IGMP snooping configuration for some VLANs."
+    categories = ["multicast", "igmp"]
+    commands = [AntaTestCommand(command="show ip igmp snooping")]
 
-        igmp_state = response["vlans"][str(vlan)]["igmpSnoopingState"]
-        if igmp_state != configuration:
-            result.is_failure()
-            result.messages.append(f"IGMP state for vlan {vlan} is {igmp_state}")
+    @AntaTest.anta_test
+    def test(self, vlans: Optional[List[str]] = None, configuration: str = "") -> None:
+        """Run VerifyIGMPSnoopingVlans validation"""
 
-    return result
+        if not vlans or not configuration:
+            self.result.is_skipped("VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given")
+            return
+        if configuration not in ["enabled", "disabled"]:
+            self.result.is_error(f"VerifyIGMPSnoopingVlans was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
+            return
+
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        logger.debug(f"query self.result is: {command_output}")
+
+        self.result.is_success()
+        for vlan in vlans:
+            if vlan not in command_output["vlans"]:
+                self.result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
+                continue
+
+            igmp_state = command_output["vlans"][str(vlan)]["igmpSnoopingState"]
+            if igmp_state != configuration:
+                self.result.is_failure(f"IGMP state for vlan {vlan} is {igmp_state}")
 
 
-@anta_test
-async def verify_igmp_snooping_global(device: InventoryDevice, result: TestResult, configuration: str) -> TestResult:
+class VerifyIGMPSnoopingGlobal(AntaTest):
     """
     Verifies the IGMP snooping global configuration.
 
     Args:
-        device (InventoryDevice): InventoryDevice instance containing all devices information.
         configuration (str): Expected global IGMP snooping configuration (enabled or disabled).
-
-    Returns:
-        TestResult instance with
-        * result = "unset" if the test has not been executed
-        * result = "skipped" if the `configuration` parameter was missing
-        * result = "success" if IGMP snooping is globally configured
-        * result = "failure" otherwise.
-        * result = "error" if any exception is caught
     """
-    if not configuration:
-        result.is_skipped("verify_igmp_snooping_global was not run as no configuration was given")
-        return result
 
-    response = await device.session.cli(command="show ip igmp snooping", ofmt="json")
-    logger.debug(f"query result is: {response}")
+    name = "VerifyIGMPSnoopingGlobal"
+    description = "Verifies the IGMP snooping global configuration."
+    categories = ["multicast", "igmp"]
+    commands = [AntaTestCommand(command="show ip igmp snooping")]
 
-    igmp_state = response["igmpSnoopingState"]
-    if igmp_state == configuration:
-        result.is_success()
-    else:
-        result.is_failure(f"IGMP state is not valid: {igmp_state}")
+    @AntaTest.anta_test
+    def test(self, configuration: str = "") -> None:
+        """Run VerifyIGMPSnoopingGlobal validation"""
 
-    return result
+        if not configuration:
+            self.result.is_skipped("VerifyIGMPSnoopingGlobal was not run as no configuration was given")
+            return
+
+        if configuration not in ["enabled", "disabled"]:
+            self.result.is_error(f"VerifyIGMPSnoopingGlobal was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
+            return
+
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        logger.debug(f"query self.result is: {command_output}")
+
+        self.result.is_success()
+        if (igmp_state := command_output["igmpSnoopingState"]) != configuration:
+            self.result.is_failure(f"IGMP state is not valid: {igmp_state}")
