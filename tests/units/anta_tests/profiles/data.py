@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-INPUT_PROFILE_SETTING: List[Dict[str, Any]] = [
+INPUT_UFT_SETTING: List[Dict[str, Any]] = [
     {
         "name": "skipped",
         "eos_data": [{}],
@@ -41,5 +41,53 @@ INPUT_PROFILE_SETTING: List[Dict[str, Any]] = [
         "side_effect": "3",
         "expected_result": "failure",
         "expected_messages": ["Device is not running correct UFT mode (expected: 3 / running: 2)"]
+    },
+]
+
+INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
+    {
+        "name": "skipped",
+        "eos_data": [{}],
+        "side_effect": None,
+        "expected_result": "skipped",
+        "expected_messages": ["verify_tcam_profile was not run as no profile was given"]
+    },
+    {
+        "name": "success",
+        "eos_data": [
+            {
+                "pmfProfiles": {
+                    "FixedSystem": {
+                        "config": "test",
+                        "configType": "System Profile",
+                        "status": "test",
+                        "mode": "tcam"
+                    }
+                },
+                "lastProgrammingStatus": {}
+            }
+        ],
+        "side_effect": "test",
+        "expected_result": "success",
+        "expected_messages": []
+    },
+    {
+        "name": "failure",
+        "eos_data": [
+            {
+                "pmfProfiles": {
+                    "FixedSystem": {
+                        "config": "test",
+                        "configType": "System Profile",
+                        "status": "default",
+                        "mode": "tcam"
+                    }
+                },
+                "lastProgrammingStatus": {}
+            }
+        ],
+        "side_effect": "test",
+        "expected_result": "failure",
+        "expected_messages": ["Incorrect profile running on device: default"]
     },
 ]
