@@ -14,6 +14,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     """
     Verifies the device is using the expected Unified Forwarding Table mode.
     """
+
     name = "verify_unified_forwarding_table_mode"
     description = ""
     categories = ["profiles"]
@@ -26,7 +27,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
             self.result.is_skipped("verify_unified_forwarding_table_mode was not run as no mode was given")
         else:
             command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-            if command_output['uftMode'] == mode:
+            if command_output["uftMode"] == mode:
                 self.result.is_success()
             else:
                 self.result.is_failure(f"Device is not running correct UFT mode (expected: {mode} / running: {command_output['uftMode']})")
@@ -36,6 +37,7 @@ class VerifyTcamProfile(AntaTest):
     """
     Verifies the device is using the configured TCAM profile.
     """
+
     name = "verify_tcam_profile"
     description = "Verify that the assigned TCAM profile is actually running on the device"
     categories = ["profiles"]
@@ -48,8 +50,10 @@ class VerifyTcamProfile(AntaTest):
             self.result.is_skipped("verify_tcam_profile was not run as no profile was given")
         else:
             command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-            if (command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"]
-               and command_output["pmfProfiles"]["FixedSystem"]["status"] == profile):
+            if (
+                command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"]
+                and command_output["pmfProfiles"]["FixedSystem"]["status"] == profile
+            ):
                 self.result.is_success()
             else:
                 self.result.is_failure(f"Incorrect profile running on device: {command_output['pmfProfiles']['FixedSystem']['status']}")

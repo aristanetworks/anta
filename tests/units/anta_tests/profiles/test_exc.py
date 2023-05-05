@@ -24,7 +24,7 @@ def test_VerifyUnifiedForwardingTableMode(mocked_device: MagicMock, test_data: A
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
     test = VerifyUnifiedForwardingTableMode(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test(mode=test_data['side_effect']))
+    asyncio.run(test.test(mode=test_data["side_effect"]))
     logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
@@ -40,7 +40,7 @@ def test_VerifyTcamProfile(mocked_device: MagicMock, test_data: Any) -> None:
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
     test = VerifyTcamProfile(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test(profile=test_data['side_effect']))
+    asyncio.run(test.test(profile=test_data["side_effect"]))
     logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
