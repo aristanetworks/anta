@@ -52,9 +52,7 @@ class VerifyTcamProfile(AntaTest):
             return
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        if (
-            command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == profile
-        ):
+        if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == profile:
             self.result.is_success()
         else:
             self.result.is_failure(f"Incorrect profile running on device: {command_output['pmfProfiles']['FixedSystem']['status']}")
