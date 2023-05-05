@@ -9,7 +9,7 @@ import traceback
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -27,13 +27,13 @@ class AntaTestCommand(BaseModel):
 
     Attributes:
         command(str): Test command
-        version(str): eAPI version - default is latest
+        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
     """
 
     command: str
-    version: str = "latest"
+    version: Union[int, Literal["latest"]] = "latest"
     ofmt: str = "json"
     output: Optional[Union[Dict[str, Any], str]]
     is_dynamic: bool = False
@@ -44,13 +44,13 @@ class AntaTestTemplate(BaseModel):
 
     Attributes:
         command(str): Test command
-        version(str): eAPI version - default is latest
+        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
     """
 
     template: str
-    version: str = "latest"
+    version: Union[int, Literal["latest"]] = "latest"
     ofmt: str = "json"
 
 

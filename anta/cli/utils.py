@@ -10,6 +10,9 @@ import logging
 from rich.logging import RichHandler
 
 logger = logging.getLogger(__name__)
+# For logs triggered before setup_logging is called
+FORMAT = "%(message)s"
+logging.basicConfig(format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
 
 
 def setup_logging(level: str = "info") -> None:
@@ -25,9 +28,9 @@ def setup_logging(level: str = "info") -> None:
         level (str, optional): level name to configure. Defaults to 'critical'.
     """
     loglevel = getattr(logging, level.upper())
+    logging.getLogger("anta").setLevel(loglevel)
+    logging.getLogger("aioeapi").setLevel(loglevel)
 
-    FORMAT = "%(message)s"
-    logging.basicConfig(level=loglevel, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
     logging.getLogger("anta.inventory").setLevel(loglevel)
     logging.getLogger("anta.result_manager").setLevel(loglevel)
 

@@ -2,7 +2,6 @@
 Generic routing test functions
 """
 import logging
-
 from typing import Any, Dict, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
@@ -23,9 +22,8 @@ class VerifyRoutingProtocolModel(AntaTest):
         "Verifies the configured routing protocol model is the expected one and if there is no mismatch between the configured and operating routing protocol model."
     )
     categories = ["routing", "generic"]
+    # "revision": 3
     commands = [AntaTestCommand(command="show ip route summary")]
-    # TODO - revision
-    # command_output = await device.session.cli(command={"cmd": "show ip route summary", "revision": 3}, ofmt="json")
 
     @AntaTest.anta_test
     def test(self, model: Optional[str] = "multi-agent") -> None:
@@ -41,7 +39,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if configured_model == operating_model == model:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing model is misconfigured: configured:{configured_model} - " f"operating:{operating_model} - expected:{model} ")
+            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {model}")
 
 
 class VerifyRoutingTableSize(AntaTest):
@@ -57,17 +55,23 @@ class VerifyRoutingTableSize(AntaTest):
     name = "VerifyRoutingTableSize"
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
     categories = ["routing", "generic"]
+    # "revision": 3
     commands = [AntaTestCommand(command="show ip route summary")]
-    # command_output = await device.session.cli(command={"cmd": "show ip route summary", "revision": 3}, ofmt="json")
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
         """Run VerifyRoutingTableSize validation"""
 
-        # TODO - extra checks on min < max?
         if not minimum or not maximum:
-            self.result.is_skipped("VerifyRoutingTableSize was not run as no minimum or maximum were given")
+            self.result.is_skipped(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} was not provided")
             return
+        if not isinstance(minimum, int) or not isinstance(maximum, int):
+            self.result.is_error(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} is not a valid value (integer)")
+            return
+        if maximum < minimum:
+            self.result.is_error(f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
+            return
+
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
         total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
         if minimum <= total_routes <= maximum:
@@ -84,7 +88,8 @@ class VerifyBFD(AntaTest):
     name = "VerifyBFD"
     description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
     categories = ["routing", "generic"]
-    commands = [AntaTestCommand(command="show bfd peers")]
+    # revision 1 as later revision introduce additional nesting for type
+    commands = [AntaTestCommand(command="show bfd peers", version=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -92,14 +97,13 @@ class VerifyBFD(AntaTest):
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
-        has_failed: bool = False
-        for vrf in command_output["vrfs"]:
-            for neighbor in command_output["vrfs"][vrf]["ipv4Neighbors"]:
-                for interface in command_output["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"]:
-                    if command_output["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"][interface]["status"] != "up":
-                        intf_state = command_output["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"][interface]["status"]
-                        intf_name = command_output["vrfs"][vrf]["ipv4Neighbors"][neighbor]["peerStats"][interface]
-                        has_failed = True
-                        self.result.is_failure(f"bfd state on interface {intf_name} is {intf_state} (expected up)")
-        if has_failed is False:
-            self.result.is_success()
+        self.result.is_success()
+
+        for _, vrf_data in command_output["vrfs"].items():
+            for _, neighbor_data in vrf_data["ipv4Neighbors"].items():
+                for peer, peer_data in neighbor_data["peerStats"].items():
+                    if (peer_status := peer_data["status"]) != "up":
+                        failure_message = f"bfd state for peer '{peer}' is {peer_status} (expected up)."
+                        if (peer_l3intf := peer_data.get("l3intf")) is not None and peer_l3intf != "":
+                            failure_message += f" Interface: {peer_l3intf}."
+                        self.result.is_failure(failure_message)
