@@ -16,7 +16,7 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
         "expected_messages": []
     },
     {
-        "name": "failure",
+        "name": "failure-wrong-vrf",
         "eos_data": [
             {
                 'vrfs': {'snmpVrfs': ['default']},
@@ -28,7 +28,7 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
         "expected_messages": ["SNMP agent disabled in vrf MGMT"]
     },
     {
-        "name": "failure",
+        "name": "failure-disabled",
         "eos_data": [
             {
                 'vrfs': {'snmpVrfs': ['default']},
@@ -38,6 +38,18 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
         "side_effect": "default",
         "expected_result": "failure",
         "expected_messages": ["SNMP agent disabled in vrf default"]
+    },
+    {
+        "name": "skipped-no-vrf",
+        "eos_data": [
+            {
+                'vrfs': {'snmpVrfs': ['default']},
+                'enabled': True
+            }
+        ],
+        "side_effect": None,
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySnmpStatus did not run because vrf was not supplied"]
     },
 ]
 
@@ -61,7 +73,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
         "expected_messages": []
     },
     {
-        "name": "failure",
+        "name": "failure-wrong-number",
         "eos_data": [
             {
                 "ipAclList": {
@@ -74,7 +86,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
         "expected_messages": ["Expected 1 SNMP IPv4 ACL(s) in vrf MGMT but got 0"]
     },
     {
-        "name": "failure",
+        "name": "failure-wrong-vrf",
         "eos_data": [
             {
                 "ipAclList": {
@@ -90,6 +102,42 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
         "side_effect": (1, "MGMT"),
         "expected_result": "failure",
         "expected_messages": ["SNMP IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SNMP']"]
+    },
+    {
+        "name": "skipped-no-vrf",
+        "eos_data": [
+            {
+                "ipAclList": {
+                    "aclList": [{
+                        "type": "Ip4Acl",
+                        "name": "ACL_IPV4_SNMP",
+                        "configuredVrfs": ["MGMT"],
+                        "activeVrfs": ["MGMT"]
+                    }]
+                }
+            }
+        ],
+        "side_effect": (1, None),
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
+    },
+    {
+        "name": "skipped-no-number",
+        "eos_data": [
+            {
+                "ipAclList": {
+                    "aclList": [{
+                        "type": "Ip4Acl",
+                        "name": "ACL_IPV4_SNMP",
+                        "configuredVrfs": ["MGMT"],
+                        "activeVrfs": ["MGMT"]
+                    }]
+                }
+            }
+        ],
+        "side_effect": (None, "MGMT"),
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
     }
 ]
 
