@@ -692,15 +692,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.profiles.verify_tcam_profile" class="md-nav__link">
-    verify_tcam_profile()
+  <a href="#anta.tests.profiles.VerifyTcamProfile" class="md-nav__link">
+    VerifyTcamProfile
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.profiles.verify_unified_forwarding_table_mode" class="md-nav__link">
-    verify_unified_forwarding_table_mode()
+  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="md-nav__link">
+    VerifyUnifiedForwardingTableMode
   </a>
   
 </li>
@@ -1171,15 +1171,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.profiles.verify_tcam_profile" class="md-nav__link">
-    verify_tcam_profile()
+  <a href="#anta.tests.profiles.VerifyTcamProfile" class="md-nav__link">
+    VerifyTcamProfile
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.profiles.verify_unified_forwarding_table_mode" class="md-nav__link">
-    verify_unified_forwarding_table_mode()
+  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="md-nav__link">
+    VerifyUnifiedForwardingTableMode
   </a>
   
 </li>
@@ -1231,120 +1231,38 @@
 
 
 
-
-<div class="doc doc-object doc-function">
-
+<div class="doc doc-object doc-class">
 
 
-<h2 id="anta.tests.profiles.verify_tcam_profile" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">verify_tcam_profile</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">profile</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-async"><code>async</code></small>
-  </span>
 
-<a href="#anta.tests.profiles.verify_tcam_profile" class="headerlink" title="Permanent link">&para;</a></h2>
+<h2 id="anta.tests.profiles.VerifyTcamProfile" class="doc doc-heading">
+        <code>VerifyTcamProfile</code>
+
+
+<a href="#anta.tests.profiles.VerifyTcamProfile" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
   
-      <p>Verifies the configured TCAM profile is the expected one.</p>
+      <p>Verifies the device is using the configured TCAM profile.</p>
 
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>device</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
-          </td>
-          <td><p>InventoryDevice instance containing all devices information.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>profile</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>The expected TCAM profile.0</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
 
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><p>TestResult instance with</p></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;mode&rdquo; if the <code>profile</code> parameter is missing</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;success&rdquo; if TCAM profile is correct</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;failure&rdquo; otherwise.</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;error&rdquo; if any exception is caught</li>
-</ul></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/profiles.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
@@ -1355,177 +1273,74 @@
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
-<span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_tcam_profile</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTcamProfile</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the configured TCAM profile is the expected one.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">        profile (str): The expected TCAM profile.0</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        TestResult instance with</span>
-<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">        * result = &quot;mode&quot; if the `profile` parameter is missing</span>
-<span class="sd">        * result = &quot;success&quot; if TCAM profile is correct</span>
-<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
+<span class="sd">    Verifies the device is using the configured TCAM profile.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">profile</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_tcam_profile was not run as no profile was given&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span>
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">profile</span>
-    <span class="p">):</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Incorrect profile configured on device: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;verify_tcam_profile&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verify that the assigned TCAM profile is actually running on the device&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_tcam_profile was not run as no profile was given&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect profile running on device: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;pmfProfiles&#39;</span><span class="p">][</span><span class="s1">&#39;FixedSystem&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
   </div>
 
 </div>
 
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-class">
 
 
 
-<h2 id="anta.tests.profiles.verify_unified_forwarding_table_mode" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">verify_unified_forwarding_table_mode</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-async"><code>async</code></small>
-  </span>
+<h2 id="anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="doc doc-heading">
+        <code>VerifyUnifiedForwardingTableMode</code>
 
-<a href="#anta.tests.profiles.verify_unified_forwarding_table_mode" class="headerlink" title="Permanent link">&para;</a></h2>
+
+<a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
   
       <p>Verifies the device is using the expected Unified Forwarding Table mode.</p>
 
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>device</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
-          </td>
-          <td><p>InventoryDevice instance containing all devices information.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>mode</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>The expected Unified Forwarding Table mode.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
 
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><p>TestResult instance with</p></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;unset&rdquo; if the test has not been executed</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;mode&rdquo; if the <code>mode</code> parameter is missing</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;success&rdquo; if UFT mode is correct</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;failure&rdquo; otherwise.</li>
-</ul></td>
-        </tr>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result_manager_models/#anta.result_manager.models.TestResult">TestResult</a></code>
-          </td>
-          <td><ul>
-<li>result = &ldquo;error&rdquo; if any exception is caught</li>
-</ul></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/profiles.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1545,52 +1360,51 @@
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;VEOS-LAB&quot;</span><span class="p">])</span>
-<span class="nd">@anta_test</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_unified_forwarding_table_mode</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyUnifiedForwardingTableMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the device is using the expected Unified Forwarding Table mode.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): InventoryDevice instance containing all devices information.</span>
-<span class="sd">        mode (str): The expected Unified Forwarding Table mode.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        TestResult instance with</span>
-<span class="sd">        * result = &quot;unset&quot; if the test has not been executed</span>
-<span class="sd">        * result = &quot;mode&quot; if the `mode` parameter is missing</span>
-<span class="sd">        * result = &quot;success&quot; if UFT mode is correct</span>
-<span class="sd">        * result = &quot;failure&quot; otherwise.</span>
-<span class="sd">        * result = &quot;error&quot; if any exception is caught</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">mode</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_unified_forwarding_table_mode was not run as no mode was given&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query result is: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;uftMode&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">response_data</span> <span class="o">==</span> <span class="n">mode</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;verify_unified_forwarding_table_mode&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;verify_unified_forwarding_table_mode was not run as no mode was given&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;uftMode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;uftMode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
   </div>
 
 </div>
+
 
 
 
