@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 import traceback
 from typing import Any, Dict, Iterator, List, Optional, Union
 
@@ -22,6 +23,42 @@ DEFAULT_HW_MODEL = "unset"
 # Pydantic models for input validation
 
 RFC_1123_REGEX = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+
+if sys.version_info < (3, 10):
+    # @gmuloc - TODO - drop this when anta drops 3.8/3.9 support
+    # For Python < 3.10, it is not possible to install a version of aio-eapi newer than 0.3.0
+    # which sadly hardcodes version to 1 in its call to eAPI
+    # This little piece of nasty hack patches the aio-eapi function to support using a different
+    # version of the eAPI.
+    # Hic Sunt Draconis.
+    # Are we proud of this? No.
+    def patched_jsoncrpc_command(self: Device, commands: List[str], ofmt: str, **kwargs: Dict[Any, Any]) -> Dict[str, Any]:
+        """
+        Used to create the JSON-RPC command dictionary object
+        """
+        version = kwargs.get("version", "latest")
+
+        cmd = {
+            "jsonrpc": "2.0",
+            "method": "runCmds",
+            "params": {
+                "version": version,
+                "cmds": commands,
+                "format": ofmt or self.EAPI_DEFAULT_OFMT,
+            },
+            "id": str(kwargs.get("req_id") or id(self)),
+        }
+        if "autoComplete" in kwargs:
+            cmd["params"]["autoComplete"] = kwargs["autoComplete"]  # type: ignore
+
+        if "expandAliases" in kwargs:
+            cmd["params"]["expandAliases"] = kwargs["expandAliases"]  # type: ignore
+
+        return cmd
+
+    python_version = ".".join(map(str, sys.version_info[:3]))
+    logger.warning(f"Using Python {python_version} < 3.10 - patching aioeapi.Device.jsoncrpc_command to support 'latest' version")
+    Device.jsoncrpc_command = patched_jsoncrpc_command
 
 
 class AntaInventoryHost(BaseModel):
@@ -189,6 +226,7 @@ class InventoryDevice(BaseModel):
             response = await self.session.cli(
                 commands=[enable_cmd, command.command],
                 ofmt=command.ofmt,
+                version=command.version,
             )
             # remove first dict related to enable command
             # only applicable to json output
