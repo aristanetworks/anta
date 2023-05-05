@@ -2170,14 +2170,16 @@ def test(self) -&gt; None:
           <td><p>Test command</p></td>
         </tr>
         <tr>
-          <td><code>version(str)</code></td>
+          <td><code>version</code></td>
           <td>
+                <code><span title="typing.Union">Union</span>[int, <span title="typing.Literal">Literal</span>[&#39;latest&#39;]]</code>
           </td>
-          <td><p>eAPI version - default is latest</p></td>
+          <td><p>eAPI version - valid values are integers or the string &ldquo;latest&rdquo; - default is &ldquo;latest&rdquo;</p></td>
         </tr>
         <tr>
           <td><code>ofmt(str)</code></td>
           <td>
+                <code><span title="typing.Union">Union</span>[int, <span title="typing.Literal">Literal</span>[&#39;latest&#39;]]</code>
           </td>
           <td><p>eAPI output - json or text - default is json</p></td>
         </tr>
@@ -2213,13 +2215,13 @@ def test(self) -&gt; None:
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        command(str): Test command</span>
-<span class="sd">        version(str): eAPI version - default is latest</span>
+<span class="sd">        version: eAPI version - valid values are integers or the string &quot;latest&quot; - default is &quot;latest&quot;</span>
 <span class="sd">        ofmt(str):  eAPI output - json or text - default is json</span>
 <span class="sd">        output: collected output either dict for json or str for text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+    <span class="n">version</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;latest&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
     <span class="n">ofmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span>
     <span class="n">is_dynamic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2275,20 +2277,23 @@ def test(self) -&gt; None:
           <td><p>Test command</p></td>
         </tr>
         <tr>
-          <td><code>version(str)</code></td>
+          <td><code>version</code></td>
           <td>
+                <code><span title="typing.Union">Union</span>[int, <span title="typing.Literal">Literal</span>[&#39;latest&#39;]]</code>
           </td>
-          <td><p>eAPI version - default is latest</p></td>
+          <td><p>eAPI version - valid values are integers or the string &ldquo;latest&rdquo; - default is &ldquo;latest&rdquo;</p></td>
         </tr>
         <tr>
           <td><code>ofmt(str)</code></td>
           <td>
+                <code><span title="typing.Union">Union</span>[int, <span title="typing.Literal">Literal</span>[&#39;latest&#39;]]</code>
           </td>
           <td><p>eAPI output - json or text - default is json</p></td>
         </tr>
         <tr>
           <td><code>output</code></td>
           <td>
+                <code><span title="typing.Union">Union</span>[int, <span title="typing.Literal">Literal</span>[&#39;latest&#39;]]</code>
           </td>
           <td><p>collected output either dict for json or str for text</p></td>
         </tr>
@@ -2315,13 +2320,13 @@ def test(self) -&gt; None:
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        command(str): Test command</span>
-<span class="sd">        version(str): eAPI version - default is latest</span>
+<span class="sd">        version: eAPI version - valid values are integers or the string &quot;latest&quot; - default is &quot;latest&quot;</span>
 <span class="sd">        ofmt(str):  eAPI output - json or text - default is json</span>
 <span class="sd">        output: collected output either dict for json or str for text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">template</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+    <span class="n">version</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;latest&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
     <span class="n">ofmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -2351,7 +2356,7 @@ def test(self) -&gt; None:
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 4, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 5, 2023</span>
       
     
   </small>
