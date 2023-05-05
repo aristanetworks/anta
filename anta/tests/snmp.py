@@ -19,12 +19,6 @@ class VerifySnmpStatus(AntaTest):
         success: The test will pass if the SNMP agent is enabled in the specified VRF.
         failure: The test will fail if the SNMP agent is disabled in the specified VRF.
         skipped: The test will be skipped if the VRF parameter is not provided.
-
-    Attributes:
-        name: The name of the test case.
-        description: A brief description of what the test case does.
-        categories: A list of categories to which this test case belongs.
-        commands: A list of commands that will be executed by the test case.
     """
 
     name = "VerifySnmpStatus"
@@ -39,9 +33,6 @@ class VerifySnmpStatus(AntaTest):
 
         Args:
             vrf: The name of the VRF in which to check for the SNMP agent. Defaults to 'default'.
-
-        Returns:
-            None. The test result will be stored in the `self.result` attribute of the test case object.
         """
         if not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because vrf was not supplied")
@@ -64,12 +55,6 @@ class VerifySnmpIPv4Acl(AntaTest):
         success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
         failure: The test will fail if the SNMP agent has not the right number of IPv4 ACL(s) in the specified VRF.
         skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
-
-    Attributes:
-        name: The name of the test case.
-        description: A brief description of what the test case does.
-        categories: A list of categories to which this test case belongs.
-        commands: A list of commands that will be executed by the test case.
     """
 
     name = "VerifySnmpIPv4Acl"
@@ -85,9 +70,6 @@ class VerifySnmpIPv4Acl(AntaTest):
         Args:
             number: The number of expected IPv4 ACL(s).
             vrf: The name of the VRF in which to check for the SNMP agent. Defaults to 'default'.
-
-        Returns:
-            None. The test result will be stored in the `self.result` attribute of the test case object.
         """
         if not number or not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
@@ -123,12 +105,6 @@ class VerifySnmpIPv6Acl(AntaTest):
         success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.
         failure: The test will fail if the SNMP agent has not the right number of IPv6 ACL(s) in the specified VRF.
         skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
-
-    Attributes:
-        name: The name of the test case.
-        description: A brief description of what the test case does.
-        categories: A list of categories to which this test case belongs.
-        commands: A list of commands that will be executed by the test case.
     """
 
     name = "VerifySnmpIPv6Acl"
@@ -144,9 +120,6 @@ class VerifySnmpIPv6Acl(AntaTest):
         Args:
             number: The number of expected IPv6 ACL(s).
             vrf: The name of the VRF in which to check for the SNMP agent. Defaults to 'default'.
-
-        Returns:
-            None. The test result will be stored in the `self.result` attribute of the test case object.
         """
         if not number or not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
