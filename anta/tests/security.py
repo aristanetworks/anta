@@ -32,7 +32,7 @@ class VerifySSHStatus(AntaTest):
         """
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[0].output
+        command_output = cast(str, self.instance_commands[0].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         line = [line for line in command_output.split("\n") if line.startswith("SSHD status")][0]
