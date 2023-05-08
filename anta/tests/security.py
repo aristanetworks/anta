@@ -16,8 +16,8 @@ class VerifySSHStatus(AntaTest):
     Verifies if the SSHD agent is disabled in the default VRF.
 
     Expected Results:
-        success: The test will pass if the SSHD agent is disabled in the default VRF.
-        failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+        * success: The test will pass if the SSHD agent is disabled in the default VRF.
+        * failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
     """
 
     name = "VerifySSHStatus"
@@ -49,9 +49,9 @@ class VerifySSHIPv4Acl(AntaTest):
     Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
+        * failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySSHIPv4Acl"
@@ -99,9 +99,9 @@ class VerifySSHIPv6Acl(AntaTest):
     Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
+        * failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySSHIPv6Acl"
@@ -149,8 +149,8 @@ class VerifyTelnetStatus(AntaTest):
     Verifies if Telnet is disabled in the default VRF.
 
     Expected Results:
-        success: The test will pass if Telnet is disabled in the default VRF.
-        failure: The test will fail if Telnet is NOT disabled in the default VRF.
+        * success: The test will pass if Telnet is disabled in the default VRF.
+        * failure: The test will fail if Telnet is NOT disabled in the default VRF.
     """
 
     name = "VerifyTelnetStatus"
@@ -179,8 +179,8 @@ class VerifyAPIHttpStatus(AntaTest):
     Verifies if eAPI HTTP server is disabled globally.
 
     Expected Results:
-        success: The test will pass if eAPI HTTP server is disabled globally.
-        failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+        * success: The test will pass if eAPI HTTP server is disabled globally.
+        * failure: The test will fail if eAPI HTTP server is NOT disabled globally.
     """
 
     name = "VerifyAPIHttpStatus"
@@ -209,9 +209,9 @@ class VerifyAPIHttpsSSL(AntaTest):
     Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
     Expected results:
-        success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
-        failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
-        skipped: The test will be skipped if the SSL profile is not provided.
+        * success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
+        * failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+        * skipped: The test will be skipped if the SSL profile is not provided.
     """
 
     name = "VerifyAPIHttpsSSL"
@@ -250,9 +250,9 @@ class VerifyAPIIPv4Acl(AntaTest):
     Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
-        failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
+        * failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifyAPIIPv4Acl"
@@ -300,9 +300,9 @@ class VerifyAPIIPv6Acl(AntaTest):
     Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
-        failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
+        * failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifyAPIIPv6Acl"

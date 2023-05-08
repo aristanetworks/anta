@@ -161,7 +161,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
         "expected_messages": []
     },
     {
-        "name": "failure",
+        "name": "failure-wrong-number",
         "eos_data": [
             {
                 "ipv6AclList": {
@@ -174,7 +174,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
         "expected_messages": ["Expected 1 SNMP IPv6 ACL(s) in vrf MGMT but got 0"]
     },
     {
-        "name": "failure",
+        "name": "failure-wrong-vrf",
         "eos_data": [
             {
                 "ipv6AclList": {
@@ -190,5 +190,41 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
         "side_effect": (1, "MGMT"),
         "expected_result": "failure",
         "expected_messages": ["SNMP IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SNMP']"]
+    },
+    {
+        "name": "skipped-no-vrf",
+        "eos_data": [
+            {
+                "ipv6AclList": {
+                    "aclList": [{
+                        "type": "Ip6Acl",
+                        "name": "ACL_IPV6_SNMP",
+                        "configuredVrfs": ["MGMT"],
+                        "activeVrfs": ["MGMT"]
+                    }]
+                }
+            }
+        ],
+        "side_effect": (1, None),
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
+    },
+    {
+        "name": "skipped-no-number",
+        "eos_data": [
+            {
+                "ipv6AclList": {
+                    "aclList": [{
+                        "type": "Ip6Acl",
+                        "name": "ACL_IPV6_SNMP",
+                        "configuredVrfs": ["MGMT"],
+                        "activeVrfs": ["MGMT"]
+                    }]
+                }
+            }
+        ],
+        "side_effect": (None, "MGMT"),
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
     }
 ]
