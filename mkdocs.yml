@@ -151,14 +151,14 @@ nav:
     - MLAG: api/tests.mlag.md
     - Multicast: api/tests.multicast.md
     - Profiles: api/tests.profiles.md
-    - System: api/tests.system.md
-    - Software: api/tests.software.md
-    - SNMP: api/tests.snmp.md
-    - Security: api/tests.security.md
     - Routing:
       - Generic: api/tests.routing.generic.md
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
+    - Security: api/tests.security.md
+    - SNMP: api/tests.snmp.md
+    - Software: api/tests.software.md
+    - System: api/tests.system.md
   - API Documentation:
     - Inventory module: api/inventory.md
     - Inventory models:
