@@ -88,6 +88,7 @@ class VerifyLoggingSourceIntf(AntaTest):
         else:
             self.result.is_failure(f"Source-interface '{intf}' is not configured in VRF {vrf}")
 
+
 class VerifyLoggingHosts(AntaTest):
     """
     Verifies logging hosts (syslog servers) for a specified VRF.
@@ -130,7 +131,8 @@ class VerifyLoggingHosts(AntaTest):
         if not not_configured:
             self.result.is_success()
         else:
-          self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {vrf}")
+            self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {vrf}")
+
 
 class VerifyLoggingLogsGeneration(AntaTest):
     """
@@ -146,7 +148,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
     categories = ["logging"]
     commands = [
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text")
+        AntaTestCommand(command="show logging | tail", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -161,13 +163,13 @@ class VerifyLoggingLogsGeneration(AntaTest):
 
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
 
-        lines = command_output.strip().split('\n')[::-1]
+        lines = command_output.strip().split("\n")[::-1]
 
         for line in lines:
             if re.search(log_pattern, line):
                 self.result.is_success()
                 return
-            
+
         self.result.is_failure("Logs are not generated")
 
 
@@ -186,7 +188,7 @@ class VerifyLoggingHostname(AntaTest):
     commands = [
         AntaTestCommand(command="show hostname"),
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text")
+        AntaTestCommand(command="show logging | tail", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -205,13 +207,14 @@ class VerifyLoggingHostname(AntaTest):
 
         log_pattern = r"ANTA VerifyLoggingHostname validation"
 
-        lines = log_output.strip().split('\n')[::-1]
+        lines = log_output.strip().split("\n")[::-1]
 
+        last_line_with_pattern = ""
         for line in lines:
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
-            
+
         if fqdn in last_line_with_pattern:
             self.result.is_success()
         else:
@@ -232,7 +235,7 @@ class VerifyLoggingTimestamp(AntaTest):
     categories = ["logging"]
     commands = [
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text")
+        AntaTestCommand(command="show logging | tail", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -248,13 +251,14 @@ class VerifyLoggingTimestamp(AntaTest):
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
 
-        lines = command_output.strip().split('\n')[::-1]
+        lines = command_output.strip().split("\n")[::-1]
 
+        last_line_with_pattern = ""
         for line in lines:
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
-            
+
         if re.search(timestamp_pattern, last_line_with_pattern):
             self.result.is_success()
         else:
