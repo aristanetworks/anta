@@ -40,11 +40,11 @@ class VerifyTransceiversManufacturers(AntaTest):
 
 class VerifyTemperature(AntaTest):
     """
-    Verifies device temparture is currently OK.
+    Verifies device temparture is currently OK (temperatureOK).
     """
 
     name = "VerifyTemperature"
-    description = "Verifies device temparture is currently OK"
+    description = "Verifies device temparture is currently OK (temperatureOK)"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
 
@@ -72,7 +72,7 @@ class VerifyTransceiversTemperature(AntaTest):
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
+    def test(self) -> None:
         """Run VerifyTransceiversTemperature validation"""
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
         sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
@@ -91,32 +91,71 @@ class VerifyTransceiversTemperature(AntaTest):
             self.result.messages.append(str(wrong_sensors))
 
 
-class VerifyEnvironmentCooling(AntaTest):
+class VerifyEnvironmentSystemCooling(AntaTest):
     """
-    Verifies the fans status is OK.
+    Verifies the System Cooling is ok.
     """
 
-    name = "VerifyEnvironmentCooling"
-    description = "Verifies the fans status is OK"
+    name = "VerifyEnvironmentSystemCooling"
+    description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
+    def test(self) -> None:
         """Run VerifyEnvironmentCooling validation"""
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
         sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
-        if sys_status == "coolingOk":
-            self.result.is_success()
-        else:
-            self.result.is_failure("Device cooling is not OK")
+
+        self.result.is_success()
+        if sys_status != "coolingOk":
+            self.result.is_failure(f"Device System cooling is not OK: {sys_status}")
+
+
+class VerifyEnvironmentCooling(AntaTest):
+    """
+    Verifies the fans status is in the accepted states list.
+
+    Default accepted states list is ['ok']
+    """
+
+    name = "VerifyEnvironmentCooling"
+    description = "Verifies the fans status is OK for fans"
+    categories = ["hardware"]
+    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self, accepted_states: Optional[List[str]] = None) -> None:
+        """Run VerifyEnvironmentCooling validation"""
+        if accepted_states is None:
+            accepted_states = ["ok"]
+
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        self.result.is_success()
+        # First go through power supplies fans
+        for power_supply in command_output.get("powerSupplySlots", []):
+            for fan in power_supply.get("fans", []):
+                if (state := fan["status"]) not in accepted_states:
+                    if self.result.result == "success":
+                        self.result.is_failure(f"Some fans state are not in the accepted list: {accepted_states}.")
+                    self.result.is_failure(f"Fan {fan['label']} on PowerSupply {power_supply['label']} has state '{state}'.")
+        # Then go through Fan Trays
+        for fan_tray in command_output.get("fanTraySlots", []):
+            for fan in fan_tray.get("fans", []):
+                if (state := fan["status"]) not in accepted_states:
+                    if self.result.result == "success":
+                        self.result.is_failure(f"Some fans state are not in the accepted list: {accepted_states}.")
+                    self.result.is_failure(f"Fan {fan['label']} on Fan Tray {fan_tray['label']} has state '{state}'.")
 
 
 class VerifyEnvironmentPower(AntaTest):
     """
-    Verifies the power supplied status is OK.
+    Verifies the power supplied status is in the accepted states list
+
+    The default accepted states list is ['ok']
     """
 
     name = "VerifyEnvironmentPower"
@@ -126,15 +165,19 @@ class VerifyEnvironmentPower(AntaTest):
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
+    def test(self, accepted_states: Optional[List[str]] = None) -> None:
         """Run VerifyEnvironmentPower validation"""
+        if accepted_states is None:
+            accepted_states = ["ok"]
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
         power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
-        wrong_power_supplies = {powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] != "ok"}
+        wrong_power_supplies = {
+            powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in accepted_states
+        }
         if not wrong_power_supplies:
             self.result.is_success()
         else:
-            self.result.is_failure("The following power supplies are not OK")
+            self.result.is_failure(f"The following power supplies states are not in the accepted_states list {accepted_states}")
             self.result.messages.append(str(wrong_power_supplies))
 
 
@@ -149,7 +192,7 @@ class VerifyAdverseDrops(AntaTest):
     commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
 
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
+    def test(self) -> None:
         """Run VerifyAdverseDrops validation"""
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
         total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
