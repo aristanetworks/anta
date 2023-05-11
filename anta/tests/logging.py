@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -35,8 +35,8 @@ class VerifyLoggingPersistent(AntaTest):
         Run VerifyLoggingPersistent validation.
         """
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        log_output = self.instance_commands[0].output
-        dir_flash_output = self.instance_commands[1].output
+        log_output = cast(str, self.instance_commands[0].output)
+        dir_flash_output = cast(str, self.instance_commands[1].output)
         self.logger.debug(f"dataset of log_output command is: {log_output}")
         self.logger.debug(f"dataset of dir_flash_output command is: {dir_flash_output}")
 
@@ -78,7 +78,7 @@ class VerifyLoggingSourceIntf(AntaTest):
             return
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[0].output
+        command_output = cast(str, self.instance_commands[0].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
@@ -118,7 +118,7 @@ class VerifyLoggingHosts(AntaTest):
             return
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[0].output
+        command_output = cast(str, self.instance_commands[0].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         not_configured = []
@@ -158,7 +158,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
         """
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[1].output
+        command_output = cast(str, self.instance_commands[1].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
@@ -198,8 +198,8 @@ class VerifyLoggingHostname(AntaTest):
         """
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        hostname_output = self.instance_commands[0].output
-        log_output = self.instance_commands[2].output
+        hostname_output = cast(Dict[str, str], self.instance_commands[0].output)
+        log_output = cast(str, self.instance_commands[2].output)
         self.logger.debug(f"dataset of hostname_output is: {hostname_output}")
         self.logger.debug(f"dataset of log_output is: {log_output}")
 
@@ -245,7 +245,7 @@ class VerifyLoggingTimestamp(AntaTest):
         """
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[1].output
+        command_output = cast(str, self.instance_commands[1].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
@@ -286,7 +286,7 @@ class VerifyLoggingAccounting(AntaTest):
         """
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = self.instance_commands[0].output
+        command_output = cast(str, self.instance_commands[0].output)
         self.logger.debug(f"dataset is: {command_output}")
 
         pattern = r"cmd=show aaa accounting logs"
