@@ -33,7 +33,7 @@ INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
         ],
         "side_effect": None,
         "expected_result": "failure",
-        "expected_messages": ["Persistent logging is disabled or no logs are saved in flash"]
+        "expected_messages": ["Persistent logging is disabled"]
     },
     {
         "name": "failure-not-saved",
@@ -49,7 +49,7 @@ INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
         ],
         "side_effect": None,
         "expected_result": "failure",
-        "expected_messages": ["Persistent logging is disabled or no logs are saved in flash"]
+        "expected_messages": ["No persistent logs are saved in flash"]
     },
 ]
 

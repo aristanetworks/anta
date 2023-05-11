@@ -16,6 +16,8 @@ class VerifyLoggingPersistent(AntaTest):
     """
     Verifies if logging persistent is enabled and logs are saved in flash.
 
+    'show logging' does not support json output yet
+
     Expected Results:
         * success: The test will pass if logging persistent is enabled and logs are in flash.
         * failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
@@ -43,10 +45,14 @@ class VerifyLoggingPersistent(AntaTest):
         pattern = r"-rw-\s+(\d+)"
         match = re.search(pattern, dir_flash_output)
 
-        if match and "disabled" not in log_output and int(match.group(1)) > 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure("Persistent logging is disabled or no logs are saved in flash")
+        self.result.is_success()
+
+        if "disabled" in log_output:
+            self.result.is_failure("Persistent logging is disabled")
+            return
+
+        if not match or int(match.group(1)) == 0:
+            self.result.is_failure("No persistent logs are saved in flash")
 
 
 class VerifyLoggingSourceIntf(AntaTest):
@@ -148,7 +154,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
     categories = ["logging"]
     commands = [
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text"),
+        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -188,7 +194,7 @@ class VerifyLoggingHostname(AntaTest):
     commands = [
         AntaTestCommand(command="show hostname"),
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text"),
+        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -235,7 +241,7 @@ class VerifyLoggingTimestamp(AntaTest):
     categories = ["logging"]
     commands = [
         AntaTestCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
-        AntaTestCommand(command="show logging | tail", ofmt="text"),
+        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
