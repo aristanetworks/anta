@@ -16,9 +16,9 @@ class VerifySnmpStatus(AntaTest):
     Verifies whether the SNMP agent is enabled in a specified VRF.
 
     Expected Results:
-        success: The test will pass if the SNMP agent is enabled in the specified VRF.
-        failure: The test will fail if the SNMP agent is disabled in the specified VRF.
-        skipped: The test will be skipped if the VRF parameter is not provided.
+        * success: The test will pass if the SNMP agent is enabled in the specified VRF.
+        * failure: The test will fail if the SNMP agent is disabled in the specified VRF.
+        * skipped: The test will be skipped if the VRF parameter is not provided.
     """
 
     name = "VerifySnmpStatus"
@@ -52,9 +52,9 @@ class VerifySnmpIPv4Acl(AntaTest):
     Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        failure: The test will fail if the SNMP agent has not the right number of IPv4 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
+        * failure: The test will fail if the SNMP agent has not the right number of IPv4 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySnmpIPv4Acl"
@@ -102,9 +102,9 @@ class VerifySnmpIPv6Acl(AntaTest):
     Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
-        success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        failure: The test will fail if the SNMP agent has not the right number of IPv6 ACL(s) in the specified VRF.
-        skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+        * success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.
+        * failure: The test will fail if the SNMP agent has not the right number of IPv6 ACL(s) in the specified VRF.
+        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySnmpIPv6Acl"
