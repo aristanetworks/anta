@@ -153,9 +153,34 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                         "asn": "666",
                     },
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "BLIH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "5.5.5.5": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLIH",
+                        "asn": "666",
+                    },
+                }
+            },
         ],
-        "side_effect": {"template_params": [{"vrf": "BLAH"}], "number": 1},
+        "side_effect": {"template_params": [{"vrf": "BLAH"}, {"vrf": "BLIH"}], "number": 1},
         "expected_result": "success",
         "expected_messages": [],
     },
