@@ -22,7 +22,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
     description = (
         "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)"
     )
-    categories = ["software"]
+    categories = ["field notices", "software"]
     commands = [AntaTestCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
