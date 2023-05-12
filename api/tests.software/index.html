@@ -547,6 +547,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -583,6 +585,20 @@
     <li class="md-nav__item">
       <a href="../tests.configuration/" class="md-nav__link">
         Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.field_notices/" class="md-nav__link">
+        Field Notices
       </a>
     </li>
   
@@ -670,7 +686,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_9" >
       
       
         
@@ -682,13 +698,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_7_8" id="__nav_7_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_7_9" id="__nav_7_9_label" tabindex="0">
           Routing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_7_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_9">
           <span class="md-nav__icon md-icon"></span>
           Routing
         </label>
@@ -851,26 +867,6 @@
         
           <li class="md-nav__item">
   <a href="#anta.tests.software.VerifyEOSVersion.test" class="md-nav__link">
-    test()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.software.VerifyFieldNotice44Resolution" class="md-nav__link">
-    VerifyFieldNotice44Resolution
-  </a>
-  
-    <nav class="md-nav" aria-label="VerifyFieldNotice44Resolution">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.software.VerifyFieldNotice44Resolution.test" class="md-nav__link">
     test()
   </a>
   
@@ -1309,26 +1305,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.tests.software.VerifyFieldNotice44Resolution" class="md-nav__link">
-    VerifyFieldNotice44Resolution
-  </a>
-  
-    <nav class="md-nav" aria-label="VerifyFieldNotice44Resolution">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.software.VerifyFieldNotice44Resolution.test" class="md-nav__link">
-    test()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#anta.tests.software.VerifyTerminAttrVersion" class="md-nav__link">
     VerifyTerminAttrVersion
   </a>
@@ -1416,7 +1392,8 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/software.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 69</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 68</span>
+<span class="normal"> 69</span>
 <span class="normal"> 70</span>
 <span class="normal"> 71</span>
 <span class="normal"> 72</span>
@@ -1448,8 +1425,7 @@
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEOSExtensions</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEOSExtensions</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies all EOS extensions installed on the device are enabled for boot persistence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1514,7 +1490,8 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
+<span class="normal"> 79</span>
 <span class="normal"> 80</span>
 <span class="normal"> 81</span>
 <span class="normal"> 82</span>
@@ -1536,8 +1513,7 @@
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyEOSExtensions validation&quot;&quot;&quot;</span>
 
@@ -1596,7 +1572,8 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/software.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -1618,8 +1595,7 @@
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEOSVersion</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEOSVersion</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the device is running one of the allowed EOS version.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1675,7 +1651,8 @@ versions (list): List of allowed EOS versions.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
@@ -1687,8 +1664,7 @@ versions (list): List of allowed EOS versions.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">versions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyEOSVersion validation</span>
 <span class="sd">    versions (list): List of allowed EOS versions.&quot;&quot;&quot;</span>
@@ -1702,404 +1678,6 @@ versions (list): List of allowed EOS versions.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;device is running version </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> not in expected versions: </span><span class="si">{</span><span class="n">versions</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="anta.tests.software.VerifyFieldNotice44Resolution" class="doc doc-heading">
-        <code>VerifyFieldNotice44Resolution</code>
-
-
-<a href="#anta.tests.software.VerifyFieldNotice44Resolution" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
-
-  
-      <p>Verifies the device is using an Aboot version that fix the bug discussed
-in the field notice 44 (Aboot manages system settings prior to EOS initialization).</p>
-<p><a href="https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44">https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44</a></p>
-
-
-        <details class="quote">
-          <summary>Source code in <code>anta/tests/software.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice44Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the device is using an Aboot version that fix the bug discussed</span>
-<span class="sd">    in the field notice 44 (Aboot manages system settings prior to EOS initialization).</span>
-
-<span class="sd">    https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyFieldNotice44Resolution&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)&quot;</span>
-    <span class="p">)</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;software&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show version detail&quot;</span><span class="p">)]</span>
-
-    <span class="c1"># TODO maybe implement ONLY ON PLATFORMS instead</span>
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">])</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyFieldNotice44Resolution validation&quot;&quot;&quot;</span>
-
-        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-
-        <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;DCS-7010T-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7010T-48-DC&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX-96&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050TX2-128&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX2-72Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX-96&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX2-128&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050QX-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050QX2-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050SX3-48YC12&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7050CX3-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060CX-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060CX2-32S&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7060SX2-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-48TC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7160-32CQ&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-64&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-68&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SE-72&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7150SC-24-CLD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7150SC-64-CLD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020TR-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020TRA-48&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020SR-24C2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7020SRG-24C2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280TR-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280TRA-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRA-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRAM-48C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2K-48C6-M&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SR2A-48YC6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280SRM-40CX2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280QR-C36&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DCS-7280QRA-C36S&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-SSD-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-SSD-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">]</span>
-
-        <span class="n">model</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;modelName&quot;</span><span class="p">])</span>
-        <span class="c1"># TODO this list could be a regex</span>
-        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">variants</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;device is not impacted by FN044&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;components&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Aboot&quot;</span><span class="p">:</span>
-                <span class="n">aboot_version</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-        </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="anta.tests.software.VerifyFieldNotice44Resolution.test" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">test</span><span class="p">()</span></code>
-
-<a href="#anta.tests.software.VerifyFieldNotice44Resolution.test" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Run VerifyFieldNotice44Resolution validation</p>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">])</span>
-<span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyFieldNotice44Resolution validation&quot;&quot;&quot;</span>
-
-    <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-
-    <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;DCS-7010T-48&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7010T-48-DC&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX-48&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX-64&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX-72&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX-72Q&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX-96&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050TX2-128&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX-64&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX-72&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX-72Q&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX2-72Q&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX-96&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX2-128&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050QX-32S&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050QX2-32S&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050SX3-48YC12&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7050CX3-32S&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7060CX-32S&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7060CX2-32S&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7060SX2-48YC6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7160-48YC6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7160-48TC6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7160-32CQ&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SE-64&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SE-68&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SE-72&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7150SC-24-CLD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7150SC-64-CLD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7020TR-48&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7020TRA-48&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7020SR-24C2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7020SRG-24C2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280TR-48C6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280TRA-48C6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SR-48C6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SRA-48C6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SRAM-48C6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SR2K-48C6-M&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SR2-48YC6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SR2A-48YC6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280SRM-40CX2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280QR-C36&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DCS-7280QRA-C36S&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">variants</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-SSD-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-SSD-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-M-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">]</span>
-
-    <span class="n">model</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;modelName&quot;</span><span class="p">])</span>
-    <span class="c1"># TODO this list could be a regex</span>
-    <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">variants</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">variant</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;device is not impacted by FN044&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
-
-    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;components&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Aboot&quot;</span><span class="p">:</span>
-            <span class="n">aboot_version</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.0.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;6.1.&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">aboot_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2135,7 +1713,8 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/software.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
@@ -2161,8 +1740,7 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTerminAttrVersion</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTerminAttrVersion</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies the device is running one of the allowed TerminAttr version.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2222,7 +1800,8 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
+<span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -2238,8 +1817,7 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">versions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run VerifyTerminAttrVersion validation</span>
@@ -2285,7 +1863,7 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 11, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 12, 2023</span>
       
     
   </small>
