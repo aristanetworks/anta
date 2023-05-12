@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-Tests for anta.tests.software.py
+Tests for anta.tests.field_notices.py
 """
 from __future__ import annotations
 
