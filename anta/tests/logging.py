@@ -1,5 +1,7 @@
 """
 Test functions related to the EOS various logging settings
+
+NOTE: 'show logging' does not support json output yet
 """
 from __future__ import annotations
 
@@ -15,8 +17,6 @@ logger = logging.getLogger(__name__)
 class VerifyLoggingPersistent(AntaTest):
     """
     Verifies if logging persistent is enabled and logs are saved in flash.
-
-    'show logging' does not support json output yet
 
     Expected Results:
         * success: The test will pass if logging persistent is enabled and logs are in flash.
