@@ -136,7 +136,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
             return
 
         serial = command_output["serialNumber"]
-        number = serial[3:7]
+        number = int(serial[3:7])
 
         if "JPE" not in serial and "JAS" not in serial:
             self.result.is_skipped("Device not exposed")
@@ -168,5 +168,5 @@ class VerifyFieldNotice72Resolution(AntaTest):
                     self.result.is_success("FN72 is mitigated")
                 return
         # We should never hit this point
-        self.result.is_error("Error in running test")
+        self.result.is_error("Error in running test - FixedSystemvrm1 not found")
         return
