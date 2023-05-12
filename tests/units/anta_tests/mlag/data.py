@@ -172,7 +172,8 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned Global inconsistancies: {'bridging': {'globalParameters': {'admin-state vlan 33': {'localValue': 'active'}, 'mac-learning vlan 33': {'localValue': 'True'}}}}"]  # noqa: E501
+        "expected_messages": ["MLAG config-sanity returned Global inconsistancies: {'bridging': {'globalParameters':"
+                              " {'admin-state vlan 33': {'localValue': 'active'}, 'mac-learning vlan 33': {'localValue': 'True'}}}}"]
     },
     {
         "name": "failure",
@@ -195,6 +196,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned Interface inconsistancies: {'trunk-native-vlan mlag30': {'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}"]  # noqa: E501
+        "expected_messages": ["MLAG config-sanity returned Interface inconsistancies: {'trunk-native-vlan mlag30': "
+                              "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}"]
     },
 ]

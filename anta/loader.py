@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     """
-    Function to pase the catalog and return a list of tests
+    Function to parse the catalog and return a list of tests
 
     Args:
         test_catalog (Dict[Any, Any]): List of tests defined in catalog YAML file
@@ -25,7 +25,7 @@ def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -
     if not test_catalog:
         return tests
     for key, value in test_catalog.items():
-        # Reauired to manage iteration within a tests module
+        # Required to manage iteration within a tests module
         if package is not None:
             key = ".".join([package, key])
         try:
