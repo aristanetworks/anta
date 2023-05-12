@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, List
 
-
 INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
     {
         "name": "success",

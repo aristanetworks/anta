@@ -111,9 +111,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     """
 
     name = "VerifyFieldNotice72Resolution"
-    description = (
-        "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
-    )
+    description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
     categories = ["field notices", "software"]
     commands = [AntaTestCommand(command="show version detail")]
 
