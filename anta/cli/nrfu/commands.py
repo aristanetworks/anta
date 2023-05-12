@@ -7,15 +7,17 @@ Commands for Anta CLI to run nrfu commands.
 import asyncio
 import logging
 import pathlib
+import sys
 from typing import List, Optional
 
 import click
 
-from anta.cli.utils import parse_tags
+from anta.cli.utils import parse_tags, return_code
 from anta.result_manager import ResultManager
 from anta.runner import main
 
-from .utils import print_jinja, print_json, print_settings, print_table, print_text
+
+from .utils import check_run, print_jinja, print_json, print_settings, print_table, print_text
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,11 @@ def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], 
     results = ResultManager()
     asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_table(results=results, device=device, test=test)
+
+    # TODO make a util method to avoid repeating the same three line
+    ignore_status = ctx.obj["ignore_status"]
+    ignore_error = ctx.obj["ignore_error"]
+    sys.exit(return_code(results, ignore_error, ignore_status))
 
 
 @click.command()
@@ -51,6 +58,10 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
     asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_json(results=results, output=output)
 
+    ignore_status = ctx.obj["ignore_status"]
+    ignore_error = ctx.obj["ignore_error"]
+    sys.exit(return_code(results, ignore_error, ignore_status))
+
 
 @click.command()
 @click.pass_context
@@ -63,6 +74,10 @@ def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], s
     results = ResultManager()
     asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_text(results=results, search=search, skip_error=skip_error)
+
+    ignore_status = ctx.obj["ignore_status"]
+    ignore_error = ctx.obj["ignore_error"]
+    sys.exit(return_code(results, ignore_error, ignore_status))
 
 
 @click.command()
@@ -90,3 +105,7 @@ def tpl_report(ctx: click.Context, tags: Optional[List[str]], template: pathlib.
     results = ResultManager()
     asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_jinja(results=results, template=template, output=output)
+
+    ignore_status = ctx.obj["ignore_status"]
+    ignore_error = ctx.obj["ignore_error"]
+    sys.exit(return_code(results, ignore_error, ignore_status))
