@@ -146,6 +146,7 @@ nav:
   - Tests Catalog Documentation:
     - Overview: api/tests.md
     - Configuration: api/tests.configuration.md
+    - Field Notices: api/tests.field_notices.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
     - MLAG: api/tests.mlag.md

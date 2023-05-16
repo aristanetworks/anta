@@ -95,16 +95,16 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         if not number:
             self.result.is_skipped("VerifyBGPIPv4UnicastCount could not run because number was not supplied")
             return
-        vrf = self.template_params[0]["vrf"]
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
-        peers = command_output["vrfs"][vrf]["peers"]
-        state_issue = _check_bgp_vrfs(command_output["vrfs"])
+        self.result.is_success()
 
-        if not state_issue and len(peers) == number:
-            self.result.is_success()
-        else:
-            self.result.is_failure()
+        for index, command in enumerate(self.instance_commands):
+            vrf = cast(Dict[str, str], command.template_params).get("vrf")
+            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+
+            peers = command_output["vrfs"][vrf]["peers"]
+            state_issue = _check_bgp_vrfs(command_output["vrfs"])
+
             if len(peers) != number:
                 self.result.is_failure(f"Expecting {number} BGP peer in vrf {vrf} and got {len(peers)}")
             if state_issue:
