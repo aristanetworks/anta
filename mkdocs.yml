@@ -149,6 +149,7 @@ nav:
     - Field Notices: api/tests.field_notices.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
+    - Logging: api/tests.logging.md
     - MLAG: api/tests.mlag.md
     - Multicast: api/tests.multicast.md
     - Profiles: api/tests.profiles.md
