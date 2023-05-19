@@ -11,6 +11,23 @@ from anta.models import AntaTest, AntaTestCommand
 logger = logging.getLogger(__name__)
 
 
+def _check_group_methods(methods: List[str]) -> List[str]:
+    """Verifies if the provided methods in various AAA tests start with 'group'."""
+    built_in_methods = ["local", "none", "logging"]
+
+    return [f"group {method}" if method not in built_in_methods and not method.startswith("group ") else method for method in methods]
+
+
+def _check_auth_type(auth_types: List[str], valid_auth_types: List[str]) -> None:
+    """Verifies if the provided auth types in various AAA tests are valid"""
+    if len(auth_types) > len(valid_auth_types):
+        raise ValueError(f"Too many parameters provided in auth_types. Valid parameters are: {valid_auth_types}")
+
+    for auth_type in auth_types:
+        if auth_type not in valid_auth_types:
+            raise ValueError(f"Wrong parameter provided in auth_types. Valid parameters are: {valid_auth_types}")
+
+
 class VerifyTacacsAuth(AntaTest):
     """
     Verifies if TACACS authentication is successful for a specified user.
@@ -181,3 +198,234 @@ class VerifyTacacsServerGroups(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"TACACS server group(s) {not_configured} are not configured")
+
+
+class VerifyAuthenMethods(AntaTest):
+    """
+    Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
+
+    Expected Results:
+        * success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
+        * failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+        * skipped: The test will be skipped if the AAA authentication method list or authentication type list are not provided.
+    """
+
+    name = "VerifyAuthenMethods"
+    description = "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x)."
+    categories = ["aaa"]
+    commands = [AntaTestCommand(command="show aaa methods authentication")]
+
+    @AntaTest.anta_test
+    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
+        """
+        Run VerifyAuthenMethods validation.
+
+        Args:
+            methods: List of AAA authentication methods. Methods should be in the right order.
+            auth_types: List of authentication types to verify. List elements must be: login, enable, dot1x.
+        """
+        if not methods or not auth_types:
+            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
+            return
+
+        methods = _check_group_methods(methods)
+
+        _check_auth_type(auth_types, ["login", "enable", "dot1x"])
+
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        not_matching = []
+
+        for auth_type in auth_types:
+            auth_type_key = f"{auth_type}AuthenMethods"
+
+            if auth_type_key == "loginAuthenMethods":
+                if not command_output[auth_type_key].get("login"):
+                    self.result.is_failure("AAA authentication methods are not configured for login console")
+                    return
+
+                if command_output[auth_type_key]["login"]["methods"] != methods:
+                    self.result.is_failure(f"AAA authentication methods {methods} are not matching for login console")
+                    return
+
+            if command_output[auth_type_key]["default"]["methods"] != methods:
+                not_matching.append(auth_type)
+
+        if not not_matching:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"AAA authentication methods {methods} are not matching for {not_matching}")
+
+
+class VerifyAuthzMethods(AntaTest):
+    """
+    Verifies the AAA authorization method lists for different authorization types (commands, exec).
+
+    Expected Results:
+        * success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
+        * failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
+        * skipped: The test will be skipped if the AAA authentication method list or authorization type list are not provided.
+    """
+
+    name = "VerifyAuthzMethods"
+    description = "Verifies the AAA authorization method lists for different authorization types (commands, exec)."
+    categories = ["aaa"]
+    commands = [AntaTestCommand(command="show aaa methods authorization")]
+
+    @AntaTest.anta_test
+    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
+        """
+        Run VerifyAuthzMethods validation.
+
+        Args:
+            methods: List of AAA authorization methods. Methods should be in the right order.
+            auth_types: List of authorization types to verify. List elements must be: commands, exec.
+        """
+        if not methods or not auth_types:
+            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
+            return
+
+        _check_auth_type(auth_types, ["commands", "exec"])
+
+        methods = _check_group_methods(methods)
+
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        not_matching = []
+
+        for auth_type in auth_types:
+            auth_type_key = f"{auth_type}AuthzMethods"
+
+            method_key = list(command_output[auth_type_key].keys())[0]
+
+            if command_output[auth_type_key][method_key]["methods"] != methods:
+                not_matching.append(auth_type)
+
+        if not not_matching:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"AAA authorization methods {methods} are not matching for {not_matching}")
+
+
+class VerifyAcctDefaultMethods(AntaTest):
+    """
+    Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
+
+    Expected Results:
+        * success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
+        * failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
+        * skipped: The test will be skipped if the AAA accounting default method list or accounting type list are not provided.
+    """
+
+    name = "VerifyAcctDefaultMethods"
+    description = "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x)."
+    categories = ["aaa"]
+    commands = [AntaTestCommand(command="show aaa methods accounting")]
+
+    @AntaTest.anta_test
+    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
+        """
+        Run VerifyAcctDefaultMethods validation.
+
+        Args:
+            methods: List of AAA accounting default methods. Methods should be in the right order.
+            auth_types: List of accounting types to verify. List elements must be: commands, exec, system, dot1x.
+        """
+        if not methods or not auth_types:
+            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
+            return
+
+        methods = _check_group_methods(methods=methods)
+
+        _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
+
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        not_matching = []
+        not_configured = []
+
+        for auth_type in auth_types:
+            auth_type_key = f"{auth_type}AcctMethods"
+
+            method_key = list(command_output[auth_type_key].keys())[0]
+
+            if not command_output[auth_type_key][method_key].get("defaultAction"):
+                not_configured.append(auth_type)
+
+            if command_output[auth_type_key][method_key]["defaultMethods"] != methods:
+                not_matching.append(auth_type)
+
+        if not_configured:
+            self.result.is_failure(f"AAA default accounting is not configured for {not_configured}")
+            return
+
+        if not not_matching:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"AAA accounting default methods {methods} are not matching for {not_matching}")
+
+
+class VerifyAcctConsoleMethods(AntaTest):
+    """
+    Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
+
+    Expected Results:
+        * success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
+        * failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
+        * skipped: The test will be skipped if the AAA accounting console method list or accounting type list are not provided.
+    """
+
+    name = "VerifyAcctConsoleMethods"
+    description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
+    categories = ["aaa"]
+    commands = [AntaTestCommand(command="show aaa methods accounting")]
+
+    @AntaTest.anta_test
+    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
+        """
+        Run VerifyAcctConsoleMethods validation.
+
+        Args:
+            methods: List of AAA accounting console methods. Methods should be in the right order.
+            auth_types: List of accounting types to verify. List elements must be: commands, exec, system, dot1x.
+        """
+        if not methods or not auth_types:
+            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
+            return
+
+        methods = _check_group_methods(methods=methods)
+
+        _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
+
+        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        self.logger.debug(f"dataset is: {command_output}")
+
+        not_matching = []
+        not_configured = []
+
+        for auth_type in auth_types:
+            auth_type_key = f"{auth_type}AcctMethods"
+
+            method_key = list(command_output[auth_type_key].keys())[0]
+
+            if not command_output[auth_type_key][method_key].get("consoleAction"):
+                not_configured.append(auth_type)
+
+            if command_output[auth_type_key][method_key]["consoleMethods"] != methods:
+                not_matching.append(auth_type)
+
+        if not_configured:
+            self.result.is_failure(f"AAA console accounting is not configured for {not_configured}")
+            return
+
+        if not not_matching:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"AAA accounting console methods {methods} are not matching for {not_matching}")
