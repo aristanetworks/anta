@@ -5,7 +5,7 @@ from functools import wraps
 from typing import Any, Callable, Dict, List, TypeVar, cast
 
 from anta.models import AntaTestCommand
-from anta.result_manager import TestResult
+from anta.result_manager.models import TestResult
 
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
