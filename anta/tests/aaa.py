@@ -12,14 +12,25 @@ logger = logging.getLogger(__name__)
 
 
 def _check_group_methods(methods: List[str]) -> List[str]:
-    """Verifies if the provided methods in various AAA tests start with 'group'."""
+    """
+    Verifies if the provided methods in various AAA tests start with 'group'.
+
+    Args:
+        methods: List of AAA methods. Methods should be in the right order.
+    """
     built_in_methods = ["local", "none", "logging"]
 
     return [f"group {method}" if method not in built_in_methods and not method.startswith("group ") else method for method in methods]
 
 
 def _check_auth_type(auth_types: List[str], valid_auth_types: List[str]) -> None:
-    """Verifies if the provided auth types in various AAA tests are valid"""
+    """
+    Verifies if the provided auth types in various AAA tests are valid.
+
+    Args:
+        auth_types: List of AAA auth types to validate.
+        valid_auth_types: List of valid AAA auth types to validate against.
+    """
     if len(auth_types) > len(valid_auth_types):
         raise ValueError(f"Too many parameters provided in auth_types. Valid parameters are: {valid_auth_types}")
 
@@ -28,39 +39,39 @@ def _check_auth_type(auth_types: List[str], valid_auth_types: List[str]) -> None
             raise ValueError(f"Wrong parameter provided in auth_types. Valid parameters are: {valid_auth_types}")
 
 
-class VerifyTacacsAuth(AntaTest):
-    """
-    Verifies if TACACS authentication is successful for a specified user.
+# FIXME: AntaTestTemplate does not support 2 templates
+# class VerifyTacacsAuth(AntaTest):
+#     """
+#     Verifies if TACACS authentication is successful for a specified user.
 
-    Expected Results:
-        * success: The test will pass if the TACACS authentication is successful.
-        * failure: The test will fail if the TACACS authentication failed.
+#     Expected Results:
+#         * success: The test will pass if the TACACS authentication is successful.
+#         * failure: The test will fail if the TACACS authentication failed.
 
-    Test should be used with a dummy username configured in TACACS.
-    """
+#     Test can be ran with a test username configured in TACACS server.
+#     """
 
-    name = "VerifyTacacsAuth"
-    description = "Verifies if TACACS authentication is successful for a specified user."
-    categories = ["aaa"]
-    # TODO: Replace with AntaTestTemplate
-    # NOTE: Need to test with json
-    commands = [AntaTestCommand(command="test aaa group tacacs+ dummyuser dummypass", ofmt="text")]
+#     name = "VerifyTacacsAuth"
+#     description = "Verifies if TACACS authentication is successful for a specified user."
+#     categories = ["aaa"]
+#     # TODO: Need to test with json output
+#     template = AntaTestTemplate(template="test aaa group tacacs+ {user} {pass}", ofmt="text")
 
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """
-        Run VerifyTacacsAuth validation.
-        """
+#     @AntaTest.anta_test
+#     def test(self) -> None:
+#         """
+#         Run VerifyTacacsAuth validation.
+#         """
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-        command_output = cast(str, self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+#         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+#         command_output = cast(str, self.instance_commands[0].output)
+#         self.logger.debug(f"dataset is: {command_output}")
 
-        if command_output == "User was successfully authenticated.\n":
-            self.result.is_success()
+#         if command_output == "User was successfully authenticated.\n":
+#             self.result.is_success()
 
-        else:
-            self.result.is_failure("Authentication failed")
+#         else:
+#             self.result.is_failure("Authentication failed")
 
 
 class VerifyTacacsSourceIntf(AntaTest):
@@ -228,7 +239,7 @@ class VerifyAuthenMethods(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
             return
 
-        methods = _check_group_methods(methods)
+        methods_with_group = _check_group_methods(methods)
 
         _check_auth_type(auth_types, ["login", "enable", "dot1x"])
 
@@ -246,11 +257,11 @@ class VerifyAuthenMethods(AntaTest):
                     self.result.is_failure("AAA authentication methods are not configured for login console")
                     return
 
-                if command_output[auth_type_key]["login"]["methods"] != methods:
+                if command_output[auth_type_key]["login"]["methods"] != methods_with_group:
                     self.result.is_failure(f"AAA authentication methods {methods} are not matching for login console")
                     return
 
-            if command_output[auth_type_key]["default"]["methods"] != methods:
+            if command_output[auth_type_key]["default"]["methods"] != methods_with_group:
                 not_matching.append(auth_type)
 
         if not not_matching:
@@ -289,7 +300,7 @@ class VerifyAuthzMethods(AntaTest):
 
         _check_auth_type(auth_types, ["commands", "exec"])
 
-        methods = _check_group_methods(methods)
+        methods_with_group = _check_group_methods(methods)
 
         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
@@ -302,7 +313,7 @@ class VerifyAuthzMethods(AntaTest):
 
             method_key = list(command_output[auth_type_key].keys())[0]
 
-            if command_output[auth_type_key][method_key]["methods"] != methods:
+            if command_output[auth_type_key][method_key]["methods"] != methods_with_group:
                 not_matching.append(auth_type)
 
         if not not_matching:
@@ -339,7 +350,7 @@ class VerifyAcctDefaultMethods(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
             return
 
-        methods = _check_group_methods(methods=methods)
+        methods_with_group = _check_group_methods(methods)
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
@@ -358,7 +369,7 @@ class VerifyAcctDefaultMethods(AntaTest):
             if not command_output[auth_type_key][method_key].get("defaultAction"):
                 not_configured.append(auth_type)
 
-            if command_output[auth_type_key][method_key]["defaultMethods"] != methods:
+            if command_output[auth_type_key][method_key]["defaultMethods"] != methods_with_group:
                 not_matching.append(auth_type)
 
         if not_configured:
@@ -399,7 +410,7 @@ class VerifyAcctConsoleMethods(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
             return
 
-        methods = _check_group_methods(methods=methods)
+        methods_with_group = _check_group_methods(methods)
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
@@ -418,7 +429,7 @@ class VerifyAcctConsoleMethods(AntaTest):
             if not command_output[auth_type_key][method_key].get("consoleAction"):
                 not_configured.append(auth_type)
 
-            if command_output[auth_type_key][method_key]["consoleMethods"] != methods:
+            if command_output[auth_type_key][method_key]["consoleMethods"] != methods_with_group:
                 not_matching.append(auth_type)
 
         if not_configured:
