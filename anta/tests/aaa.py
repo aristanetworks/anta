@@ -39,41 +39,6 @@ def _check_auth_type(auth_types: List[str], valid_auth_types: List[str]) -> None
             raise ValueError(f"Wrong parameter provided in auth_types. Valid parameters are: {valid_auth_types}")
 
 
-# FIXME: AntaTestTemplate does not support 2 templates
-# class VerifyTacacsAuth(AntaTest):
-#     """
-#     Verifies if TACACS authentication is successful for a specified user.
-
-#     Expected Results:
-#         * success: The test will pass if the TACACS authentication is successful.
-#         * failure: The test will fail if the TACACS authentication failed.
-
-#     Test can be ran with a test username configured in TACACS server.
-#     """
-
-#     name = "VerifyTacacsAuth"
-#     description = "Verifies if TACACS authentication is successful for a specified user."
-#     categories = ["aaa"]
-#     # TODO: Need to test with json output
-#     template = AntaTestTemplate(template="test aaa group tacacs+ {user} {pass}", ofmt="text")
-
-#     @AntaTest.anta_test
-#     def test(self) -> None:
-#         """
-#         Run VerifyTacacsAuth validation.
-#         """
-
-#         self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
-#         command_output = cast(str, self.instance_commands[0].output)
-#         self.logger.debug(f"dataset is: {command_output}")
-
-#         if command_output == "User was successfully authenticated.\n":
-#             self.result.is_success()
-
-#         else:
-#             self.result.is_failure("Authentication failed")
-
-
 class VerifyTacacsSourceIntf(AntaTest):
     """
     Verifies TACACS source-interface for a specified VRF.
