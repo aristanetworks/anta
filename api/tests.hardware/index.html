@@ -19,7 +19,7 @@
         <link rel="next" href="../tests.interfaces/">
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.13">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -718,6 +718,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling" class="md-nav__link">
+    VerifyEnvironmentSystemCooling
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyEnvironmentSystemCooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.hardware.VerifyTemperature" class="md-nav__link">
     VerifyTemperature
   </a>
@@ -1401,6 +1421,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling" class="md-nav__link">
+    VerifyEnvironmentSystemCooling
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyEnvironmentSystemCooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.hardware.VerifyTemperature" class="md-nav__link">
     VerifyTemperature
   </a>
@@ -1528,25 +1568,25 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyAdverseDrops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verifies there is no adverse drops on DCS7280E and DCS7500E.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1557,7 +1597,7 @@
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware counter drop&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyAdverseDrops validation&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="n">total_adverse_drop</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;totalAdverseDrops&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;totalAdverseDrops&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -1596,16 +1636,16 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyAdverseDrops validation&quot;&quot;&quot;</span>
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
     <span class="n">total_adverse_drop</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;totalAdverseDrops&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;totalAdverseDrops&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -1643,52 +1683,81 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the fans status is OK.</p>
+      <p>Verifies the fans status is in the accepted states list.</p>
+<p>Default accepted states list is [&lsquo;ok&rsquo;]</p>
 
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEnvironmentCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the fans status is OK.</span>
+<span class="sd">    Verifies the fans status is in the accepted states list.</span>
+
+<span class="sd">    Default accepted states list is [&#39;ok&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyEnvironmentCooling&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the fans status is OK&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the fans status is OK for fans&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment cooling&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accepted_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentCooling validation&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">accepted_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">accepted_states</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-        <span class="n">sys_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">sys_status</span> <span class="o">==</span> <span class="s2">&quot;coolingOk&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Device cooling is not OK&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="c1"># First go through power supplies fans</span>
+        <span class="k">for</span> <span class="n">power_supply</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;powerSupplySlots&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">fan</span> <span class="ow">in</span> <span class="n">power_supply</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fans&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">fan</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some fans state are not in the accepted list: </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fan </span><span class="si">{</span><span class="n">fan</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> on PowerSupply </span><span class="si">{</span><span class="n">power_supply</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has state &#39;</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="c1"># Then go through Fan Trays</span>
+        <span class="k">for</span> <span class="n">fan_tray</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fanTraySlots&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">fan</span> <span class="ow">in</span> <span class="n">fan_tray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fans&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">fan</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some fans state are not in the accepted list: </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fan </span><span class="si">{</span><span class="n">fan</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> on Fan Tray </span><span class="si">{</span><span class="n">fan_tray</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has state &#39;</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1709,7 +1778,7 @@
 
 
 <h3 id="anta.tests.hardware.VerifyEnvironmentCooling.test" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">test</span><span class="p">()</span></code>
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">accepted_states</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#anta.tests.hardware.VerifyEnvironmentCooling.test" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -1720,27 +1789,51 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
 <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accepted_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentCooling validation&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">accepted_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">accepted_states</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-    <span class="n">sys_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">sys_status</span> <span class="o">==</span> <span class="s2">&quot;coolingOk&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Device cooling is not OK&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="c1"># First go through power supplies fans</span>
+    <span class="k">for</span> <span class="n">power_supply</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;powerSupplySlots&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">fan</span> <span class="ow">in</span> <span class="n">power_supply</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fans&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">fan</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some fans state are not in the accepted list: </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fan </span><span class="si">{</span><span class="n">fan</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> on PowerSupply </span><span class="si">{</span><span class="n">power_supply</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has state &#39;</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="c1"># Then go through Fan Trays</span>
+    <span class="k">for</span> <span class="n">fan_tray</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fanTraySlots&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">fan</span> <span class="ow">in</span> <span class="n">fan_tray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fans&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">fan</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some fans state are not in the accepted list: </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fan </span><span class="si">{</span><span class="n">fan</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> on Fan Tray </span><span class="si">{</span><span class="n">fan_tray</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has state &#39;</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1771,35 +1864,44 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the power supplied status is OK.</p>
+      <p>Verifies the power supplied status is in the accepted states list</p>
+<p>The default accepted states list is [&lsquo;ok&rsquo;]</p>
 
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEnvironmentPower</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the power supplied status is OK.</span>
+<span class="sd">    Verifies the power supplied status is in the accepted states list</span>
+
+<span class="sd">    The default accepted states list is [&#39;ok&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyEnvironmentPower&quot;</span>
@@ -1809,15 +1911,19 @@
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accepted_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentPower validation&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">accepted_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">accepted_states</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="n">power_supplies</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;powerSupplies&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;powerSupplies&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
-        <span class="n">wrong_power_supplies</span> <span class="o">=</span> <span class="p">{</span><span class="n">powersupply</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">powersupply</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">power_supplies</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ok&quot;</span><span class="p">}</span>
+        <span class="n">wrong_power_supplies</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">powersupply</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">powersupply</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">power_supplies</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span>
+        <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wrong_power_supplies</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;The following power supplies are not OK&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following power supplies states are not in the accepted_states list </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wrong_power_supplies</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -1839,7 +1945,7 @@
 
 
 <h3 id="anta.tests.hardware.VerifyEnvironmentPower.test" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">test</span><span class="p">()</span></code>
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">accepted_states</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#anta.tests.hardware.VerifyEnvironmentPower.test" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -1850,29 +1956,165 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
 <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accepted_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentPower validation&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">accepted_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">accepted_states</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
     <span class="n">power_supplies</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;powerSupplies&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;powerSupplies&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
-    <span class="n">wrong_power_supplies</span> <span class="o">=</span> <span class="p">{</span><span class="n">powersupply</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">powersupply</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">power_supplies</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ok&quot;</span><span class="p">}</span>
+    <span class="n">wrong_power_supplies</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">powersupply</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">powersupply</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">power_supplies</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_states</span>
+    <span class="p">}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">wrong_power_supplies</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;The following power supplies are not OK&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following power supplies states are not in the accepted_states list </span><span class="si">{</span><span class="n">accepted_states</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wrong_power_supplies</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.hardware.VerifyEnvironmentSystemCooling" class="doc doc-heading">
+        <code>VerifyEnvironmentSystemCooling</code>
+
+
+<a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
+  
+      <p>Verifies the System Cooling is ok.</p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEnvironmentSystemCooling</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies the System Cooling is ok.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyEnvironmentSystemCooling&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the fans status is OK for fans&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment cooling&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+
+    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentCooling validation&quot;&quot;&quot;</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">sys_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sys_status</span> <span class="o">!=</span> <span class="s2">&quot;coolingOk&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device System cooling is not OK: </span><span class="si">{</span><span class="n">sys_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.hardware.VerifyEnvironmentSystemCooling.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">()</span></code>
+
+<a href="#anta.tests.hardware.VerifyEnvironmentSystemCooling.test" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run VerifyEnvironmentCooling validation</p>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+<span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyEnvironmentCooling validation&quot;&quot;&quot;</span>
+
+    <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="n">sys_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">sys_status</span> <span class="o">!=</span> <span class="s2">&quot;coolingOk&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device System cooling is not OK: </span><span class="si">{</span><span class="n">sys_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1903,7 +2145,7 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies device temparture is currently OK.</p>
+      <p>Verifies device temparture is currently OK (temperatureOK).</p>
 
 
         <details class="quote">
@@ -1929,11 +2171,11 @@
 <span class="normal">59</span>
 <span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies device temparture is currently OK.</span>
+<span class="sd">    Verifies device temparture is currently OK (temperatureOK).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTemperature&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK (temperatureOK)&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
@@ -2212,7 +2454,7 @@
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyTransceiversTemperature validation&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="n">sensors</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;tempSensors&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;tempSensors&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -2280,7 +2522,7 @@
 <span class="normal">90</span>
 <span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
 <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyTransceiversTemperature validation&quot;&quot;&quot;</span>
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
     <span class="n">sensors</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;tempSensors&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;tempSensors&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -2325,7 +2567,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 17, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 26, 2023</span>
       
     
   </small>
