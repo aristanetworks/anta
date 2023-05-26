@@ -7,6 +7,7 @@ import sys
 import traceback
 from typing import Any, Dict, Iterator, List, Optional, Union
 
+# from ansible_collections.arista.eos.plugins.httpapi.eos import HttpApi
 from aioeapi import Device, EapiCommandError
 from httpx import ConnectError, HTTPError
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr, root_validator
@@ -152,7 +153,7 @@ class InventoryDevice(BaseModel):
     password: str
     port: conint(gt=1, lt=65535)  # type: ignore[valid-type]
     enable_password: Optional[str]
-    session: Device
+    session: Any  # Device or HttpApi
     established: bool = False
     is_online: bool = False
     hw_model: str = DEFAULT_HW_MODEL

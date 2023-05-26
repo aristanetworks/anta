@@ -110,6 +110,7 @@ class AntaTest(ABC):
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         device: InventoryDevice,
@@ -117,13 +118,15 @@ class AntaTest(ABC):
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
-    ):
+        from_ansible: bool = False,
+    ): 
         """Class constructor"""
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
         self.logger.setLevel(level="INFO")
         self.device = device
         self.result = TestResult(name=device.name, test=self.name)
         self.labels = labels or []
+        self.from_ansible = from_ansible
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
@@ -192,7 +195,7 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        async def wrapper(
+        async def anta_wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
@@ -228,12 +231,51 @@ class AntaTest(ABC):
                 self.logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
                 self.logger.debug(traceback.format_exc())
                 self.result.is_error(exc_to_str(e))
+
             return self.result
 
-        return wrapper
+        @wraps(function)
+        def ansible_wrapper(
+            self: AntaTest,
+            **kwargs: dict[str, Any],
+        ) -> TestResult:
+            """
+            This method will call assert when it's called from Ansible
+
+            Returns:
+                TestResult: self.result, populated with the correct exit status
+            """
+            if self.result.result != "unset":
+                return self.result
+
+            try:
+                if not self.all_data_collected():
+                    raise ValueError("Some command output is missing")
+                function(self, **kwargs)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                self.logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
+                self.logger.debug(traceback.format_exc())
+                self.result.is_error(exc_to_str(e))
+
+            return self.result
+
+        @wraps(function)
+        def decision_wrapper(
+            self: AntaTest,
+            eos_data: list[dict[Any, Any] | str] | None = None,
+            **kwargs: dict[str, Any],
+        ) -> Union[Coroutine[Any, Any, TestResult], TestResult]:
+            """
+            Method to decide which wrapper to call depending on if ANTA is used from Ansible.
+            """
+            if self.from_ansible:
+                return ansible_wrapper(self, **kwargs)
+            return anta_wrapper(self, eos_data, **kwargs)
+
+        return decision_wrapper
 
     @abstractmethod
-    def test(self) -> Coroutine[Any, Any, TestResult]:
+    def test(self) -> Union[Coroutine[Any, Any, TestResult], TestResult]:
         """
         This abstract method is the core of the test.
         It MUST set the correct status of self.result with the appropriate error messages
