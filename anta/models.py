@@ -119,7 +119,7 @@ class AntaTest(ABC):
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
         from_ansible: bool = False,
-    ): 
+    ):
         """Class constructor"""
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
         self.logger.setLevel(level="INFO")
