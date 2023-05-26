@@ -145,6 +145,7 @@ nav:
     - ANTA as python lib: advanced_usages/as-python-lib.md
   - Tests Catalog Documentation:
     - Overview: api/tests.md
+    - AAA: api/tests.aaa.md
     - Configuration: api/tests.configuration.md
     - Field Notices: api/tests.field_notices.md
     - Hardware: api/tests.hardware.md
