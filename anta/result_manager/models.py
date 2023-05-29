@@ -20,6 +20,8 @@ class TestResult(BaseModel):
 
     name: str
     test: str
+    test_category: List[str]
+    test_description: str
     result: str = "unset"
     messages: List[str] = []
 

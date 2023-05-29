@@ -124,7 +124,7 @@ class AntaTest(ABC):
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
         self.logger.setLevel(level="INFO")
         self.device = device
-        self.result = TestResult(name=device.name, test=self.name)
+        self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
         self.from_ansible = from_ansible
 
