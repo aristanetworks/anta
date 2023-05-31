@@ -7,6 +7,7 @@ import logging
 from typing import Any, Dict, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
+from anta.tools.get_value import get_value
 
 logger = logging.getLogger(__name__)
 
@@ -218,6 +219,13 @@ class VerifyAPIHttpsSSL(AntaTest):
     description = "Verifies if eAPI HTTPS server SSL profile is configured and valid."
     categories = ["security"]
     commands = [AntaTestCommand(command="show management api http-commands")]
+
+    @staticmethod
+    def extract_parameters(task_vars: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Static method to extract the required parameters from task_vars.
+        """
+        return {"profile": get_value(task_vars, "management_api_http.https_ssl_profile")}
 
     @AntaTest.anta_test
     def test(self, profile: Optional[str] = None) -> None:
