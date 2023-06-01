@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Any, Callable, Dict, List, TypeVar, cast
 
 from anta.models import AntaTestCommand
+from anta.result_manager.models import TestResult
 
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
@@ -26,16 +27,20 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
         """
 
         @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> None:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
             anta_test = args[0]
-            if anta_test.device.hw_model in platforms:
-                anta_test.result.is_skipped(f"{wrapper.__name__} test is not supported on {anta_test.device.hw_model}.")
-                return
 
-            await function(*args, **kwargs)
+            if anta_test.result.result != "unset":
+                return anta_test.result
+
+            if anta_test.device.hw_model in platforms:
+                anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
+                return anta_test.result
+
+            return await function(*args, **kwargs)
 
         return cast(F, wrapper)
 
@@ -58,11 +63,15 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
         """
 
         @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> None:
+        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
             """
             wrapper for func
             """
             anta_test = args[0]
+
+            if anta_test.result.result != "unset":
+                return anta_test.result
+
             if family == "ipv4":
                 command = AntaTestCommand(command="show bgp ipv4 unicast summary vrf all")
             elif family == "ipv6":
@@ -70,23 +79,24 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
             elif family == "evpn":
                 command = AntaTestCommand(command="show bgp evpn summary")
             elif family == "rtc":
-                command = AntaTestCommand(command="show bgp rt-membership summar")
+                command = AntaTestCommand(command="show bgp rt-membership summary")
             else:
                 anta_test.result.is_error(f"Wrong address family for bgp decorator: {family}")
-                return
+                return anta_test.result
 
-            anta_test.collect()
+            await anta_test.device.collect(command=command)
 
             command_output = cast(Dict[str, Any], command.output)
+
             if "vrfs" not in command_output:
                 anta_test.result.is_skipped(f"no BGP configuration for {family} on this device")
-                return
+                return anta_test.result
             if len(bgp_vrfs := command_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
                 # No VRF
                 anta_test.result.is_skipped(f"no {family} peer on this device")
-                return
+                return anta_test.result
 
-            await function(*args, **kwargs)
+            return await function(*args, **kwargs)
 
         return cast(F, wrapper)
 

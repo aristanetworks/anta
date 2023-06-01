@@ -258,7 +258,7 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
         "expected_messages": ["Command has template but no params were given"],
     },
     {
-        "name": "skipped-empty-template-params",
+        "name": "error-empty-template-params",
         "eos_data": [{"vrfs": {}}],
         "side_effect": {"template_params": [], "number": 1},
         "expected_result": "error",

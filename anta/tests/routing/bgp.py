@@ -225,7 +225,7 @@ class VerifyBGPRTCState(AntaTest):
     name = "VerifyBGPRTCState"
     description = "Verifies all RTC BGP sessions are established (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp rtc-membership summary")]
+    commands = [AntaTestCommand(command="show bgp rt-membership summary")]
 
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
@@ -259,7 +259,7 @@ class VerifyBGPRTCCount(AntaTest):
     name = "VerifyBGPRTCCount"
     description = "Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp rtc-membership summary")]
+    commands = [AntaTestCommand(command="show bgp rt-membership summary")]
 
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
