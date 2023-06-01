@@ -118,7 +118,7 @@ class AntaTest(ABC):
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
-        from_ansible: bool = False,
+        sync: bool = False,
     ):
         """Class constructor"""
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
@@ -126,7 +126,7 @@ class AntaTest(ABC):
         self.device = device
         self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
-        self.from_ansible = from_ansible
+        self.sync = sync
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
@@ -195,13 +195,13 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        async def anta_wrapper(
+        async def async_wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
         ) -> TestResult:
             """
-            This method will call assert
+            This method will call assert asynchronously
 
             Returns:
                 TestResult: self.result, populated with the correct exit status
@@ -218,7 +218,8 @@ class AntaTest(ABC):
 
             # No test data is present, try to collect
             if not self.all_data_collected():
-                await self.collect()
+              for command in self.instance_commands:
+                await self.device.collect(command=command)
                 if self.result.result != "unset":
                     return self.result
 
@@ -235,12 +236,13 @@ class AntaTest(ABC):
             return self.result
 
         @wraps(function)
-        def ansible_wrapper(
+        def sync_wrapper(
             self: AntaTest,
+            eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
         ) -> TestResult:
             """
-            This method will call assert when it's called from Ansible
+            This method will call assert synchronously
 
             Returns:
                 TestResult: self.result, populated with the correct exit status
@@ -248,6 +250,21 @@ class AntaTest(ABC):
             if self.result.result != "unset":
                 return self.result
 
+            # TODO maybe_skip decorators
+
+            # Data
+            if eos_data is not None:
+                self.logger.debug("Test initialized with input data")
+                self.save_commands_data(eos_data)
+
+            # No test data is present, try to collect
+            if not self.all_data_collected():
+                for command in self.instance_commands:
+                  self.device.collect(command=command)
+                if self.result.result != "unset":
+                    return self.result
+
+            self.logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
             try:
                 if not self.all_data_collected():
                     raise ValueError("Some command output is missing")
@@ -266,11 +283,11 @@ class AntaTest(ABC):
             **kwargs: dict[str, Any],
         ) -> Union[Coroutine[Any, Any, TestResult], TestResult]:
             """
-            Method to decide which wrapper to call depending on if ANTA is used from Ansible.
+            Method to decide which wrapper to call depending if ANTA tests are instantiated with a sync or an async connection object.
             """
-            if self.from_ansible:
-                return ansible_wrapper(self, **kwargs)
-            return anta_wrapper(self, eos_data, **kwargs)
+            if self.sync:
+                return sync_wrapper(self, eos_data, **kwargs)
+            return async_wrapper(self, eos_data, **kwargs)
 
         return decision_wrapper
 
