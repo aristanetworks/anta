@@ -6,7 +6,7 @@ from typing import Any, Dict
 import pytest
 from pydantic import ValidationError
 
-from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, InventoryDevice, InventoryDevices
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, InventoryDeviceAioeapi, InventoryDevices
 from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
 from tests.lib.utils import generate_test_ids_dict
 
@@ -283,11 +283,11 @@ class Test_AntaInventoryInputModel:
 
 
 class Test_InventoryDeviceModel:
-    """Unit test of InventoryDevice model."""
+    """Unit test of InventoryDeviceAioeapi model."""
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_device_valid(self, test_definition: Dict[str, Any]) -> None:
-        """Test loading valid data to InventoryDevice class.
+        """Test loading valid data to InventoryDeviceAioeapi class.
 
          Test structure:
          ---------------
@@ -315,14 +315,14 @@ class Test_InventoryDeviceModel:
 
         for entity in test_definition["input"]:
             try:
-                InventoryDevice(**entity)
+                InventoryDeviceAioeapi(**entity)
             except ValidationError as exc:
                 logging.warning("Error: %s", str(exc))
                 assert False
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_device_invalid(self, test_definition: Dict[str, Any]) -> None:
-        """Test loading invalid data to InventoryDevice class.
+        """Test loading invalid data to InventoryDeviceAioeapi class.
 
          Test structure:
          ---------------
@@ -350,7 +350,7 @@ class Test_InventoryDeviceModel:
 
         for entity in test_definition["input"]:
             try:
-                InventoryDevice(**entity)
+                InventoryDeviceAioeapi(**entity)
             except ValidationError as exc:
                 logging.info("Error: %s", str(exc))
             else:
@@ -358,7 +358,7 @@ class Test_InventoryDeviceModel:
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_len(self, test_definition: Dict[str, Any]) -> None:
-        """Test len & append methods for InventoryDevice class.
+        """Test len & append methods for InventoryDeviceAioeapi class.
 
          Test structure:
          ---------------
@@ -385,12 +385,12 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(InventoryDeviceAioeapi(**entry))
         assert len(test_definition["input"]) == len(inventory_devices)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_get_item(self, test_definition: Dict[str, Any]) -> None:
-        """Test __iter__ method for InventoryDevice class.
+        """Test __iter__ method for InventoryDeviceAioeapi class.
 
          Test structure:
          ---------------
@@ -417,7 +417,7 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(InventoryDeviceAioeapi(**entry))
         if str(inventory_devices[0].session.host) == test_definition["input"][0]["host"]:
             logging.info("__getitem__ function is valid")
         else:
@@ -426,7 +426,7 @@ class Test_InventoryDeviceModel:
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
     def test_inventory_devices_iter(self, test_definition: Dict[str, Any]) -> None:
-        """Test __getitem__ method for InventoryDevice class.
+        """Test __getitem__ method for InventoryDeviceAioeapi class.
 
          Test structure:
          ---------------
@@ -453,7 +453,7 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(InventoryDeviceAioeapi(**entry))
         for idx, device in enumerate(inventory_devices):
             if str(device.host) == test_definition["input"][idx].get("host", "localhost"):
                 logging.info("__iter__ function is valid")

@@ -16,7 +16,7 @@ from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
-from anta.inventory.models import AntaInventoryInput, InventoryDevice, InventoryDevices
+from anta.inventory.models import AntaInventoryInput, InventoryDeviceAioeapi, InventoryDevices
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class AntaInventory:
                 ... auto_connect=True)
             test.get_inventory()
             [
-                    "InventoryDevice(host=IPv4Address('192.168.0.17')",
+                    "InventoryDeviceAioeapi(host=IPv4Address('192.168.0.17')",
                     "username='ansible'",
                     "password='ansible'",
                     "session=<ServerProxy for ansible:ansible@192.168.0.17/command-api>",
@@ -69,7 +69,7 @@ class AntaInventory:
                     "is_online=True",
                     "hw_model=cEOS-LAB",
                  ...
-                    "InventoryDevice(host=IPv4Address('192.168.0.2')",
+                    "InventoryDeviceAioeapi(host=IPv4Address('192.168.0.2')",
                     "username='ansible'",
                     "password='ansible'",
                     "session=None",
@@ -167,12 +167,12 @@ class AntaInventory:
     # Internal methods
     ###########################################################################
 
-    async def _read_device_hw(self, device: InventoryDevice) -> None:
+    async def _read_device_hw(self, device: InventoryDeviceAioeapi) -> None:
         """
         _read_device_hw Get HW model name from show version and update the hw_model attribute.
 
         Args:
-            device (InventoryDevice): Device to update
+            device (InventoryDeviceAioeapi): Device to update
         """
         logger.debug(f"Reading HW information for {device.name}")
         try:
@@ -187,9 +187,9 @@ class AntaInventory:
             else:
                 logger.warning(f"Cannot get HW information from device {device.name}: cannot parse 'show version'")
 
-    async def _refresh_device_fact(self, device: InventoryDevice) -> None:
+    async def _refresh_device_fact(self, device: InventoryDeviceAioeapi) -> None:
         """
-        _get_from_device Update the is_online and established flags for InventoryDevice.
+        _get_from_device Update the is_online and established flags for InventoryDeviceAioeapi.
 
         It updates following keys:
         - is_online: When a device IP is reachable and a port can be open
@@ -197,10 +197,10 @@ class AntaInventory:
         - hw_model: The hardware model string of the device
 
         Args:
-            device (InventoryDevice): Device to check using InventoryDevice structure.
+            device (InventoryDeviceAioeapi): Device to check using InventoryDeviceAioeapi structure.
 
         Returns:
-            InventoryDevice: Updated structure with devices information
+            InventoryDeviceAioeapi: Updated structure with devices information
         """
         logger.debug(f"Refreshing device {device.name}")
         device.is_online = await device.session.check_connection()
@@ -217,9 +217,9 @@ class AntaInventory:
         name: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ) -> None:
-        """Add a InventoryDevice to final inventory.
+        """Add a InventoryDeviceAioeapi to final inventory.
 
-        Create InventoryDevice and append to existing inventory
+        Create InventoryDeviceAioeapi and append to existing inventory
 
         Args:
             host (str): IP address or hostname of the device
@@ -241,13 +241,13 @@ class AntaInventory:
             kwargs["tags"] = tags
         if self.timeout:
             kwargs["timeout"] = self.timeout
-        device = InventoryDevice(**kwargs)
+        device = InventoryDeviceAioeapi(**kwargs)
         self._inventory.append(device)
 
     def _inventory_read_hosts(self) -> None:
         """Read input data from hosts section and create inventory structure.
 
-        Build InventoryDevice structure for all hosts under hosts section
+        Build InventoryDeviceAioeapi structure for all hosts under hosts section
         """
         assert self._read_inventory.hosts is not None
         for host in self._read_inventory.hosts:
@@ -256,7 +256,7 @@ class AntaInventory:
     def _inventory_read_networks(self) -> None:
         """Read input data from networks section and create inventory structure.
 
-        Build InventoryDevice structure for all IPs available in each declared subnet
+        Build InventoryDeviceAioeapi structure for all IPs available in each declared subnet
         """
         assert self._read_inventory.networks is not None
         for network in self._read_inventory.networks:
@@ -266,7 +266,7 @@ class AntaInventory:
     def _inventory_read_ranges(self) -> None:
         """Read input data from ranges section and create inventory structure.
 
-        Build InventoryDevice structure for all IPs available in each declared range
+        Build InventoryDeviceAioeapi structure for all IPs available in each declared range
         """
         assert self._read_inventory.ranges is not None
         for range_def in self._read_inventory.ranges:
@@ -297,7 +297,7 @@ class AntaInventory:
             InventoryDevices: An inventory with concerned devices
         """
 
-        def _filter_devices(device: InventoryDevice) -> bool:
+        def _filter_devices(device: InventoryDeviceAioeapi) -> bool:
             """
             Helper function to select the devices based on the input tags
             and the requirement for an established connection.

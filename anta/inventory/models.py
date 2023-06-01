@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import sys
 import traceback
+from abc import ABC, abstractmethod
 from typing import Any, Dict, Iterator, List, Optional, Union
 
 # from ansible_collections.arista.eos.plugins.httpapi.eos import HttpApi
@@ -125,7 +127,45 @@ class AntaInventoryInput(BaseModel):
 # Pydantic models for inventory output structures
 
 
-class InventoryDevice(BaseModel):
+class InventoryDevice(ABC, BaseModel):
+    """
+    Abstract class for InventoryDevice.
+    """
+
+    name: str
+    session: Any
+
+    @abstractmethod
+    def collect(self, command: AntaTestCommand) -> Any:
+        """
+        Prepares and sends request(s) to device.
+        """
+
+
+class InventoryDeviceHttpApi(InventoryDevice):
+    """
+    InventoryDevice with Ansible HttpApi connection session object.
+    """
+
+    def collect(self, command: AntaTestCommand) -> AntaTestCommand:
+        """
+        Collect device command result using HttpApi session.
+        """
+        logger.debug(f"run collect from device {self.name} for {command}")
+
+        try:
+            response = self.session.send_request(command.command, version=command.version, output=command.ofmt)
+            # Convert JSON response to dict
+            data = json.loads(response) if command.ofmt == "json" else response
+            command.output = data
+
+        except ConnectionError as e:
+            logger.error(f"Connection error raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+        return command
+
+
+class InventoryDeviceAioeapi(InventoryDevice):
     """
     Inventory model exposed by Inventory class.
 
@@ -147,13 +187,11 @@ class InventoryDevice(BaseModel):
 
         arbitrary_types_allowed = True
 
-    name: str
     host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore[valid-type]
     username: str
     password: str
     port: conint(gt=1, lt=65535)  # type: ignore[valid-type]
     enable_password: Optional[str]
-    session: Any  # Device or HttpApi
     established: bool = False
     is_online: bool = False
     hw_model: str = DEFAULT_HW_MODEL
@@ -187,10 +225,10 @@ class InventoryDevice(BaseModel):
 
     def __eq__(self, other: object) -> bool:
         """
-        Two InventoryDevice objects are equal if the hostname and the port are the same.
+        Two InventoryDeviceAioeapi objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        if not isinstance(other, InventoryDevice):
+        if not isinstance(other, InventoryDeviceAioeapi):
             return False
         return self.session.host == other.session.host and self.session.port == other.session.port
 
@@ -205,7 +243,7 @@ class InventoryDevice(BaseModel):
                 message = "`enable_password` is not set"
             raise ValueError(message)
 
-    async def collect(self, command: AntaTestCommand) -> Any:
+    async def collect(self, command: AntaTestCommand) -> AntaTestCommand:  # pylint: disable=invalid-overridden-method
         """Collect device command result
         FIXME: Under development / testing
         TODO: Build documentation
@@ -244,33 +282,32 @@ class InventoryDevice(BaseModel):
         except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error(f"Exception raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
             logger.debug(traceback.format_exc())
-        else:
-            return command
+        return command
 
 
 class InventoryDevices(BaseModel):
     """
-    Inventory model to list all InventoryDevice entries.
+    Inventory model to list all InventoryDeviceAioeapi entries.
 
     Attributes:
-        __root__(List[InventoryDevice]): A list of InventoryDevice objects.
+        __root__(List[InventoryDeviceAioeapi]): A list of InventoryDeviceAioeapi objects.
     """
 
     # pylint: disable=R0801
 
-    __root__: List[InventoryDevice] = []
+    __root__: List[InventoryDeviceAioeapi] = []
 
-    def append(self, value: InventoryDevice) -> None:
+    def append(self, value: InventoryDeviceAioeapi) -> None:
         """Add support for append method."""
         self.__root__.append(value)
 
-    def __iter__(self) -> Iterator[InventoryDevice]:
+    def __iter__(self) -> Iterator[InventoryDeviceAioeapi]:
         """Use custom iter method."""
         # TODO - mypy is not happy because we overwrite BaseModel.__iter__
         # return type and are breaking Liskov Substitution Principle.
         return iter(self.__root__)
 
-    def __getitem__(self, item: int) -> InventoryDevice:
+    def __getitem__(self, item: int) -> InventoryDeviceAioeapi:
         """Use custom getitem method."""
         return self.__root__[item]
 

@@ -10,7 +10,7 @@ from typing import Any, Callable, Coroutine, Dict, List
 from aioeapi import EapiCommandError
 from httpx import ConnectError, HTTPError
 
-from anta.inventory.models import InventoryDevice
+from anta.inventory.models import InventoryDeviceAioeapi
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def anta_test(function: Callable[..., Coroutine[Any, Any, TestResult]]) -> Calla
     """
 
     @wraps(function)
-    async def wrapper(device: InventoryDevice, *args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
+    async def wrapper(device: InventoryDeviceAioeapi, *args: List[Any], **kwargs: Dict[str, Any]) -> TestResult:
         """
         wrapper for func
         Args:
