@@ -19,7 +19,7 @@
         <link rel="next" href="../tests.routing.ospf/">
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -2500,7 +2500,7 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPRTCCount&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF).&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">,</span> <span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp rtc-membership summary&quot;</span><span class="p">)]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp rt-membership summary&quot;</span><span class="p">)]</span>
 
     <span class="nd">@check_bgp_family_enable</span><span class="p">(</span><span class="s2">&quot;rtc&quot;</span><span class="p">)</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
@@ -2676,7 +2676,7 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPRTCState&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies all RTC BGP sessions are established (default VRF).&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">,</span> <span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp rtc-membership summary&quot;</span><span class="p">)]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp rt-membership summary&quot;</span><span class="p">)]</span>
 
     <span class="nd">@check_bgp_family_enable</span><span class="p">(</span><span class="s2">&quot;rtc&quot;</span><span class="p">)</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
@@ -2784,7 +2784,7 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 26, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 1, 2023</span>
       
     
   </small>
