@@ -23,13 +23,12 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 class AntaTestTemplate(BaseModel):
-    """Class to define a test command with its API version
+    """Class to define a test template with its API version
 
     Attributes:
-        command(str): Test command
+        template(str): Test template
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
     """
 
     template: str
@@ -68,10 +67,9 @@ class AntaTestCommand(BaseModel):
 
 
 class AntaTestFilter(ABC):
-    """Class to define a test Filter"""
+    """Abstract dlass to define a test Filter"""
 
     # pylint: disable=too-few-public-methods
-
     @abstractmethod
     def should_skip(
         self,
@@ -89,7 +87,7 @@ class AntaTestFilter(ABC):
 
 
 class AntaTest(ABC):
-    """Abstract class defining a test for Anta
+    """Abstract class defining a test for ANTA
 
     The goal of this class is to handle the heavy lifting and make
     writing a test as simple as possible.
@@ -184,6 +182,7 @@ class AntaTest(ABC):
         it calls the collect co-routing define in InventoryDevice to collect ouput per command
 
         FIXME: to be tested and review
+        NOTE: used in cli.debug
         """
         for command in self.instance_commands:
             await self.device.collect(command=command)
@@ -191,7 +190,7 @@ class AntaTest(ABC):
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
-        Decorator for anta_test that handles injecting test data if given and collecting it using asyncio if missing
+        Decorator for anta_test that handles injecting test data if given and collecting it synchronously or asynchronously
         """
 
         @wraps(function)
@@ -218,10 +217,10 @@ class AntaTest(ABC):
 
             # No test data is present, try to collect
             if not self.all_data_collected():
-              for command in self.instance_commands:
-                await self.device.collect(command=command)
-                if self.result.result != "unset":
-                    return self.result
+                for command in self.instance_commands:
+                    await self.device.collect(command=command)
+                    if self.result.result != "unset":
+                        return self.result
 
             self.logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
             try:
@@ -260,7 +259,7 @@ class AntaTest(ABC):
             # No test data is present, try to collect
             if not self.all_data_collected():
                 for command in self.instance_commands:
-                  self.device.collect(command=command)
+                    self.device.collect(command=command)
                 if self.result.result != "unset":
                     return self.result
 

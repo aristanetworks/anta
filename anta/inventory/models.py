@@ -130,6 +130,10 @@ class AntaInventoryInput(BaseModel):
 class InventoryDevice(ABC, BaseModel):
     """
     Abstract class for InventoryDevice.
+
+    Attributes:
+        name (str): Device name.
+        session (Any): JSONRPC session.
     """
 
     name: str
@@ -139,47 +143,62 @@ class InventoryDevice(ABC, BaseModel):
     def collect(self, command: AntaTestCommand) -> Any:
         """
         Prepares and sends request(s) to device.
+
+        Args:
+            command (AntaTestCommand): Command to execute on the device.
+
+        Returns:
+            Any: Varies depending on the command sent and its execution result.
         """
 
 
 class InventoryDeviceHttpApi(InventoryDevice):
     """
-    InventoryDevice with Ansible HttpApi connection session object.
+    Implementation of InventoryDevice with Ansible HttpApi connection session object.
     """
 
     def collect(self, command: AntaTestCommand) -> AntaTestCommand:
         """
         Collect device command result using HttpApi session.
+
+        Args:
+            command (AntaTestCommand): Command to execute on the device.
+
+        Returns:
+            AntaTestCommand: The command that was executed, including its output data.
         """
+        # Prepare to execute the command
         logger.debug(f"run collect from device {self.name} for {command}")
 
         try:
+            # Execute the command and process the response
             response = self.session.send_request(command.command, version=command.version, output=command.ofmt)
-            # Convert JSON response to dict
             data = json.loads(response) if command.ofmt == "json" else response
             command.output = data
 
         except ConnectionError as e:
+            # Handle connection errors
             logger.error(f"Connection error raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
             logger.debug(traceback.format_exc())
+
         return command
 
 
 class InventoryDeviceAioeapi(InventoryDevice):
     """
-    Inventory model exposed by Inventory class.
+    Implementation of InventoryDevice with asynchronous connection session object.
 
     Attributes:
-        name (str): Device name
+        host (str | IPvAnyAddress): IP address to use for connection.
         username (str): Username to use for connection.
-        password (password): Password to use for connection.
+        password (str): Password to use for connection.
+        port (int): Port to use for connection.
         enable_password (Optional[str]): enable_password to use on the device, required for some tests
-        session (Any): JSONRPC session.
         established (bool): Flag to mark if connection is established (True) or not (False). Default: False.
         is_online (bool): Flag to mark if host is alive (True) or not (False). Default: False.
         hw_model (str): HW name gathered during device discovery.
-        url (str): eAPI URL to use to build session.
         tags (List[str]): List of attached tags read from inventory file.
+        timeout (float): Timeout in seconds for the connection. Default: 10.0.
     """
 
     class Config:  # pylint: disable=too-few-public-methods
@@ -187,6 +206,7 @@ class InventoryDeviceAioeapi(InventoryDevice):
 
         arbitrary_types_allowed = True
 
+    # Setup class attributes with default values
     host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore[valid-type]
     username: str
     password: str
@@ -201,6 +221,7 @@ class InventoryDeviceAioeapi(InventoryDevice):
     @root_validator(pre=True)
     def build_device(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
         """Build the device session object"""
+        # Setup default values if not provided
         if not values.get("host"):
             values["host"] = "localhost"
         if not values.get("port"):
@@ -210,6 +231,7 @@ class InventoryDeviceAioeapi(InventoryDevice):
         else:
             values["tags"] = [DEFAULT_TAG]
         if values.get("session") is None:
+            # Initialize session object
             proto = "http" if values["port"] in ["80", "8080"] else "https"
             values["session"] = Device(
                 host=values["host"],
@@ -221,12 +243,19 @@ class InventoryDeviceAioeapi(InventoryDevice):
             )
         if values.get("name") is None:
             values["name"] = f"{values['host']}:{values['port']}"
+
         return values
 
     def __eq__(self, other: object) -> bool:
         """
         Two InventoryDeviceAioeapi objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
+
+        Args:
+            other (object): The object to compare with.
+
+        Returns:
+            bool: True if the objects are equal, False otherwise.
         """
         if not isinstance(other, InventoryDeviceAioeapi):
             return False
@@ -234,7 +263,13 @@ class InventoryDeviceAioeapi(InventoryDevice):
 
     def assert_enable_password_is_not_none(self, test_name: Optional[str] = None) -> None:
         """
-        raise ValueError is enable_password is None
+        Raise ValueError if enable_password is None
+
+        Args:
+            test_name (Optional[str]): Name of the test if available.
+
+        Raises:
+            ValueError: If enable_password is None.
         """
         if not self.enable_password:
             if test_name:
@@ -244,9 +279,15 @@ class InventoryDeviceAioeapi(InventoryDevice):
             raise ValueError(message)
 
     async def collect(self, command: AntaTestCommand) -> AntaTestCommand:  # pylint: disable=invalid-overridden-method
-        """Collect device command result
+        """
+        Collect device command result asynchronously.
         FIXME: Under development / testing
         TODO: Build documentation
+        Args:
+            command (AntaTestCommand): Command to execute on the device.
+
+        Returns:
+            AntaTestCommand: The command that was executed, including its output data.
         """
         logger.debug(f"run collect from device {self.name} for {command}")
 
@@ -275,13 +316,17 @@ class InventoryDeviceAioeapi(InventoryDevice):
             command.output = response
 
         except EapiCommandError as e:
+            # Handle command error
             logger.error(f"Command failed on {self.name}: {e.errmsg}")
         except (HTTPError, ConnectError) as e:
+            # Handle HTTP and connection errors
             logger.error(f"Cannot connect to device {self.name}: {type(e).__name__}{exc_to_str(e)}")
             logger.debug(traceback.format_exc())
         except Exception as e:  # pylint: disable=broad-exception-caught
+            # Handle any other errors
             logger.error(f"Exception raised while collecting data for test {self.name} (on device {self.name}) - {exc_to_str(e)}")
             logger.debug(traceback.format_exc())
+
         return command
 
 
