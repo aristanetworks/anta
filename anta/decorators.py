@@ -18,6 +18,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
     Args:
     * platforms (List[str]): the list of platforms on which the decorated test should be skipped.
 
+    NOTE: Depecrated. Use AntaTestFilter instead.
     """
 
     def decorator(function: F) -> F:

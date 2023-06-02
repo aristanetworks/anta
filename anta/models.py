@@ -67,22 +67,16 @@ class AntaTestCommand(BaseModel):
 
 
 class AntaTestFilter(ABC):
-    """Abstract dlass to define a test Filter"""
+    """Abstract class to define a test filter"""
 
     # pylint: disable=too-few-public-methods
     @abstractmethod
-    def should_skip(
-        self,
-        device: InventoryDevice,
-        result: TestResult,
-        *args: list[Any],
-        **kwagrs: dict[str, Any],
-    ) -> bool:
+    def should_skip(self, device: InventoryDevice, result: TestResult) -> bool:
         """
-        Sets the TestResult status to skip with the appropriate skip message
+        Sets the TestResult status to "skipped" with the appropriate skip message.
 
         Returns:
-            bool: True if the test should be skipped, False otherwise
+            bool: True if the test should be skipped, False otherwise.
         """
 
 
@@ -125,6 +119,12 @@ class AntaTest(ABC):
         self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
         self.sync = sync
+
+        if hasattr(self.__class__, "test_filters") and (filters := self.__class__.test_filters) is not None:
+            for _filter in filters:
+                should_skip_result = _filter.should_skip(device=self.device, result=self.result)
+                if should_skip_result:
+                    return
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template

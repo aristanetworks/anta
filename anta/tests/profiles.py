@@ -4,8 +4,8 @@ Test functions related to ASIC profiles
 import logging
 from typing import Any, Dict, cast
 
-from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
+from anta.test_filters import SkipPlatformsFilter
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +19,8 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     description = ""
     categories = ["profiles"]
     commands = [AntaTestCommand(command="show platform trident forwarding-table partition", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, mode: Any = None) -> None:
         if not mode:
@@ -43,8 +43,8 @@ class VerifyTcamProfile(AntaTest):
     description = "Verify that the assigned TCAM profile is actually running on the device"
     categories = ["profiles"]
     commands = [AntaTestCommand(command="show hardware tcam profile", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, profile: Any = None) -> None:
         if not profile:

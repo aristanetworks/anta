@@ -134,10 +134,12 @@ class InventoryDevice(ABC, BaseModel):
     Attributes:
         name (str): Device name.
         session (Any): JSONRPC session.
+        hw_model (str): HW name gathered during device initialization.
     """
 
     name: str
     session: Any
+    hw_model: str = DEFAULT_HW_MODEL
 
     @abstractmethod
     def collect(self, command: AntaTestCommand) -> Any:
@@ -148,7 +150,7 @@ class InventoryDevice(ABC, BaseModel):
             command (AntaTestCommand): Command to execute on the device.
 
         Returns:
-            Any: Varies depending on the command sent and its execution result.
+            Any: The command that was executed, including its output data.
         """
 
 
@@ -156,6 +158,21 @@ class InventoryDeviceHttpApi(InventoryDevice):
     """
     Implementation of InventoryDevice with Ansible HttpApi connection session object.
     """
+
+    @root_validator(pre=True)
+    def set_hw_model(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Set the hw_model attribute"""
+        try:
+            # Get the device info
+            device_info = values["session"].get_device_info()
+            values["hw_model"] = device_info.get("network_os_model")
+
+        except ConnectionError as e:
+            # Handle connection errors
+            logger.error(f"Connection error raised while collecting device info of {values['name']}) - {exc_to_str(e)}")
+            logger.debug(traceback.format_exc())
+
+        return values
 
     def collect(self, command: AntaTestCommand) -> AntaTestCommand:
         """
@@ -167,7 +184,7 @@ class InventoryDeviceHttpApi(InventoryDevice):
         Returns:
             AntaTestCommand: The command that was executed, including its output data.
         """
-        # Prepare to execute the command
+
         logger.debug(f"run collect from device {self.name} for {command}")
 
         try:
@@ -196,7 +213,6 @@ class InventoryDeviceAioeapi(InventoryDevice):
         enable_password (Optional[str]): enable_password to use on the device, required for some tests
         established (bool): Flag to mark if connection is established (True) or not (False). Default: False.
         is_online (bool): Flag to mark if host is alive (True) or not (False). Default: False.
-        hw_model (str): HW name gathered during device discovery.
         tags (List[str]): List of attached tags read from inventory file.
         timeout (float): Timeout in seconds for the connection. Default: 10.0.
     """
@@ -214,7 +230,6 @@ class InventoryDeviceAioeapi(InventoryDevice):
     enable_password: Optional[str]
     established: bool = False
     is_online: bool = False
-    hw_model: str = DEFAULT_HW_MODEL
     tags: List[str] = [DEFAULT_TAG]
     timeout: float = 10.0
 

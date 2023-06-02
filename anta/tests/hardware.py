@@ -6,8 +6,8 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
+from anta.test_filters import SkipPlatformsFilter
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +17,12 @@ class VerifyTransceiversManufacturers(AntaTest):
     Verifies Manufacturers of all Transceivers.
     """
 
-    name = "verify_transceivers_manufacturers"
-    description = ""
+    name = "VerifyTransceiversManufacturers"
+    description = "Verifies if all transceivers are authorized manufacturers."
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show inventory", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, manufacturers: Optional[List[str]] = None) -> None:
         """Run VerifyTransceiversManufacturers validation"""
@@ -47,8 +47,8 @@ class VerifyTemperature(AntaTest):
     description = "Verifies device temparture is currently OK (temperatureOK)"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTemperature validation"""
@@ -69,8 +69,8 @@ class VerifyTransceiversTemperature(AntaTest):
     description = "Verifies Transceivers temperature is currently OK"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment temperature transceiver", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTransceiversTemperature validation"""
@@ -100,8 +100,8 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyEnvironmentCooling validation"""
@@ -125,8 +125,8 @@ class VerifyEnvironmentCooling(AntaTest):
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, accepted_states: Optional[List[str]] = None) -> None:
         """Run VerifyEnvironmentCooling validation"""
@@ -162,8 +162,8 @@ class VerifyEnvironmentPower(AntaTest):
     description = "Verifies the power supplied status is OK"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment power", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, accepted_states: Optional[List[str]] = None) -> None:
         """Run VerifyEnvironmentPower validation"""
@@ -190,6 +190,7 @@ class VerifyAdverseDrops(AntaTest):
     description = "Verifies there is no adverse drops on DCS7280E and DCS7500E"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
     @AntaTest.anta_test
     def test(self) -> None:
