@@ -4,8 +4,8 @@ BGP test functions
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.decorators import check_bgp_family_enable
 from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.test_filters import SkipBGPFilter
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +51,8 @@ class VerifyBGPIPv4UnicastState(AntaTest):
     description = "Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp ipv4 unicast summary vrf all")]
+    test_filters = [SkipBGPFilter(family="ipv4")]
 
-    @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPIPv4UnicastState validation"""
@@ -86,8 +86,8 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     )
     categories = ["routing", "bgp"]
     template = AntaTestTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")
+    test_filters = [SkipBGPFilter(family="ipv4")]
 
-    @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
         """Run VerifyBGPIPv4UnicastCount validation"""
@@ -126,8 +126,8 @@ class VerifyBGPIPv6UnicastState(AntaTest):
     description = "Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp ipv6 unicast summary vrf all")]
+    test_filters = [SkipBGPFilter(family="ipv6")]
 
-    @check_bgp_family_enable("ipv6")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPIPv6UnicastState validation"""
@@ -155,8 +155,8 @@ class VerifyBGPEVPNState(AntaTest):
     description = "Verifies all EVPN BGP sessions are established (default VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp evpn summary")]
+    test_filters = [SkipBGPFilter(family="evpn")]
 
-    @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPEVPNState validation"""
@@ -189,8 +189,8 @@ class VerifyBGPEVPNCount(AntaTest):
     description = "Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp evpn summary")]
+    test_filters = [SkipBGPFilter(family="evpn")]
 
-    @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
         """Run VerifyBGPEVPNCount validation"""
@@ -226,8 +226,8 @@ class VerifyBGPRTCState(AntaTest):
     description = "Verifies all RTC BGP sessions are established (default VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp rt-membership summary")]
+    test_filters = [SkipBGPFilter(family="rtc")]
 
-    @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPRTCState validation"""
@@ -260,8 +260,8 @@ class VerifyBGPRTCCount(AntaTest):
     description = "Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF)."
     categories = ["routing", "bgp"]
     commands = [AntaTestCommand(command="show bgp rt-membership summary")]
+    test_filters = [SkipBGPFilter(family="rtc")]
 
-    @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
         """Run VerifyBGPRTCCount validation"""

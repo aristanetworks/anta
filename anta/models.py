@@ -71,9 +71,22 @@ class AntaTestFilter(ABC):
 
     # pylint: disable=too-few-public-methods
     @abstractmethod
-    def should_skip(self, device: InventoryDevice, result: TestResult) -> bool:
+    def sync_should_skip(self, device: InventoryDevice, result: TestResult) -> bool:
         """
         Sets the TestResult status to "skipped" with the appropriate skip message.
+
+        Runs the synchronous version of collect.
+
+        Returns:
+            bool: True if the test should be skipped, False otherwise.
+        """
+
+    @abstractmethod
+    async def async_should_skip(self, device: InventoryDevice, result: TestResult) -> bool:
+        """
+        Sets the TestResult status to "skipped" with the appropriate skip message.
+
+        Runs the asynchronous version of collect.
 
         Returns:
             bool: True if the test should be skipped, False otherwise.
@@ -119,12 +132,6 @@ class AntaTest(ABC):
         self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
         self.sync = sync
-
-        if hasattr(self.__class__, "test_filters") and (filters := self.__class__.test_filters) is not None:
-            for _filter in filters:
-                should_skip_result = _filter.should_skip(device=self.device, result=self.result)
-                if should_skip_result:
-                    return
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
@@ -190,7 +197,7 @@ class AntaTest(ABC):
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
-        Decorator for anta_test that handles injecting test data if given and collecting it synchronously or asynchronously
+        Decorator for anta_test that handles injecting test data if given and collecting commands results synchronously or asynchronously.
         """
 
         @wraps(function)
@@ -208,6 +215,11 @@ class AntaTest(ABC):
             if self.result.result != "unset":
                 return self.result
 
+            if hasattr(self.__class__, "test_filters") and (filters := self.__class__.test_filters) is not None:
+                for _filter in filters:
+                    if await _filter.async_should_skip(device=self.device, result=self.result):
+                        return self.result
+
             # TODO maybe_skip decorators
 
             # Data
@@ -218,7 +230,7 @@ class AntaTest(ABC):
             # No test data is present, try to collect
             if not self.all_data_collected():
                 for command in self.instance_commands:
-                    await self.device.collect(command=command)
+                    await self.device.async_collect(command=command)
                     if self.result.result != "unset":
                         return self.result
 
@@ -249,6 +261,11 @@ class AntaTest(ABC):
             if self.result.result != "unset":
                 return self.result
 
+            if hasattr(self.__class__, "test_filters") and (filters := self.__class__.test_filters) is not None:
+                for _filter in filters:
+                    if _filter.sync_should_skip(device=self.device, result=self.result):
+                        return self.result
+
             # TODO maybe_skip decorators
 
             # Data
@@ -259,7 +276,7 @@ class AntaTest(ABC):
             # No test data is present, try to collect
             if not self.all_data_collected():
                 for command in self.instance_commands:
-                    self.device.collect(command=command)
+                    self.device.sync_collect(command=command)
                 if self.result.result != "unset":
                     return self.result
 

@@ -55,6 +55,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
     Args:
     * family (str): BGP family to check. Can be ipv4 / ipv6 / evpn / rtc
 
+    NOTE: Depecrated. Use AntaTestFilter instead.
     """
 
     def decorator(function: F) -> F:

@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TAG = "all"
 DEFAULT_HW_MODEL = "unset"
+DEFAULT_NAME = ""
 
 # Pydantic models for input validation
 
@@ -132,19 +133,31 @@ class InventoryDevice(ABC, BaseModel):
     Abstract class for InventoryDevice.
 
     Attributes:
-        name (str): Device name.
-        session (Any): JSONRPC session.
+        name (str): Device name gathered during device initialization.
+        session (Any): JSONRPC session. Can support synchronous or asynchronous session object.
         hw_model (str): HW name gathered during device initialization.
     """
 
-    name: str
+    name: str = DEFAULT_NAME
     session: Any
     hw_model: str = DEFAULT_HW_MODEL
 
     @abstractmethod
-    def collect(self, command: AntaTestCommand) -> Any:
+    def sync_collect(self, command: AntaTestCommand) -> Any:
         """
-        Prepares and sends request(s) to device.
+        Prepares and sends request(s) to device synchronously.
+
+        Args:
+            command (AntaTestCommand): Command to execute on the device.
+
+        Returns:
+            Any: The command that was executed, including its output data.
+        """
+
+    @abstractmethod
+    async def async_collect(self, command: AntaTestCommand) -> Any:
+        """
+        Prepares and sends request(s) to device asynchronously.
 
         Args:
             command (AntaTestCommand): Command to execute on the device.
@@ -160,12 +173,13 @@ class InventoryDeviceHttpApi(InventoryDevice):
     """
 
     @root_validator(pre=True)
-    def set_hw_model(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Set the hw_model attribute"""
+    def set_attributes(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Set the class attributes"""
         try:
             # Get the device info
             device_info = values["session"].get_device_info()
             values["hw_model"] = device_info.get("network_os_model")
+            values["name"] = device_info.get("network_os_hostname")
 
         except ConnectionError as e:
             # Handle connection errors
@@ -174,7 +188,7 @@ class InventoryDeviceHttpApi(InventoryDevice):
 
         return values
 
-    def collect(self, command: AntaTestCommand) -> AntaTestCommand:
+    def sync_collect(self, command: AntaTestCommand) -> AntaTestCommand:
         """
         Collect device command result using HttpApi session.
 
@@ -199,6 +213,12 @@ class InventoryDeviceHttpApi(InventoryDevice):
             logger.debug(traceback.format_exc())
 
         return command
+
+    async def async_collect(self, command: AntaTestCommand) -> NotImplementedError:
+        """
+        Asynchronous collector is not implemented for the HttpApi connector.
+        """
+        raise NotImplementedError(f"Asynchronous collector is not implemented for {self.__class__.__name__}.")
 
 
 class InventoryDeviceAioeapi(InventoryDevice):
@@ -234,8 +254,8 @@ class InventoryDeviceAioeapi(InventoryDevice):
     timeout: float = 10.0
 
     @root_validator(pre=True)
-    def build_device(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Build the device session object"""
+    def set_attributes(cls: BaseModel, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Build the class attributes"""
         # Setup default values if not provided
         if not values.get("host"):
             values["host"] = "localhost"
@@ -293,7 +313,13 @@ class InventoryDeviceAioeapi(InventoryDevice):
                 message = "`enable_password` is not set"
             raise ValueError(message)
 
-    async def collect(self, command: AntaTestCommand) -> AntaTestCommand:  # pylint: disable=invalid-overridden-method
+    def sync_collect(self, command: AntaTestCommand) -> NotImplementedError:
+        """
+        Synchronous collector is not implemented for the Aioepi connector.
+        """
+        raise NotImplementedError(f"Asynchronous collector is not implemented for {self.__class__.__name__}.")
+
+    async def async_collect(self, command: AntaTestCommand) -> AntaTestCommand:
         """
         Collect device command result asynchronously.
         FIXME: Under development / testing
