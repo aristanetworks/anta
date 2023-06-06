@@ -1398,35 +1398,55 @@
           <td>
                 <code>float</code>
           </td>
-          <td><p>Connection to device timeout.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Connection to device timeout.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>INVENTORY_ROOT_KEY</code></td>
           <td>
                 <code>str, <span title="typing.Optional">Optional</span></code>
           </td>
-          <td><p>head of the YAML inventory. Default is anta_inventory</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>head of the YAML inventory. Default is anta_inventory</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>EAPI_SESSION_TPL</code></td>
           <td>
                 <code>str, <span title="typing.Optional">Optional</span></code>
           </td>
-          <td><p>Template for eAPI URL builder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Template for eAPI URL builder</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>INVENTORY_OUTPUT_FORMAT</code></td>
           <td>
                 <code><span title="typing.List">List</span>[str], <span title="typing.Optional">Optional</span></code>
           </td>
-          <td><p>List of supported output format. Default [&lsquo;native&rsquo;, &lsquo;json&rsquo;]</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of supported output format. Default [&lsquo;native&rsquo;, &lsquo;json&rsquo;]</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>HW_MODEL_KEY</code></td>
           <td>
                 <code>str, <span title="typing.Optional">Optional</span></code>
           </td>
-          <td><p>Name of the key in Arista eAPI JSON provided by device.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of the key in Arista eAPI JSON provided by device.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1491,19 +1511,31 @@
           <td>
                 <code><a class="autorefs autorefs-internal" title="anta.inventory.exceptions.InventoryRootKeyErrors" href="#anta.inventory.exceptions.InventoryRootKeyErrors">InventoryRootKeyErrors</a></code>
           </td>
-          <td><p>Root key of inventory is missing.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Root key of inventory is missing.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code><a class="autorefs autorefs-internal" title="anta.inventory.exceptions.InventoryIncorrectSchema" href="#anta.inventory.exceptions.InventoryIncorrectSchema">InventoryIncorrectSchema</a></code>
           </td>
-          <td><p>Inventory file is not following AntaInventory Schema.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Inventory file is not following AntaInventory Schema.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>InventoryUnknownFormat</code>
           </td>
-          <td><p>Output format is not supported.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Output format is not supported.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2161,7 +2193,11 @@
           <td>
                 <code>str</code>
           </td>
-          <td><p>Path to inventory YAML file where user has described his inputs</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to inventory YAML file where user has described his inputs</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2171,7 +2207,11 @@
           <td>
                 <code>str</code>
           </td>
-          <td><p>Username to use to connect to devices</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Username to use to connect to devices</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2181,7 +2221,11 @@
           <td>
                 <code>str</code>
           </td>
-          <td><p>Password to use to connect to devices</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Password to use to connect to devices</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2191,7 +2235,11 @@
           <td>
                 <code>float</code>
           </td>
-          <td><p>timeout in seconds for every API call.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>timeout in seconds for every API call.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2201,7 +2249,11 @@
           <td>
                 <code>str</code>
           </td>
-          <td><p>create inventory only with matching host name in this list.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>create inventory only with matching host name in this list.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2393,8 +2445,12 @@
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether or not including non-established devices in the Inventory.
-                               Default False.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether or not including non-established devices in the Inventory.
+                               Default False.</p>
+            </div>
+          </td>
           <td>
                 <code>False</code>
           </td>
@@ -2404,7 +2460,11 @@
           <td>
                 <code><span title="typing.List">List</span>[str]</code>
           </td>
-          <td><p>List of tags to use to filter devices.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of tags to use to filter devices.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2425,7 +2485,11 @@
 <td><code>InventoryDevices</code></td>          <td>
                 <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevices" href="../inventory.models/#anta.inventory.models.InventoryDevices">InventoryDevices</a></code>
           </td>
-          <td><p>An inventory with concerned devices</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>An inventory with concerned devices</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2591,7 +2655,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 1, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 6, 2023</span>
       
     
   </small>
