@@ -36,14 +36,10 @@ class ResultManager:
 
             for device in inventory_anta.get_inventory():
                 manager.add_test_result(
-                    verify_eos_version(
-                        device=device, versions=['4.28.0F']
-                    )
+                    VerifyNTP(device=device).test()
                 )
                 manager.add_test_result(
-                    verify_uptime(
-                        device=device, minimum=1
-                    )
+                    VerifyEOSVersion(device=device).test(version='4.28.3M')
                 )
 
         Print result in native format:
@@ -52,13 +48,13 @@ class ResultManager:
             [
                 TestResult(
                     host=IPv4Address('192.168.0.10'),
-                    test='verify_eos_version',
+                    test='VerifyNTP',
                     result='failure',
-                    message="device is running version 4.27.3F-26379303.4273F (engineering build) and test expect ['4.28.0F']"
+                    message="device is not running NTP correctly"
                 ),
                 TestResult(
                     host=IPv4Address('192.168.0.10'),
-                    test='verify_eos_version',
+                    test='VerifyEOSVersion',
                     result='success',
                     message=None
                 ),
