@@ -28,6 +28,6 @@ def pydantic_to_dict(pydantic_list: Union[InventoryDevices, ListResult]) -> Any:
     """
     result = []
     for device in pydantic_list:
-        dev_dict = {k: str(v) for k, v in device}
+        dev_dict = {k: str(v) if not isinstance(v, list) else v for k, v in device}
         result.append(dev_dict)
     return result

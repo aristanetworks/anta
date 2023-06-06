@@ -9,17 +9,21 @@ RESULT_OPTIONS = ["unset", "success", "failure", "error", "skipped"]
 
 class TestResult(BaseModel):
     """
-    Describe result of a test from a single device.
+    Describe the result of a test from a single device.
 
     Attributes:
         name (str): Device name where the test has run.
         test (str): Test name runs on the device.
-        results (str): Result of the test. Can be one of unset / failure / success.
-        message (str, optional): Message to report after the test.
+        test_category (List[str]): List of test categories the test belongs to.
+        test_description (str): Test description.
+        results (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
+        message (str, optional): Message to report after the test if any.
     """
 
     name: str
     test: str
+    test_category: List[str]
+    test_description: str
     result: str = "unset"
     messages: List[str] = []
 

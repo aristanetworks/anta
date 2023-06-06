@@ -1,4 +1,4 @@
 # ANTA catalog for logging tests
 
-::: anta.tests.security
+::: anta.tests.logging
     heading_level: 3
