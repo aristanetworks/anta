@@ -23,6 +23,7 @@ class TestResult(BaseModel):
     result: str = "unset"
     messages: List[str] = []
 
+    @classmethod
     @validator("result", allow_reuse=True)
     def name_must_be_in(cls, v: str) -> str:
         """

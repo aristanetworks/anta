@@ -66,10 +66,16 @@ async def collect_commands(
             outdir = Path() / root_dir / dev.name / outformat
             outdir.mkdir(parents=True, exist_ok=True)
             outfile = outdir / command
-            result = await dev.session.cli(
-                commands=[{"cmd": "enable", "input": enable_pass}, command],
-                ofmt=outformat,
-            )
+            if enable_pass is not None:
+                result = await dev.session.cli(
+                    commands=[{"cmd": "enable", "input": enable_pass}, command],
+                    ofmt=outformat,
+                )
+            else:
+                result = await dev.session.cli(
+                    commands=["", command],
+                    ofmt=outformat,
+                )
             with outfile.open(mode="w", encoding="UTF-8") as f:
                 f.write(str(result[1]))
             logger.info(f"Collected command '{command}' from device {dev.name} ({dev.hw_model})")
