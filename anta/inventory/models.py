@@ -57,7 +57,7 @@ if sys.version_info < (3, 10):
         return cmd
 
     python_version = ".".join(map(str, sys.version_info[:3]))
-    logger.warning(f"Using Python {python_version} < 3.10 - patching aioeapi.Device.jsoncrpc_command to support 'latest' version")
+    logger.debug(f"Using Python {python_version} < 3.10 - patching aioeapi.Device.jsoncrpc_command to support 'latest' version")
     Device.jsoncrpc_command = patched_jsoncrpc_command
 
 
