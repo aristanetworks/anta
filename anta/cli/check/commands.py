@@ -139,11 +139,13 @@ def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: b
 @click.pass_context
 @click.option("--catalog", "-c", show_envvar=True, prompt="Path for tests catalog", help="Path for tests catalog", type=click.Path(), required=True)
 @click.option("--template", "-tpl", type=click.Path(), required=True, help="Path to the template to use for your report")
+@click.option("--output", "-o", type=click.Path(), default=None, required=False, help="Path to use to save report")
 @click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
 @click.option(
     "--log-level", "--log", help="Logging level of the command", default="warning", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
 )
-def tpl_report(ctx: click.Context, catalog: str, tags: str, template: str, log_level: str) -> bool:
+def tpl_report(ctx: click.Context, catalog: str, tags: str, template: str, log_level: str, output: str) -> bool:
+    # pylint: disable=too-many-arguments
     """ANTA command to check network state with templated report"""
     console = Console()
     inventory = ctx.obj["inventory"]
@@ -174,6 +176,6 @@ def tpl_report(ctx: click.Context, catalog: str, tags: str, template: str, log_l
         )
     )
 
-    display_jinja(console=console, results=results, template=template)
+    display_jinja(console=console, results=results, template=template, output=output)
 
     return True
