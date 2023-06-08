@@ -85,6 +85,7 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
 @click.option("--output", "-o", default="./tech-support", help="Path for tests catalog", type=click.Path(), required=False)
 @click.option("--ssh-port", "-ssh", default=22, help="SSH port to use for connection", type=int, required=False)
 @click.option("--insecure/--secure", help="Disable SSH Host Key validation", default=False, required=False)
+@click.option("--latest", default=1, help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
     "--configure/--not-configure", help="Ensure device has 'aaa authorization exec default local' configured (required for SCP)", default=False, required=False
 )
@@ -94,12 +95,12 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
     "--log-level", "--log", help="Logging level of the command", default="info", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
 )
 def collect_tech_support(  # pylint: disable=too-many-arguments
-    ctx: click.Context, output: str, ssh_port: int, insecure: bool, configure: bool, log_level: str, tags: str
+    ctx: click.Context, output: str, ssh_port: int, insecure: bool, latest: int, configure: bool, log_level: str, tags: str
 ) -> bool:
     """Collect scheduled tech-support from eos devices."""
     setup_logging(level=log_level)
     inventory = AntaInventory(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
-    asyncio.run(collect_scheduled_show_tech(inventory, ctx.obj["enable_password"], output, tags.split(","), ssh_port, insecure, configure))
+    asyncio.run(collect_scheduled_show_tech(inventory, ctx.obj["enable_password"], output, tags.split(","), ssh_port, insecure, latest, configure))
     return True

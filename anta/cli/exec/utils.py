@@ -9,7 +9,6 @@ import asyncio
 import itertools
 import logging
 import traceback
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Literal
 
@@ -19,8 +18,7 @@ from aioeapi import EapiCommandError
 from anta.inventory import AntaInventory
 from anta.inventory.models import InventoryDevice
 
-EOS_TECH_SUPPORT_ARCHIVE_ZIP = "/mnt/flash/schedule/all_files.zip"
-
+EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +98,7 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
     tags: List[str],
     ssh_port: int,
     insecure: bool,
+    latest: int,
     configure: bool,
 ) -> None:
     """
@@ -111,18 +110,21 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
         Collect all the tech-support files stored on Arista switches flash and copy them locally
         """
         try:
-            # Create one zip file named all_files.zip on the device with the all the show tech-support files in it
-            commands = [
-                {"cmd": "enable", "input": enable_pass},
-                f"bash timeout 30 zip {EOS_TECH_SUPPORT_ARCHIVE_ZIP} /mnt/flash/schedule/tech-support/*",
-            ]
-            await device.session.cli(commands=commands)
-            logger.info(f"Created {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on device {device.name}")
+            # Get the tech-support filename to retrieve
+            COMMAND = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
+            if latest:
+                COMMAND += f" | head -{latest}"
+            commands = [{"cmd": "enable", "input": enable_pass}, COMMAND]
+            res = await device.session.cli(commands=commands, ofmt="text")
+            if res[1]:
+                filenames = list(map(lambda f: f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}", res[1].splitlines()))
+            else:
+                logger.error(f"Unable to get tech-support filenames on {device.name}: verify that {EOS_SCHEDULED_TECH_SUPPORT} is not empty")
+                return
 
             # Create directories
-            outdir = Path() / root_dir
+            outdir = Path() / root_dir / f"{device.name.lower()}"
             outdir.mkdir(parents=True, exist_ok=True)
-            outfile = outdir / f"{device.name.lower()}_{datetime.today().strftime('%Y-%m-%d_%H%M%S')}.zip"
 
             # Check if 'aaa authorization exec default local' is present in the running-config
             commands = [
@@ -154,15 +156,11 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
                 ssh_params.update({"known_hosts": None})
 
             async with asyncssh.connect(**ssh_params) as conn:
-                await asyncssh.scp((conn, EOS_TECH_SUPPORT_ARCHIVE_ZIP), outfile)
-
-            # Delete the created zip file on the device
-            commands = [
-                {"cmd": "enable", "input": enable_pass},
-                f"bash timeout 30 rm {EOS_TECH_SUPPORT_ARCHIVE_ZIP}",
-            ]
-            await device.session.cli(commands=commands)
-            logger.info(f"Deleted {EOS_TECH_SUPPORT_ARCHIVE_ZIP} on {device.name}")
+                coros = []
+                for file in filenames:
+                    coros.append(asyncssh.scp((conn, file), outdir))
+                await asyncio.gather(*coros)
+            logger.info(f"Collected {len(filenames)} scheduled tech-support from {device.name}")
 
         except EapiCommandError as e:
             logger.error(f"Unable to collect tech-support on {device.name}: {e.errmsg}")
