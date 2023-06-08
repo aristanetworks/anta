@@ -92,3 +92,53 @@ $ anta check json -t pod1 -c nrfu/leaf.yml
   }
 ]
 ```
+
+## NRFU with your own report
+
+Because you may want to have a specific report format, ANTA provides a CLI option to build report based on Jinja2 template.
+
+```bash
+$ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_template.j2
+╭───────────────────────── Settings ─────────────────────────╮
+│ Running check-devices with:                                │
+│               - Inventory: .personal/inventory_atd.yml     │
+│               - Tests catalog: .personal/catalog-class.yml │
+│               - Template: .personal/test_template.j2       │
+╰────────────────────────────────────────────────────────────╯
+* verify_zerotouch is SUCCESS for spine01
+* verify_running_config_diffs is SUCCESS for spine01
+* verify_interface_utilization is SUCCESS for spine01
+```
+
+And the template `.personal/test_template.j2` is a pure Jinja2 template:
+
+```j2
+$ cat .personal/test_template.j2
+{% for d in data %}
+* {{ d.test }} is [green]{{ d.result | upper}}[/green] for {{ d.name }}
+{% endfor %}
+```
+
+In this context, Jinja2 template can access to all `TestResult` elements with their values as described in [this documentation](../api/result_manager_models.md#testresult-entry).
+
+An option is available to save the generated report into a text file:
+
+```bash
+# Run ANTA
+$ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_template.j2 -o .personal/demo.txt
+╭───────────────────────── Settings ─────────────────────────╮
+│ Running check-devices with:                                │
+│               - Inventory: .personal/inventory_atd.yml     │
+│               - Tests catalog: .personal/catalog-class.yml │
+│               - Template: .personal/test_template.j2       │
+╰────────────────────────────────────────────────────────────╯
+* verify_zerotouch is SUCCESS for spine01
+* verify_running_config_diffs is SUCCESS for spine01
+* verify_interface_utilization is SUCCESS for spine01
+
+# Display saved report
+$ cat .personal/demo.txt
+* verify_zerotouch is [green]SUCCESS[/green] for spine01
+* verify_running_config_diffs is [green]SUCCESS[/green] for spine01
+* verify_interface_utilization is [green]SUCCESS[/green] for spine01
+```
