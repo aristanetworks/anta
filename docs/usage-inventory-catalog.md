@@ -99,6 +99,36 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
+If your test is based on [`AntaTestTemplate`](), you have to provide inputs for EOS CLI template by using `tpl_options` list:
+
+```yaml
+anta.tests.routing.bgp:
+  - VerifyBGPIPv4UnicastCount:
+      number: 3
+      tpl_options:
+        - vrf: default
+        - vrf: customer-01
+```
+
+Which is required for the following test definition:
+
+```python
+class VerifyBGPIPv4UnicastCount(AntaTest):
+    """
+    ...
+    """
+
+    name = "VerifyBGPIPv4UnicastCount"
+    description = "..."
+    categories = ["routing", "bgp"]
+    template = AntaTestTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")
+
+    @check_bgp_family_enable("ipv4")
+    @AntaTest.anta_test
+    def test(self, number: Optional[int] = None) -> None:
+        pass
+```
+
 ### Custom tests catalog
 
 In case you want to leverage your own tests collection, you can use the following syntax:

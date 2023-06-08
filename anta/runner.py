@@ -13,6 +13,9 @@ from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
+# Key from YAML file tranfered to AntaTestTemplate of the test.
+TEST_TPL_PARAM = "tpl_options"
+
 
 async def main(
     manager: ResultManager,
@@ -30,6 +33,14 @@ async def main(
         inventory (AntaInventory): Device inventory object.
         tests (List[...]): Test catalog. Output of anta.loader.parse_catalog().
 
+    Example:
+        anta.tests.aaa:
+          - VerifyAAAMethods:
+              method: login
+              tpl_options:
+                - stage: authentication
+                - stage: authorization
+
     Returns:
         any: List of results.
     """
@@ -37,10 +48,19 @@ async def main(
 
     # asyncio.gather takes an iterator of the function to run concurrently.
     # we get the cross product of the devices and tests to build that iterator.
+
     res = await asyncio.gather(
         *(
-            test[0](device=device).test(eos_data=None, **test[1])
-            for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests)
+            test[0](device=device,
+                    template_params=test[1].get(TEST_TPL_PARAM, [])
+                    ).test(
+                eos_data=None,
+                **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAM}
+            )
+            for device, test in itertools.product(
+                inventory.get_inventory(established_only=established_only, tags=tags),
+                tests
+            )
         ),
         return_exceptions=True,
     )
