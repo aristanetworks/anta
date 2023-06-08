@@ -51,16 +51,8 @@ async def main(
 
     res = await asyncio.gather(
         *(
-            test[0](device=device,
-                    template_params=test[1].get(TEST_TPL_PARAM, [])
-                    ).test(
-                eos_data=None,
-                **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAM}
-            )
-            for device, test in itertools.product(
-                inventory.get_inventory(established_only=established_only, tags=tags),
-                tests
-            )
+            test[0](device=device, template_params=test[1].get(TEST_TPL_PARAM, [])).test(eos_data=None, **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAM})
+            for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests)
         ),
         return_exceptions=True,
     )
