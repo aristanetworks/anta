@@ -33,8 +33,9 @@ def setup_logging(level: str = "info") -> None:
 
     logging.getLogger("anta.inventory").setLevel(loglevel)
     logging.getLogger("anta.result_manager").setLevel(loglevel)
+    logging.getLogger("anta.reporter").setLevel(loglevel)
+    logging.getLogger("anta.runner").setLevel(loglevel)
 
-    logging.getLogger("anta.reporter").setLevel(logging.CRITICAL)
     logging.getLogger("anta.tests").setLevel(logging.ERROR)
     logging.getLogger("anta.tests.configuration").setLevel(logging.ERROR)
     logging.getLogger("anta.tests.hardware").setLevel(logging.ERROR)
