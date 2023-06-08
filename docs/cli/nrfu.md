@@ -5,6 +5,7 @@ All the NRFU testing commands are placed under `anta nrfu` and provide different
 - Table view
 - JSON view
 - Text view
+- Custom template view
 
 ```bash
 anta nrfu
@@ -16,9 +17,10 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  json   ANTA command to check network state with JSON result
-  table  ANTA command to check network states with table result
-  text   ANTA command to check network states with text result
+  json        ANTA command to check network state with JSON result
+  table       ANTA command to check network states with table result
+  text        ANTA command to check network states with text result
+  tpl-report  ANTA command to check network state with templated report
 ```
 
 All of these commands require the following input:
@@ -79,17 +81,25 @@ This command is helpful to generate a JSON and then pass it to another tool for 
 $ anta check json -t pod1 -c nrfu/leaf.yml
 [
   {
-    "name": "leaf2",
-    "test": "VerifyMlagStatus",
+    "name": "leaf01",
+    "test": "verify_zerotouch",
+    "test_category": [
+      "configuration"
+    ],
+    "test_description": "Verifies ZeroTouch is disabled.",
     "result": "success",
-    "messages": "[]"
+    "messages": []
   },
   {
-    "name": "leaf2",
-    "test": "VerifyMlagInterface",
+    "name": "leaf01",
+    "test": "verify_running_config_diffs",
+    "test_category": [
+      "configuration"
+    ],
+    "test_description": "",
     "result": "success",
-    "messages": "[]"
-  }
+    "messages": []
+  },
 ]
 ```
 

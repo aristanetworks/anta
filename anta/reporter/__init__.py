@@ -232,12 +232,17 @@ class ReportJinja:
 
         Report is built based on a J2 template provided by user.
         Data structure sent to template is:
-        data = [
+
+        >>> data = ResultManager.get_results(output_format="json")
+        >>> print(data)
+        [
             {
                 name: ...,
                 test: ...,
                 result: ...,
                 messages: [...]
+                test_category: ...,
+                test_description: ...,
             }
         ]
 
