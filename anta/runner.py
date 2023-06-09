@@ -14,7 +14,7 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 # Key from YAML file tranfered to AntaTestTemplate of the test.
-TEST_TPL_PARAM = "tpl_options"
+TEST_TPL_PARAMS = "tpl_options"
 
 
 async def main(
@@ -34,12 +34,11 @@ async def main(
         tests (List[...]): Test catalog. Output of anta.loader.parse_catalog().
 
     Example:
-        anta.tests.aaa:
-          - VerifyAAAMethods:
-              method: login
-              tpl_options:
-                - stage: authentication
-                - stage: authorization
+        anta.tests.routing.bgp:
+        - VerifyBGPIPv4UnicastCount:
+            number: 3
+            tpl_options:
+                - vrf: default
 
     Returns:
         any: List of results.
@@ -51,7 +50,9 @@ async def main(
 
     res = await asyncio.gather(
         *(
-            test[0](device=device, template_params=test[1].get(TEST_TPL_PARAM, [])).test(eos_data=None, **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAM})
+            test[0](device=device, template_params=test[1].get(TEST_TPL_PARAMS, [])).test(
+                eos_data=None, **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
+            )
             for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests)
         ),
         return_exceptions=True,
