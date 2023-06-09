@@ -82,6 +82,7 @@ def cli() -> None:
     nrfu.add_command(check_commands.table)
     nrfu.add_command(check_commands.json)
     nrfu.add_command(check_commands.text)
+    nrfu.add_command(check_commands.tpl_report)
     # Load CLI
     anta(obj={}, auto_envvar_prefix="ANTA")
 

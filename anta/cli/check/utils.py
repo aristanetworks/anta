@@ -6,8 +6,9 @@ Utils functions to use with anta.cli.check.commands module.
 """
 
 import asyncio
+import json
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from rich import print_json
 from rich.console import Console
@@ -18,7 +19,7 @@ from yaml import safe_load
 from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.loader import parse_catalog
-from anta.reporter import ReportTable
+from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager import ResultManager
 from anta.runner import main
 
@@ -80,3 +81,15 @@ def display_list(console: Console, results: ResultManager, output_file: Optional
     if output_file is not None:
         with open(output_file, "w", encoding="utf-8") as fout:
             fout.write(str(results.get_results(output_format="list")))
+
+
+def display_jinja(console: Console, results: ResultManager, template: str, output: Union[str, None] = None) -> None:
+    """Display result based on template."""
+    # console.print(Panel.fit(f"Custom report from {template}", style="cyan"))
+    reporter = ReportJinja(template_path=template)
+    json_data = json.loads(results.get_results(output_format="json"))
+    report = reporter.render(json_data)
+    console.print(report)
+    if output is not None:
+        with open(output, "w", encoding="utf-8") as file:
+            file.write(report)

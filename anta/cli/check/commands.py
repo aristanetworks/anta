@@ -14,7 +14,7 @@ from rich.theme import Theme
 
 from anta import RICH_COLOR_THEME
 
-from .utils import check_run, display_json, display_table
+from .utils import check_run, display_jinja, display_json, display_table
 
 logger = logging.getLogger(__name__)
 
@@ -132,4 +132,50 @@ def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: b
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
+    return True
+
+
+@click.command()
+@click.pass_context
+@click.option("--catalog", "-c", show_envvar=True, prompt="Path for tests catalog", help="Path for tests catalog", type=click.Path(), required=True)
+@click.option("--template", "-tpl", type=click.Path(), required=True, help="Path to the template to use for your report")
+@click.option("--output", "-o", type=click.Path(), default=None, required=False, help="Path to use to save report")
+@click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
+@click.option(
+    "--log-level", "--log", help="Logging level of the command", default="warning", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
+)
+def tpl_report(ctx: click.Context, catalog: str, tags: str, template: str, log_level: str, output: str) -> bool:
+    # pylint: disable=too-many-arguments
+    """ANTA command to check network state with templated report"""
+    console = Console()
+    inventory = ctx.obj["inventory"]
+
+    results = check_run(
+        inventory=inventory,
+        catalog=catalog,
+        username=ctx.obj["username"],
+        password=ctx.obj["password"],
+        timeout=ctx.obj["timeout"],
+        enable_password=ctx.obj["enable_password"],
+        tags=tags,
+        loglevel=log_level,
+    )
+
+    if log_level.upper() == "DEBUG":
+        console.print(Panel.fit("List results of all tests", style="red"))
+        console.print(results.get_results(output_format="json"))
+
+    console.print(
+        Panel.fit(
+            f"Running check-devices with:\n\
+              - Inventory: {inventory}\n\
+              - Tests catalog: {catalog}\n\
+              - Template: {template}",
+            style="cyan",
+            title="[green]Settings",
+        )
+    )
+
+    display_jinja(console=console, results=results, template=template, output=output)
+
     return True

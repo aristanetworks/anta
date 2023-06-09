@@ -2,9 +2,13 @@
 Report management for ANTA.
 """
 
-import logging
-from typing import Any, List, Optional
+# pylint: disable = too-few-public-methods
 
+import logging
+import os.path
+from typing import Any, Dict, List, Optional
+
+from jinja2 import Template
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
@@ -211,3 +215,46 @@ class ReportTable:
                     str(list_failure),
                 )
         return table
+
+
+class ReportJinja:
+    """Report builder based on a Jinja2 template."""
+
+    def __init__(self, template_path: str) -> None:
+        if os.path.isfile(template_path):
+            self.tempalte_path = template_path
+        else:
+            raise FileNotFoundError(f"template file is not found: {template_path}")
+
+    def render(self, data: List[Dict[str, Any]], trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
+        """
+        Build a report based on a Jinja2 template
+
+        Report is built based on a J2 template provided by user.
+        Data structure sent to template is:
+
+        >>> data = ResultManager.get_results(output_format="json")
+        >>> print(data)
+        [
+            {
+                name: ...,
+                test: ...,
+                result: ...,
+                messages: [...]
+                test_category: ...,
+                test_description: ...,
+            }
+        ]
+
+        Args:
+            data (List[Dict[str, Any]]): List of results from ResultManager.get_results
+            trim_blocks (bool, optional): enable trim_blocks for J2 rendering. Defaults to True.
+            lstrip_blocks (bool, optional): enable lstrip_blocks for J2 rendering. Defaults to True.
+
+        Returns:
+            str: rendered template
+        """
+        with open(self.tempalte_path, encoding="utf-8") as file_:
+            template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
+
+        return template.render({"data": data})
