@@ -101,6 +101,7 @@ venv.bak/
 test.env
 tech-support/
 tech-support/*
+2*
 
 **/report.html
 .*report.html
