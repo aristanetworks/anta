@@ -14,7 +14,7 @@ from anta.result_manager.models import TestResult
 logger = logging.getLogger(__name__)
 
 # Key from YAML file tranfered to AntaTestTemplate of the test.
-TEST_TPL_PARAMS = "tpl_options"
+TEST_TPL_PARAMS = "template_params"
 
 
 async def main(
