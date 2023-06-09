@@ -163,7 +163,7 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
             async with asyncssh.connect(**ssh_params) as conn:
                 coros = []
                 for file in filenames:
-                    logger.debug(f"Copying '{file}' from device {device.name} to '{outdir}' locally")
+                    logger.info(f"Copying '{file}' from device {device.name} to '{outdir}' locally")
                     coros.append(asyncssh.scp((conn, file), outdir))
                 await asyncio.gather(*coros)
             logger.info(f"Collected {len(filenames)} scheduled tech-support from {device.name}")
