@@ -87,14 +87,21 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
 @click.option("--insecure/--secure", help="Disable SSH Host Key validation", default=False, show_default=True, required=False)
 @click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
-    "--configure/--not-configure", help="Ensure device has 'aaa authorization exec default local' configured (required for SCP)",
-    default=False, show_default=True, required=False
+    "--configure/--not-configure",
+    help="Ensure device has 'aaa authorization exec default local' configured (required for SCP)",
+    default=False,
+    show_default=True,
+    required=False,
 )
 @click.option("--tags", "-t", default=DEFAULT_TAG, help="List of tags using coma as separator: tag1,tag2,tag3", type=str, required=False)
 # Debug stuf
 @click.option(
-    "--log-level", "--log", help="Logging level of the command", default="info", show_default=True, type=click.Choice(["debug", "info", "warning", "critical"],
-                                                                                                                      case_sensitive=False)
+    "--log-level",
+    "--log",
+    help="Logging level of the command",
+    default="info",
+    show_default=True,
+    type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False),
 )
 def collect_tech_support(  # pylint: disable=too-many-arguments
     ctx: click.Context, output: str, ssh_port: int, insecure: bool, latest: int, configure: bool, log_level: str, tags: str
