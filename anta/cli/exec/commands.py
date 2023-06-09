@@ -85,7 +85,7 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
 @click.option("--output", "-o", default="./tech-support", help="Path for tests catalog", type=click.Path(), required=False)
 @click.option("--ssh-port", "-ssh", default=22, help="SSH port to use for connection", type=int, required=False)
 @click.option("--insecure/--secure", help="Disable SSH Host Key validation", default=False, required=False)
-@click.option("--latest", default=1, help="Number of scheduled show-tech to retrieve", type=int, required=False)
+@click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
     "--configure/--not-configure", help="Ensure device has 'aaa authorization exec default local' configured (required for SCP)", default=False, required=False
 )
