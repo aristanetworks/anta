@@ -111,10 +111,11 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
         """
         try:
             # Get the tech-support filename to retrieve
-            COMMAND = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
+            command = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
             if latest:
-                COMMAND += f" | head -{latest}"
-            commands = [{"cmd": "enable", "input": enable_pass}, COMMAND]
+                command += f" | head -{latest}"
+            commands = [{"cmd": "enable", "input": enable_pass}, command]
+            logger.debug(f"Sending '{command}' to device {device.name}")
             res = await device.session.cli(commands=commands, ofmt="text")
             if res[1]:
                 filenames = list(map(lambda f: f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}", res[1].splitlines()))
@@ -131,20 +132,24 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
                 {"cmd": "enable", "input": enable_pass},
                 "show running-config | include aaa authorization exec default local",
             ]
+            logger.debug(f"Sending 'show running-config | include aaa authorization exec default local' to device {device.name}")
             res = await device.session.cli(commands=commands, ofmt="text")
 
             if not res[1]:
+                logger.debug(f"'aaa authorization exec default local' is not configured on device {device.name}")
                 if configure:
                     commands = [
                         {"cmd": "enable", "input": enable_pass},
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
+                    logger.debug(f"Configuring 'aaa authorization exec default local' on device {device.name}")
                     await device.session.cli(commands=commands)
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
                     logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")
                     return
+            logger.debug(f"'aaa authorization exec default local' is already configured on device {device.name}")
 
             ssh_params = {
                 "host": device.host,
@@ -158,6 +163,7 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
             async with asyncssh.connect(**ssh_params) as conn:
                 coros = []
                 for file in filenames:
+                    logger.debug(f"Copying '{file}' from device {device.name} to '{outdir}' locally")
                     coros.append(asyncssh.scp((conn, file), outdir))
                 await asyncio.gather(*coros)
             logger.info(f"Collected {len(filenames)} scheduled tech-support from {device.name}")
