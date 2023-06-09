@@ -48,15 +48,13 @@ async def main(
     # asyncio.gather takes an iterator of the function to run concurrently.
     # we get the cross product of the devices and tests to build that iterator.
 
-    res = await asyncio.gather(
-        *(
-            test[0](device=device, template_params=test[1].get(TEST_TPL_PARAMS, [])).test(
-                eos_data=None, **{k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
-            )
-            for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests)
-        ),
-        return_exceptions=True,
-    )
+    coros = []
+    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests):
+        test_params = {k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
+        template_params = test[1].get(TEST_TPL_PARAMS, [])
+        coros.append(test[0](device=device, template_params=template_params).test(eos_data=None, **test_params))
+
+    res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
             logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
