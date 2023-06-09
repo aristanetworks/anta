@@ -425,6 +425,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#nrfu-with-your-own-report" class="md-nav__link">
+    NRFU with your own report
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1264,6 +1271,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#nrfu-with-your-own-report" class="md-nav__link">
+    NRFU with your own report
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1295,6 +1309,7 @@
 <li>Table view</li>
 <li>JSON view</li>
 <li>Text view</li>
+<li>Custom template view</li>
 </ul>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
@@ -1305,9 +1320,10 @@ Options:
 <span class="w">  </span>--help<span class="w">  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
-<span class="w">  </span>json<span class="w">   </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result
-<span class="w">  </span>table<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
-<span class="w">  </span>text<span class="w">   </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
+<span class="w">  </span>json<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result
+<span class="w">  </span>table<span class="w">       </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
+<span class="w">  </span>text<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
+<span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report
 </code></pre></div>
 <p>All of these commands require the following input:</p>
 <ul>
@@ -1353,18 +1369,65 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifySvi<span class="w">
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>check<span class="w"> </span>json<span class="w"> </span>-t<span class="w"> </span>pod1<span class="w"> </span>-c<span class="w"> </span>nrfu/leaf.yml
 <span class="o">[</span>
 <span class="w">  </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyMlagStatus&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_zerotouch&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test_category&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">      </span><span class="s2">&quot;configuration&quot;</span>
+<span class="w">    </span><span class="o">]</span>,
+<span class="w">    </span><span class="s2">&quot;test_description&quot;</span>:<span class="w"> </span><span class="s2">&quot;Verifies ZeroTouch is disabled.&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
+<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="o">[]</span>
 <span class="w">  </span><span class="o">}</span>,
 <span class="w">  </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf2&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyMlagInterface&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_running_config_diffs&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test_category&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">      </span><span class="s2">&quot;configuration&quot;</span>
+<span class="w">    </span><span class="o">]</span>,
+<span class="w">    </span><span class="s2">&quot;test_description&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;result&quot;</span>:<span class="w"> </span><span class="s2">&quot;success&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="s2">&quot;[]&quot;</span>
-<span class="w">  </span><span class="o">}</span>
+<span class="w">    </span><span class="s2">&quot;messages&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<span class="w">  </span><span class="o">}</span>,
 <span class="o">]</span>
+</code></pre></div>
+<h4 id="nrfu-with-your-own-report">NRFU with your own report<a class="headerlink" href="#nrfu-with-your-own-report" title="Permanent link">&para;</a></h4>
+<p>Because you may want to have a specific report format, ANTA provides a CLI option to build report based on Jinja2 template.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>-c<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>-tpl<span class="w"> </span>.personal/test_template.j2
+╭─────────────────────────<span class="w"> </span>Settings<span class="w"> </span>─────────────────────────╮
+│<span class="w"> </span>Running<span class="w"> </span>check-devices<span class="w"> </span>with:<span class="w">                                </span>│
+│<span class="w">               </span>-<span class="w"> </span>Inventory:<span class="w"> </span>.personal/inventory_atd.yml<span class="w">     </span>│
+│<span class="w">               </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog:<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>│
+│<span class="w">               </span>-<span class="w"> </span>Template:<span class="w"> </span>.personal/test_template.j2<span class="w">       </span>│
+╰────────────────────────────────────────────────────────────╯
+*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+</code></pre></div>
+<p>And the template <code>.personal/test_template.j2</code> is a pure Jinja2 template:</p>
+<div class="highlight"><pre><span></span><code>$ cat .personal/test_template.j2
+{% for d in data %}
+* {{ d.test }} is [green]{{ d.result | upper}}[/green] for {{ d.name }}
+{% endfor %}
+</code></pre></div>
+<p>In this context, Jinja2 template can access to all <code>TestResult</code> elements with their values as described in <a href="../../api/result_manager_models/#testresult-entry">this documentation</a>.</p>
+<p>An option is available to save the generated report into a text file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run ANTA</span>
+$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>-c<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>-tpl<span class="w"> </span>.personal/test_template.j2<span class="w"> </span>-o<span class="w"> </span>.personal/demo.txt
+╭─────────────────────────<span class="w"> </span>Settings<span class="w"> </span>─────────────────────────╮
+│<span class="w"> </span>Running<span class="w"> </span>check-devices<span class="w"> </span>with:<span class="w">                                </span>│
+│<span class="w">               </span>-<span class="w"> </span>Inventory:<span class="w"> </span>.personal/inventory_atd.yml<span class="w">     </span>│
+│<span class="w">               </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog:<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>│
+│<span class="w">               </span>-<span class="w"> </span>Template:<span class="w"> </span>.personal/test_template.j2<span class="w">       </span>│
+╰────────────────────────────────────────────────────────────╯
+*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+
+<span class="c1"># Display saved report</span>
+$<span class="w"> </span>cat<span class="w"> </span>.personal/demo.txt
+*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
 </code></pre></div>
 
   <hr>
