@@ -73,53 +73,75 @@ leaf1#bash ls /mnt/flash/schedule/tech-support
 leaf1_tech-support_2023-03-09.1337.log.gz  leaf1_tech-support_2023-03-10.0837.log.gz  leaf1_tech-support_2023-03-11.0337.log.gz  ...
 ```
 
-As it can be useful for an NRFU to save a very complete state report before a go live, ANTA has implemented a cli that retrieves these files very easily:
+As it can be useful for an NRFU to save a very complete state report before a go live, ANTA has implemented a CLI that retrieves these files very easily:
 
 ```bash
-anta exec collect-tech-support --help
+❯ anta exec collect-tech-support --help
 
 Usage: anta exec collect-tech-support [OPTIONS]
 
   Collect scheduled tech-support from eos devices.
 
 Options:
-  -o, --output PATH               Path for tests catalog
-  -ssh, --ssh-port INTEGER        SSH port to use for connection
+  -o, --output PATH               Path for tests catalog  [default: ./tech-
+                                  support]
+  -ssh, --ssh-port INTEGER        SSH port to use for connection  [default:
+                                  22]
+  --insecure / --secure           Disable SSH Host Key validation  [default:
+                                  secure]
+  --latest INTEGER                Number of scheduled show-tech to retrieve
+  --configure / --not-configure   Ensure device has 'aaa authorization exec
+                                  default local' configured (required for SCP)
+                                  [default: not-configure]
   -t, --tags TEXT                 List of tags using coma as separator:
                                   tag1,tag2,tag3
   --log-level, --log [debug|info|warning|critical]
-                                  Logging level of the command
+                                  Logging level of the command  [default:
+                                  info]
   --help                          Show this message and exit.
 ```
 
-When you run this command, it create an archive with all tech-support available and download it locall under `--output` folder and a subfolder per device
+When you run this command, it will retrieve tech-support files and download it locally in a folder and a subfolder per device.
+You can change the default output folder with the `--output` option.
+ANTA download files from the devices using SCP, all SSH Host Key devices must be trusted prior to run the command, otherwise use the `--insecure` option.
+In order to use SCP with EOS, the configuration `aaa authorization exec default local` must be present on the devices.
+By default, ANTA will not configure this automatically, unless `--configure` is specified.
+It is possible to retrieve only the latest tech-support files using the `--latest` option.
 
 ```bash
-anta exec collect-tech-support --output .personal/test --tags spin
-
-[10:12:57] INFO     Connecting to devices...
-           INFO     Created /mnt/flash/schedule/all_files.zip on device spine01
-           INFO     Connected (version 2.0, client OpenSSH_7.8)
-           INFO     Authentication (publickey) failed.
-[10:12:58] INFO     Authentication (keyboard-interactive) successful!
-           INFO     Deleted /mnt/flash/schedule/all_files.zip on spine01
-           INFO     Created /mnt/flash/schedule/all_files.zip on device spine02
-[10:12:59] INFO     Connected (version 2.0, client OpenSSH_7.8)
-           INFO     Authentication (publickey) failed.
-           INFO     Authentication (keyboard-interactive) successful!
-[10:13:00] INFO     Deleted /mnt/flash/schedule/all_files.zip on spine02
-           INFO     Done collecting scheduled show-tech
+❯ anta exec collect-tech-support --insecure
+[15:27:19] INFO     Connecting to devices...
+INFO     Copying '/mnt/flash/schedule/tech-support/spine1_tech-support_2023-06-09.1315.log.gz' from device spine1 to 'tech-support/spine1' locally
+INFO     Copying '/mnt/flash/schedule/tech-support/leaf3_tech-support_2023-06-09.1315.log.gz' from device leaf3 to 'tech-support/leaf3' locally
+INFO     Copying '/mnt/flash/schedule/tech-support/leaf1_tech-support_2023-06-09.1315.log.gz' from device leaf1 to 'tech-support/leaf1' locally
+INFO     Copying '/mnt/flash/schedule/tech-support/leaf2_tech-support_2023-06-09.1315.log.gz' from device leaf2 to 'tech-support/leaf2' locally
+INFO     Copying '/mnt/flash/schedule/tech-support/spine2_tech-support_2023-06-09.1315.log.gz' from device spine2 to 'tech-support/spine2' locally
+INFO     Copying '/mnt/flash/schedule/tech-support/leaf4_tech-support_2023-06-09.1315.log.gz' from device leaf4 to 'tech-support/leaf4' locally
+INFO     Collected 1 scheduled tech-support from leaf2
+INFO     Collected 1 scheduled tech-support from spine2
+INFO     Collected 1 scheduled tech-support from leaf3
+INFO     Collected 1 scheduled tech-support from spine1
+INFO     Collected 1 scheduled tech-support from leaf1
+INFO     Collected 1 scheduled tech-support from leaf4
 ```
 
-And folder structure
+The output folder will look like this:
 
 ```bash
-❯ tree .personal/test
-.personal/test
-├── spine01
-│   └── 13 Mar 2023 09:12:57_spine01.zip
-└── spine02
-    └── 13 Mar 2023 09:12:57_spine02.zip
+❯ tree tech-support/
+tech-support/
+├── leaf1
+│   └── leaf1_tech-support_2023-06-09.1315.log.gz
+├── leaf2
+│   └── leaf2_tech-support_2023-06-09.1315.log.gz
+├── leaf3
+│   └── leaf3_tech-support_2023-06-09.1315.log.gz
+├── leaf4
+│   └── leaf4_tech-support_2023-06-09.1315.log.gz
+├── spine1
+│   └── spine1_tech-support_2023-06-09.1315.log.gz
+└── spine2
+    └── spine2_tech-support_2023-06-09.1315.log.gz
 
-2 directories, 2 files
+6 directories, 6 files
 ```
