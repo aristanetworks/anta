@@ -1347,47 +1347,69 @@ tech-support           now         08:37          60            30           100
 leaf1#bash ls /mnt/flash/schedule/tech-support
 leaf1_tech-support_2023-03-09.1337.log.gz  leaf1_tech-support_2023-03-10.0837.log.gz  leaf1_tech-support_2023-03-11.0337.log.gz  ...
 </code></pre></div>
-<p>As it can be useful for an NRFU to save a very complete state report before a go live, ANTA has implemented a cli that retrieves these files very easily:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span>--help
+<p>As it can be useful for an NRFU to save a very complete state report before a go live, ANTA has implemented a CLI that retrieves these files very easily:</p>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span>--help
 
 Usage:<span class="w"> </span>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>Collect<span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>eos<span class="w"> </span>devices.
 
 Options:
-<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>PATH<span class="w">               </span>Path<span class="w"> </span><span class="k">for</span><span class="w"> </span>tests<span class="w"> </span>catalog
-<span class="w">  </span>-ssh,<span class="w"> </span>--ssh-port<span class="w"> </span>INTEGER<span class="w">        </span>SSH<span class="w"> </span>port<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="k">for</span><span class="w"> </span>connection
+<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>PATH<span class="w">               </span>Path<span class="w"> </span><span class="k">for</span><span class="w"> </span>tests<span class="w"> </span>catalog<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span>./tech-
+<span class="w">                                  </span>support<span class="o">]</span>
+<span class="w">  </span>-ssh,<span class="w"> </span>--ssh-port<span class="w"> </span>INTEGER<span class="w">        </span>SSH<span class="w"> </span>port<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="k">for</span><span class="w"> </span>connection<span class="w">  </span><span class="o">[</span>default:
+<span class="w">                                  </span><span class="m">22</span><span class="o">]</span>
+<span class="w">  </span>--insecure<span class="w"> </span>/<span class="w"> </span>--secure<span class="w">           </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation<span class="w">  </span><span class="o">[</span>default:
+<span class="w">                                  </span>secure<span class="o">]</span>
+<span class="w">  </span>--latest<span class="w"> </span>INTEGER<span class="w">                </span>Number<span class="w"> </span>of<span class="w"> </span>scheduled<span class="w"> </span>show-tech<span class="w"> </span>to<span class="w"> </span>retrieve
+<span class="w">  </span>--configure<span class="w"> </span>/<span class="w"> </span>--not-configure<span class="w">   </span>Ensure<span class="w"> </span>device<span class="w"> </span>has<span class="w"> </span><span class="s1">&#39;aaa authorization exec</span>
+<span class="s1">                                  default local&#39;</span><span class="w"> </span>configured<span class="w"> </span><span class="o">(</span>required<span class="w"> </span><span class="k">for</span><span class="w"> </span>SCP<span class="o">)</span>
+<span class="w">                                  </span><span class="o">[</span>default:<span class="w"> </span>not-configure<span class="o">]</span>
 <span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">                 </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>coma<span class="w"> </span>as<span class="w"> </span>separator:
 <span class="w">                                  </span>tag1,tag2,tag3
 <span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>debug<span class="p">|</span>info<span class="p">|</span>warning<span class="p">|</span>critical<span class="o">]</span>
-<span class="w">                                  </span>Logging<span class="w"> </span>level<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span>
+<span class="w">                                  </span>Logging<span class="w"> </span>level<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w">  </span><span class="o">[</span>default:
+<span class="w">                                  </span>info<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>When you run this command, it create an archive with all tech-support available and download it locall under <code>--output</code> folder and a subfolder per device</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span>--output<span class="w"> </span>.personal/test<span class="w"> </span>--tags<span class="w"> </span>spin
-
-<span class="o">[</span><span class="m">10</span>:12:57<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connecting<span class="w"> </span>to<span class="w"> </span>devices...
-<span class="w">           </span>INFO<span class="w">     </span>Created<span class="w"> </span>/mnt/flash/schedule/all_files.zip<span class="w"> </span>on<span class="w"> </span>device<span class="w"> </span>spine01
-<span class="w">           </span>INFO<span class="w">     </span>Connected<span class="w"> </span><span class="o">(</span>version<span class="w"> </span><span class="m">2</span>.0,<span class="w"> </span>client<span class="w"> </span>OpenSSH_7.8<span class="o">)</span>
-<span class="w">           </span>INFO<span class="w">     </span>Authentication<span class="w"> </span><span class="o">(</span>publickey<span class="o">)</span><span class="w"> </span>failed.
-<span class="o">[</span><span class="m">10</span>:12:58<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Authentication<span class="w"> </span><span class="o">(</span>keyboard-interactive<span class="o">)</span><span class="w"> </span>successful!
-<span class="w">           </span>INFO<span class="w">     </span>Deleted<span class="w"> </span>/mnt/flash/schedule/all_files.zip<span class="w"> </span>on<span class="w"> </span>spine01
-<span class="w">           </span>INFO<span class="w">     </span>Created<span class="w"> </span>/mnt/flash/schedule/all_files.zip<span class="w"> </span>on<span class="w"> </span>device<span class="w"> </span>spine02
-<span class="o">[</span><span class="m">10</span>:12:59<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connected<span class="w"> </span><span class="o">(</span>version<span class="w"> </span><span class="m">2</span>.0,<span class="w"> </span>client<span class="w"> </span>OpenSSH_7.8<span class="o">)</span>
-<span class="w">           </span>INFO<span class="w">     </span>Authentication<span class="w"> </span><span class="o">(</span>publickey<span class="o">)</span><span class="w"> </span>failed.
-<span class="w">           </span>INFO<span class="w">     </span>Authentication<span class="w"> </span><span class="o">(</span>keyboard-interactive<span class="o">)</span><span class="w"> </span>successful!
-<span class="o">[</span><span class="m">10</span>:13:00<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Deleted<span class="w"> </span>/mnt/flash/schedule/all_files.zip<span class="w"> </span>on<span class="w"> </span>spine02
-<span class="w">           </span>INFO<span class="w">     </span>Done<span class="w"> </span>collecting<span class="w"> </span>scheduled<span class="w"> </span>show-tech
+<p>When you run this command, it will retrieve tech-support files and download it locally in a folder and a subfolder per device.
+You can change the default output folder with the <code>--output</code> option.
+ANTA download files from the devices using SCP, all SSH Host Key devices must be trusted prior to run the command, otherwise use the <code>--insecure</code> option.
+In order to use SCP with EOS, the configuration <code>aaa authorization exec default local</code> must be present on the devices.
+By default, ANTA will not configure this automatically, unless <code>--configure</code> is specified.
+It is possible to retrieve only the latest tech-support files using the <code>--latest</code> option.</p>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>anta<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>collect-tech-support<span class="w"> </span>--insecure
+<span class="o">[</span><span class="m">15</span>:27:19<span class="o">]</span><span class="w"> </span>INFO<span class="w">     </span>Connecting<span class="w"> </span>to<span class="w"> </span>devices...
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/spine1_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>spine1<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/spine1&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/leaf3_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf3<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/leaf3&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/leaf1_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf1<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/leaf1&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/leaf2_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf2<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/leaf2&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/spine2_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>spine2<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/spine2&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Copying<span class="w"> </span><span class="s1">&#39;/mnt/flash/schedule/tech-support/leaf4_tech-support_2023-06-09.1315.log.gz&#39;</span><span class="w"> </span>from<span class="w"> </span>device<span class="w"> </span>leaf4<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;tech-support/leaf4&#39;</span><span class="w"> </span>locally
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf2
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>spine2
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf3
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>spine1
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf1
+INFO<span class="w">     </span>Collected<span class="w"> </span><span class="m">1</span><span class="w"> </span>scheduled<span class="w"> </span>tech-support<span class="w"> </span>from<span class="w"> </span>leaf4
 </code></pre></div>
-<p>And folder structure</p>
-<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>tree<span class="w"> </span>.personal/test
-.personal/test
-├──<span class="w"> </span>spine01
-│<span class="w">   </span>└──<span class="w"> </span><span class="m">13</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">2023</span><span class="w"> </span><span class="m">09</span>:12:57_spine01.zip
-└──<span class="w"> </span>spine02
-<span class="w">    </span>└──<span class="w"> </span><span class="m">13</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">2023</span><span class="w"> </span><span class="m">09</span>:12:57_spine02.zip
+<p>The output folder will look like this:</p>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>tree<span class="w"> </span>tech-support/
+tech-support/
+├──<span class="w"> </span>leaf1
+│<span class="w">   </span>└──<span class="w"> </span>leaf1_tech-support_2023-06-09.1315.log.gz
+├──<span class="w"> </span>leaf2
+│<span class="w">   </span>└──<span class="w"> </span>leaf2_tech-support_2023-06-09.1315.log.gz
+├──<span class="w"> </span>leaf3
+│<span class="w">   </span>└──<span class="w"> </span>leaf3_tech-support_2023-06-09.1315.log.gz
+├──<span class="w"> </span>leaf4
+│<span class="w">   </span>└──<span class="w"> </span>leaf4_tech-support_2023-06-09.1315.log.gz
+├──<span class="w"> </span>spine1
+│<span class="w">   </span>└──<span class="w"> </span>spine1_tech-support_2023-06-09.1315.log.gz
+└──<span class="w"> </span>spine2
+<span class="w">    </span>└──<span class="w"> </span>spine2_tech-support_2023-06-09.1315.log.gz
 
-<span class="m">2</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">2</span><span class="w"> </span>files
+<span class="m">6</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">6</span><span class="w"> </span>files
 </code></pre></div>
 
   <hr>
@@ -1395,7 +1417,7 @@ Options:
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 9, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 11, 2023</span>
       
     
   </small>
