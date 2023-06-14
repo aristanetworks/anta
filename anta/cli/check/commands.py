@@ -13,6 +13,7 @@ from rich.panel import Panel
 from rich.theme import Theme
 
 from anta import RICH_COLOR_THEME
+from anta.cli.utils import setup_logging
 
 from .utils import check_run, display_jinja, display_json, display_table
 
@@ -36,6 +37,7 @@ logger = logging.getLogger(__name__)
 def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: str, log_level: str) -> bool:
     """ANTA command to check network states with table result"""
     # pylint: disable=too-many-arguments
+    setup_logging(level=log_level)
     console = Console()
     inventory = ctx.obj["inventory"]
 
@@ -76,6 +78,7 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
 )
 def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: str) -> bool:
     """ANTA command to check network state with JSON result"""
+    setup_logging(level=log_level)
     console = Console()
     inventory = ctx.obj["inventory"]
 
@@ -115,6 +118,7 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str, log_level: st
 def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool, log_level: str) -> bool:
     """ANTA command to check network states with text result"""
     # pylint: disable=too-many-arguments
+    setup_logging(level=log_level)
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
     results = check_run(
