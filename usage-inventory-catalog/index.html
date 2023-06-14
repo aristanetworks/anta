@@ -1390,6 +1390,30 @@
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
+<p>If your test is based on <a href=""><code>AntaTestTemplate</code></a>, you have to provide inputs for EOS CLI template by using <code>tpl_options</code> list:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing.bgp</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPIPv4UnicastCount</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">      </span><span class="nt">template_params</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">customer-01</span>
+</code></pre></div>
+<p>Which is required for the following test definition:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPIPv4UnicastCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPIPv4UnicastCount&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">,</span> <span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTestTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp ipv4 unicast summary vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@check_bgp_family_enable</span><span class="p">(</span><span class="s2">&quot;ipv4&quot;</span><span class="p">)</span>
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+</code></pre></div>
 <h5 id="custom-tests-catalog">Custom tests catalog<a class="headerlink" href="#custom-tests-catalog" title="Permanent link">&para;</a></h5>
 <p>In case you want to leverage your own tests collection, you can use the following syntax:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;your package name&gt;</span><span class="p">:</span>
@@ -1410,7 +1434,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 11, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 14, 2023</span>
       
     
   </small>
