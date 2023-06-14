@@ -4,7 +4,7 @@ Test functions related to system-level features and protocols
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, cast, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
 

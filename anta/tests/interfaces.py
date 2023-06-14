@@ -2,7 +2,7 @@
 Test functions related to the device interfaces
 """
 import re
-from typing import Any, Dict, List, cast, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
