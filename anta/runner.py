@@ -37,7 +37,7 @@ async def main(
         anta.tests.routing.bgp:
         - VerifyBGPIPv4UnicastCount:
             number: 3
-            tpl_options:
+            template_params:
                 - vrf: default
 
     Returns:
