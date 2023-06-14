@@ -22,9 +22,9 @@ class VerifyVxlan(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyVxlan validation"""
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         if "Vxlan1" not in command_output["interfaceDescriptions"]:
             self.result.is_skipped("Vxlan1 interface is not configured")
@@ -53,9 +53,9 @@ class VerifyVxlanConfigSanity(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyVxlanConfigSanity validation"""
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         failed_categories = {
             category: content

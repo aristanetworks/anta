@@ -1,13 +1,14 @@
 """
 Test functions related to the device interfaces
 """
+import logging
 import re
 from typing import Any, Dict, List, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
 
-# pylint: disable=W0511
+logger = logging.getLogger(__name__)
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -24,9 +25,9 @@ class VerifyInterfaceUtilization(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         wrong_interfaces = {}
         for line in command_output.split("\n")[1:]:
@@ -57,9 +58,9 @@ class VerifyInterfaceErrors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
         for interface, outer_v in command_output["interfaceErrorCounters"].items():
