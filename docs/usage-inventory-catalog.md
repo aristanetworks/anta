@@ -105,7 +105,7 @@ If your test is based on [`AntaTestTemplate`](), you have to provide inputs for 
 anta.tests.routing.bgp:
   - VerifyBGPIPv4UnicastCount:
       number: 3
-      tpl_options:
+      template_params:
         - vrf: default
         - vrf: customer-01
 ```
