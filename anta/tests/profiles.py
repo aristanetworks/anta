@@ -2,7 +2,7 @@
 Test functions related to ASIC profiles
 """
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, cast, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
@@ -22,7 +22,13 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self, mode: Any = None) -> None:
+    def test(self, mode: Optional[str] = None) -> None:
+        """
+        Run VerifyUnifiedForwardingTableMode validation
+
+        Args:
+            mode: Expected UFT mode.
+        """
         if not mode:
             self.result.is_skipped("verify_unified_forwarding_table_mode was not run as no mode was given")
             return
@@ -46,7 +52,13 @@ class VerifyTcamProfile(AntaTest):
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self, profile: Any = None) -> None:
+    def test(self, profile: Optional[str] = None) -> None:
+        """
+        Run VerifyTcamProfile validation
+
+        Args:
+            profile: Expected TCAM profile.
+        """
         if not profile:
             self.result.is_skipped("verify_tcam_profile was not run as no profile was given")
             return

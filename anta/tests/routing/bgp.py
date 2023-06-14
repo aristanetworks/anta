@@ -90,7 +90,13 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
-        """Run VerifyBGPIPv4UnicastCount validation"""
+        """
+        Run VerifyBGPIPv4UnicastCount validation
+
+        Args:
+            number: The expected number of BGP IPv4 unicast neighbors.
+            vrf: VRF to verify (template parameter)
+        """
 
         if not number:
             self.result.is_skipped("VerifyBGPIPv4UnicastCount could not run because number was not supplied")
@@ -193,7 +199,12 @@ class VerifyBGPEVPNCount(AntaTest):
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
-        """Run VerifyBGPEVPNCount validation"""
+        """
+        Run VerifyBGPEVPNCount validation
+
+        Args:
+            number: The expected number of BGP EVPN neighbors in the default VRF.
+        """
         if not number:
             self.result.is_skipped("VerifyBGPEVPNCount could not run because number was not supplied.")
             return
@@ -264,7 +275,12 @@ class VerifyBGPRTCCount(AntaTest):
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
-        """Run VerifyBGPRTCCount validation"""
+        """
+        Run VerifyBGPRTCCount validation
+
+        Args:
+            number: The expected number of BGP RTC neighbors (default VRF).
+        """
         if not number:
             self.result.is_skipped("VerifyBGPRTCCount could not run because number was not supplied")
             return

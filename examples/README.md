@@ -1,13 +1,12 @@
-# inventory.yml file
+## Device Inventory
 
-The file [inventory.yml](inventory.yml) is a devices inventory file.
+The file [inventory.yaml](inventory.yaml) is an example of [device inventory](https://www.anta.ninja/usage-inventory-catalog/#create-an-inventory-file).
 
-# eos-commands.yaml file
+## Test Catalog
 
-The file [eos-commands.yaml](eos-commands.yaml) is a YAML file used to indicated the list of commands output we would like to collect from devices in text or json format.
+The file [tests.yaml](tests.yaml) is an example of a [test catalog](https://www.anta.ninja/usage-inventory-catalog/#test-catalog).
+This file should contain all the tests implemented in [anta.tests](../anta/tests) with arbitrary parameters.
 
-# tests file
+## eos-commands.yaml file
 
-The file [tests_all.yaml](tests_all.yaml) and [tests_subset.yaml](tests_subset.yaml) are YAML file used to indicated the tests we would like to run.
-They are also used to indicated the parameters used by the tests.
-The tests are defined in the directory [ANTA](../anta/).
+The file [eos-commands.yaml](eos-commands.yaml) is an example of input given with the `--commands-list` option to the [anta exec snapshot](https://www.anta.ninja/cli/exec/#collect-a-set-of-commands) command.

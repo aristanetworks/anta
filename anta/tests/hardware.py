@@ -25,7 +25,12 @@ class VerifyTransceiversManufacturers(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, manufacturers: Optional[List[str]] = None) -> None:
-        """Run VerifyTransceiversManufacturers validation"""
+        """
+        Run VerifyTransceiversManufacturers validation
+
+        Args:
+            manufacturers: List of allowed transceivers manufacturers.
+        """
         if not manufacturers:
             self.result.is_skipped(f"{self.__class__.name} was not run as no manufacturers were given")
         else:
@@ -129,7 +134,12 @@ class VerifyEnvironmentCooling(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, accepted_states: Optional[List[str]] = None) -> None:
-        """Run VerifyEnvironmentCooling validation"""
+        """
+        Run VerifyEnvironmentCooling validation
+
+        Args:
+            accepted_states: Accepted states list for fan status
+        """
         if accepted_states is None:
             accepted_states = ["ok"]
 
@@ -153,20 +163,25 @@ class VerifyEnvironmentCooling(AntaTest):
 
 class VerifyEnvironmentPower(AntaTest):
     """
-    Verifies the power supplied status is in the accepted states list
+    Verifies the power supplies status is in the accepted states list
 
     The default accepted states list is ['ok']
     """
 
     name = "VerifyEnvironmentPower"
-    description = "Verifies the power supplied status is OK"
+    description = "Verifies the power supplies status is OK"
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show system environment power", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self, accepted_states: Optional[List[str]] = None) -> None:
-        """Run VerifyEnvironmentPower validation"""
+        """
+        Run VerifyEnvironmentPower validation
+
+        Args:
+            accepted_states: Accepted states list for power supplies
+        """
         if accepted_states is None:
             accepted_states = ["ok"]
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
@@ -191,6 +206,7 @@ class VerifyAdverseDrops(AntaTest):
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyAdverseDrops validation"""

@@ -4,7 +4,7 @@ Test functions related to system-level features and protocols
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, cast, Optional
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -22,16 +22,18 @@ class VerifyUptime(AntaTest):
     commands = [AntaTestCommand(command="show uptime")]
 
     @AntaTest.anta_test
-    def test(self, minimum: int = -1) -> None:
+    def test(self, minimum: Optional[int] = None) -> None:
         """
         Run VerifyUptime validation
-        minimum (int): Minimum uptime in seconds.
+
+        Args:
+            minimum: Minimum uptime in seconds.
         """
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
 
         if not (isinstance(minimum, (int, float))) or minimum < 0:
-            self.result.is_skipped("VerifyUptime was not run as no minimum uptime was given")
+            self.result.is_skipped("VerifyUptime was not run as incorrect minimum uptime was given")
             return
 
         if cast(float, command_output["upTime"]) > minimum:

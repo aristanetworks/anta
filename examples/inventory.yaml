@@ -1,0 +1,28 @@
+---
+anta_inventory:
+  hosts:
+    - name: spine1
+      host: clab-evpn-vxlan-fabric-spine1
+      tags: ['clab', 'spine']
+    - name: spine2
+      host: clab-evpn-vxlan-fabric-spine2
+      tags: ['clab', 'spine']
+    - name: leaf1
+      host: clab-evpn-vxlan-fabric-leaf1
+      tags: ['clab', 'leaf']
+    - name: leaf2
+      host: clab-evpn-vxlan-fabric-leaf2
+      tags: ['clab', 'leaf']
+    - name: leaf3
+      host: clab-evpn-vxlan-fabric-leaf3
+      tags: ['clab', 'leaf']
+    - name: leaf4
+      host: clab-evpn-vxlan-fabric-leaf4
+      tags: ['clab', 'leaf']
+  networks:
+    - network: 192.168.110.0/24
+  ranges:
+    - start: 10.0.0.9
+      end: 10.0.0.11
+    - start: 10.0.0.100
+      end: 10.0.0.101
