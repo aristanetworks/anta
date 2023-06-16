@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import List, Optional, cast
+from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaTest, AntaTestCommand
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_logging_states(command_output: str) -> str:
-    log_states = command_output.partition('\n\nExternal configuration:')[0]
+    log_states = command_output.partition("\n\nExternal configuration:")[0]
     logger.debug(f"Device logging states:\n{log_states}")
     return log_states
 
@@ -44,12 +44,16 @@ class VerifyLoggingPersistent(AntaTest):
         """
         self.result.is_success()
 
-        if "Persistent logging: disabled" in _get_logging_states(self.instance_commands[0].output):
+        output = cast(str, self.instance_commands[0].output)
+
+        if "Persistent logging: disabled" in _get_logging_states(output):
             self.result.is_failure("Persistent logging is disabled")
             return
 
+        output = cast(str, self.instance_commands[0].output)
+
         pattern = r"-rw-\s+(\d+)"
-        persist_logs = re.search(pattern, self.instance_commands[1].output)
+        persist_logs = re.search(pattern, output)
 
         if not persist_logs or int(persist_logs.group(1)) == 0:
             self.result.is_failure("No persistent logs are saved in flash")
@@ -83,9 +87,11 @@ class VerifyLoggingSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
+        output = cast(str, self.instance_commands[0].output)
+
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
 
-        if re.search(pattern, _get_logging_states(self.instance_commands[0].output)):
+        if re.search(pattern, _get_logging_states(output)):
             self.result.is_success()
         else:
             self.result.is_failure(f"Source-interface '{intf}' is not configured in VRF {vrf}")
@@ -119,11 +125,13 @@ class VerifyLoggingHosts(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because hosts or vrf were not supplied")
             return
 
+        output = cast(str, self.instance_commands[0].output)
+
         not_configured = []
 
         for host in hosts:
             pattern = rf"Logging to '{host}'.*VRF {vrf}"
-            if not re.search(pattern, _get_logging_states(self.instance_commands[0].output)):
+            if not re.search(pattern, _get_logging_states(output)):
                 not_configured.append(host)
 
         if not not_configured:
@@ -156,7 +164,8 @@ class VerifyLoggingLogsGeneration(AntaTest):
         """
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
 
-        lines = self.instance_commands[1].output.strip().split("\n")[::-1]
+        output = cast(str, self.instance_commands[1].output)
+        lines = output.strip().split("\n")[::-1]
 
         for line in lines:
             if re.search(log_pattern, line):
@@ -189,8 +198,10 @@ class VerifyLoggingHostname(AntaTest):
         """
         Run VerifyLoggingHostname validation.
         """
-        fqdn = self.instance_commands[0].output["fqdn"]
-        lines = self.instance_commands[2].output.strip().split("\n")[::-1]
+        output_hostname = cast(Dict[str, Any], self.instance_commands[0].output)
+        output_logging = cast(str, self.instance_commands[2].output)
+        fqdn = output_hostname["fqdn"]
+        lines = output_logging.strip().split("\n")[::-1]
 
         log_pattern = r"ANTA VerifyLoggingHostname validation"
 
@@ -231,7 +242,9 @@ class VerifyLoggingTimestamp(AntaTest):
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
 
-        lines = self.instance_commands[1].output.strip().split("\n")[::-1]
+        output = cast(str, self.instance_commands[1].output)
+
+        lines = output.strip().split("\n")[::-1]
 
         last_line_with_pattern = ""
         for line in lines:
@@ -265,8 +278,9 @@ class VerifyLoggingAccounting(AntaTest):
         Run VerifyLoggingAccountingvalidation.
         """
         pattern = r"cmd=show aaa accounting logs"
+        output = cast(str, self.instance_commands[0].output)
 
-        if re.search(pattern, self.instance_commands[0].output):
+        if re.search(pattern, output):
             self.result.is_success()
         else:
             self.result.is_failure("AAA accounting logs are not generated")
