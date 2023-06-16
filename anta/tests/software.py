@@ -21,8 +21,12 @@ class VerifyEOSVersion(AntaTest):
 
     @AntaTest.anta_test
     def test(self, versions: Optional[List[str]] = None) -> None:
-        """Run VerifyEOSVersion validation
-        versions (list): List of allowed EOS versions."""
+        """
+        Run VerifyEOSVersion validation
+
+        Args:
+            versions: List of allowed EOS versions.
+        """
         if not versions:
             self.result.is_skipped("VerifyEOSVersion was not run as no versions were given")
             return
@@ -49,7 +53,9 @@ class VerifyTerminAttrVersion(AntaTest):
     def test(self, versions: Optional[List[str]] = None) -> None:
         """
         Run VerifyTerminAttrVersion validation
-                versions (list): List of allowed TerminAttr versions.
+
+        Args:
+            versions: List of allowed TerminAttr versions.
         """
 
         if not versions:

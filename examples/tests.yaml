@@ -1,0 +1,208 @@
+---
+anta.tests.aaa:
+  - VerifyTacacsSourceIntf:
+      intf: Management0
+      vrf: default
+  - VerifyTacacsServers:
+      servers:
+        - 1.1.1.1
+        - 2.2.2.2
+      vrf: default
+  - VerifyTacacsServerGroups:
+      groups:
+        - admin
+        - user
+  - VerifyAuthenMethods:
+      methods:
+        - local
+        - none
+        - logging
+      auth_types:
+        - login
+        - enable
+        - dot1x
+  - VerifyAuthzMethods:
+      methods:
+        - local
+        - none
+        - logging
+      auth_types:
+        - commands
+        - exec
+  - VerifyAcctDefaultMethods:
+      methods:
+        - local
+        - none
+        - logging
+      auth_types:
+        - system
+        - exec
+        - commands
+        - dot1x
+  - VerifyAcctConsoleMethods:
+      methods:
+        - local
+        - none
+        - logging
+      auth_types:
+        - system
+        - exec
+        - commands
+        - dot1x
+
+anta.tests.configuration:
+  - VerifyZeroTouch:
+  - VerifyRunningConfigDiffs:
+
+anta.tests.field_notices:
+  - VerifyFieldNotice44Resolution:
+  - VerifyFieldNotice72Resolution:
+
+anta.tests.hardware:
+  - VerifyTransceiversManufacturers:
+      manufacturers:
+        - Not Present
+        - Arista Networks
+        - Arastra, Inc.
+  - VerifyTemperature:
+  - VerifyTransceiversTemperature:
+  - VerifyEnvironmentSystemCooling:
+  - VerifyEnvironmentCooling:
+      accepted_states:
+        - ok
+  - VerifyEnvironmentPower:
+      accepted_states:
+        - ok
+  - VerifyAdverseDrops:
+
+anta.tests.interfaces:
+  - VerifyInterfaceUtilization:
+  - VerifyInterfaceErrors:
+  - VerifyInterfaceDiscards:
+  - VerifyInterfaceErrDisabled:
+  - VerifyInterfacesStatus:
+      minimum: 4
+  - VerifyStormControlDrops:
+  - VerifyPortChannels:
+  - VerifyIllegalLACP:
+  - VerifyLoopbackCount:
+      number: 3
+  - VerifySVI:
+  - VerifySpanningTreeBlockedPorts:
+
+anta.tests.logging:
+  - VerifyLoggingPersistent:
+  - VerifyLoggingSourceIntf:
+      intf: Management0
+      vrf: default
+  - VerifyLoggingHosts:
+      hosts:
+        - 1.1.1.1
+        - 2.2.2.2
+      vrf: default
+  - VerifyLoggingLogsGeneration:
+  - VerifyLoggingHostname:
+  - VerifyLoggingTimestamp:
+  - VerifyLoggingAccounting:
+
+anta.tests.mlag:
+  - VerifyMlagStatus:
+  - VerifyMlagInterfaces:
+  - VerifyMlagConfigSanity:
+
+anta.tests.multicast:
+  - VerifyIGMPSnoopingVlans:
+      configuration: disabled
+      vlans:
+        - 10
+        - 12
+  - VerifyIGMPSnoopingGlobal:
+      configuration: enabled
+
+anta.tests.profiles:
+  - VerifyUnifiedForwardingTableMode:
+      mode: 3
+  - VerifyTcamProfile:
+      profile: vxlan-routing
+
+anta.tests.security:
+  - VerifySSHStatus:
+  - VerifySSHIPv4Acl:
+      number: 3
+      vrf: default
+  - VerifySSHIPv6Acl:
+      number: 3
+      vrf: default
+  - VerifyTelnetStatus:
+  - VerifyAPIHttpStatus:
+  - VerifyAPIHttpsSSL:
+      profile: default
+  - VerifyAPIIPv4Acl:
+      number: 3
+      vrf: default
+  - VerifyAPIIPv6Acl:
+      number: 3
+      vrf: default
+
+anta.tests.snmp:
+  - VerifySnmpStatus:
+      vrf: default
+  - VerifySnmpIPv4Acl:
+      number: 3
+      vrf: default
+  - VerifySnmpIPv6Acl:
+      number: 3
+      vrf: default
+
+anta.tests.software:
+  - VerifyEOSVersion:
+      versions:
+        - 4.25.4M
+        - 4.26.1F
+  - VerifyTerminAttrVersion:
+      versions:
+        - v1.13.6
+        - v1.8.0
+  - VerifyEOSExtensions:
+
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 86400
+  - VerifyReloadCause:
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+  - VerifySyslog:
+  - VerifyCPUUtilization:
+  - VerifyMemoryUtilization:
+  - VerifyFileSystemUtilization:
+  - VerifyNTP:
+
+anta.tests.vxlan:
+ - VerifyVxlan:
+ - VerifyVxlanConfigSanity:
+
+anta.tests.routing:
+  generic:
+    - VerifyRoutingProtocolModel:
+        model: multi-agent
+    - VerifyRoutingTableSize:
+        minimum: 2
+        maximum: 20
+    - VerifyBFD:
+  bgp:
+    - VerifyBGPIPv4UnicastState:
+    - VerifyBGPIPv4UnicastCount:
+        number: 2
+        template_params:
+          - vrf: default
+    - VerifyBGPIPv6UnicastState:
+    - VerifyBGPEVPNState:
+    - VerifyBGPEVPNCount:
+        number: 2
+    - VerifyBGPRTCState:
+    - VerifyBGPRTCCount:
+        number: 2
+  ospf:
+    - VerifyOSPFNeighborState:
+    - VerifyOSPFNeighborCount:
+        number: 3

@@ -2,7 +2,7 @@
 Test functions related to the device interfaces
 """
 import re
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
@@ -131,8 +131,13 @@ class VerifyInterfacesStatus(AntaTest):
     commands = [AntaTestCommand(command="show interfaces description")]
 
     @AntaTest.anta_test
-    def test(self, minimum: int = -1) -> None:  # type: ignore[override]
-        """Run VerifyInterfacesStatus validation"""
+    def test(self, minimum: Optional[int] = None) -> None:
+        """
+        Run VerifyInterfacesStatus validation
+
+        Args:
+            minimum: Expected minimum number of Ethernet interfaces up/up.
+        """
 
         if minimum is None or minimum < 0:
             self.result.is_skipped(f"VerifyInterfacesStatus was not run as an invalid minimum value was given {minimum}.")
@@ -255,10 +260,15 @@ class VerifyLoopbackCount(AntaTest):
     commands = [AntaTestCommand(command="show ip interface brief")]
 
     @AntaTest.anta_test
-    def test(self, number: int = -1) -> None:
-        """Run VerifyLoopbackCount validation"""
+    def test(self, number: Optional[int] = None) -> None:
+        """
+        Run VerifyLoopbackCount validation
 
-        if number is None or number < 0:
+        Args:
+            number: Number of loopback interfaces expected to be present.
+        """
+
+        if number is None:
             self.result.is_skipped("VerifyLoopbackCount was not run as no number value was given.")
             return
 

@@ -24,8 +24,14 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     commands = [AntaTestCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
-    def test(self, vlans: Optional[List[str]] = None, configuration: str = "") -> None:
-        """Run VerifyIGMPSnoopingVlans validation"""
+    def test(self, vlans: Optional[List[str]] = None, configuration: Optional[str] = None) -> None:
+        """
+        Run VerifyIGMPSnoopingVlans validation
+
+        Args:
+            vlans: List of VLANs.
+            configuration: Expected IGMP configuration (enabled or disabled) for these VLANs.
+        """
 
         if not vlans or not configuration:
             self.result.is_skipped("VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given")
@@ -62,8 +68,13 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     commands = [AntaTestCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
-    def test(self, configuration: str = "") -> None:
-        """Run VerifyIGMPSnoopingGlobal validation"""
+    def test(self, configuration: Optional[str] = None) -> None:
+        """
+        Run VerifyIGMPSnoopingGlobal validation
+
+        Args:
+            configuration: Expected global IGMP configuration (enabled or disabled).
+        """
 
         if not configuration:
             self.result.is_skipped("VerifyIGMPSnoopingGlobal was not run as no configuration was given")

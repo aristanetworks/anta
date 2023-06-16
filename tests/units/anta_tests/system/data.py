@@ -22,7 +22,7 @@ INPUT_UPTIME: List[Dict[str, Any]] = [
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "side_effect": None,
         "expected_result": "skipped",
-        "expected_messages": ["VerifyUptime was not run as no minimum uptime was given"],
+        "expected_messages": ["VerifyUptime was not run as incorrect minimum uptime was given"],
     },
 ]
 
