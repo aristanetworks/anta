@@ -36,11 +36,11 @@ class VerifyLoggingPersistent(AntaTest):
         """
         Run VerifyLoggingPersistent validation.
         """
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         log_output = cast(str, self.instance_commands[0].output)
         dir_flash_output = cast(str, self.instance_commands[1].output)
-        self.logger.debug(f"dataset of log_output command is: {log_output}")
-        self.logger.debug(f"dataset of dir_flash_output command is: {dir_flash_output}")
+        logger.debug(f"dataset of log_output command is: {log_output}")
+        logger.debug(f"dataset of dir_flash_output command is: {dir_flash_output}")
 
         pattern = r"-rw-\s+(\d+)"
         match = re.search(pattern, dir_flash_output)
@@ -83,9 +83,9 @@ class VerifyLoggingSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
 
@@ -123,9 +123,9 @@ class VerifyLoggingHosts(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because hosts or vrf were not supplied")
             return
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         not_configured = []
 
@@ -163,9 +163,9 @@ class VerifyLoggingLogsGeneration(AntaTest):
         Run VerifyLoggingLogs validation.
         """
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[1].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
 
@@ -203,11 +203,11 @@ class VerifyLoggingHostname(AntaTest):
         Run VerifyLoggingHostname validation.
         """
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         hostname_output = cast(Dict[str, str], self.instance_commands[0].output)
         log_output = cast(str, self.instance_commands[2].output)
-        self.logger.debug(f"dataset of hostname_output is: {hostname_output}")
-        self.logger.debug(f"dataset of log_output is: {log_output}")
+        logger.debug(f"dataset of hostname_output is: {hostname_output}")
+        logger.debug(f"dataset of log_output is: {log_output}")
 
         fqdn = hostname_output["fqdn"]
 
@@ -250,9 +250,9 @@ class VerifyLoggingTimestamp(AntaTest):
         Run VerifyLoggingTimestamp validation.
         """
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[1].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
@@ -291,9 +291,9 @@ class VerifyLoggingAccounting(AntaTest):
         Run VerifyLoggingAccountingvalidation.
         """
 
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[0].output)
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
 
         pattern = r"cmd=show aaa accounting logs"
 

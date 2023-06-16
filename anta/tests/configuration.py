@@ -26,9 +26,9 @@ class VerifyZeroTouch(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyZeroTouch validation"""
-        self.logger.debug(f"self.instance_commands is: {self.instance_commands}")
+        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = self.instance_commands[0].output
-        self.logger.debug(f"dataset is: {command_output}")
+        logger.debug(f"dataset is: {command_output}")
         assert isinstance(command_output, dict)
         if command_output["mode"] == "disabled":
             self.result.is_success()
@@ -49,12 +49,12 @@ class VerifyRunningConfigDiffs(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyRunningConfigDiffs validation"""
-        self.logger.debug(f"self.instance_commands is {self.instance_commands}")
+        logger.debug(f"self.instance_commands is {self.instance_commands}")
         command_output = self.instance_commands[0].output
-        self.logger.debug(f"command_output is {command_output}")
+        logger.debug(f"command_output is {command_output}")
         if command_output is None or command_output == "":
             self.result.is_success()
         else:
             self.result.is_failure()
             self.result.is_failure(str(command_output))
-        self.logger.debug(f"result is {self.result}")
+        logger.debug(f"result is {self.result}")

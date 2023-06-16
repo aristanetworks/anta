@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 F = TypeVar("F", bound=Callable[..., Any])
 
+logger = logging.getLogger(__name__)
+
 
 class AntaTestTemplate(BaseModel):
     """Class to define a test command with its API version
@@ -119,8 +121,6 @@ class AntaTest(ABC):
         labels: list[str] | None = None,
     ):
         """Class constructor"""
-        self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
-        self.logger.setLevel(level="INFO")
         self.device = device
         self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
@@ -147,7 +147,7 @@ class AntaTest(ABC):
             )
 
         if eos_data is not None:
-            self.logger.debug("Test initialized with input data")
+            logger.debug("Test initialized with input data")
             self.save_commands_data(eos_data)
 
     def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
@@ -210,7 +210,7 @@ class AntaTest(ABC):
 
             # Data
             if eos_data is not None:
-                self.logger.debug("Test initialized with input data")
+                logger.debug("Test initialized with input data")
                 self.save_commands_data(eos_data)
 
             # No test data is present, try to collect
@@ -219,14 +219,14 @@ class AntaTest(ABC):
                 if self.result.result != "unset":
                     return self.result
 
-            self.logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
+            logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
             try:
                 if not self.all_data_collected():
                     raise ValueError("Some command output is missing")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                self.logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-                self.logger.debug(traceback.format_exc())
+                logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
+                logger.debug(traceback.format_exc())
                 self.result.is_error(exc_to_str(e))
             return self.result
 
