@@ -4,6 +4,7 @@ Models to define a TestStructure
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import traceback
 from abc import ABC, abstractmethod
@@ -176,14 +177,10 @@ class AntaTest(ABC):
 
     async def collect(self) -> None:
         """
-        Private collection methids used in anta_assert to handle collection failures
-
-        it calls the collect co-routing define in InventoryDevice to collect ouput per command
-
-        FIXME: to be tested and review
+        Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
-        for command in self.instance_commands:
-            await self.device.collect(command=command)
+        logger.debug(f"Test {self.name} for device {self.device.name}: running command outputs collection")
+        await asyncio.gather(*(self.device.collect(command=command) for command in self.instance_commands))
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
@@ -198,7 +195,11 @@ class AntaTest(ABC):
             **kwargs: dict[str, Any],
         ) -> TestResult:
             """
-            This method will call assert
+            Wraps the test function and implement (in this order):
+            1. Instantiate the command outputs if `eos_data` is provided
+            2. Collect missing command outputs from the device
+            3. Run the test function
+            4. Catches and set the result if the test function raises an exception
 
             Returns:
                 TestResult: self.result, populated with the correct exit status
@@ -219,13 +220,13 @@ class AntaTest(ABC):
                 if self.result.result != "unset":
                     return self.result
 
-            logger.debug(f"Running asserts for test {self.name} for device {self.device.name}: running collect")
             try:
                 if not self.all_data_collected():
                     raise ValueError("Some command output is missing")
+                logger.debug(f"Test {self.name} for device {self.device.name}: running test")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.error(f"Exception raised during 'assert' for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
+                logger.error(f"Exception raised for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
                 logger.debug(traceback.format_exc())
                 self.result.is_error(exc_to_str(e))
             return self.result
