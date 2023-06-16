@@ -96,8 +96,7 @@ venv.bak/
 /site
 
 # VScode settings
-.vscode/settings.json
-.vscode/
+.vscode
 test.env
 tech-support/
 tech-support/*
