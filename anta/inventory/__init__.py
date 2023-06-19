@@ -148,22 +148,6 @@ class AntaInventory:
                     del device
 
     ###########################################################################
-    # Boolean methods
-    ###########################################################################
-
-    def _is_ip_exist(self, ip: str) -> bool:  # TODO mtache: unused, remove this ?
-        """Check if an IP is part of the current inventory.
-
-        Args:
-            ip (str): IP address to search in our inventory
-
-        Returns:
-            bool: True if device is in our inventory, False if not
-        """
-        logger.debug(f"Checking if device {ip} is in our inventory")
-        return len([str(dev.host) for dev in self._inventory if str(ip) == str(dev.host)]) == 1
-
-    ###########################################################################
     # Internal methods
     ###########################################################################
 
