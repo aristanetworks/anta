@@ -114,7 +114,7 @@ plugins = [
   "pydantic.mypy",
   ]
 # Comment below for better type checking
-follow_imports = "skip"
+#follow_imports = "skip"
 ignore_missing_imports = true
 warn_redundant_casts = true
 # Note: tox find some unused type ignore which are required for pre-commit
