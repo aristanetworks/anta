@@ -56,7 +56,7 @@ class Test_AntaInventory:
 
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
+            AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
             assert False
@@ -87,7 +87,7 @@ class Test_AntaInventory:
 
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
+            AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
         except InventoryIncorrectSchema as exc:
             logging.warning("Exception is: %s", exc)
             assert True
@@ -125,7 +125,7 @@ class Test_AntaInventory:
             pytest.skip("Test data has no nb_hosts parameter configured")
 
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
-        inventory_test = AntaInventory(inventory_file=inventory_file, username="arista", password="arista123")
+        inventory_test = AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
         inventory_json = json.loads(inventory_test.get_inventory(established_only=False).json())
         assert test_definition["parameters"]["ipaddress_in_scope"] in [d["host"] for d in inventory_json]
         assert int(test_definition["parameters"]["nb_hosts"]) == len([d["host"] for d in inventory_json])

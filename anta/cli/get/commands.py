@@ -82,7 +82,7 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
     console = Console()
     setup_logging(level=log_level)
 
-    inventory_anta = AntaInventory(
+    inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"],
         username=ctx.obj["username"],
         password=ctx.obj["password"],
@@ -115,7 +115,7 @@ def tags(ctx: click.Context, log_level: str) -> bool:
     console = Console()
     setup_logging(level=log_level)
 
-    inventory_anta = AntaInventory(
+    inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"],
         username=ctx.obj["username"],
         password=ctx.obj["password"],

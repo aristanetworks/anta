@@ -53,7 +53,7 @@ class AntaInventory:
 
         Inventory result:
 
-            test = AntaInventory(
+            test = AntaInventory.parse(
                 ... inventory_file='examples/inventory.yml',
                 ... username='ansible',
                 ... password='ansible',
@@ -79,12 +79,6 @@ class AntaInventory:
                     "tags": ['dc1', 'spine', 'pod01'],
                     "hw_model=unset",
                 ]
-
-    Raises:
-        InventoryRootKeyErrors: Root key of inventory is missing.
-        InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
-        InventoryUnknownFormat: Output format is not supported.
-
     """
 
     # Root key of inventory part of the inventory file
@@ -94,58 +88,64 @@ class AntaInventory:
     # HW model definition in show version
     HW_MODEL_KEY = "modelName"
 
-    # pylint: disable=R0913
-    def __init__(
-        self,
-        inventory_file: str,
-        username: str,
-        password: str,
-        enable_password: Optional[str] = None,
-        timeout: Optional[float] = None,
-        filter_hosts: Optional[List[str]] = None,
-    ) -> None:
-        """Class constructor.
+    def __init__(self) -> None:
+        """Class constructor"""
+        self._inventory = InventoryDevices()
+
+    @staticmethod
+    def parse(inventory_file: str, username: str, password: str, enable_password: Optional[str] = None, timeout: Optional[float] = None) -> AntaInventory:
+        """
+        Create an AntaInventory object from an inventory file.
 
         Args:
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
             timeout (float, optional): timeout in seconds for every API call.
-            filter_hosts (str, optional): create inventory only with matching host name in this list.
+
+        Raises:
+            InventoryRootKeyErrors: Root key of inventory is missing.
+            InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+            InventoryUnknownFormat: Output format is not supported.
         """
-        self._username = username
-        self._password = password
-        self._enable_password = enable_password
-        self.timeout = timeout
-        self._inventory = InventoryDevices()
+
+        inventory = AntaInventory()
+        kwargs: Dict[str, Any] = {"username": username, "password": password, "enable_password": enable_password, "timeout": timeout}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         with open(inventory_file, "r", encoding="UTF-8") as fd:
             data = yaml.load(fd, Loader=SafeLoader)
 
         # Load data using Pydantic
         try:
-            self._read_inventory = AntaInventoryInput(**data[self.INVENTORY_ROOT_KEY])
+            inventory_input = AntaInventoryInput(**data[AntaInventory.INVENTORY_ROOT_KEY])
         except KeyError as exc:
-            logger.error(f"Inventory root key is missing: {self.INVENTORY_ROOT_KEY}")
-            raise InventoryRootKeyErrors(f"Inventory root key ({self.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
+            logger.error(f"Inventory root key is missing: {AntaInventory.INVENTORY_ROOT_KEY}")
+            raise InventoryRootKeyErrors(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
         except ValidationError as exc:
             logger.error("Inventory data are not compliant with inventory models")
             raise InventoryIncorrectSchema("Inventory is not following schema") from exc
 
         # Read data from input
-        if self._read_inventory.dict()["hosts"] is not None:
-            self._inventory_read_hosts()
-        if self._read_inventory.dict()["networks"] is not None:
-            self._inventory_read_networks()
-        if self._read_inventory.dict()["ranges"] is not None:
-            self._inventory_read_ranges()
+        if inventory_input.hosts is not None:
+            for host in inventory_input.hosts:
+                device = InventoryDevice(name=str(host.name), host=str(host.host), port=host.port, tags=host.tags, **kwargs)
+                inventory.add_device(device)
+        if inventory_input.networks is not None:
+            for network in inventory_input.networks:
+                for host_ip in IPNetwork(str(network.network)):
+                    device = InventoryDevice(host=str(host_ip), tags=network.tags, **kwargs)
+                    inventory.add_device(device)
+        if inventory_input.ranges is not None:
+            for range_def in inventory_input.ranges:
+                range_increment = IPAddress(str(range_def.start))
+                range_stop = IPAddress(str(range_def.end))
+                while range_increment <= range_stop:
+                    device = InventoryDevice(host=str(range_increment), tags=range_def.tags, **kwargs)
+                    inventory.add_device(device)
+                    range_increment += 1
 
-        if filter_hosts:
-            for device in self._inventory:
-                # TODO - @gmuloc - device does not have url anymore - does this work
-                # if device.url.host not in filter_hosts:
-                if str(device.host) not in filter_hosts:
-                    del device
+        return inventory
 
     ###########################################################################
     # Internal methods
@@ -194,72 +194,6 @@ class AntaInventory:
             logger.warning(f"Could not connect to device {device.name}: cannot open eAPI port")
         device.established = bool(device.is_online and device.hw_model)
 
-    def _add_device_to_inventory(
-        self,
-        host: str,
-        port: Optional[int] = None,
-        name: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-    ) -> None:
-        """Add a InventoryDevice to final inventory.
-
-        Create InventoryDevice and append to existing inventory
-
-        Args:
-            host (str): IP address or hostname of the device
-            port (int): eAPI port of the device
-            name (str): Optional name of the device
-        """
-        kwargs: Dict[str, Any] = {
-            "host": host,
-            "username": self._username,
-            "password": self._password,
-        }
-        if name:
-            kwargs["name"] = name
-        if port:
-            kwargs["port"] = port
-        if self._enable_password:
-            kwargs["enable_password"] = self._enable_password
-        if tags:
-            kwargs["tags"] = tags
-        if self.timeout:
-            kwargs["timeout"] = self.timeout
-        device = InventoryDevice(**kwargs)
-        self._inventory.append(device)
-
-    def _inventory_read_hosts(self) -> None:
-        """Read input data from hosts section and create inventory structure.
-
-        Build InventoryDevice structure for all hosts under hosts section
-        """
-        assert self._read_inventory.hosts is not None
-        for host in self._read_inventory.hosts:
-            self._add_device_to_inventory(str(host.host), host.port, host.name, tags=host.tags)
-
-    def _inventory_read_networks(self) -> None:
-        """Read input data from networks section and create inventory structure.
-
-        Build InventoryDevice structure for all IPs available in each declared subnet
-        """
-        assert self._read_inventory.networks is not None
-        for network in self._read_inventory.networks:
-            for host_ip in IPNetwork(str(network.network)):
-                self._add_device_to_inventory(host_ip, tags=network.tags)
-
-    def _inventory_read_ranges(self) -> None:
-        """Read input data from ranges section and create inventory structure.
-
-        Build InventoryDevice structure for all IPs available in each declared range
-        """
-        assert self._read_inventory.ranges is not None
-        for range_def in self._read_inventory.ranges:
-            range_increment = IPAddress(str(range_def.start))
-            range_stop = IPAddress(str(range_def.end))
-            while range_increment <= range_stop:
-                self._add_device_to_inventory(str(range_increment), tags=range_def.tags)
-                range_increment += 1
-
     ###########################################################################
     # Public methods
     ###########################################################################
@@ -293,6 +227,18 @@ class AntaInventory:
         result = InventoryDevices()
         result.__root__ = list(filter(_filter_devices, self._inventory))
         return result
+
+    ###########################################################################
+    # SET methods
+    ###########################################################################
+
+    def add_device(self, device: InventoryDevice) -> None:
+        """Add a InventoryDevice to final inventory.
+
+        Args:
+            device (InventoryDevice): Device object to be added
+        """
+        self._inventory.append(device)
 
     ###########################################################################
     # MISC methods
