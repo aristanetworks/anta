@@ -9,6 +9,7 @@ Commands for Anta CLI to run debug commands.
 import asyncio
 import json
 import logging
+from typing import Literal, Union
 
 import click
 from rich import print_json
@@ -27,10 +28,10 @@ templater: str = ""
 @click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run on EOS using eAPI")
 @click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=str, default="latest", help="Version of the command through eAPI")
+@click.option("--api-version", "--version", type=Union[int, Literal['latest']], default="latest", help="Version of the command through eAPI")
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
 @click.option("--log-level", "--log", help="Logging level of the command", default="warning")
-def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: str, device: str, log_level: str) -> None:
+def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: Union[int, Literal['latest']], device: str, log_level: str) -> None:
     """Run arbitrary command to an EOS device and get result using eAPI"""
     # pylint: disable=too-many-arguments
     console = Console()
@@ -58,10 +59,10 @@ def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: str, devic
 @click.option("--template", "-t", type=str, required=False, default="{}", help="Command template to run on EOS using eAPI")
 @click.option("--params", "-p", type=str, required=True, help="Command parameters to use with template. Must be a JSON string for a list of dict")
 @click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=str, default="latest", help="Version of the command through eAPI")
+@click.option("--api-version", "--version", type=Union[int, Literal['latest']], default="latest", help="Version of the command through eAPI")
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
 @click.option("--log-level", "--log", help="Logging level of the command", default="warning")
-def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_version: str, device: str, log_level: str) -> None:
+def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_version: Union[int, Literal['latest']], device: str, log_level: str) -> None:
     """Run arbitrary command to an EOS device and get result using eAPI"""
     # pylint: disable=too-many-arguments
     # pylint: disable=unused-argument
