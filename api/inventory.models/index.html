@@ -2239,7 +2239,7 @@ TODO: Build documentation</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add support for append method.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>  <span class="c1"># type: ignore</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Use custom iter method.&quot;&quot;&quot;</span>
         <span class="c1"># TODO - mypy is not happy because we overwrite BaseModel.__iter__</span>
         <span class="c1"># return type and are breaking Liskov Substitution Principle.</span>
@@ -2318,7 +2318,7 @@ TODO: Build documentation</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">InventoryDevice</span><span class="p">]:</span>  <span class="c1"># type: ignore</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use custom iter method.&quot;&quot;&quot;</span>
     <span class="c1"># TODO - mypy is not happy because we overwrite BaseModel.__iter__</span>
     <span class="c1"># return type and are breaking Liskov Substitution Principle.</span>
@@ -2423,7 +2423,7 @@ TODO: Build documentation</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 16, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 19, 2023</span>
       
     
   </small>
