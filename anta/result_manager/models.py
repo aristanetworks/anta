@@ -133,7 +133,7 @@ class ListResult(BaseModel):
         """Add support for append method."""
         self.__root__.append(value)
 
-    def __iter__(self) -> Iterator[TestResult]:
+    def __iter__(self) -> Iterator[TestResult]:  # type: ignore
         """Use custom iter method."""
         # TODO - mypy is not happy because we overwrite BaseModel.__iter__
         # return type and are breaking Liskov Substitution Principle.
