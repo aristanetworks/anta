@@ -60,7 +60,7 @@ class AntaTestCommand(BaseModel):
     template_params: Optional[Dict[str, str]]
 
     @validator("template_params")
-    def prevent_none_when_template_is_set(cls: Type[AntaTestTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:
+    def prevent_none_when_template_is_set(cls: Type[AntaTestTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore
         """
         Raises if template is set but no params are given
         """

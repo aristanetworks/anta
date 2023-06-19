@@ -263,7 +263,7 @@ class InventoryDevices(BaseModel):
         """Add support for append method."""
         self.__root__.append(value)
 
-    def __iter__(self) -> Iterator[InventoryDevice]:
+    def __iter__(self) -> Iterator[InventoryDevice]:  # type: ignore
         """Use custom iter method."""
         # TODO - mypy is not happy because we overwrite BaseModel.__iter__
         # return type and are breaking Liskov Substitution Principle.
