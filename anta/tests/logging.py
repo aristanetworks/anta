@@ -15,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 def _get_logging_states(command_output: str) -> str:
+    """
+    Parse "show logging" output and gets operational logging states used
+    in the tests in this module.
+
+    Args:
+        command_output: The 'show logging' output
+    """
     log_states = command_output.partition("\n\nExternal configuration:")[0]
     logger.debug(f"Device logging states:\n{log_states}")
     return log_states
@@ -44,16 +51,15 @@ class VerifyLoggingPersistent(AntaTest):
         """
         self.result.is_success()
 
-        output = cast(str, self.instance_commands[0].output)
+        log_output = cast(str, self.instance_commands[0].output)
+        dir_flash_output = cast(str, self.instance_commands[1].output)
 
-        if "Persistent logging: disabled" in _get_logging_states(output):
+        if "Persistent logging: disabled" in _get_logging_states(log_output):
             self.result.is_failure("Persistent logging is disabled")
             return
 
-        output = cast(str, self.instance_commands[0].output)
-
         pattern = r"-rw-\s+(\d+)"
-        persist_logs = re.search(pattern, output)
+        persist_logs = re.search(pattern, dir_flash_output)
 
         if not persist_logs or int(persist_logs.group(1)) == 0:
             self.result.is_failure("No persistent logs are saved in flash")
