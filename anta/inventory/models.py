@@ -209,8 +209,6 @@ class InventoryDevice(BaseModel):
         FIXME: Under development / testing
         TODO: Build documentation
         """
-        logger.debug(f"run collect from device {self.name} for {command}")
-
         try:
             if self.enable_password is not None:
                 enable_cmd = {
@@ -234,6 +232,7 @@ class InventoryDevice(BaseModel):
                 # selecting only our command output
                 response = response[1]
             command.output = response
+            logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:
             logger.error(f"Command failed on {self.name}: {e.errmsg}")
