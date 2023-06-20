@@ -1,7 +1,6 @@
 {
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
-  "python.linting.pylintEnabled": true,
   "python.linting.mypyEnabled": true,
   "python.formatting.provider": "black",
   "pylint.importStrategy": "fromEnvironment",
@@ -11,10 +10,14 @@
     "--config=/dev/null",
     "--max-line-length=165"
   ],
-  "python.linting.pylintArgs": [
-    "--rcfile=pylintrc"
-  ],
   "python.linting.mypyArgs": [
     "--config-file=pyproject.toml"
+  ],
+  "pylint.severity": {
+    "refactor": "Warning"
+  },
+  "pylint.args": [
+    "--load-plugins=pylint_pydantic",
+    "--rcfile=pylintrc"
   ]
 }
