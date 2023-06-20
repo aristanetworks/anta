@@ -42,3 +42,4 @@ class EapiVersion(click.ParamType):
             return int(value)
         except ValueError:
             self.fail(f"{value!r} is not a valid eAPI version", param, ctx)
+            return None
