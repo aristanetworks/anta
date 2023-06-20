@@ -15,7 +15,7 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml.loader import SafeLoader
 
-from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
+from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput, InventoryDevice, InventoryDevices
 
 logger = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ class AntaInventory:
             timeout (float, optional): timeout in seconds for every API call.
 
         Raises:
-            InventoryRootKeyErrors: Root key of inventory is missing.
+            InventoryRootKeyError: Root key of inventory is missing.
             InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
             InventoryUnknownFormat: Output format is not supported.
         """
@@ -121,10 +121,10 @@ class AntaInventory:
             inventory_input = AntaInventoryInput(**data[AntaInventory.INVENTORY_ROOT_KEY])
         except KeyError as exc:
             logger.error(f"Inventory root key is missing: {AntaInventory.INVENTORY_ROOT_KEY}")
-            raise InventoryRootKeyErrors(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
+            raise InventoryRootKeyError(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
         except ValidationError as exc:
             logger.error("Inventory data are not compliant with inventory models")
-            raise InventoryIncorrectSchema("Inventory is not following schema") from exc
+            raise InventoryIncorrectSchema(f"Inventory is not following the schema: {str(exc)}") from exc
 
         # Read data from input
         if inventory_input.hosts is not None:

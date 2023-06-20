@@ -10,7 +10,7 @@ import yaml
 from pydantic import ValidationError
 
 from anta.inventory import AntaInventory
-from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyErrors
+from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from tests.data.json_data import ANTA_INVENTORY_TESTS
 from tests.lib.utils import generate_test_ids_dict
 
@@ -91,7 +91,7 @@ class Test_AntaInventory:
         except InventoryIncorrectSchema as exc:
             logging.warning("Exception is: %s", exc)
             assert True
-        except InventoryRootKeyErrors as exc:
+        except InventoryRootKeyError as exc:
             logging.warning("Exception is: %s", exc)
             assert True
         else:
