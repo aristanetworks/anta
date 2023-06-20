@@ -20,7 +20,7 @@ def setup_logging(level: str = "info") -> None:
     Configure logging
 
     Args:
-        level (str, optional): level name to configure. Defaults to 'critical'.
+        level (str, optional): level name to configure.
     """
     loglevel = getattr(logging, level.upper())
     logging.getLogger("anta").setLevel(loglevel)
