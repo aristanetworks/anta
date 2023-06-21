@@ -1386,10 +1386,10 @@
 <h3 id="how-to-use-anta-as-a-python-library">How to use ANTA as a Python Library<a class="headerlink" href="#how-to-use-anta-as-a-python-library" title="Permanent link">&para;</a></h3>
 <p>ANTA has been built to allow user to embeded its tools in your own application. This section describes how you can leverage ANTA modules to help you create your own NRFU solution.</p>
 <h4 id="inventory-manager">Inventory Manager<a class="headerlink" href="#inventory-manager" title="Permanent link">&para;</a></h4>
-<p>Inventory class is in charge of creating a list of hosts with their information and an eAPI session ready to be consummed. To do that, it connects to all devices to check reachability and ensure eAPI is running.</p>
+<p>AntaInventory class is in charge of creating a list of hosts with their information and an eAPI session ready to be consummed. To do that, it connects to all devices to check reachability and ensure eAPI is running.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.inventory</span> <span class="kn">import</span> <span class="n">AntaInventory</span>
 
-<span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">(</span>
+<span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
     <span class="n">inventory_file</span><span class="o">=</span><span class="s2">&quot;inventory.yml&quot;</span><span class="p">,</span>
     <span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
     <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
@@ -1573,7 +1573,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 20, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 21, 2023</span>
       
     
   </small>
