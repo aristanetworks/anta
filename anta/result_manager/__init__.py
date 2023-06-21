@@ -20,7 +20,7 @@ class ResultManager:
 
         Create Inventory:
 
-            inventory_anta = AntaInventory(
+            inventory_anta = AntaInventory.parse(
                 inventory_file='examples/inventory.yml',
                 username='ansible',
                 password='ansible',

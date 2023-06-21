@@ -31,7 +31,7 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
     """Execute a run of all tests against inventory."""
     setup_logging(level=loglevel)
 
-    inventory_anta = AntaInventory(inventory_file=inventory, username=username, password=password, enable_password=enable_password, timeout=timeout)
+    inventory_anta = AntaInventory.parse(inventory_file=inventory, username=username, password=password, enable_password=enable_password, timeout=timeout)
     logger.info(f"Inventory {inventory} loaded")
 
     # Test loader

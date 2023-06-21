@@ -37,7 +37,7 @@ def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: Union[int,
     console = Console()
     setup_logging(level=log_level)
 
-    inventory_anta = AntaInventory(
+    inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
 
@@ -68,7 +68,7 @@ def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_
     # pylint: disable=unused-argument
     console = Console()
     setup_logging(level=log_level)
-    inventory_anta = AntaInventory(
+    inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
     device_anta = [inventory_device for inventory_device in inventory_anta.get_inventory() if inventory_device.name == device][0]

@@ -1,7 +1,7 @@
 """Manage Exception in Inventory module."""
 
 
-class InventoryRootKeyErrors(Exception):
+class InventoryRootKeyError(Exception):
     """Error raised when inventory root key is not found."""
 
 

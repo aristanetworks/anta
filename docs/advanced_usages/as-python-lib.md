@@ -4,12 +4,12 @@ ANTA has been built to allow user to embeded its tools in your own application. 
 
 ## Inventory Manager
 
-Inventory class is in charge of creating a list of hosts with their information and an eAPI session ready to be consummed. To do that, it connects to all devices to check reachability and ensure eAPI is running.
+AntaInventory class is in charge of creating a list of hosts with their information and an eAPI session ready to be consummed. To do that, it connects to all devices to check reachability and ensure eAPI is running.
 
 ```python
 from anta.inventory import AntaInventory
 
-inventory = AntaInventory(
+inventory = AntaInventory.parse(
     inventory_file="inventory.yml",
     username="username",
     password="password",

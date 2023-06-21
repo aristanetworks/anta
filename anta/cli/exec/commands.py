@@ -34,7 +34,7 @@ def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
 
     setup_logging(level=log_level)
 
-    inventory_anta = AntaInventory(
+    inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
     asyncio.run(clear_counters_utils(inventory_anta, ctx.obj["enable_password"], tags=tags.split(",")))
@@ -74,7 +74,7 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
     except FileNotFoundError:
         logger.error(f"Error reading {commands_list}")
         sys.exit(1)
-    inventory = AntaInventory(
+    inventory = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
     asyncio.run(collect_commands(inventory, ctx.obj["enable_password"], eos_commands, output_directory, tags=tags.split(",")))
@@ -108,7 +108,7 @@ def collect_tech_support(  # pylint: disable=too-many-arguments
 ) -> bool:
     """Collect scheduled tech-support from eos devices."""
     setup_logging(level=log_level)
-    inventory = AntaInventory(
+    inventory = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
     asyncio.run(collect_scheduled_show_tech(inventory, ctx.obj["enable_password"], output, tags.split(","), ssh_port, insecure, latest, configure))
