@@ -17,7 +17,7 @@
     "refactor": "Warning"
   },
   "pylint.args": [
-    "--load-plugins=pylint_pydantic",
+    "--load-plugins pylint_pydantic",
     "--rcfile=pylintrc"
   ]
 }

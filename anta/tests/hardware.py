@@ -17,7 +17,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     Verifies Manufacturers of all Transceivers.
     """
 
-    name = "verify_transceivers_manufacturers"
+    name = "VerifyTransceiversManufacturers"
     description = ""
     categories = ["hardware"]
     commands = [AntaTestCommand(command="show inventory", ofmt="json")]

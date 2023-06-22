@@ -15,7 +15,7 @@ class VerifyMlagStatus(AntaTest):
     state is active, negotiation status is connected, local int is up, peer link is up.
     """
 
-    name = "verify_mlag_status"
+    name = "VerifyMlagStatus"
     description = "Verifies MLAG status"
     categories = ["mlag"]
     commands = [AntaTestCommand(command="show mlag", ofmt="json")]
@@ -23,9 +23,8 @@ class VerifyMlagStatus(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyMlagStatus validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
@@ -45,7 +44,7 @@ class VerifyMlagInterfaces(AntaTest):
     Verifies there are no inactive or active-partial MLAG interfaces.
     """
 
-    name = "verify_mlag_interfaces"
+    name = "VerifyMlagInterfaces"
     description = "Verifies there are no inactive or active-partial MLAG interfaces."
     categories = ["mlag"]
     commands = [AntaTestCommand(command="show mlag", ofmt="json")]
@@ -53,9 +52,8 @@ class VerifyMlagInterfaces(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyMlagInterfaces validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
@@ -70,7 +68,7 @@ class VerifyMlagConfigSanity(AntaTest):
     Verifies there are no MLAG config-sanity inconsistencies.
     """
 
-    name = "verify_mlag_config_sanity"
+    name = "VerifyMlagConfigSanity"
     description = "Verifies there are no MLAG config-sanity inconsistencies."
     categories = ["mlag"]
     commands = [AntaTestCommand(command="show mlag config-sanity", ofmt="json")]
@@ -78,9 +76,8 @@ class VerifyMlagConfigSanity(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyMlagConfigSanity validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if "mlagActive" not in command_output.keys():
             self.result.is_error("Incorrect JSON response - mlagActive state not found")

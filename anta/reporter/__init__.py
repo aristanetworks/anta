@@ -113,7 +113,6 @@ class ReportTable:
         for result in result_manager.get_results(output_format="list"):
             # pylint: disable=R0916
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
-                logger.debug(f"adding new entry in table: {result.name} / {result.test} / {result.result}")
                 state = self._color_result(status=str(result.result), output_type="str")
                 message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
                 table.add_row(str(result.name), result.test, state, message)

@@ -14,7 +14,7 @@ class VerifyVxlan(AntaTest):
     Verifies if Vxlan1 interface is configured, and is up/up
     """
 
-    name = "verify_vxlan"
+    name = "VerifyVxlan"
     description = "Verifies Vxlan1 status"
     categories = ["vxlan"]
     commands = [AntaTestCommand(command="show interfaces description", ofmt="json")]
@@ -22,9 +22,8 @@ class VerifyVxlan(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyVxlan validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if "Vxlan1" not in command_output["interfaceDescriptions"]:
             self.result.is_skipped("Vxlan1 interface is not configured")
@@ -45,7 +44,7 @@ class VerifyVxlanConfigSanity(AntaTest):
     Verifies that there are no VXLAN config-sanity issues flagged
     """
 
-    name = "verify_vxlan_config_sanity"
+    name = "VerifyVxlanConfigSanity"
     description = "Verifies VXLAN config-sanity"
     categories = ["vxlan"]
     commands = [AntaTestCommand(command="show vxlan config-sanity", ofmt="json")]
@@ -53,9 +52,12 @@ class VerifyVxlanConfigSanity(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyVxlanConfigSanity validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
+
+        if "categories" not in command_output or len(command_output["categories"]) == 0:
+            self.result.is_skipped("VXLAN is not configured on this device")
+            return
 
         failed_categories = {
             category: content
@@ -63,9 +65,7 @@ class VerifyVxlanConfigSanity(AntaTest):
             if category in ["localVtep", "mlag", "pd"] and content["allCheckPass"] is not True
         }
 
-        if len(command_output["categories"]) == 0:
-            self.result.is_skipped("VXLAN is not configured on this device")
-        elif len(failed_categories) > 0:
+        if len(failed_categories) > 0:
             self.result.is_failure(f"Vxlan config sanity check is not passing: {failed_categories}")
         else:
             self.result.is_success()

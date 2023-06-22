@@ -15,7 +15,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     Verifies the device is using the expected Unified Forwarding Table mode.
     """
 
-    name = "verify_unified_forwarding_table_mode"
+    name = "VerifyUnifiedForwardingTableMode"
     description = ""
     categories = ["profiles"]
     commands = [AntaTestCommand(command="show platform trident forwarding-table partition", ofmt="json")]
@@ -30,7 +30,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
             mode: Expected UFT mode.
         """
         if not mode:
-            self.result.is_skipped("verify_unified_forwarding_table_mode was not run as no mode was given")
+            self.result.is_skipped("VerifyUnifiedForwardingTableMode was not run as no mode was given")
             return
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
@@ -45,7 +45,7 @@ class VerifyTcamProfile(AntaTest):
     Verifies the device is using the configured TCAM profile.
     """
 
-    name = "verify_tcam_profile"
+    name = "VerifyTcamProfile"
     description = "Verify that the assigned TCAM profile is actually running on the device"
     categories = ["profiles"]
     commands = [AntaTestCommand(command="show hardware tcam profile", ofmt="json")]
@@ -60,7 +60,7 @@ class VerifyTcamProfile(AntaTest):
             profile: Expected TCAM profile.
         """
         if not profile:
-            self.result.is_skipped("verify_tcam_profile was not run as no profile was given")
+            self.result.is_skipped("VerifyTcamProfile was not run as no profile was given")
             return
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)

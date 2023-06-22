@@ -82,7 +82,7 @@ $ anta check json -t pod1 -c nrfu/leaf.yml
 [
   {
     "name": "leaf01",
-    "test": "verify_zerotouch",
+    "test": "VerifyZeroTouch",
     "test_category": [
       "configuration"
     ],
@@ -92,7 +92,7 @@ $ anta check json -t pod1 -c nrfu/leaf.yml
   },
   {
     "name": "leaf01",
-    "test": "verify_running_config_diffs",
+    "test": "VerifyRunningConfigDiffs",
     "test_category": [
       "configuration"
     ],
@@ -115,9 +115,9 @@ $ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_templa
 │               - Tests catalog: .personal/catalog-class.yml │
 │               - Template: .personal/test_template.j2       │
 ╰────────────────────────────────────────────────────────────╯
-* verify_zerotouch is SUCCESS for spine01
-* verify_running_config_diffs is SUCCESS for spine01
-* verify_interface_utilization is SUCCESS for spine01
+* VerifyZeroTouch is SUCCESS for spine01
+* VerifyRunningConfigDiffs is SUCCESS for spine01
+* VerifyInterfaceUtilization is SUCCESS for spine01
 ```
 
 And the template `.personal/test_template.j2` is a pure Jinja2 template:
@@ -142,13 +142,13 @@ $ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_templa
 │               - Tests catalog: .personal/catalog-class.yml │
 │               - Template: .personal/test_template.j2       │
 ╰────────────────────────────────────────────────────────────╯
-* verify_zerotouch is SUCCESS for spine01
-* verify_running_config_diffs is SUCCESS for spine01
-* verify_interface_utilization is SUCCESS for spine01
+* VerifyZeroTouch is SUCCESS for spine01
+* VerifyRunningConfigDiffs is SUCCESS for spine01
+* VerifyInterfaceUtilization is SUCCESS for spine01
 
 # Display saved report
 $ cat .personal/demo.txt
-* verify_zerotouch is [green]SUCCESS[/green] for spine01
-* verify_running_config_diffs is [green]SUCCESS[/green] for spine01
-* verify_interface_utilization is [green]SUCCESS[/green] for spine01
+* VerifyZeroTouch is [green]SUCCESS[/green] for spine01
+* VerifyRunningConfigDiffs is [green]SUCCESS[/green] for spine01
+* VerifyInterfaceUtilization is [green]SUCCESS[/green] for spine01
 ```

@@ -112,6 +112,12 @@ class TestResult(BaseModel):
             self.messages.append(message)
         return True
 
+    def __str__(self) -> str:
+        """
+        Returns a human readable string of this TestResult
+        """
+        return f"Test {self.test} on device {self.name} has result {self.result}"
+
 
 class ListResult(BaseModel):
     """

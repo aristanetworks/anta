@@ -11,9 +11,6 @@ from typing import Any, Literal, Optional, Union
 import click
 from rich.logging import RichHandler
 
-FORMAT = "%(message)s"
-logging.basicConfig(format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
-
 
 def setup_logging(level: str = "info") -> None:
     """
@@ -22,8 +19,13 @@ def setup_logging(level: str = "info") -> None:
     Args:
         level (str, optional): level name to configure.
     """
+    root = logging.getLogger()
+    handler = RichHandler()
+    formatter = logging.Formatter(fmt="%(message)s", datefmt="[%X]")
+    handler.setFormatter(formatter)
+    root.addHandler(handler)
     loglevel = getattr(logging, level.upper())
-    logging.getLogger("anta").setLevel(loglevel)
+    root.setLevel(loglevel)
 
 
 class EapiVersion(click.ParamType):

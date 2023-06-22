@@ -18,7 +18,7 @@ class VerifyZeroTouch(AntaTest):
     Verifies ZeroTouch is disabled.
     """
 
-    name = "verify_zerotouch"
+    name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled."
     categories = ["configuration"]
     commands = [AntaTestCommand(command="show zerotouch")]
@@ -26,9 +26,9 @@ class VerifyZeroTouch(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyZeroTouch validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = self.instance_commands[0].output
-        logger.debug(f"dataset is: {command_output}")
+
         assert isinstance(command_output, dict)
         if command_output["mode"] == "disabled":
             self.result.is_success()
@@ -41,7 +41,7 @@ class VerifyRunningConfigDiffs(AntaTest):
     Verifies there is no difference between the running-config and the startup-config.
     """
 
-    name = "verify_running_config_diffs"
+    name = "VerifyRunningConfigDiffs"
     description = ""
     categories = ["configuration"]
     commands = [AntaTestCommand(command="show running-config diffs", ofmt="text")]

@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import traceback
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
@@ -15,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Lite
 from pydantic import BaseModel, validator
 
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import exc_to_str, tb_to_str
 
 if TYPE_CHECKING:
     from anta.inventory.models import InventoryDevice
@@ -179,8 +178,13 @@ class AntaTest(ABC):
         """
         Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
-        logger.debug(f"Test {self.name} for device {self.device.name}: running command outputs collection")
-        await asyncio.gather(*(self.device.collect(command=command) for command in self.instance_commands))
+        logger.debug(f"Test {self.name} on device {self.device.name}: running command outputs collection")
+        try:
+            await asyncio.gather(*(self.device.collect(command=command) for command in self.instance_commands))
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
+            logger.debug(tb_to_str(e))
+            self.result.is_error(exc_to_str(e))
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
@@ -223,11 +227,11 @@ class AntaTest(ABC):
             try:
                 if not self.all_data_collected():
                     raise ValueError("Some command output is missing")
-                logger.debug(f"Test {self.name} for device {self.device.name}: running test")
+                logger.debug(f"Test {self.name} on device {self.device.name}: running test")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error(f"Exception raised for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-                logger.debug(traceback.format_exc())
+                logger.debug(tb_to_str(e))
                 self.result.is_error(exc_to_str(e))
             return self.result
 
