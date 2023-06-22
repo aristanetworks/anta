@@ -63,7 +63,6 @@ class ResultManager:
 
     def __init__(self) -> None:
         """Class constructor."""
-        logger.debug("Instantiate result-manager")
         self._result_entries = ListResult()
 
     def __len__(self) -> int:
@@ -78,7 +77,7 @@ class ResultManager:
         Args:
             entry (TestResult): TestResult data to add to the report
         """
-        logger.info(f"add new test result to manager: {entry}")
+        logger.debug(entry)
         self._result_entries.append(entry)
 
     def add_test_results(self, entries: List[TestResult]) -> None:
@@ -87,8 +86,8 @@ class ResultManager:
         Args:
             entries (List[TestResult]): list of TestResult data to add to the report
         """
-        logger.info(f"add new list of results to manager: {[r.result for r in entries if r is not None]}")
-        self._result_entries.extend(entries)
+        for e in entries:
+            self.add_test_result(e)
 
     def get_results(self, output_format: str = "native") -> Any:
         """
@@ -105,7 +104,6 @@ class ResultManager:
         Returns:
             any: List of results.
         """
-        logger.info(f"retrieve list of result using output_format {output_format}")
         if output_format == "list":
             return list(self._result_entries)
 
@@ -126,7 +124,6 @@ class ResultManager:
         Returns:
             list[TestResult]: List of results related to the test.
         """
-        logger.info(f"retrieve list of result using output_format {output_format} for test {test_name}")
         if output_format == "list":
             return [result for result in self._result_entries if str(result.test) == test_name]
 
@@ -147,7 +144,6 @@ class ResultManager:
         Returns:
             Any: List of results related to the host.
         """
-        logger.info(f"retrieve list of result using output_format {output_format} for host {host_ip}")
         if output_format == "list":
             return [result for result in self._result_entries if str(result.name) == host_ip]
 
@@ -164,12 +160,10 @@ class ResultManager:
         Returns:
             List[str]: List of names for all tests.
         """
-        logger.info("build list of testcases registered in result-manager")
         result_list = []
         for testcase in self._result_entries:
             if str(testcase.test) not in result_list:
                 result_list.append(str(testcase.test))
-        logger.debug(f"list of tests name: {result_list}")
         return result_list
 
     def get_hosts(self) -> List[str]:
@@ -179,10 +173,8 @@ class ResultManager:
         Returns:
             List[str]: List of IP addresses.
         """
-        logger.info("build list of host ip registered in result-manager")
         result_list = []
         for testcase in self._result_entries:
             if str(testcase.name) not in result_list:
                 result_list.append(str(testcase.name))
-        logger.debug(f"list of tests name: {result_list}")
         return result_list

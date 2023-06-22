@@ -31,9 +31,7 @@ class VerifySSHStatus(AntaTest):
         Run VerifySSHStatus validation.
         """
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(str, self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         line = [line for line in command_output.split("\n") if line.startswith("SSHD status")][0]
         status = line.split("is ")[1]
@@ -72,9 +70,7 @@ class VerifySSHIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -122,9 +118,7 @@ class VerifySSHIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
@@ -164,9 +158,7 @@ class VerifyTelnetStatus(AntaTest):
         Run VerifyTelnetStatus validation.
         """
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if command_output["serverState"] == "disabled":
             self.result.is_success()
@@ -194,9 +186,7 @@ class VerifyAPIHttpStatus(AntaTest):
         Run VerifyAPIHTTPStatus validation.
         """
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         if command_output["enabled"] and not command_output["httpServer"]["running"]:
             self.result.is_success()
@@ -231,9 +221,7 @@ class VerifyAPIHttpsSSL(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because profile was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         try:
             if command_output["sslProfile"]["name"] == profile and command_output["sslProfile"]["state"] == "valid":
@@ -273,9 +261,7 @@ class VerifyAPIIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -323,9 +309,7 @@ class VerifyAPIIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)

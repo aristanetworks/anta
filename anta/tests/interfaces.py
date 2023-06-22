@@ -16,7 +16,7 @@ class VerifyInterfaceUtilization(AntaTest):
     Verifies interfaces utilization is below 75%.
     """
 
-    name = "verify_interface_utilization"
+    name = "VerifyInterfaceUtilization"
     description = "Verifies interfaces utilization is below 75%."
     categories = ["interfaces"]
     # TODO - move from text to json if possible
@@ -25,9 +25,8 @@ class VerifyInterfaceUtilization(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(str, self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         wrong_interfaces = {}
         for line in command_output.split("\n")[1:]:
@@ -50,7 +49,7 @@ class VerifyInterfaceErrors(AntaTest):
     Verifies interfaces error counters are equal to zero.
     """
 
-    name = "verify_interface_errors"
+    name = "VerifyInterfaceErrors"
     description = "Verifies interfaces error counters are equal to zero."
     categories = ["interfaces"]
     commands = [AntaTestCommand(command="show interfaces counters errors")]
@@ -58,9 +57,8 @@ class VerifyInterfaceErrors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
+
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
         for interface, outer_v in command_output["interfaceErrorCounters"].items():

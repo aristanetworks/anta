@@ -67,9 +67,7 @@ class VerifyTacacsSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         try:
             if command_output["srcIntf"][vrf] == intf:
@@ -109,9 +107,7 @@ class VerifyTacacsServers(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because servers or vrf were not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         tacacs_servers = command_output["tacacsServers"]
 
@@ -158,9 +154,7 @@ class VerifyTacacsServerGroups(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because groups were not supplied")
             return
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Any], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         tacacs_groups = command_output["groups"]
 
@@ -208,9 +202,7 @@ class VerifyAuthenMethods(AntaTest):
 
         _check_auth_type(auth_types, ["login", "enable", "dot1x"])
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         not_matching = []
 
@@ -267,9 +259,7 @@ class VerifyAuthzMethods(AntaTest):
 
         methods_with_group = _check_group_methods(methods)
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         not_matching = []
 
@@ -319,9 +309,7 @@ class VerifyAcctDefaultMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         not_matching = []
         not_configured = []
@@ -379,9 +367,7 @@ class VerifyAcctConsoleMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        logger.debug(f"self.instance_commands is: {self.instance_commands}")
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
-        logger.debug(f"dataset is: {command_output}")
 
         not_matching = []
         not_configured = []

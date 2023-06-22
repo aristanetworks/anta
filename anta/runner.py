@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
+from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ async def main(
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.error(f"Error when running tests: {r.__class__.__name__}: {r}")
-    logger.info(f"List of test result is: {res}")
+            logger.critical(f"Error in main ANTA Runner - {exc_to_str(r)}")
+            logger.debug(tb_to_str(r))
+            res.remove(r)
     manager.add_test_results(res)
