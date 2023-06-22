@@ -160,6 +160,7 @@ nav:
       - OSPF: api/tests.routing.ospf.md
     - Security: api/tests.security.md
     - SNMP: api/tests.snmp.md
+    - STP: api/tests.stp.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
   - API Documentation:
