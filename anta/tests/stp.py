@@ -156,7 +156,7 @@ class VerifySTPForwardingPorts(AntaTest):
         self.result.is_success()
 
         for index, command in enumerate(self.instance_commands):
-            vlan_id = cast(Dict[str, str], command.template_params).get("vlan")
+            vlan_id = cast(Dict[str, str], command.template_params)["vlan"]
             command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
             logger.debug(f"dataset for vlan {vlan_id} is: {command_output}")
 
