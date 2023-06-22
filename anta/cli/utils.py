@@ -33,7 +33,7 @@ class EapiVersion(click.ParamType):
 
     name = "eAPI Version"
 
-    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Union[int, Literal["latest"]]:
+    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Union[int, Literal["latest"], None]:
         if isinstance(value, int):
             return value
         try:
