@@ -6,7 +6,7 @@ from typing import Any, Dict
 import pytest
 from pydantic import ValidationError
 
-from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, InventoryDevice, InventoryDevices
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, AsyncEOSDevice, InventoryDevices
 from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
 from tests.lib.utils import generate_test_ids_dict
 
@@ -315,7 +315,7 @@ class Test_InventoryDeviceModel:
 
         for entity in test_definition["input"]:
             try:
-                InventoryDevice(**entity)
+                AsyncEOSDevice(**entity)
             except ValidationError as exc:
                 logging.warning("Error: %s", str(exc))
                 assert False
@@ -350,7 +350,7 @@ class Test_InventoryDeviceModel:
 
         for entity in test_definition["input"]:
             try:
-                InventoryDevice(**entity)
+                AsyncEOSDevice(**entity)
             except ValidationError as exc:
                 logging.info("Error: %s", str(exc))
             else:
@@ -385,7 +385,7 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(AsyncEOSDevice(**entry))
         assert len(test_definition["input"]) == len(inventory_devices)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
@@ -417,7 +417,7 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(AsyncEOSDevice(**entry))
         if str(inventory_devices[0].session.host) == test_definition["input"][0]["host"]:
             logging.info("__getitem__ function is valid")
         else:
@@ -453,7 +453,7 @@ class Test_InventoryDeviceModel:
             pytest.skip("Not concerned by the test")
         inventory_devices = InventoryDevices()
         for entry in test_definition["input"]:
-            inventory_devices.append(InventoryDevice(**entry))
+            inventory_devices.append(AsyncEOSDevice(**entry))
         for idx, device in enumerate(inventory_devices):
             if str(device.host) == test_definition["input"][idx].get("host", "localhost"):
                 logging.info("__iter__ function is valid")

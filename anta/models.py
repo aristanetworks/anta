@@ -17,7 +17,7 @@ from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str, tb_to_str
 
 if TYPE_CHECKING:
-    from anta.inventory.models import InventoryDevice
+    from anta.inventory.models import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -77,7 +77,7 @@ class AntaTestFilter(ABC):
     @abstractmethod
     def should_skip(
         self,
-        device: InventoryDevice,
+        device: AntaDevice,
         result: TestResult,
         *args: list[Any],
         **kwagrs: dict[str, Any],
@@ -114,7 +114,7 @@ class AntaTest(ABC):
 
     def __init__(
         self,
-        device: InventoryDevice,
+        device: AntaDevice,
         template_params: list[dict[str, Any]] | None = None,
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,

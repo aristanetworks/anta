@@ -16,7 +16,7 @@ import asyncssh
 from aioeapi import EapiCommandError
 
 from anta.inventory import AntaInventory
-from anta.inventory.models import InventoryDevice
+from anta.inventory.models import AntaDevice
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
@@ -28,7 +28,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, enable_pass: str, 
     clear counters
     """
 
-    async def clear(dev: InventoryDevice) -> None:
+    async def clear(dev: AntaDevice) -> None:
         commands = [{"cmd": "enable", "input": enable_pass}, "clear counters"]
         if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
             commands.append("clear hardware counter drop")
@@ -59,7 +59,7 @@ async def collect_commands(
     Collect EOS commands
     """
 
-    async def collect(dev: InventoryDevice, command: str, outformat: Literal["json", "text"]) -> None:
+    async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         try:
             outdir = Path() / root_dir / dev.name / outformat
             outdir.mkdir(parents=True, exist_ok=True)
@@ -111,7 +111,7 @@ async def collect_scheduled_show_tech(  # pylint: disable=too-many-arguments
     Collect scheduled show-tech on devices
     """
 
-    async def collect(device: InventoryDevice) -> None:
+    async def collect(device: AntaDevice) -> None:
         """
         Collect all the tech-support files stored on Arista switches flash and copy them locally
         """
