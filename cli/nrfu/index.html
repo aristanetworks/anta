@@ -1370,7 +1370,7 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifySvi<span class="w">
 <span class="o">[</span>
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_zerotouch&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyZeroTouch&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;test_category&quot;</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">      </span><span class="s2">&quot;configuration&quot;</span>
 <span class="w">    </span><span class="o">]</span>,
@@ -1380,7 +1380,7 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifySvi<span class="w">
 <span class="w">  </span><span class="o">}</span>,
 <span class="w">  </span><span class="o">{</span>
 <span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;leaf01&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;verify_running_config_diffs&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;test&quot;</span>:<span class="w"> </span><span class="s2">&quot;VerifyRunningConfigDiffs&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;test_category&quot;</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">      </span><span class="s2">&quot;configuration&quot;</span>
 <span class="w">    </span><span class="o">]</span>,
@@ -1399,9 +1399,9 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifySvi<span class="w">
 │<span class="w">               </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog:<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>│
 │<span class="w">               </span>-<span class="w"> </span>Template:<span class="w"> </span>.personal/test_template.j2<span class="w">       </span>│
 ╰────────────────────────────────────────────────────────────╯
-*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyRunningConfigDiffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
 </code></pre></div>
 <p>And the template <code>.personal/test_template.j2</code> is a pure Jinja2 template:</p>
 <div class="highlight"><pre><span></span><code>$ cat .personal/test_template.j2
@@ -1419,15 +1419,15 @@ $<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span
 │<span class="w">               </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog:<span class="w"> </span>.personal/catalog-class.yml<span class="w"> </span>│
 │<span class="w">               </span>-<span class="w"> </span>Template:<span class="w"> </span>.personal/test_template.j2<span class="w">       </span>│
 ╰────────────────────────────────────────────────────────────╯
-*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyRunningConfigDiffs<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>is<span class="w"> </span>SUCCESS<span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
 
 <span class="c1"># Display saved report</span>
 $<span class="w"> </span>cat<span class="w"> </span>.personal/demo.txt
-*<span class="w"> </span>verify_zerotouch<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_running_config_diffs<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
-*<span class="w"> </span>verify_interface_utilization<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyRunningConfigDiffs<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
+*<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>is<span class="w"> </span><span class="o">[</span>green<span class="o">]</span>SUCCESS<span class="o">[</span>/green<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>spine01
 </code></pre></div>
 
   <hr>
@@ -1435,7 +1435,7 @@ $<span class="w"> </span>cat<span class="w"> </span>.personal/demo.txt
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 21, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 22, 2023</span>
       
     
   </small>
