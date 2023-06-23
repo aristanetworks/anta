@@ -14,7 +14,6 @@ import click
 from yaml import safe_load
 
 from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
-from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
 
@@ -23,17 +22,9 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.pass_context
-# Generic options
 @click.option("--tags", "-t", default="all", help="List of tags using coma as separator: tag1,tag2,tag3", type=str)
-# Debug stuf
-@click.option(
-    "--log-level", "--log", help="Logging level of the command", default="info", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
-)
-def clear_counters(ctx: click.Context, log_level: str, tags: str) -> None:
+def clear_counters(ctx: click.Context, tags: str) -> None:
     """Clear counter statistics on EOS devices"""
-
-    setup_logging(level=log_level)
-
     inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )
@@ -47,7 +38,6 @@ def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) ->
 
 @click.command()
 @click.pass_context
-# Generic options
 @click.option("--tags", "-t", default=DEFAULT_TAG, help="List of tags using coma as separator: tag1,tag2,tag3", type=str)
 @click.option("--commands-list", "-c", show_envvar=True, type=click.Path(), help="File with list of commands to grab", required=True)
 @click.option(
@@ -60,13 +50,8 @@ def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) ->
     default="anta_snapshot",
     callback=_get_snapshot_dir,
 )
-# Debug stuf
-@click.option(
-    "--log-level", "--log", help="Logging level of the command", default="info", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
-)
-def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_directory: str, tags: str) -> None:
+def snapshot(ctx: click.Context, commands_list: str, output_directory: str, tags: str) -> None:
     """Collect commands output from devices in inventory"""
-    setup_logging(level=log_level)
     try:
         with open(commands_list, "r", encoding="UTF-8") as file:
             file_content = file.read()
@@ -94,20 +79,10 @@ def snapshot(ctx: click.Context, commands_list: str, log_level: str, output_dire
     required=False,
 )
 @click.option("--tags", "-t", default=DEFAULT_TAG, help="List of tags using coma as separator: tag1,tag2,tag3", type=str, required=False)
-# Debug stuf
-@click.option(
-    "--log-level",
-    "--log",
-    help="Logging level of the command",
-    default="info",
-    show_default=True,
-    type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False),
-)
 def collect_tech_support(  # pylint: disable=too-many-arguments
-    ctx: click.Context, output: str, ssh_port: int, insecure: bool, latest: int, configure: bool, log_level: str, tags: str
+    ctx: click.Context, output: str, ssh_port: int, insecure: bool, latest: int, configure: bool, tags: str
 ) -> bool:
     """Collect scheduled tech-support from eos devices."""
-    setup_logging(level=log_level)
     inventory = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
     )

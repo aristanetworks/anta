@@ -12,7 +12,7 @@ import click
 from rich.logging import RichHandler
 
 
-def setup_logging(level: str = "info") -> None:
+def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
     """
     Configure logging
 
@@ -20,10 +20,11 @@ def setup_logging(level: str = "info") -> None:
         level (str, optional): level name to configure.
     """
     root = logging.getLogger()
-    handler = RichHandler()
-    formatter = logging.Formatter(fmt="%(message)s", datefmt="[%X]")
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
+    if not root.hasHandlers():
+        handler = RichHandler()
+        formatter = logging.Formatter(fmt="%(message)s", datefmt="[%X]")
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
     loglevel = getattr(logging, level.upper())
     root.setLevel(loglevel)
 

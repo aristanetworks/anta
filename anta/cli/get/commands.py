@@ -17,7 +17,6 @@ from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.console import Console
 
-from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
 
@@ -32,13 +31,9 @@ logger = logging.getLogger(__name__)
 @click.option("--cvp-password", "-p", default=None, help="CVP Password / token", type=str, required=True)
 @click.option("--cvp-container", "-c", default=None, help="Container where devices are configured", type=str, required=False)
 @click.option("--inventory-directory", "-d", default=None, help="Path to save inventory file", type=click.Path())
-@click.option(
-    "--log-level", "--log", help="Logging level of the command", default="info", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
-)
-def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str, log_level: str) -> bool:
+def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str) -> bool:
     """Build ANTA inventory from Cloudvision"""
     # pylint: disable=too-many-arguments
-    setup_logging(level=log_level)
     logger.info(f"Getting auth token from {cvp_ip} for user {cvp_username}")
     token = get_cv_token(cvp_ip=cvp_ip, cvp_username=cvp_username, cvp_password=cvp_password)
 
@@ -72,15 +67,10 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 @click.command()
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
-@click.option(
-    "--log-level", "--log", help="Logging level of the command", default="warning", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
-)
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) -> bool:
+def inventory(ctx: click.Context, tags: Any, connected: bool) -> bool:
     """Show inventory loaded in ANTA."""
     console = Console()
-    setup_logging(level=log_level)
-
     inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"],
         username=ctx.obj["username"],
@@ -106,14 +96,9 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
 
 @click.command()
 @click.pass_context
-@click.option(
-    "--log-level", "--log", help="Logging level of the command", default="warning", type=click.Choice(["debug", "info", "warning", "critical"], case_sensitive=False)
-)
-def tags(ctx: click.Context, log_level: str) -> bool:
+def tags(ctx: click.Context) -> bool:
     """Get list of configured tags in user inventory."""
     console = Console()
-    setup_logging(level=log_level)
-
     inventory_anta = AntaInventory.parse(
         inventory_file=ctx.obj["inventory"],
         username=ctx.obj["username"],

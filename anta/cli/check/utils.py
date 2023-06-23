@@ -16,7 +16,6 @@ from rich.panel import Panel
 from rich.pretty import pprint
 from yaml import safe_load
 
-from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.loader import parse_catalog
 from anta.reporter import ReportJinja, ReportTable
@@ -26,10 +25,9 @@ from anta.runner import main
 logger = logging.getLogger(__name__)
 
 
-def check_run(inventory: str, catalog: str, username: str, password: str, enable_password: str, timeout: int, tags: Any, loglevel: str) -> ResultManager:
+def check_run(inventory: str, catalog: str, username: str, password: str, enable_password: str, timeout: int, tags: Any) -> ResultManager:
     # pylint: disable=too-many-arguments
     """Execute a run of all tests against inventory."""
-    setup_logging(level=loglevel)
 
     inventory_anta = AntaInventory.parse(inventory_file=inventory, username=username, password=password, enable_password=enable_password, timeout=timeout)
     logger.info(f"Inventory {inventory} loaded")

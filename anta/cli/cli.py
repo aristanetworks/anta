@@ -6,6 +6,8 @@
 ANTA CLI Baseline.
 """
 
+import logging
+
 import click
 
 from anta import __version__
@@ -13,6 +15,7 @@ from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
+from anta.cli.utils import setup_logging
 
 # Top level entrypoint
 
@@ -32,7 +35,23 @@ from anta.cli.get import commands as get_commands
     help="Path to your inventory file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
 )
-def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
+@click.option(
+    "--log-level",
+    "--log",
+    help="ANTA logging level",
+    default=logging.getLevelName(logging.INFO),
+    type=click.Choice(
+        [
+            logging.getLevelName(logging.CRITICAL),
+            logging.getLevelName(logging.ERROR),
+            logging.getLevelName(logging.WARNING),
+            logging.getLevelName(logging.INFO),
+            logging.getLevelName(logging.DEBUG),
+        ],
+        case_sensitive=False,
+    ),
+)
+def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int, log_level: str) -> None:
     """Arista Network Test CLI"""
     # pylint: disable=too-many-arguments
     ctx.ensure_object(dict)
@@ -42,6 +61,7 @@ def anta(ctx: click.Context, username: str, password: str, enable_password: str,
     ctx.obj["timeout"] = timeout
     ctx.obj["enable_password"] = enable_password
     ctx.obj["timeout"] = timeout
+    setup_logging(level=log_level)
 
 
 @anta.group()
