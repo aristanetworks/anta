@@ -20,7 +20,6 @@ from rich.console import Console
 from anta.cli.utils import setup_logging
 from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
-from anta.tools.pydantic import pydantic_to_dict
 
 from .utils import create_inventory, get_cv_token
 
@@ -100,7 +99,7 @@ def inventory(ctx: click.Context, tags: Any, connected: bool, log_level: str) ->
         asyncio.run(inventory_anta.connect_inventory())
 
     inventory_result = inventory_anta.get_inventory(tags=tags)
-    console.print_json(json.dumps(pydantic_to_dict(inventory_result), indent=2))
+    console.print_json(json.dumps(vars(inventory_result), indent=2))
 
     return True
 

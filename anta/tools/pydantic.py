@@ -5,18 +5,17 @@ Toolkit for ANTA to play with Pydantic.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Sequence
 
 if TYPE_CHECKING:
-    from anta.inventory.models import InventoryDevices
     from anta.result_manager.models import ListResult
 
 logger = logging.getLogger(__name__)
 
 
-def pydantic_to_dict(pydantic_list: Union[InventoryDevices, ListResult]) -> Any:
+def pydantic_to_dict(pydantic_list: ListResult) -> List[Dict[str, Sequence[Any]]]:
     """
-    Convert Pydantic object into a dict
+    Convert Pydantic object into a list of dict
 
     Mimic .dict() option from pydantic but overwrite IPv4Address nodes
 
@@ -24,7 +23,7 @@ def pydantic_to_dict(pydantic_list: Union[InventoryDevices, ListResult]) -> Any:
         pydantic_list: Iterable pydantic object
 
     Returns:
-        dict: dictionary object
+        List[Dict[str, str]]: the list of dict
     """
     result = []
     for device in pydantic_list:

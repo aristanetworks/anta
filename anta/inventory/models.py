@@ -309,38 +309,3 @@ class AsyncEOSDevice(AntaDevice):
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)
-
-
-class InventoryDevices(BaseModel):
-    """
-    Inventory model to list all AntaDevice entries.
-
-    Attributes:
-        __root__(List[AntaDevice]): A list of AntaDevice objects.
-    """
-
-    # pylint: disable=R0801
-
-    __root__: List[AntaDevice] = []
-
-    def append(self, value: AntaDevice) -> None:
-        """Add support for append method."""
-        self.__root__.append(value)
-
-    def __iter__(self) -> Iterator[AntaDevice]:  # type: ignore
-        """Use custom iter method."""
-        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
-        # return type and are breaking Liskov Substitution Principle.
-        return iter(self.__root__)
-
-    def __getitem__(self, item: int) -> AntaDevice:
-        """Use custom getitem method."""
-        return self.__root__[item]
-
-    def __len__(self) -> int:
-        """Support for length of __root__"""
-        return len(self.__root__)
-
-    def json(self, **kwargs: Any) -> str:
-        """Returns a JSON representation of the devices"""
-        return super().json(exclude={"__root__": {"__all__": {"session"}}}, **kwargs)
