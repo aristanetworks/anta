@@ -316,7 +316,7 @@ class Test_InventoryDeviceModel:
         for entity in test_definition["input"]:
             try:
                 AsyncEOSDevice(**entity)
-            except ValidationError as exc:
+            except TypeError as exc:
                 logging.warning("Error: %s", str(exc))
                 assert False
 
@@ -351,7 +351,7 @@ class Test_InventoryDeviceModel:
         for entity in test_definition["input"]:
             try:
                 AsyncEOSDevice(**entity)
-            except ValidationError as exc:
+            except TypeError as exc:
                 logging.info("Error: %s", str(exc))
             else:
                 assert False
