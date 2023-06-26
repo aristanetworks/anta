@@ -14,7 +14,6 @@ inventory = AntaInventory.parse(
     username="username",
     password="password",
     enable_password="enable",
-    auto_connect=True,
     timeout=1,
 )
 ```

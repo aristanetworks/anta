@@ -24,8 +24,7 @@ class ResultManager:
                 inventory_file='examples/inventory.yml',
                 username='ansible',
                 password='ansible',
-                timeout=0.5,
-                auto_connect=True
+                timeout=0.5
             )
 
         Create Result Manager:

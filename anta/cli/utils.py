@@ -9,7 +9,29 @@ import logging
 from typing import Any, Literal, Optional, Union
 
 import click
+from click import Option
 
+import anta.loader
+from anta.inventory import AntaInventory
+
+logger = logging.getLogger(__name__)
+
+
+def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInventory:
+    try:
+        inventory = AntaInventory.parse(
+            inventory_file=value,
+            username=ctx.params["username"],
+            password=ctx.params["password"],
+            enable_password=ctx.params["enable_password"],
+            timeout=ctx.params["timeout"],
+            insecure=ctx.params["insecure"],
+        )
+        logger.info(f"Inventory {value} loaded")
+        return inventory
+    except Exception as exc:
+        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {str(exc)}")
+        return None
 
 
 def setup_logging(ctx: click.Context, param: Option, value: str) -> str:

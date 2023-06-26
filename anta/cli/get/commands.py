@@ -16,8 +16,8 @@ import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.console import Console
+from rich.pretty import pretty_repr
 
-from anta.inventory import AntaInventory
 from anta.inventory.models import DEFAULT_TAG
 
 from .utils import create_inventory, get_cv_token
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 @click.option("--cvp-password", "-p", default=None, help="CVP Password / token", type=str, required=True)
 @click.option("--cvp-container", "-c", default=None, help="Container where devices are configured", type=str, required=False)
 @click.option("--inventory-directory", "-d", default=None, help="Path to save inventory file", type=click.Path())
-def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str) -> bool:
+def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str) -> None:
     """Build ANTA inventory from Cloudvision"""
     # pylint: disable=too-many-arguments
     logger.info(f"Getting auth token from {cvp_ip} for user {cvp_username}")
@@ -61,23 +61,15 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
         logger.info(f"Getting inventory for container {cvp_container} from {cvp_ip}")
         cvp_inventory = clnt.api.get_devices_in_container(cvp_container)
     create_inventory(cvp_inventory, out_dir, cvp_container)
-    return True
 
 
 @click.command()
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(ctx: click.Context, tags: Any, connected: bool) -> bool:
+def inventory(ctx: click.Context, tags: Any, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
     console = Console()
-    inventory_anta = AntaInventory.parse(
-        inventory_file=ctx.obj["inventory"],
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        enable_password=ctx.obj["enable_password"],
-    )
-    logger.info(f"Inventory {ctx.obj['inventory']} loaded")
 
     if tags is not None:
         tags = tags.split(",") if "," in tags else [tags]
@@ -86,30 +78,21 @@ def inventory(ctx: click.Context, tags: Any, connected: bool) -> bool:
     console.print("Current inventory content is:", style="white on blue")
 
     if connected:
-        asyncio.run(inventory_anta.connect_inventory())
+        asyncio.run(ctx.obj["inventory"].connect_inventory())
 
-    inventory_result = inventory_anta.get_inventory(tags=tags)
-    console.print_json(json.dumps(vars(inventory_result), indent=2))
-
-    return True
+    inventory_result = ctx.obj["inventory"].get_inventory(tags=tags)
+    console.print(pretty_repr(vars(inventory_result)))
 
 
 @click.command()
 @click.pass_context
-def tags(ctx: click.Context) -> bool:
+def tags(ctx: click.Context) -> None:
     """Get list of configured tags in user inventory."""
     console = Console()
-    inventory_anta = AntaInventory.parse(
-        inventory_file=ctx.obj["inventory"],
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        enable_password=ctx.obj["enable_password"],
-    )
     tags_found = []
-    for device in inventory_anta.get_inventory():
+    for device in ctx.obj["inventory"]:
         tags_found += device.tags
     tags_found = sorted(set(tags_found))
     console.print("Tags found:")
     console.print_json(json.dumps(tags_found, indent=2))
     console.print(f"\n* note that tag [green]{DEFAULT_TAG}[/green] has been added by anta")
-    return True

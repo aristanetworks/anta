@@ -53,7 +53,9 @@ class AntaInventory:
             return result
 
     @staticmethod
-    def parse(inventory_file: str, username: str, password: str, enable_password: Optional[str] = None, timeout: Optional[float] = None) -> AntaInventory:
+    def parse(
+        inventory_file: str, username: str, password: str, enable_password: Optional[str] = None, timeout: Optional[float] = None, insecure: bool = False
+    ) -> AntaInventory:
         """
         Create an AntaInventory object from an inventory file.
         Instantiate AntaDevice objects using the AsyncEOSDevice subclass.
@@ -71,7 +73,7 @@ class AntaInventory:
         """
 
         inventory = AntaInventory()
-        kwargs: Dict[str, Any] = {"username": username, "password": password, "enable_password": enable_password, "timeout": timeout}
+        kwargs: Dict[str, Any] = {"username": username, "password": password, "enable_password": enable_password, "timeout": timeout, "insecure": insecure}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         with open(inventory_file, "r", encoding="UTF-8") as fd:

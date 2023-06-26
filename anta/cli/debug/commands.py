@@ -32,15 +32,10 @@ templater: str = ""
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
 def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: str) -> None:
     """Run arbitrary command to an EOS device and get result using eAPI"""
-    # pylint: disable=too-many-arguments
     console = Console()
 
-    inventory_anta = AntaInventory.parse(
-        inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
-    )
-
-    device_anta = [inventory_device for inventory_device in inventory_anta.get_inventory() if inventory_device.name == device][0]
-
+    # TODO - @mtache write public method to get a device from its name
+    device_anta = [inventory_device for inventory_device in ctx.obj["inventory"] if inventory_device.name == device][0]
     logger.info(f"receive device from inventory: {device_anta}")
 
     console.print(f"run command [green]{command}[/green] on [red]{device}[/red]")
@@ -64,11 +59,11 @@ def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_
     # pylint: disable=too-many-arguments
     # pylint: disable=unused-argument
     console = Console()
-    inventory_anta = AntaInventory.parse(
-        inventory_file=ctx.obj["inventory"], username=ctx.obj["username"], password=ctx.obj["password"], enable_password=ctx.obj["enable_password"]
-    )
-    device_anta = [inventory_device for inventory_device in inventory_anta.get_inventory() if inventory_device.name == device][0]
+
+    # TODO - @mtache write public method to get a device from its name
+    device_anta = [inventory_device for inventory_device in ctx.obj["inventory"] if inventory_device.name == device][0]
     logger.info(f"receive device from inventory: {device_anta}")
+
     console.print(f"run dynmic command [blue]{template}[/blue] with [orange]{params}[/orange] on [red]{device}[/red]")
 
     params = json.loads(params)

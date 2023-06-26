@@ -25,12 +25,8 @@ from anta.runner import main
 logger = logging.getLogger(__name__)
 
 
-def check_run(inventory: str, catalog: str, username: str, password: str, enable_password: str, timeout: int, tags: Any) -> ResultManager:
-    # pylint: disable=too-many-arguments
+def check_run(inventory: AntaInventory, catalog: str, tags: Any) -> ResultManager:
     """Execute a run of all tests against inventory."""
-
-    inventory_anta = AntaInventory.parse(inventory_file=inventory, username=username, password=password, enable_password=enable_password, timeout=timeout)
-    logger.info(f"Inventory {inventory} loaded")
 
     # Test loader
 
@@ -41,13 +37,11 @@ def check_run(inventory: str, catalog: str, username: str, password: str, enable
 
     # Test Execution
 
-    logger.info("starting running test on inventory ...")
-
     if tags is not None:
         tags = tags.split(",") if "," in tags else [tags]
 
     results = ResultManager()
-    asyncio.run(main(results, inventory_anta, tests_catalog, tags=tags), debug=False)
+    asyncio.run(main(results, inventory, tests_catalog, tags=tags))
 
     return results
 
