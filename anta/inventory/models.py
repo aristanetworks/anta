@@ -6,9 +6,10 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, Tuple
 
 import asyncssh
+from asyncssh import SSHClientConnection
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
@@ -246,6 +247,8 @@ class AsyncEOSDevice(AntaDevice):
 
     # Hardware model definition in show version
     HW_MODEL_KEY: str = "modelName"
+    # Maximum concurrent SSH connections opened with EOS
+    MAX_SSH_CONNECTIONS: int = 10
 
     def __init__(  # pylint: disable=R0913
         self,
@@ -397,18 +400,27 @@ class AsyncEOSDevice(AntaDevice):
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
         """
-        async with asyncssh.connect(options=self._ssh_opts) as conn:
+        async with asyncssh.connect(
+            host=self._ssh_opts.host,
+            port=self._ssh_opts.port,
+            tunnel=self._ssh_opts.tunnel,
+            family=self._ssh_opts.family,
+            local_addr=self._ssh_opts.local_addr,
+            options=self._ssh_opts,
+        ) as conn:
+            src: Union[List[Tuple[SSHClientConnection, Path]], List[Path]]
+            dst: Union[Tuple[SSHClientConnection, Path], Path]
             if direction == "from":
-                coros = []
+                src = [(conn, file) for file in sources]
+                dst = destination
                 for file in sources:
                     logger.info(f"Copying '{file}' from device {self.name} to '{destination}' locally")
-                    coros.append(asyncssh.scp((conn, file), destination))
             elif direction == "to":
-                coros = []
+                src = sources
+                dst = (conn, destination)
                 for file in sources:
                     logger.info(f"Copying '{file}' to device {self.name} to '{destination}' remotely")
-                    coros.append(asyncssh.scp(file, (conn, destination)))
             else:
                 logger.critical(f"'direction' argument to copy() fonction is invalid: {direction}")
                 return
-            await asyncio.gather(*coros)
+            await asyncssh.scp(src, dst)

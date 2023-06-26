@@ -28,10 +28,9 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
         root.addHandler(handler)
     loglevel = getattr(logging, level.upper())
     root.setLevel(loglevel)
-    if not loglevel == logging.DEBUG:
+    if loglevel == logging.INFO:
         # asyncssh is really chatty
         logging.getLogger("asyncssh").setLevel(logging.WARNING)
-        logging.getLogger("asyncssh.sftp").setLevel(loglevel)
     logger.info(f"ANTA logging set to {level.upper()}")
 
 

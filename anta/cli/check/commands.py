@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--group-by", default=None, type=click.Choice(["none", "host", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
 )
-def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: str) -> bool:
+def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: str) -> None:
     """ANTA command to check network states with table result"""
     # pylint: disable=too-many-arguments
     console = Console()
@@ -44,18 +44,8 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
         )
     )
 
-    results = check_run(
-        inventory=inventory,
-        catalog=catalog,
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        timeout=ctx.obj["timeout"],
-        enable_password=ctx.obj["enable_password"],
-        tags=tags,
-    )
+    results = check_run(inventory=inventory, catalog=catalog, tags=tags)
     display_table(console=console, results=results, group_by=group_by, search=search)
-
-    return True
 
 
 @click.command()
@@ -64,7 +54,7 @@ def table(ctx: click.Context, catalog: str, tags: str, group_by: str, search: st
 @click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
 # Options valid with --display json
 @click.option("--output", "-o", default=None, help="Path to save output in json or list", type=click.File(), required=False)
-def json(ctx: click.Context, catalog: str, output: str, tags: str) -> bool:
+def json(ctx: click.Context, catalog: str, output: str, tags: str) -> None:
     """ANTA command to check network state with JSON result"""
     console = Console()
     inventory = ctx.obj["inventory"]
@@ -78,18 +68,8 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str) -> bool:
         )
     )
 
-    results = check_run(
-        inventory=inventory,
-        catalog=catalog,
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        timeout=ctx.obj["timeout"],
-        enable_password=ctx.obj["enable_password"],
-        tags=tags,
-    )
+    results = check_run(inventory=inventory, catalog=catalog, tags=tags)
     display_json(console=console, results=results, output_file=output)
-
-    return True
 
 
 @click.command()
@@ -98,26 +78,17 @@ def json(ctx: click.Context, catalog: str, output: str, tags: str) -> bool:
 @click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
 @click.option("--search", "-s", default=".*", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error/--no-skip-error", help="Hide tests in errors due to connectivity issue", default=False, required=False)
-def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool) -> bool:
+def text(ctx: click.Context, catalog: str, tags: str, search: str, skip_error: bool) -> None:
     """ANTA command to check network states with text result"""
     # pylint: disable=too-many-arguments
     custom_theme = Theme(RICH_COLOR_THEME)
     console = Console(theme=custom_theme)
-    results = check_run(
-        inventory=ctx.obj["inventory"],
-        catalog=catalog,
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        timeout=ctx.obj["timeout"],
-        enable_password=ctx.obj["enable_password"],
-        tags=tags,
-    )
+    results = check_run(inventory=ctx.obj["inventory"], catalog=catalog, tags=tags)
     regexp = re.compile(search)
     for line in results.get_results(output_format="list"):
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
-    return True
 
 
 @click.command()
@@ -132,15 +103,7 @@ def tpl_report(ctx: click.Context, catalog: str, tags: str, template: str, outpu
     console = Console()
     inventory = ctx.obj["inventory"]
 
-    results = check_run(
-        inventory=inventory,
-        catalog=catalog,
-        username=ctx.obj["username"],
-        password=ctx.obj["password"],
-        timeout=ctx.obj["timeout"],
-        enable_password=ctx.obj["enable_password"],
-        tags=tags,
-    )
+    results = check_run(inventory=inventory, catalog=catalog, tags=tags)
 
     # @mtache - TODO
     # if log_level.upper() == "DEBUG":

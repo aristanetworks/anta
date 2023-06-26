@@ -17,7 +17,6 @@ from rich.console import Console
 
 from anta.cli.debug.utils import RunArbitraryCommand
 from anta.cli.utils import EapiVersion
-from anta.inventory import AntaInventory
 from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
