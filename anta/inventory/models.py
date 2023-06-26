@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
 
+import asyncssh
 from aioeapi import Device, EapiCommandError
+from asyncssh import SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr
+from rich.pretty import pretty_repr
 
 from anta.models import AntaTestCommand
 from anta.tools.misc import exc_to_str, tb_to_str
@@ -194,6 +199,15 @@ class AntaDevice(ABC):
             command: the command to collect
         """
 
+    async def collect_commands(self, commands: List[AntaTestCommand]) -> None:
+        """
+        Collect multiple commands.
+
+        Args:
+            commands: the commands to collect
+        """
+        await asyncio.gather(*(self.collect(command=command) for command in commands))
+
     @abstractmethod
     async def refresh(self) -> None:
         """
@@ -204,6 +218,18 @@ class AntaDevice(ABC):
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
+
+    async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
+        """
+        Copy files to and from the device, usually through SCP.
+        It is not mandatory to implement this for a valid AntaDevice subclass.
+
+        Args:
+            sources: List of files to copy to or from the device.
+            destination: Local or remote destination when copying the files. Can be a folder.
+            direction: Defines if this coroutine copies files to or from the device.
+        """
+        raise NotImplementedError(f"copy() method has not been implemented in {self.__class__.__name__} definition")
 
 
 class AsyncEOSDevice(AntaDevice):
@@ -231,7 +257,8 @@ class AsyncEOSDevice(AntaDevice):
         port: Optional[int] = None,
         ssh_port: Optional[int] = 22,
         tags: Optional[List[str]] = None,
-        timeout: float = 10.0,
+        timeout: Optional[float] = None,
+        insecure: bool = False,
         proto: Literal["http", "https"] = "https",
     ) -> None:
         """
@@ -246,6 +273,7 @@ class AsyncEOSDevice(AntaDevice):
             proto: eAPI protocol. Value can be 'http' or 'https'
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port
+            insecure: Disable SSH Host Key validation
             tags: List of tags for this device
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
         """
@@ -254,6 +282,11 @@ class AsyncEOSDevice(AntaDevice):
         super().__init__(name, tags)
         self._enable_password = enable_password
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        ssh_params: Dict[str, Any] = {}
+        if insecure:
+            ssh_params.update({"known_hosts": None})
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
+        logger.debug(pretty_repr(vars(self)))
 
     # https://github.com/python/mypy/issues/6523
     if TYPE_CHECKING:
@@ -273,9 +306,8 @@ class AsyncEOSDevice(AntaDevice):
                 "tags": self.tags,
                 "is_online": self.is_online,
                 "established": self.established,
-                "host": self._session.host,
-                "port": self._session.port,
-                "timeout": self._session.timeout.as_dict(),
+                "session": vars(self._session),
+                "ssh_options": vars(self._ssh_opts),
             }
 
     def __eq__(self, other: object) -> bool:
@@ -355,3 +387,28 @@ class AsyncEOSDevice(AntaDevice):
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)
+
+    async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
+        """
+        Copy files to and from the device using asyncssh.scp().
+
+        Args:
+            sources: List of files to copy to or from the device.
+            destination: Local or remote destination when copying the files. Can be a folder.
+            direction: Defines if this coroutine copies files to or from the device.
+        """
+        async with asyncssh.connect(options=self._ssh_opts) as conn:
+            if direction == "from":
+                coros = []
+                for file in sources:
+                    logger.info(f"Copying '{file}' from device {self.name} to '{destination}' locally")
+                    coros.append(asyncssh.scp((conn, file), destination))
+            elif direction == "to":
+                coros = []
+                for file in sources:
+                    logger.info(f"Copying '{file}' to device {self.name} to '{destination}' remotely")
+                    coros.append(asyncssh.scp(file, (conn, destination)))
+            else:
+                logger.critical(f"'direction' argument to copy() fonction is invalid: {direction}")
+                return
+            await asyncio.gather(*coros)
