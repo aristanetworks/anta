@@ -7,6 +7,7 @@ ANTA CLI Baseline.
 """
 
 import logging
+from typing import Any, Dict
 
 import click
 
@@ -56,7 +57,7 @@ from anta.inventory import AntaInventory
     ),
     callback=setup_logging,
 )
-def anta(ctx: click.Context, inventory: AntaInventory, **kwargs) -> None:
+def anta(ctx: click.Context, inventory: AntaInventory, **kwargs: Dict[str, Any]) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test CLI"""
     ctx.ensure_object(dict)

@@ -106,9 +106,10 @@ async def collect_scheduled_show_tech(
         """
         try:
             # Get the tech-support filename to retrieve
-            command = AntaTestCommand(command=f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}", ofmt="text")
+            cmd = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
             if latest:
-                command.command += f" | head -{latest}"
+                cmd += f" | head -{latest}"
+            command = AntaTestCommand(command=cmd, ofmt="text")
             await device.collect(command=command)
             if command.output:
                 filenames = list(map(lambda f: Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}"), str(command.output).splitlines()))
@@ -129,13 +130,13 @@ async def collect_scheduled_show_tech(
                 if configure:
                     # TODO - @mtache - add `config` field to `AntaTestCommand` object to handle this use case.
                     commands = [
-                        {"cmd": "enable", "input": device._enable_password},
+                        {"cmd": "enable", "input": device._enable_password},  # type: ignore[attr-defined] # pylint: disable=protected-access
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
                     command = AntaTestCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
                     logger.debug(f"Configuring 'aaa authorization exec default local' on device {device.name}")
-                    await device.session.cli(commands=commands)
+                    await device.session.cli(commands=commands)  # type: ignore[attr-defined]
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
                     logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")

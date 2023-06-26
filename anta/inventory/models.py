@@ -6,12 +6,11 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union
 
 import asyncssh
-from asyncssh import SSHClientConnection
 from aioeapi import Device, EapiCommandError
-from asyncssh import SSHClientConnectionOptions
+from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr
 from rich.pretty import pretty_repr
