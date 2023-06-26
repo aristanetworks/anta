@@ -6,9 +6,32 @@ import logging
 import sys
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from rich.logging import RichHandler
+
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
+
+
+def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
+    """
+    Configure logging
+
+    Args:
+        level (str, optional): level name to configure.
+    """
+    root = logging.getLogger()
+    if not root.hasHandlers():
+        handler = RichHandler()
+        formatter = logging.Formatter(fmt="%(name)s - %(message)s", datefmt="[%X]")
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
+    loglevel = getattr(logging, level.upper())
+    root.setLevel(loglevel)
+    if loglevel == logging.INFO:
+        # asyncssh is really chatty
+        logging.getLogger("asyncssh").setLevel(logging.WARNING)
+    logger.info(f"ANTA logging set to {level.upper()}")
 
 
 def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:

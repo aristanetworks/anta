@@ -9,23 +9,46 @@ import logging
 from typing import Any, Literal, Optional, Union
 
 import click
-from rich.logging import RichHandler
+from click import Option
+
+import anta.loader
+from anta.inventory import AntaInventory
+
+logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = "info") -> None:
+def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInventory:
+    # pylint: disable=unused-argument
     """
-    Configure logging
-
-    Args:
-        level (str, optional): level name to configure.
+    Click option callback to parse an ANTA inventory YAML file
     """
-    root = logging.getLogger()
-    handler = RichHandler()
-    formatter = logging.Formatter(fmt="%(message)s", datefmt="[%X]")
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
-    loglevel = getattr(logging, level.upper())
-    root.setLevel(loglevel)
+    try:
+        inventory = AntaInventory.parse(
+            inventory_file=value,
+            username=ctx.params["username"],
+            password=ctx.params["password"],
+            enable_password=ctx.params["enable_password"],
+            timeout=ctx.params["timeout"],
+            insecure=ctx.params["insecure"],
+        )
+        logger.info(f"Inventory {value} loaded")
+        return inventory
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {str(exc)}")
+        return None
+
+
+def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to set ANTA logging level
+    """
+    try:
+        anta.loader.setup_logging(value)
+        return value
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        ctx.fail(f"Unable to set ANTA logging level '{value}': {str(exc)}")
+        return None
 
 
 class EapiVersion(click.ParamType):

@@ -77,8 +77,7 @@ INVENTORY_DEVICE_MODEL = [
         "name": "Valid_Inventory",
         "input": [
             {"host": "1.1.1.1", "username": "arista", "password": "arista123!"},
-            {"host": "1.1.1.2", "username": "arista", "password": "arista123!"},
-            {"username": "arista", "password": "arista123!"},
+            {"host": "1.1.1.2", "username": "arista", "password": "arista123!"}
         ],
         "expected_result": "valid",
     },
@@ -86,9 +85,7 @@ INVENTORY_DEVICE_MODEL = [
         "name": "Invalid_Inventory",
         "input": [
             {"host": "1.1.1.1", "password": "arista123!"},
-            {"host": "1.1.1.1", "username": "arista"},
-            {"host": "@", "username": "arista", "password": "arista123!"},
-            {"host": "1.1.1.1/32", "username": "arista", "password": "arista123!"},
+            {"host": "1.1.1.1", "username": "arista"}
         ],
         "expected_result": "invalid",
     },

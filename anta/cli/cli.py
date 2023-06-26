@@ -6,6 +6,9 @@
 ANTA CLI Baseline.
 """
 
+import logging
+from typing import Any, Dict
+
 import click
 
 from anta import __version__
@@ -13,6 +16,8 @@ from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
+from anta.cli.utils import parse_inventory, setup_logging
+from anta.inventory import AntaInventory
 
 # Top level entrypoint
 
@@ -20,28 +25,43 @@ from anta.cli.get import commands as get_commands
 @click.group()
 @click.pass_context
 @click.version_option(__version__)
-@click.option("--username", show_envvar=True, default="admin", help="Username to connect to EOS", required=True)
-@click.option("--password", show_envvar=True, default="arista123", help="Password to connect to EOS", required=True)
-@click.option("--timeout", show_envvar=True, default=5, help="Connection timeout (default 5)", required=False)
-@click.option("--enable-password", show_envvar=True, help="Enable password if required to connect", required=False)
+@click.option("--username", show_envvar=True, help="Username to connect to EOS", required=True)
+@click.option("--password", show_envvar=True, help="Password to connect to EOS", required=True)
+@click.option("--timeout", show_envvar=True, default=5, help="Global connection timeout", show_default=True)
+@click.option("--insecure/--secure", show_envvar=True, default=False, help="Disable SSH Host Key validation", show_default=True)
+@click.option("--enable-password", show_envvar=True, help="Enable password if required to connect")
 @click.option(
     "--inventory",
     "-i",
     show_envvar=True,
     required=True,
-    help="Path to your inventory file",
+    help="Path to the inventory YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
+    callback=parse_inventory,
 )
-def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int) -> None:
+@click.option(
+    "--log-level",
+    "--log",
+    show_envvar=True,
+    help="ANTA logging level",
+    default=logging.getLevelName(logging.INFO),
+    type=click.Choice(
+        [
+            logging.getLevelName(logging.CRITICAL),
+            logging.getLevelName(logging.ERROR),
+            logging.getLevelName(logging.WARNING),
+            logging.getLevelName(logging.INFO),
+            logging.getLevelName(logging.DEBUG),
+        ],
+        case_sensitive=False,
+    ),
+    callback=setup_logging,
+)
+def anta(ctx: click.Context, inventory: AntaInventory, **kwargs: Dict[str, Any]) -> None:
+    # pylint: disable=unused-argument
     """Arista Network Test CLI"""
-    # pylint: disable=too-many-arguments
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = inventory
-    ctx.obj["username"] = username
-    ctx.obj["password"] = password
-    ctx.obj["timeout"] = timeout
-    ctx.obj["enable_password"] = enable_password
-    ctx.obj["timeout"] = timeout
 
 
 @anta.group()

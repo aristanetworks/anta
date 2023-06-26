@@ -6,7 +6,7 @@ from typing import Any, Dict
 import pytest
 from pydantic import ValidationError
 
-from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, AsyncEOSDevice, InventoryDevices
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, AsyncEOSDevice
 from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
 from tests.lib.utils import generate_test_ids_dict
 
@@ -316,7 +316,7 @@ class Test_InventoryDeviceModel:
         for entity in test_definition["input"]:
             try:
                 AsyncEOSDevice(**entity)
-            except ValidationError as exc:
+            except TypeError as exc:
                 logging.warning("Error: %s", str(exc))
                 assert False
 
@@ -351,112 +351,7 @@ class Test_InventoryDeviceModel:
         for entity in test_definition["input"]:
             try:
                 AsyncEOSDevice(**entity)
-            except ValidationError as exc:
+            except TypeError as exc:
                 logging.info("Error: %s", str(exc))
             else:
-                assert False
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
-    def test_inventory_devices_len(self, test_definition: Dict[str, Any]) -> None:
-        """Test len & append methods for InventoryDevice class.
-
-         Test structure:
-         ---------------
-
-        {
-             "name": "Invalid_Inventory",
-             "input": [
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 },
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 }
-             ],
-             "expected_result": "valid"
-         }
-
-        """
-        if test_definition["expected_result"] != "valid":
-            pytest.skip("Not concerned by the test")
-        inventory_devices = InventoryDevices()
-        for entry in test_definition["input"]:
-            inventory_devices.append(AsyncEOSDevice(**entry))
-        assert len(test_definition["input"]) == len(inventory_devices)
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
-    def test_inventory_devices_get_item(self, test_definition: Dict[str, Any]) -> None:
-        """Test __iter__ method for InventoryDevice class.
-
-         Test structure:
-         ---------------
-
-        {
-             "name": "Invalid_Inventory",
-             "input": [
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 },
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 }
-             ],
-             "expected_result": "valid"
-         }
-
-        """
-        if test_definition["expected_result"] != "valid":
-            pytest.skip("Not concerned by the test")
-        inventory_devices = InventoryDevices()
-        for entry in test_definition["input"]:
-            inventory_devices.append(AsyncEOSDevice(**entry))
-        if str(inventory_devices[0].session.host) == test_definition["input"][0]["host"]:
-            logging.info("__getitem__ function is valid")
-        else:
-            logging.error("__getitem__ is not working as expected")
-            assert False
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
-    def test_inventory_devices_iter(self, test_definition: Dict[str, Any]) -> None:
-        """Test __getitem__ method for InventoryDevice class.
-
-         Test structure:
-         ---------------
-
-        {
-             "name": "Invalid_Inventory",
-             "input": [
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 },
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 }
-             ],
-             "expected_result": "valid"
-         }
-
-        """
-        if test_definition["expected_result"] != "valid":
-            pytest.skip("Not concerned by the test")
-        inventory_devices = InventoryDevices()
-        for entry in test_definition["input"]:
-            inventory_devices.append(AsyncEOSDevice(**entry))
-        for idx, device in enumerate(inventory_devices):
-            if str(device.host) == test_definition["input"][idx].get("host", "localhost"):
-                logging.info("__iter__ function is valid")
-            else:
-                logging.error("__iter__ is not working as expected")
                 assert False

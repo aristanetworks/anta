@@ -4,7 +4,6 @@ Models to define a TestStructure
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -180,7 +179,7 @@ class AntaTest(ABC):
         """
         logger.debug(f"Test {self.name} on device {self.device.name}: running command outputs collection")
         try:
-            await asyncio.gather(*(self.device.collect(command=command) for command in self.instance_commands))
+            await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
             logger.debug(tb_to_str(e))

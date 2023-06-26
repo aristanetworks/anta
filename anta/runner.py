@@ -44,6 +44,7 @@ async def main(
     Returns:
         any: List of results.
     """
+
     await inventory.connect_inventory()
 
     # asyncio.gather takes an iterator of the function to run concurrently.
@@ -55,6 +56,7 @@ async def main(
         template_params = test[1].get(TEST_TPL_PARAMS, [])
         coros.append(test[0](device=device, template_params=template_params).test(eos_data=None, **test_params))
 
+    logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
