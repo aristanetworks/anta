@@ -18,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInventory:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to parse an ANTA inventory YAML file
+    """
     try:
         inventory = AntaInventory.parse(
             inventory_file=value,
@@ -29,16 +33,20 @@ def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInvent
         )
         logger.info(f"Inventory {value} loaded")
         return inventory
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {str(exc)}")
         return None
 
 
 def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to set ANTA logging level
+    """
     try:
         anta.loader.setup_logging(value)
         return value
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         ctx.fail(f"Unable to set ANTA logging level '{value}': {str(exc)}")
         return None
 

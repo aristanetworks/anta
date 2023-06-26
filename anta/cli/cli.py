@@ -57,8 +57,8 @@ from anta.inventory import AntaInventory
     callback=setup_logging,
 )
 def anta(ctx: click.Context, inventory: AntaInventory, **kwargs) -> None:
+    # pylint: disable=unused-argument
     """Arista Network Test CLI"""
-    # pylint: disable=too-many-arguments
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = inventory
 

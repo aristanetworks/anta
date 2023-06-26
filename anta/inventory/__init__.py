@@ -56,6 +56,7 @@ class AntaInventory:
     def parse(
         inventory_file: str, username: str, password: str, enable_password: Optional[str] = None, timeout: Optional[float] = None, insecure: bool = False
     ) -> AntaInventory:
+        # pylint: disable=too-many-arguments
         """
         Create an AntaInventory object from an inventory file.
         Instantiate AntaDevice objects using the AsyncEOSDevice subclass.
