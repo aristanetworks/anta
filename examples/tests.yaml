@@ -165,6 +165,24 @@ anta.tests.software:
         - v1.8.0
   - VerifyEOSExtensions:
 
+anta.tests.stp:
+  - VerifySTPMode:
+      mode: rapidPvst
+      template_params:
+        - vlan: 10
+        - vlan: 20
+  - VerifySTPBlockedPorts:
+  - VerifySTPCounters:
+  - VerifySTPForwardingPorts:
+      template_params:
+        - vlan: 10
+        - vlan: 20
+  - VerifySTPRootPriority:
+      priority: 32768
+      instances:
+        - 10
+        - 20
+
 anta.tests.system:
   - VerifyUptime:
       minimum: 86400

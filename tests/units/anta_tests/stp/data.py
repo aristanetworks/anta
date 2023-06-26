@@ -30,7 +30,21 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         "expected_messages": []
     },
     {
-        "name": "failure",
+        "name": "failure-no-instances",
+        "eos_data": [
+            {
+                "spanningTreeVlanInstances": {}
+            },
+            {
+                "spanningTreeVlanInstances": {}
+            },
+        ],
+        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected_result": "failure",
+        "expected_messages": ["STP mode 'rstp' not configured for VLAN 10", "STP mode 'rstp' not configured for VLAN 20"]
+    },
+    {
+        "name": "failure-wrong-mode",
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -265,6 +279,23 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
         "expected_messages": []
     },
     {
+        "name": "failure-no-instances",
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {}
+            },
+            {
+                "unmappedVlans": [],
+                "topologies": {}
+            }
+        ],
+        "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected_result": "failure",
+        "expected_messages": ["STP instance for VLAN 10 is not configured",
+                              "STP instance for VLAN 20 is not configured"]
+    },
+    {
         "name": "failure",
         "eos_data": [
             {
@@ -353,4 +384,186 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
         "expected_result": "error",
         "expected_messages": ["Command has template but no params were given"]
     }
+]
+
+INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
+    {
+        "name": "success-specific-instances",
+        "eos_data": [
+            {
+                "instances": {
+                    "VL10": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 10,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL20": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 20,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL30": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 30,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    }
+                }
+            }
+        ],
+        "side_effect": {"priority": 32768, "instances": [10, 20]},
+        "expected_result": "success",
+        "expected_messages": []
+    },
+    {
+        "name": "success-all-instances",
+        "eos_data": [
+            {
+                "instances": {
+                    "VL10": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 10,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL20": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 20,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL30": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 30,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    }
+                }
+            }
+        ],
+        "side_effect": {"priority": 32768, "instances": None},
+        "expected_result": "success",
+        "expected_messages": []
+    },
+    {
+        "name": "failure-no-instances",
+        "eos_data": [
+            {
+                "instances": {}
+            }
+        ],
+        "side_effect": {"priority": 32768, "instances": [10, 20]},
+        "expected_result": "failure",
+        "expected_messages": ["No STP instances configured"]
+    },
+    {
+        "name": "failure-wrong-priority",
+        "eos_data": [
+            {
+                "instances": {
+                    "VL10": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 10,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL20": {
+                        "rootBridge": {
+                            "priority": 8196,
+                            "systemIdExtension": 20,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL30": {
+                        "rootBridge": {
+                            "priority": 8196,
+                            "systemIdExtension": 30,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    }
+                }
+            }
+        ],
+        "side_effect": {"priority": 32768, "instances": [10, 20, 30]},
+        "expected_result": "failure",
+        "expected_messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]
+    },
+    {
+        "name": "skipped",
+        "eos_data": [
+            {
+                "instances": {
+                    "VL10": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 10,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL20": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 20,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    },
+                    "VL30": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 30,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15
+                        }
+                    }
+                }
+            }
+        ],
+        "side_effect": {"priority": None, "instances": [10, 20, 30]},
+        "expected_result": "skipped",
+        "expected_messages": ["VerifySTPRootPriority did not run because priority was not supplied"]
+    },
 ]
