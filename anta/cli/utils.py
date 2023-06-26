@@ -9,24 +9,16 @@ import logging
 from typing import Any, Literal, Optional, Union
 
 import click
-from rich.logging import RichHandler
 
 
-def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
-    """
-    Configure logging
 
-    Args:
-        level (str, optional): level name to configure.
-    """
-    root = logging.getLogger()
-    if not root.hasHandlers():
-        handler = RichHandler()
-        formatter = logging.Formatter(fmt="%(message)s", datefmt="[%X]")
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
-    loglevel = getattr(logging, level.upper())
-    root.setLevel(loglevel)
+def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
+    try:
+        anta.loader.setup_logging(value)
+        return value
+    except Exception as exc:
+        ctx.fail(f"Unable to set ANTA logging level '{value}': {str(exc)}")
+        return None
 
 
 class EapiVersion(click.ParamType):

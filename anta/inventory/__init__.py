@@ -160,12 +160,12 @@ class AntaInventory:
     ###########################################################################
 
     async def connect_inventory(self) -> None:
-        """connect_inventory Helper to prepare inventory with network data."""
-        logger.debug("Refreshing facts for current inventory")
+        """Run `refresh()` coroutines for all AntaDevice objects in this inventory."""
+        logger.debug("Refreshing devices...")
         results = await asyncio.gather(
             *(device.refresh() for device in self._inventory),
             return_exceptions=True,
         )
         for r in results:
             if isinstance(r, Exception):
-                logger.error(f"Error when initiating inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")
+                logger.error(f"Error when refreshing inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")

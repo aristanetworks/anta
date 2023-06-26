@@ -38,6 +38,7 @@ from anta.cli.utils import setup_logging
 @click.option(
     "--log-level",
     "--log",
+    show_envvar=True,
     help="ANTA logging level",
     default=logging.getLevelName(logging.INFO),
     type=click.Choice(
@@ -50,6 +51,7 @@ from anta.cli.utils import setup_logging
         ],
         case_sensitive=False,
     ),
+    callback=setup_logging,
 )
 def anta(ctx: click.Context, username: str, password: str, enable_password: str, inventory: str, timeout: int, log_level: str) -> None:
     """Arista Network Test CLI"""
