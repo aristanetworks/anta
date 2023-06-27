@@ -321,27 +321,3 @@ class VerifySVI(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SVIs are not up: {down_svis}")
-
-
-class VerifySpanningTreeBlockedPorts(AntaTest):
-    """
-    Verifies there is no spanning-tree blocked ports.
-    """
-
-    name = "VerifySpanningTreeBlockedPorts"
-    description = "Verifies there is no spanning-tree blocked ports."
-    categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show spanning-tree blockedports")]
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Run VerifySpanningTreeBlockedPorts validation"""
-
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-
-        if len(command_output["spanningTreeInstances"]) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure()
-            # TODO: a bit lazy would need a real output for this
-            self.result.messages.append(f"The following ports are spanning-tree blocked {command_output['spanningTreeInstances']}")

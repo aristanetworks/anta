@@ -53,7 +53,7 @@ async def main(
     coros = []
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags), tests):
         test_params = {k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
-        template_params = test[1].get(TEST_TPL_PARAMS, [])
+        template_params = test[1].get(TEST_TPL_PARAMS)
         coros.append(test[0](device=device, template_params=template_params).test(eos_data=None, **test_params))
 
     logger.info("Running ANTA tests...")

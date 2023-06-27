@@ -481,20 +481,3 @@ INPUT_SVI: List[Dict[str, Any]] = [
         "expected_messages": ["The following SVIs are not up: ['Vlan42']"],
     },
 ]
-
-INPUT_SPANNING_TREE_BLOCKED_PORTS: List[Dict[str, Any]] = [
-    {
-        "name": "success",
-        "eos_data": [{"spanningTreeInstances": {}}],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
-    {
-        "name": "failure",
-        "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet1", "Ethernet7", "Ethernet8"]}}}],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following ports are spanning-tree blocked {'MST0': {'spanningTreeBlockedPorts': ['Ethernet1', 'Ethernet7', 'Ethernet8']}}"],
-    },
-]
