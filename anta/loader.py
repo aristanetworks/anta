@@ -21,11 +21,10 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
         level (str, optional): level name to configure.
     """
     root = logging.getLogger()
-    if not root.hasHandlers():
-        handler = RichHandler()
-        formatter = logging.Formatter(fmt="%(name)s - %(message)s", datefmt="[%X]")
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
+    handler = RichHandler()
+    formatter = logging.Formatter(fmt="%(name)s - %(message)s", datefmt="[%X]")
+    handler.setFormatter(formatter)
+    root.addHandler(handler)
     loglevel = getattr(logging, level.upper())
     root.setLevel(loglevel)
     if loglevel == logging.INFO:
