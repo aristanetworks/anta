@@ -24,13 +24,12 @@ logger = logging.getLogger(__name__)
 
 
 class AntaTestTemplate(BaseModel):
-    """Class to define a test command with its API version
+    """Class to define a test template with its API version
 
     Attributes:
-        command(str): Test command
+        template(str): Test template
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
     """
 
     template: str
@@ -45,7 +44,7 @@ class AntaTestCommand(BaseModel):
         command(str): Test command
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
+        output: Collected output either dict for json or str for text
         template Optional(AntaTestTemplate): Template used to generate the command
         template_params Optional(dict): params used in the template to generate the command
     """
@@ -69,28 +68,21 @@ class AntaTestCommand(BaseModel):
 
 
 class AntaTestFilter(ABC):
-    """Class to define a test Filter"""
+    """Abstract class to define a test filter"""
 
     # pylint: disable=too-few-public-methods
-
     @abstractmethod
-    def should_skip(
-        self,
-        device: AntaDevice,
-        result: TestResult,
-        *args: list[Any],
-        **kwagrs: dict[str, Any],
-    ) -> bool:
+    async def should_skip(self, device: AntaDevice, result: TestResult) -> bool:
         """
-        Sets the TestResult status to skip with the appropriate skip message
+        Sets the TestResult status to "skipped" with the appropriate skip message.
 
         Returns:
-            bool: True if the test should be skipped, False otherwise
+            bool: True if the test should be skipped, False otherwise.
         """
 
 
 class AntaTest(ABC):
-    """Abstract class defining a test for Anta
+    """Abstract class defining a test for ANTA
 
     The goal of this class is to handle the heavy lifting and make
     writing a test as simple as possible.
@@ -199,16 +191,23 @@ class AntaTest(ABC):
         ) -> TestResult:
             """
             Wraps the test function and implement (in this order):
-            1. Instantiate the command outputs if `eos_data` is provided
-            2. Collect missing command outputs from the device
-            3. Run the test function
-            4. Catches and set the result if the test function raises an exception
+            1. Skip the test if filters are present
+            2. Instantiate the command outputs if `eos_data` is provided
+            3. Collect missing command outputs from the device
+            4. Run the test function
+            5. Catches and set the result if the test function raises an exception
 
             Returns:
                 TestResult: self.result, populated with the correct exit status
             """
             if self.result.result != "unset":
                 return self.result
+
+            # Check filters
+            if hasattr(self.__class__, "test_filters") and (filters := self.__class__.test_filters) is not None:
+                for _filter in filters:
+                    if await _filter.should_skip(device=self.device, result=self.result):
+                        return self.result
 
             # TODO maybe_skip decorators
 

@@ -5,8 +5,8 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, cast
 
-from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
+from anta.test_filters import SkipPlatformsFilter
 
 logger = logging.getLogger(__name__)
 
@@ -171,8 +171,8 @@ class VerifyStormControlDrops(AntaTest):
     description = "Verifies the device did not drop packets due its to storm-control configuration."
     categories = ["interfaces"]
     commands = [AntaTestCommand(command="show storm-control")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyStormControlDrops validation"""
@@ -201,8 +201,8 @@ class VerifyPortChannels(AntaTest):
     description = "Verifies there is no inactive port in port channels."
     categories = ["interfaces"]
     commands = [AntaTestCommand(command="show port-channel")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyPortChannels validation"""

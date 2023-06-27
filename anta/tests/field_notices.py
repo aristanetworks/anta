@@ -4,8 +4,8 @@ Test functions to flag field notices
 import logging
 from typing import Any, Dict, cast
 
-from anta.decorators import skip_on_platforms
 from anta.models import AntaTest, AntaTestCommand
+from anta.test_filters import SkipPlatformsFilter
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +24,9 @@ class VerifyFieldNotice44Resolution(AntaTest):
     )
     categories = ["field notices", "software"]
     commands = [AntaTestCommand(command="show version detail")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:  # type: ignore[override]
         """Run VerifyFieldNotice44Resolution validation"""
@@ -114,9 +114,9 @@ class VerifyFieldNotice72Resolution(AntaTest):
     description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
     categories = ["field notices", "software"]
     commands = [AntaTestCommand(command="show version detail")]
+    test_filters = [SkipPlatformsFilter(platforms_to_skip=["cEOSLab", "vEOS-lab"])]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:  # type: ignore[override]
         """Run VerifyFieldNotice72Resolution validation"""

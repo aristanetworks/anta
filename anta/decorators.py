@@ -18,6 +18,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
     Args:
     * platforms (List[str]): the list of platforms on which the decorated test should be skipped.
 
+    NOTE: Depecrated. Use AntaTestFilter instead.
     """
 
     def decorator(function: F) -> F:
@@ -54,6 +55,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
     Args:
     * family (str): BGP family to check. Can be ipv4 / ipv6 / evpn / rtc
 
+    NOTE: Depecrated. Use AntaTestFilter instead.
     """
 
     def decorator(function: F) -> F:
