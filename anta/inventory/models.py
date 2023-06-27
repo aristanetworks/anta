@@ -308,8 +308,8 @@ class AsyncEOSDevice(AntaDevice):
                 "tags": self.tags,
                 "is_online": self.is_online,
                 "established": self.established,
-                "session": vars(self._session),
-                "ssh_options": vars(self._ssh_opts),
+                "_session": vars(self._session),
+                "_ssh_opts": vars(self._ssh_opts),
             }
 
     def __eq__(self, other: object) -> bool:
@@ -389,6 +389,7 @@ class AsyncEOSDevice(AntaDevice):
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)
+        logger.debug(pretty_repr(vars(self)))
 
     async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """
