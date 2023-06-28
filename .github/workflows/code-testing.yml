@@ -80,3 +80,13 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox
+  test-documentation:
+    name: Build offline documentation for testing
+    runs-on: ubuntu-20.04
+    needs: [lint-python, type-python, test-python]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: pip install -r docs/requirements.txt
+      - name: "Build mkdocs documentation offline"
+        run: mkdocs build
