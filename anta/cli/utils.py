@@ -7,6 +7,7 @@ Utils functions to use with anta.cli.cli module.
 
 import logging
 from typing import Any, Literal, Optional, Union
+from anta.tools.misc import exc_to_str, tb_to_str
 
 import click
 from click import Option
@@ -34,7 +35,8 @@ def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInvent
         logger.info(f"Inventory {value} loaded")
         return inventory
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {str(exc)}")
+        logger.critical(tb_to_str(exc))
+        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {exc_to_str(exc)}")
         return None
 
 
@@ -47,7 +49,8 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
         anta.loader.setup_logging(value)
         return value
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        ctx.fail(f"Unable to set ANTA logging level '{value}': {str(exc)}")
+        logger.critical(tb_to_str(exc))
+        ctx.fail(f"Unable to set ANTA logging level '{value}': {exc_to_str(exc)}")
         return None
 
 
