@@ -19,7 +19,7 @@
         <link rel="next" href="../result_manager/">
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -551,6 +551,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -811,6 +813,20 @@
     <li class="md-nav__item">
       <a href="../tests.snmp/" class="md-nav__link">
         SNMP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.stp/" class="md-nav__link">
+        STP
       </a>
     </li>
   
@@ -1473,7 +1489,8 @@ writing a test as simple as possible.</p>
 
         <details class="quote">
           <summary>Source code in <code>anta/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+<span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
 <span class="normal"> 96</span>
@@ -1632,8 +1649,7 @@ writing a test as simple as possible.</p>
 <span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTest</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTest</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class defining a test for Anta</span>
 
 <span class="sd">    The goal of this class is to handle the heavy lifting and make</span>
@@ -1657,7 +1673,7 @@ writing a test as simple as possible.</p>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
         <span class="n">template_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="c1"># TODO document very well the order of eos_data</span>
         <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1723,7 +1739,7 @@ writing a test as simple as possible.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: running command outputs collection&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">)</span> <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">))</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception raised while collecting commands for test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) - </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">tb_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1825,7 +1841,8 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
+<span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
@@ -1860,10 +1877,9 @@ writing a test as simple as possible.</p>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
     <span class="n">template_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="c1"># TODO document very well the order of eos_data</span>
     <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1920,7 +1936,8 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+<span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
@@ -1929,8 +1946,7 @@ writing a test as simple as possible.</p>
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify that the mandatory class attributes are defined</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1963,9 +1979,9 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">all_data_collected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">all_data_collected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;returns True if output is populated for every command&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1994,7 +2010,8 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
@@ -2042,8 +2059,7 @@ writing a test as simple as possible.</p>
 <span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for anta_test that handles injecting test data if given and collecting it using asyncio if missing</span>
@@ -2119,7 +2135,8 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
+<span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
@@ -2128,14 +2145,13 @@ writing a test as simple as possible.</p>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Method used to collect outputs of all commands of this test class from the device of this test instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: running command outputs collection&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">)</span> <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">))</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception raised while collecting commands for test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) - </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">tb_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -2162,13 +2178,13 @@ writing a test as simple as possible.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+<span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Called at init or at test execution time&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Test initialization error: Trying to save more data than there are commands for the test&quot;</span><span class="p">)</span>
@@ -2208,7 +2224,8 @@ def test(self) -&gt; None:
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
+<span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
@@ -2220,8 +2237,7 @@ def test(self) -&gt; None:
 <span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This abstract method is the core of the test.</span>
@@ -2342,7 +2358,8 @@ def test(self) -&gt; None:
 
         <details class="quote">
           <summary>Source code in <code>anta/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
+<span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
@@ -2368,8 +2385,7 @@ def test(self) -&gt; None:
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTestCommand</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTestCommand</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to define a test command with its API version</span>
 
 <span class="sd">    Attributes:</span>
@@ -2428,15 +2444,15 @@ def test(self) -&gt; None:
 
       <details class="quote">
         <summary>Source code in <code>anta/models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
+<span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;template_params&quot;</span><span class="p">)</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;template_params&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">prevent_none_when_template_is_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">AntaTestTemplate</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>  <span class="c1"># type: ignore</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raises if template is set but no params are given</span>
@@ -2530,7 +2546,8 @@ def test(self) -&gt; None:
 
         <details class="quote">
           <summary>Source code in <code>anta/models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+<span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
@@ -2541,8 +2558,7 @@ def test(self) -&gt; None:
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTestTemplate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaTestTemplate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to define a test command with its API version</span>
 
 <span class="sd">    Attributes:</span>
@@ -2583,7 +2599,7 @@ def test(self) -&gt; None:
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 22, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 28, 2023</span>
       
     
   </small>
@@ -2676,7 +2692,7 @@ def test(self) -&gt; None:
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>

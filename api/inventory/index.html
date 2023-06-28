@@ -19,7 +19,7 @@
         <link rel="next" href="../inventory.models.input/">
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -551,6 +551,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -823,6 +825,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../tests.stp/" class="md-nav__link">
+        STP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tests.software/" class="md-nav__link">
         Software
       </a>
@@ -945,8 +961,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.inventory.AntaInventory.__dict__" class="md-nav__link">
+    __dict__
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.inventory.AntaInventory.__init__" class="md-nav__link">
     __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.inventory.AntaInventory.__iter__" class="md-nav__link">
+    __iter__()
   </a>
   
 </li>
@@ -1306,8 +1336,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.inventory.AntaInventory.__dict__" class="md-nav__link">
+    __dict__
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.inventory.AntaInventory.__init__" class="md-nav__link">
     __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.inventory.AntaInventory.__iter__" class="md-nav__link">
+    __iter__()
   </a>
   
 </li>
@@ -1409,127 +1453,14 @@
   <div class="doc doc-contents first">
 
   
-      <p>Inventory Abstraction for ANTA framework.</p>
-
-  <p><strong>Attributes:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>timeout</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Connection to device timeout.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code>INVENTORY_ROOT_KEY</code></td>
-          <td>
-                <code>str, <span title="typing.Optional">Optional</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>head of the YAML inventory. Default is anta_inventory</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code>EAPI_SESSION_TPL</code></td>
-          <td>
-                <code>str, <span title="typing.Optional">Optional</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Template for eAPI URL builder</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code>INVENTORY_OUTPUT_FORMAT</code></td>
-          <td>
-                <code><span title="typing.List">List</span>[str], <span title="typing.Optional">Optional</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>List of supported output format. Default [&lsquo;native&rsquo;, &lsquo;json&rsquo;]</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code>HW_MODEL_KEY</code></td>
-          <td>
-                <code>str, <span title="typing.Optional">Optional</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of the key in Arista eAPI JSON provided by device.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-<p><strong>Examples:</strong></p>
-    <p>Inventory file input</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">print</span><span class="ss">(</span><span class="nv">inventory</span>.<span class="nv">yml</span><span class="ss">)</span>
-<span class="nv">anta_inventory</span>:
-<span class="w">  </span><span class="nv">hosts</span>:
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">hosts</span>:<span class="w"> </span><span class="mi">1</span>.<span class="mi">1</span>.<span class="mi">1</span>.<span class="mi">1</span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">host</span>:<span class="w"> </span><span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">2</span>
-<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]
-<span class="w">  </span><span class="nv">networks</span>:
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">network</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">8</span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">network</span>:<span class="w"> </span><span class="mi">192</span>.<span class="mi">168</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="o">/</span><span class="mi">16</span>
-<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]
-<span class="w">  </span><span class="nv">ranges</span>:
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="nv">start</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">1</span>
-<span class="w">      </span><span class="k">end</span>:<span class="w"> </span><span class="mi">10</span>.<span class="mi">0</span>.<span class="mi">0</span>.<span class="mi">11</span>
-<span class="w">      </span><span class="nv">tags</span>:<span class="w"> </span>[<span class="s1">&#39;dc1&#39;</span>,<span class="w"> </span><span class="s1">&#39;spine&#39;</span>,<span class="w"> </span><span class="s1">&#39;pod01&#39;</span>]
-</code></pre></div>
-
-<p>Inventory result:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AntaInventory</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span>
-<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="n">inventory_file</span><span class="o">=</span><span class="err">&#39;</span><span class="n">examples</span><span class="o">/</span><span class="n">inventory</span><span class="p">.</span><span class="n">yml</span><span class="err">&#39;</span><span class="p">,</span>
-<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="n">username</span><span class="o">=</span><span class="err">&#39;</span><span class="n">ansible</span><span class="err">&#39;</span><span class="p">,</span>
-<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="n">password</span><span class="o">=</span><span class="err">&#39;</span><span class="n">ansible</span><span class="err">&#39;</span><span class="p">,</span>
-<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="n">auto_connect</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
-<span class="n">test</span><span class="p">.</span><span class="n">get_inventory</span><span class="p">()</span>
-<span class="p">[</span>
-<span class="w">        </span><span class="s">&quot;InventoryDevice(host=IPv4Address(&#39;192.168.0.17&#39;)&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;username=&#39;ansible&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;password=&#39;ansible&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;session=&lt;ServerProxy for ansible:ansible@192.168.0.17/command-api&gt;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;url=&#39;https://ansible:ansible@192.168.0.17/command-api&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;established=True&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;is_online=True&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;hw_model=cEOS-LAB&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="p">...</span>
-<span class="w">        </span><span class="s">&quot;InventoryDevice(host=IPv4Address(&#39;192.168.0.2&#39;)&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;username=&#39;ansible&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;password=&#39;ansible&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;session=None&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;url=&#39;https://ansible:ansible@192.168.0.2/command-api&#39;&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;established=False&quot;</span>
-<span class="w">        </span><span class="s">&quot;is_online=False&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;tags&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">dc1</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">spine</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">pod01</span><span class="err">&#39;</span><span class="p">],</span>
-<span class="w">        </span><span class="s">&quot;hw_model=unset&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="p">]</span>
-</code></pre></div>
+      <p>Inventory abstraction for ANTA framework.</p>
 
 
         <details class="quote">
           <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 24</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
@@ -1679,163 +1610,47 @@
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">:</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Inventory Abstraction for ANTA framework.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        timeout (float): Connection to device timeout.</span>
-<span class="sd">        INVENTORY_ROOT_KEY (str, Optional): head of the YAML inventory. Default is anta_inventory</span>
-<span class="sd">        EAPI_SESSION_TPL (str, Optional): Template for eAPI URL builder</span>
-<span class="sd">        INVENTORY_OUTPUT_FORMAT (List[str],Optional): List of supported output format. Default [&#39;native&#39;, &#39;json&#39;]</span>
-<span class="sd">        HW_MODEL_KEY (str,Optional): Name of the key in Arista eAPI JSON provided by device.</span>
-
-<span class="sd">    Examples:</span>
-
-<span class="sd">        Inventory file input</span>
-
-<span class="sd">            print(inventory.yml)</span>
-<span class="sd">            anta_inventory:</span>
-<span class="sd">              hosts:</span>
-<span class="sd">                - hosts: 1.1.1.1</span>
-<span class="sd">                - host: 2.2.2.2</span>
-<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
-<span class="sd">              networks:</span>
-<span class="sd">                - network: 10.0.0.0/8</span>
-<span class="sd">                - network: 192.168.0.0/16</span>
-<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
-<span class="sd">              ranges:</span>
-<span class="sd">                - start: 10.0.0.1</span>
-<span class="sd">                  end: 10.0.0.11</span>
-<span class="sd">                  tags: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;]</span>
-
-<span class="sd">        Inventory result:</span>
-
-<span class="sd">            test = AntaInventory.parse(</span>
-<span class="sd">                ... inventory_file=&#39;examples/inventory.yml&#39;,</span>
-<span class="sd">                ... username=&#39;ansible&#39;,</span>
-<span class="sd">                ... password=&#39;ansible&#39;,</span>
-<span class="sd">                ... auto_connect=True)</span>
-<span class="sd">            test.get_inventory()</span>
-<span class="sd">            [</span>
-<span class="sd">                    &quot;InventoryDevice(host=IPv4Address(&#39;192.168.0.17&#39;)&quot;,</span>
-<span class="sd">                    &quot;username=&#39;ansible&#39;&quot;,</span>
-<span class="sd">                    &quot;password=&#39;ansible&#39;&quot;,</span>
-<span class="sd">                    &quot;session=&lt;ServerProxy for ansible:ansible@192.168.0.17/command-api&gt;&quot;,</span>
-<span class="sd">                    &quot;url=&#39;https://ansible:ansible@192.168.0.17/command-api&#39;&quot;,</span>
-<span class="sd">                    &quot;established=True&quot;,</span>
-<span class="sd">                    &quot;is_online=True&quot;,</span>
-<span class="sd">                    &quot;hw_model=cEOS-LAB&quot;,</span>
-<span class="sd">                 ...</span>
-<span class="sd">                    &quot;InventoryDevice(host=IPv4Address(&#39;192.168.0.2&#39;)&quot;,</span>
-<span class="sd">                    &quot;username=&#39;ansible&#39;&quot;,</span>
-<span class="sd">                    &quot;password=&#39;ansible&#39;&quot;,</span>
-<span class="sd">                    &quot;session=None&quot;,</span>
-<span class="sd">                    &quot;url=&#39;https://ansible:ansible@192.168.0.2/command-api&#39;&quot;,</span>
-<span class="sd">                    &quot;established=False&quot;</span>
-<span class="sd">                    &quot;is_online=False&quot;,</span>
-<span class="sd">                    &quot;tags&quot;: [&#39;dc1&#39;, &#39;spine&#39;, &#39;pod01&#39;],</span>
-<span class="sd">                    &quot;hw_model=unset&quot;,</span>
-<span class="sd">                ]</span>
+<span class="sd">    Inventory abstraction for ANTA framework.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Root key of inventory part of the inventory file</span>
     <span class="n">INVENTORY_ROOT_KEY</span> <span class="o">=</span> <span class="s2">&quot;anta_inventory&quot;</span>
     <span class="c1"># Supported Output format</span>
     <span class="n">INVENTORY_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;native&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]</span>
-    <span class="c1"># HW model definition in show version</span>
-    <span class="n">HW_MODEL_KEY</span> <span class="o">=</span> <span class="s2">&quot;modelName&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Class constructor&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make AntaInventory iterable&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">)</span>
+
+    <span class="c1"># https://github.com/python/mypy/issues/6523</span>
+    <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+        <span class="vm">__dict__</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Any]</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">__dict__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns a dictionary that represents the AntaInventory object.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">dev</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+        <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=too-many-arguments</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an AntaInventory object from an inventory file.</span>
+<span class="sd">        Instantiate AntaDevice objects using the AsyncEOSDevice subclass.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            inventory_file (str): Path to inventory YAML file where user has described his inputs</span>
@@ -1850,7 +1665,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
-        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span> <span class="s2">&quot;enable_password&quot;</span><span class="p">:</span> <span class="n">enable_password</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">timeout</span><span class="p">}</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span> <span class="s2">&quot;enable_password&quot;</span><span class="p">:</span> <span class="n">enable_password</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">timeout</span><span class="p">,</span> <span class="s2">&quot;insecure&quot;</span><span class="p">:</span> <span class="n">insecure</span><span class="p">}</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -1869,70 +1684,23 @@
         <span class="c1"># Read data from input</span>
         <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">hosts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
-                <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">port</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">port</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">networks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">host_ip</span> <span class="ow">in</span> <span class="n">IPNetwork</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">network</span><span class="p">)):</span>
-                    <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host_ip</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host_ip</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">ranges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">range_def</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">ranges</span><span class="p">:</span>
                 <span class="n">range_increment</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
                 <span class="n">range_stop</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
                 <span class="k">while</span> <span class="n">range_increment</span> <span class="o">&lt;=</span> <span class="n">range_stop</span><span class="p">:</span>
-                    <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
                     <span class="n">range_increment</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">inventory</span>
-
-    <span class="c1">###########################################################################</span>
-    <span class="c1"># Internal methods</span>
-    <span class="c1">###########################################################################</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_read_device_hw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        _read_device_hw Get HW model name from show version and update the hw_model attribute.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            device (InventoryDevice): Device to update</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading HW information for </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show version&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">EapiCommandError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot get HW information from device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">errmsg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">ConnectError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot get HW information from device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">HW_MODEL_KEY</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
-                <span class="n">device</span><span class="o">.</span><span class="n">hw_model</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HW_MODEL_KEY</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot get HW information from device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: cannot parse &#39;show version&#39;&quot;</span><span class="p">)</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_refresh_device_fact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        _get_from_device Update the is_online and established flags for InventoryDevice.</span>
-
-<span class="sd">        It updates following keys:</span>
-<span class="sd">        - is_online: When a device IP is reachable and a port can be open</span>
-<span class="sd">        - established: When a CLI command in EXEC mode succeed using eAPI</span>
-<span class="sd">        - hw_model: The hardware model string of the device</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            device (InventoryDevice): Device to check using InventoryDevice structure.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            InventoryDevice: Updated structure with devices information</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Refreshing device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">device</span><span class="o">.</span><span class="n">is_online</span> <span class="o">=</span> <span class="k">await</span> <span class="n">device</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">check_connection</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">is_online</span><span class="p">:</span>
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_device_hw</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: cannot open eAPI port&quot;</span><span class="p">)</span>
-        <span class="n">device</span><span class="o">.</span><span class="n">established</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">is_online</span> <span class="ow">and</span> <span class="n">device</span><span class="o">.</span><span class="n">hw_model</span><span class="p">)</span>
 
     <span class="c1">###########################################################################</span>
     <span class="c1"># Public methods</span>
@@ -1942,20 +1710,19 @@
     <span class="c1"># GET methods</span>
     <span class="c1">###########################################################################</span>
 
-    <span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InventoryDevices</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        get_inventory Returns a new filtered inventory.</span>
+<span class="sd">        Returns a filtered inventory.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            established_only (bool, optional): Whether or not including non-established devices in the Inventory.</span>
-<span class="sd">                                               Default False.</span>
-<span class="sd">            tags (List[str], optional): List of tags to use to filter devices.</span>
+<span class="sd">            established_only: Whether or not to include only established devices. Default False.</span>
+<span class="sd">            tags: List of tags to filter devices.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            InventoryDevices: An inventory with concerned devices</span>
+<span class="sd">            AntaInventory: An inventory with filtered AntaDevice objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper function to select the devices based on the input tags</span>
 <span class="sd">            and the requirement for an established connection.</span>
@@ -1964,19 +1731,21 @@
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">__root__</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+        <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="c1">###########################################################################</span>
     <span class="c1"># SET methods</span>
     <span class="c1">###########################################################################</span>
 
-    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a InventoryDevice to final inventory.</span>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a device to final inventory.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            device (InventoryDevice): Device object to be added</span>
+<span class="sd">            device: Device object to be added</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
@@ -1985,15 +1754,15 @@
     <span class="c1">###########################################################################</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;connect_inventory Helper to prepare inventory with network data.&quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing facts for current inventory&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run `refresh()` coroutines for all AntaDevice objects in this inventory.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing devices...&quot;</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refresh_device_fact</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
+            <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
             <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error when initiating inventory: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error when refreshing inventory: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -2006,6 +1775,27 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="anta.inventory.AntaInventory.__dict__" class="doc doc-heading">
+<code class="highlight language-python"><span class="vm">__dict__</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#anta.inventory.AntaInventory.__dict__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns a dictionary that represents the AntaInventory object.</p>
+  </div>
+
+</div>
 
 
 
@@ -2025,11 +1815,38 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class constructor&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="anta.inventory.AntaInventory.__iter__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
+
+<a href="#anta.inventory.AntaInventory.__iter__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Make AntaInventory iterable</p>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make AntaInventory iterable&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2048,7 +1865,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Add a InventoryDevice to final inventory.</p>
+      <p>Add a device to final inventory.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2064,7 +1881,7 @@
         <tr>
           <td><code>device</code></td>
           <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevice" href="../inventory.models/#anta.inventory.models.InventoryDevice">InventoryDevice</a></code>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.AntaDevice" href="../inventory.models/#anta.inventory.models.AntaDevice">AntaDevice</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2080,17 +1897,17 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a InventoryDevice to final inventory.</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a device to final inventory.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        device (InventoryDevice): Device object to be added</span>
+<span class="sd">        device: Device object to be added</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2115,29 +1932,29 @@
 
   <div class="doc doc-contents ">
   
-      <p>connect_inventory Helper to prepare inventory with network data.</p>
+      <p>Run <code>refresh()</code> coroutines for all AntaDevice objects in this inventory.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;connect_inventory Helper to prepare inventory with network data.&quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing facts for current inventory&quot;</span><span class="p">)</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run `refresh()` coroutines for all AntaDevice objects in this inventory.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing devices...&quot;</span><span class="p">)</span>
     <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refresh_device_fact</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
+        <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
         <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error when initiating inventory: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error when refreshing inventory: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2156,7 +1973,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>get_inventory Returns a new filtered inventory.</p>
+      <p>Returns a filtered inventory.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2176,8 +1993,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Whether or not including non-established devices in the Inventory.
-                               Default False.</p>
+              <p>Whether or not to include only established devices. Default False.</p>
             </div>
           </td>
           <td>
@@ -2187,11 +2003,11 @@
         <tr>
           <td><code>tags</code></td>
           <td>
-                <code><span title="typing.List">List</span>[str]</code>
+                <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[str]]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>List of tags to use to filter devices.</p>
+              <p>List of tags to filter devices.</p>
             </div>
           </td>
           <td>
@@ -2211,12 +2027,12 @@
     </thead>
     <tbody>
         <tr>
-<td><code>InventoryDevices</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.inventory.models.InventoryDevices" href="../inventory.models/#anta.inventory.models.InventoryDevices">InventoryDevices</a></code>
+<td><code>AntaInventory</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="#anta.inventory.AntaInventory">AntaInventory</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>An inventory with concerned devices</p>
+              <p>An inventory with filtered AntaDevice objects.</p>
             </div>
           </td>
         </tr>
@@ -2225,44 +2041,44 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InventoryDevices</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get_inventory Returns a new filtered inventory.</span>
+<span class="sd">    Returns a filtered inventory.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        established_only (bool, optional): Whether or not including non-established devices in the Inventory.</span>
-<span class="sd">                                           Default False.</span>
-<span class="sd">        tags (List[str], optional): List of tags to use to filter devices.</span>
+<span class="sd">        established_only: Whether or not to include only established devices. Default False.</span>
+<span class="sd">        tags: List of tags to filter devices.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        InventoryDevices: An inventory with concerned devices</span>
+<span class="sd">        AntaInventory: An inventory with filtered AntaDevice objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">InventoryDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_filter_devices</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to select the devices based on the input tags</span>
 <span class="sd">        and the requirement for an established connection.</span>
@@ -2271,8 +2087,10 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">InventoryDevices</span><span class="p">()</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">__root__</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+    <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -2285,7 +2103,7 @@
 
 
 <h2 id="anta.inventory.AntaInventory.parse" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">enable_password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">enable_password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
@@ -2296,7 +2114,8 @@
 
   <div class="doc doc-contents ">
   
-      <p>Create an AntaInventory object from an inventory file.</p>
+      <p>Create an AntaInventory object from an inventory file.
+Instantiate AntaDevice objects using the AsyncEOSDevice subclass.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2412,7 +2231,47 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
@@ -2429,46 +2288,14 @@
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+    <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=too-many-arguments</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an AntaInventory object from an inventory file.</span>
+<span class="sd">    Instantiate AntaDevice objects using the AsyncEOSDevice subclass.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        inventory_file (str): Path to inventory YAML file where user has described his inputs</span>
@@ -2483,7 +2310,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
-    <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span> <span class="s2">&quot;enable_password&quot;</span><span class="p">:</span> <span class="n">enable_password</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">timeout</span><span class="p">}</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span> <span class="s2">&quot;enable_password&quot;</span><span class="p">:</span> <span class="n">enable_password</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">timeout</span><span class="p">,</span> <span class="s2">&quot;insecure&quot;</span><span class="p">:</span> <span class="n">insecure</span><span class="p">}</span>
     <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -2502,19 +2329,19 @@
     <span class="c1"># Read data from input</span>
     <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">hosts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">port</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">port</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">networks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">host_ip</span> <span class="ow">in</span> <span class="n">IPNetwork</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">network</span><span class="p">)):</span>
-                <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host_ip</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">host_ip</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">ranges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">range_def</span> <span class="ow">in</span> <span class="n">inventory_input</span><span class="o">.</span><span class="n">ranges</span><span class="p">:</span>
             <span class="n">range_increment</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
             <span class="n">range_stop</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">range_def</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
             <span class="k">while</span> <span class="n">range_increment</span> <span class="o">&lt;=</span> <span class="n">range_stop</span><span class="p">:</span>
-                <span class="n">device</span> <span class="o">=</span> <span class="n">InventoryDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">range_increment</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">range_def</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">inventory</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">range_increment</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -2629,7 +2456,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 22, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 28, 2023</span>
       
     
   </small>
@@ -2722,7 +2549,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
