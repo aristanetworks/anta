@@ -46,6 +46,7 @@ from anta.result_manager.models import TestResult
     show_envvar=True,
     help="ANTA logging level",
     default=logging.getLevelName(logging.INFO),
+    show_default=True,
     type=click.Choice(
         [
             logging.getLevelName(logging.CRITICAL),

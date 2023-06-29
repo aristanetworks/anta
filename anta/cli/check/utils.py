@@ -8,13 +8,16 @@ Utils functions to use with anta.cli.check.commands module.
 import asyncio
 import json
 import logging
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+import pathlib
+import re
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from rich import print_json
-from rich.console import Console
+import click
+import rich
 from rich.panel import Panel
 from rich.pretty import pprint
 
+from anta.cli.console import console
 from anta.inventory import AntaInventory
 from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager import ResultManager
@@ -22,14 +25,6 @@ from anta.result_manager.models import TestResult
 from anta.runner import main
 
 logger = logging.getLogger(__name__)
-
-
-def print_settings(console: Console, inventory: AntaInventory, catalog: str, template: Optional[str] = None) -> None:
-    """Print ANTA settings before running tests"""
-    message = f"Running ANTA tests with:\n- {inventory}\n- Tests catalog contains {len(catalog)} tests"
-    if template:
-        message += f"\n- Template: {template}"
-    console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
 
 
 def check_run(inventory: AntaInventory, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]], tags: Any) -> ResultManager:
@@ -43,38 +38,56 @@ def check_run(inventory: AntaInventory, catalog: List[Tuple[Callable[..., TestRe
     return results
 
 
-def display_table(console: Console, results: ResultManager, group_by: Optional[str] = None, search: str = "") -> None:
-    """Display result in a table"""
+def print_settings(context: click.Context, report_template: Optional[pathlib.Path] = None, report_output: Optional[pathlib.Path] = None) -> None:
+    """Print ANTA settings before running tests"""
+    message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'])} tests"
+    if report_template:
+        message += f"\n- Report template: {report_template}"
+    if report_output:
+        message += f"\n- Report output: {report_output}"
+    console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
+
+
+def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None) -> None:
+    """Print result in a table"""
     reporter = ReportTable()
-    if group_by is None:
+    if device:
+        console.print(reporter.report_summary_hosts(result_manager=results, host=device))
+    if test:
+        console.print(reporter.report_summary_tests(result_manager=results, testcase=test))
+    if device is None and test is None:
         console.print(reporter.report_all(result_manager=results))
-    elif group_by == "host":
-        console.print(reporter.report_summary_hosts(result_manager=results, host=search))
-    elif group_by == "test":
-        console.print(reporter.report_summary_tests(result_manager=results, testcase=search))
 
 
-def display_json(console: Console, results: ResultManager, output_file: Optional[str] = None) -> None:
-    """Display result in a json format"""
+def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+    """Print result in a json format"""
     console.print(Panel("JSON results of all tests", style="cyan"))
-    print_json(results.get_results(output_format="json"))
-    if output_file is not None:
-        with open(output_file, "w", encoding="utf-8") as fout:
+    rich.print_json(results.get_results(output_format="json"))
+    if output is not None:
+        with open(output, "w", encoding="utf-8") as fout:
             fout.write(results.get_results(output_format="json"))
 
 
-def display_list(console: Console, results: ResultManager, output_file: Optional[str] = None) -> None:
-    """Display result in a list"""
+def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+    """Print result in a list"""
     console.print(Panel.fit("List results of all tests", style="cyan"))
     pprint(results.get_results(output_format="list"))
-    if output_file is not None:
-        with open(output_file, "w", encoding="utf-8") as fout:
+    if output is not None:
+        with open(output, "w", encoding="utf-8") as fout:
             fout.write(str(results.get_results(output_format="list")))
 
 
-def display_jinja(console: Console, results: ResultManager, template: str, output: Union[str, None] = None) -> None:
-    """Display result based on template."""
-    # console.print(Panel.fit(f"Custom report from {template}", style="cyan"))
+def print_text(results: ResultManager, search: Optional[str] = None, skip_error: bool = False) -> None:
+    """Print results as simple text"""
+    regexp = re.compile(search if search else ".*")
+    for line in results.get_results(output_format="list"):
+        if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
+            message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
+            console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
+
+
+def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional[pathlib.Path] = None) -> None:
+    """Print result based on template."""
     reporter = ReportJinja(template_path=template)
     json_data = json.loads(results.get_results(output_format="json"))
     report = reporter.render(json_data)
