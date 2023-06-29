@@ -321,3 +321,56 @@ class VerifySVI(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SVIs are not up: {down_svis}")
+
+
+class VerifyL3MTU(AntaTest):
+    """
+    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.
+
+    Expected Results:
+        * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
+        * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+
+    Limitations:
+        * Only Ethernet, Port-Channel, Vlan interfaces are supported.
+        * Other interface types, like Management, Loopback, Vxlan, Tunnel are currently not supported.
+
+    https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces
+
+    """
+
+    name = "VerifyL3MTU"
+    description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
+    categories = ["interfaces"]
+    commands = [AntaTestCommand(command="show interfaces")]
+
+    NOT_SUPPORTED_INTERFACES: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+
+    @AntaTest.anta_test
+    def test(self, mtu: int = 1500) -> None:
+        """
+        Run VerifyL3MTU validation
+
+        Args:
+          mtu: Layer 3 MTU to verify. Defaults to 1500.
+
+        """
+
+        if not mtu:
+            self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
+            return
+
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+
+        wrong_l3mtu_intf = []
+
+        for interface, values in command_output["interfaces"].items():
+            if not re.sub(r"\d+$", "", interface) in self.NOT_SUPPORTED_INTERFACES:
+                if values["forwardingModel"] == "routed" and values["mtu"] != mtu:
+                    wrong_l3mtu_intf.append(interface)
+
+        if not wrong_l3mtu_intf:
+            self.result.is_success()
+
+        else:
+            self.result.is_failure(f"The following interface(s) have the wrong MTU configured: {wrong_l3mtu_intf}")

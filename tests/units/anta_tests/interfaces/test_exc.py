@@ -19,6 +19,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceErrors,
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
+    VerifyL3MTU,
     VerifyLoopbackCount,
     VerifyPortChannels,
     VerifyStormControlDrops,
@@ -33,6 +34,7 @@ from .data import (
     INPUT_INTERFACE_ERRORS,
     INPUT_INTERFACE_UTILIZATION,
     INPUT_INTERFACES_STATUS,
+    INPUT_L3MTU,
     INPUT_LOOPBACK_COUNT,
     INPUT_PORT_CHANNELS,
     INPUT_STORM_CONTROL_DROPS,
@@ -202,6 +204,23 @@ def test_VerifySVI(mocked_device: MagicMock, test_data: Any) -> None:
 
     test = VerifySVI(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
+
+    logging.info(f"test result is: {test.result}")
+
+    assert str(test.result.name) == mocked_device.name
+    assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
+
+
+@pytest.mark.parametrize("test_data", INPUT_L3MTU, ids=generate_test_ids_list(INPUT_L3MTU))
+def test_VerifyL3MTU(mocked_device: MagicMock, test_data: Any) -> None:
+    """Check VerifyL3MTU"""
+
+    logging.info(f"Mocked device is: {mocked_device.host}")
+    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
+
+    test = VerifyL3MTU(mocked_device, eos_data=test_data["eos_data"])
+    asyncio.run(test.test(mtu=test_data["side_effect"]["mtu"]))
 
     logging.info(f"test result is: {test.result}")
 
