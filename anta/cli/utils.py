@@ -7,13 +7,13 @@ Utils functions to use with anta.cli.cli module.
 
 import logging
 from typing import Any, Literal, Optional, Union
-from anta.tools.misc import exc_to_str, tb_to_str
 
 import click
 from click import Option
 
 import anta.loader
 from anta.inventory import AntaInventory
+from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
 
