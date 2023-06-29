@@ -7,7 +7,7 @@ ANTA CLI Baseline.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Callable, Dict, List, Tuple
 
 import click
 
@@ -16,8 +16,9 @@ from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
-from anta.cli.utils import parse_inventory, setup_logging
+from anta.cli.utils import parse_catalog, parse_inventory, setup_logging
 from anta.inventory import AntaInventory
+from anta.result_manager.models import TestResult
 
 # Top level entrypoint
 
@@ -65,8 +66,19 @@ def anta(ctx: click.Context, inventory: AntaInventory, **kwargs: Dict[str, Any])
 
 
 @anta.group()
-def nrfu() -> None:
+@click.pass_context
+@click.option(
+    "--catalog",
+    "-c",
+    show_envvar=True,
+    help="Path to the tests catalog YAML file",
+    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
+    required=True,
+    callback=parse_catalog,
+)
+def nrfu(ctx: click.Context, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
     """Run NRFU against inventory devices"""
+    ctx.obj["catalog"] = catalog
 
 
 @anta.group("exec")
