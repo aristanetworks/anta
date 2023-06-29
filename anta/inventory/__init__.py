@@ -12,8 +12,9 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml import safe_load
 
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
-from anta.inventory.models import AntaDevice, AntaInventoryInput, AsyncEOSDevice
+from anta.inventory.models import AntaInventoryInput
 
 logger = logging.getLogger(__name__)
 

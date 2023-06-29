@@ -6,7 +6,8 @@ from typing import Any, Dict
 import pytest
 from pydantic import ValidationError
 
-from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange, AsyncEOSDevice
+from anta.device import AsyncEOSDevice
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
 from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
 from tests.lib.utils import generate_test_ids_dict
 

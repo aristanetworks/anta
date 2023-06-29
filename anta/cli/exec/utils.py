@@ -15,8 +15,8 @@ from typing import Dict, List, Literal
 
 from aioeapi import EapiCommandError
 
+from anta.device import AntaDevice
 from anta.inventory import AntaInventory
-from anta.inventory.models import AntaDevice
 from anta.models import AntaTestCommand
 from anta.tools.misc import exc_to_str, tb_to_str
 

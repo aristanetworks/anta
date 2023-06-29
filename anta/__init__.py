@@ -1,5 +1,5 @@
 """
-anta init
+Arista Network Test Automation (ANTA) Framework
 """
 import importlib.metadata
 
