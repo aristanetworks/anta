@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
+DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
 

@@ -9,9 +9,6 @@ from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr
 
 logger = logging.getLogger(__name__)
 
-# Default values
-DEFAULT_TAG = "all"
-
 # Pydantic models for input validation
 
 RFC_1123_REGEX = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"

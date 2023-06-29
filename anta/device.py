@@ -10,8 +10,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 from rich.pretty import pretty_repr
 
-from anta.inventory.models import DEFAULT_TAG
-from anta.models import AntaTestCommand
+from anta.models import DEFAULT_TAG, AntaTestCommand
 from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
