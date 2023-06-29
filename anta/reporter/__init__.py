@@ -6,6 +6,7 @@ Report management for ANTA.
 
 import logging
 import os.path
+import pathlib
 from typing import Any, Dict, List, Optional
 
 from jinja2 import Template
@@ -219,7 +220,7 @@ class ReportTable:
 class ReportJinja:
     """Report builder based on a Jinja2 template."""
 
-    def __init__(self, template_path: str) -> None:
+    def __init__(self, template_path: pathlib.Path) -> None:
         if os.path.isfile(template_path):
             self.tempalte_path = template_path
         else:
