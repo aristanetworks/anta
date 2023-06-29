@@ -25,11 +25,11 @@ from anta.inventory import AntaInventory
 @click.group()
 @click.pass_context
 @click.version_option(__version__)
-@click.option("--username", show_envvar=True, help="Username to connect to EOS", required=True)
-@click.option("--password", show_envvar=True, help="Password to connect to EOS", required=True)
-@click.option("--timeout", show_envvar=True, default=5, help="Global connection timeout", show_default=True)
-@click.option("--insecure/--secure", show_envvar=True, default=False, help="Disable SSH Host Key validation", show_default=True)
-@click.option("--enable-password", show_envvar=True, help="Enable password if required to connect")
+@click.option("--username", show_envvar=True, help="Username to connect to EOS", required=True, is_eager=True)
+@click.option("--password", show_envvar=True, help="Password to connect to EOS", required=True, is_eager=True)
+@click.option("--timeout", show_envvar=True, default=5, help="Global connection timeout", show_default=True, is_eager=True)
+@click.option("--insecure/--secure", show_envvar=True, default=False, help="Disable SSH Host Key validation", show_default=True, is_eager=True)
+@click.option("--enable-password", show_envvar=True, help="Enable password if required to connect", is_eager=True)
 @click.option(
     "--inventory",
     "-i",

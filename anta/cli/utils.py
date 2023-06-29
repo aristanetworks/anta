@@ -13,6 +13,7 @@ from click import Option
 
 import anta.loader
 from anta.inventory import AntaInventory
+from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,8 @@ def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInvent
         logger.info(f"Inventory {value} loaded")
         return inventory
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {str(exc)}")
+        logger.critical(tb_to_str(exc))
+        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {exc_to_str(exc)}")
         return None
 
 
@@ -47,7 +49,8 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
         anta.loader.setup_logging(value)
         return value
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        ctx.fail(f"Unable to set ANTA logging level '{value}': {str(exc)}")
+        logger.critical(tb_to_str(exc))
+        ctx.fail(f"Unable to set ANTA logging level '{value}': {exc_to_str(exc)}")
         return None
 
 
