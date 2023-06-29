@@ -8,10 +8,9 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional
 
-import yaml
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
-from yaml.loader import SafeLoader
+from yaml import safe_load
 
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaDevice, AntaInventoryInput, AsyncEOSDevice
@@ -36,6 +35,16 @@ class AntaInventory:
     def __iter__(self) -> Iterator[AntaDevice]:
         """Make AntaInventory iterable"""
         return iter(self._inventory)
+
+    def __str__(self) -> str:
+        """Human readable string representing the inventory"""
+        devs = {}
+        for dev in self._inventory:
+            if vars(dev)["type"] not in devs:
+                devs[vars(dev)["type"]] = 1
+            else:
+                devs[vars(dev)["type"]] += 1
+        return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
 
     # https://github.com/python/mypy/issues/6523
     if TYPE_CHECKING:
@@ -77,8 +86,8 @@ class AntaInventory:
         kwargs: Dict[str, Any] = {"username": username, "password": password, "enable_password": enable_password, "timeout": timeout, "insecure": insecure}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-        with open(inventory_file, "r", encoding="UTF-8") as fd:
-            data = yaml.load(fd, Loader=SafeLoader)
+        with open(inventory_file, "r", encoding="UTF-8") as file:
+            data = safe_load(file)
 
         # Load data using Pydantic
         try:

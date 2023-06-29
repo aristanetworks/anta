@@ -8,40 +8,37 @@ Utils functions to use with anta.cli.check.commands module.
 import asyncio
 import json
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from rich import print_json
 from rich.console import Console
 from rich.panel import Panel
 from rich.pretty import pprint
-from yaml import safe_load
 
 from anta.inventory import AntaInventory
-from anta.loader import parse_catalog
 from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager import ResultManager
+from anta.result_manager.models import TestResult
 from anta.runner import main
 
 logger = logging.getLogger(__name__)
 
 
-def check_run(inventory: AntaInventory, catalog: str, tags: Any) -> ResultManager:
-    """Execute a run of all tests against inventory."""
+def print_settings(console: Console, inventory: AntaInventory, catalog: str, template: Optional[str] = None) -> None:
+    """Print ANTA settings before running tests"""
+    message = f"Running ANTA tests with:\n- {inventory}\n- Tests catalog contains {len(catalog)} tests"
+    if template:
+        message += f"\n- Template: {template}"
+    console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
 
-    # Test loader
 
-    with open(catalog, "r", encoding="UTF-8") as file:
-        test_catalog_input = safe_load(file)
-
-    tests_catalog = parse_catalog(test_catalog_input)
-
-    # Test Execution
-
+def check_run(inventory: AntaInventory, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]], tags: Any) -> ResultManager:
+    """Run ANTA tests"""
     if tags is not None:
         tags = tags.split(",") if "," in tags else [tags]
 
     results = ResultManager()
-    asyncio.run(main(results, inventory, tests_catalog, tags=tags))
+    asyncio.run(main(results, inventory, catalog, tags=tags))
 
     return results
 

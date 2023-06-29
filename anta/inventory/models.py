@@ -354,11 +354,14 @@ class AsyncEOSDevice(AntaDevice):
             logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:
+            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
             logger.error(f"Command '{command.command}' failed on {self.name}: {e.errmsg}")
             logger.debug(command)
         except (HTTPError, ConnectError) as e:
+            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
             logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
         except Exception as e:  # pylint: disable=broad-exception-caught
+            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
             logger.critical(f"Exception raised while collecting command '{command.command}' on device {self.name} - {exc_to_str(e)}")
             logger.debug(tb_to_str(e))
             logger.debug(command)
