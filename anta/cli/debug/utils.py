@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # coding: utf-8 -*-
-
 """
-Utils functions to use with anta.cli.cli module.
+Utils functions to use with anta.cli.debug module.
 """
 
 from anta.models import AntaTest, AntaTestCommand

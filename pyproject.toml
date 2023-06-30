@@ -80,7 +80,7 @@ Homepage = "https://www.anta.ninja"
 Contributing = "https://github.com/arista-netdevops-community/anta/blob/master/CONTRIBUTING.md"
 
 [project.scripts]
-anta = "anta.cli.cli:cli"
+anta = "anta.cli:cli"
 
 
 ################################

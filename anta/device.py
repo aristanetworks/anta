@@ -1,3 +1,6 @@
+"""
+ANTA Device Abstraction Module
+"""
 import asyncio
 import logging
 from abc import ABC, abstractmethod
@@ -89,7 +92,7 @@ class AntaDevice(ABC):
     else:
 
         @property
-        def __dict__(self) -> dict[str, Any]:
+        def __dict__(self) -> Dict[str, Any]:
             """
             Returns a dictionary that represents the AntaDevice object.
             Can be overriden in subclasses.
@@ -224,7 +227,7 @@ class AsyncEOSDevice(AntaDevice):
     else:
 
         @property
-        def __dict__(self) -> dict[str, Any]:
+        def __dict__(self) -> Dict[str, Any]:
             """
             Returns a dictionary that represents the AntaDevice object.
             Can be overriden in subclasses.

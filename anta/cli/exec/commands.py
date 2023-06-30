@@ -15,7 +15,7 @@ import click
 from yaml import safe_load
 
 from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
-from anta.inventory.models import DEFAULT_TAG
+from anta.models import DEFAULT_TAG
 
 logger = logging.getLogger(__name__)
 

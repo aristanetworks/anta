@@ -18,7 +18,7 @@ from cvprac.cvp_client_errors import CvpApiError
 from rich.console import Console
 from rich.pretty import pretty_repr
 
-from anta.inventory.models import DEFAULT_TAG
+from anta.models import DEFAULT_TAG
 
 from .utils import create_inventory, get_cv_token
 
