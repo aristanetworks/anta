@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, create_autospec
 import pytest
 from aioeapi import Device
 
-from anta.inventory.models import AntaDevice
+from anta.device import AntaDevice
 
 
 @pytest.fixture

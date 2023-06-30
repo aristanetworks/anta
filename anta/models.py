@@ -16,9 +16,10 @@ from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str, tb_to_str
 
 if TYPE_CHECKING:
-    from anta.inventory.models import AntaDevice
+    from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
+DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
 
