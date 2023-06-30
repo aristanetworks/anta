@@ -1,9 +1,9 @@
 # AntaDevice Abstracted class
 
-::: anta.inventory.models.AntaDevice
+::: anta.device.AntaDevice
     heading_level: 2
 
 # AsyncEOSDevice class
 
-::: anta.inventory.models.AsyncEOSDevice
+::: anta.device.AsyncEOSDevice
     heading_level: 2
