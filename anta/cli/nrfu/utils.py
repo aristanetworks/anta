@@ -5,12 +5,11 @@
 Utils functions to use with anta.cli.check.commands module.
 """
 
-import asyncio
 import json
 import logging
 import pathlib
 import re
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Optional
 
 import click
 import rich
@@ -18,24 +17,10 @@ from rich.panel import Panel
 from rich.pretty import pprint
 
 from anta.cli.console import console
-from anta.inventory import AntaInventory
 from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
-from anta.runner import main
 
 logger = logging.getLogger(__name__)
-
-
-def check_run(inventory: AntaInventory, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]], tags: Any) -> ResultManager:
-    """Run ANTA tests"""
-    if tags is not None:
-        tags = tags.split(",") if "," in tags else [tags]
-
-    results = ResultManager()
-    asyncio.run(main(results, inventory, catalog, tags=tags))
-
-    return results
 
 
 def print_settings(context: click.Context, report_template: Optional[pathlib.Path] = None, report_output: Optional[pathlib.Path] = None) -> None:
