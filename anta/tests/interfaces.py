@@ -345,7 +345,7 @@ class VerifyL3MTU(AntaTest):
     categories = ["interfaces"]
     commands = [AntaTestCommand(command="show interfaces")]
 
-    NOT_SUPPORTED_INTERFACES: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+    NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
 
     @AntaTest.anta_test
     def test(self, mtu: int = 1500) -> None:
