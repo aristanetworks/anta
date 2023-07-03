@@ -4,16 +4,16 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, cast
 
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.models import AntaTest, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
 
 
 class VerifyReachability(AntaTest):
     """
-    Test the network reachability to one or many destination IP(s).
+    Test network reachability to one or many destination IP(s).
 
     Expected Results:
         * success: The test will pass if all destination IP(s) are reachable.
@@ -31,19 +31,18 @@ class VerifyReachability(AntaTest):
         """
         Run VerifyReachability validation.
         """
-        
+
         failures = []
 
         for index, command in enumerate(self.instance_commands):
-            src, dst = (cast(Dict[str, str], command.template_params)["src"],
-                        cast(Dict[str, str], command.template_params)["dst"])
-            
+            src, dst = (cast(Dict[str, str], command.template_params)["src"], cast(Dict[str, str], command.template_params)["dst"])
+
             command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-            if not "2 received" in command_output["messages"][0]:
+            if "2 received" not in command_output["messages"][0]:
                 failures.append((src, dst))
 
         if not failures:
             self.result.is_success()
-        
+
         else:
             self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
