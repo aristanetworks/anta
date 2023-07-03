@@ -366,7 +366,7 @@ class VerifyL3MTU(AntaTest):
         wrong_l3mtu_intf = []
 
         for interface, values in command_output["interfaces"].items():
-            if not re.sub(r"\d+$", "", interface) in self.NOT_SUPPORTED_INTERFACES:
+            if re.sub(r"\d+$", "", interface) not in self.NOT_SUPPORTED_INTERFACES:
                 if values["forwardingModel"] == "routed" and values["mtu"] != mtu:
                     wrong_l3mtu_intf.append(interface)
 
