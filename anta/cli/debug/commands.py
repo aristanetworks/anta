@@ -54,11 +54,11 @@ def run_cmd(command: str, ofmt: str, api_version: Union[int, Literal["latest"]],
 def run_template(template: str, params: List[str], ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
     """Run arbitrary templated command to an ANTA device.
 
-       Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
-       Example:
+    Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
+    Example:
 
-       anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
-       """
+    anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
+    """
     template_params = dict(zip(params[::2], params[1::2]))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
