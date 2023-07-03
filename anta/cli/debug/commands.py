@@ -7,96 +7,63 @@ Commands for Anta CLI to run debug commands.
 """
 
 import asyncio
-import json
 import logging
-from typing import Literal, Union
+from typing import List, Literal, Union
 
 import click
-from rich import print_json
-from rich.console import Console
+from click import Option
 
-from anta.cli.debug.utils import RunArbitraryCommand
+from anta.cli.console import console
 from anta.cli.utils import EapiVersion
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.device import AntaDevice
+from anta.models import AntaTestCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
-templater: str = ""
 
 
-@click.command()
-@click.pass_context
-@click.option("--command", "-c", type=str, required=True, help="Command to run on EOS using eAPI")
-@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="Version of the command through eAPI")
-@click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
-def run_cmd(ctx: click.Context, command: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: str) -> None:
-    """Run arbitrary command to an EOS device and get result using eAPI"""
-    console = Console()
-
-    # TODO - @mtache write public method to get a device from its name
-    device_anta = [inventory_device for inventory_device in ctx.obj["inventory"] if inventory_device.name == device][0]
-    logger.info(f"receive device from inventory: {device_anta}")
-
-    console.print(f"run command [green]{command}[/green] on [red]{device}[/red]")
-
-    run_command = RunArbitraryCommand(device=device_anta)
-    run_command.instance_commands = [AntaTestCommand(command=command, ofmt=ofmt, version=api_version)]
-    asyncio.run(run_command.collect())
-    result = run_command.instance_commands[0].output
-    console.print(result)
-
-
-@click.command()
-@click.pass_context
-@click.option("--template", "-t", type=str, required=False, default="{}", help="Command template to run on EOS using eAPI")
-@click.option("--params", "-p", type=str, required=True, help="Command parameters to use with template. Must be a JSON string for a list of dict")
-@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="Version of the command through eAPI")
-@click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
-def run_template(ctx: click.Context, template: str, params: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: str) -> None:
-    """Run arbitrary command to an EOS device and get result using eAPI"""
-    # pylint: disable=too-many-arguments
+def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
     # pylint: disable=unused-argument
-    console = Console()
+    """
+    Click option callback to get an AntaDevice instance from a string
+    """
+    if value is not None:
+        # TODO - @mtache write public method to get a device from its name
+        return [dev for dev in ctx.obj["inventory"] if dev.name == value][0]
+    return None
 
-    # TODO - @mtache write public method to get a device from its name
-    device_anta = [inventory_device for inventory_device in ctx.obj["inventory"] if inventory_device.name == device][0]
-    logger.info(f"receive device from inventory: {device_anta}")
 
-    console.print(f"run dynmic command [blue]{template}[/blue] with [orange]{params}[/orange] on [red]{device}[/red]")
+@click.command()
+@click.option("--command", "-c", type=str, required=True, help="Command to run")
+@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="EOS eAPI format to use. can be text or json")
+@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="EOS eAPI version to use")
+@click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
+def run_cmd(command: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
+    """Run arbitrary command to an ANTA device"""
+    console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
+    c = AntaTestCommand(command=command, ofmt=ofmt, version=api_version)
+    asyncio.run(device.collect(c))
+    console.print(c.output)
 
-    params = json.loads(params)
-    assert isinstance(params, list)
 
-    templater = template
+@click.command()
+@click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
+@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="EOS eAPI format to use. can be text or json")
+@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="EOS eAPI version to use")
+@click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
+@click.argument("params", required=True, nargs=-1)
+def run_template(template: str, params: List[str], ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
+    """Run arbitrary templated command to an ANTA device.
 
-    class RunArbitraryTemplateCommand(AntaTest):
-        """
-        Run an EOS command and return result
-        Based on AntaTest to build relevant output for pytest
-        """
+       Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
+       Example:
 
-        name = "Run aributrary EOS command"
-        description = "To be used only with anta debug commands"
-        template = AntaTestTemplate(template=templater)
-        categories = ["debug"]
+       anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
+       """
+    template_params = dict(zip(params[::2], params[1::2]))
 
-        @AntaTest.anta_test
-        def test(self) -> None:
-            """
-            Fake test function
-            CLI should only call self.collect()
-            """
-
-    async def internal_run() -> None:
-        """Workaround for running potential multipple asyncio call without closing loop"""
-        # template_obj = AntaTestTemplate(template=template, ofmt=ofmt, version=api_version)
-        # RunArbitraryTemplateCommand.__class__.template = template_obj
-        run_command1 = RunArbitraryTemplateCommand(device_anta, params)
-        for cmd in run_command1.instance_commands:
-            console.print(f"run_command = [green]{cmd.command}[/green] [red]{device}[/red]")
-            await run_command1.collect()
-            result = run_command1.instance_commands
-            print_json(json.dumps(result[0].output))
-
-    asyncio.run(internal_run())
+    console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
+    c = AntaTestCommand(
+        command=template.format(**template_params), template=AntaTestTemplate(template=template), template_params=template_params, ofmt=ofmt, version=api_version
+    )
+    asyncio.run(device.collect(c))
+    console.print(c.output)
