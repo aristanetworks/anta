@@ -690,6 +690,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyIPProxyARP" class="md-nav__link">
+    VerifyIPProxyARP
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyIPProxyARP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyIPProxyARP.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.interfaces.VerifyIllegalLACP" class="md-nav__link">
     VerifyIllegalLACP
   </a>
@@ -799,6 +819,26 @@
         
           <li class="md-nav__item">
   <a href="#anta.tests.interfaces.VerifyInterfacesStatus.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyL3MTU" class="md-nav__link">
+    VerifyL3MTU
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyL3MTU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyL3MTU.test" class="md-nav__link">
     test()
   </a>
   
@@ -1453,6 +1493,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyIPProxyARP" class="md-nav__link">
+    VerifyIPProxyARP
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyIPProxyARP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyIPProxyARP.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.interfaces.VerifyIllegalLACP" class="md-nav__link">
     VerifyIllegalLACP
   </a>
@@ -1562,6 +1622,26 @@
         
           <li class="md-nav__item">
   <a href="#anta.tests.interfaces.VerifyInterfacesStatus.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyL3MTU" class="md-nav__link">
+    VerifyL3MTU
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyL3MTU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.interfaces.VerifyL3MTU.test" class="md-nav__link">
     test()
   </a>
   
@@ -1698,6 +1778,190 @@
 
 
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.interfaces.VerifyIPProxyARP" class="doc doc-heading">
+        <code>VerifyIPProxyARP</code>
+
+
+<a href="#anta.tests.interfaces.VerifyIPProxyARP" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
+  
+      <p>Verifies if Proxy-ARP is enabled for the provided list of interface(s).</p>
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if Proxy-ARP is enabled on the specified interface(s).</li>
+<li>failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).</li>
+<li>error: The test will give an error if a list of interface(s) is not provided as template_params.</li>
+</ul>
+</details>
+
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIPProxyARP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies if Proxy-ARP is enabled for the provided list of interface(s).</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if Proxy-ARP is enabled on the specified interface(s).</span>
+<span class="sd">        * failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).</span>
+<span class="sd">        * error: The test will give an error if a list of interface(s) is not provided as template_params.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyIPProxyARP&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies if Proxy-ARP is enabled for the provided list of interface(s).&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTestTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show ip interface </span><span class="si">{intf}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyIPProxyARP validation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">disabled_intf</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
+            <span class="n">intf</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;intf&quot;</span><span class="p">)</span>
+            <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">intf</span><span class="p">][</span><span class="s2">&quot;proxyArp&quot;</span><span class="p">]:</span>
+                <span class="n">disabled_intf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intf</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">disabled_intf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following interface(s) have Proxy-ARP disabled: </span><span class="si">{</span><span class="n">disabled_intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.interfaces.VerifyIPProxyARP.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">()</span></code>
+
+<a href="#anta.tests.interfaces.VerifyIPProxyARP.test" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run VerifyIPProxyARP validation.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyIPProxyARP validation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">disabled_intf</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
+        <span class="n">intf</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;intf&quot;</span><span class="p">)</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">intf</span><span class="p">][</span><span class="s2">&quot;proxyArp&quot;</span><span class="p">]:</span>
+            <span class="n">disabled_intf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intf</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">disabled_intf</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following interface(s) have Proxy-ARP disabled: </span><span class="si">{</span><span class="n">disabled_intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -2643,6 +2907,274 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only </span><span class="si">{</span><span class="n">count_up_up</span><span class="si">}</span><span class="s2">, less than </span><span class="si">{</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> Ethernet interfaces are UP/UP&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following Ethernet interfaces are not UP/UP: </span><span class="si">{</span><span class="n">other_ethernet_interfaces</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.interfaces.VerifyL3MTU" class="doc doc-heading">
+        <code>VerifyL3MTU</code>
+
+
+<a href="#anta.tests.interfaces.VerifyL3MTU" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
+  
+      <p>Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.</p>
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if all layer 3 interfaces have the proper MTU configured.</li>
+<li>failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.</li>
+<li>skipped: The test will be skipped if the MTU value is not provided.</li>
+</ul>
+</details>
+<details class="limitations" open>
+  <summary>Limitations</summary>
+  <ul>
+<li>Only Ethernet, Port-Channel, Vlan interfaces are supported.</li>
+<li>Other interface types, like Management, Loopback, Vxlan, Tunnel are currently not supported.</li>
+</ul>
+</details>      <p><a href="https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces">https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces</a></p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyL3MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if all layer 3 interfaces have the proper MTU configured.</span>
+<span class="sd">        * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.</span>
+<span class="sd">        * skipped: The test will be skipped if the MTU value is not provided.</span>
+
+<span class="sd">    Limitations:</span>
+<span class="sd">        * Only Ethernet, Port-Channel, Vlan interfaces are supported.</span>
+<span class="sd">        * Other interface types, like Management, Loopback, Vxlan, Tunnel are currently not supported.</span>
+
+<span class="sd">    https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyL3MTU&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces&quot;</span><span class="p">)]</span>
+
+    <span class="n">NOT_SUPPORTED_INTERFACES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Management&quot;</span><span class="p">,</span> <span class="s2">&quot;Loopback&quot;</span><span class="p">,</span> <span class="s2">&quot;Vxlan&quot;</span><span class="p">,</span> <span class="s2">&quot;Tunnel&quot;</span><span class="p">]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1500</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyL3MTU validation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">          mtu: Layer 3 MTU to verify. Defaults to 1500.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mtu</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because mtu was not supplied&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="n">wrong_l3mtu_intf</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NOT_SUPPORTED_INTERFACES</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;forwardingModel&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;routed&quot;</span> <span class="ow">and</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;mtu&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mtu</span><span class="p">:</span>
+                    <span class="n">wrong_l3mtu_intf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wrong_l3mtu_intf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following interface(s) have the wrong MTU configured: </span><span class="si">{</span><span class="n">wrong_l3mtu_intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.interfaces.VerifyL3MTU.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">mtu</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span></code>
+
+<a href="#anta.tests.interfaces.VerifyL3MTU.test" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run VerifyL3MTU validation</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mtu</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Layer 3 MTU to verify. Defaults to 1500.</p>
+            </div>
+          </td>
+          <td>
+                <code>1500</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1500</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyL3MTU validation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      mtu: Layer 3 MTU to verify. Defaults to 1500.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mtu</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because mtu was not supplied&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="n">wrong_l3mtu_intf</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NOT_SUPPORTED_INTERFACES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;forwardingModel&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;routed&quot;</span> <span class="ow">and</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;mtu&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mtu</span><span class="p">:</span>
+                <span class="n">wrong_l3mtu_intf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">wrong_l3mtu_intf</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following interface(s) have the wrong MTU configured: </span><span class="si">{</span><span class="n">wrong_l3mtu_intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
