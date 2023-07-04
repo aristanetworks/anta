@@ -157,7 +157,9 @@ class AntaTest(ABC):
                 self.result.is_error("Command has template but no params were given")
                 return
             self.template_params = template_params
-            self.instance_commands.extend(tpl.render(param) for param in template_params)
+            for param in template_params:
+                template_instance = deepcopy(tpl)
+                self.instance_commands.append(template_instance.render(param))
 
         if eos_data is not None:
             logger.debug("Test initialized with input data")
