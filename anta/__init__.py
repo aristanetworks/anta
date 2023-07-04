@@ -2,6 +2,7 @@
 Arista Network Test Automation (ANTA) Framework
 """
 import importlib.metadata
+import os
 
 __version__ = importlib.metadata.version("anta")
 __credits__ = [
@@ -15,6 +16,9 @@ __credits__ = [
     "Thomas Grimonet",
 ]
 __copyright__ = "Copyright 2022, Arista EMEA AS"
+
+# Global ANTA debug environment variable. Can be set using the cli 'anta --debug'.
+__DEBUG__ = bool(os.environ.get("ANTA_DEBUG", "").lower() == "true")
 
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
