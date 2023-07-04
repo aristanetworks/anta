@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class AntaInventory(dict):  # type: ignore
+    # dict[str, AntaDevice] - not working in python 3.8 hence the ignore
     """
     Inventory abstraction for ANTA framework.
     """
