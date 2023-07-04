@@ -55,15 +55,15 @@ from anta.result_manager.models import TestResult
     ),
     callback=setup_logging,
 )
-@click.option("--ignore-status", show_envvar=True, default=False, help="Always exit with success", is_eager=True)
-@click.option("--ignore-error", show_envvar=True, default=False, help="Only report failures and not errors", is_eager=True)
-def anta(ctx: click.Context, inventory: AntaInventory, **kwargs: Dict[str, Any]) -> None:
+@click.option("--ignore-status", show_envvar=True, is_flag=True, default=False, help="Always exit with success")
+@click.option("--ignore-error", show_envvar=True, is_flag=True, default=False, help="Only report failures and not errors")
+def anta(ctx: click.Context, inventory: AntaInventory, ignore_status: bool, ignore_error: bool, **kwargs: Dict[str, Any]) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test CLI"""
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = inventory
-    ctx.obj["ignore_status"] = kwargs.get("ignore_status")
-    ctx.obj["ignore_error"] = kwargs.get("ignore_error")
+    ctx.obj["ignore_status"] = ignore_status
+    ctx.obj["ignore_error"] = ignore_error
 
 
 @anta.group()
