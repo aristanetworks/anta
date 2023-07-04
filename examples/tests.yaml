@@ -88,6 +88,12 @@ anta.tests.interfaces:
   - VerifyLoopbackCount:
       number: 3
   - VerifySVI:
+  - VerifyL3MTU:
+      mtu: 9214
+  - VerifyIPProxyARP:
+      template_params:
+        - intf: Ethernet1
+        - intf: Ethernet2
 
 anta.tests.logging:
   - VerifyLoggingPersistent:

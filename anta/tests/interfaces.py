@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -321,3 +321,95 @@ class VerifySVI(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SVIs are not up: {down_svis}")
+
+
+class VerifyL3MTU(AntaTest):
+    """
+    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.
+
+    Expected Results:
+        * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
+        * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+        * skipped: The test will be skipped if the MTU value is not provided.
+
+    Limitations:
+        * Only Ethernet, Port-Channel, Vlan interfaces are supported.
+        * Other interface types, like Management, Loopback, Vxlan, Tunnel are currently not supported.
+
+    https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces
+
+    """
+
+    name = "VerifyL3MTU"
+    description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
+    categories = ["interfaces"]
+    commands = [AntaTestCommand(command="show interfaces")]
+
+    NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+
+    @AntaTest.anta_test
+    def test(self, mtu: int = 1500) -> None:
+        """
+        Run VerifyL3MTU validation
+
+        Args:
+          mtu: Layer 3 MTU to verify. Defaults to 1500.
+
+        """
+
+        if not mtu:
+            self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
+            return
+
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+
+        wrong_l3mtu_intf = []
+
+        for interface, values in command_output["interfaces"].items():
+            if re.sub(r"\d+$", "", interface) not in self.NOT_SUPPORTED_INTERFACES:
+                if values["forwardingModel"] == "routed" and values["mtu"] != mtu:
+                    wrong_l3mtu_intf.append(interface)
+
+        if not wrong_l3mtu_intf:
+            self.result.is_success()
+
+        else:
+            self.result.is_failure(f"The following interface(s) have the wrong MTU configured: {wrong_l3mtu_intf}")
+
+
+class VerifyIPProxyARP(AntaTest):
+    """
+    Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+
+    Expected Results:
+        * success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
+        * failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
+        * error: The test will give an error if a list of interface(s) is not provided as template_params.
+
+    """
+
+    name = "VerifyIPProxyARP"
+    description = "Verifies if Proxy-ARP is enabled for the provided list of interface(s)."
+    categories = ["interfaces"]
+    template = AntaTestTemplate(template="show ip interface {intf}")
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """
+        Run VerifyIPProxyARP validation.
+        """
+
+        disabled_intf = []
+
+        for index, command in enumerate(self.instance_commands):
+            intf = cast(Dict[str, str], command.template_params).get("intf")
+            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+
+            if not command_output["interfaces"][intf]["proxyArp"]:
+                disabled_intf.append(intf)
+
+        if disabled_intf:
+            self.result.is_failure(f"The following interface(s) have Proxy-ARP disabled: {disabled_intf}")
+
+        else:
+            self.result.is_success()
