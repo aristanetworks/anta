@@ -164,12 +164,13 @@ nav:
     - STP: api/tests.stp.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
+    - VxLAN: api/tests.vxlan.md
   - API Documentation:
-    - Inventory module: api/inventory.md
-    - Inventory models:
-      - User Inventory data model: api/inventory.models.input.md
-      - Generated Inventory data model: api/inventory.models.md
-    - Test models: api/models.md
+    - Inventory: 
+      - Inventory module: api/inventory.md
+      - Inventory models: api/inventory.models.input.md
+    - Test:
+      - Test models: api/models.md
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
