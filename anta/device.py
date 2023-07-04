@@ -5,14 +5,14 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
 
 import asyncssh
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
-from rich.pretty import pretty_repr
 
+from anta import __DEBUG__
 from anta.models import DEFAULT_TAG, AntaTestCommand
 from anta.tools.misc import exc_to_str, tb_to_str
 
@@ -86,25 +86,16 @@ class AntaDevice(ABC):
         if DEFAULT_TAG not in self.tags:
             self.tags.append(DEFAULT_TAG)
 
-    # https://github.com/python/mypy/issues/6523
-    if TYPE_CHECKING:
-        __dict__ = {}  # type: Dict[str, Any]
-    else:
-
-        @property
-        def __dict__(self) -> Dict[str, Any]:
-            """
-            Returns a dictionary that represents the AntaDevice object.
-            Can be overriden in subclasses.
-            """
-            return {
-                "name": self.name,
-                "type": self.__class__.__name__,
-                "hw_model": self.hw_model,
-                "tags": self.tags,
-                "is_online": self.is_online,
-                "established": self.established,
-            }
+    def __rich_repr__(self) -> Iterator[Tuple[str, Any]]:
+        """
+        Implements Rich Repr Protocol
+        https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
+        """
+        yield "name", self.name
+        yield "tags", self.tags
+        yield "hw_model", self.hw_model
+        yield "is_online", self.is_online
+        yield "established", self.established
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
@@ -219,29 +210,22 @@ class AsyncEOSDevice(AntaDevice):
         if insecure:
             ssh_params.update({"known_hosts": None})
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
-        logger.debug(pretty_repr(vars(self)))
 
-    # https://github.com/python/mypy/issues/6523
-    if TYPE_CHECKING:
-        __dict__ = {}  # type: Dict[str, Any]
-    else:
-
-        @property
-        def __dict__(self) -> Dict[str, Any]:
-            """
-            Returns a dictionary that represents the AntaDevice object.
-            Can be overriden in subclasses.
-            """
-            return {
-                "name": self.name,
-                "type": self.__class__.__name__,
-                "hw_model": self.hw_model,
-                "tags": self.tags,
-                "is_online": self.is_online,
-                "established": self.established,
-                "_session": vars(self._session),
-                "_ssh_opts": vars(self._ssh_opts),
-            }
+    def __rich_repr__(self) -> Iterator[Tuple[str, Any]]:
+        """
+        Implements Rich Repr Protocol
+        https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
+        """
+        yield from super().__rich_repr__()
+        yield "host", self._session.host
+        yield "eapi_port", self._session.port
+        yield "username", self._ssh_opts.username
+        yield "password", self._ssh_opts.password
+        yield "enable_password", self._enable_password
+        yield "insecure", self._ssh_opts.known_hosts is None
+        if __DEBUG__:
+            yield "_session", vars(self._session)
+            yield "_ssh_opts", vars(self._ssh_opts)
 
     def __eq__(self, other: object) -> bool:
         """
@@ -323,7 +307,6 @@ class AsyncEOSDevice(AntaDevice):
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)
-        logger.debug(pretty_repr(vars(self)))
 
     async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """

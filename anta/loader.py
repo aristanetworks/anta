@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from rich.logging import RichHandler
 
+from anta import __DEBUG__
 from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
@@ -21,16 +22,28 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
         level (str, optional): level name to configure.
     """
     root = logging.getLogger()
+    loglevel = getattr(logging, level.upper())
     handler = RichHandler(markup=True, rich_tracebacks=True)
-    formatter = logging.Formatter(fmt="[grey58]\[%(name)s][/grey58] %(message)s", datefmt="[%X]")  # noqa: W605 pylint: disable=anomalous-backslash-in-string
+    if __DEBUG__:
+        fmt_string = "[grey58]\[%(name)s][/grey58] %(message)s"  # noqa: W605 pylint: disable=anomalous-backslash-in-string
+    else:
+        fmt_string = "%(message)s"
+    formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
     handler.setFormatter(formatter)
     root.addHandler(handler)
-    loglevel = getattr(logging, level.upper())
     root.setLevel(loglevel)
-    if loglevel == logging.INFO:
-        # asyncssh is really chatty
-        logging.getLogger("asyncssh").setLevel(logging.WARNING)
-    logger.info(f"ANTA logging set to {level.upper()}")
+
+    if __DEBUG__:
+        if loglevel != logging.DEBUG:
+            root.setLevel(logging.DEBUG)
+            logger.debug(f"Override current logging level {level.upper()} with DEBUG")
+        logger.debug("ANTA Debug Mode enabled")
+    else:
+        if loglevel == logging.INFO:
+            # asyncssh is really chatty
+            logging.getLogger("asyncssh").setLevel(logging.WARNING)
+            # httpx as well
+            logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:

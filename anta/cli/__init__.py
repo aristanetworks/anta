@@ -57,7 +57,7 @@ from anta.result_manager.models import TestResult
 )
 def anta(ctx: click.Context, inventory: AntaInventory, **kwargs: Dict[str, Any]) -> None:
     # pylint: disable=unused-argument
-    """Arista Network Test CLI"""
+    """Arista Network Test Automation (ANTA) CLI"""
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = inventory
 
