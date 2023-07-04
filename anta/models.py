@@ -8,9 +8,9 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str, tb_to_str
@@ -28,45 +28,65 @@ class AntaTemplate(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
-        command(str): Test command
+        template: Python f-string. Example: 'show vlan {vlan_id}'
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
-        ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
+        ofmt: eAPI output - json or text - default is json
+        vars: dictionary of variables with string values to render the Python f-string
     """
 
     template: str
-    version: Union[int, Literal["latest"]] = "latest"
-    ofmt: str = "json"
+    version: Union[int, Literal['latest']] = 'latest'
+    ofmt: Literal['json', 'text'] = 'json'
+    vars: Optional[Dict[str, str]]
+
+    def render(self, vars: Optional[Dict[str, str]] = None) -> AntaCommand:
+        if vars is None:
+            if self.vars is None:
+                raise RuntimeError(f'Cannot render template {self.template}: vars is missing')
+        else:
+            self.vars = vars
+        return AntaCommand(
+                    command=self.template.format(**self.vars),
+                    ofmt=self.ofmt,
+                    version=self.version
+                )
 
 
 class AntaCommand(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
-        command(str): Test command
+        command: Device command
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
-        ofmt(str):  eAPI output - json or text - default is json
+        ofmt: eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
-        template Optional(AntaTemplate): Template used to generate the command
-        template_params Optional(dict): params used in the template to generate the command
     """
 
     command: str
-    version: Union[int, Literal["latest"]] = "latest"
-    ofmt: str = "json"
+    version: Union[int, Literal['latest']] = 'latest'
+    ofmt: Literal['json', 'text'] = 'json'
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
-    template_params: Optional[Dict[str, Any]] = None
 
-    @validator("template_params")
-    def prevent_none_when_template_is_set(cls: Type[AntaTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore
-        """
-        Raises if template is set but no params are given
-        """
-        if hasattr(cls, "template") and cls.template is not None:
-            assert value is not None
+    @property
+    def json_output(self) -> Dict[str, Any]:
+        if self.output is None:
+            raise RuntimeError(f'There is no output for command {self.command}')
+        if self.ofmt != 'json':
+            raise RuntimeError(f'Output of command {self.command} is not a JSON')
+        if isinstance(self.output, str):
+            raise RuntimeError(f'Output of command {self.command} is invalid')
+        return self.output
 
-        return value
+    @property
+    def text_output(self) -> str:
+        if self.output is None:
+            raise RuntimeError(f'There is no output for command {self.command}')
+        if self.ofmt != 'text':
+            raise RuntimeError(f'Output of command {self.command} is not a JSON')
+        if not isinstance(self.output, str):
+            raise RuntimeError(f'Output of command {self.command} is invalid')
+        return self.output
 
 
 class AntaTestFilter(ABC):
@@ -135,16 +155,7 @@ class AntaTest(ABC):
                 self.result.is_error("Command has template but no params were given")
                 return
             self.template_params = template_params
-            self.instance_commands.extend(
-                AntaCommand(
-                    command=tpl.template.format(**param),
-                    ofmt=tpl.ofmt,
-                    version=tpl.version,
-                    template=tpl,
-                    template_params=param,
-                )
-                for param in template_params
-            )
+            self.instance_commands.extend(tpl.render(param) for param in template_params)
 
         if eos_data is not None:
             logger.debug("Test initialized with input data")
