@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, TypeVar, Union, List
 
 from pydantic import BaseModel
 
@@ -48,7 +48,8 @@ class AntaTemplate(BaseModel):
         return AntaCommand(
                     command=self.template.format(**self.vars),
                     ofmt=self.ofmt,
-                    version=self.version
+                    version=self.version,
+                    template=self
                 )
 
 
@@ -60,6 +61,7 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt: eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
+        template: AntaTemplate object used to render this command
     """
 
     command: str
@@ -144,10 +146,10 @@ class AntaTest(ABC):
         self.device = device
         self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels = labels or []
+        self.instance_commands: List[AntaCommand] = []
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
-        self.instance_commands = []
         if hasattr(self.__class__, "commands") and (cmds := self.__class__.commands) is not None:
             self.instance_commands.extend(deepcopy(cmds))
         if hasattr(self.__class__, "template") and (tpl := self.__class__.template) is not None:
