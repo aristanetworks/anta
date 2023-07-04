@@ -78,7 +78,7 @@ def inventory(ctx: click.Context, tags: Optional[List[str]], connected: bool) ->
         asyncio.run(ctx.obj["inventory"].connect_inventory())
 
     inventory_result = ctx.obj["inventory"].get_inventory(tags=tags)
-    console.print(pretty_repr(vars(inventory_result)))
+    console.print(pretty_repr(inventory_result))
 
 
 @click.command()

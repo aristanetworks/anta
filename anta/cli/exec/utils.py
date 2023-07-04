@@ -42,7 +42,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[Lis
 
     logger.info("Connecting to devices...")
     await anta_inventory.connect_inventory()
-    devices = anta_inventory.get_inventory(established_only=True, tags=tags)
+    devices = anta_inventory.get_inventory(established_only=True, tags=tags).values()
     logger.info("Clearing counters on remote devices...")
     await asyncio.gather(*(clear(device) for device in devices))
 
@@ -77,7 +77,7 @@ async def collect_commands(
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
-    devices = inv.get_inventory(established_only=True, tags=tags)
+    devices = inv.get_inventory(established_only=True, tags=tags).values()
     logger.info("Collecting commands from remote devices")
     coros = [collect(device, command, "json") for device, command in itertools.product(devices, commands["json_format"])]
     coros += [collect(device, command, "text") for device, command in itertools.product(devices, commands["text_format"])]
@@ -152,5 +152,5 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
-    devices = inv.get_inventory(established_only=True, tags=tags)
+    devices = inv.get_inventory(established_only=True, tags=tags).values()
     await asyncio.gather(*(collect(device) for device in devices))

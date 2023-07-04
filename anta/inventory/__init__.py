@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, List, Optional
 
 from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
@@ -19,7 +19,7 @@ from anta.inventory.models import AntaInventoryInput
 logger = logging.getLogger(__name__)
 
 
-class AntaInventory:
+class AntaInventory(dict):  # type: ignore
     """
     Inventory abstraction for ANTA framework.
     """
@@ -29,38 +29,15 @@ class AntaInventory:
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT = ["native", "json"]
 
-    def __init__(self) -> None:
-        """Class constructor"""
-        self._inventory: List[AntaDevice] = []
-
-    def __iter__(self) -> Iterator[AntaDevice]:
-        """Make AntaInventory iterable"""
-        return iter(self._inventory)
-
     def __str__(self) -> str:
         """Human readable string representing the inventory"""
         devs = {}
-        for dev in self._inventory:
-            if vars(dev)["type"] not in devs:
-                devs[vars(dev)["type"]] = 1
+        for dev in self.values():
+            if (dev_type := dev.__class__.__name__) not in devs:
+                devs[dev_type] = 1
             else:
-                devs[vars(dev)["type"]] += 1
+                devs[dev_type] += 1
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
-
-    # https://github.com/python/mypy/issues/6523
-    if TYPE_CHECKING:
-        __dict__ = {}  # type: Dict[str, Any]
-    else:
-
-        @property
-        def __dict__(self) -> dict[str, Any]:
-            """
-            Returns a dictionary that represents the AntaInventory object.
-            """
-            result = {}
-            for dev in self._inventory:
-                result[dev.name] = vars(dev)
-            return result
 
     @staticmethod
     def parse(
@@ -150,7 +127,7 @@ class AntaInventory:
                 return False
             return bool(not established_only or device.established)
 
-        devices: List[AntaDevice] = list(filter(_filter_devices, self._inventory))
+        devices: List[AntaDevice] = list(filter(_filter_devices, self.values()))
         result = AntaInventory()
         for device in devices:
             result.add_device(device)
@@ -160,13 +137,18 @@ class AntaInventory:
     # SET methods
     ###########################################################################
 
+    def __setitem__(self, key: str, value: AntaDevice) -> None:
+        if key != value.name:
+            raise RuntimeError(f"The key must be the device name for device '{value.name}'. Use AntaInventory.add_device().")
+        return super().__setitem__(key, value)
+
     def add_device(self, device: AntaDevice) -> None:
         """Add a device to final inventory.
 
         Args:
             device: Device object to be added
         """
-        self._inventory.append(device)
+        self[device.name] = device
 
     ###########################################################################
     # MISC methods
@@ -176,7 +158,7 @@ class AntaInventory:
         """Run `refresh()` coroutines for all AntaDevice objects in this inventory."""
         logger.debug("Refreshing devices...")
         results = await asyncio.gather(
-            *(device.refresh() for device in self._inventory),
+            *(device.refresh() for device in self.values()),
             return_exceptions=True,
         )
         for r in results:
