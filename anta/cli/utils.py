@@ -67,11 +67,11 @@ def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInvent
             insecure=ctx.params["insecure"],
         )
         logger.info(f"Inventory {value} loaded")
-        return inventory
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.critical(tb_to_str(exc))
         ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {exc_to_str(exc)}")
-        return None
+
+    return inventory
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
@@ -82,14 +82,13 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
     try:
         with open(value, "r", encoding="UTF-8") as file:
             data = safe_load(file)
-        return anta.loader.parse_catalog(data)
     # TODO catch proper exception
     # pylint: disable-next=broad-exception-caught
     except Exception as exc:
         logger.critical(tb_to_str(exc))
         ctx.fail(f"Unable to parse ANTA Tests Catalog file '{value}': {exc_to_str(exc)}")
 
-        return None
+    return anta.loader.parse_catalog(data)
 
 
 def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
@@ -99,11 +98,11 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
     """
     try:
         anta.loader.setup_logging(value)
-        return value
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.critical(tb_to_str(exc))
         ctx.fail(f"Unable to set ANTA logging level '{value}': {exc_to_str(exc)}")
-        return None
+
+    return value
 
 
 class EapiVersion(click.ParamType):
