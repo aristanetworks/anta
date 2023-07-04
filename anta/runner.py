@@ -14,7 +14,7 @@ from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
 
-# Key from YAML file tranfered to AntaTestTemplate of the test.
+# Key from YAML file tranfered to AntaTemplate of the test.
 TEST_TPL_PARAMS = "template_params"
 
 

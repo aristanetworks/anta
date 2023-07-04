@@ -24,7 +24,7 @@ DEFAULT_TAG = "all"
 logger = logging.getLogger(__name__)
 
 
-class AntaTestTemplate(BaseModel):
+class AntaTemplate(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
@@ -47,7 +47,7 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt(str):  eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
-        template Optional(AntaTestTemplate): Template used to generate the command
+        template Optional(AntaTemplate): Template used to generate the command
         template_params Optional(dict): params used in the template to generate the command
     """
 
@@ -55,11 +55,11 @@ class AntaCommand(BaseModel):
     version: Union[int, Literal["latest"]] = "latest"
     ofmt: str = "json"
     output: Optional[Union[Dict[str, Any], str]] = None
-    template: Optional[AntaTestTemplate] = None
+    template: Optional[AntaTemplate] = None
     template_params: Optional[Dict[str, Any]] = None
 
     @validator("template_params")
-    def prevent_none_when_template_is_set(cls: Type[AntaTestTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore
+    def prevent_none_when_template_is_set(cls: Type[AntaTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore
         """
         Raises if template is set but no params are given
         """
@@ -107,7 +107,7 @@ class AntaTest(ABC):
     # Or any child type
     commands: ClassVar[list[AntaCommand]]
     # TODO - today we support only one template per Test
-    template: ClassVar[AntaTestTemplate]
+    template: ClassVar[AntaTemplate]
 
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]

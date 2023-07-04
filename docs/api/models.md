@@ -3,12 +3,12 @@
 ::: anta.models.AntaTest
     heading_level: 2
 
-# AntaCommand definition
+# AntaTestCommand definition
 
-::: anta.models.AntaCommand
+::: anta.models.AntaTestCommand
     heading_level: 2
 
-# AntaTestTemplate definition
+# AntaTemplate definition
 
-::: anta.models.AntaTestTemplate
+::: anta.models.AntaTemplate
     heading_level: 2

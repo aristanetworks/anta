@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, cast
 
-from anta.models import AntaTest, AntaTestTemplate
+from anta.models import AntaTest, AntaTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories = ["connectivity"]
-    template = AntaTestTemplate(template="ping {dst} source {src} repeat 2")
+    template = AntaTemplate(template="ping {dst} source {src} repeat 2")
 
     @AntaTest.anta_test
     def test(self) -> None:
