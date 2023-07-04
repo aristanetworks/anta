@@ -17,7 +17,7 @@ from anta.result_manager import ResultManager
 from anta.runner import main
 
 
-from .utils import check_run, print_jinja, print_json, print_settings, print_table, print_text
+from .utils import print_jinja, print_json, print_settings, print_table, print_text
 
 logger = logging.getLogger(__name__)
 
