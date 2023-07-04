@@ -4,7 +4,6 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, cast
 
 from anta.models import AntaTest, AntaTemplate
 
@@ -34,11 +33,15 @@ class VerifyReachability(AntaTest):
 
         failures = []
 
-        for index, command in enumerate(self.instance_commands):
-            src, dst = (cast(Dict[str, str], command.template_params)["src"], cast(Dict[str, str], command.template_params)["dst"])
+        for command in self.instance_commands:
+            if command.template and command.template.vars and \
+               ('src' and 'dst') in command.template.vars:
+                src, dst = command.template.vars["src"], command.template.vars["dst"]
+            else:
+                self.result.is_error('The destination IP(s) or the source interface/IP(s) are not provided as template_params')
+                return
 
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-            if "2 received" not in command_output["messages"][0]:
+            if "2 received" not in command.json_output["messages"][0]:
                 failures.append((src, dst))
 
         if not failures:

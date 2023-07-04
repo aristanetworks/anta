@@ -400,12 +400,15 @@ class VerifyIPProxyARP(AntaTest):
         """
 
         disabled_intf = []
-
-        for index, command in enumerate(self.instance_commands):
-            intf = cast(Dict[str, str], command.template_params).get("intf")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-
-            if not command_output["interfaces"][intf]["proxyArp"]:
+        for command in self.instance_commands:
+            if command.template and command.template.vars and \
+               'intf' in command.template.vars:
+                intf = command.template.vars['intf']
+            else:
+                self.result.is_error('A list of interface(s) is not provided as template_params')
+                return
+            logger.debug(command)
+            if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
 
         if disabled_intf:

@@ -104,12 +104,16 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vrf = cast(Dict[str, str], command.template_params).get("vrf")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+        for command in self.instance_commands:
+            if command.template and command.template.vars and \
+               "vrf" in command.template.vars:
+                vrf = command.template.vars['vrf']
+            else:
+                self.result.is_error('A list of VRF(s) is not provided as template_params')
+                return
 
-            peers = command_output["vrfs"][vrf]["peers"]
-            state_issue = _check_bgp_vrfs(command_output["vrfs"])
+            peers = command.json_output["vrfs"][vrf]["peers"]
+            state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
 
             if len(peers) != number:
                 self.result.is_failure(f"Expecting {number} BGP peer in vrf {vrf} and got {len(peers)}")

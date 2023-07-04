@@ -57,11 +57,14 @@ class VerifySTPMode(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vlan_id = cast(Dict[str, str], command.template_params).get("vlan")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-
-            if not (stp_mode := get_value(command_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
+        for command in self.instance_commands:
+            if command.template and command.template.vars and \
+               "vlan" in command.template.vars:
+                vlan_id = command.template.vars['vlan']
+            else:
+                self.result.is_error('A list of VLAN(s) is not provided as template_params')
+                return
+            if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 self.result.is_failure(f"STP mode '{mode}' not configured for VLAN {vlan_id}")
 
             elif stp_mode != mode:
@@ -153,11 +156,15 @@ class VerifySTPForwardingPorts(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vlan_id = cast(Dict[str, str], command.template_params)["vlan"]
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+        for command in self.instance_commands:
+            if command.template and command.template.vars and \
+               "vlan" in command.template.vars:
+                vlan_id = command.template.vars['vlan']
+            else:
+                self.result.is_error('A list of VLAN(s) is not provided as template_params')
+                return
 
-            if not (topologies := get_value(command_output, "topologies")):
+            if not (topologies := get_value(command.json_output, "topologies")):
                 self.result.is_failure(f"STP instance for VLAN {vlan_id} is not configured")
 
             else:
