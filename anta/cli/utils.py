@@ -19,6 +19,16 @@ from anta.tools.misc import exc_to_str, tb_to_str
 logger = logging.getLogger(__name__)
 
 
+def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to parse an ANTA inventory tags
+    """
+    if value is not None:
+        return value.split(",") if "," in value else [value]
+    return None
+
+
 def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInventory:
     # pylint: disable=unused-argument
     """

@@ -11,7 +11,7 @@ import json
 import logging
 import traceback
 from pathlib import Path
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from aioeapi import EapiCommandError
 
@@ -25,7 +25,7 @@ EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: List[str]) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[List[str]] = None) -> None:
     """
     Clear counters
     """
@@ -50,8 +50,8 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: List[str]) -
 async def collect_commands(
     inv: AntaInventory,
     commands: Dict[str, str],
-    root_dir: str,
-    tags: List[str],
+    root_dir: Path,
+    tags: Optional[List[str]] = None,
 ) -> None:
     """
     Collect EOS commands
@@ -60,17 +60,19 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        outfile = outdir / command
         c = AntaTestCommand(command=command, ofmt=outformat)
         await dev.collect(c)
-        if c.output is None:
+        if c.output is None:  # TODO @mtache use c.failed
             logger.error(f"Could not collect commands on device {dev.name}")
             return
+        if c.ofmt == "json":
+            outfile = outdir / (command + ".json")
+            content = json.dumps(c.output, indent=2)
+        elif c.ofmt == "text":
+            outfile = outdir / (command + ".log")
+            content = str(c.output)
         with outfile.open(mode="w", encoding="UTF-8") as f:
-            if c.ofmt == "json":
-                f.write(json.dumps(c.output, indent=2))
-            elif c.ofmt == "text":
-                f.write(str(c.output))
+            f.write(content)
         logger.info(f"Collected command '{command}' from device {dev.name} ({dev.hw_model})")
 
     logger.info("Connecting to devices...")
@@ -89,13 +91,7 @@ async def collect_commands(
             logger.debug(tb_to_str(r))
 
 
-async def collect_scheduled_show_tech(
-    inv: AntaInventory,
-    root_dir: Path,
-    tags: List[str],
-    latest: int,
-    configure: bool,
-) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
     """
     Collect scheduled show-tech on devices
     """

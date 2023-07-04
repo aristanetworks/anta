@@ -10,14 +10,15 @@ import asyncio
 import json
 import logging
 import os
-from typing import Any
+from typing import List, Optional
 
 import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
-from rich.console import Console
 from rich.pretty import pretty_repr
 
+from anta.cli.console import console
+from anta.cli.utils import parse_tags
 from anta.models import DEFAULT_TAG
 
 from .utils import create_inventory, get_cv_token
@@ -65,14 +66,10 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False)
+@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(ctx: click.Context, tags: Any, connected: bool) -> None:
+def inventory(ctx: click.Context, tags: Optional[List[str]], connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-    console = Console()
-
-    if tags is not None:
-        tags = tags.split(",") if "," in tags else [tags]
 
     logger.debug(f"Requesting devices for tags: {tags}")
     console.print("Current inventory content is:", style="white on blue")
@@ -88,7 +85,6 @@ def inventory(ctx: click.Context, tags: Any, connected: bool) -> None:
 @click.pass_context
 def tags(ctx: click.Context) -> None:
     """Get list of configured tags in user inventory."""
-    console = Console()
     tags_found = []
     for device in ctx.obj["inventory"]:
         tags_found += device.tags
