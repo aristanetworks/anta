@@ -6,7 +6,7 @@ import json
 import logging
 from typing import Any, List
 
-from anta.result_manager.models import ListResult, TestResult
+from anta.result_manager.models import RESULT_OPTIONS, ListResult, TestResult
 from anta.tools.pydantic import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
@@ -61,14 +61,57 @@ class ResultManager:
     """
 
     def __init__(self) -> None:
-        """Class constructor."""
+        """
+        Class constructor.
+
+        The status of the class is initialized to "unset"
+
+        Then when adding a test with a status that is NOT 'error' the following
+        table shows the updated status:
+
+        | Current Status |         Added test Status       | Updated Status |
+        | -------------- | ------------------------------- | -------------- |
+        |      unset     |              Any                |       Any      |
+        |     skipped    |         unset, skipped          |     skipped    |
+        |     skipped    |            success              |     success    |
+        |     skipped    |            failure              |     failure    |
+        |     success    |     unset, skipped, success     |     success    |
+        |     success    |            failure              |     failure    |
+        |     failure    | unset, skipped success, failure |     failure    |
+
+        If the status of the added test is error, the status is untouched and the
+        error_status is set to True.
+        """
+        logger.debug("Instantiate result-manager")
         self._result_entries = ListResult()
+        # Initialize status
+        self.status = "unset"
+        self.error_status = False
 
     def __len__(self) -> int:
         """
         Implement __len__ method to count number of results.
         """
         return len(self._result_entries)
+
+    def __update_status(self, test_status: str) -> None:
+        """
+        Update ResultManager status based on the table above.
+        """
+        if test_status not in RESULT_OPTIONS:
+            raise ValueError("{test_status} is not a valid result option")
+        if test_status == "error":
+            if not self.error_status:
+                logger.info("A test has returned an 'error' status")
+            self.error_status = True
+            return
+
+        if self.status == "unset":
+            self.status = test_status
+        elif self.status == "skipped" and test_status in {"success", "failure"}:
+            self.status = test_status
+        elif self.status == "success" and test_status == "failure":
+            self.status = "failure"
 
     def add_test_result(self, entry: TestResult) -> None:
         """Add a result to the list
@@ -78,6 +121,7 @@ class ResultManager:
         """
         logger.debug(entry)
         self._result_entries.append(entry)
+        self.__update_status(entry.result)
 
     def add_test_results(self, entries: List[TestResult]) -> None:
         """Add a list of results to the list
@@ -87,6 +131,12 @@ class ResultManager:
         """
         for e in entries:
             self.add_test_result(e)
+
+    def get_status(self, ignore_error: bool = False) -> str:
+        """
+        Returns the current status including error_status if ignore_error is False
+        """
+        return "error" if self.error_status and not ignore_error else self.status
 
     def get_results(self, output_format: str = "native") -> Any:
         """
