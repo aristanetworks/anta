@@ -80,10 +80,10 @@ class VerifyMlagInterfaces(AntaTest):
             self.result.is_skipped("MLAG is disabled")
             return
 
-        if command_output["mlagPorts"]["Inactive"] != 0 or command_output["mlagPorts"]["Active-partial"] != 0:
-            self.result.is_failure(f"MLAG status is not OK: {command_output['mlagPorts']}")
-        else:
+        if command_output["mlagPorts"]["Inactive"] == 0 and command_output["mlagPorts"]["Active-partial"] == 0:
             self.result.is_success()
+        else:
+            self.result.is_failure(f"MLAG status is not OK: {command_output['mlagPorts']}")
 
 
 class VerifyMlagConfigSanity(AntaTest):
@@ -113,14 +113,14 @@ class VerifyMlagConfigSanity(AntaTest):
             self.result.is_skipped("MLAG is disabled")
             return
 
-        if len(command_output["globalConfiguration"]) > 0 or len(command_output["interfaceConfiguration"]) > 0:
-            self.result.is_failure()
-            if len(command_output["globalConfiguration"]) > 0:
-                self.result.is_failure(f"MLAG config-sanity returned Global inconsistancies: {command_output['globalConfiguration']}")
-            if len(command_output["interfaceConfiguration"]) > 0:
-                self.result.is_failure(f"MLAG config-sanity returned Interface inconsistancies: {command_output['interfaceConfiguration']}")
-        else:
+        if len(command_output["globalConfiguration"]) == 0 and len(command_output["interfaceConfiguration"]) == 0:
             self.result.is_success()
+
+        elif len(command_output["globalConfiguration"]) > 0:
+            self.result.is_failure(f"MLAG config-sanity returned Global inconsistancies: {command_output['globalConfiguration']}")
+
+        elif len(command_output["interfaceConfiguration"]) > 0:
+            self.result.is_failure(f"MLAG config-sanity returned Interface inconsistancies: {command_output['interfaceConfiguration']}")
 
 
 class VerifyMlagReloadDelay(AntaTest):
