@@ -5,6 +5,7 @@ This section describes all the available tests provided by ANTA package.
 
 - [AAA](tests.aaa.md)
 - [Configuration](tests.configuration.md)
+- [Connectivity](tests.connectivity.md)
 - [Field Notice](tests.field_notices.md)
 - [Hardware](tests.hardware.md)
 - [Interfaces](tests.interfaces.md)

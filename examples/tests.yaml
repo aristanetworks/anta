@@ -54,6 +54,14 @@ anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
 
+anta.tests.connectivity:
+  - VerifyReachability:
+      template_params:
+        - src: Loopback0
+          dst: 10.0.0.1
+        - src: Loopback0
+          dst: 10.0.0.2
+          
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:

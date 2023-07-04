@@ -147,6 +147,7 @@ nav:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
     - Configuration: api/tests.configuration.md
+    - Connectivity: api/tests.connectivity.md
     - Field Notices: api/tests.field_notices.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
