@@ -977,27 +977,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__dict__" class="md-nav__link">
-    __dict__
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__init__" class="md-nav__link">
-    __init__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__iter__" class="md-nav__link">
-    __iter__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#anta.inventory.AntaInventory.__str__" class="md-nav__link">
     __str__()
   </a>
@@ -1359,27 +1338,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__dict__" class="md-nav__link">
-    __dict__
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__init__" class="md-nav__link">
-    __init__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.inventory.AntaInventory.__iter__" class="md-nav__link">
-    __iter__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#anta.inventory.AntaInventory.__str__" class="md-nav__link">
     __str__()
   </a>
@@ -1481,6 +1439,8 @@
 
 <a id="anta.inventory.AntaInventory"></a>
   <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code>dict</code></p>
 
   
       <p>Inventory abstraction for ANTA framework.</p>
@@ -1633,24 +1593,8 @@
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">:</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntaInventory</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+    <span class="c1"># dict[str, AntaDevice] - not working in python 3.8 hence the ignore</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inventory abstraction for ANTA framework.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1660,38 +1604,15 @@
     <span class="c1"># Supported Output format</span>
     <span class="n">INVENTORY_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;native&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class constructor&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make AntaInventory iterable&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Human readable string representing the inventory&quot;&quot;&quot;</span>
         <span class="n">devs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devs</span><span class="p">:</span>
-                <span class="n">devs</span><span class="p">[</span><span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">dev_type</span> <span class="o">:=</span> <span class="n">dev</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devs</span><span class="p">:</span>
+                <span class="n">devs</span><span class="p">[</span><span class="n">dev_type</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">devs</span><span class="p">[</span><span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">devs</span><span class="p">[</span><span class="n">dev_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ANTA Inventory contains </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1"> devices (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">)&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">devs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="c1"># https://github.com/python/mypy/issues/6523</span>
-    <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-        <span class="vm">__dict__</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Any]</span>
-    <span class="k">else</span><span class="p">:</span>
-
-        <span class="nd">@property</span>
-        <span class="k">def</span> <span class="nf">__dict__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Returns a dictionary that represents the AntaInventory object.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-                <span class="n">result</span><span class="p">[</span><span class="n">dev</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
@@ -1781,7 +1702,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-        <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+        <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
             <span class="n">result</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -1791,13 +1712,18 @@
     <span class="c1"># SET methods</span>
     <span class="c1">###########################################################################</span>
 
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The key must be the device name for device &#39;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Use AntaInventory.add_device().&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a device to final inventory.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device: Device object to be added</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
 
     <span class="c1">###########################################################################</span>
     <span class="c1"># MISC methods</span>
@@ -1807,7 +1733,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run `refresh()` coroutines for all AntaDevice objects in this inventory.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing devices...&quot;</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
+            <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
             <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
@@ -1826,82 +1752,7 @@
 
 
 
-<div class="doc doc-object doc-attribute">
 
-
-
-<h2 id="anta.inventory.AntaInventory.__dict__" class="doc doc-heading">
-<code class="highlight language-python"><span class="vm">__dict__</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-<a href="#anta.inventory.AntaInventory.__dict__" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Returns a dictionary that represents the AntaInventory object.</p>
-  </div>
-
-</div>
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="anta.inventory.AntaInventory.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
-
-<a href="#anta.inventory.AntaInventory.__init__" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Class constructor</p>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class constructor&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="anta.inventory.AntaInventory.__iter__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
-
-<a href="#anta.inventory.AntaInventory.__iter__" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Make AntaInventory iterable</p>
-
-      <details class="quote">
-        <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make AntaInventory iterable&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
 
 <div class="doc doc-object doc-function">
 
@@ -1919,22 +1770,22 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human readable string representing the inventory&quot;&quot;&quot;</span>
     <span class="n">devs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devs</span><span class="p">:</span>
-            <span class="n">devs</span><span class="p">[</span><span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dev_type</span> <span class="o">:=</span> <span class="n">dev</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">devs</span><span class="p">:</span>
+            <span class="n">devs</span><span class="p">[</span><span class="n">dev_type</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">devs</span><span class="p">[</span><span class="nb">vars</span><span class="p">(</span><span class="n">dev</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">devs</span><span class="p">[</span><span class="n">dev_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ANTA Inventory contains </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1"> devices (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">)&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">devs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1986,19 +1837,19 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a device to final inventory.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        device: Device object to be added</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="bp">self</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2025,20 +1876,20 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run `refresh()` coroutines for all AntaDevice objects in this inventory.&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing devices...&quot;</span><span class="p">)</span>
     <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">),</span>
+        <span class="o">*</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
         <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
@@ -2130,32 +1981,32 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a filtered inventory.</span>
 
@@ -2176,7 +2027,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">established_only</span> <span class="ow">or</span> <span class="n">device</span><span class="o">.</span><span class="n">established</span><span class="p">)</span>
 
-    <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">))</span>
+    <span class="n">devices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_filter_devices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -2320,7 +2171,29 @@ Instantiate AntaDevice objects using the AsyncEOSDevice subclass.</p>
 
       <details class="quote">
         <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 65</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
 <span class="normal"> 66</span>
 <span class="normal"> 67</span>
 <span class="normal"> 68</span>
@@ -2355,29 +2228,7 @@ Instantiate AntaDevice objects using the AsyncEOSDevice subclass.</p>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
     <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
