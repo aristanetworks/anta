@@ -9,7 +9,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,8 @@ class VerifyLoggingPersistent(AntaTest):
     description = "Verifies if logging persistent is enabled and logs are saved in flash."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="show logging", ofmt="text"),
-        AntaTestCommand(command="dir flash:/persist/messages", ofmt="text"),
+        AntaCommand(command="show logging", ofmt="text"),
+        AntaCommand(command="dir flash:/persist/messages", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -78,7 +78,7 @@ class VerifyLoggingSourceIntf(AntaTest):
     name = "VerifyLoggingSourceInt"
     description = "Verifies logging source-interface for a specified VRF."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show logging", ofmt="text")]
+    commands = [AntaCommand(command="show logging", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
@@ -116,7 +116,7 @@ class VerifyLoggingHosts(AntaTest):
     name = "VerifyLoggingHosts"
     description = "Verifies logging hosts (syslog servers) for a specified VRF."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show logging", ofmt="text")]
+    commands = [AntaCommand(command="show logging", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self, hosts: Optional[List[str]] = None, vrf: str = "default") -> None:
@@ -159,8 +159,8 @@ class VerifyLoggingLogsGeneration(AntaTest):
     description = "Verifies if logs are generated."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -194,9 +194,9 @@ class VerifyLoggingHostname(AntaTest):
     description = "Verifies if logs are generated with the device FQDN."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="show hostname"),
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="show hostname"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -236,8 +236,8 @@ class VerifyLoggingTimestamp(AntaTest):
     description = "Verifies if logs are generated with the appropriate timestamp."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -276,7 +276,7 @@ class VerifyLoggingAccounting(AntaTest):
     name = "VerifyLoggingAccounting"
     description = "Verifies if AAA accounting logs are generated."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show aaa accounting logs | tail", ofmt="text")]
+    commands = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:

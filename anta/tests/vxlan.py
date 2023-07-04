@@ -4,7 +4,7 @@ Test functions related to VXLAN
 import logging
 from typing import Any, Dict, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class VerifyVxlan(AntaTest):
     name = "VerifyVxlan"
     description = "Verifies Vxlan1 status"
     categories = ["vxlan"]
-    commands = [AntaTestCommand(command="show interfaces description", ofmt="json")]
+    commands = [AntaCommand(command="show interfaces description", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -47,7 +47,7 @@ class VerifyVxlanConfigSanity(AntaTest):
     name = "VerifyVxlanConfigSanity"
     description = "Verifies VXLAN config-sanity"
     categories = ["vxlan"]
-    commands = [AntaTestCommand(command="show vxlan config-sanity", ofmt="json")]
+    commands = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:

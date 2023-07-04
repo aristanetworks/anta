@@ -4,7 +4,7 @@ Test functions related to Multi-chassis Link Aggregation (MLAG)
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 from anta.tools.get_value import get_value
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class VerifyMlagStatus(AntaTest):
     name = "VerifyMlagStatus"
     description = "This test verifies the health status of the MLAG configuration."
     categories = ["mlag"]
-    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
+    commands = [AntaCommand(command="show mlag", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -66,7 +66,7 @@ class VerifyMlagInterfaces(AntaTest):
     name = "VerifyMlagInterfaces"
     description = "This test verifies there are no inactive or active-partial MLAG ports."
     categories = ["mlag"]
-    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
+    commands = [AntaCommand(command="show mlag", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -100,7 +100,7 @@ class VerifyMlagConfigSanity(AntaTest):
     name = "VerifyMlagConfigSanity"
     description = "This test verifies there are no MLAG config-sanity inconsistencies."
     categories = ["mlag"]
-    commands = [AntaTestCommand(command="show mlag config-sanity", ofmt="json")]
+    commands = [AntaCommand(command="show mlag config-sanity", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:

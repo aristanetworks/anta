@@ -105,7 +105,7 @@ This approach means each time you create a test it will be based on this `AntaTe
 - `name`: Name of the test
 - `description`: A human readable description of your test
 - `categories`: a list of categories to sort test.
-- `commands`: a list of command to run. This list _must_ be a list of `AntaTestCommand` which is described in the next part of this document.
+- `commands`: a list of command to run. This list _must_ be a list of `AntaCommand` which is described in the next part of this document.
 
 Here is an example of a hardware test related to device temperature:
 
@@ -115,7 +115,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 
 class VerifyTemperature(AntaTest):
@@ -126,7 +126,7 @@ class VerifyTemperature(AntaTest):
     name = "VerifyTemperature"
     description = "Verifies device temparture is currently OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -179,7 +179,7 @@ assert test.result.result == "success"
 
 To make it easier to get data, ANTA defines 2 different classes to manage commands to send to device:
 
-#### `anta.models.AntaTestCommand`
+#### `anta.models.AntaCommand`
 
 Abstract a command with following information:
 
@@ -191,10 +191,10 @@ Abstract a command with following information:
 Usage example:
 
 ```python
-from anta.models import AntaTestCommand
+from anta.models import AntaCommand
 
-cmd1 = AntaTestCommand(command="show zerotouch")
-cmd2 = AntaTestCommand(command="show running-config diffs", ofmt="text")
+cmd1 = AntaCommand(command="show zerotouch")
+cmd2 = AntaCommand(command="show running-config diffs", ofmt="text")
 ```
 
 #### `anta.models.AntaTestTemplate`

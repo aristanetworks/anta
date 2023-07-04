@@ -4,7 +4,7 @@ Test functions related to the EOS software
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class VerifyEOSVersion(AntaTest):
     name = "VerifyEOSVersion"
     description = "Verifies the device is running one of the allowed EOS version."
     categories = ["software"]
-    commands = [AntaTestCommand(command="show version")]
+    commands = [AntaCommand(command="show version")]
 
     @AntaTest.anta_test
     def test(self, versions: Optional[List[str]] = None) -> None:
@@ -47,7 +47,7 @@ class VerifyTerminAttrVersion(AntaTest):
     name = "VerifyTerminAttrVersion"
     description = "Verifies the device is running one of the allowed TerminAttr version."
     categories = ["software"]
-    commands = [AntaTestCommand(command="show version detail")]
+    commands = [AntaCommand(command="show version detail")]
 
     @AntaTest.anta_test
     def test(self, versions: Optional[List[str]] = None) -> None:
@@ -79,7 +79,7 @@ class VerifyEOSExtensions(AntaTest):
     name = "VerifyEOSExtensions"
     description = "Verifies all EOS extensions installed on the device are enabled for boot persistence."
     categories = ["software"]
-    commands = [AntaTestCommand(command="show extensions"), AntaTestCommand(command="show boot-extensions")]
+    commands = [AntaCommand(command="show extensions"), AntaCommand(command="show boot-extensions")]
 
     @AntaTest.anta_test
     def test(self) -> None:

@@ -3,9 +3,9 @@
 ::: anta.models.AntaTest
     heading_level: 2
 
-# AntaTestCommand definition
+# AntaCommand definition
 
-::: anta.models.AntaTestCommand
+::: anta.models.AntaCommand
     heading_level: 2
 
 # AntaTestTemplate definition

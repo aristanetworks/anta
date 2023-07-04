@@ -4,7 +4,7 @@ Generic routing test functions
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class VerifyRoutingProtocolModel(AntaTest):
     )
     categories = ["routing", "generic"]
     # "revision": 3
-    commands = [AntaTestCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary")]
 
     @AntaTest.anta_test
     def test(self, model: Optional[str] = "multi-agent") -> None:
@@ -56,7 +56,7 @@ class VerifyRoutingTableSize(AntaTest):
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
     categories = ["routing", "generic"]
     # "revision": 3
-    commands = [AntaTestCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary")]
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
@@ -89,7 +89,7 @@ class VerifyBFD(AntaTest):
     description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
     categories = ["routing", "generic"]
     # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaTestCommand(command="show bfd peers", version=1)]
+    commands = [AntaCommand(command="show bfd peers", version=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:

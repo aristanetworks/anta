@@ -16,7 +16,7 @@ from click import Option
 from anta.cli.console import console
 from anta.cli.utils import EapiVersion
 from anta.device import AntaDevice
-from anta.models import AntaTestCommand, AntaTestTemplate
+from anta.models import AntaCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
 def run_cmd(command: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
     """Run arbitrary command to an ANTA device"""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
-    c = AntaTestCommand(command=command, ofmt=ofmt, version=api_version)
+    c = AntaCommand(command=command, ofmt=ofmt, version=api_version)
     asyncio.run(device.collect(c))
     console.print(c.output)
 
@@ -62,7 +62,7 @@ def run_template(template: str, params: List[str], ofmt: str, api_version: Union
     template_params = dict(zip(params[::2], params[1::2]))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
-    c = AntaTestCommand(
+    c = AntaCommand(
         command=template.format(**template_params), template=AntaTestTemplate(template=template), template_params=template_params, ofmt=ofmt, version=api_version
     )
     asyncio.run(device.collect(c))

@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class VerifyOSPFNeighborState(AntaTest):
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
     categories = ["routing", "ospf"]
-    commands = [AntaTestCommand(command="show ip ospf neighbor")]
+    commands = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -81,7 +81,7 @@ class VerifyOSPFNeighborCount(AntaTest):
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
     categories = ["routing", "ospf"]
-    commands = [AntaTestCommand(command="show ip ospf neighbor")]
+    commands = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:

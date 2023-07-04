@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class VerifyUptime(AntaTest):
     name = "VerifyUptime"
     description = "Verifies the device uptime is higher than a value."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show uptime")]
+    commands = [AntaCommand(command="show uptime")]
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None) -> None:
@@ -54,7 +54,7 @@ class VerifyReloadCause(AntaTest):
     name = "VerifyReloadCause"
     description = "Verifies the device uptime is higher than a value."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show reload cause")]
+    commands = [AntaCommand(command="show reload cause")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -92,7 +92,7 @@ class VerifyCoredump(AntaTest):
     name = "VerifyCoredump"
     description = "Verifies there is no core file."
     categories = ["system"]
-    commands = [AntaTestCommand(command="bash timeout 10 ls /var/core", ofmt="text")]
+    commands = [AntaCommand(command="bash timeout 10 ls /var/core", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -115,7 +115,7 @@ class VerifyAgentLogs(AntaTest):
     name = "VerifyAgentLogs"
     description = "Verifies there is no agent crash reported on the device."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show agent logs crash", ofmt="text")]
+    commands = [AntaCommand(command="show agent logs crash", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -138,7 +138,7 @@ class VerifySyslog(AntaTest):
     name = "VerifySyslog"
     description = "Verifies the device had no syslog message with a severity of warning (or a more severe message) during the last 7 days."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show logging last 7 days threshold warnings", ofmt="text")]
+    commands = [AntaCommand(command="show logging last 7 days threshold warnings", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -161,7 +161,7 @@ class VerifyCPUUtilization(AntaTest):
     name = "VerifyCPUUtilization"
     description = "Verifies the CPU utilization is less than 75%."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show processes top once")]
+    commands = [AntaCommand(command="show processes top once")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -185,7 +185,7 @@ class VerifyMemoryUtilization(AntaTest):
     name = "VerifyMemoryUtilization"
     description = "Verifies the Memory utilization is less than 75%."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show version")]
+    commands = [AntaCommand(command="show version")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -209,7 +209,7 @@ class VerifyFileSystemUtilization(AntaTest):
     name = "VerifyFileSystemUtilization"
     description = "Verifies each partition on the disk is used less than 75%."
     categories = ["system"]
-    commands = [AntaTestCommand(command="bash timeout 10 df -h", ofmt="text")]
+    commands = [AntaCommand(command="bash timeout 10 df -h", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -233,7 +233,7 @@ class VerifyNTP(AntaTest):
     name = "VerifyNTP"
     description = "Verifies NTP is synchronised."
     categories = ["system"]
-    commands = [AntaTestCommand(command="show ntp status", ofmt="text")]
+    commands = [AntaCommand(command="show ntp status", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class VerifyZeroTouch(AntaTest):
     name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled."
     categories = ["configuration"]
-    commands = [AntaTestCommand(command="show zerotouch")]
+    commands = [AntaCommand(command="show zerotouch")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -44,7 +44,7 @@ class VerifyRunningConfigDiffs(AntaTest):
     name = "VerifyRunningConfigDiffs"
     description = ""
     categories = ["configuration"]
-    commands = [AntaTestCommand(command="show running-config diffs", ofmt="text")]
+    commands = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:

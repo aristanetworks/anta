@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class VerifySSHStatus(AntaTest):
     name = "VerifySSHStatus"
     description = "Verifies if the SSHD agent is disabled in the default VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh", ofmt="text")]
+    commands = [AntaCommand(command="show management ssh", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -55,7 +55,7 @@ class VerifySSHIPv4Acl(AntaTest):
     name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh ip access-list summary")]
+    commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -103,7 +103,7 @@ class VerifySSHIPv6Acl(AntaTest):
     name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh ipv6 access-list summary")]
+    commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -150,7 +150,7 @@ class VerifyTelnetStatus(AntaTest):
     name = "VerifyTelnetStatus"
     description = "Verifies if Telnet is disabled in the default VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management telnet")]
+    commands = [AntaCommand(command="show management telnet")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -178,7 +178,7 @@ class VerifyAPIHttpStatus(AntaTest):
     name = "VerifyAPIHttpStatus"
     description = "Verifies if eAPI HTTP server is disabled globally."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands")]
+    commands = [AntaCommand(command="show management api http-commands")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -207,7 +207,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     name = "VerifyAPIHttpsSSL"
     description = "Verifies if eAPI HTTPS server SSL profile is configured and valid."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands")]
+    commands = [AntaCommand(command="show management api http-commands")]
 
     @AntaTest.anta_test
     def test(self, profile: Optional[str] = None) -> None:
@@ -246,7 +246,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands ip access-list summary")]
+    commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -294,7 +294,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands ipv6 access-list summary")]
+    commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:

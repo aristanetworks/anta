@@ -175,7 +175,7 @@ Where we have:
 - `expected_messages`: Optional messages we expect for the test.
 
 !!! info "Use Anta CLI to get test data"
-    To complete this block, you can use [`anta debug`](./cli/debug.md) commands to get `AntaTestCommand` output to use in your test.
+    To complete this block, you can use [`anta debug`](./cli/debug.md) commands to get `AntaCommand` output to use in your test.
 
 ## Git Pre-commit hook
 

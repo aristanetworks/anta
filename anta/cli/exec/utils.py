@@ -17,7 +17,7 @@ from aioeapi import EapiCommandError
 
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
-from anta.models import AntaTestCommand
+from anta.models import AntaCommand
 from anta.tools.misc import exc_to_str, tb_to_str
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
@@ -31,12 +31,12 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[Lis
     """
 
     async def clear(dev: AntaDevice) -> None:
-        commands = [AntaTestCommand(command="clear counters")]
+        commands = [AntaCommand(command="clear counters")]
         if dev.hw_model not in ["cEOSLab", "vEOS-lab"]:
-            commands.append(AntaTestCommand(command="clear hardware counter drop"))
+            commands.append(AntaCommand(command="clear hardware counter drop"))
         await dev.collect_commands(commands=commands)
         for command in commands:
-            if command.output is None:  # TODO - add a failed attribute to AntaTestCommand class
+            if command.output is None:  # TODO - add a failed attribute to AntaCommand class
                 logger.error(f"Could not clear counters on device {dev.name}")
         logger.info(f"Cleared counters on {dev.name} ({dev.hw_model})")
 
@@ -60,7 +60,7 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        c = AntaTestCommand(command=command, ofmt=outformat)
+        c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if c.output is None:  # TODO @mtache use c.failed
             logger.error(f"Could not collect commands on device {dev.name}")
@@ -105,7 +105,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             cmd = f"bash timeout 10 ls -1t {EOS_SCHEDULED_TECH_SUPPORT}"
             if latest:
                 cmd += f" | head -{latest}"
-            command = AntaTestCommand(command=cmd, ofmt="text")
+            command = AntaCommand(command=cmd, ofmt="text")
             await device.collect(command=command)
             if command.output:
                 filenames = list(map(lambda f: Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}"), str(command.output).splitlines()))
@@ -118,19 +118,19 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             outdir.mkdir(parents=True, exist_ok=True)
 
             # Check if 'aaa authorization exec default local' is present in the running-config
-            command = AntaTestCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
+            command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
             await device.collect(command=command)
 
             if not command.output:
                 logger.debug(f"'aaa authorization exec default local' is not configured on device {device.name}")
                 if configure:
-                    # TODO - @mtache - add `config` field to `AntaTestCommand` object to handle this use case.
+                    # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.
                     commands = [
                         {"cmd": "enable", "input": device._enable_password},  # type: ignore[attr-defined] # pylint: disable=protected-access
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
-                    command = AntaTestCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
+                    command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
                     logger.debug(f"Configuring 'aaa authorization exec default local' on device {device.name}")
                     await device.session.cli(commands=commands)  # type: ignore[attr-defined]
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")

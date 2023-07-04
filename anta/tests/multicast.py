@@ -4,7 +4,7 @@ Test functions related to multicast
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     name = "VerifyIGMPSnoopingVlans"
     description = "Verifies the IGMP snooping configuration for some VLANs."
     categories = ["multicast", "igmp"]
-    commands = [AntaTestCommand(command="show ip igmp snooping")]
+    commands = [AntaCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
     def test(self, vlans: Optional[List[str]] = None, configuration: Optional[str] = None) -> None:
@@ -65,7 +65,7 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."
     categories = ["multicast", "igmp"]
-    commands = [AntaTestCommand(command="show ip igmp snooping")]
+    commands = [AntaCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
     def test(self, configuration: Optional[str] = None) -> None:

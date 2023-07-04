@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
         "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)"
     )
     categories = ["field notices", "software"]
-    commands = [AntaTestCommand(command="show version detail")]
+    commands = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -113,7 +113,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     name = "VerifyFieldNotice72Resolution"
     description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
     categories = ["field notices", "software"]
-    commands = [AntaTestCommand(command="show version detail")]
+    commands = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])

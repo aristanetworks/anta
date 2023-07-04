@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.models import AntaTest, AntaCommand, AntaTestTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class VerifyInterfaceUtilization(AntaTest):
     description = "Verifies interfaces utilization is below 75%."
     categories = ["interfaces"]
     # TODO - move from text to json if possible
-    commands = [AntaTestCommand(command="show interfaces counters rates", ofmt="text")]
+    commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -52,7 +52,7 @@ class VerifyInterfaceErrors(AntaTest):
     name = "VerifyInterfaceErrors"
     description = "Verifies interfaces error counters are equal to zero."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces counters errors")]
+    commands = [AntaCommand(command="show interfaces counters errors")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -77,7 +77,7 @@ class VerifyInterfaceDiscards(AntaTest):
     name = "VerifyInterfaceDiscards"
     description = "Verifies interfaces packet discard counters are equal to zero."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces counters discards")]
+    commands = [AntaCommand(command="show interfaces counters discards")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -103,7 +103,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
     name = "VerifyInterfaceErrDisabled"
     description = "Verifies there is no interface in error disable state."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces status")]
+    commands = [AntaCommand(command="show interfaces status")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -127,7 +127,7 @@ class VerifyInterfacesStatus(AntaTest):
     name = "VerifyInterfacesStatus"
     description = "Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces description")]
+    commands = [AntaCommand(command="show interfaces description")]
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None) -> None:
@@ -170,7 +170,7 @@ class VerifyStormControlDrops(AntaTest):
     name = "VerifyStormControlDrops"
     description = "Verifies the device did not drop packets due its to storm-control configuration."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show storm-control")]
+    commands = [AntaCommand(command="show storm-control")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -200,7 +200,7 @@ class VerifyPortChannels(AntaTest):
     name = "VerifyPortChannels"
     description = "Verifies there is no inactive port in port channels."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show port-channel")]
+    commands = [AntaCommand(command="show port-channel")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -228,7 +228,7 @@ class VerifyIllegalLACP(AntaTest):
     name = "VerifyIllegalLACP"
     description = "Verifies there is no illegal LACP packets received."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show lacp counters all-ports")]
+    commands = [AntaCommand(command="show lacp counters all-ports")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -256,7 +256,7 @@ class VerifyLoopbackCount(AntaTest):
     name = "VerifyLoopbackCount"
     description = "Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show ip interface brief")]
+    commands = [AntaCommand(command="show ip interface brief")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
@@ -301,7 +301,7 @@ class VerifySVI(AntaTest):
     name = "VerifySVI"
     description = "Verifies there is no interface vlan down."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show ip interface brief")]
+    commands = [AntaCommand(command="show ip interface brief")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -343,7 +343,7 @@ class VerifyL3MTU(AntaTest):
     name = "VerifyL3MTU"
     description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces")]
+    commands = [AntaCommand(command="show interfaces")]
 
     NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
 

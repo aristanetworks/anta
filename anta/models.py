@@ -39,7 +39,7 @@ class AntaTestTemplate(BaseModel):
     ofmt: str = "json"
 
 
-class AntaTestCommand(BaseModel):
+class AntaCommand(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
@@ -105,7 +105,7 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     # Or any child type
-    commands: ClassVar[list[AntaTestCommand]]
+    commands: ClassVar[list[AntaCommand]]
     # TODO - today we support only one template per Test
     template: ClassVar[AntaTestTemplate]
 
@@ -136,7 +136,7 @@ class AntaTest(ABC):
                 return
             self.template_params = template_params
             self.instance_commands.extend(
-                AntaTestCommand(
+                AntaCommand(
                     command=tpl.template.format(**param),
                     ofmt=tpl.ofmt,
                     version=tpl.version,

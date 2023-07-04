@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.models import AntaTest, AntaCommand, AntaTestTemplate
 from anta.tools.get_value import get_value
 
 logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class VerifySTPBlockedPorts(AntaTest):
     name = "VerifySTPBlockedPorts"
     description = "Verifies there is no STP blocked ports."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree blockedports")]
+    commands = [AntaCommand(command="show spanning-tree blockedports")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -110,7 +110,7 @@ class VerifySTPCounters(AntaTest):
     name = "VerifySTPCounters"
     description = "Verifies there is no errors in STP BPDU packets."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree counters")]
+    commands = [AntaCommand(command="show spanning-tree counters")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -182,7 +182,7 @@ class VerifySTPRootPriority(AntaTest):
     name = "VerifySTPRootPriority"
     description = "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s)."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree root detail")]
+    commands = [AntaCommand(command="show spanning-tree root detail")]
 
     @AntaTest.anta_test
     def test(self, priority: Optional[int] = None, instances: Optional[List[int]] = None) -> None:

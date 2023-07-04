@@ -17,7 +17,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 
 class VerifyTemperature(AntaTest):
@@ -28,7 +28,7 @@ class VerifyTemperature(AntaTest):
     name = "VerifyTemperature"
     description = "Verifies device temparture is currently OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -49,10 +49,10 @@ The following elements have to be imported:
 
 - [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.
 - `anta.models.AntaTest`: class that gives you all the tooling for your test
-- `anta.models.AntaTestCommand`: A class to abstract an Arista EOS command
+- `anta.models.AntaCommand`: A class to abstract an Arista EOS command
 
 ```python
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 
 class VerifyTemperature(AntaTest):
@@ -111,7 +111,7 @@ __Metadata information__
 
 __Commands to run__
 
-- `commands`: a list of command to run. This list _must_ be a list of `AntaTestCommand` which is described in the next part of this document.
+- `commands`: a list of command to run. This list _must_ be a list of `AntaCommand` which is described in the next part of this document.
 - `template`: a command template (`AntaTestTemplate`) to run where variables are provided during test execution.
 
 !!! warning ""
@@ -123,7 +123,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 
 class <YourTestName>(AntaTest):
@@ -135,7 +135,7 @@ class <YourTestName>(AntaTest):
     description = "<test description in human reading format>"
     categories = ["<a list of arbitrary categories>"]
     commands = [
-        AntaTestCommand(
+        AntaCommand(
             command="<eos command to run>",
             ofmt="<command format output>",
             version="<eapi version to use>"

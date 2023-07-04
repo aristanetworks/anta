@@ -4,7 +4,7 @@ decorators for tests
 from functools import wraps
 from typing import Any, Callable, Dict, List, TypeVar, cast
 
-from anta.models import AntaTestCommand
+from anta.models import AntaCommand
 from anta.result_manager.models import TestResult
 
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
@@ -73,13 +73,13 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
                 return anta_test.result
 
             if family == "ipv4":
-                command = AntaTestCommand(command="show bgp ipv4 unicast summary vrf all")
+                command = AntaCommand(command="show bgp ipv4 unicast summary vrf all")
             elif family == "ipv6":
-                command = AntaTestCommand(command="show bgp ipv6 unicast summary vrf all")
+                command = AntaCommand(command="show bgp ipv6 unicast summary vrf all")
             elif family == "evpn":
-                command = AntaTestCommand(command="show bgp evpn summary")
+                command = AntaCommand(command="show bgp evpn summary")
             elif family == "rtc":
-                command = AntaTestCommand(command="show bgp rt-membership summary")
+                command = AntaCommand(command="show bgp rt-membership summary")
             else:
                 anta_test.result.is_error(f"Wrong address family for bgp decorator: {family}")
                 return anta_test.result

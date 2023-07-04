@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class VerifyTacacsSourceIntf(AntaTest):
     name = "VerifyTacacsSourceIntf"
     description = "Verifies TACACS source-interface for a specified VRF."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
@@ -92,7 +92,7 @@ class VerifyTacacsServers(AntaTest):
     name = "VerifyTacacsServers"
     description = "Verifies TACACS servers are configured for a specified VRF."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, servers: Optional[List[str]] = None, vrf: str = "default") -> None:
@@ -140,7 +140,7 @@ class VerifyTacacsServerGroups(AntaTest):
     name = "VerifyTacacsServerGroups"
     description = "Verifies if the provided TACACS server group(s) are configured."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, groups: Optional[List[str]] = None) -> None:
@@ -183,7 +183,7 @@ class VerifyAuthenMethods(AntaTest):
     name = "VerifyAuthenMethods"
     description = "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods authentication")]
+    commands = [AntaCommand(command="show aaa methods authentication")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -240,7 +240,7 @@ class VerifyAuthzMethods(AntaTest):
     name = "VerifyAuthzMethods"
     description = "Verifies the AAA authorization method lists for different authorization types (commands, exec)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods authorization")]
+    commands = [AntaCommand(command="show aaa methods authorization")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -290,7 +290,7 @@ class VerifyAcctDefaultMethods(AntaTest):
     name = "VerifyAcctDefaultMethods"
     description = "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods accounting")]
+    commands = [AntaCommand(command="show aaa methods accounting")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -348,7 +348,7 @@ class VerifyAcctConsoleMethods(AntaTest):
     name = "VerifyAcctConsoleMethods"
     description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods accounting")]
+    commands = [AntaCommand(command="show aaa methods accounting")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:

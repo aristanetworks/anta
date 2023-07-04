@@ -7,7 +7,7 @@ import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     name = "VerifyTransceiversManufacturers"
     description = ""
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show inventory", ofmt="json")]
+    commands = [AntaCommand(command="show inventory", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -51,7 +51,7 @@ class VerifyTemperature(AntaTest):
     name = "VerifyTemperature"
     description = "Verifies device temparture is currently OK (temperatureOK)"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -73,7 +73,7 @@ class VerifyTransceiversTemperature(AntaTest):
     name = "VerifyTransceiversTemperature"
     description = "Verifies Transceivers temperature is currently OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature transceiver", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -104,7 +104,7 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     name = "VerifyEnvironmentSystemCooling"
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -129,7 +129,7 @@ class VerifyEnvironmentCooling(AntaTest):
     name = "VerifyEnvironmentCooling"
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -171,7 +171,7 @@ class VerifyEnvironmentPower(AntaTest):
     name = "VerifyEnvironmentPower"
     description = "Verifies the power supplies status is OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment power", ofmt="json")]
+    commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -204,7 +204,7 @@ class VerifyAdverseDrops(AntaTest):
     name = "VerifyAdverseDrops"
     description = "Verifies there is no adverse drops on DCS7280E and DCS7500E"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
+    commands = [AntaCommand(command="show hardware counter drop", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test

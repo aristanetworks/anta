@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class VerifySnmpStatus(AntaTest):
     name = "VerifySnmpStatus"
     description = "Verifies if the SNMP agent is enabled."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp")]
+    commands = [AntaCommand(command="show snmp")]
 
     @AntaTest.anta_test
     def test(self, vrf: str = "default") -> None:
@@ -58,7 +58,7 @@ class VerifySnmpIPv4Acl(AntaTest):
     name = "VerifySnmpIPv4Acl"
     description = "Verifies if the SNMP agent has IPv4 ACL(s) configured."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp ipv4 access-list summary")]
+    commands = [AntaCommand(command="show snmp ipv4 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -106,7 +106,7 @@ class VerifySnmpIPv6Acl(AntaTest):
     name = "VerifySnmpIPv6Acl"
     description = "Verifies if the SNMP agent has IPv6 ACL(s) configured."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp ipv6 access-list summary")]
+    commands = [AntaCommand(command="show snmp ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:

@@ -13,7 +13,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
-from anta.models import DEFAULT_TAG, AntaTestCommand
+from anta.models import DEFAULT_TAG, AntaCommand
 from anta.tools.misc import exc_to_str, tb_to_str
 
 logger = logging.getLogger(__name__)
@@ -104,24 +104,24 @@ class AntaDevice(ABC):
         """
 
     @abstractmethod
-    async def collect(self, command: AntaTestCommand) -> None:
+    async def collect(self, command: AntaCommand) -> None:
         """
         Collect device command output.
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
 
         The `collect()` implementation needs to populate the `output` attribute
-        of the `AntaTestCommand` object passed as argument.
+        of the `AntaCommand` object passed as argument.
 
         If a failure occurs, the `collect()` implementation is expected to catch the
         exception and implement proper logging, the `output` attribute of the
-        `AntaTestCommand` object passed as argument would be `None` in this case.
+        `AntaCommand` object passed as argument would be `None` in this case.
 
         Args:
             command: the command to collect
         """
 
-    async def collect_commands(self, commands: List[AntaTestCommand]) -> None:
+    async def collect_commands(self, commands: List[AntaCommand]) -> None:
         """
         Collect multiple commands.
 
@@ -236,7 +236,7 @@ class AsyncEOSDevice(AntaDevice):
             return False
         return self._session.host == other._session.host and self._session.port == other._session.port
 
-    async def collect(self, command: AntaTestCommand) -> None:
+    async def collect(self, command: AntaCommand) -> None:
         """
         Collect device command output from EOS using aio-eapi.
 
@@ -269,14 +269,14 @@ class AsyncEOSDevice(AntaDevice):
             logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
+            # TODO @mtache - propagate the exception in some AntaCommand attribute
             logger.error(f"Command '{command.command}' failed on {self.name}: {e.errmsg}")
             logger.debug(command)
         except (HTTPError, ConnectError) as e:
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
+            # TODO @mtache - propagate the exception in some AntaCommand attribute
             logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
         except Exception as e:  # pylint: disable=broad-exception-caught
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
+            # TODO @mtache - propagate the exception in some AntaCommand attribute
             logger.critical(f"Exception raised while collecting command '{command.command}' on device {self.name} - {exc_to_str(e)}")
             logger.debug(tb_to_str(e))
             logger.debug(command)

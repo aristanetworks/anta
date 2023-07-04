@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
+from anta.models import AntaTest, AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     name = "VerifyUnifiedForwardingTableMode"
     description = ""
     categories = ["profiles"]
-    commands = [AntaTestCommand(command="show platform trident forwarding-table partition", ofmt="json")]
+    commands = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -48,7 +48,7 @@ class VerifyTcamProfile(AntaTest):
     name = "VerifyTcamProfile"
     description = "Verify that the assigned TCAM profile is actually running on the device"
     categories = ["profiles"]
-    commands = [AntaTestCommand(command="show hardware tcam profile", ofmt="json")]
+    commands = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
