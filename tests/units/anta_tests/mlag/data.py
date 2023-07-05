@@ -139,17 +139,26 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         "expected_messages": ["MLAG is disabled"]
     },
     {
+        "name": "error",
+        "eos_data": [
+            {
+                "dummy": False,
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "error",
+        "expected_messages": ["Incorrect JSON response - 'mlagActive' state was not found"]
+    },
+    {
         "name": "failure-global",
         "eos_data": [
             {
                 "globalConfiguration": {
-                    "bridging": {
+                    "mlag": {
                         "globalParameters": {
-                            "admin-state vlan 33": {
-                                "localValue": "active"
-                            },
-                            "mac-learning vlan 33": {
-                                "localValue": "True"
+                            "dual-primary-detection-delay": {
+                                "localValue": "0",
+                                "peerValue": "200"
                             }
                         }
                     }
@@ -161,8 +170,10 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned Global inconsistancies: {'bridging': {'globalParameters':"
-                              " {'admin-state vlan 33': {'localValue': 'active'}, 'mac-learning vlan 33': {'localValue': 'True'}}}}"]
+        "expected_messages": ["MLAG config-sanity returned inconsistancies: "
+                              "{'globalConfiguration': {'mlag': {'globalParameters': "
+                              "{'dual-primary-detection-delay': {'localValue': '0', 'peerValue': '200'}}}}, "
+                              "'interfaceConfiguration': {}}"]
     },
     {
         "name": "failure-interface",
@@ -185,8 +196,10 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned Interface inconsistancies: {'trunk-native-vlan mlag30': "
-                              "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}"]
+        "expected_messages": ["MLAG config-sanity returned inconsistancies: "
+                              "{'globalConfiguration': {}, "
+                              "'interfaceConfiguration': {'trunk-native-vlan mlag30': "
+                              "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}}"]
     },
 ]
 

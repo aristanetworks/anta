@@ -94,6 +94,7 @@ class VerifyMlagConfigSanity(AntaTest):
         * success: The test will pass if there are NO MLAG config-sanity inconsistencies.
         * failure: The test will fail if there are MLAG config-sanity inconsistencies.
         * skipped: The test will be skipped if MLAG is 'disabled'.
+        * error: The test will give an error if 'mlagActive' is not found in the JSON response.
     """
 
     name = "VerifyMlagConfigSanity"
@@ -109,18 +110,21 @@ class VerifyMlagConfigSanity(AntaTest):
 
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
 
-        if command_output["mlagActive"] is False:
+        if (mlag_status := get_value(command_output, "mlagActive")) is None:
+            self.result.is_error("Incorrect JSON response - 'mlagActive' state was not found")
+            return
+
+        if mlag_status is False:
             self.result.is_skipped("MLAG is disabled")
             return
 
-        if len(command_output["globalConfiguration"]) == 0 and len(command_output["interfaceConfiguration"]) == 0:
+        keys_to_verify = ["globalConfiguration", "interfaceConfiguration"]
+        verified_output = {key: get_value(command_output, key) for key in keys_to_verify}
+
+        if not any(verified_output.values()):
             self.result.is_success()
-
-        elif len(command_output["globalConfiguration"]) > 0:
-            self.result.is_failure(f"MLAG config-sanity returned Global inconsistancies: {command_output['globalConfiguration']}")
-
-        elif len(command_output["interfaceConfiguration"]) > 0:
-            self.result.is_failure(f"MLAG config-sanity returned Interface inconsistancies: {command_output['interfaceConfiguration']}")
+        else:
+            self.result.is_failure(f"MLAG config-sanity returned inconsistancies: {verified_output}")
 
 
 class VerifyMlagReloadDelay(AntaTest):
@@ -203,10 +207,7 @@ class VerifyMlagDualPrimary(AntaTest):
             )
             return
 
-        if errdisabled:
-            action = "errdisableAllInterfaces"
-        else:
-            action = "none"
+        errdisabled_action = "errdisableAllInterfaces" if errdisabled else "none"
 
         command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
 
@@ -223,7 +224,7 @@ class VerifyMlagDualPrimary(AntaTest):
 
         if (
             verified_output["detail.dualPrimaryDetectionDelay"] == detection_delay
-            and verified_output["detail.dualPrimaryAction"] == action
+            and verified_output["detail.dualPrimaryAction"] == errdisabled_action
             and verified_output["dualPrimaryMlagRecoveryDelay"] == recovery_delay
             and verified_output["dualPrimaryNonMlagRecoveryDelay"] == recovery_delay_non_mlag
         ):
