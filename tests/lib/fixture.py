@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, create_autospec
 
 import pytest
 from aioeapi import Device
+from click.testing import CliRunner
 
 from anta.device import AntaDevice
 
@@ -28,3 +29,11 @@ def mocked_device(hw_model: str = "unknown_hw") -> MagicMock:
     mock.hw_model = hw_model
 
     return mock
+
+
+@pytest.fixture
+def click_runner() -> CliRunner:
+    """
+    Convenience fixture to return a click.CliRunner for cli testing
+    """
+    return CliRunner()

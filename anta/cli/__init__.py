@@ -5,6 +5,7 @@ ANTA CLI
 """
 
 import logging
+import pathlib
 from typing import Any, Callable, Dict, List, Tuple
 
 import click
@@ -15,26 +16,51 @@ from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
 from anta.cli.utils import parse_catalog, parse_inventory, setup_logging
-from anta.inventory import AntaInventory
 from anta.result_manager.models import TestResult
 
 
 @click.group()
 @click.pass_context
 @click.version_option(__version__)
-@click.option("--username", show_envvar=True, help="Username to connect to EOS", required=True, is_eager=True)
-@click.option("--password", show_envvar=True, help="Password to connect to EOS", required=True, is_eager=True)
-@click.option("--timeout", show_envvar=True, default=5, help="Global connection timeout", show_default=True, is_eager=True)
-@click.option("--insecure/--secure", show_envvar=True, default=False, help="Disable SSH Host Key validation", show_default=True, is_eager=True)
-@click.option("--enable-password", show_envvar=True, help="Enable password if required to connect", is_eager=True)
+@click.option(
+    "--username",
+    show_envvar=True,
+    help="Username to connect to EOS",
+    required=True,
+)
+@click.option(
+    "--password",
+    show_envvar=True,
+    help="Password to connect to EOS",
+    required=True,
+)
+@click.option(
+    "--timeout",
+    show_envvar=True,
+    default=5,
+    help="Global connection timeout",
+    show_default=True,
+)
+@click.option(
+    "--insecure/--secure",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+    help="Disable SSH Host Key validation",
+    show_default=True,
+)
+@click.option(
+    "--enable-password",
+    show_envvar=True,
+    help="Enable password if required to connect",
+)
 @click.option(
     "--inventory",
     "-i",
     show_envvar=True,
     required=True,
     help="Path to the inventory YAML file",
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
-    callback=parse_inventory,
+    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
 )
 @click.option(
     "--log-level",
@@ -57,11 +83,11 @@ from anta.result_manager.models import TestResult
 )
 @click.option("--ignore-status", show_envvar=True, is_flag=True, default=False, help="Always exit with success")
 @click.option("--ignore-error", show_envvar=True, is_flag=True, default=False, help="Only report failures and not errors")
-def anta(ctx: click.Context, inventory: AntaInventory, ignore_status: bool, ignore_error: bool, **kwargs: Dict[str, Any]) -> None:
+def anta(ctx: click.Context, inventory: str, ignore_status: bool, ignore_error: bool, **kwargs: Dict[str, Any]) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
     ctx.ensure_object(dict)
-    ctx.obj["inventory"] = inventory
+    ctx.obj["inventory"] = parse_inventory(ctx, inventory)
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
 
