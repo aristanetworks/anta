@@ -54,6 +54,8 @@ async def main(
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         test_params = {k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
         template_params = test[1].get(TEST_TPL_PARAMS)
+        # TODO - catch pydantic_core._pydantic_core.ValidationError here.
+        # This may happen during AntaTestinstantiation due to wrong data for AntaCommand/AntaTemplate
         coros.append(test[0](device=device, template_params=template_params).test(eos_data=None, **test_params))
 
     logger.info("Running ANTA tests...")

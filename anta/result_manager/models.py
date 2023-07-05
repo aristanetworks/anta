@@ -2,7 +2,7 @@
 
 from typing import Iterator, List
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, RootModel, validator
 
 RESULT_OPTIONS = ["unset", "success", "failure", "error", "skipped"]
 
@@ -119,7 +119,7 @@ class TestResult(BaseModel):
         return f"Test {self.test} on device {self.name} has result {self.result}"
 
 
-class ListResult(BaseModel):
+class ListResult(RootModel[List[TestResult]]):
     """
     List result for all tests on all devices.
 
@@ -127,28 +127,26 @@ class ListResult(BaseModel):
         __root__ (List[TestResult]): A list of TestResult objects.
     """
 
-    # pylint: disable=R0801
-
-    __root__: List[TestResult] = []
+    root: List[TestResult] = []
 
     def extend(self, values: List[TestResult]) -> None:
         """Add support for extend method."""
-        self.__root__.extend(values)
+        self.root.extend(values)
 
     def append(self, value: TestResult) -> None:
         """Add support for append method."""
-        self.__root__.append(value)
+        self.root.append(value)
 
     def __iter__(self) -> Iterator[TestResult]:  # type: ignore
         """Use custom iter method."""
         # TODO - mypy is not happy because we overwrite BaseModel.__iter__
         # return type and are breaking Liskov Substitution Principle.
-        return iter(self.__root__)
+        return iter(self.root)
 
     def __getitem__(self, item: int) -> TestResult:
         """Use custom getitem method."""
-        return self.__root__[item]
+        return self.root[item]
 
     def __len__(self) -> int:
         """Support for length of __root__"""
-        return len(self.__root__)
+        return len(self.root)
