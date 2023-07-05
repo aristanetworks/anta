@@ -52,8 +52,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
     return None
 
 
-def parse_inventory(ctx: click.Context, param: Option, value: str) -> AntaInventory:
-    # pylint: disable=unused-argument
+def parse_inventory(ctx: click.Context, value: str) -> AntaInventory:
     """
     Click option callback to parse an ANTA inventory YAML file
     """

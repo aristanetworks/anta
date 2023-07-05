@@ -27,3 +27,5 @@ signature-mutators=click.decorators.option
 [MAIN]
 load-plugins=pylint_pydantic
 extension-pkg-whitelist=pydantic
+ignore-paths = ^tests/units/anta_tests/.*/data.py$,
+               ^tests/units/anta_tests/routing/.*/data.py$,
