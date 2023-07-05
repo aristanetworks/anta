@@ -33,7 +33,7 @@ for device in inventory.get_inventory(established_only=True):
     )
 ```
 
-You can find data model for [anta.inventory.AntaInventory](../api/inventory.md) in the [auto-generated documentation](../api/inventory.models.md).
+You can find the ANTA Inventory module [here](../api/inventory.md).
 
 ??? note "How to create your inventory file"
     Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
