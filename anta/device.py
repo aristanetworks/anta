@@ -200,7 +200,6 @@ class AsyncEOSDevice(AntaDevice):
             name = f"{host}:{port}"
         super().__init__(name, tags)
         self._enable_password = enable_password
-        timeout = httpx.Timeout(10.0, read=0.5)
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: Dict[str, Any] = {}
         if insecure:

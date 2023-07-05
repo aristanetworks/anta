@@ -27,8 +27,7 @@ def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
     Click option callback to get an AntaDevice instance from a string
     """
     if value is not None:
-        # TODO - @mtache write public method to get a device from its name
-        return [dev for dev in ctx.obj["inventory"] if dev.name == value][0]
+        return ctx.obj["inventory"][value]
     return None
 
 
@@ -42,9 +41,9 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], api_version: Union[int,
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     c = AntaCommand(command=command, ofmt=ofmt, version=api_version)
     asyncio.run(device.collect(c))
-    if ofmt == 'json':
+    if ofmt == "json":
         console.print(c.json_output)
-    if ofmt == 'text':
+    if ofmt == "text":
         console.print(c.text_output)
 
 
@@ -65,10 +64,10 @@ def run_template(template: str, params: List[str], ofmt: Literal["json", "text"]
     template_params = dict(zip(params[::2], params[1::2]))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
-    t = AntaTemplate(template=template, params=template_params, ofmt=ofmt, version=api_version)
+    t = AntaTemplate(template=template, ofmt=ofmt, version=api_version)
     c = t.render(template_params)
     asyncio.run(device.collect(c))
-    if ofmt == 'json':
+    if ofmt == "json":
         console.print(c.json_output)
-    if ofmt == 'text':
+    if ofmt == "text":
         console.print(c.text_output)
