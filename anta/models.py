@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, TypeVar, Union, List
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -31,26 +31,32 @@ class AntaTemplate(BaseModel):
         template: Python f-string. Example: 'show vlan {vlan_id}'
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt: eAPI output - json or text - default is json
-        vars: dictionary of variables with string values to render the Python f-string
+        params: dictionary of variables with string values to render the Python f-string
     """
 
     template: str
-    version: Union[int, Literal['latest']] = 'latest'
-    ofmt: Literal['json', 'text'] = 'json'
-    vars: Optional[Dict[str, str]]
+    version: Union[int, Literal["latest"]] = "latest"
+    ofmt: Literal["json", "text"] = "json"
+    params: Optional[Dict[str, str]]
 
-    def render(self, vars: Optional[Dict[str, str]] = None) -> AntaCommand:
-        if vars is None:
-            if self.vars is None:
-                raise RuntimeError(f'Cannot render template {self.template}: vars is missing')
+    def render(self, params: Optional[Dict[str, str]] = None) -> AntaCommand:
+        """Render an AntaCommand from an AntaTemplate instance.
+           Keep the parameters used in the AntaTemplate instance.
+
+            Args:
+                params: the template parameters. If not provided, will try to use the instance params if defined.
+
+            Returns:
+                AntaCommand: The rendered AntaCommand.
+                             This AntaCommand instance have a template attribute that references this
+                             AntaTemplate instance.
+        """
+        if params is None:
+            if self.params is None:
+                raise RuntimeError(f"Cannot render template {self.template}: params is missing")
         else:
-            self.vars = vars
-        return AntaCommand(
-                    command=self.template.format(**self.vars),
-                    ofmt=self.ofmt,
-                    version=self.version,
-                    template=self
-                )
+            self.params = params
+        return AntaCommand(command=self.template.format(**self.params), ofmt=self.ofmt, version=self.version, template=self)
 
 
 class AntaCommand(BaseModel):
@@ -60,10 +66,10 @@ class AntaCommand(BaseModel):
         command: Device command
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt: eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
         template: AntaTemplate object used to render this command
         failed: If the command execution fails, the Exception object is stored in this field
     """
+
     class Config:
         # This is required if we want to keep an Exception object in the failed field
         arbitrary_types_allowed = True
@@ -77,23 +83,30 @@ class AntaCommand(BaseModel):
 
     @property
     def json_output(self) -> Dict[str, Any]:
+        """Get the command output as JSON"""
         if self.output is None:
-            raise RuntimeError(f'There is no output for command {self.command}')
-        if self.ofmt != 'json':
-            raise RuntimeError(f'Output of command {self.command} is not a JSON')
+            raise RuntimeError(f"There is no output for command {self.command}")
+        if self.ofmt != "json":
+            raise RuntimeError(f"Output of command {self.command} is not a JSON")
         if isinstance(self.output, str):
-            raise RuntimeError(f'Output of command {self.command} is invalid')
+            raise RuntimeError(f"Output of command {self.command} is invalid")
         return self.output
 
     @property
     def text_output(self) -> str:
+        """Get the command output as a string"""
         if self.output is None:
-            raise RuntimeError(f'There is no output for command {self.command}')
-        if self.ofmt != 'text':
-            raise RuntimeError(f'Output of command {self.command} is not a JSON')
+            raise RuntimeError(f"There is no output for command {self.command}")
+        if self.ofmt != "text":
+            raise RuntimeError(f"Output of command {self.command} is not a JSON")
         if not isinstance(self.output, str):
-            raise RuntimeError(f'Output of command {self.command} is invalid')
+            raise RuntimeError(f"Output of command {self.command} is invalid")
         return self.output
+
+    @property
+    def collected(self) -> bool:
+        """Return True if the command has been collected"""
+        return self.output is not None and self.failed is not None
 
 
 class AntaTestFilter(ABC):
@@ -180,7 +193,7 @@ class AntaTest(ABC):
 
     def all_data_collected(self) -> bool:
         """returns True if output is populated for every command"""
-        return all(command.output is not None for command in self.instance_commands)
+        return all(command.collected for command in self.instance_commands)
 
     def get_failed_commands(self) -> List[AntaCommand]:
         """returns a list of all the commands that have a populated failed field"""
@@ -227,14 +240,14 @@ class AntaTest(ABC):
             **kwargs: dict[str, Any],
         ) -> TestResult:
             """
-                Wraps the test function and implement (in this order):
-                1. Instantiate the command outputs if `eos_data` is provided
-                2. Collect missing command outputs from the device
-                3. Run the test function
-                4. Catches and set the result if the test function raises an exception
+            Wraps the test function and implement (in this order):
+            1. Instantiate the command outputs if `eos_data` is provided
+            2. Collect missing command outputs from the device
+            3. Run the test function
+            4. Catches and set the result if the test function raises an exception
 
-                Returns:
-                    TestResult: self.result, populated with the correct exit status
+            Returns:
+                TestResult: self.result, populated with the correct exit status
             """
             if self.result.result != "unset":
                 return self.result
@@ -254,7 +267,7 @@ class AntaTest(ABC):
 
             try:
                 if cmds := self.get_failed_commands():
-                    self.result.is_error('\n'.join([f'{cmd.command}: {exc_to_str(cmd.failed)}' for cmd in cmds]))
+                    self.result.is_error("\n".join([f"{cmd.command}: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command}: has failed" for cmd in cmds]))
                     return self.result
                 logger.debug(f"Test {self.name} on device {self.device.name}: running test")
                 function(self, **kwargs)

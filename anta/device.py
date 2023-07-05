@@ -3,7 +3,6 @@ ANTA Device Abstraction Module
 """
 import asyncio
 import logging
-import httpx
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
@@ -201,6 +200,7 @@ class AsyncEOSDevice(AntaDevice):
             name = f"{host}:{port}"
         super().__init__(name, tags)
         self._enable_password = enable_password
+        timeout = httpx.Timeout(10.0, read=0.5)
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: Dict[str, Any] = {}
         if insecure:
@@ -286,7 +286,7 @@ class AsyncEOSDevice(AntaDevice):
         - hw_model: The hardware model of the device
         """
         # Refresh command
-        COMMAND: str = 'show version'
+        COMMAND: str = "show version"
         # Hardware model definition in show version
         HW_MODEL_KEY: str = "modelName"
         logger.debug(f"Refreshing device {self.name}")

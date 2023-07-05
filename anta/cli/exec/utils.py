@@ -36,8 +36,8 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[Lis
             commands.append(AntaCommand(command="clear hardware counter drop"))
         await dev.collect_commands(commands=commands)
         for command in commands:
-            if command.output is None:  # TODO - add a failed attribute to AntaCommand class
-                logger.error(f"Could not clear counters on device {dev.name}")
+            if not command.collected:
+                logger.error(f"Could not clear counters on device {dev.name}: {command.failed}")
         logger.info(f"Cleared counters on {dev.name} ({dev.hw_model})")
 
     logger.info("Connecting to devices...")
