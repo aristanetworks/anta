@@ -4,7 +4,7 @@ Test functions related to multicast
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaCommand
+from anta.models import AntaCommand, AntaTest
 
 logger = logging.getLogger(__name__)
 

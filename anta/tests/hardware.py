@@ -7,7 +7,7 @@ import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaCommand
+from anta.models import AntaCommand, AntaTest
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, Optional, cast
 
 from anta.decorators import check_bgp_family_enable
-from anta.models import AntaTest, AntaCommand, AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -105,11 +105,10 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and \
-               "vrf" in command.template.vars:
-                vrf = command.template.vars['vrf']
+            if command.template and command.template.vars and "vrf" in command.template.vars:
+                vrf = command.template.vars["vrf"]
             else:
-                self.result.is_error('A list of VRF(s) is not provided as template_params')
+                self.result.is_error("A list of VRF(s) is not provided as template_params")
                 return
 
             peers = command.json_output["vrfs"][vrf]["peers"]

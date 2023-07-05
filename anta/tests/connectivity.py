@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from anta.models import AntaTest, AntaTemplate
+from anta.models import AntaTemplate, AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +34,10 @@ class VerifyReachability(AntaTest):
         failures = []
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and \
-               ('src' and 'dst') in command.template.vars:
+            if command.template and command.template.vars and ("src" and "dst") in command.template.vars:
                 src, dst = command.template.vars["src"], command.template.vars["dst"]
             else:
-                self.result.is_error('The destination IP(s) or the source interface/IP(s) are not provided as template_params')
+                self.result.is_error("The destination IP(s) or the source interface/IP(s) are not provided as template_params")
                 return
 
             if "2 received" not in command.json_output["messages"][0]:

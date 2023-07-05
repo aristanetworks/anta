@@ -4,7 +4,7 @@ Generic routing test functions
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaCommand
+from anta.models import AntaCommand, AntaTest
 
 logger = logging.getLogger(__name__)
 

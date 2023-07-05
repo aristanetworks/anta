@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 
-from anta.models import AntaTest, AntaCommand
+from anta.models import AntaCommand, AntaTest
 
 logger = logging.getLogger(__name__)
 

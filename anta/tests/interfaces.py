@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaCommand, AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -401,11 +401,10 @@ class VerifyIPProxyARP(AntaTest):
 
         disabled_intf = []
         for command in self.instance_commands:
-            if command.template and command.template.vars and \
-               'intf' in command.template.vars:
-                intf = command.template.vars['intf']
+            if command.template and command.template.vars and "intf" in command.template.vars:
+                intf = command.template.vars["intf"]
             else:
-                self.result.is_error('A list of interface(s) is not provided as template_params')
+                self.result.is_error("A list of interface(s) is not provided as template_params")
                 return
             logger.debug(command)
             if not command.json_output["interfaces"][intf]["proxyArp"]:

@@ -4,8 +4,7 @@ Test functions related to Multi-chassis Link Aggregation (MLAG)
 import logging
 from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaCommand
-from anta.tools.get_value import get_value
+from anta.models import AntaCommand, AntaTest
 
 logger = logging.getLogger(__name__)
 

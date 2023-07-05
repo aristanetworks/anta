@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaCommand, AntaTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
 
 logger = logging.getLogger(__name__)
@@ -58,11 +58,10 @@ class VerifySTPMode(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and \
-               "vlan" in command.template.vars:
-                vlan_id = command.template.vars['vlan']
+            if command.template and command.template.vars and "vlan" in command.template.vars:
+                vlan_id = command.template.vars["vlan"]
             else:
-                self.result.is_error('A list of VLAN(s) is not provided as template_params')
+                self.result.is_error("A list of VLAN(s) is not provided as template_params")
                 return
             if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 self.result.is_failure(f"STP mode '{mode}' not configured for VLAN {vlan_id}")
@@ -157,11 +156,10 @@ class VerifySTPForwardingPorts(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and \
-               "vlan" in command.template.vars:
-                vlan_id = command.template.vars['vlan']
+            if command.template and command.template.vars and "vlan" in command.template.vars:
+                vlan_id = command.template.vars["vlan"]
             else:
-                self.result.is_error('A list of VLAN(s) is not provided as template_params')
+                self.result.is_error("A list of VLAN(s) is not provided as template_params")
                 return
 
             if not (topologies := get_value(command.json_output, "topologies")):
