@@ -88,10 +88,10 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
 
             command_output = cast(Dict[str, Any], command.output)
 
-            if "vrfs" not in command_output:
+            if "vrfs" not in command_output:  # pylint: disable=unsupported-membership-test
                 anta_test.result.is_skipped(f"no BGP configuration for {family} on this device")
                 return anta_test.result
-            if len(bgp_vrfs := command_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
+            if len(bgp_vrfs := command_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:  # pylint: disable=unsubscriptable-object
                 # No VRF
                 anta_test.result.is_skipped(f"no {family} peer on this device")
                 return anta_test.result

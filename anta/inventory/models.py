@@ -25,10 +25,10 @@ class AntaInventoryHost(BaseModel):
         tags (List[str]): List of attached tags read from inventory file.
     """
 
-    name: Optional[str]
-    host: Union[constr(regex=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
-    port: Optional[conint(gt=1, lt=65535)]  # type: ignore
-    tags: Optional[List[str]]
+    name: Optional[str] = None
+    host: Union[constr(pattern=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
+    port: Optional[conint(gt=1, lt=65535)] = None  # type: ignore
+    tags: Optional[List[str]] = None
 
 
 class AntaInventoryNetwork(BaseModel):
@@ -41,7 +41,7 @@ class AntaInventoryNetwork(BaseModel):
     """
 
     network: IPvAnyNetwork
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
 
 
 class AntaInventoryRange(BaseModel):
@@ -56,7 +56,7 @@ class AntaInventoryRange(BaseModel):
 
     start: IPvAnyAddress
     end: IPvAnyAddress
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
 
 
 class AntaInventoryInput(BaseModel):
@@ -69,6 +69,6 @@ class AntaInventoryInput(BaseModel):
         range (List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
 
-    networks: Optional[List[AntaInventoryNetwork]]
-    hosts: Optional[List[AntaInventoryHost]]
-    ranges: Optional[List[AntaInventoryRange]]
+    networks: Optional[List[AntaInventoryNetwork]] = None
+    hosts: Optional[List[AntaInventoryHost]] = None
+    ranges: Optional[List[AntaInventoryRange]] = None

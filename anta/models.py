@@ -54,9 +54,9 @@ class AntaTestCommand(BaseModel):
     command: str
     version: Union[int, Literal["latest"]] = "latest"
     ofmt: str = "json"
-    output: Optional[Union[Dict[str, Any], str]]
+    output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTestTemplate] = None
-    template_params: Optional[Dict[str, str]]
+    template_params: Optional[Dict[str, Any]] = None
 
     @validator("template_params")
     def prevent_none_when_template_is_set(cls: Type[AntaTestTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore

@@ -53,7 +53,7 @@ repos:
         args:
           - --config-file=pyproject.toml
         additional_dependencies:
-          - pydantic~=1.10
+          - pydantic~=2.0
           - types-PyYAML
           - types-paramiko
           - types-requests
