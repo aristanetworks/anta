@@ -8,9 +8,10 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union, cast
 
 from pydantic import BaseModel, ConfigDict, conint
+from rich.progress import Progress, TaskID
 
 from anta import __DEBUG__
 from anta.result_manager.models import TestResult
@@ -162,13 +163,17 @@ class AntaTest(ABC):
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
+        progress: Optional[Progress] = None,
     ):
         """Class constructor"""
+        # Accept 6 input arguments
+        # pylint: disable=R0913
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
         self.result: TestResult = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels: List[str] = labels or []
         self.instance_commands: List[AntaCommand] = []
+        self.progress = progress
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
@@ -204,11 +209,7 @@ class AntaTest(ABC):
 
     def get_failed_commands(self) -> List[AntaCommand]:
         """returns a list of all the commands that have a populated failed field"""
-        errors = []
-        for command in self.instance_commands:
-            if command.failed is not None:
-                errors.append(command)
-        return errors
+        return [command for command in self.instance_commands if command.failed is not None]
 
     def __init_subclass__(cls) -> None:
         """
@@ -233,7 +234,7 @@ class AntaTest(ABC):
             if __DEBUG__:
                 self.logger.exception(message)
             else:
-                self.logger.error(message + f": {exc_to_str(e)}")
+                self.logger.error(f"{message}: {exc_to_str(e)}")
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -286,8 +287,13 @@ class AntaTest(ABC):
                 if __DEBUG__:
                     self.logger.exception(message)
                 else:
-                    self.logger.error(message + f": {exc_to_str(e)}")
+                    self.logger.error(f"{message}: {exc_to_str(e)}")
                 self.result.is_error(exc_to_str(e))
+            if self.progress:
+                # TODO this is hacky because we only have one task..
+                # Should be id 0 - casting for mypy
+                nrfu_task: TaskID = cast(TaskID, 0)
+                self.progress.update(nrfu_task, advance=1)
             return self.result
 
         return wrapper

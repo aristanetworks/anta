@@ -16,7 +16,7 @@ from anta.cli.utils import parse_tags, return_code
 from anta.result_manager import ResultManager
 from anta.runner import main
 
-from .utils import print_jinja, print_json, print_settings, print_table, print_text
+from .utils import anta_progress_bar, print_jinja, print_json, print_settings, print_table, print_text
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,8 @@ def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], 
     """ANTA command to check network states with table result"""
     print_settings(ctx)
     results = ResultManager()
-    asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    with anta_progress_bar() as progress:
+        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags, progress=progress))
     print_table(results=results, device=device, test=test)
 
     # TODO make a util method to avoid repeating the same three line
@@ -54,7 +55,8 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
     """ANTA command to check network state with JSON result"""
     print_settings(ctx)
     results = ResultManager()
-    asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    with anta_progress_bar() as progress:
+        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags, progress=progress))
     print_json(results=results, output=output)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -71,7 +73,8 @@ def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], s
     """ANTA command to check network states with text result"""
     print_settings(ctx)
     results = ResultManager()
-    asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    with anta_progress_bar() as progress:
+        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags, progress=progress))
     print_text(results=results, search=search, skip_error=skip_error)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -102,7 +105,8 @@ def tpl_report(ctx: click.Context, tags: Optional[List[str]], template: pathlib.
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)
     results = ResultManager()
-    asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    with anta_progress_bar() as progress:
+        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags, progress=progress))
     print_jinja(results=results, template=template, output=output)
 
     ignore_status = ctx.obj["ignore_status"]

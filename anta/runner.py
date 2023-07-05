@@ -7,6 +7,8 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from rich.progress import Progress
+
 from anta import __DEBUG__
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
@@ -25,6 +27,7 @@ async def main(
     tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]],
     tags: Optional[List[str]] = None,
     established_only: bool = True,
+    progress: Optional[Progress] = None,
 ) -> None:
     """
     Main coroutine to run ANTA.
@@ -45,6 +48,8 @@ async def main(
     Returns:
         any: List of results.
     """
+    # Accept 6 arguments here
+    # pylint: disable=R0913
 
     await inventory.connect_inventory()
 
@@ -57,14 +62,17 @@ async def main(
         template_params = test[1].get(TEST_TPL_PARAMS)
         try:
             # Instantiate AntaTest object
-            test_instance = test[0](device=device, template_params=template_params)
+            test_instance = test[0](device=device, template_params=template_params, progress=progress)
             coros.append(test_instance.test(eos_data=None, **test_params))
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
             if __DEBUG__:
                 logger.exception(message)
             else:
-                logger.error(message + f": {exc_to_str(e)}")
+                logger.error(f"{message}: {exc_to_str(e)}")
+
+    if progress is not None:
+        progress.add_task("Running NRFU Tests...", total=len(coros))
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
@@ -74,6 +82,6 @@ async def main(
             if __DEBUG__:
                 logger.exception(message, exc_info=r)
             else:
-                logger.error(message + f": {exc_to_str(r)}")
+                logger.error(f"{message}: {exc_to_str(r)}")
             res.remove(r)
     manager.add_test_results(res)
