@@ -22,7 +22,7 @@ dependencies = [
   "click-help-colors==0.9.1",
   "cvprac>=1.2.0",
   "netaddr>=0.8.0",
-  "pydantic~=1.10",
+  "pydantic~=2.0",
   "PyYAML>=6.0",
   "requests",
   "rich>=12.5.1",
