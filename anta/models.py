@@ -62,13 +62,18 @@ class AntaCommand(BaseModel):
         ofmt: eAPI output - json or text - default is json
         output: collected output either dict for json or str for text
         template: AntaTemplate object used to render this command
+        failed: If the command execution fails, the Exception object is stored in this field
     """
+    class Config:
+        # This is required if we want to keep an Exception object in the failed field
+        arbitrary_types_allowed = True
 
     command: str
     version: Union[int, Literal['latest']] = 'latest'
     ofmt: Literal['json', 'text'] = 'json'
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
+    failed: Optional[Exception] = None
 
     @property
     def json_output(self) -> Dict[str, Any]:
@@ -177,6 +182,14 @@ class AntaTest(ABC):
         """returns True if output is populated for every command"""
         return all(command.output is not None for command in self.instance_commands)
 
+    def get_failed_commands(self) -> List[AntaCommand]:
+        """returns a list of all the commands that have a populated failed field"""
+        errors = []
+        for command in self.instance_commands:
+            if command.failed is not None:
+                errors.append(command)
+        return errors
+
     def __init_subclass__(cls) -> None:
         """
         Verify that the mandatory class attributes are defined
@@ -214,14 +227,14 @@ class AntaTest(ABC):
             **kwargs: dict[str, Any],
         ) -> TestResult:
             """
-            Wraps the test function and implement (in this order):
-            1. Instantiate the command outputs if `eos_data` is provided
-            2. Collect missing command outputs from the device
-            3. Run the test function
-            4. Catches and set the result if the test function raises an exception
+                Wraps the test function and implement (in this order):
+                1. Instantiate the command outputs if `eos_data` is provided
+                2. Collect missing command outputs from the device
+                3. Run the test function
+                4. Catches and set the result if the test function raises an exception
 
-            Returns:
-                TestResult: self.result, populated with the correct exit status
+                Returns:
+                    TestResult: self.result, populated with the correct exit status
             """
             if self.result.result != "unset":
                 return self.result
@@ -230,18 +243,19 @@ class AntaTest(ABC):
 
             # Data
             if eos_data is not None:
-                logger.debug("Test initialized with input data")
                 self.save_commands_data(eos_data)
+                logger.debug(f"Test {self.name} initialized with input data {eos_data}")
 
-            # No test data is present, try to collect
+            # If some data is missing, try to collect
             if not self.all_data_collected():
                 await self.collect()
                 if self.result.result != "unset":
                     return self.result
 
             try:
-                if not self.all_data_collected():
-                    raise ValueError("Some command output is missing")
+                if cmds := self.get_failed_commands():
+                    self.result.is_error('\n'.join([f'{cmd.command}: {exc_to_str(cmd.failed)}' for cmd in cmds]))
+                    return self.result
                 logger.debug(f"Test {self.name} on device {self.device.name}: running test")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
