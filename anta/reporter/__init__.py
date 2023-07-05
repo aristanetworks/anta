@@ -108,7 +108,7 @@ class ReportTable:
             Table: A fully populated rich Table
         """
         table = Table(title=title)
-        headers = ["Device IP", "Test Name", "Test Status", "Message(s)"]
+        headers = ["Device IP", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
         for result in result_manager.get_results(output_format="list"):
@@ -116,7 +116,8 @@ class ReportTable:
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
                 state = self._color_result(status=str(result.result), output_type="str")
                 message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-                table.add_row(str(result.name), result.test, state, message)
+                test_categories = ", ".join(result.test_category)
+                table.add_row(str(result.name), result.test, state, message, result.test_description, test_categories)
         return table
 
     def report_summary_tests(
