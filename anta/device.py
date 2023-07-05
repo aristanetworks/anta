@@ -261,7 +261,7 @@ class AsyncEOSDevice(AntaDevice):
             if command.ofmt in ["json", "text"]:
                 # selecting only our command output
                 response = response[1]
-            command.output = response
+            command.set_output(response)
             logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:

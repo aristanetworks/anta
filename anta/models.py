@@ -10,7 +10,7 @@ from copy import deepcopy
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str, tb_to_str
@@ -31,32 +31,25 @@ class AntaTemplate(BaseModel):
         template: Python f-string. Example: 'show vlan {vlan_id}'
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt: eAPI output - json or text - default is json
-        params: dictionary of variables with string values to render the Python f-string
     """
 
     template: str
     version: Union[int, Literal["latest"]] = "latest"
     ofmt: Literal["json", "text"] = "json"
-    params: Optional[Dict[str, str]]
 
-    def render(self, params: Optional[Dict[str, str]] = None) -> AntaCommand:
+    def render(self, params: Dict[str, str]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
-           Keep the parameters used in the AntaTemplate instance.
+        Keep the parameters used in the AntaTemplate instance.
 
-            Args:
-                params: the template parameters. If not provided, will try to use the instance params if defined.
+         Args:
+             params: dictionary of variables with string values to render the Python f-string
 
-            Returns:
-                AntaCommand: The rendered AntaCommand.
-                             This AntaCommand instance have a template attribute that references this
-                             AntaTemplate instance.
+         Returns:
+             AntaCommand: The rendered AntaCommand.
+                          This AntaCommand instance have a template attribute that references this
+                          AntaTemplate instance.
         """
-        if params is None:
-            if self.params is None:
-                raise RuntimeError(f"Cannot render template {self.template}: params is missing")
-        else:
-            self.params = params
-        return AntaCommand(command=self.template.format(**self.params), ofmt=self.ofmt, version=self.version, template=self)
+        return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, template=self, params=params)
 
 
 class AntaCommand(BaseModel):
@@ -67,46 +60,50 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are integers or the string "latest" - default is "latest"
         ofmt: eAPI output - json or text - default is json
         template: AntaTemplate object used to render this command
+        params: dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
     """
 
-    class Config:
-        # This is required if we want to keep an Exception object in the failed field
-        arbitrary_types_allowed = True
+    # This is required if we want to keep an Exception object in the failed field
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     command: str
-    version: Union[int, Literal['latest']] = 'latest'
-    ofmt: Literal['json', 'text'] = 'json'
-    output: Optional[Union[Dict[str, Any], str]] = None
+    version: Union[int, Literal["latest"]] = "latest"
+    ofmt: Literal["json", "text"] = "json"
+    _output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
+    params: Optional[Dict[str, str]] = None
+
+    def set_output(self, output: Union[Dict[str, Any], str]) -> None:
+        if self._output is not None:
+            raise RuntimeError(f"Output of command {self.command} cannot be overriden")
+        if (isinstance(output, str) and self.ofmt != "text") or (isinstance(output, dict) and self.ofmt != "json"):
+            raise RuntimeError(f"Output of command {self.command} has wrong type")
+        self._output = output
 
     @property
     def json_output(self) -> Dict[str, Any]:
         """Get the command output as JSON"""
-        if self.output is None:
+        if self._output is None:
             raise RuntimeError(f"There is no output for command {self.command}")
-        if self.ofmt != "json":
-            raise RuntimeError(f"Output of command {self.command} is not a JSON")
-        if isinstance(self.output, str):
+        if self.ofmt != "json" or not isinstance(self._output, dict):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self.output
+        return self._output
 
     @property
     def text_output(self) -> str:
         """Get the command output as a string"""
-        if self.output is None:
+        if self._output is None:
             raise RuntimeError(f"There is no output for command {self.command}")
-        if self.ofmt != "text":
-            raise RuntimeError(f"Output of command {self.command} is not a JSON")
-        if not isinstance(self.output, str):
+        if self.ofmt != "text" or not isinstance(self._output, str):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self.output
+        return self._output
 
     @property
     def collected(self) -> bool:
         """Return True if the command has been collected"""
-        return self.output is not None and self.failed is not None
+        return self._output is not None and self.failed is not None
 
 
 class AntaTestFilter(ABC):
