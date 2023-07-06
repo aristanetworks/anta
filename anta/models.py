@@ -10,7 +10,7 @@ from copy import deepcopy
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, conint
 
 from anta import __DEBUG__
 from anta.result_manager.models import TestResult
@@ -23,17 +23,28 @@ F = TypeVar("F", bound=Callable[..., Any])
 DEFAULT_TAG = "all"
 
 
+# TODO: Notes on eAPI version/revision
+# eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
+# (revisions are numbers, default value is 1).
+# By default an eAPI request will return revision 1 of the model instance,
+# this ensures that older management software will not suddenly stop working when a switch is upgraded.
+# A "revision" applies to a particular CLI command whereas a "version" is global and is internally
+# translated to a specific "revision" for each CLI command in the rpc.
+
+
 class AntaTemplate(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
         template: Python f-string. Example: 'show vlan {vlan_id}'
-        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
     """
 
     template: str
-    version: Union[int, Literal["latest"]] = "latest"
+    version: Literal[1, "latest"] = "latest"
+    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
 
     def render(self, params: Dict[str, Any]) -> AntaCommand:
@@ -48,7 +59,7 @@ class AntaTemplate(BaseModel):
                           This AntaCommand instance have a template attribute that references this
                           AntaTemplate instance.
         """
-        return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, template=self, params=params)
+        return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
 
 
 class AntaCommand(BaseModel):
@@ -56,7 +67,8 @@ class AntaCommand(BaseModel):
 
     Attributes:
         command: Device command
-        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
         template: AntaTemplate object used to render this command
         params: dictionary of variables with string values to render the template
@@ -67,7 +79,8 @@ class AntaCommand(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     command: str
-    version: Union[int, Literal["latest"]] = "latest"
+    version: Literal[1, "latest"] = "latest"
+    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None

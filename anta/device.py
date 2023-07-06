@@ -243,15 +243,22 @@ class AsyncEOSDevice(AntaDevice):
             command: the command to collect
         """
         try:
+            commands = []
             if self._enable_password is not None:
-                enable_cmd = {
-                    "cmd": "enable",
-                    "input": str(self._enable_password),
-                }
+                commands.append(
+                    {
+                        "cmd": "enable",
+                        "input": str(self._enable_password),
+                    }
+                )
             else:
-                enable_cmd = {"cmd": "enable"}
+                commands.append({"cmd": "enable"})
+            if command.revision:
+                commands.append({"cmd": command.command, "revision": command.revision})
+            else:
+                commands.append({"cmd": command.command})
             response = await self._session.cli(
-                commands=[enable_cmd, command.command],
+                commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )

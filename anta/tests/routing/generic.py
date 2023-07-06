@@ -87,7 +87,7 @@ class VerifyBFD(AntaTest):
     description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
     categories = ["routing", "generic"]
     # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaCommand(command="show bfd peers", version=1)]
+    commands = [AntaCommand(command="show bfd peers", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
