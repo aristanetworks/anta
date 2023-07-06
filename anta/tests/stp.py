@@ -3,13 +3,10 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 """
 from __future__ import annotations
 
-import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-
-logger = logging.getLogger(__name__)
 
 
 class VerifySTPMode(AntaTest):

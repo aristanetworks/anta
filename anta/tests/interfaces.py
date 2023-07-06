@@ -1,14 +1,12 @@
 """
 Test functions related to the device interfaces
 """
-import logging
+
 import re
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -406,7 +404,6 @@ class VerifyIPProxyARP(AntaTest):
             else:
                 self.result.is_error("A list of interface(s) is not provided as template_params")
                 return
-            logger.debug(command)
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
 

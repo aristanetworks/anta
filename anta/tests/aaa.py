@@ -3,12 +3,9 @@ Test functions related to the EOS various AAA settings
 """
 from __future__ import annotations
 
-import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 def _check_group_methods(methods: List[str]) -> List[str]:

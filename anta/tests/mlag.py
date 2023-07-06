@@ -1,12 +1,10 @@
 """
 Test functions related to Multi-chassis Link Aggregation (MLAG)
 """
-import logging
-from typing import Any, Dict, Optional, cast
+
+from typing import Any, Dict, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyMlagStatus(AntaTest):

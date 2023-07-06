@@ -1,12 +1,10 @@
 """
 Test functions related to the EOS software
 """
-import logging
+
 from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyEOSVersion(AntaTest):

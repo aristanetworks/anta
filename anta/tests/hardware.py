@@ -3,13 +3,10 @@ Test functions related to the hardware or environement
 """
 from __future__ import annotations
 
-import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyTransceiversManufacturers(AntaTest):

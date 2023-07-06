@@ -3,11 +3,7 @@ Test functions related to various connectivity checks
 """
 from __future__ import annotations
 
-import logging
-
 from anta.models import AntaTemplate, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyReachability(AntaTest):

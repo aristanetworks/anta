@@ -11,10 +11,8 @@ from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTest
 
-logger = logging.getLogger(__name__)
 
-
-def _get_logging_states(command_output: str) -> str:
+def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     """
     Parse "show logging" output and gets operational logging states used
     in the tests in this module.
@@ -54,7 +52,7 @@ class VerifyLoggingPersistent(AntaTest):
         log_output = cast(str, self.instance_commands[0].output)
         dir_flash_output = cast(str, self.instance_commands[1].output)
 
-        if "Persistent logging: disabled" in _get_logging_states(log_output):
+        if "Persistent logging: disabled" in _get_logging_states(self.logger, log_output):
             self.result.is_failure("Persistent logging is disabled")
             return
 
@@ -97,7 +95,7 @@ class VerifyLoggingSourceIntf(AntaTest):
 
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
 
-        if re.search(pattern, _get_logging_states(output)):
+        if re.search(pattern, _get_logging_states(self.logger, output)):
             self.result.is_success()
         else:
             self.result.is_failure(f"Source-interface '{intf}' is not configured in VRF {vrf}")
@@ -137,7 +135,7 @@ class VerifyLoggingHosts(AntaTest):
 
         for host in hosts:
             pattern = rf"Logging to '{host}'.*VRF {vrf}"
-            if not re.search(pattern, _get_logging_states(output)):
+            if not re.search(pattern, _get_logging_states(self.logger, output)):
                 not_configured.append(host)
 
         if not not_configured:

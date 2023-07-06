@@ -1,13 +1,11 @@
 """
 Test functions to flag field notices
 """
-import logging
+
 from typing import Any, Dict, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyFieldNotice44Resolution(AntaTest):

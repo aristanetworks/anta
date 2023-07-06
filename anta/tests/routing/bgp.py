@@ -1,13 +1,11 @@
 """
 BGP test functions
 """
-import logging
+
 from typing import Any, Dict, Optional, cast
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 def _check_bgp_vrfs(bgp_vrfs: Dict[str, Any]) -> Dict[str, Any]:

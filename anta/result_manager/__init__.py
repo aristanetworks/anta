@@ -101,8 +101,6 @@ class ResultManager:
         if test_status not in RESULT_OPTIONS:
             raise ValueError("{test_status} is not a valid result option")
         if test_status == "error":
-            if not self.error_status:
-                logger.info("A test has returned an 'error' status")
             self.error_status = True
             return
 

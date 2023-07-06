@@ -1,13 +1,11 @@
 """
 Test functions related to ASIC profiles
 """
-import logging
+
 from typing import Any, Dict, Optional, cast
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyUnifiedForwardingTableMode(AntaTest):

@@ -6,11 +6,7 @@ Test functions related to the device configuration
 
 from __future__ import annotations
 
-import logging
-
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyZeroTouch(AntaTest):
@@ -49,12 +45,9 @@ class VerifyRunningConfigDiffs(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyRunningConfigDiffs validation"""
-        logger.debug(f"self.instance_commands is {self.instance_commands}")
         command_output = self.instance_commands[0].output
-        logger.debug(f"command_output is {command_output}")
         if command_output is None or command_output == "":
             self.result.is_success()
         else:
             self.result.is_failure()
             self.result.is_failure(str(command_output))
-        logger.debug(f"result is {self.result}")

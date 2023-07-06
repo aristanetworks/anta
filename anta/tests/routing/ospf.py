@@ -3,12 +3,9 @@ OSPF test functions
 """
 from __future__ import annotations
 
-import logging
 from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 def _count_ospf_neighbor(ospf_neighbor_json: Dict[str, Any]) -> int:

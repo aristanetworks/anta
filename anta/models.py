@@ -151,9 +151,10 @@ class AntaTest(ABC):
         labels: list[str] | None = None,
     ):
         """Class constructor"""
-        self.device = device
-        self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
-        self.labels = labels or []
+        self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
+        self.device: AntaDevice = device
+        self.result: TestResult = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
+        self.labels: List[str] = labels or []
         self.instance_commands: List[AntaCommand] = []
 
         # TODO - check optimization for deepcopy
@@ -255,7 +256,9 @@ class AntaTest(ABC):
 
             try:
                 if cmds := self.get_failed_commands():
-                    self.result.is_error("\n".join([f"{cmd.command}: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command}: has failed" for cmd in cmds]))
+                    self.result.is_error(
+                        "\n".join([f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in cmds])
+                    )
                     return self.result
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught

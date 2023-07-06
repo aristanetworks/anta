@@ -1,12 +1,10 @@
 """
 Test functions related to VXLAN
 """
-import logging
+
 from typing import Any, Dict, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyVxlan(AntaTest):

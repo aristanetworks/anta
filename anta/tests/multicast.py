@@ -1,12 +1,10 @@
 """
 Test functions related to multicast
 """
-import logging
+
 from typing import Any, Dict, List, Optional, cast
 
 from anta.models import AntaCommand, AntaTest
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):
@@ -41,7 +39,6 @@ class VerifyIGMPSnoopingVlans(AntaTest):
             return
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        logger.debug(f"query self.result is: {command_output}")
 
         self.result.is_success()
         for vlan in vlans:
@@ -85,7 +82,6 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
             return
 
         command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        logger.debug(f"query self.result is: {command_output}")
 
         self.result.is_success()
         if (igmp_state := command_output["igmpSnoopingState"]) != configuration:
