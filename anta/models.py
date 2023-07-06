@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 DEFAULT_TAG = "all"
 
+logger = logging.getLogger(__name__)
 
 # TODO: Notes on eAPI version/revision
 # eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
@@ -179,8 +180,11 @@ class AntaTest(ABC):
                 return
             self.template_params = template_params
             for param in template_params:
-                template_instance = deepcopy(tpl)
-                self.instance_commands.append(template_instance.render(param))
+                try:
+                    self.instance_commands.append(tpl.render(param))
+                except KeyError:
+                    self.result.is_error(f"Cannot render template '{tpl.template}': wrong parameters")
+                    return
 
         if eos_data is not None:
             self.logger.debug("Test initialized with input data")

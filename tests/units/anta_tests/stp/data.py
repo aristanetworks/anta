@@ -122,6 +122,32 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         "expected_messages": ["Command has template but no params were given"]
     },
     {
+        "name": "error",
+        "eos_data": [
+            {
+                "spanningTreeVlanInstances": {
+                    "10": {
+                        "spanningTreeVlanInstance": {
+                            "protocol": "rstp"
+                        }
+                    }
+                }
+            },
+            {
+                "spanningTreeVlanInstances": {
+                    "20": {
+                        "spanningTreeVlanInstance": {
+                            "protocol": "rstp"
+                        }
+                    }
+                }
+            },
+        ],
+        "side_effect": {"mode": "rstp", "template_params": [{'plop': 1}]},
+        "expected_result": "error",
+        "expected_messages": ["Cannot render template 'show spanning-tree vlan {vlan}': wrong parameters"]
+    },
+    {
         "name": "skipped",
         "eos_data": [
             {

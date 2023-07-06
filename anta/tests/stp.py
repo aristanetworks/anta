@@ -57,9 +57,6 @@ class VerifySTPMode(AntaTest):
         for command in self.instance_commands:
             if command.params and "vlan" in command.params:
                 vlan_id = command.params["vlan"]
-            else:
-                self.result.is_error("A list of VLAN(s) is not provided as template_params")
-                return
             if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 self.result.is_failure(f"STP mode '{mode}' not configured for VLAN {vlan_id}")
 
@@ -155,9 +152,6 @@ class VerifySTPForwardingPorts(AntaTest):
         for command in self.instance_commands:
             if command.params and "vlan" in command.params:
                 vlan_id = command.params["vlan"]
-            else:
-                self.result.is_error("A list of VLAN(s) is not provided as template_params")
-                return
 
             if not (topologies := get_value(command.json_output, "topologies")):
                 self.result.is_failure(f"STP instance for VLAN {vlan_id} is not configured")
