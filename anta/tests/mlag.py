@@ -2,8 +2,6 @@
 Test functions related to Multi-chassis Link Aggregation (MLAG)
 """
 
-from typing import Any, Dict, cast
-
 from anta.models import AntaCommand, AntaTest
 
 
@@ -30,7 +28,7 @@ class VerifyMlagStatus(AntaTest):
         Run VerifyMlagStatus validation
         """
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
@@ -71,7 +69,7 @@ class VerifyMlagInterfaces(AntaTest):
         Run VerifyMlagInterfaces validation
         """
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
@@ -105,7 +103,7 @@ class VerifyMlagConfigSanity(AntaTest):
         Run VerifyMlagConfigSanity validation
         """
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if (mlag_status := get_value(command_output, "mlagActive")) is None:
             self.result.is_error("Incorrect JSON response - 'mlagActive' state was not found")

@@ -3,7 +3,7 @@ Test functions related to the EOS various AAA settings
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -64,7 +64,7 @@ class VerifyTacacsSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         try:
             if command_output["srcIntf"][vrf] == intf:
@@ -104,7 +104,7 @@ class VerifyTacacsServers(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because servers or vrf were not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         tacacs_servers = command_output["tacacsServers"]
 
@@ -151,7 +151,7 @@ class VerifyTacacsServerGroups(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because groups were not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         tacacs_groups = command_output["groups"]
 
@@ -199,7 +199,7 @@ class VerifyAuthenMethods(AntaTest):
 
         _check_auth_type(auth_types, ["login", "enable", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
 
@@ -256,7 +256,7 @@ class VerifyAuthzMethods(AntaTest):
 
         methods_with_group = _check_group_methods(methods)
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
 
@@ -306,7 +306,7 @@ class VerifyAcctDefaultMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
         not_configured = []
@@ -364,7 +364,7 @@ class VerifyAcctConsoleMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
         not_configured = []

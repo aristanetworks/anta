@@ -3,7 +3,7 @@ OSPF test functions
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -54,7 +54,7 @@ class VerifyOSPFNeighborState(AntaTest):
     def test(self) -> None:
         """Run VerifyOSPFNeighborState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if _count_ospf_neighbor(command_output) == 0:
             self.result.is_skipped("no OSPF neighbor found")
@@ -87,7 +87,7 @@ class VerifyOSPFNeighborCount(AntaTest):
             self.result.is_skipped(f"VerifyOSPFNeighborCount was not run as the number given '{number}' is not a valid value.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if (neighbor_count := _count_ospf_neighbor(command_output)) == 0:
             self.result.is_skipped("no OSPF neighbor found")

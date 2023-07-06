@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -49,8 +49,8 @@ class VerifyLoggingPersistent(AntaTest):
         """
         self.result.is_success()
 
-        log_output = cast(str, self.instance_commands[0].output)
-        dir_flash_output = cast(str, self.instance_commands[1].output)
+        log_output = self.instance_commands[0].text_output
+        dir_flash_output = self.instance_commands[1].text_output
 
         if "Persistent logging: disabled" in _get_logging_states(self.logger, log_output):
             self.result.is_failure("Persistent logging is disabled")
@@ -91,7 +91,7 @@ class VerifyLoggingSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
 
@@ -129,7 +129,7 @@ class VerifyLoggingHosts(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because hosts or vrf were not supplied")
             return
 
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         not_configured = []
 
@@ -168,7 +168,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
         """
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
 
-        output = cast(str, self.instance_commands[1].output)
+        output = self.instance_commands[1].text_output
         lines = output.strip().split("\n")[::-1]
 
         for line in lines:
@@ -202,8 +202,8 @@ class VerifyLoggingHostname(AntaTest):
         """
         Run VerifyLoggingHostname validation.
         """
-        output_hostname = cast(Dict[str, Any], self.instance_commands[0].output)
-        output_logging = cast(str, self.instance_commands[2].output)
+        output_hostname = self.instance_commands[0].json_output
+        output_logging = self.instance_commands[2].text_output
         fqdn = output_hostname["fqdn"]
         lines = output_logging.strip().split("\n")[::-1]
 
@@ -246,7 +246,7 @@ class VerifyLoggingTimestamp(AntaTest):
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
 
-        output = cast(str, self.instance_commands[1].output)
+        output = self.instance_commands[1].text_output
 
         lines = output.strip().split("\n")[::-1]
 
@@ -282,7 +282,7 @@ class VerifyLoggingAccounting(AntaTest):
         Run VerifyLoggingAccountingvalidation.
         """
         pattern = r"cmd=show aaa accounting logs"
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         if re.search(pattern, output):
             self.result.is_success()

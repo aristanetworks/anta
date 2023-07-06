@@ -3,7 +3,7 @@ Test functions related to the device interfaces
 """
 
 import re
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -24,7 +24,7 @@ class VerifyInterfaceUtilization(AntaTest):
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
 
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         wrong_interfaces = {}
         for line in command_output.split("\n")[1:]:
@@ -56,7 +56,7 @@ class VerifyInterfaceErrors(AntaTest):
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
         for interface, outer_v in command_output["interfaceErrorCounters"].items():
@@ -81,7 +81,7 @@ class VerifyInterfaceDiscards(AntaTest):
     def test(self) -> None:
         """Run VerifyInterfaceDiscards validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
 
@@ -107,7 +107,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
     def test(self) -> None:
         """Run VerifyInterfaceErrDisabled validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
 
@@ -140,7 +140,7 @@ class VerifyInterfacesStatus(AntaTest):
             self.result.is_skipped(f"VerifyInterfacesStatus was not run as an invalid minimum value was given {minimum}.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         count_up_up = 0
         other_ethernet_interfaces = []
@@ -175,7 +175,7 @@ class VerifyStormControlDrops(AntaTest):
     def test(self) -> None:
         """Run VerifyStormControlDrops validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
         for interface, interface_dict in command_output["interfaces"].items():
@@ -205,7 +205,7 @@ class VerifyPortChannels(AntaTest):
     def test(self) -> None:
         """Run VerifyPortChannels validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         po_with_invactive_ports: List[Dict[str, str]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
@@ -232,7 +232,7 @@ class VerifyIllegalLACP(AntaTest):
     def test(self) -> None:
         """Run VerifyIllegalLACP validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
@@ -269,7 +269,7 @@ class VerifyLoopbackCount(AntaTest):
             self.result.is_skipped("VerifyLoopbackCount was not run as no number value was given.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         loopback_count = 0
         down_loopback_interfaces = []
@@ -305,7 +305,7 @@ class VerifySVI(AntaTest):
     def test(self) -> None:
         """Run VerifySVI validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         down_svis = []
 
@@ -359,7 +359,7 @@ class VerifyL3MTU(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_l3mtu_intf = []
 

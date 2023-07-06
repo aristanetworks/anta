@@ -3,7 +3,7 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
@@ -87,7 +87,7 @@ class VerifySTPBlockedPorts(AntaTest):
         Run VerifySTPBlockedPorts validation
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if not (stp_instances := command_output["spanningTreeInstances"]):
             self.result.is_success()
@@ -117,7 +117,7 @@ class VerifySTPCounters(AntaTest):
         Run VerifySTPBlockedPorts validation
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         interfaces_with_errors = [
             interface for interface, counters in command_output["interfaces"].items() if counters["bpduTaggedError"] or counters["bpduOtherError"] != 0
@@ -199,7 +199,7 @@ class VerifySTPRootPriority(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because priority was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if not (stp_instances := command_output["instances"]):
             self.result.is_failure("No STP instances configured")

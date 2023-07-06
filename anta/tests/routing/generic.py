@@ -2,7 +2,7 @@
 Generic routing test functions
 """
 
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -30,7 +30,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if not model:
             self.result.is_skipped("VerifyRoutingProtocolModel was not run as no model was given")
             return
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         configured_model = command_output["protoModelStatus"]["configuredProtoModel"]
         operating_model = command_output["protoModelStatus"]["operatingProtoModel"]
@@ -70,7 +70,7 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_error(f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
         if minimum <= total_routes <= maximum:
             self.result.is_success()
@@ -93,7 +93,7 @@ class VerifyBFD(AntaTest):
     def test(self) -> None:
         """Run VerifyBFD validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
 

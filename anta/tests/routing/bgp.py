@@ -2,7 +2,7 @@
 BGP test functions
 """
 
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -55,7 +55,7 @@ class VerifyBGPIPv4UnicastState(AntaTest):
     def test(self) -> None:
         """Run VerifyBGPIPv4UnicastState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
 
         if not state_issue:
@@ -139,7 +139,7 @@ class VerifyBGPIPv6UnicastState(AntaTest):
     def test(self) -> None:
         """Run VerifyBGPIPv6UnicastState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
 
@@ -168,7 +168,7 @@ class VerifyBGPEVPNState(AntaTest):
     def test(self) -> None:
         """Run VerifyBGPEVPNState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         bgp_vrfs = command_output["vrfs"]
 
@@ -210,7 +210,7 @@ class VerifyBGPEVPNCount(AntaTest):
             self.result.is_skipped("VerifyBGPEVPNCount could not run because number was not supplied.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
@@ -244,7 +244,7 @@ class VerifyBGPRTCState(AntaTest):
     def test(self) -> None:
         """Run VerifyBGPRTCState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         bgp_vrfs = command_output["vrfs"]
 
@@ -286,7 +286,7 @@ class VerifyBGPRTCCount(AntaTest):
             self.result.is_skipped("VerifyBGPRTCCount could not run because number was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]

@@ -2,7 +2,7 @@
 Test functions related to ASIC profiles
 """
 
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
@@ -31,7 +31,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
             self.result.is_skipped("VerifyUnifiedForwardingTableMode was not run as no mode was given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         if command_output["uftMode"] == mode:
             self.result.is_success()
         else:
@@ -61,7 +61,7 @@ class VerifyTcamProfile(AntaTest):
             self.result.is_skipped("VerifyTcamProfile was not run as no profile was given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == profile:
             self.result.is_success()
         else:

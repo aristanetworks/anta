@@ -2,7 +2,7 @@
 Test functions related to the EOS software
 """
 
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -29,7 +29,7 @@ class VerifyEOSVersion(AntaTest):
             self.result.is_skipped("VerifyEOSVersion was not run as no versions were given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["version"] in versions:
             self.result.is_success()
@@ -60,7 +60,7 @@ class VerifyTerminAttrVersion(AntaTest):
             self.result.is_skipped("VerifyTerminAttrVersion was not run as no versions were given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         command_output_data = command_output["details"]["packages"]["TerminAttr-core"]["version"]
         if command_output_data in versions:
@@ -85,8 +85,8 @@ class VerifyEOSExtensions(AntaTest):
 
         boot_extensions = []
 
-        show_extensions_command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        show_boot_extensions_command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[1].output)
+        show_extensions_command_output = self.instance_commands[0].json_output
+        show_boot_extensions_command_output = self.instance_commands[1].json_output
 
         installed_extensions = [
             extension for extension, extension_data in show_extensions_command_output["extensions"].items() if extension_data["status"] == "installed"

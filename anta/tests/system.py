@@ -3,7 +3,7 @@ Test functions related to system-level features and protocols
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, cast
+from typing import Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -27,13 +27,13 @@ class VerifyUptime(AntaTest):
             minimum: Minimum uptime in seconds.
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if not (isinstance(minimum, (int, float))) or minimum < 0:
             self.result.is_skipped("VerifyUptime was not run as incorrect minimum uptime was given")
             return
 
-        if cast(float, command_output["upTime"]) > minimum:
+        if command_output["upTime"] > minimum:
             self.result.is_success()
         else:
             self.result.is_failure(f"Uptime is {command_output['upTime']}")
@@ -59,7 +59,7 @@ class VerifyReloadCause(AntaTest):
         Run VerifyReloadCause validation
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if "resetCauses" not in command_output.keys():
             self.result.is_error("no reload cause available")
@@ -70,7 +70,7 @@ class VerifyReloadCause(AntaTest):
             self.result.is_success()
             return
 
-        reset_causes = cast(List[Dict[str, Any]], command_output["resetCauses"])
+        reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
         if command_output_data in [
             "Reload requested by the user.",
@@ -96,7 +96,7 @@ class VerifyCoredump(AntaTest):
         """
         Run VerifyCoredump validation
         """
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         if len(command_output) == 0:
             self.result.is_success()
@@ -119,7 +119,7 @@ class VerifyAgentLogs(AntaTest):
         """
         Run VerifyAgentLogs validation
         """
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         if len(command_output) == 0:
             self.result.is_success()
@@ -142,7 +142,7 @@ class VerifySyslog(AntaTest):
         """
         Run VerifySyslog validation
         """
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         if len(command_output) == 0:
             self.result.is_success()
@@ -165,7 +165,7 @@ class VerifyCPUUtilization(AntaTest):
         """
         Run VerifyCPUUtilization validation
         """
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
 
         if command_output_data > 25:
@@ -189,9 +189,9 @@ class VerifyMemoryUtilization(AntaTest):
         """
         Run VerifyMemoryUtilization validation
         """
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
-        memory_usage = float(cast(float, command_output["memFree"])) / float(cast(float, command_output["memTotal"]))
+        memory_usage = command_output["memFree"] / command_output["memTotal"]
         if memory_usage > 0.25:
             self.result.is_success()
         else:
@@ -213,7 +213,7 @@ class VerifyFileSystemUtilization(AntaTest):
         """
         Run VerifyFileSystemUtilization validation
         """
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         self.result.is_success()
 
@@ -237,7 +237,7 @@ class VerifyNTP(AntaTest):
         """
         Run VerifyNTP validation
         """
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         if command_output.split("\n")[0].split(" ")[0] == "synchronised":
             self.result.is_success()

@@ -2,7 +2,7 @@
 Test functions related to multicast
 """
 
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -38,7 +38,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
             self.result.is_error(f"VerifyIGMPSnoopingVlans was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
         for vlan in vlans:
@@ -81,7 +81,7 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
             self.result.is_error(f"VerifyIGMPSnoopingGlobal was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
         if (igmp_state := command_output["igmpSnoopingState"]) != configuration:

@@ -3,7 +3,7 @@ Test functions related to the hardware or environement
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
@@ -31,7 +31,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         if not manufacturers:
             self.result.is_skipped(f"{self.__class__.name} was not run as no manufacturers were given")
         else:
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+            command_output = self.instance_commands[0].json_output
             wrong_manufacturers = {interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in manufacturers}
             if not wrong_manufacturers:
                 self.result.is_success()
@@ -54,7 +54,7 @@ class VerifyTemperature(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTemperature validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
         if temperature_status == "temperatureOk":
             self.result.is_success()
@@ -76,7 +76,7 @@ class VerifyTransceiversTemperature(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTransceiversTemperature validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
         wrong_sensors = {
             sensor["name"]: {
@@ -108,7 +108,7 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     def test(self) -> None:
         """Run VerifyEnvironmentCooling validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
 
         self.result.is_success()
@@ -140,7 +140,7 @@ class VerifyEnvironmentCooling(AntaTest):
         if accepted_states is None:
             accepted_states = ["ok"]
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         self.result.is_success()
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
@@ -181,7 +181,7 @@ class VerifyEnvironmentPower(AntaTest):
         """
         if accepted_states is None:
             accepted_states = ["ok"]
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
         wrong_power_supplies = {
             powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in accepted_states
@@ -207,7 +207,7 @@ class VerifyAdverseDrops(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyAdverseDrops validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
         if total_adverse_drop == 0:
             self.result.is_success()

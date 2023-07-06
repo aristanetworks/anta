@@ -3,7 +3,7 @@ Test functions related to the EOS various SNMP settings
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
 from anta.models import AntaCommand, AntaTest
 
@@ -34,7 +34,7 @@ class VerifySnmpStatus(AntaTest):
         if not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because vrf was not supplied")
         else:
-            command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+            command_output = self.instance_commands[0].json_output
 
             if command_output["enabled"] and vrf in command_output["vrfs"]["snmpVrfs"]:
                 self.result.is_success()
@@ -70,7 +70,7 @@ class VerifySnmpIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -118,7 +118,7 @@ class VerifySnmpIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
