@@ -37,7 +37,7 @@ class AntaTemplate(BaseModel):
     version: Union[int, Literal["latest"]] = "latest"
     ofmt: Literal["json", "text"] = "json"
 
-    def render(self, params: Dict[str, str]) -> AntaCommand:
+    def render(self, params: Dict[str, Any]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
         Keep the parameters used in the AntaTemplate instance.
 
@@ -70,40 +70,33 @@ class AntaCommand(BaseModel):
     command: str
     version: Union[int, Literal["latest"]] = "latest"
     ofmt: Literal["json", "text"] = "json"
-    _output: Optional[Union[Dict[str, Any], str]] = None
+    output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
-    params: Optional[Dict[str, str]] = None
-
-    def set_output(self, output: Union[Dict[str, Any], str]) -> None:
-        if self._output is not None:
-            raise RuntimeError(f"Output of command {self.command} cannot be overriden")
-        if (isinstance(output, str) and self.ofmt != "text") or (isinstance(output, dict) and self.ofmt != "json"):
-            raise RuntimeError(f"Output of command {self.command} has wrong type")
-        self._output = output
+    params: Optional[Dict[str, Any]] = None
 
     @property
     def json_output(self) -> Dict[str, Any]:
         """Get the command output as JSON"""
-        if self._output is None:
+        if self.output is None:
             raise RuntimeError(f"There is no output for command {self.command}")
-        if self.ofmt != "json" or not isinstance(self._output, dict):
+        if self.ofmt != "json" or not isinstance(self.output, dict):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self._output
+        return self.output
 
     @property
     def text_output(self) -> str:
         """Get the command output as a string"""
-        if self._output is None:
+        if self.output is None:
             raise RuntimeError(f"There is no output for command {self.command}")
-        if self.ofmt != "text" or not isinstance(self._output, str):
+        if self.ofmt != "text" or not isinstance(self.output, str):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self._output
+        return self.output
 
     @property
     def collected(self) -> bool:
         """Return True if the command has been collected"""
-        return self._output is not None and self.failed is not None
+        return self.output is not None and self.failed is None
 
 
 class AntaTestFilter(ABC):

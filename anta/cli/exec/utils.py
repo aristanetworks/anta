@@ -61,15 +61,15 @@ async def collect_commands(
         outdir.mkdir(parents=True, exist_ok=True)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
-        if c.output is None:  # TODO @mtache use c.failed
-            logger.error(f"Could not collect commands on device {dev.name}")
+        if not c.collected:
+            logger.error(f"Could not collect commands on device {dev.name}: {exc_to_str(c.failed)}")
             return
         if c.ofmt == "json":
             outfile = outdir / (command + ".json")
-            content = json.dumps(c.output, indent=2)
+            content = json.dumps(c.json_output, indent=2)
         elif c.ofmt == "text":
             outfile = outdir / (command + ".log")
-            content = str(c.output)
+            content = c.text_output
         with outfile.open(mode="w", encoding="UTF-8") as f:
             f.write(content)
         logger.info(f"Collected command '{command}' from device {dev.name} ({dev.hw_model})")
@@ -102,8 +102,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                 cmd += f" | head -{latest}"
             command = AntaCommand(command=cmd, ofmt="text")
             await device.collect(command=command)
-            if command.output:
-                filenames = list(map(lambda f: Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}"), str(command.output).splitlines()))
+            if command.collected and command.text_output:
+                filenames = list(map(lambda f: Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}"), command.text_output.splitlines()))
             else:
                 logger.error(f"Unable to get tech-support filenames on {device.name}: verify that {EOS_SCHEDULED_TECH_SUPPORT} is not empty")
                 return
@@ -116,7 +116,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
             await device.collect(command=command)
 
-            if not command.output:
+            if command.collected and not command.text_output:
                 logger.debug(f"'aaa authorization exec default local' is not configured on device {device.name}")
                 if configure:
                     # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.

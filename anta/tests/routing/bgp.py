@@ -105,8 +105,8 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and "vrf" in command.template.vars:
-                vrf = command.template.vars["vrf"]
+            if command.params and "vrf" in command.params:
+                vrf = command.params["vrf"]
             else:
                 self.result.is_error("A list of VRF(s) is not provided as template_params")
                 return

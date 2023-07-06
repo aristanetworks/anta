@@ -58,8 +58,8 @@ class VerifySTPMode(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and "vlan" in command.template.vars:
-                vlan_id = command.template.vars["vlan"]
+            if command.params and "vlan" in command.params:
+                vlan_id = command.params["vlan"]
             else:
                 self.result.is_error("A list of VLAN(s) is not provided as template_params")
                 return
@@ -156,8 +156,8 @@ class VerifySTPForwardingPorts(AntaTest):
         self.result.is_success()
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and "vlan" in command.template.vars:
-                vlan_id = command.template.vars["vlan"]
+            if command.params and "vlan" in command.params:
+                vlan_id = command.params["vlan"]
             else:
                 self.result.is_error("A list of VLAN(s) is not provided as template_params")
                 return

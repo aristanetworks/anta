@@ -401,8 +401,8 @@ class VerifyIPProxyARP(AntaTest):
 
         disabled_intf = []
         for command in self.instance_commands:
-            if command.template and command.template.vars and "intf" in command.template.vars:
-                intf = command.template.vars["intf"]
+            if command.params and "intf" in command.params:
+                intf = command.params["intf"]
             else:
                 self.result.is_error("A list of interface(s) is not provided as template_params")
                 return

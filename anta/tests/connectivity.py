@@ -34,8 +34,8 @@ class VerifyReachability(AntaTest):
         failures = []
 
         for command in self.instance_commands:
-            if command.template and command.template.vars and ("src" and "dst") in command.template.vars:
-                src, dst = command.template.vars["src"], command.template.vars["dst"]
+            if command.params and ("src" and "dst") in command.params:
+                src, dst = command.params["src"], command.params["dst"]
             else:
                 self.result.is_error("The destination IP(s) or the source interface/IP(s) are not provided as template_params")
                 return
