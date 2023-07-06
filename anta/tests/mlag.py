@@ -1,8 +1,10 @@
 """
 Test functions related to Multi-chassis Link Aggregation (MLAG)
 """
+from typing import Optional
 
 from anta.models import AntaCommand, AntaTest
+from anta.tools.get_value import get_value
 
 
 class VerifyMlagStatus(AntaTest):
@@ -135,7 +137,7 @@ class VerifyMlagReloadDelay(AntaTest):
     name = "VerifyMlagReloadDelay"
     description = "This test verifies the reload-delay parameters of the MLAG configuration."
     categories = ["mlag"]
-    commands = [AntaTestCommand(command="show mlag", ofmt="json")]
+    commands = [AntaCommand(command="show mlag", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self, reload_delay: Optional[int] = None, reload_delay_non_mlag: Optional[int] = None) -> None:
@@ -151,7 +153,7 @@ class VerifyMlagReloadDelay(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because reload_delay or reload_delay_non_mlag were not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
@@ -180,7 +182,7 @@ class VerifyMlagDualPrimary(AntaTest):
     name = "VerifyMlagDualPrimary"
     description = "This test verifies the dual-primary detection and its parameters of the MLAG configuration."
     categories = ["mlag"]
-    commands = [AntaTestCommand(command="show mlag detail", ofmt="json")]
+    commands = [AntaCommand(command="show mlag detail", ofmt="json")]
 
     @AntaTest.anta_test
     def test(
@@ -204,7 +206,7 @@ class VerifyMlagDualPrimary(AntaTest):
 
         errdisabled_action = "errdisableAllInterfaces" if errdisabled else "none"
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
