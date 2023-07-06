@@ -1508,7 +1508,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
 
 
 <span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
@@ -1519,7 +1519,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTemperature&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1537,9 +1537,9 @@
 <ul>
 <li><a href="../api/inventory.models.md"><code>InventoryDevice</code></a>: Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.</li>
 <li><code>anta.models.AntaTest</code>: class that gives you all the tooling for your test</li>
-<li><code>anta.models.AntaTestCommand</code>: A class to abstract an Arista EOS command</li>
+<li><code>anta.models.AntaCommand</code>: A class to abstract an Arista EOS command</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
 
 
 <span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
@@ -1587,8 +1587,8 @@
 </ul>
 <p><strong>Commands to run</strong></p>
 <ul>
-<li><code>commands</code>: a list of command to run. This list <em>must</em> be a list of <code>AntaTestCommand</code> which is described in the next part of this document.</li>
-<li><code>template</code>: a command template (<code>AntaTestTemplate</code>) to run where variables are provided during test execution.</li>
+<li><code>commands</code>: a list of command to run. This list <em>must</em> be a list of <code>AntaCommand</code> which is described in the next part of this document.</li>
+<li><code>template</code>: a command template (<code>AntaTemplate</code>) to run where variables are provided during test execution.</li>
 </ul>
 <div class="admonition warning">
 <p>It is either <code>commands</code> or <code>template</code>. But not both.</p>
@@ -1598,7 +1598,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaTestCommand</span>
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
 
 
 <span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
@@ -1610,7 +1610,7 @@
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&lt;test description in human reading format&gt;&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;a list of arbitrary categories&gt;&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">AntaTestCommand</span><span class="p">(</span>
+        <span class="n">AntaCommand</span><span class="p">(</span>
             <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&lt;eos command to run&gt;&quot;</span><span class="p">,</span>
             <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;&lt;command format output&gt;&quot;</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="s2">&quot;&lt;eapi version to use&gt;&quot;</span>

@@ -1460,7 +1460,7 @@
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
-<p>If your test is based on <a href=""><code>AntaTestTemplate</code></a>, you have to provide inputs for EOS CLI template by using <code>tpl_options</code> list:</p>
+<p>If your test is based on <a href=""><code>AntaTemplate</code></a>, you have to provide inputs for EOS CLI template by using <code>tpl_options</code> list:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing.bgp</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPIPv4UnicastCount</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
@@ -1477,7 +1477,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPIPv4UnicastCount&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">,</span> <span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
-    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTestTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp ipv4 unicast summary vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp ipv4 unicast summary vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@check_bgp_family_enable</span><span class="p">(</span><span class="s2">&quot;ipv4&quot;</span><span class="p">)</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>

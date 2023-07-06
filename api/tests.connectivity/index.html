@@ -1422,7 +1422,12 @@
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1454,9 +1459,7 @@
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test network reachability to one or many destination IP(s).</span>
 
@@ -1469,7 +1472,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyReachability&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Test the network reachability to one or many destination IP(s).&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
-    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTestTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;ping </span><span class="si">{dst}</span><span class="s2"> source </span><span class="si">{src}</span><span class="s2"> repeat 2&quot;</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;ping </span><span class="si">{dst}</span><span class="s2"> source </span><span class="si">{src}</span><span class="s2"> repeat 2&quot;</span><span class="p">)</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1479,11 +1482,14 @@
 
         <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
-            <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)[</span><span class="s2">&quot;dst&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;src&quot;</span> <span class="ow">and</span> <span class="s2">&quot;dst&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dst&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;The destination IP(s) or the source interface/IP(s) are not provided as template_params&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
 
-            <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;2 received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s2">&quot;2 received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
@@ -1522,7 +1528,12 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
@@ -1539,9 +1550,7 @@
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run VerifyReachability validation.</span>
@@ -1549,11 +1558,14 @@
 
     <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
-        <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">template_params</span><span class="p">)[</span><span class="s2">&quot;dst&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;src&quot;</span> <span class="ow">and</span> <span class="s2">&quot;dst&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dst&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;The destination IP(s) or the source interface/IP(s) are not provided as template_params&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
-        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;2 received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s2">&quot;2 received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
