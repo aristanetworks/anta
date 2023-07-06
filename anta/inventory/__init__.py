@@ -164,4 +164,4 @@ class AntaInventory(dict):  # type: ignore
         )
         for r in results:
             if isinstance(r, Exception):
-                logger.error(f"Error when refreshing inventory: {r.__class__.__name__}{'' if not str(r) else f' ({str(r)})'}")
+                logger.exception("Error when refreshing inventory", exc_info=r)

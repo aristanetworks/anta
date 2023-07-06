@@ -14,7 +14,7 @@ from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
 from anta.models import DEFAULT_TAG, AntaCommand
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -270,8 +270,7 @@ class AsyncEOSDevice(AntaDevice):
             logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
             command.failed = e
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.critical(f"Exception raised while collecting command '{command.command}' on device {self.name} - {exc_to_str(e)}")
-            logger.debug(tb_to_str(e))
+            logger.exception(f"Exception raised while collecting command '{command.command}' on device {self.name}")
             command.failed = e
             logger.debug(command)
 

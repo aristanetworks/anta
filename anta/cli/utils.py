@@ -12,11 +12,14 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Optional, 
 import click
 from click import Option
 from yaml import safe_load
+from anta.cli.console import console
+from rich.traceback import Traceback
+from pathlib import Path
 
 import anta.loader
 from anta.inventory import AntaInventory
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +45,26 @@ class ExitCode(enum.IntEnum):
     USAGE_ERROR = 4
 
 
+def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
+    """
+    Helper function parse an ANTA inventory YAML file
+    """
+    try:
+        inventory = AntaInventory.parse(
+            inventory_file=str(path),
+            username=ctx.params["username"],
+            password=ctx.params["password"],
+            enable_password=ctx.params["enable_password"],
+            timeout=ctx.params["timeout"],
+            insecure=ctx.params["insecure"],
+        )
+    except Exception:  # pylint: disable=broad-exception-caught
+        message = f"Unable to parse ANTA Inventory file '{path}'"
+        logger.exception(message)
+        ctx.fail(message)
+    return inventory
+
+
 def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
     # pylint: disable=unused-argument
     """
@@ -50,27 +73,6 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
     if value is not None:
         return value.split(",") if "," in value else [value]
     return None
-
-
-def parse_inventory(ctx: click.Context, value: str) -> AntaInventory:
-    """
-    Click option callback to parse an ANTA inventory YAML file
-    """
-    try:
-        inventory = AntaInventory.parse(
-            inventory_file=value,
-            username=ctx.params["username"],
-            password=ctx.params["password"],
-            enable_password=ctx.params["enable_password"],
-            timeout=ctx.params["timeout"],
-            insecure=ctx.params["insecure"],
-        )
-        logger.info(f"Inventory {value} loaded")
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.critical(tb_to_str(exc))
-        ctx.fail(f"Unable to parse ANTA Inventory file '{value}': {exc_to_str(exc)}")
-
-    return inventory
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
@@ -83,9 +85,10 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
             data = safe_load(file)
     # TODO catch proper exception
     # pylint: disable-next=broad-exception-caught
-    except Exception as exc:
-        logger.critical(tb_to_str(exc))
-        ctx.fail(f"Unable to parse ANTA Tests Catalog file '{value}': {exc_to_str(exc)}")
+    except Exception:
+        message = f"Unable to parse ANTA Tests Catalog file '{value}'"
+        logger.exception(message)
+        ctx.fail(message)
 
     return anta.loader.parse_catalog(data)
 
@@ -97,9 +100,10 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
     """
     try:
         anta.loader.setup_logging(value)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.critical(tb_to_str(exc))
-        ctx.fail(f"Unable to set ANTA logging level '{value}': {exc_to_str(exc)}")
+    except Exception:  # pylint: disable=broad-exception-caught
+        message = f"Unable to set ANTA logging level '{value}'"
+        logger.exception(message)
+        ctx.fail(message)
 
     return value
 

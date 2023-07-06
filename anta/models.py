@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List
 from pydantic import BaseModel, ConfigDict
 
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -216,12 +216,10 @@ class AntaTest(ABC):
         """
         Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
-        logger.debug(f"Test {self.name} on device {self.device.name}: running command outputs collection")
         try:
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-            logger.debug(tb_to_str(e))
+            logger.exception(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})")
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -266,11 +264,9 @@ class AntaTest(ABC):
                 if cmds := self.get_failed_commands():
                     self.result.is_error("\n".join([f"{cmd.command}: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command}: has failed" for cmd in cmds]))
                     return self.result
-                logger.debug(f"Test {self.name} on device {self.device.name}: running test")
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.error(f"Exception raised for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-                logger.debug(tb_to_str(e))
+                logger.exception(f"Exception raised for test {self.name} (on device {self.device.name})")
                 self.result.is_error(exc_to_str(e))
             return self.result
 

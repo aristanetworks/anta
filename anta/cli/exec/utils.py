@@ -9,7 +9,6 @@ import asyncio
 import itertools
 import json
 import logging
-import traceback
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
@@ -18,7 +17,7 @@ from aioeapi import EapiCommandError
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
@@ -84,11 +83,7 @@ async def collect_commands(
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.error(f"Error when collecting commands: {r.__class__.__name__}: {r}")
-    for r in res:
-        if isinstance(r, Exception):
-            logger.critical(f"Error when collecting commands - {exc_to_str(r)}")
-            logger.debug(tb_to_str(r))
+            logger.exception("Error when collecting commands", exc_info=r)
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
@@ -145,10 +140,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
         except EapiCommandError as e:
             logger.error(f"Unable to collect tech-support on {device.name}: {e.errmsg}")
         # In this case we want to catch all exceptions
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error(f"Unable to collect tech-support on device {device.name}")
-            logger.debug(f"Exception raised for device {device.name} - {type(e).__name__}: {str(e)}")
-            logger.debug(traceback.format_exc())
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(f"Unable to collect tech-support on device {device.name}")
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
