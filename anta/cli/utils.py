@@ -8,7 +8,7 @@ from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 
 import click
 from click import Option
@@ -105,23 +105,6 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
         ctx.fail(message)
 
     return value
-
-
-class EapiVersion(click.ParamType):
-    """
-    Click custom type for eAPI parameter
-    """
-
-    name = "eAPI Version"
-
-    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Union[int, Literal["latest"], None]:
-        if isinstance(value, int):
-            return value
-        try:
-            return value if value.lower() == "latest" else int(value)
-        except ValueError:
-            self.fail(f"{value!r} is not a valid eAPI version", param, ctx)
-            return None
 
 
 def return_code(result_manager: ResultManager, ignore_error: bool, ignore_status: bool) -> int:

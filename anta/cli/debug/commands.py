@@ -8,13 +8,12 @@ Commands for Anta CLI to run debug commands.
 
 import asyncio
 import logging
-from typing import List, Literal, Union
+from typing import List, Literal
 
 import click
 from click import Option
 
 from anta.cli.console import console
-from anta.cli.utils import EapiVersion
 from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate
 
