@@ -82,7 +82,7 @@ class AntaCommand(BaseModel):
             raise RuntimeError(f"There is no output for command {self.command}")
         if self.ofmt != "json" or not isinstance(self.output, dict):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self.output
+        return dict(self.output)
 
     @property
     def text_output(self) -> str:
@@ -91,7 +91,7 @@ class AntaCommand(BaseModel):
             raise RuntimeError(f"There is no output for command {self.command}")
         if self.ofmt != "text" or not isinstance(self.output, str):
             raise RuntimeError(f"Output of command {self.command} is invalid")
-        return self.output
+        return str(self.output)
 
     @property
     def collected(self) -> bool:

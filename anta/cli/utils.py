@@ -7,19 +7,16 @@ from __future__ import annotations
 
 import enum
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import click
 from click import Option
 from yaml import safe_load
-from anta.cli.console import console
-from rich.traceback import Traceback
-from pathlib import Path
 
 import anta.loader
 from anta.inventory import AntaInventory
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 

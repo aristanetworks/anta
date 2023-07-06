@@ -61,7 +61,7 @@ async def collect_commands(
         outdir.mkdir(parents=True, exist_ok=True)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
-        if not c.collected:
+        if not c.collected and c.failed is not None:
             logger.error(f"Could not collect commands on device {dev.name}: {exc_to_str(c.failed)}")
             return
         if c.ofmt == "json":

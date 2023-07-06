@@ -57,7 +57,7 @@ async def main(
             # Instantiate AntaTest object
             test_instance = test[0](device=device, template_params=template_params)
             coros.append(test_instance.test(eos_data=None, **test_params))
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             logger.exception("Error when creating ANTA tests")
 
     logger.info("Running ANTA tests...")

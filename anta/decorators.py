@@ -87,7 +87,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
 
             await anta_test.device.collect(command=command)
 
-            if command.failed is not None:
+            if not command.collected and command.failed is not None:
                 anta_test.result.is_error(f"{command.command}: {exc_to_str(command.failed)}")
                 return anta_test.result
             if "vrfs" not in command.json_output:
