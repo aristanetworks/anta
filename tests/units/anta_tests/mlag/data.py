@@ -170,7 +170,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned inconsistancies: "
+        "expected_messages": ["MLAG config-sanity returned inconsistencies: "
                               "{'globalConfiguration': {'mlag': {'globalParameters': "
                               "{'dual-primary-detection-delay': {'localValue': '0', 'peerValue': '200'}}}}, "
                               "'interfaceConfiguration': {}}"]
@@ -196,7 +196,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["MLAG config-sanity returned inconsistancies: "
+        "expected_messages": ["MLAG config-sanity returned inconsistencies: "
                               "{'globalConfiguration': {}, "
                               "'interfaceConfiguration': {'trunk-native-vlan mlag30': "
                               "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}}"]
