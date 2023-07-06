@@ -2,7 +2,7 @@
 
 ANTA CLI also provides a set of entrypoints to help building ANTA content. We call it debug and it provides different options:
 
-- Run a command on a device from your inventory and expose a result from AntaTestCommand
+- Run a command on a device from your inventory and expose a result from AntaCommand
 - Run a templated command and expose the result
 
 Both are extremly useful to build your test since you have a visual access to the output you have to test. It also helps to extract content to use for unit test as descirbed in our [contribution guide](../contribution.md).

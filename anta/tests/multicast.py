@@ -1,12 +1,10 @@
 """
 Test functions related to multicast
 """
-import logging
-from typing import Any, Dict, List, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from typing import List, Optional
 
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):
@@ -21,7 +19,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     name = "VerifyIGMPSnoopingVlans"
     description = "Verifies the IGMP snooping configuration for some VLANs."
     categories = ["multicast", "igmp"]
-    commands = [AntaTestCommand(command="show ip igmp snooping")]
+    commands = [AntaCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
     def test(self, vlans: Optional[List[str]] = None, configuration: Optional[str] = None) -> None:
@@ -40,8 +38,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
             self.result.is_error(f"VerifyIGMPSnoopingVlans was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        logger.debug(f"query self.result is: {command_output}")
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
         for vlan in vlans:
@@ -65,7 +62,7 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."
     categories = ["multicast", "igmp"]
-    commands = [AntaTestCommand(command="show ip igmp snooping")]
+    commands = [AntaCommand(command="show ip igmp snooping")]
 
     @AntaTest.anta_test
     def test(self, configuration: Optional[str] = None) -> None:
@@ -84,8 +81,7 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
             self.result.is_error(f"VerifyIGMPSnoopingGlobal was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
-        logger.debug(f"query self.result is: {command_output}")
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
         if (igmp_state := command_output["igmpSnoopingState"]) != configuration:

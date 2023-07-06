@@ -3,12 +3,9 @@ OSPF test functions
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 def _count_ospf_neighbor(ospf_neighbor_json: Dict[str, Any]) -> int:
@@ -51,13 +48,13 @@ class VerifyOSPFNeighborState(AntaTest):
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
     categories = ["routing", "ospf"]
-    commands = [AntaTestCommand(command="show ip ospf neighbor")]
+    commands = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyOSPFNeighborState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if _count_ospf_neighbor(command_output) == 0:
             self.result.is_skipped("no OSPF neighbor found")
@@ -81,7 +78,7 @@ class VerifyOSPFNeighborCount(AntaTest):
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
     categories = ["routing", "ospf"]
-    commands = [AntaTestCommand(command="show ip ospf neighbor")]
+    commands = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
@@ -90,7 +87,7 @@ class VerifyOSPFNeighborCount(AntaTest):
             self.result.is_skipped(f"VerifyOSPFNeighborCount was not run as the number given '{number}' is not a valid value.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if (neighbor_count := _count_ospf_neighbor(command_output)) == 0:
             self.result.is_skipped("no OSPF neighbor found")

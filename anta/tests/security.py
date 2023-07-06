@@ -3,12 +3,9 @@ Test functions related to the EOS various security settings
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifySSHStatus(AntaTest):
@@ -23,7 +20,7 @@ class VerifySSHStatus(AntaTest):
     name = "VerifySSHStatus"
     description = "Verifies if the SSHD agent is disabled in the default VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh", ofmt="text")]
+    commands = [AntaCommand(command="show management ssh", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -31,7 +28,7 @@ class VerifySSHStatus(AntaTest):
         Run VerifySSHStatus validation.
         """
 
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         line = [line for line in command_output.split("\n") if line.startswith("SSHD status")][0]
         status = line.split("is ")[1]
@@ -55,7 +52,7 @@ class VerifySSHIPv4Acl(AntaTest):
     name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh ip access-list summary")]
+    commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -70,7 +67,7 @@ class VerifySSHIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -103,7 +100,7 @@ class VerifySSHIPv6Acl(AntaTest):
     name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management ssh ipv6 access-list summary")]
+    commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -118,7 +115,7 @@ class VerifySSHIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
@@ -150,7 +147,7 @@ class VerifyTelnetStatus(AntaTest):
     name = "VerifyTelnetStatus"
     description = "Verifies if Telnet is disabled in the default VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management telnet")]
+    commands = [AntaCommand(command="show management telnet")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -158,7 +155,7 @@ class VerifyTelnetStatus(AntaTest):
         Run VerifyTelnetStatus validation.
         """
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["serverState"] == "disabled":
             self.result.is_success()
@@ -178,7 +175,7 @@ class VerifyAPIHttpStatus(AntaTest):
     name = "VerifyAPIHttpStatus"
     description = "Verifies if eAPI HTTP server is disabled globally."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands")]
+    commands = [AntaCommand(command="show management api http-commands")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -186,7 +183,7 @@ class VerifyAPIHttpStatus(AntaTest):
         Run VerifyAPIHTTPStatus validation.
         """
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if command_output["enabled"] and not command_output["httpServer"]["running"]:
             self.result.is_success()
@@ -207,7 +204,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     name = "VerifyAPIHttpsSSL"
     description = "Verifies if eAPI HTTPS server SSL profile is configured and valid."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands")]
+    commands = [AntaCommand(command="show management api http-commands")]
 
     @AntaTest.anta_test
     def test(self, profile: Optional[str] = None) -> None:
@@ -221,7 +218,7 @@ class VerifyAPIHttpsSSL(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because profile was not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         try:
             if command_output["sslProfile"]["name"] == profile and command_output["sslProfile"]["state"] == "valid":
@@ -246,7 +243,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands ip access-list summary")]
+    commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -261,7 +258,7 @@ class VerifyAPIIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -294,7 +291,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories = ["security"]
-    commands = [AntaTestCommand(command="show management api http-commands ipv6 access-list summary")]
+    commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -309,7 +306,7 @@ class VerifyAPIIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)

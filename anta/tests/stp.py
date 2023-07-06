@@ -3,13 +3,10 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-
-logger = logging.getLogger(__name__)
 
 
 class VerifySTPMode(AntaTest):
@@ -26,7 +23,7 @@ class VerifySTPMode(AntaTest):
     name = "VerifySTPMode"
     description = "Verifies the configured STP mode for a provided list of VLAN(s)."
     categories = ["stp"]
-    template = AntaTestTemplate(template="show spanning-tree vlan {vlan}")
+    template = AntaTemplate(template="show spanning-tree vlan {vlan}")
 
     @staticmethod
     def _check_stp_mode(mode: str) -> None:
@@ -57,11 +54,10 @@ class VerifySTPMode(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vlan_id = cast(Dict[str, str], command.template_params).get("vlan")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-
-            if not (stp_mode := get_value(command_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
+        for command in self.instance_commands:
+            if command.params and "vlan" in command.params:
+                vlan_id = command.params["vlan"]
+            if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 self.result.is_failure(f"STP mode '{mode}' not configured for VLAN {vlan_id}")
 
             elif stp_mode != mode:
@@ -80,7 +76,7 @@ class VerifySTPBlockedPorts(AntaTest):
     name = "VerifySTPBlockedPorts"
     description = "Verifies there is no STP blocked ports."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree blockedports")]
+    commands = [AntaCommand(command="show spanning-tree blockedports")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -88,7 +84,7 @@ class VerifySTPBlockedPorts(AntaTest):
         Run VerifySTPBlockedPorts validation
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if not (stp_instances := command_output["spanningTreeInstances"]):
             self.result.is_success()
@@ -110,7 +106,7 @@ class VerifySTPCounters(AntaTest):
     name = "VerifySTPCounters"
     description = "Verifies there is no errors in STP BPDU packets."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree counters")]
+    commands = [AntaCommand(command="show spanning-tree counters")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -118,7 +114,7 @@ class VerifySTPCounters(AntaTest):
         Run VerifySTPBlockedPorts validation
         """
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         interfaces_with_errors = [
             interface for interface, counters in command_output["interfaces"].items() if counters["bpduTaggedError"] or counters["bpduOtherError"] != 0
@@ -143,7 +139,7 @@ class VerifySTPForwardingPorts(AntaTest):
     name = "VerifySTPForwardingPorts"
     description = "Verifies that all interfaces are forwarding for a provided list of VLAN(s)."
     categories = ["stp"]
-    template = AntaTestTemplate(template="show spanning-tree topology vlan {vlan} status")
+    template = AntaTemplate(template="show spanning-tree topology vlan {vlan} status")
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -153,11 +149,11 @@ class VerifySTPForwardingPorts(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vlan_id = cast(Dict[str, str], command.template_params)["vlan"]
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+        for command in self.instance_commands:
+            if command.params and "vlan" in command.params:
+                vlan_id = command.params["vlan"]
 
-            if not (topologies := get_value(command_output, "topologies")):
+            if not (topologies := get_value(command.json_output, "topologies")):
                 self.result.is_failure(f"STP instance for VLAN {vlan_id} is not configured")
 
             else:
@@ -182,7 +178,7 @@ class VerifySTPRootPriority(AntaTest):
     name = "VerifySTPRootPriority"
     description = "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s)."
     categories = ["stp"]
-    commands = [AntaTestCommand(command="show spanning-tree root detail")]
+    commands = [AntaCommand(command="show spanning-tree root detail")]
 
     @AntaTest.anta_test
     def test(self, priority: Optional[int] = None, instances: Optional[List[int]] = None) -> None:
@@ -197,7 +193,7 @@ class VerifySTPRootPriority(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because priority was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         if not (stp_instances := command_output["instances"]):
             self.result.is_failure("No STP instances configured")

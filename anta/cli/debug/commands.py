@@ -8,15 +8,14 @@ Commands for Anta CLI to run debug commands.
 
 import asyncio
 import logging
-from typing import List, Literal, Union
+from typing import List, Literal
 
 import click
 from click import Option
 
 from anta.cli.console import console
-from anta.cli.utils import EapiVersion
 from anta.device import AntaDevice
-from anta.models import AntaTestCommand, AntaTestTemplate
+from anta.models import AntaCommand, AntaTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -27,31 +26,38 @@ def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
     Click option callback to get an AntaDevice instance from a string
     """
     if value is not None:
-        # TODO - @mtache write public method to get a device from its name
-        return [dev for dev in ctx.obj["inventory"] if dev.name == value][0]
+        return ctx.obj["inventory"][value]
     return None
 
 
 @click.command()
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
-@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="EOS eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="EOS eAPI version to use")
+@click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")
+@click.option("--version", "-v", type=click.Choice(["1", "latest"]), default="latest", help="EOS eAPI version")
+@click.option("--revision", "-r", type=int, help="eAPI command revision", required=False)
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
-def run_cmd(command: str, ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
+def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
     """Run arbitrary command to an ANTA device"""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
-    c = AntaTestCommand(command=command, ofmt=ofmt, version=api_version)
+    # I do not assume the following line, but click make me do it
+    v: Literal[1, "latest"] = version if version == "latest" else 1
+    c = AntaCommand(command=command, ofmt=ofmt, version=v, revision=revision)
     asyncio.run(device.collect(c))
-    console.print(c.output)
+    if ofmt == "json":
+        console.print(c.json_output)
+    if ofmt == "text":
+        console.print(c.text_output)
 
 
 @click.command()
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
-@click.option("--ofmt", type=click.Choice(["text", "json"]), default="json", help="EOS eAPI format to use. can be text or json")
-@click.option("--api-version", "--version", type=EapiVersion(), default="latest", help="EOS eAPI version to use")
+@click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")
+@click.option("--version", "-v", type=click.Choice(["1", "latest"]), default="latest", help="EOS eAPI version")
+@click.option("--revision", "-r", type=int, help="eAPI command revision", required=False)
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
 @click.argument("params", required=True, nargs=-1)
-def run_template(template: str, params: List[str], ofmt: str, api_version: Union[int, Literal["latest"]], device: AntaDevice) -> None:
+def run_template(template: str, params: List[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
+    # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.
 
     Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
@@ -62,8 +68,12 @@ def run_template(template: str, params: List[str], ofmt: str, api_version: Union
     template_params = dict(zip(params[::2], params[1::2]))
 
     console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
-    c = AntaTestCommand(
-        command=template.format(**template_params), template=AntaTestTemplate(template=template), template_params=template_params, ofmt=ofmt, version=api_version
-    )
+    # I do not assume the following line, but click make me do it
+    v: Literal[1, "latest"] = version if version == "latest" else 1
+    t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
+    c = t.render(template_params)
     asyncio.run(device.collect(c))
-    console.print(c.output)
+    if ofmt == "json":
+        console.print(c.json_output)
+    if ofmt == "text":
+        console.print(c.text_output)

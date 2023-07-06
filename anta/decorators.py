@@ -4,8 +4,9 @@ decorators for tests
 from functools import wraps
 from typing import Any, Callable, Dict, List, TypeVar, cast
 
-from anta.models import AntaTestCommand
+from anta.models import AntaCommand
 from anta.result_manager.models import TestResult
+from anta.tools.misc import exc_to_str
 
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
@@ -73,25 +74,26 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
                 return anta_test.result
 
             if family == "ipv4":
-                command = AntaTestCommand(command="show bgp ipv4 unicast summary vrf all")
+                command = AntaCommand(command="show bgp ipv4 unicast summary vrf all")
             elif family == "ipv6":
-                command = AntaTestCommand(command="show bgp ipv6 unicast summary vrf all")
+                command = AntaCommand(command="show bgp ipv6 unicast summary vrf all")
             elif family == "evpn":
-                command = AntaTestCommand(command="show bgp evpn summary")
+                command = AntaCommand(command="show bgp evpn summary")
             elif family == "rtc":
-                command = AntaTestCommand(command="show bgp rt-membership summary")
+                command = AntaCommand(command="show bgp rt-membership summary")
             else:
                 anta_test.result.is_error(f"Wrong address family for bgp decorator: {family}")
                 return anta_test.result
 
             await anta_test.device.collect(command=command)
 
-            command_output = cast(Dict[str, Any], command.output)
-
-            if "vrfs" not in command_output:  # pylint: disable=unsupported-membership-test
+            if not command.collected and command.failed is not None:
+                anta_test.result.is_error(f"{command.command}: {exc_to_str(command.failed)}")
+                return anta_test.result
+            if "vrfs" not in command.json_output:
                 anta_test.result.is_skipped(f"no BGP configuration for {family} on this device")
                 return anta_test.result
-            if len(bgp_vrfs := command_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:  # pylint: disable=unsubscriptable-object
+            if len(bgp_vrfs := command.json_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
                 # No VRF
                 anta_test.result.is_skipped(f"no {family} peer on this device")
                 return anta_test.result

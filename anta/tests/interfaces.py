@@ -1,14 +1,12 @@
 """
 Test functions related to the device interfaces
 """
-import logging
+
 import re
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -20,13 +18,13 @@ class VerifyInterfaceUtilization(AntaTest):
     description = "Verifies interfaces utilization is below 75%."
     categories = ["interfaces"]
     # TODO - move from text to json if possible
-    commands = [AntaTestCommand(command="show interfaces counters rates", ofmt="text")]
+    commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
 
-        command_output = cast(str, self.instance_commands[0].output)
+        command_output = self.instance_commands[0].text_output
 
         wrong_interfaces = {}
         for line in command_output.split("\n")[1:]:
@@ -52,13 +50,13 @@ class VerifyInterfaceErrors(AntaTest):
     name = "VerifyInterfaceErrors"
     description = "Verifies interfaces error counters are equal to zero."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces counters errors")]
+    commands = [AntaCommand(command="show interfaces counters errors")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceUtilization validation"""
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
         for interface, outer_v in command_output["interfaceErrorCounters"].items():
@@ -77,13 +75,13 @@ class VerifyInterfaceDiscards(AntaTest):
     name = "VerifyInterfaceDiscards"
     description = "Verifies interfaces packet discard counters are equal to zero."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces counters discards")]
+    commands = [AntaCommand(command="show interfaces counters discards")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceDiscards validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
 
@@ -103,13 +101,13 @@ class VerifyInterfaceErrDisabled(AntaTest):
     name = "VerifyInterfaceErrDisabled"
     description = "Verifies there is no interface in error disable state."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces status")]
+    commands = [AntaCommand(command="show interfaces status")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyInterfaceErrDisabled validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
 
@@ -127,7 +125,7 @@ class VerifyInterfacesStatus(AntaTest):
     name = "VerifyInterfacesStatus"
     description = "Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces description")]
+    commands = [AntaCommand(command="show interfaces description")]
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None) -> None:
@@ -142,7 +140,7 @@ class VerifyInterfacesStatus(AntaTest):
             self.result.is_skipped(f"VerifyInterfacesStatus was not run as an invalid minimum value was given {minimum}.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         count_up_up = 0
         other_ethernet_interfaces = []
@@ -170,14 +168,14 @@ class VerifyStormControlDrops(AntaTest):
     name = "VerifyStormControlDrops"
     description = "Verifies the device did not drop packets due its to storm-control configuration."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show storm-control")]
+    commands = [AntaCommand(command="show storm-control")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyStormControlDrops validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
         for interface, interface_dict in command_output["interfaces"].items():
@@ -200,14 +198,14 @@ class VerifyPortChannels(AntaTest):
     name = "VerifyPortChannels"
     description = "Verifies there is no inactive port in port channels."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show port-channel")]
+    commands = [AntaCommand(command="show port-channel")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyPortChannels validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         po_with_invactive_ports: List[Dict[str, str]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
@@ -228,13 +226,13 @@ class VerifyIllegalLACP(AntaTest):
     name = "VerifyIllegalLACP"
     description = "Verifies there is no illegal LACP packets received."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show lacp counters all-ports")]
+    commands = [AntaCommand(command="show lacp counters all-ports")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyIllegalLACP validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
@@ -256,7 +254,7 @@ class VerifyLoopbackCount(AntaTest):
     name = "VerifyLoopbackCount"
     description = "Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show ip interface brief")]
+    commands = [AntaCommand(command="show ip interface brief")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
@@ -271,7 +269,7 @@ class VerifyLoopbackCount(AntaTest):
             self.result.is_skipped("VerifyLoopbackCount was not run as no number value was given.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         loopback_count = 0
         down_loopback_interfaces = []
@@ -301,13 +299,13 @@ class VerifySVI(AntaTest):
     name = "VerifySVI"
     description = "Verifies there is no interface vlan down."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show ip interface brief")]
+    commands = [AntaCommand(command="show ip interface brief")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifySVI validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         down_svis = []
 
@@ -343,7 +341,7 @@ class VerifyL3MTU(AntaTest):
     name = "VerifyL3MTU"
     description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
     categories = ["interfaces"]
-    commands = [AntaTestCommand(command="show interfaces")]
+    commands = [AntaCommand(command="show interfaces")]
 
     NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
 
@@ -361,7 +359,7 @@ class VerifyL3MTU(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         wrong_l3mtu_intf = []
 
@@ -391,7 +389,7 @@ class VerifyIPProxyARP(AntaTest):
     name = "VerifyIPProxyARP"
     description = "Verifies if Proxy-ARP is enabled for the provided list of interface(s)."
     categories = ["interfaces"]
-    template = AntaTestTemplate(template="show ip interface {intf}")
+    template = AntaTemplate(template="show ip interface {intf}")
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -400,12 +398,10 @@ class VerifyIPProxyARP(AntaTest):
         """
 
         disabled_intf = []
-
-        for index, command in enumerate(self.instance_commands):
-            intf = cast(Dict[str, str], command.template_params).get("intf")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
-
-            if not command_output["interfaces"][intf]["proxyArp"]:
+        for command in self.instance_commands:
+            if command.params and "intf" in command.params:
+                intf = command.params["intf"]
+            if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
 
         if disabled_intf:

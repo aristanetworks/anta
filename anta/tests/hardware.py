@@ -3,13 +3,10 @@ Test functions related to the hardware or environement
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifyTransceiversManufacturers(AntaTest):
@@ -20,7 +17,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     name = "VerifyTransceiversManufacturers"
     description = ""
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show inventory", ofmt="json")]
+    commands = [AntaCommand(command="show inventory", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -34,7 +31,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         if not manufacturers:
             self.result.is_skipped(f"{self.__class__.name} was not run as no manufacturers were given")
         else:
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+            command_output = self.instance_commands[0].json_output
             wrong_manufacturers = {interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in manufacturers}
             if not wrong_manufacturers:
                 self.result.is_success()
@@ -51,13 +48,13 @@ class VerifyTemperature(AntaTest):
     name = "VerifyTemperature"
     description = "Verifies device temparture is currently OK (temperatureOK)"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTemperature validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
         if temperature_status == "temperatureOk":
             self.result.is_success()
@@ -73,13 +70,13 @@ class VerifyTransceiversTemperature(AntaTest):
     name = "VerifyTransceiversTemperature"
     description = "Verifies Transceivers temperature is currently OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment temperature transceiver", ofmt="json")]
+    commands = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyTransceiversTemperature validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
         wrong_sensors = {
             sensor["name"]: {
@@ -104,14 +101,14 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     name = "VerifyEnvironmentSystemCooling"
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyEnvironmentCooling validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
 
         self.result.is_success()
@@ -129,7 +126,7 @@ class VerifyEnvironmentCooling(AntaTest):
     name = "VerifyEnvironmentCooling"
     description = "Verifies the fans status is OK for fans"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment cooling", ofmt="json")]
+    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -143,7 +140,7 @@ class VerifyEnvironmentCooling(AntaTest):
         if accepted_states is None:
             accepted_states = ["ok"]
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         self.result.is_success()
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
@@ -171,7 +168,7 @@ class VerifyEnvironmentPower(AntaTest):
     name = "VerifyEnvironmentPower"
     description = "Verifies the power supplies status is OK"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show system environment power", ofmt="json")]
+    commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -184,7 +181,7 @@ class VerifyEnvironmentPower(AntaTest):
         """
         if accepted_states is None:
             accepted_states = ["ok"]
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
         wrong_power_supplies = {
             powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in accepted_states
@@ -204,13 +201,13 @@ class VerifyAdverseDrops(AntaTest):
     name = "VerifyAdverseDrops"
     description = "Verifies there is no adverse drops on DCS7280E and DCS7500E"
     categories = ["hardware"]
-    commands = [AntaTestCommand(command="show hardware counter drop", ofmt="json")]
+    commands = [AntaCommand(command="show hardware counter drop", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyAdverseDrops validation"""
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
         if total_adverse_drop == 0:
             self.result.is_success()

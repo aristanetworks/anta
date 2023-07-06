@@ -7,14 +7,15 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from anta import __DEBUG__
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
-# Key from YAML file tranfered to AntaTestTemplate of the test.
+# Key from YAML file tranfered to AntaTemplate of the test.
 TEST_TPL_PARAMS = "template_params"
 
 
@@ -54,15 +55,25 @@ async def main(
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         test_params = {k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
         template_params = test[1].get(TEST_TPL_PARAMS)
-        # TODO - catch pydantic_core._pydantic_core.ValidationError here.
-        # This may happen during AntaTestinstantiation due to wrong data for AntaCommand/AntaTemplate
-        coros.append(test[0](device=device, template_params=template_params).test(eos_data=None, **test_params))
+        try:
+            # Instantiate AntaTest object
+            test_instance = test[0](device=device, template_params=template_params)
+            coros.append(test_instance.test(eos_data=None, **test_params))
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            message = "Error when creating ANTA tests"
+            if __DEBUG__:
+                logger.exception(message)
+            else:
+                logger.error(message + f": {exc_to_str(e)}")
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.critical(f"Error in main ANTA Runner - {exc_to_str(r)}")
-            logger.debug(tb_to_str(r))
+            message = "Error in main ANTA Runner"
+            if __DEBUG__:
+                logger.exception(message, exc_info=r)
+            else:
+                logger.error(message + f": {exc_to_str(r)}")
             res.remove(r)
     manager.add_test_results(res)

@@ -7,14 +7,12 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
-def _get_logging_states(command_output: str) -> str:
+def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     """
     Parse "show logging" output and gets operational logging states used
     in the tests in this module.
@@ -40,8 +38,8 @@ class VerifyLoggingPersistent(AntaTest):
     description = "Verifies if logging persistent is enabled and logs are saved in flash."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="show logging", ofmt="text"),
-        AntaTestCommand(command="dir flash:/persist/messages", ofmt="text"),
+        AntaCommand(command="show logging", ofmt="text"),
+        AntaCommand(command="dir flash:/persist/messages", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -51,10 +49,10 @@ class VerifyLoggingPersistent(AntaTest):
         """
         self.result.is_success()
 
-        log_output = cast(str, self.instance_commands[0].output)
-        dir_flash_output = cast(str, self.instance_commands[1].output)
+        log_output = self.instance_commands[0].text_output
+        dir_flash_output = self.instance_commands[1].text_output
 
-        if "Persistent logging: disabled" in _get_logging_states(log_output):
+        if "Persistent logging: disabled" in _get_logging_states(self.logger, log_output):
             self.result.is_failure("Persistent logging is disabled")
             return
 
@@ -78,7 +76,7 @@ class VerifyLoggingSourceIntf(AntaTest):
     name = "VerifyLoggingSourceInt"
     description = "Verifies logging source-interface for a specified VRF."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show logging", ofmt="text")]
+    commands = [AntaCommand(command="show logging", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
@@ -93,11 +91,11 @@ class VerifyLoggingSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
 
-        if re.search(pattern, _get_logging_states(output)):
+        if re.search(pattern, _get_logging_states(self.logger, output)):
             self.result.is_success()
         else:
             self.result.is_failure(f"Source-interface '{intf}' is not configured in VRF {vrf}")
@@ -116,7 +114,7 @@ class VerifyLoggingHosts(AntaTest):
     name = "VerifyLoggingHosts"
     description = "Verifies logging hosts (syslog servers) for a specified VRF."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show logging", ofmt="text")]
+    commands = [AntaCommand(command="show logging", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self, hosts: Optional[List[str]] = None, vrf: str = "default") -> None:
@@ -131,13 +129,13 @@ class VerifyLoggingHosts(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because hosts or vrf were not supplied")
             return
 
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         not_configured = []
 
         for host in hosts:
             pattern = rf"Logging to '{host}'.*VRF {vrf}"
-            if not re.search(pattern, _get_logging_states(output)):
+            if not re.search(pattern, _get_logging_states(self.logger, output)):
                 not_configured.append(host)
 
         if not not_configured:
@@ -159,8 +157,8 @@ class VerifyLoggingLogsGeneration(AntaTest):
     description = "Verifies if logs are generated."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -170,7 +168,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
         """
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
 
-        output = cast(str, self.instance_commands[1].output)
+        output = self.instance_commands[1].text_output
         lines = output.strip().split("\n")[::-1]
 
         for line in lines:
@@ -194,9 +192,9 @@ class VerifyLoggingHostname(AntaTest):
     description = "Verifies if logs are generated with the device FQDN."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="show hostname"),
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="show hostname"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -204,8 +202,8 @@ class VerifyLoggingHostname(AntaTest):
         """
         Run VerifyLoggingHostname validation.
         """
-        output_hostname = cast(Dict[str, Any], self.instance_commands[0].output)
-        output_logging = cast(str, self.instance_commands[2].output)
+        output_hostname = self.instance_commands[0].json_output
+        output_logging = self.instance_commands[2].text_output
         fqdn = output_hostname["fqdn"]
         lines = output_logging.strip().split("\n")[::-1]
 
@@ -236,8 +234,8 @@ class VerifyLoggingTimestamp(AntaTest):
     description = "Verifies if logs are generated with the appropriate timestamp."
     categories = ["logging"]
     commands = [
-        AntaTestCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
-        AntaTestCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
     ]
 
     @AntaTest.anta_test
@@ -248,7 +246,7 @@ class VerifyLoggingTimestamp(AntaTest):
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
 
-        output = cast(str, self.instance_commands[1].output)
+        output = self.instance_commands[1].text_output
 
         lines = output.strip().split("\n")[::-1]
 
@@ -276,7 +274,7 @@ class VerifyLoggingAccounting(AntaTest):
     name = "VerifyLoggingAccounting"
     description = "Verifies if AAA accounting logs are generated."
     categories = ["logging"]
-    commands = [AntaTestCommand(command="show aaa accounting logs | tail", ofmt="text")]
+    commands = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -284,7 +282,7 @@ class VerifyLoggingAccounting(AntaTest):
         Run VerifyLoggingAccountingvalidation.
         """
         pattern = r"cmd=show aaa accounting logs"
-        output = cast(str, self.instance_commands[0].output)
+        output = self.instance_commands[0].text_output
 
         if re.search(pattern, output):
             self.result.is_success()

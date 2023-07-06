@@ -8,12 +8,13 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, ConfigDict, conint
 
+from anta import __DEBUG__
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.tools.misc import exc_to_str
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -23,50 +24,92 @@ DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
 
+# TODO: Notes on eAPI version/revision
+# eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
+# (revisions are numbers, default value is 1).
+# By default an eAPI request will return revision 1 of the model instance,
+# this ensures that older management software will not suddenly stop working when a switch is upgraded.
+# A "revision" applies to a particular CLI command whereas a "version" is global and is internally
+# translated to a specific "revision" for each CLI command in the rpc.
 
-class AntaTestTemplate(BaseModel):
+
+class AntaTemplate(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
-        command(str): Test command
-        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
-        ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
+        template: Python f-string. Example: 'show vlan {vlan_id}'
+        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
+        ofmt: eAPI output - json or text - default is json
     """
 
     template: str
-    version: Union[int, Literal["latest"]] = "latest"
-    ofmt: str = "json"
+    version: Literal[1, "latest"] = "latest"
+    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
+    ofmt: Literal["json", "text"] = "json"
+
+    def render(self, params: Dict[str, Any]) -> AntaCommand:
+        """Render an AntaCommand from an AntaTemplate instance.
+        Keep the parameters used in the AntaTemplate instance.
+
+         Args:
+             params: dictionary of variables with string values to render the Python f-string
+
+         Returns:
+             AntaCommand: The rendered AntaCommand.
+                          This AntaCommand instance have a template attribute that references this
+                          AntaTemplate instance.
+        """
+        return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
 
 
-class AntaTestCommand(BaseModel):
+class AntaCommand(BaseModel):
     """Class to define a test command with its API version
 
     Attributes:
-        command(str): Test command
-        version: eAPI version - valid values are integers or the string "latest" - default is "latest"
-        ofmt(str):  eAPI output - json or text - default is json
-        output: collected output either dict for json or str for text
-        template Optional(AntaTestTemplate): Template used to generate the command
-        template_params Optional(dict): params used in the template to generate the command
+        command: Device command
+        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
+        ofmt: eAPI output - json or text - default is json
+        template: AntaTemplate object used to render this command
+        params: dictionary of variables with string values to render the template
+        failed: If the command execution fails, the Exception object is stored in this field
     """
 
+    # This is required if we want to keep an Exception object in the failed field
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     command: str
-    version: Union[int, Literal["latest"]] = "latest"
-    ofmt: str = "json"
+    version: Literal[1, "latest"] = "latest"
+    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
+    ofmt: Literal["json", "text"] = "json"
     output: Optional[Union[Dict[str, Any], str]] = None
-    template: Optional[AntaTestTemplate] = None
-    template_params: Optional[Dict[str, Any]] = None
+    template: Optional[AntaTemplate] = None
+    failed: Optional[Exception] = None
+    params: Optional[Dict[str, Any]] = None
 
-    @validator("template_params")
-    def prevent_none_when_template_is_set(cls: Type[AntaTestTemplate], value: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:  # type: ignore
-        """
-        Raises if template is set but no params are given
-        """
-        if hasattr(cls, "template") and cls.template is not None:
-            assert value is not None
+    @property
+    def json_output(self) -> Dict[str, Any]:
+        """Get the command output as JSON"""
+        if self.output is None:
+            raise RuntimeError(f"There is no output for command {self.command}")
+        if self.ofmt != "json" or not isinstance(self.output, dict):
+            raise RuntimeError(f"Output of command {self.command} is invalid")
+        return dict(self.output)
 
-        return value
+    @property
+    def text_output(self) -> str:
+        """Get the command output as a string"""
+        if self.output is None:
+            raise RuntimeError(f"There is no output for command {self.command}")
+        if self.ofmt != "text" or not isinstance(self.output, str):
+            raise RuntimeError(f"Output of command {self.command} is invalid")
+        return str(self.output)
+
+    @property
+    def collected(self) -> bool:
+        """Return True if the command has been collected"""
+        return self.output is not None and self.failed is None
 
 
 class AntaTestFilter(ABC):
@@ -105,9 +148,9 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     # Or any child type
-    commands: ClassVar[list[AntaTestCommand]]
+    commands: ClassVar[list[AntaCommand]]
     # TODO - today we support only one template per Test
-    template: ClassVar[AntaTestTemplate]
+    template: ClassVar[AntaTemplate]
 
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
@@ -121,13 +164,14 @@ class AntaTest(ABC):
         labels: list[str] | None = None,
     ):
         """Class constructor"""
-        self.device = device
-        self.result = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
-        self.labels = labels or []
+        self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
+        self.device: AntaDevice = device
+        self.result: TestResult = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
+        self.labels: List[str] = labels or []
+        self.instance_commands: List[AntaCommand] = []
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
-        self.instance_commands = []
         if hasattr(self.__class__, "commands") and (cmds := self.__class__.commands) is not None:
             self.instance_commands.extend(deepcopy(cmds))
         if hasattr(self.__class__, "template") and (tpl := self.__class__.template) is not None:
@@ -135,19 +179,15 @@ class AntaTest(ABC):
                 self.result.is_error("Command has template but no params were given")
                 return
             self.template_params = template_params
-            self.instance_commands.extend(
-                AntaTestCommand(
-                    command=tpl.template.format(**param),
-                    ofmt=tpl.ofmt,
-                    version=tpl.version,
-                    template=tpl,
-                    template_params=param,
-                )
-                for param in template_params
-            )
+            for param in template_params:
+                try:
+                    self.instance_commands.append(tpl.render(param))
+                except KeyError:
+                    self.result.is_error(f"Cannot render template '{tpl.template}': wrong parameters")
+                    return
 
         if eos_data is not None:
-            logger.debug("Test initialized with input data")
+            self.logger.debug("Test initialized with input data")
             self.save_commands_data(eos_data)
 
     def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
@@ -160,7 +200,15 @@ class AntaTest(ABC):
 
     def all_data_collected(self) -> bool:
         """returns True if output is populated for every command"""
-        return all(command.output is not None for command in self.instance_commands)
+        return all(command.collected for command in self.instance_commands)
+
+    def get_failed_commands(self) -> List[AntaCommand]:
+        """returns a list of all the commands that have a populated failed field"""
+        errors = []
+        for command in self.instance_commands:
+            if command.failed is not None:
+                errors.append(command)
+        return errors
 
     def __init_subclass__(cls) -> None:
         """
@@ -178,12 +226,14 @@ class AntaTest(ABC):
         """
         Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
-        logger.debug(f"Test {self.name} on device {self.device.name}: running command outputs collection")
         try:
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-            logger.debug(tb_to_str(e))
+            message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
+            if __DEBUG__:
+                self.logger.exception(message)
+            else:
+                self.logger.error(message + f": {exc_to_str(e)}")
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -215,23 +265,28 @@ class AntaTest(ABC):
 
             # Data
             if eos_data is not None:
-                logger.debug("Test initialized with input data")
                 self.save_commands_data(eos_data)
+                self.logger.debug(f"Test {self.name} initialized with input data {eos_data}")
 
-            # No test data is present, try to collect
+            # If some data is missing, try to collect
             if not self.all_data_collected():
                 await self.collect()
                 if self.result.result != "unset":
                     return self.result
 
             try:
-                if not self.all_data_collected():
-                    raise ValueError("Some command output is missing")
-                logger.debug(f"Test {self.name} on device {self.device.name}: running test")
+                if cmds := self.get_failed_commands():
+                    self.result.is_error(
+                        "\n".join([f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in cmds])
+                    )
+                    return self.result
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.error(f"Exception raised for test {self.name} (on device {self.device.name}) - {exc_to_str(e)}")
-                logger.debug(tb_to_str(e))
+                message = f"Exception raised for test {self.name} (on device {self.device.name})"
+                if __DEBUG__:
+                    self.logger.exception(message)
+                else:
+                    self.logger.error(message + f": {exc_to_str(e)}")
                 self.result.is_error(exc_to_str(e))
             return self.result
 

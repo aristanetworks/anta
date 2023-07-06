@@ -13,8 +13,8 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
-from anta.models import DEFAULT_TAG, AntaTestCommand
-from anta.tools.misc import exc_to_str, tb_to_str
+from anta.models import DEFAULT_TAG, AntaCommand
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -104,24 +104,24 @@ class AntaDevice(ABC):
         """
 
     @abstractmethod
-    async def collect(self, command: AntaTestCommand) -> None:
+    async def collect(self, command: AntaCommand) -> None:
         """
         Collect device command output.
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
 
         The `collect()` implementation needs to populate the `output` attribute
-        of the `AntaTestCommand` object passed as argument.
+        of the `AntaCommand` object passed as argument.
 
         If a failure occurs, the `collect()` implementation is expected to catch the
         exception and implement proper logging, the `output` attribute of the
-        `AntaTestCommand` object passed as argument would be `None` in this case.
+        `AntaCommand` object passed as argument would be `None` in this case.
 
         Args:
             command: the command to collect
         """
 
-    async def collect_commands(self, commands: List[AntaTestCommand]) -> None:
+    async def collect_commands(self, commands: List[AntaCommand]) -> None:
         """
         Collect multiple commands.
 
@@ -165,11 +165,6 @@ class AsyncEOSDevice(AntaDevice):
         hw_model: Hardware model of the device
         tags: List of tags for this device
     """
-
-    # Hardware model definition in show version
-    HW_MODEL_KEY: str = "modelName"
-    # Maximum concurrent SSH connections opened with EOS
-    MAX_SSH_CONNECTIONS: int = 10
 
     def __init__(  # pylint: disable=R0913
         self,
@@ -236,7 +231,7 @@ class AsyncEOSDevice(AntaDevice):
             return False
         return self._session.host == other._session.host and self._session.port == other._session.port
 
-    async def collect(self, command: AntaTestCommand) -> None:
+    async def collect(self, command: AntaCommand) -> None:
         """
         Collect device command output from EOS using aio-eapi.
 
@@ -248,15 +243,22 @@ class AsyncEOSDevice(AntaDevice):
             command: the command to collect
         """
         try:
+            commands = []
             if self._enable_password is not None:
-                enable_cmd = {
-                    "cmd": "enable",
-                    "input": str(self._enable_password),
-                }
+                commands.append(
+                    {
+                        "cmd": "enable",
+                        "input": str(self._enable_password),
+                    }
+                )
             else:
-                enable_cmd = {"cmd": "enable"}
+                commands.append({"cmd": "enable"})
+            if command.revision:
+                commands.append({"cmd": command.command, "revision": command.revision})
+            else:
+                commands.append({"cmd": command.command})
             response = await self._session.cli(
-                commands=[enable_cmd, command.command],
+                commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
@@ -269,16 +271,18 @@ class AsyncEOSDevice(AntaDevice):
             logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
             logger.error(f"Command '{command.command}' failed on {self.name}: {e.errmsg}")
-            logger.debug(command)
+            command.failed = e
         except (HTTPError, ConnectError) as e:
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
             logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
+            command.failed = e
         except Exception as e:  # pylint: disable=broad-exception-caught
-            # TODO @mtache - propagate the exception in some AntaTestCommand attribute
-            logger.critical(f"Exception raised while collecting command '{command.command}' on device {self.name} - {exc_to_str(e)}")
-            logger.debug(tb_to_str(e))
+            message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
+            if __DEBUG__:
+                logger.exception(message)
+            else:
+                logger.error(message + f": {exc_to_str(e)}")
+            command.failed = e
             logger.debug(command)
 
     async def refresh(self) -> None:
@@ -290,20 +294,24 @@ class AsyncEOSDevice(AntaDevice):
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
+        # Refresh command
+        COMMAND: str = "show version"
+        # Hardware model definition in show version
+        HW_MODEL_KEY: str = "modelName"
         logger.debug(f"Refreshing device {self.name}")
         self.is_online = await self._session.check_connection()
         if self.is_online:
             try:
-                response = await self._session.cli(command="show version")
+                response = await self._session.cli(command=COMMAND)
             except EapiCommandError as e:
                 logger.warning(f"Cannot get hardware information from device {self.name}: {e.errmsg}")
             except (HTTPError, ConnectError) as e:
-                logger.warning(f"Cannot get hardware information from device {self.name}: {type(e).__name__}{'' if not str(e) else f' ({str(e)})'}")
+                logger.warning(f"Cannot get hardware information from device {self.name}: {exc_to_str(e)}")
             else:
-                if self.HW_MODEL_KEY in response:
-                    self.hw_model = response[self.HW_MODEL_KEY]
+                if HW_MODEL_KEY in response:
+                    self.hw_model = response[HW_MODEL_KEY]
                 else:
-                    logger.warning(f"Cannot get hardware information from device {self.name}: cannot parse 'show version'")
+                    logger.warning(f"Cannot get hardware information from device {self.name}: cannot parse '{COMMAND}'")
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)

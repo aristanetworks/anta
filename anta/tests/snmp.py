@@ -3,12 +3,9 @@ Test functions related to the EOS various SNMP settings
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifySnmpStatus(AntaTest):
@@ -24,7 +21,7 @@ class VerifySnmpStatus(AntaTest):
     name = "VerifySnmpStatus"
     description = "Verifies if the SNMP agent is enabled."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp")]
+    commands = [AntaCommand(command="show snmp")]
 
     @AntaTest.anta_test
     def test(self, vrf: str = "default") -> None:
@@ -37,7 +34,7 @@ class VerifySnmpStatus(AntaTest):
         if not vrf:
             self.result.is_skipped(f"{self.__class__.name} did not run because vrf was not supplied")
         else:
-            command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+            command_output = self.instance_commands[0].json_output
 
             if command_output["enabled"] and vrf in command_output["vrfs"]["snmpVrfs"]:
                 self.result.is_success()
@@ -58,7 +55,7 @@ class VerifySnmpIPv4Acl(AntaTest):
     name = "VerifySnmpIPv4Acl"
     description = "Verifies if the SNMP agent has IPv4 ACL(s) configured."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp ipv4 access-list summary")]
+    commands = [AntaCommand(command="show snmp ipv4 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -73,7 +70,7 @@ class VerifySnmpIPv4Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
@@ -106,7 +103,7 @@ class VerifySnmpIPv6Acl(AntaTest):
     name = "VerifySnmpIPv6Acl"
     description = "Verifies if the SNMP agent has IPv6 ACL(s) configured."
     categories = ["snmp"]
-    commands = [AntaTestCommand(command="show snmp ipv6 access-list summary")]
+    commands = [AntaCommand(command="show snmp ipv6 access-list summary")]
 
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
@@ -121,7 +118,7 @@ class VerifySnmpIPv6Acl(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)

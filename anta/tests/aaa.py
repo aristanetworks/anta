@@ -3,12 +3,9 @@ Test functions related to the EOS various AAA settings
 """
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import List, Optional
 
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 def _check_group_methods(methods: List[str]) -> List[str]:
@@ -52,7 +49,7 @@ class VerifyTacacsSourceIntf(AntaTest):
     name = "VerifyTacacsSourceIntf"
     description = "Verifies TACACS source-interface for a specified VRF."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
@@ -67,7 +64,7 @@ class VerifyTacacsSourceIntf(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         try:
             if command_output["srcIntf"][vrf] == intf:
@@ -92,7 +89,7 @@ class VerifyTacacsServers(AntaTest):
     name = "VerifyTacacsServers"
     description = "Verifies TACACS servers are configured for a specified VRF."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, servers: Optional[List[str]] = None, vrf: str = "default") -> None:
@@ -107,7 +104,7 @@ class VerifyTacacsServers(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because servers or vrf were not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         tacacs_servers = command_output["tacacsServers"]
 
@@ -140,7 +137,7 @@ class VerifyTacacsServerGroups(AntaTest):
     name = "VerifyTacacsServerGroups"
     description = "Verifies if the provided TACACS server group(s) are configured."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show tacacs")]
+    commands = [AntaCommand(command="show tacacs")]
 
     @AntaTest.anta_test
     def test(self, groups: Optional[List[str]] = None) -> None:
@@ -154,7 +151,7 @@ class VerifyTacacsServerGroups(AntaTest):
             self.result.is_skipped(f"{self.__class__.name} did not run because groups were not supplied")
             return
 
-        command_output = cast(Dict[str, Any], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         tacacs_groups = command_output["groups"]
 
@@ -183,7 +180,7 @@ class VerifyAuthenMethods(AntaTest):
     name = "VerifyAuthenMethods"
     description = "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods authentication")]
+    commands = [AntaCommand(command="show aaa methods authentication")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -202,7 +199,7 @@ class VerifyAuthenMethods(AntaTest):
 
         _check_auth_type(auth_types, ["login", "enable", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
 
@@ -240,7 +237,7 @@ class VerifyAuthzMethods(AntaTest):
     name = "VerifyAuthzMethods"
     description = "Verifies the AAA authorization method lists for different authorization types (commands, exec)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods authorization")]
+    commands = [AntaCommand(command="show aaa methods authorization")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -259,7 +256,7 @@ class VerifyAuthzMethods(AntaTest):
 
         methods_with_group = _check_group_methods(methods)
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
 
@@ -290,7 +287,7 @@ class VerifyAcctDefaultMethods(AntaTest):
     name = "VerifyAcctDefaultMethods"
     description = "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods accounting")]
+    commands = [AntaCommand(command="show aaa methods accounting")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -309,7 +306,7 @@ class VerifyAcctDefaultMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
         not_configured = []
@@ -348,7 +345,7 @@ class VerifyAcctConsoleMethods(AntaTest):
     name = "VerifyAcctConsoleMethods"
     description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
     categories = ["aaa"]
-    commands = [AntaTestCommand(command="show aaa methods accounting")]
+    commands = [AntaCommand(command="show aaa methods accounting")]
 
     @AntaTest.anta_test
     def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
@@ -367,7 +364,7 @@ class VerifyAcctConsoleMethods(AntaTest):
 
         _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
 
-        command_output = cast(Dict[str, Dict[str, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         not_matching = []
         not_configured = []

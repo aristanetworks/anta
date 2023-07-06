@@ -1,13 +1,11 @@
 """
 BGP test functions
 """
-import logging
-from typing import Any, Dict, Optional, cast
+
+from typing import Any, Dict, Optional
 
 from anta.decorators import check_bgp_family_enable
-from anta.models import AntaTest, AntaTestCommand, AntaTestTemplate
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 def _check_bgp_vrfs(bgp_vrfs: Dict[str, Any]) -> Dict[str, Any]:
@@ -50,14 +48,14 @@ class VerifyBGPIPv4UnicastState(AntaTest):
     name = "VerifyBGPIPv4UnicastState"
     description = "Verifies all IPv4 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp ipv4 unicast summary vrf all")]
+    commands = [AntaCommand(command="show bgp ipv4 unicast summary vrf all")]
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPIPv4UnicastState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
 
         if not state_issue:
@@ -85,7 +83,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         " the actual number of BGP IPv4 unicast neighbors is the one we expect."
     )
     categories = ["routing", "bgp"]
-    template = AntaTestTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")
+    template = AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
@@ -104,12 +102,12 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
 
         self.result.is_success()
 
-        for index, command in enumerate(self.instance_commands):
-            vrf = cast(Dict[str, str], command.template_params).get("vrf")
-            command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[index].output)
+        for command in self.instance_commands:
+            if command.params and "vrf" in command.params:
+                vrf = command.params["vrf"]
 
-            peers = command_output["vrfs"][vrf]["peers"]
-            state_issue = _check_bgp_vrfs(command_output["vrfs"])
+            peers = command.json_output["vrfs"][vrf]["peers"]
+            state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
 
             if len(peers) != number:
                 self.result.is_failure(f"Expecting {number} BGP peer in vrf {vrf} and got {len(peers)}")
@@ -131,14 +129,14 @@ class VerifyBGPIPv6UnicastState(AntaTest):
     name = "VerifyBGPIPv6UnicastState"
     description = "Verifies all IPv6 unicast BGP sessions are established (for all VRF) and all BGP messages queues for these sessions are empty (for all VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp ipv6 unicast summary vrf all")]
+    commands = [AntaCommand(command="show bgp ipv6 unicast summary vrf all")]
 
     @check_bgp_family_enable("ipv6")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPIPv6UnicastState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
 
@@ -160,14 +158,14 @@ class VerifyBGPEVPNState(AntaTest):
     name = "VerifyBGPEVPNState"
     description = "Verifies all EVPN BGP sessions are established (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp evpn summary")]
+    commands = [AntaCommand(command="show bgp evpn summary")]
 
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPEVPNState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         bgp_vrfs = command_output["vrfs"]
 
@@ -194,7 +192,7 @@ class VerifyBGPEVPNCount(AntaTest):
     name = "VerifyBGPEVPNCount"
     description = "Verifies all EVPN BGP sessions are established (default VRF) and the actual number of BGP EVPN neighbors is the one we expect (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp evpn summary")]
+    commands = [AntaCommand(command="show bgp evpn summary")]
 
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
@@ -209,7 +207,7 @@ class VerifyBGPEVPNCount(AntaTest):
             self.result.is_skipped("VerifyBGPEVPNCount could not run because number was not supplied.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
@@ -236,14 +234,14 @@ class VerifyBGPRTCState(AntaTest):
     name = "VerifyBGPRTCState"
     description = "Verifies all RTC BGP sessions are established (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp rt-membership summary")]
+    commands = [AntaCommand(command="show bgp rt-membership summary")]
 
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBGPRTCState validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         bgp_vrfs = command_output["vrfs"]
 
@@ -270,7 +268,7 @@ class VerifyBGPRTCCount(AntaTest):
     name = "VerifyBGPRTCCount"
     description = "Verifies all RTC BGP sessions are established (default VRF) and the actual number of BGP RTC neighbors is the one we expect (default VRF)."
     categories = ["routing", "bgp"]
-    commands = [AntaTestCommand(command="show bgp rt-membership summary")]
+    commands = [AntaCommand(command="show bgp rt-membership summary")]
 
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
@@ -285,7 +283,7 @@ class VerifyBGPRTCCount(AntaTest):
             self.result.is_skipped("VerifyBGPRTCCount could not run because number was not supplied")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]

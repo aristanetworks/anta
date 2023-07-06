@@ -1,12 +1,10 @@
 """
 Generic routing test functions
 """
-import logging
-from typing import Any, Dict, Optional, cast
 
-from anta.models import AntaTest, AntaTestCommand
+from typing import Optional
 
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -23,7 +21,7 @@ class VerifyRoutingProtocolModel(AntaTest):
     )
     categories = ["routing", "generic"]
     # "revision": 3
-    commands = [AntaTestCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary")]
 
     @AntaTest.anta_test
     def test(self, model: Optional[str] = "multi-agent") -> None:
@@ -32,7 +30,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if not model:
             self.result.is_skipped("VerifyRoutingProtocolModel was not run as no model was given")
             return
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         configured_model = command_output["protoModelStatus"]["configuredProtoModel"]
         operating_model = command_output["protoModelStatus"]["operatingProtoModel"]
@@ -56,7 +54,7 @@ class VerifyRoutingTableSize(AntaTest):
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
     categories = ["routing", "generic"]
     # "revision": 3
-    commands = [AntaTestCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary")]
 
     @AntaTest.anta_test
     def test(self, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
@@ -72,7 +70,7 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_error(f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
         if minimum <= total_routes <= maximum:
             self.result.is_success()
@@ -89,13 +87,13 @@ class VerifyBFD(AntaTest):
     description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
     categories = ["routing", "generic"]
     # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaTestCommand(command="show bfd peers", version=1)]
+    commands = [AntaCommand(command="show bfd peers", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Run VerifyBFD validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
 

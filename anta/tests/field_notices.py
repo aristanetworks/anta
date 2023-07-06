@@ -1,13 +1,9 @@
 """
 Test functions to flag field notices
 """
-import logging
-from typing import Any, Dict, cast
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifyFieldNotice44Resolution(AntaTest):
@@ -23,7 +19,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
         "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)"
     )
     categories = ["field notices", "software"]
-    commands = [AntaTestCommand(command="show version detail")]
+    commands = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -31,7 +27,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
     def test(self) -> None:  # type: ignore[override]
         """Run VerifyFieldNotice44Resolution validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         devices = [
             "DCS-7010T-48",
@@ -81,7 +77,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
         ]
         variants = ["-SSD-F", "-SSD-R", "-M-F", "-M-R", "-F", "-R"]
 
-        model = cast(str, command_output["modelName"])
+        model = command_output["modelName"]
         # TODO this list could be a regex
         for variant in variants:
             model = model.replace(variant, "")
@@ -113,7 +109,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     name = "VerifyFieldNotice72Resolution"
     description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
     categories = ["field notices", "software"]
-    commands = [AntaTestCommand(command="show version detail")]
+    commands = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -121,11 +117,11 @@ class VerifyFieldNotice72Resolution(AntaTest):
     def test(self) -> None:  # type: ignore[override]
         """Run VerifyFieldNotice72Resolution validation"""
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
 
         devices = ["DCS-7280SR3-48YC8", "DCS-7280SR3K-48YC8"]
         variants = ["-SSD-F", "-SSD-R", "-M-F", "-M-R", "-F", "-R"]
-        model = cast(str, command_output["modelName"])
+        model = command_output["modelName"]
 
         for variant in variants:
             model = model.replace(variant, "")

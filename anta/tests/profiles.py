@@ -1,13 +1,11 @@
 """
 Test functions related to ASIC profiles
 """
-import logging
-from typing import Any, Dict, Optional, cast
+
+from typing import Optional
 
 from anta.decorators import skip_on_platforms
-from anta.models import AntaTest, AntaTestCommand
-
-logger = logging.getLogger(__name__)
+from anta.models import AntaCommand, AntaTest
 
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
@@ -18,7 +16,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     name = "VerifyUnifiedForwardingTableMode"
     description = ""
     categories = ["profiles"]
-    commands = [AntaTestCommand(command="show platform trident forwarding-table partition", ofmt="json")]
+    commands = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -33,7 +31,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
             self.result.is_skipped("VerifyUnifiedForwardingTableMode was not run as no mode was given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         if command_output["uftMode"] == mode:
             self.result.is_success()
         else:
@@ -48,7 +46,7 @@ class VerifyTcamProfile(AntaTest):
     name = "VerifyTcamProfile"
     description = "Verify that the assigned TCAM profile is actually running on the device"
     categories = ["profiles"]
-    commands = [AntaTestCommand(command="show hardware tcam profile", ofmt="json")]
+    commands = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -63,7 +61,7 @@ class VerifyTcamProfile(AntaTest):
             self.result.is_skipped("VerifyTcamProfile was not run as no profile was given")
             return
 
-        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+        command_output = self.instance_commands[0].json_output
         if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == profile:
             self.result.is_success()
         else:
