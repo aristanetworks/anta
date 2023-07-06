@@ -170,4 +170,4 @@ class AntaInventory(dict):  # type: ignore
                 if __DEBUG__:
                     logger.exception(message, exc_info=r)
                 else:
-                    logger.error(message + f": {exc_to_str(r)}")
+                    logger.error(f"{message}: {exc_to_str(r)}")

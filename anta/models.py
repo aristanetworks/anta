@@ -305,7 +305,6 @@ class AntaTest(ABC):
             nrfu_task: TaskID = cast(TaskID, 0)
             self.progress.update(nrfu_task, advance=1)
 
-
     @abstractmethod
     def test(self) -> Coroutine[Any, Any, TestResult]:
         """
