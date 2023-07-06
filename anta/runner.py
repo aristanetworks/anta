@@ -61,13 +61,13 @@ async def main(
             coros.append(test_instance.test(eos_data=None, **test_params))
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
-            logger.exception(message) if __DEBUG__ else logger.error(message+f': {exc_to_str(e)}')
+            logger.exception(message) if __DEBUG__ else logger.error(message + f": {exc_to_str(e)}")
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
             message = "Error in main ANTA Runner"
-            logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message+f': {exc_to_str(r)}')
+            logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message + f": {exc_to_str(r)}")
             res.remove(r)
     manager.add_test_results(res)

@@ -13,10 +13,10 @@ from pydantic import ValidationError
 from yaml import safe_load
 
 from anta import __DEBUG__
-from anta.tools.misc import exc_to_str
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -167,4 +167,4 @@ class AntaInventory(dict):  # type: ignore
         for r in results:
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
-                logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message+f': {exc_to_str(r)}')
+                logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message + f": {exc_to_str(r)}")
