@@ -85,7 +85,10 @@ async def collect_commands(
     for r in res:
         if isinstance(r, Exception):
             message = "Error when collecting commands"
-            logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message + f": {exc_to_str(r)}")
+            if __DEBUG__:
+                logger.exception(message, exc_info=r)
+            else:
+                logger.error(message + f": {exc_to_str(r)}")
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
@@ -144,7 +147,10 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             message = f"Unable to collect tech-support on device {device.name}"
-            logger.exception(message) if __DEBUG__ else logger.error(message + f": {exc_to_str(e)}")
+            if __DEBUG__:
+                logger.exception(message)
+            else:
+                logger.error(message + f": {exc_to_str(e)}")
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

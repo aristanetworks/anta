@@ -59,7 +59,11 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
         )
     except Exception as e:  # pylint: disable=broad-exception-caught
         message = f"Unable to parse ANTA Inventory file '{path}'"
-        logger.exception(message) if __DEBUG__ else logger.error(message + f": {exc_to_str(e)}")
+        if __DEBUG__:
+            logger.exception(message)
+        else:
+            logger.error(message + f": {exc_to_str(e)}")
+
         ctx.fail(message)
     return inventory
 
@@ -86,7 +90,10 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
     # pylint: disable-next=broad-exception-caught
     except Exception as e:
         message = f"Unable to parse ANTA Tests Catalog file '{value}'"
-        logger.exception(message) if __DEBUG__ else logger.error(message + f": {exc_to_str(e)}")
+        if __DEBUG__:
+            logger.exception(message)
+        else:
+            logger.error(message + f": {exc_to_str(e)}")
         ctx.fail(message)
 
     return anta.loader.parse_catalog(data)
@@ -101,7 +108,10 @@ def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
         anta.loader.setup_logging(value)
     except Exception as e:  # pylint: disable=broad-exception-caught
         message = f"Unable to set ANTA logging level '{value}'"
-        logger.exception(message) if __DEBUG__ else logger.error(message + f": {exc_to_str(e)}")
+        if __DEBUG__:
+            logger.exception(message)
+        else:
+            logger.error(message + f": {exc_to_str(e)}")
         ctx.fail(message)
 
     return value

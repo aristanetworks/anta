@@ -167,4 +167,7 @@ class AntaInventory(dict):  # type: ignore
         for r in results:
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
-                logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message + f": {exc_to_str(r)}")
+                if __DEBUG__:
+                    logger.exception(message, exc_info=r)
+                else:
+                    logger.error(message + f": {exc_to_str(r)}")

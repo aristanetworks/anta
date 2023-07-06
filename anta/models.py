@@ -230,7 +230,10 @@ class AntaTest(ABC):
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
-            self.logger.exception(message) if __DEBUG__ else self.logger.error(message + f": {exc_to_str(e)}")
+            if __DEBUG__:
+                self.logger.exception(message)
+            else:
+                self.logger.error(message + f": {exc_to_str(e)}")
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -280,7 +283,10 @@ class AntaTest(ABC):
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
-                self.logger.exception(message) if __DEBUG__ else self.logger.error(message + f": {exc_to_str(e)}")
+                if __DEBUG__:
+                    self.logger.exception(message)
+                else:
+                    self.logger.error(message + f": {exc_to_str(e)}")
                 self.result.is_error(exc_to_str(e))
             return self.result
 

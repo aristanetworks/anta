@@ -57,6 +57,7 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
 @click.argument("params", required=True, nargs=-1)
 def run_template(template: str, params: List[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
+    # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.
 
     Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
