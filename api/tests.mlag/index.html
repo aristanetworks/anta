@@ -756,6 +756,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagDualPrimary" class="md-nav__link">
+    VerifyMlagDualPrimary
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyMlagDualPrimary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagDualPrimary.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.mlag.VerifyMlagInterfaces" class="md-nav__link">
     VerifyMlagInterfaces
   </a>
@@ -765,6 +785,26 @@
         
           <li class="md-nav__item">
   <a href="#anta.tests.mlag.VerifyMlagInterfaces.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagReloadDelay" class="md-nav__link">
+    VerifyMlagReloadDelay
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyMlagReloadDelay">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagReloadDelay.test" class="md-nav__link">
     test()
   </a>
   
@@ -1387,6 +1427,26 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagDualPrimary" class="md-nav__link">
+    VerifyMlagDualPrimary
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyMlagDualPrimary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagDualPrimary.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.tests.mlag.VerifyMlagInterfaces" class="md-nav__link">
     VerifyMlagInterfaces
   </a>
@@ -1396,6 +1456,26 @@
         
           <li class="md-nav__item">
   <a href="#anta.tests.mlag.VerifyMlagInterfaces.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagReloadDelay" class="md-nav__link">
+    VerifyMlagReloadDelay
+  </a>
+  
+    <nav class="md-nav" aria-label="VerifyMlagReloadDelay">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.mlag.VerifyMlagReloadDelay.test" class="md-nav__link">
     test()
   </a>
   
@@ -1460,7 +1540,7 @@
 <a id="anta.tests.mlag"></a>
   <div class="doc doc-contents first">
   
-      <p>Test functions related to Multi-Chassis LAG</p>
+      <p>Test functions related to Multi-chassis Link Aggregation (MLAG)</p>
 
   
 
@@ -1489,66 +1569,97 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies there are no MLAG config-sanity inconsistencies.</p>
+      <p>This test verifies there are no MLAG config-sanity inconsistencies.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if there are NO MLAG config-sanity inconsistencies.</li>
+<li>failure: The test will fail if there are MLAG config-sanity inconsistencies.</li>
+<li>skipped: The test will be skipped if MLAG is &lsquo;disabled&rsquo;.</li>
+<li>error: The test will give an error if &lsquo;mlagActive&rsquo; is not found in the JSON response.</li>
+</ul>
+</details>
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagConfigSanity</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagConfigSanity</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies there are no MLAG config-sanity inconsistencies.</span>
+<span class="sd">    This test verifies there are no MLAG config-sanity inconsistencies.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if there are NO MLAG config-sanity inconsistencies.</span>
+<span class="sd">        * failure: The test will fail if there are MLAG config-sanity inconsistencies.</span>
+<span class="sd">        * skipped: The test will be skipped if MLAG is &#39;disabled&#39;.</span>
+<span class="sd">        * error: The test will give an error if &#39;mlagActive&#39; is not found in the JSON response.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyMlagConfigSanity&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies there are no MLAG config-sanity inconsistencies.&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies there are no MLAG config-sanity inconsistencies.&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mlag&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show mlag config-sanity&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagConfigSanity validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyMlagConfigSanity validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;mlagActive&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Incorrect JSON response - mlagActive state not found&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagActive&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mlag_status</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;mlagActive&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Incorrect JSON response - &#39;mlagActive&#39; state was not found&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">mlag_status</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;MLAG config-sanity returned Global inconsistancies: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;globalConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;MLAG config-sanity returned Interface inconsistancies: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;interfaceConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">]</span>
+        <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">verified_output</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG config-sanity returned inconsistencies: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1580,41 +1691,403 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagConfigSanity validation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyMlagConfigSanity validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;mlagActive&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Incorrect JSON response - mlagActive state not found&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagActive&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mlag_status</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;mlagActive&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Incorrect JSON response - &#39;mlagActive&#39; state was not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">mlag_status</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;MLAG config-sanity returned Global inconsistancies: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;globalConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;MLAG config-sanity returned Interface inconsistancies: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;interfaceConfiguration&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;globalConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;interfaceConfiguration&quot;</span><span class="p">]</span>
+    <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">verified_output</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG config-sanity returned inconsistencies: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.mlag.VerifyMlagDualPrimary" class="doc doc-heading">
+        <code>VerifyMlagDualPrimary</code>
+
+
+<a href="#anta.tests.mlag.VerifyMlagDualPrimary" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
+  
+      <p>This test verifies the dual-primary detection and its parameters of the MLAG configuration.</p>
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.</li>
+<li>failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.</li>
+<li>skipped: The test will be skipped if the dual-primary parameters are NOT provided or if MLAG is &lsquo;disabled&rsquo;.</li>
+</ul>
+</details>
+
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagDualPrimary</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This test verifies the dual-primary detection and its parameters of the MLAG configuration.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.</span>
+<span class="sd">        * failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.</span>
+<span class="sd">        * skipped: The test will be skipped if the dual-primary parameters are NOT provided or if MLAG is &#39;disabled&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyMlagDualPrimary&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies the dual-primary detection and its parameters of the MLAG configuration.&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mlag&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show mlag detail&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">detection_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errdisabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">recovery_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recovery_delay_non_mlag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyMlagDualPrimary validation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            detection_delay: Delay detection for &lt;N&gt; seconds.</span>
+<span class="sd">            errdisabled: Errdisabled all interfaces when dual-primary is detected. Defaults to False.</span>
+<span class="sd">            recovery_delay: Delay (seconds) after dual-primary detection resolves until non peer-link ports that are part of an MLAG are enabled.</span>
+<span class="sd">            recovery_delay_non_mlag: Delay (seconds) after dual-primary detection resolves until ports that are not part of an MLAG are enabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">detection_delay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">errdisabled</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">recovery_delay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">recovery_delay_non_mlag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because detection_delay, errdisabled, recovery_delay or recovery_delay_non_mlag were not supplied&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">errdisabled_action</span> <span class="o">=</span> <span class="s2">&quot;errdisableAllInterfaces&quot;</span> <span class="k">if</span> <span class="n">errdisabled</span> <span class="k">else</span> <span class="s2">&quot;none&quot;</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryDetectionState&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Dual-primary detection is disabled&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;detail.dualPrimaryDetectionDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;detail.dualPrimaryAction&quot;</span><span class="p">,</span> <span class="s2">&quot;dualPrimaryMlagRecoveryDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;dualPrimaryNonMlagRecoveryDelay&quot;</span><span class="p">]</span>
+        <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;detail.dualPrimaryDetectionDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">detection_delay</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;detail.dualPrimaryAction&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">errdisabled_action</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryMlagRecoveryDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">recovery_delay</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryNonMlagRecoveryDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">recovery_delay_non_mlag</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The dual-primary parameters are not configured properly: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.mlag.VerifyMlagDualPrimary.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">detection_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errdisabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">recovery_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">recovery_delay_non_mlag</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#anta.tests.mlag.VerifyMlagDualPrimary.test" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run VerifyMlagDualPrimary validation</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>detection_delay</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Delay detection for <N> seconds.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>errdisabled</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Errdisabled all interfaces when dual-primary is detected. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>recovery_delay</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Delay (seconds) after dual-primary detection resolves until non peer-link ports that are part of an MLAG are enabled.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>recovery_delay_non_mlag</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Delay (seconds) after dual-primary detection resolves until ports that are not part of an MLAG are enabled.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">detection_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errdisabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">recovery_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recovery_delay_non_mlag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyMlagDualPrimary validation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        detection_delay: Delay detection for &lt;N&gt; seconds.</span>
+<span class="sd">        errdisabled: Errdisabled all interfaces when dual-primary is detected. Defaults to False.</span>
+<span class="sd">        recovery_delay: Delay (seconds) after dual-primary detection resolves until non peer-link ports that are part of an MLAG are enabled.</span>
+<span class="sd">        recovery_delay_non_mlag: Delay (seconds) after dual-primary detection resolves until ports that are not part of an MLAG are enabled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">detection_delay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">errdisabled</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">recovery_delay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">recovery_delay_non_mlag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because detection_delay, errdisabled, recovery_delay or recovery_delay_non_mlag were not supplied&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">errdisabled_action</span> <span class="o">=</span> <span class="s2">&quot;errdisableAllInterfaces&quot;</span> <span class="k">if</span> <span class="n">errdisabled</span> <span class="k">else</span> <span class="s2">&quot;none&quot;</span>
+
+    <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryDetectionState&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Dual-primary detection is disabled&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;detail.dualPrimaryDetectionDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;detail.dualPrimaryAction&quot;</span><span class="p">,</span> <span class="s2">&quot;dualPrimaryMlagRecoveryDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;dualPrimaryNonMlagRecoveryDelay&quot;</span><span class="p">]</span>
+    <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;detail.dualPrimaryDetectionDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">detection_delay</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;detail.dualPrimaryAction&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">errdisabled_action</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryMlagRecoveryDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">recovery_delay</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;dualPrimaryNonMlagRecoveryDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">recovery_delay_non_mlag</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The dual-primary parameters are not configured properly: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1645,54 +2118,80 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies there are no inactive or active-partial MLAG interfaces.</p>
+      <p>This test verifies there are no inactive or active-partial MLAG ports.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if there are NO inactive or active-partial MLAG ports.</li>
+<li>failure: The test will fail if there are inactive or active-partial MLAG ports.</li>
+<li>skipped: The test will be skipped if MLAG is &lsquo;disabled&rsquo;.</li>
+</ul>
+</details>
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
-<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagInterfaces</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagInterfaces</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies there are no inactive or active-partial MLAG interfaces.</span>
+<span class="sd">    This test verifies there are no inactive or active-partial MLAG ports.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if there are NO inactive or active-partial MLAG ports.</span>
+<span class="sd">        * failure: The test will fail if there are inactive or active-partial MLAG ports.</span>
+<span class="sd">        * skipped: The test will be skipped if MLAG is &#39;disabled&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyMlagInterfaces&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies there are no inactive or active-partial MLAG interfaces.&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies there are no inactive or active-partial MLAG ports.&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mlag&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show mlag&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagInterfaces validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyMlagInterfaces validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Inactive&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Active-partial&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;mlagPorts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Inactive&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Active-partial&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;mlagPorts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1724,29 +2223,293 @@
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagInterfaces validation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyMlagInterfaces validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Inactive&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Active-partial&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;mlagPorts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Inactive&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;mlagPorts&quot;</span><span class="p">][</span><span class="s2">&quot;Active-partial&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;mlagPorts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.mlag.VerifyMlagReloadDelay" class="doc doc-heading">
+        <code>VerifyMlagReloadDelay</code>
+
+
+<a href="#anta.tests.mlag.VerifyMlagReloadDelay" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
+
+  
+      <p>This test verifies the reload-delay parameters of the MLAG configuration.</p>
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if the reload-delay parameters are configured properly.</li>
+<li>failure: The test will fail if the reload-delay parameters are NOT configured properly.</li>
+<li>skipped: The test will be skipped if the reload-delay parameters are NOT provided or if MLAG is &lsquo;disabled&rsquo;.</li>
+</ul>
+</details>
+
+        <details class="quote">
+          <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagReloadDelay</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This test verifies the reload-delay parameters of the MLAG configuration.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if the reload-delay parameters are configured properly.</span>
+<span class="sd">        * failure: The test will fail if the reload-delay parameters are NOT configured properly.</span>
+<span class="sd">        * skipped: The test will be skipped if the reload-delay parameters are NOT provided or if MLAG is &#39;disabled&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyMlagReloadDelay&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies the reload-delay parameters of the MLAG configuration.&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mlag&quot;</span><span class="p">]</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show mlag&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reload_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyMlagReloadDelay validation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reload_delay: Delay (seconds) after reboot until non peer-link ports that are part of an MLAG are enabled.</span>
+<span class="sd">            reload_delay_non_mlag: Delay (seconds) after reboot until ports that are not part of an MLAG are enabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reload_delay</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because reload_delay or reload_delay_non_mlag were not supplied&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;reloadDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;reloadDelayNonMlag&quot;</span><span class="p">]</span>
+        <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;reloadDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">reload_delay</span> <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;reloadDelayNonMlag&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The reload-delay parameters are not configured properly: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.mlag.VerifyMlagReloadDelay.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">reload_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reload_delay_non_mlag</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#anta.tests.mlag.VerifyMlagReloadDelay.test" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run VerifyMlagReloadDelay validation</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>reload_delay</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Delay (seconds) after reboot until non peer-link ports that are part of an MLAG are enabled.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>reload_delay_non_mlag</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Delay (seconds) after reboot until ports that are not part of an MLAG are enabled.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>anta/tests/mlag.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reload_delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyMlagReloadDelay validation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reload_delay: Delay (seconds) after reboot until non peer-link ports that are part of an MLAG are enabled.</span>
+<span class="sd">        reload_delay_non_mlag: Delay (seconds) after reboot until ports that are not part of an MLAG are enabled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">reload_delay</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not run because reload_delay or reload_delay_non_mlag were not supplied&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;reloadDelay&quot;</span><span class="p">,</span> <span class="s2">&quot;reloadDelayNonMlag&quot;</span><span class="p">]</span>
+    <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;reloadDelay&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">reload_delay</span> <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;reloadDelayNonMlag&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">reload_delay_non_mlag</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The reload-delay parameters are not configured properly: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1777,14 +2540,22 @@
         Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies if MLAG us running, and if the status is good
-state is active, negotiation status is connected, local int is up, peer link is up.</p>
+      <p>This test verifies the health status of the MLAG configuration.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if the MLAG state is &lsquo;active&rsquo;, negotiation status is &lsquo;connected&rsquo;,
+           peer-link status and local interface status are &lsquo;up&rsquo;.</li>
+<li>failure: The test will fail if the MLAG state is not &lsquo;active&rsquo;, negotiation status is not &lsquo;connected&rsquo;,
+           peer-link status or local interface status are not &lsquo;up&rsquo;.</li>
+<li>skipped: The test will be skipped if MLAG is &lsquo;disabled&rsquo;.</li>
+</ul>
+</details>
 
         <details class="quote">
           <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -1810,34 +2581,61 @@ state is active, negotiation status is connected, local int is up, peer link is 
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMlagStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies if MLAG us running, and if the status is good</span>
-<span class="sd">    state is active, negotiation status is connected, local int is up, peer link is up.</span>
+<span class="sd">    This test verifies the health status of the MLAG configuration.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * success: The test will pass if the MLAG state is &#39;active&#39;, negotiation status is &#39;connected&#39;,</span>
+<span class="sd">                   peer-link status and local interface status are &#39;up&#39;.</span>
+<span class="sd">        * failure: The test will fail if the MLAG state is not &#39;active&#39;, negotiation status is not &#39;connected&#39;,</span>
+<span class="sd">                   peer-link status or local interface status are not &#39;up&#39;.</span>
+<span class="sd">        * skipped: The test will be skipped if MLAG is &#39;disabled&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyMlagStatus&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies MLAG status&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies the health status of the MLAG configuration.&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mlag&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTestCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show mlag&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagStatus validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyMlagStatus validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;active&quot;</span>
-            <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;negStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;connected&quot;</span>
-            <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;localIntfStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
-            <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
+            <span class="k">return</span>
+
+        <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;negStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;localIntfStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span>
+        <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;active&quot;</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;negStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;localIntfStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
+            <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1869,14 +2667,7 @@ state is active, negotiation status is connected, local int is up, peer link is 
 
       <details class="quote">
         <summary>Source code in <code>anta/tests/mlag.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
@@ -1885,23 +2676,44 @@ state is active, negotiation status is connected, local int is up, peer link is 
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyMlagStatus validation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyMlagStatus validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;MLAG is disabled&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="p">(</span>
-        <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;active&quot;</span>
-        <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;negStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;connected&quot;</span>
-        <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;localIntfStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
-        <span class="ow">or</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
+        <span class="k">return</span>
+
+    <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;negStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;localIntfStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span>
+    <span class="n">verified_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;active&quot;</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;negStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;localIntfStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
+        <span class="ow">and</span> <span class="n">verified_output</span><span class="p">[</span><span class="s2">&quot;peerLinkStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">command_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MLAG status is not OK: </span><span class="si">{</span><span class="n">verified_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1930,7 +2742,7 @@ state is active, negotiation status is connected, local int is up, peer link is 
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 5, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
       
     
   </small>
