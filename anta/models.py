@@ -21,8 +21,6 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 DEFAULT_TAG = "all"
 
-logger = logging.getLogger(__name__)
-
 
 class AntaTemplate(BaseModel):
     """Class to define a test command with its API version
@@ -171,7 +169,7 @@ class AntaTest(ABC):
                 self.instance_commands.append(template_instance.render(param))
 
         if eos_data is not None:
-            logger.debug("Test initialized with input data")
+            self.logger.debug("Test initialized with input data")
             self.save_commands_data(eos_data)
 
     def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
@@ -213,7 +211,7 @@ class AntaTest(ABC):
         try:
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.exception(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})")
+            self.logger.exception(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})")
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -246,7 +244,7 @@ class AntaTest(ABC):
             # Data
             if eos_data is not None:
                 self.save_commands_data(eos_data)
-                logger.debug(f"Test {self.name} initialized with input data {eos_data}")
+                self.logger.debug(f"Test {self.name} initialized with input data {eos_data}")
 
             # If some data is missing, try to collect
             if not self.all_data_collected():
@@ -262,7 +260,7 @@ class AntaTest(ABC):
                     return self.result
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.exception(f"Exception raised for test {self.name} (on device {self.device.name})")
+                self.logger.exception(f"Exception raised for test {self.name} (on device {self.device.name})")
                 self.result.is_error(exc_to_str(e))
             return self.result
 
