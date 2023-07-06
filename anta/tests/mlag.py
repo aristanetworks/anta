@@ -124,7 +124,7 @@ class VerifyMlagConfigSanity(AntaTest):
         if not any(verified_output.values()):
             self.result.is_success()
         else:
-            self.result.is_failure(f"MLAG config-sanity returned inconsistancies: {verified_output}")
+            self.result.is_failure(f"MLAG config-sanity returned inconsistencies: {verified_output}")
 
 
 class VerifyMlagReloadDelay(AntaTest):
