@@ -12,6 +12,8 @@ from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml import safe_load
 
+from anta import __DEBUG__
+from anta.tools.misc import exc_to_str
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
@@ -164,4 +166,5 @@ class AntaInventory(dict):  # type: ignore
         )
         for r in results:
             if isinstance(r, Exception):
-                logger.exception("Error when refreshing inventory", exc_info=r)
+                message = "Error when refreshing inventory"
+                logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message+f': {exc_to_str(r)}')

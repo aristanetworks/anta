@@ -14,6 +14,7 @@ from typing import Dict, List, Literal, Optional
 
 from aioeapi import EapiCommandError
 
+from anta import __DEBUG__
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
@@ -83,7 +84,8 @@ async def collect_commands(
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.exception("Error when collecting commands", exc_info=r)
+            message = "Error when collecting commands"
+            logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message+f': {exc_to_str(r)}')
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
@@ -140,8 +142,9 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
         except EapiCommandError as e:
             logger.error(f"Unable to collect tech-support on {device.name}: {e.errmsg}")
         # In this case we want to catch all exceptions
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(f"Unable to collect tech-support on device {device.name}")
+        except Exception as e:  # pylint: disable=broad-except
+            message = f"Unable to collect tech-support on device {device.name}"
+            logger.exception(message) if __DEBUG__ else logger.error(message+f': {exc_to_str(e)}')
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

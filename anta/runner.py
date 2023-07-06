@@ -7,9 +7,11 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from anta import __DEBUG__
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +59,15 @@ async def main(
             # Instantiate AntaTest object
             test_instance = test[0](device=device, template_params=template_params)
             coros.append(test_instance.test(eos_data=None, **test_params))
-        except Exception:  # pylint: disable=broad-exception-caught
-            logger.exception("Error when creating ANTA tests")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            message = "Error when creating ANTA tests"
+            logger.exception(message) if __DEBUG__ else logger.error(message+f': {exc_to_str(e)}')
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.exception("Error in main ANTA Runner", exc_info=r)
+            message = "Error in main ANTA Runner"
+            logger.exception(message, exc_info=r) if __DEBUG__ else logger.error(message+f': {exc_to_str(r)}')
             res.remove(r)
     manager.add_test_results(res)

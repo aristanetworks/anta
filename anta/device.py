@@ -270,7 +270,8 @@ class AsyncEOSDevice(AntaDevice):
             logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
             command.failed = e
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.exception(f"Exception raised while collecting command '{command.command}' on device {self.name}")
+            message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
+            logger.exception(message) if __DEBUG__ else logger.error(message+f': {exc_to_str(e)}')
             command.failed = e
             logger.debug(command)
 

@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List
 
 from pydantic import BaseModel, ConfigDict
 
+from anta import __DEBUG__
 from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str
 
@@ -211,7 +212,8 @@ class AntaTest(ABC):
         try:
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            self.logger.exception(f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})")
+            message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
+            self.logger.exception(message) if __DEBUG__ else self.logger.error(message+f': {exc_to_str(e)}')
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -260,7 +262,8 @@ class AntaTest(ABC):
                     return self.result
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
-                self.logger.exception(f"Exception raised for test {self.name} (on device {self.device.name})")
+                message = f"Exception raised for test {self.name} (on device {self.device.name})"
+                self.logger.exception(message) if __DEBUG__ else self.logger.error(message+f': {exc_to_str(e)}')
                 self.result.is_error(exc_to_str(e))
             return self.result
 
