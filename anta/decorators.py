@@ -35,10 +35,12 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
+                anta_test.update_progres()
                 return anta_test.result
 
             if anta_test.device.hw_model in platforms:
                 anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
+                anta_test.update_progres()
                 return anta_test.result
 
             return await function(*args, **kwargs)
@@ -71,6 +73,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
+                anta_test.update_progres()
                 return anta_test.result
 
             if family == "ipv4":
@@ -92,10 +95,12 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
                 return anta_test.result
             if "vrfs" not in command.json_output:
                 anta_test.result.is_skipped(f"no BGP configuration for {family} on this device")
+                anta_test.update_progres()
                 return anta_test.result
             if len(bgp_vrfs := command.json_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
                 # No VRF
                 anta_test.result.is_skipped(f"no {family} peer on this device")
+                anta_test.update_progres()
                 return anta_test.result
 
             return await function(*args, **kwargs)

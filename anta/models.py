@@ -289,14 +289,22 @@ class AntaTest(ABC):
                 else:
                     self.logger.error(f"{message}: {exc_to_str(e)}")
                 self.result.is_error(exc_to_str(e))
-            if self.progress:
-                # TODO this is hacky because we only have one task..
-                # Should be id 0 - casting for mypy
-                nrfu_task: TaskID = cast(TaskID, 0)
-                self.progress.update(nrfu_task, advance=1)
+
+            self.update_progress()
             return self.result
 
         return wrapper
+
+    def update_progress(self) -> None:
+        """
+        Update progress bar if it exists
+        """
+        if self.progress:
+            # TODO this is hacky because we only have one task..
+            # Should be id 0 - casting for mypy
+            nrfu_task: TaskID = cast(TaskID, 0)
+            self.progress.update(nrfu_task, advance=1)
+
 
     @abstractmethod
     def test(self) -> Coroutine[Any, Any, TestResult]:
