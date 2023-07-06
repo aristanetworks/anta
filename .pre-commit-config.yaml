@@ -57,5 +57,4 @@ repos:
           - types-PyYAML
           - types-paramiko
           - types-requests
-        # Do not run mypy on tests but only on code and scripts
         files: ^(anta|scripts|tests)/
