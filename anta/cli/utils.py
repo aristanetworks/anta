@@ -56,6 +56,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
             inventory_file=str(path),
             username=ctx.params["username"],
             password=ctx.params["password"],
+            enable=ctx.params["enable"],
             enable_password=ctx.params["enable_password"],
             timeout=ctx.params["timeout"],
             insecure=ctx.params["insecure"],

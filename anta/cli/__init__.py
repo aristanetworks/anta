@@ -51,9 +51,17 @@ from anta.result_manager.models import TestResult
     show_default=True,
 )
 @click.option(
+    "--enable",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+    help="Add enable mode towards the devices if required to connect",
+    show_default=True,
+)
+@click.option(
     "--enable-password",
     show_envvar=True,
-    help="Enable password if required to connect",
+    help="Enable password if required to connect, --enable MUST be set",
 )
 @click.option(
     "--inventory",

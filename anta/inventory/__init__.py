@@ -118,7 +118,13 @@ class AntaInventory(dict):  # type: ignore
 
     @staticmethod
     def parse(
-        inventory_file: str, username: str, password: str, enable_password: Optional[str] = None, timeout: Optional[float] = None, insecure: bool = False
+        inventory_file: str,
+        username: str,
+        password: str,
+        enable: bool = False,
+        enable_password: Optional[str] = None,
+        timeout: Optional[float] = None,
+        insecure: bool = False,
     ) -> AntaInventory:
         # pylint: disable=too-many-arguments
         """
@@ -129,6 +135,7 @@ class AntaInventory(dict):  # type: ignore
             inventory_file (str): Path to inventory YAML file where user has described his inputs
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
+            enable (bool): Whether or not the commands need to be run in enable mode towards the devices
             timeout (float, optional): timeout in seconds for every API call.
 
         Raises:
@@ -138,7 +145,14 @@ class AntaInventory(dict):  # type: ignore
         """
 
         inventory = AntaInventory()
-        kwargs: Dict[str, Any] = {"username": username, "password": password, "enable_password": enable_password, "timeout": timeout, "insecure": insecure}
+        kwargs: Dict[str, Any] = {
+            "username": username,
+            "password": password,
+            "enable": enable,
+            "enable_password": enable_password,
+            "timeout": timeout,
+            "insecure": insecure,
+        }
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         with open(inventory_file, "r", encoding="UTF-8") as file:

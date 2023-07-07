@@ -41,7 +41,13 @@ def exc_to_str(exception: Exception) -> str:
     """
     Helper function that returns a human readable string from an Exception object
     """
-    return f"{type(exception).__name__}{f' ({str(exception)})' if str(exception) else ''}"
+    res = f"{type(exception).__name__}"
+    if str(exception):
+        res += f" ({str(exception)})"
+    elif hasattr(exception, "errmsg"):
+        # TODO - remove when we bump aio-eapi once our PR is merged there
+        res += f" ({exception.errmsg})"
+    return res
 
 
 def tb_to_str(exception: Exception) -> str:

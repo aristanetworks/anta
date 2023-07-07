@@ -18,6 +18,8 @@ ANTA is Python framework that automates tests for Arista devices.
 
 ![anta nrfu](imgs/anta-nrfu.svg)
 
+!!! info username/password/enable/enable-password are the same for all devices
+
 ```bash
 # Install ANTA CLI
 $ pip install anta
@@ -38,6 +40,8 @@ Options:
                                   ANTA_TIMEOUT; default: 5]
   --insecure                      Disable SSH Host Key validation  [env var:
                                   ANTA_INSECURE]
+  --enable                        Add enable mode towards the devices if
+                                  required to connect  [env var: ANTA_ENABLE]
   --enable-password TEXT          Enable password if required to connect  [env
                                   var: ANTA_ENABLE_PASSWORD]
   -i, --inventory FILE            Path to the inventory YAML file  [env var:
