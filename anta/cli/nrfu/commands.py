@@ -13,8 +13,8 @@ from typing import List, Optional
 import click
 
 from anta.cli.utils import parse_tags, return_code
-from anta.result_manager import ResultManager
 from anta.models import AntaTest
+from anta.result_manager import ResultManager
 from anta.runner import main
 
 from .utils import anta_progress_bar, print_jinja, print_json, print_settings, print_table, print_text

@@ -7,9 +7,9 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from anta.models import AntaTest
 from anta import __DEBUG__
 from anta.inventory import AntaInventory
+from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str
@@ -25,7 +25,7 @@ async def main(
     inventory: AntaInventory,
     tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]],
     tags: Optional[List[str]] = None,
-    established_only: bool = True
+    established_only: bool = True,
 ) -> None:
     """
     Main coroutine to run ANTA.

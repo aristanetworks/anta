@@ -164,7 +164,7 @@ class AntaTest(ABC):
         template_params: list[dict[str, Any]] | None = None,
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
-        labels: list[str] | None = None
+        labels: list[str] | None = None,
     ):
         """Class constructor"""
         # Accept 6 input arguments
