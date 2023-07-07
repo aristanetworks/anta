@@ -12,6 +12,7 @@ from typing import List, Optional
 
 import click
 
+from anta.cli.console import console
 from anta.cli.utils import parse_tags, return_code
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -27,13 +28,19 @@ logger = logging.getLogger(__name__)
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
-def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], test: Optional[str]) -> None:
+@click.option(
+    "--group-by", default=None, type=click.Choice(["none", "host", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
+)
+def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], test: Optional[str], group_by: str) -> None:
     """ANTA command to check network states with table result"""
+    console.print("\n")
     print_settings(ctx)
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_table(results=results, device=device, test=test)
+    console.print("\n")
+
+    print_table(results=results, device=device, group_by=group_by, test=test)
 
     # TODO make a util method to avoid repeating the same three line
     ignore_status = ctx.obj["ignore_status"]
@@ -58,6 +65,7 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    console.print("\n")
     print_json(results=results, output=output)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -76,6 +84,7 @@ def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], s
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    console.print("\n")
     print_text(results=results, search=search, skip_error=skip_error)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -108,6 +117,7 @@ def tpl_report(ctx: click.Context, tags: Optional[List[str]], template: pathlib.
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    console.print("\n")
     print_jinja(results=results, template=template, output=output)
 
     ignore_status = ctx.obj["ignore_status"]
