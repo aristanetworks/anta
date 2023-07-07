@@ -7,8 +7,6 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from rich.progress import Progress
-
 from anta.models import AntaTest
 from anta import __DEBUG__
 from anta.inventory import AntaInventory

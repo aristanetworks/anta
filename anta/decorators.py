@@ -3,7 +3,6 @@ decorators for tests
 """
 from functools import wraps
 from typing import Any, Callable, Dict, List, TypeVar, cast
-import logging
 
 from anta.models import AntaCommand, AntaTest
 from anta.result_manager.models import TestResult
@@ -12,7 +11,6 @@ from anta.tools.misc import exc_to_str
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
 
-logger = logging.getLogger(__name__)
 
 def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
     """
