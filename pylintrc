@@ -2,7 +2,6 @@
 disable=
     invalid-name,
     logging-fstring-interpolation,
-    logging-not-lazy,
     fixme
 
 [BASIC]

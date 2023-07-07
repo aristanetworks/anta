@@ -66,10 +66,10 @@ async def collect_commands(
             logger.error(f"Could not collect commands on device {dev.name}: {exc_to_str(c.failed)}")
             return
         if c.ofmt == "json":
-            outfile = outdir / (command + ".json")
+            outfile = outdir / f"{command}.json"
             content = json.dumps(c.json_output, indent=2)
         elif c.ofmt == "text":
-            outfile = outdir / (command + ".log")
+            outfile = outdir / f"{command}.log"
             content = c.text_output
         with outfile.open(mode="w", encoding="UTF-8") as f:
             f.write(content)
@@ -88,7 +88,7 @@ async def collect_commands(
             if __DEBUG__:
                 logger.exception(message, exc_info=r)
             else:
-                logger.error(message + f": {exc_to_str(r)}")
+                logger.error(f"{message}: {exc_to_str(r)}")
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
@@ -150,7 +150,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             if __DEBUG__:
                 logger.exception(message)
             else:
-                logger.error(message + f": {exc_to_str(e)}")
+                logger.error(f"{message}: {exc_to_str(e)}")
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

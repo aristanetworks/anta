@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from anta import __DEBUG__
 from anta.inventory import AntaInventory
+from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str
@@ -45,6 +46,8 @@ async def main(
     Returns:
         any: List of results.
     """
+    # Accept 6 arguments here
+    # pylint: disable=R0913
 
     await inventory.connect_inventory()
 
@@ -64,7 +67,10 @@ async def main(
             if __DEBUG__:
                 logger.exception(message)
             else:
-                logger.error(message + f": {exc_to_str(e)}")
+                logger.error(f"{message}: {exc_to_str(e)}")
+
+    if AntaTest.progress is not None:
+        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)
@@ -74,6 +80,6 @@ async def main(
             if __DEBUG__:
                 logger.exception(message, exc_info=r)
             else:
-                logger.error(message + f": {exc_to_str(r)}")
+                logger.error(f"{message}: {exc_to_str(r)}")
             res.remove(r)
     manager.add_test_results(res)

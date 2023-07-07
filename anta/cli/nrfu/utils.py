@@ -15,6 +15,7 @@ import click
 import rich
 from rich.panel import Panel
 from rich.pretty import pprint
+from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
 from anta.reporter import ReportJinja, ReportTable
@@ -80,3 +81,44 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional
     if output is not None:
         with open(output, "w", encoding="utf-8") as file:
             file.write(report)
+
+
+# Adding our own ANTA spinner - overriding rich SPINNERS for our own
+# so ignore warning for redefinition
+rich.spinner.SPINNERS = {  # type: ignore[attr-defined] # noqa: F811
+    "anta": {
+        "interval": 150,
+        "frames": [
+            "(     🐜)",
+            "(    🐜 )",
+            "(   🐜  )",
+            "(  🐜   )",
+            "( 🐜    )",
+            "(🐜     )",
+            "(🐌     )",
+            "( 🐌    )",
+            "(  🐌   )",
+            "(   🐌  )",
+            "(    🐌 )",
+            "(     🐌)",
+        ],
+    }
+}
+
+
+def anta_progress_bar() -> Progress:
+    """
+    Return a customized Progress for progress bar
+    """
+    return Progress(
+        SpinnerColumn("anta"),
+        TextColumn("•"),
+        TextColumn("{task.description}[progress.percentage]{task.percentage:>3.0f}%"),
+        BarColumn(bar_width=None),
+        MofNCompleteColumn(),
+        TextColumn("•"),
+        TimeElapsedColumn(),
+        TextColumn("•"),
+        TimeRemainingColumn(),
+        expand=True,
+    )
