@@ -300,7 +300,7 @@ class AntaTest(ABC):
         """
         Update progress bar for all AntaTest objects if it exists
         """
-        if cls.progress and cls.nrfu_task is not None:
+        if cls.progress and (cls.nrfu_task is not None):
             cls.progress.update(cls.nrfu_task, advance=1)
 
     @abstractmethod
