@@ -1337,21 +1337,36 @@ pip<span class="w"> </span>install<span class="w"> </span>anta
 $<span class="w"> </span>anta
 Usage:<span class="w"> </span>anta<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
-<span class="w">  </span>Arista<span class="w"> </span>Network<span class="w"> </span>Test<span class="w"> </span>CLI
+<span class="w">  </span>Arista<span class="w"> </span>Network<span class="w"> </span>Test<span class="w"> </span>Automation<span class="w"> </span><span class="o">(</span>ANTA<span class="o">)</span><span class="w"> </span>CLI
 
 Options:
-<span class="w">  </span>--username<span class="w"> </span>TEXT<span class="w">         </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_USERNAME<span class="o">]</span>
-<span class="w">  </span>--password<span class="w"> </span>TEXT<span class="w">         </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PASSWORD<span class="o">]</span>
-<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">       </span>Connection<span class="w"> </span>timeout<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="m">5</span><span class="o">)</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="o">]</span>
-<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">  </span>Enable<span class="w"> </span>password<span class="w"> </span><span class="k">if</span><span class="w"> </span>required<span class="w"> </span>to<span class="w"> </span>connect<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
-<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>PATH<span class="w">    </span>Path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>inventory<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_INVENTORY<span class="o">]</span>
-<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">       </span>Connection<span class="w"> </span>timeout<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="m">5</span><span class="o">)</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="o">]</span>
-<span class="w">  </span>--help<span class="w">                  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--version<span class="w">                       </span>Show<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--username<span class="w"> </span>TEXT<span class="w">                 </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_USERNAME<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>--password<span class="w"> </span>TEXT<span class="w">                 </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_PASSWORD<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">               </span>Global<span class="w"> </span>connection<span class="w"> </span>timeout<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_TIMEOUT<span class="p">;</span><span class="w"> </span>default:<span class="w"> </span><span class="m">5</span><span class="o">]</span>
+<span class="w">  </span>--insecure<span class="w">                      </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_INSECURE<span class="o">]</span>
+<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">          </span>Enable<span class="w"> </span>password<span class="w"> </span><span class="k">if</span><span class="w"> </span>required<span class="w"> </span>to<span class="w"> </span>connect<span class="w">  </span><span class="o">[</span>env
+<span class="w">                                  </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
+<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">            </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>CRITICAL<span class="p">|</span>ERROR<span class="p">|</span>WARNING<span class="p">|</span>INFO<span class="p">|</span>DEBUG<span class="o">]</span>
+<span class="w">                                  </span>ANTA<span class="w"> </span>logging<span class="w"> </span>level<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_LOG_LEVEL<span class="p">;</span><span class="w"> </span>default:<span class="w"> </span>INFO<span class="o">]</span>
+<span class="w">  </span>--ignore-status<span class="w">                 </span>Always<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>with<span class="w"> </span>success<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_IGNORE_STATUS<span class="o">]</span>
+<span class="w">  </span>--ignore-error<span class="w">                  </span>Only<span class="w"> </span>report<span class="w"> </span>failures<span class="w"> </span>and<span class="w"> </span>not<span class="w"> </span>errors<span class="w">  </span><span class="o">[</span>env
+<span class="w">                                  </span>var:<span class="w"> </span>ANTA_IGNORE_ERROR<span class="o">]</span>
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
-<span class="w">  </span><span class="nb">exec</span><span class="w">  </span>Execute<span class="w"> </span>commands<span class="w"> </span>to<span class="w"> </span>inventory<span class="w"> </span>devices
-<span class="w">  </span>get<span class="w">   </span>Get<span class="w"> </span>data<span class="w"> </span>from/to<span class="w"> </span>ANTA
-<span class="w">  </span>nrfu<span class="w">  </span>Run<span class="w"> </span>NRFU<span class="w"> </span>against<span class="w"> </span>inventory<span class="w"> </span>devices
+<span class="w">  </span>debug<span class="w">  </span>Debug<span class="w"> </span>commands<span class="w"> </span><span class="k">for</span><span class="w"> </span>building<span class="w"> </span>ANTA
+<span class="w">  </span><span class="nb">exec</span><span class="w">   </span>Execute<span class="w"> </span>commands<span class="w"> </span>to<span class="w"> </span>inventory<span class="w"> </span>devices
+<span class="w">  </span>get<span class="w">    </span>Get<span class="w"> </span>data<span class="w"> </span>from/to<span class="w"> </span>ANTA
+<span class="w">  </span>nrfu<span class="w">   </span>Run<span class="w"> </span>NRFU<span class="w"> </span>against<span class="w"> </span>inventory<span class="w"> </span>devices
 </code></pre></div>
 
   <hr>
