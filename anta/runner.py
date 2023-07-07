@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from rich.progress import Progress
 
+from anta.models import AntaTest
 from anta import __DEBUG__
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
@@ -26,8 +27,7 @@ async def main(
     inventory: AntaInventory,
     tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]],
     tags: Optional[List[str]] = None,
-    established_only: bool = True,
-    progress: Optional[Progress] = None,
+    established_only: bool = True
 ) -> None:
     """
     Main coroutine to run ANTA.
@@ -62,7 +62,7 @@ async def main(
         template_params = test[1].get(TEST_TPL_PARAMS)
         try:
             # Instantiate AntaTest object
-            test_instance = test[0](device=device, template_params=template_params, progress=progress)
+            test_instance = test[0](device=device, template_params=template_params)
             coros.append(test_instance.test(eos_data=None, **test_params))
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
@@ -71,8 +71,8 @@ async def main(
             else:
                 logger.error(f"{message}: {exc_to_str(e)}")
 
-    if progress is not None:
-        progress.add_task("Running NRFU Tests...", total=len(coros))
+    if AntaTest.progress is not None:
+        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
     logger.info("Running ANTA tests...")
     res = await asyncio.gather(*coros, return_exceptions=True)

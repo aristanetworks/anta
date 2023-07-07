@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict, conint
 from rich.progress import Progress, TaskID
@@ -152,6 +152,8 @@ class AntaTest(ABC):
     commands: ClassVar[list[AntaCommand]]
     # TODO - today we support only one template per Test
     template: ClassVar[AntaTemplate]
+    progress: Optional[Progress] = None
+    nrfu_task: Optional[TaskID] = None
 
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
@@ -162,8 +164,7 @@ class AntaTest(ABC):
         template_params: list[dict[str, Any]] | None = None,
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
-        labels: list[str] | None = None,
-        progress: Optional[Progress] = None,
+        labels: list[str] | None = None
     ):
         """Class constructor"""
         # Accept 6 input arguments
@@ -173,7 +174,6 @@ class AntaTest(ABC):
         self.result: TestResult = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
         self.labels: List[str] = labels or []
         self.instance_commands: List[AntaCommand] = []
-        self.progress = progress
 
         # TODO - check optimization for deepcopy
         # Generating instance_commands from list of commands and template
@@ -290,20 +290,18 @@ class AntaTest(ABC):
                     self.logger.error(f"{message}: {exc_to_str(e)}")
                 self.result.is_error(exc_to_str(e))
 
-            self.update_progress()
+            AntaTest.update_progress()
             return self.result
 
         return wrapper
 
-    def update_progress(self) -> None:
+    @classmethod
+    def update_progress(cls) -> None:
         """
-        Update progress bar if it exists
+        Update progress bar for all AntaTest objects if it exists
         """
-        if self.progress:
-            # TODO this is hacky because we only have one task..
-            # Should be id 0 - casting for mypy
-            nrfu_task: TaskID = cast(TaskID, 0)
-            self.progress.update(nrfu_task, advance=1)
+        if cls.progress and cls.nrfu_task is not None:
+            cls.progress.update(cls.nrfu_task, advance=1)
 
     @abstractmethod
     def test(self) -> Coroutine[Any, Any, TestResult]:
