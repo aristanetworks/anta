@@ -28,7 +28,7 @@ $ pip list
 
 # Check version using cli
 $ anta --version
-anta, version 0.5.0
+anta, version 0.6.0
 ```
 
 ### Install development requirements
