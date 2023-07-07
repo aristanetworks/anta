@@ -3,6 +3,7 @@ Test functions related to system-level features and protocols
 """
 from __future__ import annotations
 
+import re
 from typing import Optional
 
 from anta.models import AntaCommand, AntaTest
@@ -124,7 +125,9 @@ class VerifyAgentLogs(AntaTest):
         if len(command_output) == 0:
             self.result.is_success()
         else:
-            self.result.is_failure(f"device reported some agent crashes: {command_output}")
+            pattern = re.compile(r"^===> (.*?) <===$", re.MULTILINE)
+            agents = "\n * ".join(pattern.findall(command_output))
+            self.result.is_failure(f"device reported some agent logs:\n * {agents}")
 
 
 class VerifySyslog(AntaTest):
