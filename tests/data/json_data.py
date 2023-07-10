@@ -1,12 +1,15 @@
 # pylint: skip-file
 
-INVENTORY_MODEL_HOST = [
+INVENTORY_MODEL_HOST_VALID = [
     {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},
     {
         "name": "validIPv6",
         "input": "fe80::cc62:a9ff:feef:932a",
         "expected_result": "valid",
     },
+]
+
+INVENTORY_MODEL_HOST_INVALID = [
     {
         "name": "invalidIPv4_with_netmask",
         "input": "1.1.1.1/32",
@@ -25,10 +28,13 @@ INVENTORY_MODEL_HOST = [
     },
 ]
 
-INVENTORY_MODEL_NETWORK = [
+INVENTORY_MODEL_NETWORK_VALID = [
     {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/24", "expected_result": "valid"},
-    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/17", "expected_result": "invalid"},
     {"name": "ValidIPv6_Subnet", "input": "2001:db8::/32", "expected_result": "valid"},
+]
+
+INVENTORY_MODEL_NETWORK_INVALID = [
+    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/17", "expected_result": "invalid"},
     {
         "name": "InvalidIPv6_Subnet",
         "input": "2001:db8::/16",
@@ -36,7 +42,7 @@ INVENTORY_MODEL_NETWORK = [
     },
 ]
 
-INVENTORY_MODEL_RANGE = [
+INVENTORY_MODEL_RANGE_VALID = [
     {
         "name": "ValidIPv4_Range",
         "input": {"start": "10.1.0.1", "end": "10.1.0.10"},
@@ -44,7 +50,15 @@ INVENTORY_MODEL_RANGE = [
     },
 ]
 
-INVENTORY_MODEL = [
+INVENTORY_MODEL_RANGE_INVALID = [
+    {
+        "name": "InvalidIPv4_Range_name",
+        "input": {"start": "toto", "end": "10.1.0.1"},
+        "expected_result": "invalid",
+    },
+]
+
+INVENTORY_MODEL_VALID = [
     {
         "name": "Valid_Host_Only",
         "input": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]},
@@ -65,6 +79,9 @@ INVENTORY_MODEL = [
         },
         "expected_result": "valid",
     },
+]
+
+INVENTORY_MODEL_INVALID = [
     {
         "name": "Host_with_Invalid_entry",
         "input": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2/32"}]},
@@ -72,29 +89,26 @@ INVENTORY_MODEL = [
     },
 ]
 
-INVENTORY_DEVICE_MODEL = [
+INVENTORY_DEVICE_MODEL_VALID = [
     {
         "name": "Valid_Inventory",
-        "input": [
-            {"host": "1.1.1.1", "username": "arista", "password": "arista123!"},
-            {"host": "1.1.1.2", "username": "arista", "password": "arista123!"}
-        ],
+        "input": [{"host": "1.1.1.1", "username": "arista", "password": "arista123!"}, {"host": "1.1.1.2", "username": "arista", "password": "arista123!"}],
         "expected_result": "valid",
     },
+]
+
+INVENTORY_DEVICE_MODEL_INVALID = [
     {
         "name": "Invalid_Inventory",
-        "input": [
-            {"host": "1.1.1.1", "password": "arista123!"},
-            {"host": "1.1.1.1", "username": "arista"}
-        ],
+        "input": [{"host": "1.1.1.1", "password": "arista123!"}, {"host": "1.1.1.1", "username": "arista"}],
         "expected_result": "invalid",
     },
 ]
 
-ANTA_INVENTORY_TESTS = [
+ANTA_INVENTORY_TESTS_VALID = [
     {
         "name": "ValidInventory_with_host_only",
-        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]}},
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}, {"host": "my.awesome.host.com"}]}},
         "expected_result": "valid",
         "parameters": {
             "ipaddress_in_scope": "192.168.0.17",
@@ -141,7 +155,7 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         "name": "ValidInventory_with_host_tags",
-        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17", "tags": ['leaf']}, {"host": "192.168.0.2", "tags": ['spine']}]}},
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17", "tags": ["leaf"]}, {"host": "192.168.0.2", "tags": ["spine"]}]}},
         "expected_result": "valid",
         "parameters": {
             "ipaddress_in_scope": "192.168.0.17",
@@ -151,7 +165,7 @@ ANTA_INVENTORY_TESTS = [
     },
     {
         "name": "ValidInventory_with_networks_tags",
-        "input": {"anta_inventory": {"networks": [{"network": "192.168.0.0/24", "tags": ['leaf']}]}},
+        "input": {"anta_inventory": {"networks": [{"network": "192.168.0.0/24", "tags": ["leaf"]}]}},
         "expected_result": "valid",
         "parameters": {
             "ipaddress_in_scope": "192.168.0.1",
@@ -164,8 +178,8 @@ ANTA_INVENTORY_TESTS = [
         "input": {
             "anta_inventory": {
                 "ranges": [
-                    {"start": "10.0.0.1", "end": "10.0.0.11", "tags": ['leaf']},
-                    {"start": "10.0.0.101", "end": "10.0.0.111", "tags": ['spine']},
+                    {"start": "10.0.0.1", "end": "10.0.0.11", "tags": ["leaf"]},
+                    {"start": "10.0.0.101", "end": "10.0.0.111", "tags": ["spine"]},
                 ]
             }
         },
@@ -176,9 +190,32 @@ ANTA_INVENTORY_TESTS = [
             "nb_hosts": 22,
         },
     },
+]
+
+ANTA_INVENTORY_TESTS_INVALID = [
     {
         "name": "InvalidInventory_with_host_only",
         "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17/32"}, {"host": "192.168.0.2"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_network_bits",
+        "input": {"anta_inventory": {"networks": [{"network": "192.168.42.0/8"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_network",
+        "input": {"anta_inventory": {"networks": [{"network": "toto"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_range",
+        "input": {"anta_inventory": {"ranges": [{"start": "toto", "end": "192.168.42.42"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_range_type_mismatch",
+        "input": {"anta_inventory": {"ranges": [{"start": "fe80::cafe", "end": "192.168.42.42"}]}},
         "expected_result": "invalid",
     },
     {

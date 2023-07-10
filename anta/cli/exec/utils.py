@@ -14,11 +14,10 @@ from typing import Dict, List, Literal, Optional
 
 from aioeapi import EapiCommandError
 
-from anta import __DEBUG__
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import anta_log_exception, exc_to_str
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
@@ -85,10 +84,7 @@ async def collect_commands(
     for r in res:
         if isinstance(r, Exception):
             message = "Error when collecting commands"
-            if __DEBUG__:
-                logger.exception(message, exc_info=r)
-            else:
-                logger.error(f"{message}: {exc_to_str(r)}")
+            anta_log_exception(r, message, logger)
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
@@ -147,10 +143,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
         # In this case we want to catch all exceptions
         except Exception as e:  # pylint: disable=broad-except
             message = f"Unable to collect tech-support on device {device.name}"
-            if __DEBUG__:
-                logger.exception(message)
-            else:
-                logger.error(f"{message}: {exc_to_str(e)}")
+            anta_log_exception(e, message, logger)
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

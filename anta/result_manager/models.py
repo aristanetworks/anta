@@ -2,7 +2,7 @@
 
 from typing import Iterator, List
 
-from pydantic import BaseModel, RootModel, validator
+from pydantic import BaseModel, RootModel, field_validator
 
 RESULT_OPTIONS = ["unset", "success", "failure", "error", "skipped"]
 
@@ -28,7 +28,7 @@ class TestResult(BaseModel):
     messages: List[str] = []
 
     @classmethod
-    @validator("result", allow_reuse=True)
+    @field_validator("result")
     def name_must_be_in(cls, v: str) -> str:
         """
         Status validator
