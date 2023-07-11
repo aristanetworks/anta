@@ -13,9 +13,8 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List
 from pydantic import BaseModel, ConfigDict, conint
 from rich.progress import Progress, TaskID
 
-from anta import __DEBUG__
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import anta_log_exception, exc_to_str
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -231,10 +230,7 @@ class AntaTest(ABC):
             await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
-            if __DEBUG__:
-                self.logger.exception(message)
-            else:
-                self.logger.error(f"{message}: {exc_to_str(e)}")
+            anta_log_exception(e, message, self.logger)
             self.result.is_error(exc_to_str(e))
 
     @staticmethod
@@ -247,7 +243,7 @@ class AntaTest(ABC):
         async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
+            **kwargs: Any,
         ) -> TestResult:
             """
             Wraps the test function and implement (in this order):
@@ -284,10 +280,7 @@ class AntaTest(ABC):
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
-                if __DEBUG__:
-                    self.logger.exception(message)
-                else:
-                    self.logger.error(f"{message}: {exc_to_str(e)}")
+                anta_log_exception(e, message, self.logger)
                 self.result.is_error(exc_to_str(e))
 
             AntaTest.update_progress()

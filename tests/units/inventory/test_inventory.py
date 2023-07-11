@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
-from tests.data.json_data import ANTA_INVENTORY_TESTS
+from tests.data.json_data import ANTA_INVENTORY_TESTS_INVALID, ANTA_INVENTORY_TESTS_VALID
 from tests.lib.utils import generate_test_ids_dict
 
 
@@ -27,11 +27,9 @@ class Test_AntaInventory:
 
     def check_parameter(self, parameter: str, test_definition: Dict[Any, Any]) -> bool:
         """Check if parameter is configured in testbed."""
-        if "parameters" not in test_definition.keys() or parameter not in test_definition["parameters"].keys():
-            return False
-        return True
+        return "parameters" in test_definition and parameter in test_definition["parameters"].keys()
 
-    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_VALID, ids=generate_test_ids_dict)
     def test_init_valid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with valid data.
 
@@ -49,20 +47,14 @@ class Test_AntaInventory:
         }
 
         """
-
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
             AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
             assert False
-        else:
-            assert True
 
-    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict)
     def test_init_invalid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with invalid data.
 
@@ -72,7 +64,7 @@ class Test_AntaInventory:
         {
             'name': 'ValidInventory_with_host_only',
             'input': {"anta_inventory":{"hosts":[{"host":"192.168.0.17"},{"host":"192.168.0.2"}]}},
-            'expected_result': 'valid',
+            'expected_result': 'invalid',
             'parameters': {
                 'ipaddress_in_scope': '192.168.0.17',
                 'ipaddress_out_of_scope': '192.168.1.1',
@@ -80,18 +72,12 @@ class Test_AntaInventory:
         }
 
         """
-
-        if test_definition["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
             AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
         except InventoryIncorrectSchema as exc:
             logging.warning("Exception is: %s", exc)
-            assert True
         except InventoryRootKeyError as exc:
             logging.warning("Exception is: %s", exc)
-            assert True
         else:
             assert False

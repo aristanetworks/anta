@@ -83,7 +83,7 @@ from anta.result_manager.models import TestResult
 )
 @click.option("--ignore-status", show_envvar=True, is_flag=True, default=False, help="Always exit with success")
 @click.option("--ignore-error", show_envvar=True, is_flag=True, default=False, help="Only report failures and not errors")
-def anta(ctx: click.Context, inventory: pathlib.Path, ignore_status: bool, ignore_error: bool, **kwargs: Dict[str, Any]) -> None:
+def anta(ctx: click.Context, inventory: pathlib.Path, ignore_status: bool, ignore_error: bool, **kwargs: Any) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
     ctx.ensure_object(dict)
