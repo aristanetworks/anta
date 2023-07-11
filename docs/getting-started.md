@@ -14,7 +14,7 @@ For more details about how to install package, please see the [requirements and 
 
 ## Configure Arista EOS devices
 
-First, you need to configure your management interface
+For ANTA to be able to connect to your target devices, you need to configure your management interface
 
 ```eos
 vrf instance MGMT
@@ -41,7 +41,7 @@ management api http-commands
 
 ## Create your inventory
 
-First, we need to list devices we want to test. You can create a file manually with this format:
+ANTA uses an inventory to list the target devices for the tests. You can create a file manually with this format:
 
 ```yaml
 anta_inventory:
@@ -70,7 +70,7 @@ anta_inventory:
 
 ## Test Catalog
 
-To test your network, it is important to define a test catalog to list all the tests to run against your inventory. Test catalog references python functions into a yaml file. This file can be loaded by anta.loader.py
+To test your network, ANTA relies on a test catalog to list all the tests to run against your inventory. A test catalog references python functions into a yaml file.
 
 The structure to follow is like:
 
@@ -83,12 +83,12 @@ The structure to follow is like:
 
 > You can read more details about how to build your catalog [here](../usage-inventory-catalog/#test-catalog)
 
-Here is an example for basic things:
+Here is an example for basic tests:
 
 ```yaml
 # Load anta.tests.software
 anta.tests.software:
-  - VerifyEosVersion: # Verifies the device is running one of the allowed EOS version.
+  - VerifyEOSVersion: # Verifies the device is running one of the allowed EOS version.
       versions: # List of allowed EOS versions.
         - 4.25.4M
         - 4.26.1F
@@ -100,12 +100,12 @@ anta.tests.software:
 anta.tests.system:
   - VerifyUptime: # Verifies the device uptime is higher than a value.
       minimum: 1
-  - VerifyNtp:
+  - VerifyNTP:
   - VerifySyslog:
 
 anta.tests.mlag:
   - VerifyMlagStatus:
-  - VerifyMlagInterface:
+  - VerifyMlagInterfaces:
   - VerifyMlagConfigSanity:
 
 anta.tests.configuration:
@@ -115,7 +115,7 @@ anta.tests.configuration:
 
 ## Test your network
 
-To test EOS devices, this package comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
+ANTA comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
 
 This entrypoint has multiple options to manage test coverage and reporting.
 
@@ -124,45 +124,60 @@ This entrypoint has multiple options to manage test coverage and reporting.
 $ anta
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
-  Arista Network Test CLI
+  Arista Network Test Automation (ANTA) CLI
 
 Options:
-  --version               Show the version and exit.
-  --username TEXT         Username to connect to EOS  [env var: ANTA_USERNAME;
-                          required]
-  --password TEXT         Password to connect to EOS  [env var: ANTA_PASSWORD;
-                          required]
-  --timeout INTEGER       Connection timeout (default 5)  [env var:
-                          ANTA_TIMEOUT]
-  --enable-password TEXT  Enable password if required to connect  [env var:
-                          ANTA_ENABLE_PASSWORD]
-  -i, --inventory PATH    Path to your inventory file  [env var:
-                          ANTA_INVENTORY; required]
-  --help                  Show this message and exit.
+  --version                       Show the version and exit.
+  --username TEXT                 Username to connect to EOS  [env var:
+                                  ANTA_USERNAME; required]
+  --password TEXT                 Password to connect to EOS  [env var:
+                                  ANTA_PASSWORD; required]
+  --timeout INTEGER               Global connection timeout  [env var:
+                                  ANTA_TIMEOUT; default: 5]
+  --insecure                      Disable SSH Host Key validation  [env var:
+                                  ANTA_INSECURE]
+  --enable-password TEXT          Enable password if required to connect  [env
+                                  var: ANTA_ENABLE_PASSWORD]
+  -i, --inventory FILE            Path to the inventory YAML file  [env var:
+                                  ANTA_INVENTORY; required]
+  --log-level, --log [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  ANTA logging level  [env var:
+                                  ANTA_LOG_LEVEL; default: INFO]
+  --ignore-status                 Always exit with success  [env var:
+                                  ANTA_IGNORE_STATUS]
+  --ignore-error                  Only report failures and not errors  [env
+                                  var: ANTA_IGNORE_ERROR]
+  --help                          Show this message and exit.
 
 Commands:
-  exec  Execute commands to inventory devices
-  get   Get data from/to ANTA
-  nrfu  Run NRFU against inventory devices
+  debug  Debug commands for building ANTA
+  exec   Execute commands to inventory devices
+  get    Get data from/to ANTA
+  nrfu   Run NRFU against inventory devices
+```
 
-
-
+```bash
 # NRFU part of ANTA
-$ anta nrfu
+$ anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
   Run NRFU against inventory devices
 
 Options:
-  --help  Show this message and exit.
+  -c, --catalog FILE  Path to the tests catalog YAML file  [env var:
+                      ANTA_NRFU_CATALOG; required]
+  --help              Show this message and exit.
 
 Commands:
-  json   ANTA command to check network state with JSON result
-  table  ANTA command to check network states with table result
-  text   ANTA command to check network states with text result
+  json        ANTA command to check network state with JSON result
+  table       ANTA command to check network states with table result
+  text        ANTA command to check network states with text result
+  tpl-report  ANTA command to check network state with templated report
 ```
 
-Default output is a table format listing all test results, and it can be changed to a report per test case or per host
+> Currently to be able to run `anta nrfu --help` you need to have given to ANTA the mandatory input parameters: username, password and inventory otherwise the CLI will report an issue. This is tracked in: https://github.com/arista-netdevops-community/anta/issues/263
+
+To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
 ### Default report using table
 
@@ -172,41 +187,63 @@ anta \
     --password arista123 \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu table --tags leaf --catalog .personal/tests-bases.yml
+    nrfu --catalog .personal/tests-bases.yml table --tags leaf
 
-╭──────────────────────── Settings ────────────────────────╮
-│ Running check-devices with:                              │
-│               - Inventory: .personal/inventory_atd.yml   │
-│               - Tests catalog: .personal/tests-bases.yml │
-╰──────────────────────────────────────────────────────────╯
-                                                                            All tests results
-┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Device IP ┃ Test Name                          ┃ Test Status ┃ Message(s)                                                     ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ leaf01    │ VerifyEosVersion                   │ success     │                                                                │
-│ leaf01    │ VerifyTerminAttrVersion            │ success     │                                                                │
-│ leaf01    │ VerifyUptime                       │ success     │                                                                │
-│ leaf01    │ VerifyNtp                          │ failure     │ not sync with NTP server (NTP is disabled.)                    │
-│ leaf01    │ VerifySyslog                       │ failure     │ Device has some log messages with a severity WARNING or higher │
-└───────────┴────────────────────────────────────┴─────────────┴────────────────────────────────────────────────────────────────┘
+
+╭────────────────────── Settings ──────────────────────╮
+│ Running ANTA tests:                                  │
+│ - ANTA Inventory contains 6 devices (AsyncEOSDevice) │
+│ - Tests catalog contains 10 tests                    │
+╰──────────────────────────────────────────────────────╯
+[10:17:24] INFO     Running ANTA tests...                                                                                                           runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40/40 • 0:00:02 • 0:00:00
+
+                                                                       All tests results                                                                        
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Device IP ┃ Test Name                ┃ Test Status ┃ Message(s)       ┃ Test description                                                     ┃ Test category ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ leaf01    │ VerifyEOSVersion         │ success     │                  │ Verifies the device is running one of the allowed EOS version.       │ software      │
+│ leaf01    │ VerifyTerminAttrVersion  │ success     │                  │ Verifies the device is running one of the allowed TerminAttr         │ software      │
+│           │                          │             │                  │ version.                                                             │               │
+│ leaf01    │ VerifyUptime             │ success     │                  │ Verifies the device uptime is higher than a value.                   │ system        │
+│ leaf01    │ VerifyNTP                │ success     │                  │ Verifies NTP is synchronised.                                        │ system        │
+│ leaf01    │ VerifySyslog             │ success     │                  │ Verifies the device had no syslog message with a severity of warning │ system        │
+│           │                          │             │                  │ (or a more severe message) during the last 7 days.                   │               │
+│ leaf01    │ VerifyMlagStatus         │ skipped     │ MLAG is disabled │ This test verifies the health status of the MLAG configuration.      │ mlag          │
+│ leaf01    │ VerifyMlagInterfaces     │ skipped     │ MLAG is disabled │ This test verifies there are no inactive or active-partial MLAG      │ mlag          │
+[...]
+│ leaf04    │ VerifyMlagConfigSanity   │ skipped     │ MLAG is disabled │ This test verifies there are no MLAG config-sanity inconsistencies.  │ mlag          │
+│ leaf04    │ VerifyZeroTouch          │ success     │                  │ Verifies ZeroTouch is disabled.                                      │ configuration │
+│ leaf04    │ VerifyRunningConfigDiffs │ success     │                  │                                                                      │ configuration │
+└───────────┴──────────────────────────┴─────────────┴──────────────────┴──────────────────────────────────────────────────────────────────────┴───────────────┘
 ```
 
 ### Report in text mode
 
-```
+```bash
 $ anta \
     --username tom \
     --password arista123 \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu text --tags leaf --catalog .personal/tests-bases.yml
+    nrfu --catalog .personal/tests-bases.yml text --tags leaf
 
-leaf01 :: VerifyEosVersion :: SUCCESS
+╭────────────────────── Settings ──────────────────────╮
+│ Running ANTA tests:                                  │
+│ - ANTA Inventory contains 6 devices (AsyncEOSDevice) │
+│ - Tests catalog contains 10 tests                    │
+╰──────────────────────────────────────────────────────╯
+[10:20:47] INFO     Running ANTA tests...                                                                                                           runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40/40 • 0:00:01 • 0:00:00
+leaf01 :: VerifyEOSVersion :: SUCCESS
 leaf01 :: VerifyTerminAttrVersion :: SUCCESS
 leaf01 :: VerifyUptime :: SUCCESS
-leaf01 :: VerifyNtp :: FAILURE (not sync with NTP server (NTP is disabled.))
-leaf01 :: VerifySyslog :: FAILURE (Device has some log messages with a severity WARNING or higher)
-...
+leaf01 :: VerifyNTP :: SUCCESS
+leaf01 :: VerifySyslog :: SUCCESS
+leaf01 :: VerifyMlagStatus :: SKIPPED (MLAG is disabled)
+leaf01 :: VerifyMlagInterfaces :: SKIPPED (MLAG is disabled)
+leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
+[...]
 ```
 
 ### Report per host
@@ -217,25 +254,40 @@ $ anta \
     --password arista123 \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu json --tags leaf --catalog .personal/tests-bases.yml
+    nrfu --catalog .personal/tests-bases.yml json --tags leaf
 
-╭──────────────────────────────────────────────────────────────────────────────╮
-│ JSON results of all tests                                                    │
-╰──────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────── Settings ──────────────────────╮
+│ Running ANTA tests:                                  │
+│ - ANTA Inventory contains 6 devices (AsyncEOSDevice) │
+│ - Tests catalog contains 10 tests                    │
+╰──────────────────────────────────────────────────────╯
+[10:21:51] INFO     Running ANTA tests...                                                                                                           runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40/40 • 0:00:02 • 0:00:00
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ JSON results of all tests                                                                                                                                    │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 [
   {
     "name": "leaf01",
-    "test": "VerifyEosVersion",
+    "test": "VerifyEOSVersion",
+    "test_category": [
+      "software"
+    ],
+    "test_description": "Verifies the device is running one of the allowed EOS version.",
     "result": "success",
-    "messages": "[]"
+    "messages": []
   },
   {
     "name": "leaf01",
     "test": "VerifyTerminAttrVersion",
+    "test_category": [
+      "software"
+    ],
+    "test_description": "Verifies the device is running one of the allowed TerminAttr version.",
     "result": "success",
-    "messages": "[]"
+    "messages": []
   },
-...
+[...]
 ]
 ```
 
