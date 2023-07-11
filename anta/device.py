@@ -14,7 +14,7 @@ from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
 from anta.models import DEFAULT_TAG, AntaCommand
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 # Hic Sunt Draconis.
 # Are we proud of this? No.
 # Waiting for: https://github.com/jeremyschulman/aio-eapi/issues/9
-def patched_jsoncrpc_command(self: Device, commands: List[str], ofmt: str, **kwargs: Dict[Any, Any]) -> Dict[str, Any]:
+def patched_jsoncrpc_command(self: Device, commands: List[str], ofmt: str, **kwargs: Any) -> Dict[str, Any]:
     """
     Used to create the JSON-RPC command dictionary object
     """
@@ -271,17 +271,16 @@ class AsyncEOSDevice(AntaDevice):
             logger.debug(f"{self.name}: {command}")
 
         except EapiCommandError as e:
-            logger.error(f"Command '{command.command}' failed on {self.name}: {e.errmsg}")
+            message = f"Command '{command.command}' failed on {self.name}"
+            anta_log_exception(e, message, logger)
             command.failed = e
         except (HTTPError, ConnectError) as e:
-            logger.error(f"Cannot connect to device {self.name}: {exc_to_str(e)}")
+            message = f"Cannot connect to device {self.name}"
+            anta_log_exception(e, message, logger)
             command.failed = e
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
-            if __DEBUG__:
-                logger.exception(message)
-            else:
-                logger.error(message + f": {exc_to_str(e)}")
+            anta_log_exception(e, message, logger)
             command.failed = e
             logger.debug(command)
 

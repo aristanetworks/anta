@@ -8,14 +8,25 @@ from pydantic import ValidationError
 
 from anta.device import AsyncEOSDevice
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
-from tests.data.json_data import INVENTORY_DEVICE_MODEL, INVENTORY_MODEL, INVENTORY_MODEL_HOST, INVENTORY_MODEL_NETWORK, INVENTORY_MODEL_RANGE
+from tests.data.json_data import (
+    INVENTORY_DEVICE_MODEL_INVALID,
+    INVENTORY_DEVICE_MODEL_VALID,
+    INVENTORY_MODEL_HOST_INVALID,
+    INVENTORY_MODEL_HOST_VALID,
+    INVENTORY_MODEL_INVALID,
+    INVENTORY_MODEL_NETWORK_INVALID,
+    INVENTORY_MODEL_NETWORK_VALID,
+    INVENTORY_MODEL_RANGE_INVALID,
+    INVENTORY_MODEL_RANGE_VALID,
+    INVENTORY_MODEL_VALID,
+)
 from tests.lib.utils import generate_test_ids_dict
 
 
 class Test_InventoryUnitModels:
     """Test components of AntaInventoryInput model."""
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_host_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test host input model.
 
@@ -29,9 +40,6 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
         try:
             host_inventory = AntaInventoryHost(host=test_definition["input"])
         except ValidationError as exc:
@@ -40,7 +48,7 @@ class Test_InventoryUnitModels:
         else:
             assert test_definition["input"] == str(host_inventory.host)
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_INVALID, ids=generate_test_ids_dict)
     def test_anta_inventory_host_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test host input model.
 
@@ -54,13 +62,10 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
         with pytest.raises(ValidationError):
             AntaInventoryHost(host=test_definition["input"])
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_network_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test Network input model with valid data.
 
@@ -74,9 +79,6 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
         try:
             network_inventory = AntaInventoryNetwork(network=test_definition["input"])
         except ValidationError as exc:
@@ -85,7 +87,7 @@ class Test_InventoryUnitModels:
         else:
             assert test_definition["input"] == str(network_inventory.network)
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_INVALID, ids=generate_test_ids_dict)
     def test_anta_inventory_network_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test Network input model with invalid data.
 
@@ -99,9 +101,6 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
         try:
             AntaInventoryNetwork(network=test_definition["input"])
         except ValidationError as exc:
@@ -109,7 +108,7 @@ class Test_InventoryUnitModels:
         else:
             assert False
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_range_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test range input model.
 
@@ -123,9 +122,6 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
         try:
             range_inventory = AntaInventoryRange(
                 start=test_definition["input"]["start"],
@@ -138,7 +134,7 @@ class Test_InventoryUnitModels:
             assert test_definition["input"]["start"] == str(range_inventory.start)
             assert test_definition["input"]["end"] == str(range_inventory.end)
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_INVALID, ids=generate_test_ids_dict)
     def test_anta_inventory_range_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test range input model.
 
@@ -152,9 +148,6 @@ class Test_InventoryUnitModels:
          }
 
         """
-        if test_definition["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
         try:
             AntaInventoryRange(
                 start=test_definition["input"]["start"],
@@ -173,10 +166,10 @@ class Test_AntaInventoryInputModel:
         """Test inventory keys are those expected."""
 
         inventory = AntaInventoryInput()
-        logging.info("Inventory keys are: %s", str(inventory.dict().keys()))
-        assert all(elem in inventory.dict().keys() for elem in ["hosts", "networks", "ranges"])
+        logging.info("Inventory keys are: %s", str(inventory.model_dump().keys()))
+        assert all(elem in inventory.model_dump().keys() for elem in ["hosts", "networks", "ranges"])
 
-    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_intput_valid(self, inventory_def: Dict[str, Any]) -> None:
         """Test loading valid data to inventory class.
 
@@ -199,10 +192,6 @@ class Test_AntaInventoryInputModel:
         }
 
         """
-
-        if inventory_def["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
         inventory = AntaInventoryInput()
         try:
             if "hosts" in inventory_def["input"].keys():
@@ -228,9 +217,9 @@ class Test_AntaInventoryInputModel:
             assert False
         else:
             logging.info("Checking if all root keys are correctly lodaded")
-            assert all(elem in inventory.dict().keys() for elem in inventory_def["input"].keys())
+            assert all(elem in inventory.model_dump().keys() for elem in inventory_def["input"].keys())
 
-    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_INVALID, ids=generate_test_ids_dict)
     def test_anta_inventory_intput_invalid(self, inventory_def: Dict[str, Any]) -> None:
         """Test loading invalid data to inventory class.
 
@@ -253,10 +242,6 @@ class Test_AntaInventoryInputModel:
         }
 
         """
-
-        if inventory_def["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
         # inventory_file = self.create_inventory(content=inventory_def['input'], tmp_path=tmp_path)
         try:
             if "hosts" in inventory_def["input"].keys():
@@ -286,7 +271,7 @@ class Test_AntaInventoryInputModel:
 class Test_InventoryDeviceModel:
     """Unit test of InventoryDevice model."""
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_VALID, ids=generate_test_ids_dict)
     def test_inventory_device_valid(self, test_definition: Dict[str, Any]) -> None:
         """Test loading valid data to InventoryDevice class.
 
@@ -321,7 +306,7 @@ class Test_InventoryDeviceModel:
                 logging.warning("Error: %s", str(exc))
                 assert False
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL, ids=generate_test_ids_dict)
+    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_INVALID, ids=generate_test_ids_dict)
     def test_inventory_device_invalid(self, test_definition: Dict[str, Any]) -> None:
         """Test loading invalid data to InventoryDevice class.
 

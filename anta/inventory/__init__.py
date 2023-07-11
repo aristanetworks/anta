@@ -6,17 +6,16 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from ipaddress import ip_address, ip_network
 from typing import Any, Dict, List, Optional
 
-from netaddr import IPAddress, IPNetwork
 from pydantic import ValidationError
 from yaml import safe_load
 
-from anta import __DEBUG__
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,81 @@ class AntaInventory(dict):  # type: ignore
             else:
                 devs[dev_type] += 1
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
+
+    @staticmethod
+    def _parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+        """
+        Parses the host section of an AntaInventoryInput and add the devices to the inventory
+
+        Args:
+            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
+            inventory (AntaInventory): AntaInventory to add the parsed devices to
+        """
+        if inventory_input.hosts is None:
+            return
+
+        for host in inventory_input.hosts:
+            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **kwargs)
+            inventory.add_device(device)
+
+    @staticmethod
+    def _parse_networks(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+        """
+        Parses the network section of an AntaInventoryInput and add the devices to the inventory.
+
+        Args:
+            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
+            inventory (AntaInventory): AntaInventory to add the parsed devices to
+
+        Raises:
+            InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+        """
+        if inventory_input.networks is None:
+            return
+
+        for network in inventory_input.networks:
+            try:
+                for host_ip in ip_network(str(network.network)):
+                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **kwargs)
+                    inventory.add_device(device)
+            except ValueError as e:
+                message = "Could not parse network {network.network} in the inventory"
+                anta_log_exception(e, message, logger)
+                raise InventoryIncorrectSchema(message) from e
+
+    @staticmethod
+    def _parse_ranges(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+        """
+        Parses the range section of an AntaInventoryInput and add the devices to the inventory.
+
+        Args:
+            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
+            inventory (AntaInventory): AntaInventory to add the parsed devices to
+
+        Raises:
+            InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+        """
+        if inventory_input.ranges is None:
+            return
+
+        for range_def in inventory_input.ranges:
+            try:
+                range_increment = ip_address(str(range_def.start))
+                range_stop = ip_address(str(range_def.end))
+                while range_increment <= range_stop:  # type: ignore[operator]
+                    # mypy raise an issue about comparing IPv4Address and IPv6Address
+                    # but this is handled by the ipaddress module natively by raising a TypeError
+                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **kwargs)
+                    inventory.add_device(device)
+                    range_increment += 1
+            except ValueError as e:
+                message = f"Could not parse the following range in the inventory: {range_def.start} - {range_def.end}"
+                anta_log_exception(e, message, logger)
+                raise InventoryIncorrectSchema(message) from e
+            except TypeError as e:
+                message = f"A range in the inventory has different address families for start and end: {range_def.start} - {range_def.end}"
+                anta_log_exception(e, message, logger)
+                raise InventoryIncorrectSchema(message) from e
 
     @staticmethod
     def parse(
@@ -81,23 +155,9 @@ class AntaInventory(dict):  # type: ignore
             raise InventoryIncorrectSchema(f"Inventory is not following the schema: {str(exc)}") from exc
 
         # Read data from input
-        if inventory_input.hosts is not None:
-            for host in inventory_input.hosts:
-                device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **kwargs)
-                inventory.add_device(device)
-        if inventory_input.networks is not None:
-            for network in inventory_input.networks:
-                for host_ip in IPNetwork(str(network.network)):
-                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **kwargs)
-                    inventory.add_device(device)
-        if inventory_input.ranges is not None:
-            for range_def in inventory_input.ranges:
-                range_increment = IPAddress(str(range_def.start))
-                range_stop = IPAddress(str(range_def.end))
-                while range_increment <= range_stop:
-                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **kwargs)
-                    inventory.add_device(device)
-                    range_increment += 1
+        AntaInventory._parse_hosts(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_networks(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_ranges(inventory_input, inventory, **kwargs)
 
         return inventory
 
@@ -167,7 +227,4 @@ class AntaInventory(dict):  # type: ignore
         for r in results:
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
-                if __DEBUG__:
-                    logger.exception(message, exc_info=r)
-                else:
-                    logger.error(f"{message}: {exc_to_str(r)}")
+                anta_log_exception(r, message, logger)

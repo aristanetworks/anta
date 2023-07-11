@@ -2,7 +2,7 @@
 decorators for tests
 """
 from functools import wraps
-from typing import Any, Callable, Dict, List, TypeVar, cast
+from typing import Any, Callable, List, TypeVar, cast
 
 from anta.models import AntaCommand, AntaTest
 from anta.result_manager.models import TestResult
@@ -28,7 +28,7 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
         """
 
         @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
             """
             wrapper for func
             """
@@ -66,7 +66,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
         """
 
         @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Dict[str, Any]) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
             """
             wrapper for func
             """

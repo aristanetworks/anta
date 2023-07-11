@@ -7,12 +7,11 @@ import itertools
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from anta import __DEBUG__
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str
+from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +63,7 @@ async def main(
             coros.append(test_instance.test(eos_data=None, **test_params))
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
-            if __DEBUG__:
-                logger.exception(message)
-            else:
-                logger.error(f"{message}: {exc_to_str(e)}")
+            anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
@@ -77,9 +73,6 @@ async def main(
     for r in res:
         if isinstance(r, Exception):
             message = "Error in main ANTA Runner"
-            if __DEBUG__:
-                logger.exception(message, exc_info=r)
-            else:
-                logger.error(f"{message}: {exc_to_str(r)}")
+            anta_log_exception(r, message, logger)
             res.remove(r)
     manager.add_test_results(res)
