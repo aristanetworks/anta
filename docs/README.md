@@ -19,7 +19,9 @@ This repository comes with a [cli](cli/overview.md) to run __Arista Network Test
 ```bash
 # Install ANTA
 pip install anta
+```
 
+```bash
 # Run ANTA cli
 $ anta
 Usage: anta [OPTIONS] COMMAND [ARGS]...
