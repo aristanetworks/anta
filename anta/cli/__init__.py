@@ -15,11 +15,12 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import parse_catalog, parse_inventory, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, setup_logging
 from anta.result_manager.models import TestResult
 
 
-@click.group()
+# @click.group()
+@click.group(cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.version_option(__version__)
 @click.option(
