@@ -96,14 +96,22 @@ INPUT_AGENT_LOGS: List[Dict[str, Any]] = [
             """===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===
 CLI Exception: Exception
 CLI Exception: Backtrace
+===> /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023 <===
+===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===
+EntityManager::doBackoff waiting for remote sysdb version ....ok
+
+===> /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023 <===
+===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===
+EntityManager::doBackoff waiting for remote sysdb version ...................ok
 """
         ],
         "side_effect": [],
         "expected_result": "failure",
         "expected_messages": [
-            "device reported some agent crashes: ===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\n"
-            "CLI Exception: Exception\n"
-            "CLI Exception: Backtrace\n",
+            'device reported some agent logs:\n'
+            ' * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n'
+            ' * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n'
+            ' * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023',
         ],
     },
 ]
