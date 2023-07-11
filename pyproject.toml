@@ -203,13 +203,13 @@ python =
   3.11: py311
 
 [testenv]
-description = run the test driver with {basepython}
+description = Run pytest with {basepython}
 extras = dev
 commands =
    pytest
 
 [testenv:lint]
-description = check the code style
+description = Check the code style
 commands =
   black --check --diff --color .
   isort --check --diff --color .
@@ -218,21 +218,23 @@ commands =
   pylint anta
 
 [testenv:type]
-description = check typing
+description = Check typing
 commands =
   type: mypy --config-file=pyproject.toml anta
 
 [testenv:clean]
+description = Erase previous coverage reports
 deps = coverage[toml]
 skip_install = true
 commands = coverage erase
 
 [testenv:report]
+description = Generate coverage report
 deps = coverage[toml]
 commands =
   coverage --version
   coverage report --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
-depends = py310
+depends = py311
 """
