@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, requires_enable, setup_logging
 from anta.result_manager.models import TestResult
 
 
@@ -62,6 +62,7 @@ from anta.result_manager.models import TestResult
     "--enable-password",
     show_envvar=True,
     help="Enable password if required to connect, --enable MUST be set",
+    callback=requires_enable,
 )
 @click.option(
     "--inventory",

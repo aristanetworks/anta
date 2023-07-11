@@ -8,10 +8,9 @@ from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 import click
-from click import Option
 from yaml import safe_load
 
 import anta.loader
@@ -22,6 +21,7 @@ from anta.tools.misc import anta_log_exception
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no_cover
+    from click import Option
     from anta.result_manager import ResultManager
 
 
@@ -68,7 +68,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     return inventory
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
+def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[str]]:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA inventory tags
@@ -76,6 +76,15 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
     if value is not None:
         return value.split(",") if "," in value else [value]
     return None
+
+
+def requires_enable(ctx: click.Context, param: Option, value: str) -> None:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to ensure that enable is True when the option is set
+    """
+    if ctx.params.get("enable") is not True:
+        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable' (or setting associated env variable")
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
