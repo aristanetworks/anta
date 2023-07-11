@@ -42,7 +42,7 @@ class AntaInventory(dict):  # type: ignore
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
 
     @staticmethod
-    def __parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+    def _parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
         """
         Parses the host section of an AntaInventoryInput and add the devices to the inventory
 
@@ -58,7 +58,7 @@ class AntaInventory(dict):  # type: ignore
             inventory.add_device(device)
 
     @staticmethod
-    def __parse_networks(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+    def _parse_networks(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
         """
         Parses the network section of an AntaInventoryInput and add the devices to the inventory.
 
@@ -83,7 +83,7 @@ class AntaInventory(dict):  # type: ignore
                 raise InventoryIncorrectSchema(message) from e
 
     @staticmethod
-    def __parse_ranges(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
+    def _parse_ranges(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
         """
         Parses the range section of an AntaInventoryInput and add the devices to the inventory.
 
@@ -155,9 +155,9 @@ class AntaInventory(dict):  # type: ignore
             raise InventoryIncorrectSchema(f"Inventory is not following the schema: {str(exc)}") from exc
 
         # Read data from input
-        AntaInventory.__parse_hosts(inventory_input, inventory, **kwargs)
-        AntaInventory.__parse_networks(inventory_input, inventory, **kwargs)
-        AntaInventory.__parse_ranges(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_hosts(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_networks(inventory_input, inventory, **kwargs)
+        AntaInventory._parse_ranges(inventory_input, inventory, **kwargs)
 
         return inventory
 
