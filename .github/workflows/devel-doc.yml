@@ -1,0 +1,38 @@
+---
+# This is deploying the latest commits on master to devel documentation
+name: Mkdocs
+on:
+  push:
+    branches:
+      - master
+    paths:
+      # Run only if any of the following paths are changed when pushing to master
+      # May need to update this
+      - "docs/**"
+      - "mkdocs.yml"
+
+jobs:
+  'build_latest_doc':
+    name: 'Update Public devel documentation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 'Setup Python 3 on runner'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Setup Git config
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 'Build mkdocs content and deploy to gh-pages to devel'
+        run: |
+            pip install -r ./docs/requirements.txt
+            mike deploy --push devel
+            # This may not always be required
+            mike set-default --push devel
