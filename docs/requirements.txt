@@ -9,3 +9,4 @@ mkdocstrings>=0.19.0
 mkdocstrings-python>=0.7.1
 mdx_truly_sane_lists
 fontawesome_markdown
+mike==1.1.2

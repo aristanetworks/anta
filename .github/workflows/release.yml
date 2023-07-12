@@ -1,12 +1,31 @@
 ---
 name: "Tag & Release management"
 on:
-  workflow_dispatch:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
+
 jobs:
+  release-doc:
+    name: "Publish documentation for release ${{github.ref_name}}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 'Setup Python 3 on runner'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Setup Git config
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 'Build mkdocs content to site folder'
+        run: |
+          pip install -r ./docs/requirements.txt
+          mike deploy --update-alias --push  ${{github.ref_name}} stable
   pypi:
     name: Publish version to Pypi servers
     runs-on: ubuntu-latest
