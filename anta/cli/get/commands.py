@@ -86,7 +86,7 @@ def inventory(ctx: click.Context, tags: Optional[List[str]], connected: bool) ->
 def tags(ctx: click.Context) -> None:
     """Get list of configured tags in user inventory."""
     tags_found = []
-    for device in ctx.obj["inventory"]:
+    for device in ctx.obj["inventory"].values():
         tags_found += device.tags
     tags_found = sorted(set(tags_found))
     console.print("Tags found:")
