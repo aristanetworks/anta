@@ -1,18 +1,20 @@
-# ANTA debug commands
+# Debugging ANTA Commands
 
-ANTA CLI also provides a set of entrypoints to help building ANTA content. We call it `debug` and it provides different options:
+The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` entrypoint and offers the following options:
 
-- Run a command on a device from your inventory and expose the result.
-- Run a templated command on a device from your inventory and expose the result.
+- Executing a command on a device from your inventory and revealing the result.
+- Running a templated command on a device from your inventory and revealing the result.
 
-Both are extremly useful to build your tests since you have visual access to the output you receive from the eAPI. It also help extracting output content to be used by the unit tests, as described in our [contribution guide](../contribution.md).
+These tools are especially helpful in building your tests, as they give you visual access to the output you receive from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
 
-!!! note "ANTA Inventory"
-    Because `debug` is based on a device from your inventory, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#create-an-inventory-file).
+!!! warning
+    The `debug` tools require a device from your inventory. Thus, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#create-an-inventory-file).
 
-## Get the result of an EOS command
+## Executing an EOS command
 
-To run a command, you can leverage the `run-cmd` entrypoint with the following options:
+You can use the `run-cmd` entrypoint to run a command, which includes the following options:
+
+### Command overview
 
 ```bash
 $ anta debug run-cmd --help
@@ -29,7 +31,9 @@ Options:
   --help                    Show this message and exit.
 ```
 
-In practice, this command is very simple to use. Here is an example using `show interfaces description` with a `JSON` format:
+### Example
+
+This example illustrates how to run the `show interfaces description` command with a `JSON` format:
 
 ```bash
 anta debug run-cmd --command "show interfaces description" --device DC1-SPINE1
@@ -46,9 +50,11 @@ Run command show interfaces description on DC1-SPINE1
 }
 ```
 
-## Get the result of an EOS command using templates
+## Executing an EOS command using templates
 
-The `run-template` entrypoint allows the user to provide an [`f-string`](https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python) templated command followed by a list of arguments (key followed by a value) to build a dictionary used as template parameters:
+The `run-template` entrypoint allows the user to provide an [`f-string`](https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python) templated command. It is followed by a list of arguments (key-value pairs) that build a dictionary used as template parameters.
+
+### Command overview
 
 ```bash
 $ anta debug run-template --help
@@ -71,7 +77,9 @@ Options:
   --help                    Show this message and exit.
 ```
 
-Here is `run-template` in action using `show vlan {vlan_id}` with a `JSON` format:
+### Example
+
+This example uses the `show vlan {vlan_id}` command in a `JSON` format:
 
 ```bash
 anta debug run-template --template "show vlan {vlan_id}" vlan_id 10 --device DC1-LEAF1A
@@ -92,8 +100,10 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
     'sourceDetail': ''
 }
 ```
-!!! warning "Multiple arguments"
+!!! warning
     If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
+
+### Example of multiple arguments
 
 ```bash
 anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    

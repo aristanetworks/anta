@@ -92,7 +92,7 @@ Tags found:
 * note that tag all has been added by anta
 ```
 
-!!! note Default all tag
+!!! note
     Even if you haven't explicitly configured the `all` tag in your inventory, it's automatically added. This default tag allows you to execute commands on all devices in your inventory when you don't specify any particular tag.
 
 ## List devices in inventory
@@ -116,7 +116,7 @@ Options:
 ```
 
 
-!!! tip Offline information only
+!!! tip
     In its default mode, `anta get inventory` provides only information that doesn't rely on a device connection. If you're interested in obtaining connection-dependent details, like the hardware model, please use the `--connected` option.
 
 ### Example
