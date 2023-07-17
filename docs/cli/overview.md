@@ -76,10 +76,10 @@ For all subcommands, ANTA will return the exit code 0, indicating a successful o
 
 For the nrfu command, ANTA uses the following exit codes:
 
-- Exit code 0 - All tests passed successfully.
-- Exit code 1 - Tests were run, but at least one test returned a failure.
-- Exit code 2 - Tests were run, but at least one test returned an error.
-- Exit code 3 - An internal error occurred while executing tests.
+- `Exit code 0` - All tests passed successfully.
+- `Exit code 1` - Tests were run, but at least one test returned a failure.
+- `Exit code 2` - Tests were run, but at least one test returned an error.
+- `Exit code 3` - An internal error occurred while executing tests.
 
 To ignore the test status, use `anta --ignore-status nrfu`, and the exit code will always be 0.
 

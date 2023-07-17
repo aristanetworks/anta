@@ -1,6 +1,6 @@
 # Executing Commands on Devices
 
-ANTA CLI incorporates a set of entrypoints to facilitate remote command execution on EOS devices.
+ANTA CLI provides a set of entrypoints to facilitate remote command execution on EOS devices.
 
 ### EXEC Command overview
 ```bash
@@ -46,9 +46,10 @@ anta exec clear-counters --tags SPINE
            INFO     Cleared counters on DC1-SPINE1 (cEOSLab)                                                                                                         utils.py:41
            INFO     Cleared counters on DC2-SPINE2 (cEOSLab)
 ```
+
 ## Collect a set of commands
 
-This command collects all the commands you've specified in a catalog, which can be in either `json` or `text` format.
+This command collects all the commands specified in a commands-list file, which can be in either `json` or `text` format.
 
 ### Command overview
 
@@ -70,7 +71,7 @@ Options:
   --help                    Show this message and exit.
 ```
 
-Your catalog file should follow this structure:
+The commands-list file should follow this structure:
 
 ```yaml
 ---
@@ -94,6 +95,7 @@ anta exec snapshot --tags SPINE --commands-list ./commands.yaml --output ./
            INFO     Collected command 'show bfd peers' from device DC1-SPINE1 (cEOSLab)                                                                              utils.py:76
            INFO     Collected command 'show bfd peers' from device DC1-SPINE2 (cEOSLab)
 ```
+
 The results of the executed commands will be stored in the output directory specified during command execution:
 
 ```bash
@@ -168,9 +170,12 @@ When executed, this command fetches tech-support files and downloads them locall
 
 ANTA uses SCP to download files from devices; ensure that all SSH Host Keys are trusted before running the command. Use the `anta --insecure` option if they are not.
 
-The configuration `aaa authorization exec default local` must be enabled on devices for SCP to function. ANTA won't automatically configure this unless `--configure` is specified.
+The configuration `aaa authorization exec default local` must be enabled on devices for SCP to function. ANTA will not automatically configure this unless `--configure` is specified.
 
 The `--latest` option allows retrieval of a specific number of the most recent tech-support files.
+
+!!! warning
+    By default **all** the tech-support files present on the devices are retrieved.
 
 ### Example
 
@@ -211,4 +216,5 @@ tech-support/
 
 6 directories, 6 files
 ```
+
 Each device has its own subdirectory containing the collected tech-support files.

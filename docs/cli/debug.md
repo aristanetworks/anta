@@ -1,11 +1,11 @@
-# Debugging ANTA Commands
+# ANTA debug commands
 
-The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` entrypoint and offers the following options:
+The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` subcommand and offers the following options:
 
-- Executing a command on a device from your inventory and revealing the result.
-- Running a templated command on a device from your inventory and revealing the result.
+- Executing a command on a device from your inventory and retrieving the result.
+- Running a templated command on a device from your inventory and retrieving the result.
 
-These tools are especially helpful in building your tests, as they give you visual access to the output you receive from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
+These tools are especially helpful in building the tests, as they give a visual access to the output received from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
 
 !!! warning
     The `debug` tools require a device from your inventory. Thus, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#create-an-inventory-file).
@@ -33,7 +33,7 @@ Options:
 
 ### Example
 
-This example illustrates how to run the `show interfaces description` command with a `JSON` format:
+This example illustrates how to run the `show interfaces description` command with a `JSON` format (default):
 
 ```bash
 anta debug run-cmd --command "show interfaces description" --device DC1-SPINE1
@@ -111,4 +111,5 @@ anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.
 
 anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1           
 > {'dst': '1.1.1.1', 'src': 'Loopback1'}
+# Notice how `src` and `dst` keep only the latest value
 ```

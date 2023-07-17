@@ -31,7 +31,7 @@ All commands under the `anta nrfu` namespace require a catalog yaml file specifi
 
 ## Performing NRFU with text rendering
 
-The `text` command provides a straightforward text report for each test executed on all devices in your inventory.
+The `text` subcommand provides a straightforward text report for each test executed on all devices in your inventory.
 
 ### Command overview
 
@@ -51,7 +51,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-The `--tags` option allows you to target specific devices in your inventory, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
+The `--tags` option allows to target specific devices in your inventory, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
 
 The `--skip-error` option can be used to exclude tests that failed due to connectivity issues or unsupported commands.
 
@@ -60,7 +60,7 @@ The `--skip-error` option can be used to exclude tests that failed due to connec
 ```bash
 anta nrfu text --tags LEAF --search DC1-LEAF1A
 ```
-[![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="800" }](../imgs/anta-nrfu-text-output.png)
+[![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-text-output.png)
 
 ## Performing NRFU with table rendering
 
@@ -90,14 +90,14 @@ The `--device` and `--test` options show a summarized view of the test results f
 ```bash
 anta nrfu table --tags LEAF
 ```
-[![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="800" }](../imgs/anta-nrfu-table-output.png)
+[![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-output.png)
 
 For larger setups, you can also group the results by host or test to get a summarized view:
 
 ```bash
 anta nrfu table --tags LEAF --device DC1-LEAF1A
 ```
-[![anta nrfu table per host results](../imgs/anta-nrfu-table-per-host-output.png){ loading=lazy width="800" }](../imgs/anta-nrfu-table-per-host-output.png)
+[![anta nrfu table per host results](../imgs/anta-nrfu-table-per-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-per-host-output.png)
 
 ## Performing NRFU with JSON rendering
 
@@ -127,7 +127,7 @@ The `--output` option allows you to save the JSON report as a file.
 ```bash
 anta nrfu json --tags LEAF
 ```
-[![anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="800" }](../imgs/anta-nrfu-json-output.png)
+[![anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-json-output.png)
 
 ## Performing NRFU with custom reports
 
@@ -160,7 +160,7 @@ The `--tags` option can be used to target specific devices in your inventory.
 ```bash
 anta nrfu tpl-report --tags LEAF --template ./custom_template.j2
 ```
-[![anta nrfu json results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="800" }](../imgs/anta-nrfu-tpl-report-output.png)
+[![anta nrfu json results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
 
 The template `./custom_template.j2` is a simple Jinja2 template:
 
