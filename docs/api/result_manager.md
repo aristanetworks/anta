@@ -1,4 +1,3 @@
-# ANTA ResultManager module
-
-::: anta.result_manager.ResultManager
-    heading_level: 2
+### ::: anta.result_manager.ResultManager
+      options:
+        filters: ["!^_[^_]", "!^__len__"]

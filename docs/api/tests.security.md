@@ -1,4 +1,6 @@
 # ANTA catalog for security tests
 
 ::: anta.tests.security
-    heading_level: 3
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false

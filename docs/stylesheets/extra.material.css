@@ -198,3 +198,10 @@
     /* width: 50%; */
   }
 }
+
+/* mkdocstrings css from official repo to indent sub-elements nicely */
+/* Indentation. */
+div.doc-contents {
+  padding-left: 25px;
+  border-left: .05rem solid var(--md-typeset-table-color);
+}

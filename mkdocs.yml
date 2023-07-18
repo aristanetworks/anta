@@ -71,20 +71,37 @@ extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
 
 watch:
-  # Watch src/ directory to reload on changes to docstrings for mkdocstrings
-  # plugin.
   - docs
+  # Watch src/ directory to reload on changes to docstrings for mkdocstrings plugin.
+  - anta
 
 plugins:
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
+          paths: [anta]
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://mkdocstrings.github.io/objects.inv
+            - https://mkdocstrings.github.io/griffe/objects.inv
           options:
-            show_root_heading: false
-            show_source: true
-      watch:
-        - anta
+            docstring_options:
+              ignore_init_summary: true
+            docstring_section_style: table
+            heading_level: 2
+            inherited_members: false
+            merge_init_into_class: true
+            separate_signature: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            # sadly symbols are for insiders only
+            # https://mkdocstrings.github.io/python/usage/configuration/headings/#show_symbol_type_toc
+            # show_symbol_type_heading: true
+            # show_symbol_type_toc: true
+            # default filters here
+            filters: ["!^_[^_]"]
   - search:
       lang: en
   - git-revision-date-localized:
@@ -172,6 +189,8 @@ nav:
     - Inventory: 
       - Inventory module: api/inventory.md
       - Inventory models: api/inventory.models.input.md
+    - Device:
+      - Device models: api/device.md
     - Test:
       - Test models: api/models.md
     - Result Manager:

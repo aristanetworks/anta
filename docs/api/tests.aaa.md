@@ -1,4 +1,6 @@
-# ANTA catalog for AAA tests
+# ANTA catalog for interfaces tests
 
 ::: anta.tests.aaa
-    heading_level: 3
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
