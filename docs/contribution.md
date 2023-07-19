@@ -1,49 +1,32 @@
 # How to contribute to ANTA
 
-Contribution model is based on a fork-model. Don't push to arista-netdevops-community/anta directly. Always do a branch in your repository and create a PR.
+Contribution model is based on a fork-model. Don't push to arista-netdevops-community/anta directly. Always do a branch in your forked repository and create a PR.
 
 To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
 
-## Install repository
+## Create a development environement
 
-Run these commands to install:
-
-- The package [ANTA](https://github.com/arista-netdevops-community/anta/blob/master/anta) and its dependencies
-- ANTA cli executable.
+Run the following commands to create an ANTA development environement:
 
 ```bash
 # Clone repository
-git clone https://github.com/arista-netdevops-community/anta.git
-cd anta
+$ git clone https://github.com/arista-netdevops-community/anta.git
+$ cd anta
 
-# Install module in editable mode
-pip install -e .
+# Install ANTA in editable mode and its development tools
+$ pip install -e .[dev]
+
+# Verify installation
+$ pip list -e
+Package Version Editable project location
+------- ------- -------------------------
+anta    0.6.0   /mnt/lab/projects/anta
 ```
 
-Run these commands to verify:
+Then, [`tox`](https://tox.wiki/) is configued with few environments to run CI locally:
 
 ```bash
-# Check python installation
-$ pip list
-
-# Check version using cli
-$ anta --version
-anta, version 0.6.0
-```
-
-### Install development requirements
-
-Run pip to install anta and its developement tools.
-
-```bash
-pip install 'anta[dev]'
-```
-
-> This command has to be done after you install repository with commands provided in previous section.
-
-Then, tox is configued with few environment to run CI locally:
-
-```bash
+$ tox list -d
 default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
@@ -53,15 +36,9 @@ py39   -> Run pytest with py39
 py310  -> Run pytest with py310
 py311  -> Run pytest with py311
 report -> Generate coverage report
-
-additional environments:
-3.8    -> Run pytest with 3.8
-3.9    -> Run pytest with 3.9
-3.10   -> Run pytest with 3.10
-3.11   -> Run pytest with 3.11
 ```
 
-## Code linting
+### Code linting
 
 ```bash
 tox -e lint
@@ -83,7 +60,7 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
   congratulations :) (19.56 seconds)
 ```
 
-## Code Typing
+### Code Typing
 
 ```bash
 tox -e type
@@ -180,7 +157,7 @@ pre-commit install
 
 When running a commit or a pre-commit check:
 
-```
+``` bash
 ❯ echo "import foobaz" > test.py && git add test.py
 ❯ pre-commit
 pylint...................................................................Failed
@@ -197,14 +174,14 @@ test.py:1:0: W0611: Unused import foobaz (unused-import)
 
 ## Documentation
 
-mkdocs is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
+[`mkdocs`](https://www.mkdocs.org/) is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
 
 ### Install documentation requirements
 
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -r docs/requirements.txt
+pip install -e .[doc]
 ```
 
 ### Testing documentation
@@ -215,15 +192,20 @@ You can then check locally the documentation using the following command from th
 mkdocs serve
 ```
 
+By default, `mkdocs` listens to http://127.0.0.1:8000/, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
+
+```bash
+mkdocs serve --dev-addr=0.0.0.0:8080
+```
+
 ### Checking links
-Writing documentation is crucial but managing links can be cumbersome. To be sure there is no 404, you can use [`muffet`](https://github.com/raviqqe/muffet) with this cli:
+
+Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
 ```
 
-
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/master/.github/workflows).
-We can view the result [here](https://github.com/arista-netdevops-community/anta/actions)
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/master/.github/workflows). We can view the results [here](https://github.com/arista-netdevops-community/anta/actions).
