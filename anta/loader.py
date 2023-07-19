@@ -25,7 +25,7 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
     loglevel = getattr(logging, level.upper())
     handler = RichHandler(markup=True, rich_tracebacks=True)
     if __DEBUG__:
-        fmt_string = "[grey58]\[%(name)s][/grey58] %(message)s"  # noqa: W605 pylint: disable=anomalous-backslash-in-string
+        fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
     else:
         fmt_string = "%(message)s"
     formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
