@@ -1,15 +1,7 @@
-# Data models for anta.inventory
+### ::: anta.inventory.models.AntaInventoryInput
 
-::: anta.inventory.models.AntaInventoryInput
-    heading_level: 2
+### ::: anta.inventory.models.AntaInventoryHost
 
-# User inventory components
+### ::: anta.inventory.models.AntaInventoryNetwork
 
-::: anta.inventory.models.AntaInventoryHost
-    heading_level: 2
-
-::: anta.inventory.models.AntaInventoryNetwork
-    heading_level: 2
-
-::: anta.inventory.models.AntaInventoryRange
-    heading_level: 2
+### ::: anta.inventory.models.AntaInventoryRange

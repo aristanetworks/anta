@@ -1,25 +1,25 @@
-# Create inventory from CloudVision
+# Create an Inventory from CloudVision
 
-In a large setup, it can be useful to create your inventory based on CloudVision inventory.
+In large setups, it might be beneficial to construct your inventory based on CloudVision. The `from-cvp` entrypoint of the `get` command enables the user to create an ANTA inventory from CloudVision.
+
+### Command overview
 
 ```bash
-$ anta get from-cvp
+anta get from-cvp --help
 Usage: anta get from-cvp [OPTIONS]
 
   Build ANTA inventory from Cloudvision
 
 Options:
-  -ip, --cvp-ip TEXT              CVP IP Address
-  -u, --cvp-username TEXT         CVP Username
-  -p, --cvp-password TEXT         CVP Password / token
+  -ip, --cvp-ip TEXT              CVP IP Address  [required]
+  -u, --cvp-username TEXT         CVP Username  [required]
+  -p, --cvp-password TEXT         CVP Password / token  [required]
   -c, --cvp-container TEXT        Container where devices are configured
   -d, --inventory-directory PATH  Path to save inventory file
-  --log-level, --log [debug|info|warning|critical]
-                                  Logging level of the command
   --help                          Show this message and exit.
 ```
 
-Output is an inventory with the name of the container added as a tag for the host:
+The output is an inventory where the name of the container is added as a tag for each host:
 
 ```yaml
 anta_inventory:
@@ -34,10 +34,12 @@ anta_inventory:
     - pod2
 ```
 
-!!! warning Container lookup is not recursive
-    Current implementation only takes devices directly attached to a specific container when using cli with `--cvp-container` option.
+!!! warning
+    The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
 
-If you want to build an inventory based on multiple containers, you can use a bash command as shown below and then manually concatenate files to create a single inventory file.
+### Creating an inventory from multiple containers
+
+If you need to create an inventory from multiple containers, you can use a bash command and then manually concatenate files to create a single inventory file:
 
 ```bash
 $ for container in pod01 pod02 spines; do anta get from-cvp -ip <cvp-ip> -u cvpadmin -p cvpadmin -c $container -d test-inventory; done

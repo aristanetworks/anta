@@ -4,8 +4,6 @@
 
 # Arista Network Test Automation (ANTA) Framework
 
-__WARNING:__ Documentation is work in progress for version 0.6.0 available in Pypi.
-
 This repository is a Python package to automate tests on Arista devices.
 
 - The package name is ANTA, which stands for **Arista Network Test Automation**.

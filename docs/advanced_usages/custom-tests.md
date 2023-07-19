@@ -70,8 +70,8 @@ class VerifyTemperature(AntaTest):
 
 Besides these 3 main imports, anta provides some additional and optional decorators:
 
-- `anta.test.skip_on_platforms`: To skip a test for a function not available for some platform
-- `anta.tests.check_bgp_family_enable`: To run tests only if specific BGP family is active.
+- `anta.decorators.skip_on_platforms`: To skip a test for a function not available for some platform
+- `anta.decorators.check_bgp_family_enable`: To run tests only if specific BGP family is active.
 
 
 ```python
@@ -114,9 +114,6 @@ __Commands to run__
 - `commands`: a list of command to run. This list _must_ be a list of `AntaCommand` which is described in the next part of this document.
 - `template`: a command template (`AntaTemplate`) to run where variables are provided during test execution.
 
-!!! warning ""
-    It is either `commands` or `template`. But not both.
-
 ```python
 from __future__ import annotations
 
@@ -138,7 +135,8 @@ class <YourTestName>(AntaTest):
         AntaCommand(
             command="<eos command to run>",
             ofmt="<command format output>",
-            version="<eapi version to use>"
+            version="<eapi version to use>",
+            revision="<revision to use for the command>",           # revision has precedence over version
         )
     ]
 ```
@@ -157,6 +155,7 @@ The code here can be very simple as well as very complex and will depend of what
 ```python
 class <YourTestName>(AntaTest):
     ...
+    @AntaTest.anta_test
     def test(self) -> None:
         pass
 ```
@@ -166,20 +165,28 @@ If you want to support option in your test, just declare your options in your te
 ```python
 class <YourTestName>(AntaTest):
     ...
-    def test(self, my_param1: str) -> None:
+    @AntaTest.anta_test
+    def test(self, my_param1: Optional[str] = None) -> None:
         pass
 ```
+
+The options __must__ be optional keyword arguments.
 
 ### Check inputs
 
 If your test has some user inputs, you first have to validate the supplied values are valid. If it is not valid, we expect `TestResult` to return `skipped` with a custom message.
 
 ```python
-# Check if test option is correct
-if not minimum:
-    self.result.is_skipped("verify_dynamic_vlan was run without minimum value set")
-else:
+class <YourTestName>(AntaTest):
     ...
+    @AntaTest.anta_test
+    def test(self, minimum: Optional[int] = None) -> None:
+        # Check if test option is correct
+        if not minimum:
+            self.result.is_skipped("verify_dynamic_vlan was run without minimum value set")
+            return
+        # continue test..
+        ...
 ```
 
 ### Implement your logic
@@ -189,15 +196,24 @@ Here you implement your own logic. In general, the first action is to send comma
 In the example below, we request the list of vlans configured on device and then count all the vlans marked as dynamic
 
 ```python
-# Grab data for your command
-command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+class <YourTestName>(AntaTest):
+    ...
+    @AntaTest.anta_test
+    def test(self, minimum: Optional[int] = None) -> None:
+        # Check if test option is correct
+        if not minimum:
+            self.result.is_skipped("verify_dynamic_vlan was run without minimum value set")
+            return
 
-# Do your test: In this example we count number of vlans with field dynamic set to true
-num_dyn_vlan = len([ vlan for vlan,data in command_output['vlans'].items() if command_output['dynamic'] is True])
-if num_dyn_vlan >= minimum:
-    self.result.is_success()
-else:
-    self.result.is_failure(f"Device has {num_dyn_vlan} configured, we expect at least {minimum}")
+        # Grab data for your command
+        command_output = cast(Dict[str, Dict[Any, Any]], self.instance_commands[0].output)
+
+        # Do your test: In this example we count number of vlans with field dynamic set to true
+        num_dyn_vlan = len([ vlan for vlan,data in command_output['vlans'].items() if command_output['dynamic'] is True])
+        if num_dyn_vlan >= minimum:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Device has {num_dyn_vlan} configured, we expect at least {minimum}")
 ```
 
 As you can see there is no error management to do in your code. Everything is packaged in `anta_tests` and below is a simple example of error captured with an incorrect JSON key in the code above:
@@ -209,7 +225,7 @@ ERROR    Exception raised for test verify_dynamic_vlan (on device 192.168.0.10) 
 !!! info "Get stack trace for debugging"
     If you want to access to the full exception stack, you can run your test with logging level set to `DEBUG`. With ANTA cli, it is available with following option:
     ```bash
-    $ anta nrfu text --catalog test_custom.yml --log-level debug
+    $ ANTA_DEBUG=True anta nrfu text --catalog test_custom.yml --log-level debug
     ```
 
 ## Create your catalog
@@ -239,4 +255,4 @@ leaf04 :: verify_dynamic_vlan :: SUCCESS
 ```
 
 !!! warning "Install your python package"
-    Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly as explained at the begining of this page.
+    Anta uses Python path to access to your test. So it is critical to have your tests library installed correctly as explained at the begining of this page (in short, your module should be in your `PYTHONPATH` to be able to be loaded).

@@ -1,13 +1,18 @@
-# CLI overview
+# Overview of ANTA's Command-Line Interface (CLI)
 
-ANTA comes with a CLI to execute all the supported actions. If you want to build your own tool, you should visit [this page](../advanced_usages/as-python-lib.md) where we describe how to use ANTA as a python library
+ANTA provides a powerful Command-Line Interface (CLI) to perform a wide range of operations. This document provides a comprehensive overview of ANTA CLI usage and its commands.
 
-To invoke anta, open a shell window and then enter `anta`
+ANTA can also be used as a Python library, allowing you to build your own tools based on it. Visit this [page](../advanced_usages/as-python-lib.md) for more details.
+
+To start using the ANTA CLI, open your terminal and type `anta`.
+
+## Invoking ANTA CLI
 
 ```bash
+anta --help
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
-  Arista Network Test CLI
+  Arista Network Test Automation (ANTA) CLI
 
 Options:
   --version                       Show the version and exit.
@@ -17,8 +22,8 @@ Options:
                                   ANTA_PASSWORD; required]
   --timeout INTEGER               Global connection timeout  [env var:
                                   ANTA_TIMEOUT; default: 5]
-  --insecure / --secure           Disable SSH Host Key validation  [env var:
-                                  ANTA_INSECURE; default: secure]
+  --insecure                      Disable SSH Host Key validation  [env var:
+                                  ANTA_INSECURE]
   --enable-password TEXT          Enable password if required to connect  [env
                                   var: ANTA_ENABLE_PASSWORD]
   -i, --inventory FILE            Path to the inventory YAML file  [env var:
@@ -39,44 +44,50 @@ Commands:
   nrfu   Run NRFU against inventory devices
 ```
 
-## ANTA parameters
+## ANTA Global Parameters
 
-Some parameters are globally required and can be passed to anta via cli or via ENV VAR:
+Certain parameters are globally required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
 
-```bash
-$ anta --username tom --password arista123 --inventory inventory.yml <anta cli>
-```
-
-Or if you prefer to set ENV VAR:
+To pass the parameters via the CLI:
 
 ```bash
-# Save information for anta cli
-$ export ANTA_USERNAME=tom
-$ export ANTA_PASSWORD=arista123
-$ export ANTA_INVENTORY=inventory.yml
-
-# Run cli
-$ anta <anta cli>
+anta --username tom --password arista123 --inventory inventory.yml <anta cli>
 ```
 
-## ANTA ExitCodes
+To set them as ENV VAR:
 
-For all subcommands except nrfu, `anta` wil return with the exit code 0.
+```bash
+export ANTA_USERNAME=tom
+export ANTA_PASSWORD=arista123
+export ANTA_INVENTORY=inventory.yml
+```
 
-For the nrfu commands, `anta` is using the following exit codes:
+Then, run the CLI:
 
-* Exit code 0 - All tests passed successfully.
-* Exit code 1 - Tests were run but at least one test returned a failure.
-* Exit code 2 - Tests were run but at least one test returned an error.
-* Exit code 3 - Internal error happened while executing tests (not used today).
+```bash
+anta <anta cli>
+```
 
-It is possible to ignore the status when running the nrfu command by using `anta --ignore-status nrfu` and in that case the exit code will always be 0.
+## ANTA Exit Codes
 
-It is possible to ignore errors when running the nrfu command by using `anta --ignore-error nrfu` and in that case the exit code will either be 0 if all tests succeeded or 1 if any test failed.
+ANTA utilizes different exit codes to indicate the status of the test runs.
+
+For all subcommands, ANTA will return the exit code 0, indicating a successful operation, except for the nrfu command.
+
+For the nrfu command, ANTA uses the following exit codes:
+
+- `Exit code 0` - All tests passed successfully.
+- `Exit code 1` - Tests were run, but at least one test returned a failure.
+- `Exit code 2` - Tests were run, but at least one test returned an error.
+- `Exit code 3` - An internal error occurred while executing tests.
+
+To ignore the test status, use `anta --ignore-status nrfu`, and the exit code will always be 0.
+
+To ignore errors, use `anta --ignore-error nrfu`, and the exit code will be 0 if all tests succeeded or 1 if any test failed.
 
 ## Shell Completion
 
-You can enable shell completion for the anta cli:
+You can enable shell completion for the ANTA CLI:
 
 === "ZSH"
 

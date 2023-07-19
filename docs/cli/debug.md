@@ -1,95 +1,115 @@
 # ANTA debug commands
 
-ANTA CLI also provides a set of entrypoints to help building ANTA content. We call it debug and it provides different options:
+The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` subcommand and offers the following options:
 
-- Run a command on a device from your inventory and expose a result from AntaCommand
-- Run a templated command and expose the result
+- Executing a command on a device from your inventory and retrieving the result.
+- Running a templated command on a device from your inventory and retrieving the result.
 
-Both are extremly useful to build your test since you have a visual access to the output you have to test. It also helps to extract content to use for unit test as descirbed in our [contribution guide](../contribution.md).
+These tools are especially helpful in building the tests, as they give a visual access to the output received from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
 
-!!! info "Use your inventory"
-    Because it is based on ANTA cli, all your commands use an [ANTA inventory](overview.md) and require to get a valid one.
+!!! warning
+    The `debug` tools require a device from your inventory. Thus, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#create-an-inventory-file).
 
-## Get result of an EOS command
+## Executing an EOS command
 
-To run a command, you can leverage `run-cmd` entrypoint with following options:
+You can use the `run-cmd` entrypoint to run a command, which includes the following options:
+
+### Command overview
 
 ```bash
 $ anta debug run-cmd --help
 Usage: anta debug run-cmd [OPTIONS]
 
-  Run arbitrary command to an EOS device and get result using eAPI
+  Run arbitrary command to an ANTA device
 
 Options:
-  -c, --command TEXT             Command to run on EOS using eAPI  [required]
-  --ofmt [text|json]             eAPI format to use. can be text or json
-  --api-version, --version TEXT  Version of the command through eAPI
-  -d, --device TEXT              Device from inventory to use  [required]
-  --log-level, --log TEXT        Logging level of the command
-  --help                         Show this message and exit.
+  -c, --command TEXT        Command to run  [required]
+  --ofmt [json|text]        EOS eAPI format to use. can be text or json
+  -v, --version [1|latest]  EOS eAPI version
+  -r, --revision INTEGER    eAPI command revision
+  -d, --device TEXT         Device from inventory to use  [required]
+  --help                    Show this message and exit.
 ```
 
-In practice, this command is very simple to use. Here is an example using `show interfaces description` with a `JSON` format:
+### Example
+
+This example illustrates how to run the `show interfaces description` command with a `JSON` format (default):
 
 ```bash
-anta debug run-cmd -c "show interfaces description" --device ptt015
-run command show interfaces description on ptt015
+anta debug run-cmd --command "show interfaces description" --device DC1-SPINE1
+Run command show interfaces description on DC1-SPINE1
 {
     'interfaceDescriptions': {
-        'Ethernet8': {'interfaceStatus': 'adminDown', 'description': '', 'lineProtocolStatus': 'down'},
-        'Ethernet9': {'interfaceStatus': 'adminDown', 'description': '', 'lineProtocolStatus': 'down'},
-        'Ethernet12': {'interfaceStatus': 'adminDown', 'description': '', 'lineProtocolStatus': 'down'},
-    ...
+        'Ethernet1': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-LEAF1A_Ethernet1', 'interfaceStatus': 'up'},
+        'Ethernet2': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-LEAF1B_Ethernet1', 'interfaceStatus': 'up'},
+        'Ethernet3': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-BL1_Ethernet1', 'interfaceStatus': 'up'},
+        'Ethernet4': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-BL2_Ethernet1', 'interfaceStatus': 'up'},
+        'Loopback0': {'lineProtocolStatus': 'up', 'description': 'EVPN_Overlay_Peering', 'interfaceStatus': 'up'},
+        'Management0': {'lineProtocolStatus': 'up', 'description': 'oob_management', 'interfaceStatus': 'up'}
+    }
 }
 ```
 
-## Get result of an EOS command using templates
+## Executing an EOS command using templates
 
-This command allows user to provide an [`f-string`](https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python) and a list of dictionary to run a command dynamically. Idea is to help building output for test using such approach.
+The `run-template` entrypoint allows the user to provide an [`f-string`](https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python) templated command. It is followed by a list of arguments (key-value pairs) that build a dictionary used as template parameters.
+
+### Command overview
 
 ```bash
 $ anta debug run-template --help
-Usage: anta debug run-template [OPTIONS]
+Usage: anta debug run-template [OPTIONS] PARAMS...
 
-  Run arbitrary command to an EOS device and get result using eAPI
+  Run arbitrary templated command to an ANTA device.
+
+  Takes a list of arguments (keys followed by a value) to build a dictionary
+  used as template parameters. Example:
+
+  anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
 Options:
-  -t, --template TEXT            Command template to run on EOS using eAPI
-  -p, --params TEXT              Command parameters to use with template. Must
-                                 be a JSON string for a list of dict
-                                 [required]
-  --ofmt [text|json]             eAPI format to use. can be text or json
-  --api-version, --version TEXT  Version of the command through eAPI
-  -d, --device TEXT              Device from inventory to use  [required]
-  --log-level, --log TEXT        Logging level of the command
-  --help                         Show this message and exit.
+  -t, --template TEXT       Command template to run. E.g. 'show vlan
+                            {vlan_id}'  [required]
+  --ofmt [json|text]        EOS eAPI format to use. can be text or json
+  -v, --version [1|latest]  EOS eAPI version
+  -r, --revision INTEGER    eAPI command revision
+  -d, --device TEXT         Device from inventory to use  [required]
+  --help                    Show this message and exit.
 ```
 
-In practice, this command is very simple to use. Here is an example using `show lldp neighbors ` with a `JSON` format for only 2 interfaces: Ethernet1 and Ethernet2
+### Example
+
+This example uses the `show vlan {vlan_id}` command in a `JSON` format:
 
 ```bash
-anta debug run-template \
-    --params "[{"ifd": "Ethernet1"}, {"ifd":"Ethernet2"}]" \
-    --template "show lldp neighbors {ifd}" \
-    --device ptt015
+anta debug run-template --template "show vlan {vlan_id}" vlan_id 10 --device DC1-LEAF1A
+Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
+{
+    'vlans': {
+        '10': {
+            'name': 'VRFPROD_VLAN10',
+            'dynamic': False,
+            'status': 'active',
+            'interfaces': {
+                'Cpu': {'privatePromoted': False, 'blocked': None},
+                'Port-Channel11': {'privatePromoted': False, 'blocked': None},
+                'Vxlan1': {'privatePromoted': False, 'blocked': None}
+            }
+        }
+    },
+    'sourceDetail': ''
+}
+```
+!!! warning
+    If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
-run dynmic command show lldp neighbors {ifd} with [{"ifd": "Ethernet1"}, {"ifd":"Ethernet2"}] on ptt015
-run_command = show lldp neighbors Ethernet1 ptt015
-{
-  "tablesLastChangeTime": 1682498936.0082116,
-  "tablesAgeOuts": 0,
-  "tablesInserts": 1,
-  "lldpNeighbors": [],
-  "tablesDeletes": 0,
-  "tablesDrops": 0
-}
-run_command = show lldp neighbors Ethernet2 ptt015
-{
-  "tablesLastChangeTime": 1682498936.008321,
-  "tablesAgeOuts": 0,
-  "tablesInserts": 1,
-  "lldpNeighbors": [],
-  "tablesDeletes": 0,
-  "tablesDrops": 0
-}
+### Example of multiple arguments
+
+```bash
+anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
+> {'dst': '8.8.8.8', 'src': 'Loopback0'}
+
+anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1           
+> {'dst': '1.1.1.1', 'src': 'Loopback1'}
+# Notice how `src` and `dst` keep only the latest value
 ```
