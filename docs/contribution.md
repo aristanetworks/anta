@@ -195,13 +195,33 @@ test.py:1:0: W0611: Unused import foobaz (unused-import)
 
 > NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.
 
-## Test your documentation
+## Documentation
 
+mkdocs is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
+
+### Install documentation requirements
+
+Run pip to install the documentation requirements from the root of the repo:
+
+```bash
+pip install -r docs/requirements.txt
+```
+
+### Testing documentation
+
+You can then check locally the documentation using the following command from the root of the repo:
+
+```bash
+mkdocs serve
+```
+
+### Checking links
 Writing documentation is crucial but managing links can be cumbersome. To be sure there is no 404, you can use [`muffet`](https://github.com/raviqqe/muffet) with this cli:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
 ```
+
 
 ## Continuous Integration
 
