@@ -24,7 +24,7 @@ jobs:
 
       - name: 'Build mkdocs content to site folder'
         run: |
-          pip install -r ./docs/requirements.txt
+          pip install .[doc]
           mike deploy --update-alias --push  ${{github.ref_name}} stable
   pypi:
     name: Publish version to Pypi servers

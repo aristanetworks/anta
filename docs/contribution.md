@@ -204,14 +204,14 @@ mkdocs is used to generate the documentation. A PR should always update the docu
 Run pip to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -r docs/requirements.txt
+pip install 'anta[doc]'
 ```
 
 ### Testing documentation
 
-You can then check locally the documentation using the following command from the root of the repo:
+You can then check locally the documentation using the following command from the root of the repo
 
-```bash
+```
 mkdocs serve
 ```
 
