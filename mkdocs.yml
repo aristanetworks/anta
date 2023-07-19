@@ -140,8 +140,7 @@ markdown_extensions:
       baselevel: 3
   - pymdownx.highlight
   - pymdownx.superfences
-  - pymdownx.snippets:
-      base_path: 'docs/'
+  - pymdownx.snippets
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
@@ -149,7 +148,7 @@ markdown_extensions:
 # TOC
 docs_dir: docs/
 nav:
-  - Home: README.md
+  - Home: index.md
   - Getting Started: getting-started.md
   - Installation: requirements-and-installation.md
   - Inventory & Tests catalog: usage-inventory-catalog.md
