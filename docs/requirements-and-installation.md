@@ -13,7 +13,7 @@ Python 3.9.9
 
 This installation will deploy tests collection, scripts and all their Python requirements.
 
-The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/master/pyproject.toml) file, under dependencies.
+The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/main/pyproject.toml) file, under dependencies.
 
 
 ### Install from Pypi server

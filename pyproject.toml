@@ -80,7 +80,6 @@ doc = [
   "mkdocs-material>=8.3.9",
   "mkdocs-material-extensions>=1.0.3",
   "mkdocstrings[python]>=0.20.0",
-  "mdx_truly_sane_lists",
   "fontawesome_markdown",
   "mike==1.1.2",
 ]
@@ -88,7 +87,7 @@ doc = [
 [project.urls]
 Homepage = "https://www.anta.ninja"
 "Bug Tracker" = "https://github.com/arista-netdevops-community/anta/issues"
-Contributing = "https://github.com/arista-netdevops-community/anta/blob/master/CONTRIBUTING.md"
+Contributing = "https://www.anta.ninja/main/contribution/"
 
 [project.scripts]
 anta = "anta.cli:cli"
