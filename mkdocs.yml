@@ -162,7 +162,7 @@ nav:
     - Helpers: cli/debug.md
   - Advanced Usages:
     - Create your own Library: advanced_usages/custom-tests.md
-    - ANTA as python lib: advanced_usages/as-python-lib.md
+    - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Catalog Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md

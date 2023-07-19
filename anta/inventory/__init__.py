@@ -122,8 +122,8 @@ class AntaInventory(dict):  # type: ignore
     ) -> AntaInventory:
         # pylint: disable=too-many-arguments
         """
-        Create an AntaInventory object from an inventory file.
-        Instantiate AntaDevice objects using the AsyncEOSDevice subclass.
+        Create an AntaInventory instance from an inventory file.
+        The inventory devices are AsyncEOSDevice instances.
 
         Args:
             inventory_file (str): Path to inventory YAML file where user has described his inputs

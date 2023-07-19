@@ -1,53 +1,67 @@
-# How to use ANTA as a Python Library
+ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
-ANTA has been built to allow user to embeded its tools in your own application. This section describes how you can leverage ANTA modules to help you create your own NRFU solution.
+!!! tip
+    If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
 
-## Inventory Manager
+## [AntaDevice](../api/device.md#anta.device.AntaDevice) Abstract Class
 
-AntaInventory class is in charge of creating a list of hosts with their information and an eAPI session ready to be consummed. To do that, it connects to all devices to check reachability and ensure eAPI is running.
+A device is represented in ANTA as a instance of a subclass of the [AntaDevice](../api/device.md### ::: anta.device.AntaDevice) abstract class.
+There are few abstract methods that needs to be implemented by child classes:
 
-```python
-from anta.inventory import AntaInventory
+- The [collect()](../api/device.md#anta.device.AntaDevice.collect) coroutine is in charge of collecting outputs of [AntaCommand](../api/models.md#anta.models.AntaCommand) instances.
+- The [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutine is in charge of updating attributes of the [AntaDevice](../api/device.md### ::: anta.device.AntaDevice) instance. These attributes are used by [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) to filter out unreachable devices or by [AntaTest](../api/models.md#anta.models.AntaTest) to skip devices based on their hardware models.
 
-inventory = AntaInventory.parse(
-    inventory_file="inventory.yml",
-    username="username",
-    password="password",
-    enable_password="enable",
-    timeout=1,
-    insecure=False,
-)
-```
+The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to copy files to and from the device. It does not need to be implemented if tests are not using it.
 
-Then it is easy to get all devices or only active devices with the following method:
+### [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) Class
+
+The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) class is an implementation of [AntaDevice](../api/device.md#anta.device.AntaDevice) for Arista EOS.
+It uses the [aio-eapi](https://github.com/jeremyschulman/aio-eapi) eAPI client and the [AsyncSSH](https://github.com/ronf/asyncssh) library.
+
+- The [collect()](../api/device.md#anta.device.AsyncEOSDevice.collect) coroutine collects [AntaCommand](../api/models.md#anta.models.AntaCommand) outputs using eAPI.
+- The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
+- The [copy()](../api/device.md#anta.device.AsyncEOSDevice.copy) coroutine copies files to and from the device using the SCP protocol.
+
+## [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) Class
+
+The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a subclass of the standard Python type [dict](https://docs.python.org/3/library/stdtypes.html#dict). The keys of this dictionary are the device names, the values are [AntaDevice](../api/device.md#anta.device.AntaDevice) instances.
+
+
+[AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) provides methods to interact with the ANTA inventory:
+
+- The [add_device()](../api/inventory.md#anta.inventory.AntaInventory.add_device) method adds an [AntaDevice](../api/device.md### ::: anta.device.AntaDevice) instance to the inventory. Adding an entry to [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) with a key different from the device name is not allowed.
+- The [get_inventory()](../api/inventory.md#anta.inventory.AntaInventory.get_inventory) returns a new [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance with filtered out devices based on the method inputs.
+- The [connect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.connect_inventory) coroutine will execute the [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutines of all the devices in the inventory.
+- The [parse()](../api/inventory.md#anta.inventory.AntaInventory.parse) static method creates an [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance from a YAML file and returns it. The devices are [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) instances.
+
+
+To parse a YAML inventory file and print the devices connection status:
 
 ```python
 """
 Example
 """
-# This is needed to run the script for python < 3.10 for typing annotations
-from __future__ import annotations
-
 import asyncio
 
 from anta.inventory import AntaInventory
 
 
-async def main_loop(inv: AntaInventory) -> None:
+async def main(inv: AntaInventory) -> None:
     """
-    Take an inventory and a list of commands and:
+    Take an AntaInventory and:
     1. try to connect to every device in the inventory
-    2. print a message for every device where connection could not be established
+    2. print a message for every device connection status
     """
     await inv.connect_inventory()
 
-    # Print a list of devices that could not be connected to
-    for device in inv.get_inventory(established_only=False).values():
-        if device.established is False:
+    for device in inv.values():
+        if device.established:
+            print(f"Device {device.name} is online")
+        else:
             print(f"Could not connect to device {device.name}")
 
 if __name__ == "__main__":
-    # Create the inventory
+    # Create the AntaInventory instance
     inventory = AntaInventory.parse(
         inventory_file="inv.yml",
         username="arista",
@@ -55,12 +69,14 @@ if __name__ == "__main__":
         timeout=15,
     )
 
-    # Run the main asyncio  entry point
-    res = asyncio.run(main_loop(inventory, commands))
+    # Run the main coroutine
+    res = asyncio.run(main(inventory))
 ```
 
+??? note "How to create your inventory file"
+    Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
-To run an EOS commands list on the reachable devices from the inventory
+To run an EOS commands list on the reachable devices from the inventory:
 ```python
 """
 Example
@@ -69,18 +85,17 @@ Example
 from __future__ import annotations
 
 import asyncio
-from copy import deepcopy
 from pprint import pprint
 
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 
 
-async def main_loop(inv: AntaInventory, commands: list[str]) -> dict[str, list[AntaCommand]]:                                                                                                                                                                             
+async def main(inv: AntaInventory, commands: list[str]) -> dict[str, list[AntaCommand]]:
     """
-    Take an inventory and a list of commands and:
+    Take an AntaInventory and a list of commands as string and:
     1. try to connect to every device in the inventory
-    2. collect the results of the commands towards each device
+    2. collect the results of the commands from each device
 
     Returns:
       a dictionary where key is the device name and the value is the list of AntaCommand ran towards the device
@@ -91,7 +106,6 @@ async def main_loop(inv: AntaInventory, commands: list[str]) -> dict[str, list[A
     coros = []
     # dict to keep track of the commands per device
     result_dict = {}
-    print("DONE")
     for name, device in inv.get_inventory(established_only=True).items():
         anta_commands = [AntaCommand(command=command, ofmt="json") for command in commands]
         result_dict[name] = anta_commands
@@ -104,7 +118,7 @@ async def main_loop(inv: AntaInventory, commands: list[str]) -> dict[str, list[A
 
 
 if __name__ == "__main__":
-    # Create the inventory
+    # Create the AntaInventory instance
     inventory = AntaInventory.parse(
         inventory_file="inv.yml",
         username="arista",
@@ -116,18 +130,10 @@ if __name__ == "__main__":
     commands = ["show version", "show ip bgp summary"]
 
     # Run the main asyncio  entry point
-    res = asyncio.run(main_loop(inventory, commands))
+    res = asyncio.run(main(inventory, commands))
 
     pprint(res)
 ```
-
-!!! tip
-    If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
-
-You can find the ANTA Inventory module [here](../api/inventory.md).
-
-??? note "How to create your inventory file"
-    Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 
 ## Use tests from ANTA
