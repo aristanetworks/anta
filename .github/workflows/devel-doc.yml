@@ -32,7 +32,7 @@ jobs:
 
       - name: 'Build mkdocs content and deploy to gh-pages to devel'
         run: |
-            pip install -r ./docs/requirements.txt
+            pip install .[doc]
             mike deploy --push devel
             # This may not always be required
             mike set-default --push devel

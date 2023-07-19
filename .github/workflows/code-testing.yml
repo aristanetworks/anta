@@ -87,6 +87,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: pip install -r docs/requirements.txt
+        run: pip install .[doc]
       - name: "Build mkdocs documentation offline"
         run: mkdocs build
