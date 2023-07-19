@@ -208,4 +208,4 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
 
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/master/.github/workflows). We can view the results [here](https://github.com/arista-netdevops-community/anta/actions).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/arista-netdevops-community/anta/actions).

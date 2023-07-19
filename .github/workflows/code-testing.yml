@@ -3,7 +3,7 @@ name: Linting and Testing Anta
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:

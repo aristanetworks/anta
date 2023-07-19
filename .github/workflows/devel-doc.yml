@@ -1,12 +1,12 @@
 ---
-# This is deploying the latest commits on master to devel documentation
+# This is deploying the latest commits on main to devel documentation
 name: Mkdocs
 on:
   push:
     branches:
-      - master
+      - main
     paths:
-      # Run only if any of the following paths are changed when pushing to master
+      # Run only if any of the following paths are changed when pushing to main
       # May need to update this
       - "docs/**"
       - "mkdocs.yml"

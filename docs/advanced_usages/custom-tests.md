@@ -47,9 +47,8 @@ class VerifyTemperature(AntaTest):
 
 The following elements have to be imported:
 
-- [`InventoryDevice`](../api/inventory.models.md): Where the eAPI session lives. It is used to send commands over HTTP/HTTPS define in your test.
-- `anta.models.AntaTest`: class that gives you all the tooling for your test
-- `anta.models.AntaCommand`: A class to abstract an Arista EOS command
+- [anta.models.AntaTest](../api/models.md#anta.models.AntaTest): class that gives you all the tooling for your test
+- [anta.models.AntaCommand](../api/models.md#anta.models.AntaCommand): A class to abstract an Arista EOS command
 
 ```python
 from anta.models import AntaTest, AntaCommand
