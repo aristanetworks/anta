@@ -1,9 +1,5 @@
-# ANTA Inventory module
+### ::: anta.inventory.AntaInventory
+    options:
+        filters: ["!^_[^_]", "!__str__"]
 
-::: anta.inventory.AntaInventory
-    heading_level: 2
-
-# Exceptions
-
-::: anta.inventory.exceptions
-    heading_level: 2
+### ::: anta.inventory.exceptions

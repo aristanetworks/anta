@@ -1,14 +1,7 @@
-# AntaTest definition
+### ::: anta.models.AntaTest
+    options:
+        filters: ["!^_[^_]", "!__init_subclass__"]
 
-::: anta.models.AntaTest
-    heading_level: 2
+### ::: anta.models.AntaCommand
 
-# AntaCommand definition
-
-::: anta.models.AntaCommand
-    heading_level: 2
-
-# AntaTemplate definition
-
-::: anta.models.AntaTemplate
-    heading_level: 2
+### ::: anta.models.AntaTemplate

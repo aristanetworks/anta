@@ -1,20 +1,24 @@
-# Execute NRFU testing
+# Execute Network Readiness For Use (NRFU) Testing
 
-All the NRFU testing commands are placed under `anta nrfu` and provide different rendering options:
+ANTA provides a set of commands for performing NRFU tests on devices. These commands are under the `anta nrfu` namespace and offer multiple output format options:
 
-- Table view
-- JSON view
-- Text view
-- Custom template view
+- [Text view](#performing-nrfu-with-text-rendering)
+- [Table view](#performing-nrfu-with-table-rendering)
+- [JSON view](#performing-nrfu-with-json-rendering)
+- [Custom template view](#performing-nrfu-with-custom-reports)
+
+### NRFU Command overview
 
 ```bash
-anta nrfu
+anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
   Run NRFU against inventory devices
 
 Options:
-  --help  Show this message and exit.
+  -c, --catalog FILE  Path to the tests catalog YAML file  [env var:
+                      ANTA_NRFU_CATALOG; required]
+  --help              Show this message and exit.
 
 Commands:
   json        ANTA command to check network state with JSON result
@@ -23,132 +27,163 @@ Commands:
   tpl-report  ANTA command to check network state with templated report
 ```
 
-All of these commands require the following input:
+All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option.
 
-- A path to a catalog of tests to execute (`--catalog`)
-- A list of tags if they are part of your inventory (`--tags`). List is comma separated
+## Performing NRFU with text rendering
 
+The `text` subcommand provides a straightforward text report for each test executed on all devices in your inventory.
 
-## NRFU with text rendering
-
-This rendering is a pure text report for every test run on all devices. It comes with some options:
-
-- Search (`--search`) for a regexp pattern in hostname and test name
-- Option to skip (`--skip-error`) tests in error (not failure) because of a connectivity issue or unsupported command
-
-Example output
+### Command overview
 
 ```bash
-$ anta nrfu text --tags pod1 --catalog nrfu/leaf.yml
-leaf2 :: VerifyMlagStatus :: SUCCESS
-leaf2 :: VerifyMlagInterface :: SUCCESS
-leaf2 :: VerifyMlagConfigSanity :: SUCCESS
-leaf2 :: VerifyInterfaceUtilization :: SUCCESS
-leaf2 :: VerifyInterfaceErrors :: SUCCESS
-leaf2 :: VerifyInterfaceDiscards :: SUCCESS
-leaf2 :: VerifyInterfaceErrDisabled :: SUCCESS
-leaf2 :: VerifyInterfaceStatus :: SUCCESS
-leaf2 :: VerifyStormControlDrop :: SKIPPED (VerifyStormControlDrop test is not supported on cEOSLab.)
-leaf2 :: VerifyPortChannel :: SUCCESS
-leaf2 :: VerifyIllegalLacp :: SUCCESS
-leaf2 :: VerifyLoopbackCount :: FAILURE (Found 3 Loopbacks when expecting 2)
-leaf2 :: VerifySvi :: SUCCESS
-[...]
+anta nrfu text --help
+Usage: anta nrfu text [OPTIONS]
+
+  ANTA command to check network states with text result
+
+Options:
+  -t, --tags TEXT                 List of tags using comma as separator:
+                                  tag1,tag2,tag3
+  -s, --search TEXT               Regular expression to search in both name
+                                  and test
+  --skip-error / --no-skip-error  Hide tests in errors due to connectivity
+                                  issue  [default: no-skip-error]
+  --help                          Show this message and exit.
 ```
 
-## NRFU with table report
+The `--tags` option allows to target specific devices in your inventory, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
 
-This rendering prints results in a nice table supporting grep filtering. It comes with its own set of options:
+The `--skip-error` option can be used to exclude tests that failed due to connectivity issues or unsupported commands.
 
-- Search (`--search`) for a pattern in hostname and test name.
-- Option to group (`--group-by`) and summarize results. You can group by `host` or `test`.
+### Example
 
 ```bash
-$ anta check table -t pod1 -c nrfu/cudi.yml
+anta nrfu text --tags LEAF --search DC1-LEAF1A
 ```
+[![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-text-output.png)
 
-![anta nrfu table result](../imgs/anta-nrfu-table-output.png){ loading=lazy width="800" }
+## Performing NRFU with table rendering
 
-You can also group per host or per test to get a summary view in case of large setup
+The `table` command under the `anta nrfu` namespace offers a clear and organized table view of the test results, suitable for filtering. It also has its own set of options for better control over the output.
 
-![anta nrfu table group-by result](../imgs/anta-nrfu-table-group-by-test-output.png){ loading=lazy width="800" }
-
-## NRFU with JSON output
-
-This command is helpful to generate a JSON and then pass it to another tool for reporting for instance. Only one option is available to save output to a file (`--output`)
+### Command overview
 
 ```bash
-$ anta check json -t pod1 -c nrfu/leaf.yml
-[
-  {
-    "name": "leaf01",
-    "test": "VerifyZeroTouch",
-    "test_category": [
-      "configuration"
-    ],
-    "test_description": "Verifies ZeroTouch is disabled.",
-    "result": "success",
-    "messages": []
-  },
-  {
-    "name": "leaf01",
-    "test": "VerifyRunningConfigDiffs",
-    "test_category": [
-      "configuration"
-    ],
-    "test_description": "",
-    "result": "success",
-    "messages": []
-  },
-]
+anta nrfu table --help
+Usage: anta nrfu table [OPTIONS]
+
+  ANTA command to check network states with table result
+
+Options:
+  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
+  -d, --device TEXT  Show a summary for this device
+  -t, --test TEXT    Show a summary for this test
+  --help             Show this message and exit.
 ```
 
-## NRFU with your own report
+The `--tags` option can be used to target specific devices in your inventory.
 
-Because you may want to have a specific report format, ANTA provides a CLI option to build report based on Jinja2 template.
+The `--device` and `--test` options show a summarized view of the test results for a specific host or test case, respectively.
+
+### Example
 
 ```bash
-$ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_template.j2
-╭───────────────────────── Settings ─────────────────────────╮
-│ Running check-devices with:                                │
-│               - Inventory: .personal/inventory_atd.yml     │
-│               - Tests catalog: .personal/catalog-class.yml │
-│               - Template: .personal/test_template.j2       │
-╰────────────────────────────────────────────────────────────╯
-* VerifyZeroTouch is SUCCESS for spine01
-* VerifyRunningConfigDiffs is SUCCESS for spine01
-* VerifyInterfaceUtilization is SUCCESS for spine01
+anta nrfu table --tags LEAF
+```
+[![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-output.png)
+
+For larger setups, you can also group the results by host or test to get a summarized view:
+
+```bash
+anta nrfu table --tags LEAF --device DC1-LEAF1A
+```
+[![anta nrfu table per host results](../imgs/anta-nrfu-table-per-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-per-host-output.png)
+
+## Performing NRFU with JSON rendering
+
+The JSON rendering command in NRFU testing is useful in generating a JSON output that can subsequently be passed on to another tool for reporting purposes.
+
+### Command overview
+
+```bash
+anta nrfu json --help
+Usage: anta nrfu json [OPTIONS]
+
+  ANTA command to check network state with JSON result
+
+Options:
+  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
+  -o, --output FILE  Path to save report as a file  [env var:
+                     ANTA_NRFU_JSON_OUTPUT]
+  --help             Show this message and exit.
 ```
 
-And the template `.personal/test_template.j2` is a pure Jinja2 template:
+The `--tags` option can be used to target specific devices in your inventory.
+
+The `--output` option allows you to save the JSON report as a file.
+
+### Example
+
+```bash
+anta nrfu json --tags LEAF
+```
+[![anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-json-output.png)
+
+## Performing NRFU with custom reports
+
+ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 template system, allowing you to tailor reports to your specific needs.
+
+### Command overview
+
+```bash
+anta nrfu tpl-report --help
+Usage: anta nrfu tpl-report [OPTIONS]
+
+  ANTA command to check network state with templated report
+
+Options:
+  -tpl, --template FILE  Path to the template to use for the report  [env var:
+                         ANTA_NRFU_TPL_REPORT_TEMPLATE; required]
+  -o, --output FILE      Path to save report as a file  [env var:
+                         ANTA_NRFU_TPL_REPORT_OUTPUT]
+  -t, --tags TEXT        List of tags using comma as separator: tag1,tag2,tag3
+  --help                 Show this message and exit.
+```
+The `--template` option is used to specify the Jinja2 template file for generating the custom report.
+
+The `--output` option allows you to choose the path where the final report will be saved.
+
+The `--tags` option can be used to target specific devices in your inventory.
+
+### Example
+
+```bash
+anta nrfu tpl-report --tags LEAF --template ./custom_template.j2
+```
+[![anta nrfu json results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
+
+The template `./custom_template.j2` is a simple Jinja2 template:
 
 ```j2
-$ cat .personal/test_template.j2
 {% for d in data %}
 * {{ d.test }} is [green]{{ d.result | upper}}[/green] for {{ d.name }}
 {% endfor %}
 ```
 
-In this context, Jinja2 template can access to all `TestResult` elements with their values as described in [this documentation](../api/result_manager_models.md#testresult-entry).
+The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result_manager_models.md#testresult-entry).
 
-An option is available to save the generated report into a text file:
+You can also save the report result to a file using the `--output` option:
 
 ```bash
-# Run ANTA
-$ anta nrfu tpl-report -c .personal/catalog-class.yml -tpl .personal/test_template.j2 -o .personal/demo.txt
-╭───────────────────────── Settings ─────────────────────────╮
-│ Running check-devices with:                                │
-│               - Inventory: .personal/inventory_atd.yml     │
-│               - Tests catalog: .personal/catalog-class.yml │
-│               - Template: .personal/test_template.j2       │
-╰────────────────────────────────────────────────────────────╯
-* VerifyZeroTouch is SUCCESS for spine01
-* VerifyRunningConfigDiffs is SUCCESS for spine01
-* VerifyInterfaceUtilization is SUCCESS for spine01
+anta nrfu tpl-report --tags LEAF --template ./custom_template.j2 --output nrfu-tpl-report.txt
+```
 
-# Display saved report
-$ cat .personal/demo.txt
-* VerifyZeroTouch is [green]SUCCESS[/green] for spine01
-* VerifyRunningConfigDiffs is [green]SUCCESS[/green] for spine01
-* VerifyInterfaceUtilization is [green]SUCCESS[/green] for spine01
+The resulting output might look like this:
+
+```bash
+cat nrfu-tpl-report.txt
+* VerifyMlagStatus is [green]SUCCESS[/green] for DC1-LEAF1A
+* VerifyMlagInterfaces is [green]SUCCESS[/green] for DC1-LEAF1A
+* VerifyMlagConfigSanity is [green]SUCCESS[/green] for DC1-LEAF1A
+* VerifyMlagReloadDelay is [green]SUCCESS[/green] for DC1-LEAF1A
 ```

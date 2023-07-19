@@ -1,10 +1,67 @@
-# Get Inventory Information
+# Retrieving Inventory Information
 
-ANTA CLI provides a set of entrypoints to get data from your local inventory.
+The ANTA CLI offers multiple entrypoints to access data from your local inventory.
 
-## Get all configured tags
+## Inventory used of examples
 
-Since most commands in anta support tags filtering, this command helps you list all available tags configured in your inventory.
+Let's consider the following inventory:
+
+```yaml
+---
+anta_inventory:
+  hosts:
+    - host: 172.20.20.101
+      name: DC1-SPINE1
+      tags: ["SPINE", "DC1"]
+    
+    - host: 172.20.20.102
+      name: DC1-SPINE2
+      tags: ["SPINE", "DC1"]
+    
+    - host: 172.20.20.111
+      name: DC1-LEAF1A
+      tags: ["LEAF", "DC1"]
+    
+    - host: 172.20.20.112
+      name: DC1-LEAF1B
+      tags: ["LEAF", "DC1"]
+
+    - host: 172.20.20.121
+      name: DC1-BL1
+      tags: ["BL", "DC1"]
+
+    - host: 172.20.20.122
+      name: DC1-BL2
+      tags: ["BL", "DC1"]
+
+    - host: 172.20.20.201
+      name: DC2-SPINE1
+      tags: ["SPINE", "DC2"]
+
+    - host: 172.20.20.202
+      name: DC2-SPINE2
+      tags: ["SPINE", "DC2"]
+
+    - host: 172.20.20.211
+      name: DC2-LEAF1A
+      tags: ["LEAF", "DC2"]
+
+    - host: 172.20.20.212
+      name: DC2-LEAF1B
+      tags: ["LEAF", "DC2"]
+
+    - host: 172.20.20.221
+      name: DC2-BL1
+      tags: ["BL", "DC2"]
+      
+    - host: 172.20.20.222
+      name: DC2-BL2
+      tags: ["BL", "DC2"]
+```
+
+## Obtaining all configured tags
+
+As most of ANTA's commands accommodate tag filtering, this particular command is useful for enumerating all tags configured in the inventory. Running the `anta get tags` command will return a list of all tags that have been configured in the inventory.
 
 ### Command overview
 
@@ -15,62 +72,36 @@ Usage: anta get tags [OPTIONS]
   Get list of configured tags in user inventory.
 
 Options:
-  --log-level, --log [debug|info|warning|critical]
-                                  Logging level of the command
-  --help                          Show this message and exit.
+  --help  Show this message and exit.
 ```
 
 ### Example
 
-Let's consider the following inventory:
-
-```yaml
-anta_inventory:
-  hosts:
-  - host: 192.168.0.10
-    name: spine01
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.11
-    name: spine02
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.12
-    name: leaf01
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.13
-    name: leaf02
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.14
-    name: leaf03
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.15
-    name: leaf04
-    tags: ['fabric', 'leaf']
-```
-
-To get the list of all configured tags in your CLI, run the following command:
+To get the list of all configured tags in the inventory, run the following command:
 
 ```bash
-$ anta get tags
+anta get tags
 Tags found:
 [
-  "all",
-  "fabric",
-  "leaf",
-  "spine"
+  "BL",
+  "DC1",
+  "DC2",
+  "LEAF",
+  "SPINE",
+  "all"
 ]
-None
 
 * note that tag all has been added by anta
 ```
 
-!!! tip Default tag
-    As you can see, the tag `all` has been added even if not explicitely configued in your inventory. This tag is the default tag added to all your devices to run commands against your inventory when you do not provide any specific tag.
+!!! note
+    Even if you haven't explicitly configured the `all` tag in the inventory, it is automatically added. This default tag allows to execute commands on all devices in the inventory when no tag is specified.
 
 ## List devices in inventory
 
-### Command overview
+This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags. The `--connected` option allows to display only the devices where a connection has been established.
 
-To get a list of all devices available in your inventory with ANTA, use the following command
+### Command overview
 
 ```bash
 anta get inventory --help
@@ -79,81 +110,76 @@ Usage: anta get inventory [OPTIONS]
   Show inventory loaded in ANTA.
 
 Options:
-  -t, --tags TEXT                 List of tags using comma as separator:
-                                  tag1,tag2,tag3
-  --log-level, --log [debug|info|warning|critical]
-                                  Logging level of the command
-  --connected / --not-connected   Display inventory after connection has been
-                                  created
-  --help                          Show this message and exit.
+  -t, --tags TEXT                List of tags using comma as separator:
+                                 tag1,tag2,tag3
+  --connected / --not-connected  Display inventory after connection has been
+                                 created
+  --help                         Show this message and exit.
 ```
 
-It will give you all information loaded in ANTA inventory from your [inventory file](../../usage-inventory-catalog/).
 
-!!! tip Offline information only
-    By default only information not based on device connection is available. If you want to get information based on connection such as hardware model, you should use the `--connected` option.
+!!! tip
+    In its default mode, `anta get inventory` provides only information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, please use the `--connected` option.
 
 ### Example
 
-Considering the following inventory file:
-
-```yaml
-anta_inventory:
-  hosts:
-  - host: 192.168.0.10
-    name: spine01
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.11
-    name: spine02
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.12
-    name: leaf01
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.13
-    name: leaf02
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.14
-    name: leaf03
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.15
-    name: leaf04
-    tags: ['fabric', 'leaf']
-```
-
-You can get ANTA inventory with the command:
+To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your [inventory file](../../usage-inventory-catalog/).
 
 ```bash
-$ anta --username ansible --password ansible get inventory --tags spine
+anta get inventory --tags SPINE
 Current inventory content is:
-[
-  {
-    "name": "spine01",
-    "host": "192.168.0.10",
-    "username": "ansible",
-    "password": "ansible",
-    "port": "443",
-    "enable_password": "None",
-    "session": "<aioeapi.device.Device object at 0x7fa98d0a2d30>",
-    "hw_model": "unset",
-    "tags": "['fabric', 'spine', 'all']",
-    "timeout": "10.0",
-    "established": "False",
-    "is_online": "False"
-  },
-  {
-    "name": "spine02",
-    "host": "192.168.0.11",
-    "username": "ansible",
-    "password": "ansible",
-    "port": "443",
-    "enable_password": "None",
-    "session": "<aioeapi.device.Device object at 0x7fa98d0a2ac0>",
-    "hw_model": "unset",
-    "tags": "['fabric', 'spine', 'all']",
-    "timeout": "10.0",
-    "established": "False",
-    "is_online": "False"
-  }
-]
-None
+{
+    'DC1-SPINE1': AsyncEOSDevice(
+        name='DC1-SPINE1',
+        tags=['SPINE', 'DC1', 'all'],
+        hw_model=None,
+        is_online=False,
+        established=False,
+        host='172.20.20.101',
+        eapi_port=443,
+        username='arista',
+        password='arista',
+        enable_password='arista',
+        insecure=False
+    ),
+    'DC1-SPINE2': AsyncEOSDevice(
+        name='DC1-SPINE2',
+        tags=['SPINE', 'DC1', 'all'],
+        hw_model=None,
+        is_online=False,
+        established=False,
+        host='172.20.20.102',
+        eapi_port=443,
+        username='arista',
+        password='arista',
+        enable_password='arista',
+        insecure=False
+    ),
+    'DC2-SPINE1': AsyncEOSDevice(
+        name='DC2-SPINE1',
+        tags=['SPINE', 'DC2', 'all'],
+        hw_model=None,
+        is_online=False,
+        established=False,
+        host='172.20.20.201',
+        eapi_port=443,
+        username='arista',
+        password='arista',
+        enable_password='arista',
+        insecure=False
+    ),
+    'DC2-SPINE2': AsyncEOSDevice(
+        name='DC2-SPINE2',
+        tags=['SPINE', 'DC2', 'all'],
+        hw_model=None,
+        is_online=False,
+        established=False,
+        host='172.20.20.202',
+        eapi_port=443,
+        username='arista',
+        password='arista',
+        enable_password='arista',
+        insecure=False
+    )
+}
 ```

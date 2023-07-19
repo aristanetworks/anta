@@ -1,4 +1,4 @@
-# Inventory & Catalog definition
+# Inventory and Catalog definition
 
 This page describes how to create an inventory and a tests catalog.
 
@@ -22,9 +22,9 @@ anta_inventory:
       tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
 ```
 
-Your inventory file can be based on any of these 3 keys and shall start with `anta_inventory` key. A full description of inventory model is available in [API documentation](../api/inventory.models.input/)
+Your inventory file can be based on any of these 3 keys and MUST start with `anta_inventory` key. A full description of the inventory model is available in [API documentation](../api/inventory.models.input/)
 
-The next output is an inventory example:
+An inventory example:
 
 ```yaml
 ---
@@ -47,9 +47,8 @@ anta_inventory:
 
 ## Test Catalog
 
-In addition to your inventory file, you also have to define a catalog of tests to execute against all your devices. This catalogue list all your tests and their parameters.
-
-Its format is a YAML file and keys are tests functions inherited from the python path. Let's take an example below:
+In addition to your inventory file, you also have to define a catalog of tests to execute against all your devices. This catalog list all your tests and their parameters.
+Its format is a YAML file and keys are tests functions inherited from the python path.
 
 ### Default tests catalog
 
@@ -99,7 +98,7 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
-If your test is based on [`AntaTemplate`](), you have to provide inputs for EOS CLI template by using `tpl_options` list:
+If your test is based on [`AntaTemplate`](), you have to provide inputs for EOS CLI template by using `template_params` list:
 
 ```yaml
 anta.tests.routing.bgp:
@@ -127,6 +126,21 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     @AntaTest.anta_test
     def test(self, number: Optional[int] = None) -> None:
         pass
+```
+
+If you need to run the same test but with a different number of neighbors, you can write it as follow:
+
+```yaml
+anta.tests.routing.bgp:
+  - VerifyBGPIPv4UnicastCount:
+      number: 2
+      template_params:
+        - vrf: default
+anta.tests.routing.bgp:
+  - VerifyBGPIPv4UnicastCount:
+      number: 3
+      template_params:
+        - vrf: customer-01
 ```
 
 ### Custom tests catalog

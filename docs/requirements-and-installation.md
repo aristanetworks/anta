@@ -1,11 +1,10 @@
 # ANTA Requirements
 
-
 ## Python version
 
-Python 3 (`>=3.8` and `=<3.10`) is required:
+Python 3 (`>=3.8`) is required:
 
-```shell
+```bash
 python --version
 Python 3.9.9
 ```
@@ -14,33 +13,33 @@ Python 3.9.9
 
 This installation will deploy tests collection, scripts and all their Python requirements.
 
-The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/master/pyproject.toml#L20) file
+The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/master/pyproject.toml) file, under dependencies.
 
 
 ### Install from Pypi server
 
-```shell
+```bash
 pip install anta
 ```
 
 ### Install ANTA from github
 
 
-```shell
+```bash
 pip install git+https://github.com/arista-netdevops-community/anta.git
+
+# You can even specify the branch, tag or commit:
+pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-feature-branch>
+pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>
+pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>
 ```
 
-You can even specify the branch, tag or commit:
-
-- `<anta-repository>@<cool-feature-branch>`
-- `<anta-repository>@<cool-tag>`
-- `<anta-repository>@<cool-hash>`
 
 ### Check installation
 
 Run these commands to verify:
 
-```shell
+```bash
 # Check ANTA has been installed in your python path
 pip list | grep anta
 
@@ -56,7 +55,7 @@ anta, version 0.6.0
 
 ## EOS Requirements
 
-To get ANTA working, your Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
+To get ANTA working, the targetted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure

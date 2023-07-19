@@ -11,10 +11,10 @@ Run these commands to install:
 - The package [ANTA](https://github.com/arista-netdevops-community/anta/blob/master/anta) and its dependencies
 - ANTA cli executable.
 
-```shell
+```bash
 # Clone repository
 git clone https://github.com/arista-netdevops-community/anta.git
-cd network-test-automation
+cd anta
 
 # Install module in editable mode
 pip install -e .
@@ -35,7 +35,7 @@ anta, version 0.6.0
 
 Run pip to install anta and its developement tools.
 
-```
+```bash
 pip install 'anta[dev]'
 ```
 
@@ -44,20 +44,21 @@ pip install 'anta[dev]'
 Then, tox is configued with few environment to run CI locally:
 
 ```bash
-tox list
 default environments:
-clean  -> run the test driver with /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/bin/python3.9
-py38   -> run the test driver with py38
-py39   -> run the test driver with py39
-py310  -> run the test driver with py310
-lint   -> check the code style
-type   -> check typing
-report -> run the test driver with /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/bin/python3.9
+clean  -> Erase previous coverage reports
+lint   -> Check the code style
+type   -> Check typing
+py38   -> Run pytest with py38
+py39   -> Run pytest with py39
+py310  -> Run pytest with py310
+py311  -> Run pytest with py311
+report -> Generate coverage report
 
 additional environments:
-3.8    -> run the test driver with 3.8
-3.9    -> run the test driver with 3.9
-3.10   -> run the test driver with 3.10
+3.8    -> Run pytest with 3.8
+3.9    -> Run pytest with 3.9
+3.10   -> Run pytest with 3.10
+3.11   -> Run pytest with 3.11
 ```
 
 ## Code linting
@@ -65,23 +66,21 @@ additional environments:
 ```bash
 tox -e lint
 [...]
-lint: commands[0]> flake8 --max-line-length=165 --config=/dev/null anta
-lint: commands[1]> flake8 --max-line-length=165 --config=/dev/null scripts
-lint: commands[2]> flake8 --max-line-length=165 --config=/dev/null tests
-lint: commands[3]> pylint anta
+lint: commands[0]> black --check --diff --color .
+All done! ✨ 🍰 ✨
+104 files would be left unchanged.
+lint: commands[1]> isort --check --diff --color .
+Skipped 7 files
+lint: commands[2]> flake8 --max-line-length=165 --config=/dev/null anta
+lint: commands[3]> flake8 --max-line-length=165 --config=/dev/null tests
+lint: commands[4]> pylint anta
 
 --------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
-lint: commands[4]> pylint scripts
-
--------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 7.15/10, +2.85)
-
-.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/\
-pyproject_api/_backend.py True setuptools.build_meta
-  lint: OK (28.37=setup[7.03]+cmd[0.38,0.23,0.25,11.07,9.41] seconds)
-  congratulations :) (28.45 seconds)
+.pkg: _exit> python /Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+  lint: OK (19.26=setup[5.83]+cmd[1.50,0.76,1.19,1.20,8.77] seconds)
+  congratulations :) (19.56 seconds)
 ```
 
 ## Code Typing
@@ -89,15 +88,15 @@ pyproject_api/_backend.py True setuptools.build_meta
 ```bash
 tox -e type
 
+[...]
 type: commands[0]> mypy --config-file=pyproject.toml anta
-Success: no issues found in 38 source files
-type: commands[1]> mypy --config-file=pyproject.toml scripts
-Success: no issues found in 6 source files
-.pkg: _exit> python /home/tom/.pyenv/versions/3.9.9/envs/arista-anta/lib/python3.9/site-packages/\
-pyproject_api/_backend.py True setuptools.build_meta
-  type: OK (28.80=setup[24.54]+cmd[3.35,0.90] seconds)
-  congratulations :) (28.89 seconds)
+Success: no issues found in 52 source files
+.pkg: _exit> python /Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+  type: OK (46.66=setup[24.20]+cmd[22.46] seconds)
+  congratulations :) (47.01 seconds)
 ```
+
+> NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
 
 ## Unit tests
 
@@ -112,8 +111,6 @@ All submodule should have its own pytest section under `tests/units/anta_tests/<
 A pytest definition should be similar to this template:
 
 ```python
-# -*- coding: utf-8 -*-
-
 """
 Tests for anta.tests.hardware.py
 """
@@ -134,9 +131,6 @@ from .data import INPUT_<TEST_NAME>
 @pytest.mark.parametrize("test_data", INPUT_<TEST_NAME>, ids=generate_test_ids_list(INPUT_<TEST_NAME>))
 def test_<TEST_CASE>(mocked_device: MagicMock, test_data: Any) -> None:
     """Check <TEST_CASE>."""
-
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
     test = <TEST_CASE>(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
@@ -170,7 +164,7 @@ Where we have:
 
 - `name`: Name of the test displayed by Pytest
 - `eos_data`: a list of data coming from EOS.
-- `side_effect`: defined for futur use.
+- `side_effect`: used to inject template and test parameters (look for some examples in the existing tests)
 - `expected_result`: Result we expect for this test
 - `expected_messages`: Optional messages we expect for the test.
 
@@ -199,15 +193,37 @@ test.py:1:0: E0401: Unable to import 'foobaz' (import-error)
 test.py:1:0: W0611: Unused import foobaz (unused-import)
 ```
 
-## Test your documentation
+> NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.
 
+## Documentation
+
+mkdocs is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
+
+### Install documentation requirements
+
+Run pip to install the documentation requirements from the root of the repo:
+
+```bash
+pip install -r docs/requirements.txt
+```
+
+### Testing documentation
+
+You can then check locally the documentation using the following command from the root of the repo:
+
+```bash
+mkdocs serve
+```
+
+### Checking links
 Writing documentation is crucial but managing links can be cumbersome. To be sure there is no 404, you can use [`muffet`](https://github.com/raviqqe/muffet) with this cli:
 
 ```bash
 muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
 ```
 
+
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/81ec7f90246879217d713c9873fa485ddcb0955e/.github/workflows).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/master/.github/workflows).
 We can view the result [here](https://github.com/arista-netdevops-community/anta/actions)

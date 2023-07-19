@@ -1,9 +1,8 @@
-# AntaDevice Abstracted class
+### ::: anta.device.AntaDevice
+    options:
+      filters: ["!^_[^_]", "!__(eq|rich_repr)__"]
 
-::: anta.device.AntaDevice
-    heading_level: 2
+### ::: anta.device.AsyncEOSDevice
+    options:
+      filters: ["!^_[^_]", "!__(eq|rich_repr)__"]
 
-# AsyncEOSDevice class
-
-::: anta.device.AsyncEOSDevice
-    heading_level: 2

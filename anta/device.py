@@ -60,7 +60,7 @@ class AntaDevice(ABC):
     An implementation of this class needs must override the abstract coroutines `collect()` and
     `refresh()`.
 
-    Instance attributes:
+    Attributes:
         name: Device name
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
@@ -136,9 +136,9 @@ class AntaDevice(ABC):
         Update attributes of an AntaDevice instance.
 
         This coroutine must update the following attributes of AntaDevice:
-        - is_online: When the device IP is reachable and a port can be open
-        - established: When a command execution succeeds
-        - hw_model: The hardware model of the device
+            - `is_online`: When the device IP is reachable and a port can be open
+            - `established`: When a command execution succeeds
+            - `hw_model`: The hardware model of the device
         """
 
     async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
@@ -158,7 +158,7 @@ class AsyncEOSDevice(AntaDevice):
     """
     Implementation of AntaDevice for EOS using aio-eapi.
 
-    Instance attributes:
+    Attributes:
         name: Device name
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
@@ -189,12 +189,12 @@ class AsyncEOSDevice(AntaDevice):
             password: Password to connect to eAPI and SSH
             name: Device name
             enable_password: Password used to gain privileged access on EOS
-            proto: eAPI protocol. Value can be 'http' or 'https'
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port
-            insecure: Disable SSH Host Key validation
             tags: List of tags for this device
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
+            insecure: Disable SSH Host Key validation
+            proto: eAPI protocol. Value can be 'http' or 'https'
         """
         if name is None:
             name = f"{host}:{port}"

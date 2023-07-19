@@ -194,7 +194,7 @@ class ReportTable:
             "# of skipped",
             "# of failure",
             "# of errors",
-            "List of failed ortest case",
+            "List of failed or error test cases",
         ]
         table = self._build_headers(headers=headers, table=table)
         for host_read in result_manager.get_hosts():
