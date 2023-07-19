@@ -54,7 +54,7 @@ Commands:
   nrfu   Run NRFU against inventory devices
 ```
 
-[![anta nrfu table output](imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }](imgs/anta-nrfu-table-output.png)
+![anta nrfu table output](imgs/anta-nrfu-table-output.png)
 
 
 ## Documentation

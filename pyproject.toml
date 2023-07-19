@@ -50,7 +50,7 @@ requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = [
-  "bump2version==1.0.1",
+  "bumpver==2023.1125",
   "black==23.3.0",
   "flake8==6.0.0",
   "isort==5.10.1",
@@ -99,6 +99,23 @@ anta = "anta.cli:cli"
 [tool.setuptools.packages.find]
 include = ["anta*"]
 namespaces = false
+
+################################
+# Version
+################################
+[tool.bumpver]
+current_version = "0.6.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "bump: Version {old_version} -> {new_version}"
+commit = true
+# No tag
+tag = false
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "v{version}"']
+"docs/contribution.md" = ["anta    {version}"]
+"docs/requirements-and-installation.md " = ["anta, version v{version}"]
 
 ################################
 # Linting

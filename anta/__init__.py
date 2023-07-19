@@ -4,7 +4,7 @@ Arista Network Test Automation (ANTA) Framework
 import importlib.metadata
 import os
 
-__version__ = importlib.metadata.version("anta")
+__version__ = f"v{importlib.metadata.version('anta')}"
 __credits__ = [
     "Angélique Phillipps",
     "Colin MacGiollaEáin",
