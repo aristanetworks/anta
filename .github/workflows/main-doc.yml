@@ -1,5 +1,5 @@
 ---
-# This is deploying the latest commits on main to devel documentation
+# This is deploying the latest commits on main to main documentation
 name: Mkdocs
 on:
   push:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   'build_latest_doc':
-    name: 'Update Public devel documentation'
+    name: 'Update Public main documentation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,9 +30,9 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: 'Build mkdocs content and deploy to gh-pages to devel'
+      - name: 'Build mkdocs content and deploy to gh-pages to main'
         run: |
             pip install .[doc]
-            mike deploy --push devel
+            mike deploy --push main
             # This may not always be required
-            mike set-default --push devel
+            mike set-default --push main
