@@ -90,6 +90,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -1292,10 +1304,9 @@
   
       <p>TableReport Generate a Table based on TestResult.</p>
 
-
-        <details class="quote">
-          <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
 <span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
@@ -1801,11 +1812,12 @@
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">table</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1829,9 +1841,9 @@
   
       <p><strong>init</strong> Class constructor</p>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
@@ -1861,10 +1873,11 @@
         <span class="n">ColorManager</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;skipped&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">RICH_COLOR_PALETTE</span><span class="o">.</span><span class="n">SKIPPED</span><span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1880,6 +1893,8 @@
   
       <p>Create a table report with all tests for one or all devices.</p>
 <p>Create table with full output: Host / Test / Status / Message</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1951,6 +1966,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1973,9 +1990,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
@@ -2061,10 +2078,11 @@
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">table</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2080,6 +2098,8 @@
   
       <p>Create a table report with result agregated per host.</p>
 <p>Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2137,6 +2157,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2159,9 +2181,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
@@ -2281,10 +2303,11 @@
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">table</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2300,6 +2323,8 @@
   
       <p>Create a table report with result agregated per test.</p>
 <p>Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2357,6 +2382,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2379,9 +2406,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
@@ -2499,7 +2526,7 @@
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">table</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2607,7 +2634,7 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>

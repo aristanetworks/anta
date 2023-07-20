@@ -90,6 +90,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -1329,6 +1341,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1346,6 +1359,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies there is no adverse drops on DCS-7280E and DCS-7500E switches.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1374,6 +1389,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1445,9 +1462,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
@@ -1505,10 +1522,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1527,6 +1545,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies the fans status is OK.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1555,6 +1575,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1626,9 +1648,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
@@ -1690,10 +1712,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1712,6 +1735,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies the power supplies status is OK.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1740,6 +1765,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1811,9 +1838,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
@@ -1879,10 +1906,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1902,6 +1930,8 @@
   
       <p>Verifies the device temperature is currently OK
 and the device did not report any temperature alarm in the past.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1930,6 +1960,8 @@ and the device did not report any temperature alarm in the past.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2001,9 +2033,9 @@ and the device did not report any temperature alarm in the past.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
@@ -2071,10 +2103,11 @@ and the device did not report any temperature alarm in the past.</p>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2094,6 +2127,8 @@ and the device did not report any temperature alarm in the past.</p>
   
       <p>Verifies the transceivers temperature is currently OK
 and the device did not report any alarm in the past for its transceivers temperature.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2122,6 +2157,8 @@ and the device did not report any alarm in the past for its transceivers tempera
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2194,9 +2231,9 @@ and the device did not report any alarm in the past for its transceivers tempera
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
@@ -2290,10 +2327,11 @@ and the device did not report any alarm in the past for its transceivers tempera
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2312,6 +2350,8 @@ and the device did not report any alarm in the past for its transceivers tempera
   <div class="doc doc-contents ">
   
       <p>Verifies the device is only using transceivers from supported manufacturers.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2354,6 +2394,8 @@ and the device did not report any alarm in the past for its transceivers tempera
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2437,9 +2479,9 @@ and the device did not report any alarm in the past for its transceivers tempera
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/hardware.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/hardware.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -2537,7 +2579,7 @@ and the device did not report any alarm in the past for its transceivers tempera
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2645,7 +2687,7 @@ and the device did not report any alarm in the past for its transceivers tempera
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>

@@ -90,6 +90,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -1289,6 +1301,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1306,6 +1319,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1334,6 +1349,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1405,9 +1422,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
@@ -1493,10 +1510,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1516,6 +1534,8 @@
   
       <p>Verifies the configured routing protocol model is the one we expect.
 And if there is no mismatch between the configured and operating routing protocol model.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1557,6 +1577,8 @@ And if there is no mismatch between the configured and operating routing protoco
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1640,9 +1662,9 @@ And if there is no mismatch between the configured and operating routing protoco
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -1726,10 +1748,11 @@ And if there is no mismatch between the configured and operating routing protoco
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1749,6 +1772,8 @@ And if there is no mismatch between the configured and operating routing protoco
   
       <p>Verifies the size of the IP routing table (default VRF).
 Should be between the two provided thresholds.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1803,6 +1828,8 @@ Should be between the two provided thresholds.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1886,9 +1913,9 @@ Should be between the two provided thresholds.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
@@ -1968,7 +1995,7 @@ Should be between the two provided thresholds.</p>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2076,7 +2103,7 @@ Should be between the two provided thresholds.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>

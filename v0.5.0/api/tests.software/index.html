@@ -90,6 +90,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -1301,6 +1313,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1318,6 +1331,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies all EOS extensions installed on the device are enabled for boot persistence.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1346,6 +1361,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1417,9 +1434,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/software.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
@@ -1499,10 +1516,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1521,6 +1539,8 @@
   <div class="doc doc-contents ">
   
       <p>Verifies the device is running one of the allowed EOS version.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1563,6 +1583,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1646,9 +1668,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/software.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -1714,10 +1736,11 @@
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1738,6 +1761,8 @@
       <p>Verifies the device is using an Aboot version that fix the bug discussed
 in the field notice 44 (Aboot manages system settings prior to EOS initialization).</p>
 <p><a href="https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44">https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44</a></p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1766,6 +1791,8 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1837,9 +1864,9 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/software.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
@@ -2041,10 +2068,11 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2063,6 +2091,8 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
   <div class="doc doc-contents ">
   
       <p>Verifies the device is running one of the allowed TerminAttr version.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2105,6 +2135,8 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2188,9 +2220,9 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/software.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/software.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
@@ -2266,7 +2298,7 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2374,7 +2406,7 @@ in the field notice 44 (Aboot manages system settings prior to EOS initializatio
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>

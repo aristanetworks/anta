@@ -90,6 +90,18 @@
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
         
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
       </div>
     
     
@@ -1345,6 +1357,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1363,6 +1376,8 @@
   
       <p>Verifies all EVPN BGP sessions are established (default VRF)
 and the actual number of BGP EVPN neighbors is the one we expect (default VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1405,6 +1420,8 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1489,9 +1506,9 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
@@ -1579,10 +1596,11 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1601,6 +1619,8 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
   <div class="doc doc-contents ">
   
       <p>Verifies all EVPN BGP sessions are established (default VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1629,6 +1649,8 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1712,9 +1734,9 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -1792,10 +1814,11 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1816,6 +1839,8 @@ and the actual number of BGP EVPN neighbors is the one we expect (default VRF).<
       <p>Verifies all IPv4 unicast BGP sessions are established
 and all BGP messages queues for these sessions are empty
 and the actual number of BGP IPv4 unicast neighbors is the one we expect.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1871,6 +1896,8 @@ and the actual number of BGP IPv4 unicast neighbors is the one we expect.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1956,9 +1983,9 @@ and the actual number of BGP IPv4 unicast neighbors is the one we expect.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 70</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 70</span>
 <span class="normal"> 71</span>
 <span class="normal"> 72</span>
 <span class="normal"> 73</span>
@@ -2084,10 +2111,11 @@ and the actual number of BGP IPv4 unicast neighbors is the one we expect.</p>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2107,6 +2135,8 @@ and the actual number of BGP IPv4 unicast neighbors is the one we expect.</p>
   
       <p>Verifies all IPv4 unicast BGP sessions are established (for all VRF)
 and all BGP messages queues for these sessions are empty (for all VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2135,6 +2165,8 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2219,9 +2251,9 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -2327,10 +2359,11 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2350,6 +2383,8 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
   
       <p>Verifies all IPv6 unicast BGP sessions are established (for all VRF)
 and all BGP messages queues for these sessions are empty (for all VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2378,6 +2413,8 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2462,9 +2499,9 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
@@ -2570,10 +2607,11 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2593,6 +2631,8 @@ and all BGP messages queues for these sessions are empty (for all VRF).</p>
   
       <p>Verifies all RTC BGP sessions are established (default VRF)
 and the actual number of BGP RTC neighbors is the one we expect (default VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2635,6 +2675,8 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2719,9 +2761,9 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
@@ -2815,10 +2857,11 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2837,6 +2880,8 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
   <div class="doc doc-contents ">
   
       <p>Verifies all RTC BGP sessions are established (default VRF).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2865,6 +2910,8 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2948,9 +2995,9 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">277</span>
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span>
@@ -3022,7 +3069,7 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
 
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -3130,7 +3177,7 @@ and the actual number of BGP RTC neighbors is the one we expect (default VRF).</
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
