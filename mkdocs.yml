@@ -51,6 +51,7 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  custom_dir: docs/overrides
 
 extra:
   social:
@@ -62,6 +63,9 @@ extra:
       link: https://pypi.org/project/anta/
   version:
     provider: mike
+    default:
+      - stable
+      - main
 
 extra_css:
   - stylesheets/extra.material.css
