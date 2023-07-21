@@ -18,49 +18,18 @@ ANTA is Python framework that automates tests for Arista devices.
 
 ![anta nrfu](imgs/anta-nrfu.svg)
 
-!!! info username/password/enable/enable-password are the same for all devices
-
 ```bash
 # Install ANTA CLI
 $ pip install anta
 
 # Run ANTA CLI
-$ anta
-Usage: anta [OPTIONS] COMMAND [ARGS]...
-
-  Arista Network Test Automation (ANTA) CLI
-
-Options:
-  --version                       Show the version and exit.
-  --username TEXT                 Username to connect to EOS  [env var:
-                                  ANTA_USERNAME; required]
-  --password TEXT                 Password to connect to EOS  [env var:
-                                  ANTA_PASSWORD; required]
-  --timeout INTEGER               Global connection timeout  [env var:
-                                  ANTA_TIMEOUT; default: 5]
-  --insecure                      Disable SSH Host Key validation  [env var:
-                                  ANTA_INSECURE]
-  --enable                        Add enable mode towards the devices if
-                                  required to connect  [env var: ANTA_ENABLE]
-  --enable-password TEXT          Enable password if required to connect  [env
-                                  var: ANTA_ENABLE_PASSWORD]
-  -i, --inventory FILE            Path to the inventory YAML file  [env var:
-                                  ANTA_INVENTORY; required]
-  --log-level, --log [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  ANTA logging level  [env var:
-                                  ANTA_LOG_LEVEL; default: INFO]
-  --ignore-status                 Always exit with success  [env var:
-                                  ANTA_IGNORE_STATUS]
-  --ignore-error                  Only report failures and not errors  [env
-                                  var: ANTA_IGNORE_ERROR]
-  --help                          Show this message and exit.
-
-Commands:
-  debug  Debug commands for building ANTA
-  exec   Execute commands to inventory devices
-  get    Get data from/to ANTA
-  nrfu   Run NRFU against inventory devices
+$ anta --help
+--8<-- "anta_help.txt"
 ```
+
+!!! info
+    `username`, `password`, `enable`, and `enable-password` values are the same for all devices
+
 
 ## Documentation
 
