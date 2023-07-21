@@ -14,7 +14,7 @@ from typing import Dict, List, Literal, Optional
 
 from aioeapi import EapiCommandError
 
-from anta.device import AntaDevice
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 from anta.tools.misc import anta_log_exception, exc_to_str
@@ -120,6 +120,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             if command.collected and not command.text_output:
                 logger.debug(f"'aaa authorization exec default local' is not configured on device {device.name}")
                 if configure:
+                    # Otherwise mypy complains about enable
+                    assert isinstance(device, AsyncEOSDevice)
                     # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.
                     commands = []
                     if device.enable and device._enable_password is not None:  # type: ignore[attr-defined] # pylint: disable=protected-access
@@ -128,11 +130,12 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                         commands.append({"cmd": "enable"})
                     commands.extend(
                         [
-                            "configure terminal",
-                            "aaa authorization exec default local",
+                            {"cmd": "configure terminal"},
+                            {"cmd": "aaa authorization exec default local"},
                         ]
                     )
                     logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
+                    command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
                     await device.session.cli(commands=commands)  # type: ignore[attr-defined]
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
