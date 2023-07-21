@@ -47,6 +47,10 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     """
     Helper function parse an ANTA inventory YAML file
     """
+    if ctx.obj.get("_anta_help"):
+        # Currently looking for help for a subcommand so no
+        # need to parse the Inventory, return an empty one
+        return AntaInventory()
     try:
         inventory = AntaInventory.parse(
             inventory_file=str(path),
@@ -135,3 +139,30 @@ def return_code(result_manager: ResultManager, ignore_error: bool, ignore_status
 
     logger.error("Please gather logs and open an issue on Github.")
     raise ValueError(f"Unknown status returned by the ResultManager: {status}. Please gather logs and open an issue on Github.")
+
+
+class IgnoreRequiredWithHelp(click.Group):
+    """
+    https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
+    Solution to allow help without required options on subcommand
+
+    This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
+    """
+
+    def parse_args(self, ctx: click.Context, args: List[str]) -> List[str]:
+        """
+        Ignore MissingParameter exception when parsing arguments if `--help`
+        is present for a subcommand
+        """
+        try:
+            return super().parse_args(ctx, args)
+        except click.MissingParameter:
+            if "--help" not in args:
+                raise
+
+            # remove the required params so that help can display
+            for param in self.params:
+                param.required = False
+            # Adding a flag for potential callbacks
+            ctx.obj["_anta_help"] = True
+            return super().parse_args(ctx, args)
