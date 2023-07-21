@@ -126,7 +126,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
-                    logger.debug(f"Configuring 'aaa authorization exec default local' on device {device.name}")
+                    logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
                     await device._session.cli(commands=commands)  # type: ignore[attr-defined]
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
