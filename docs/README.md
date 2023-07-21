@@ -1,6 +1,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/anta/blob/main/LICENSE)
 [![Linting and Testing Anta](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml/badge.svg)](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml)
 [![github release](https://img.shields.io/github/release/arista-netdevops-community/anta.svg)](https://github.com/arista-netdevops-community/anta/releases/)
+![PyPI - Downloads/month](https://img.shields.io/pypi/dm/eos-downloader)
 ![coverage](https://github.com/arista-netdevops-community/anta/blob/gh-pages/latest-release-coverage.svg)
 
 # Arista Network Test Automation (ANTA) Framework
