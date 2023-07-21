@@ -122,12 +122,12 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                 if configure:
                     # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.
                     commands = [
-                        {"cmd": "enable", "input": device._enable_password},  # type: ignore[attr-defined] pylint: disable=protected-access
+                        {"cmd": "enable", "input": device._enable_password},  # type: ignore[attr-defined] # pylint: disable=protected-access
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
                     logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
-                    await device._session.cli(commands=commands)  # type: ignore[attr-defined] pylint: disable=protected-access
+                    await device._session.cli(commands=commands)  # type: ignore[attr-defined] # pylint: disable=protected-access
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
                     logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")
