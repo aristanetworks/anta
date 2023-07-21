@@ -211,7 +211,7 @@ ignore_errors = true
 directory = "coverage_html_report"
 
 [tool.coverage.xml]
-directory = ".coverage.xml"
+output = ".coverage.xml"
 
 ################################
 # Tox
