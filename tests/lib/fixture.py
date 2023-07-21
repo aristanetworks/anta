@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Fixture for Anta Testing"""
 
 from typing import Callable

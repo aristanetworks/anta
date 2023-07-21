@@ -1,0 +1,5 @@
+---
+anta_inventory:
+  hosts:
+    - name: anta-1
+      host: fake.anta.ninja

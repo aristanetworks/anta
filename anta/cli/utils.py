@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no_cover
     from click import Option
+
     from anta.result_manager import ResultManager
 
 
@@ -83,8 +84,8 @@ def requires_enable(ctx: click.Context, param: Option, value: str) -> None:
     """
     Click option callback to ensure that enable is True when the option is set
     """
-    if ctx.params.get("enable") is not True:
-        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable' (or setting associated env variable")
+    if value is not None and ctx.params.get("enable") is not True:
+        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable' (or setting associated env variable)")
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
