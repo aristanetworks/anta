@@ -72,7 +72,10 @@ def snapshot(ctx: click.Context, tags: Optional[List[str]], commands_list: Path,
 @click.option("--output", "-o", default="./tech-support", show_default=True, help="Path for tests catalog", type=click.Path(path_type=Path), required=False)
 @click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
-    "--configure/--not-configure", help="Ensure devices have 'aaa authorization exec default local' configured (required for SCP on EOS). THIS WILL CHANGE THE CONFIGURATION OF YOUR NETWORK.", default=False, show_default=True
+    "--configure/--not-configure",
+    help="Ensure devices have 'aaa authorization exec default local' configured (required for SCP on EOS). THIS WILL CHANGE THE CONFIGURATION OF YOUR NETWORK.",
+    default=False,
+    show_default=True,
 )
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 def collect_tech_support(ctx: click.Context, tags: Optional[List[str]], output: Path, latest: Optional[int], configure: bool) -> None:
