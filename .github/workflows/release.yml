@@ -6,6 +6,26 @@ on:
       - published
 
 jobs:
+  release-coverage:
+    name: Updated ANTA release coverage badge
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install genbadge[coverage] tox tox-gh-actions
+      - name: "Run pytest via tox for ${{ matrix.python }}"
+        run: tox
+      - name: Generate coverage badge
+        run: genbadge coverage -i .coverage.xml -o badge/latest-release-coverage.svg
+      - name: Publish coverage badge to gh-pages branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          # branch: coverage-badge
+          folder: badge
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
     runs-on: ubuntu-latest

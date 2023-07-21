@@ -210,6 +210,9 @@ ignore_errors = true
 [tool.coverage.html]
 directory = "coverage_html_report"
 
+[tool.coverage.xml]
+directory = ".coverage.xml"
+
 ################################
 # Tox
 ################################
@@ -228,8 +231,8 @@ envlist =
 python =
   3.8: py38
   3.9: py39
-  3.10: erase, py310, report
-  3.11: py311
+  3.10: py310
+  3.11: erase, py311, report
 
 [testenv]
 description = Run pytest with {basepython}
@@ -242,8 +245,7 @@ description = Check the code style
 commands =
   black --check --diff --color .
   isort --check --diff --color .
-  flake8 --max-line-length=165 --config=/dev/null anta
-  flake8 --max-line-length=165 --config=/dev/null tests
+  flake8 --max-line-length=165 --config=/dev/null anta tests
   pylint anta
 
 [testenv:type]
@@ -263,6 +265,7 @@ deps = coverage[toml]
 commands =
   coverage --version
   coverage report --rcfile=pyproject.toml
+  coverage xml --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py311
