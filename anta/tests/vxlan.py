@@ -5,19 +5,26 @@ Test functions related to VXLAN
 from anta.models import AntaCommand, AntaTest
 
 
-class VerifyVxlan(AntaTest):
+class VerifyVxlan1Interface(AntaTest):
     """
-    Verifies if Vxlan1 interface is configured, and is up/up
+    This test verifies if the Vxlan1 interface is configured and 'up/up'.
+
+    Expected Results:
+      * success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
+      * failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.
+      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
-    name = "VerifyVxlan"
-    description = "Verifies Vxlan1 status"
+    name = "VerifyVxlan1Interface"
+    description = "This test verifies if the Vxlan1 interface is configured and 'up/up'."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show interfaces description", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyVxlan validation"""
+        """
+        Run VerifyVxlan1Interface validation
+        """
 
         command_output = self.instance_commands[0].json_output
 
@@ -37,22 +44,29 @@ class VerifyVxlan(AntaTest):
 
 class VerifyVxlanConfigSanity(AntaTest):
     """
-    Verifies that there are no VXLAN config-sanity issues flagged
+    This test verifies that no issues are detected with the VXLAN configuration.
+
+    Expected Results:
+      * success: The test will pass if no issues are detected with the VXLAN configuration.
+      * failure: The test will fail if issues are detected with the VXLAN configuration.
+      * skipped: The test will be skipped if VXLAN is not configured on the device.
     """
 
     name = "VerifyVxlanConfigSanity"
-    description = "Verifies VXLAN config-sanity"
+    description = "This test verifies that no issues are detected with the VXLAN configuration."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyVxlanConfigSanity validation"""
+        """
+        Run VerifyVxlanConfigSanity validation
+        """
 
         command_output = self.instance_commands[0].json_output
 
         if "categories" not in command_output or len(command_output["categories"]) == 0:
-            self.result.is_skipped("VXLAN is not configured on this device")
+            self.result.is_skipped("VXLAN is not configured")
             return
 
         failed_categories = {
@@ -62,6 +76,6 @@ class VerifyVxlanConfigSanity(AntaTest):
         }
 
         if len(failed_categories) > 0:
-            self.result.is_failure(f"Vxlan config sanity check is not passing: {failed_categories}")
+            self.result.is_failure(f"VXLAN config sanity check is not passing: {failed_categories}")
         else:
             self.result.is_success()

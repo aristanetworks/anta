@@ -217,7 +217,7 @@ anta.tests.system:
   - VerifyNTP:
 
 anta.tests.vxlan:
- - VerifyVxlan:
+ - VerifyVxlan1Interface:
  - VerifyVxlanConfigSanity:
 
 anta.tests.routing:
