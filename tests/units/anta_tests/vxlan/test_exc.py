@@ -10,20 +10,20 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from anta.tests.vxlan import VerifyVxlan, VerifyVxlanConfigSanity
+from anta.tests.vxlan import VerifyVxlan1Interface, VerifyVxlanConfigSanity
 from tests.lib.utils import generate_test_ids_list
 
 from .data import INPUT_VXLAN_CONFIG_SANITY, INPUT_VXLAN_STATUS
 
 
 @pytest.mark.parametrize("test_data", INPUT_VXLAN_STATUS, ids=generate_test_ids_list(INPUT_VXLAN_STATUS))
-def test_VerifyVxlan(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyVxlan"""
+def test_VerifyVxlan1Interface(mocked_device: MagicMock, test_data: Any) -> None:
+    """Check VerifyVxlan1Interface"""
 
     logging.info(f"Mocked device is: {mocked_device.host}")
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
-    test = VerifyVxlan(mocked_device, eos_data=test_data["eos_data"])
+    test = VerifyVxlan1Interface(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
     logging.info(f"test result is: {test.result}")
 
