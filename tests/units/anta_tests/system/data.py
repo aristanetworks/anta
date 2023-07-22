@@ -15,14 +15,14 @@ INPUT_UPTIME: List[Dict[str, Any]] = [
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "side_effect": 666,
         "expected_result": "failure",
-        "expected_messages": ["Uptime is 665.15"],
+        "expected_messages": ["Device uptime is 665.15 seconds"],
     },
     {
         "name": "skipped-no-minimum",
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "side_effect": None,
         "expected_result": "skipped",
-        "expected_messages": ["VerifyUptime was not run as incorrect minimum uptime was given"],
+        "expected_messages": ["VerifyUptime was not run since the provided uptime value is invalid or negative"],
     },
 ]
 
@@ -61,7 +61,16 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["Reload cause is Reload after crash."],
+        "expected_messages": ["Reload cause is: 'Reload after crash.'"],
+    },
+    {
+        "name": "error",
+        "eos_data": [
+            {}
+        ],
+        "side_effect": [],
+        "expected_result": "error",
+        "expected_messages": ["No reload causes available"],
     },
 ]
 
@@ -108,7 +117,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
         "side_effect": [],
         "expected_result": "failure",
         "expected_messages": [
-            'device reported some agent logs:\n'
+            'Device has reported agent crashes:\n'
             ' * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n'
             ' * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n'
             ' * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023',
@@ -133,7 +142,7 @@ Ethernet1
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["Device has some log messages with a severity WARNING or higher"],
+        "expected_messages": ["Device has reported some log messages with WARNING or higher severity"],
     },
 ]
 
@@ -190,7 +199,7 @@ INPUT_CPU_UTILIZATION: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["device reported a high CPU utilization (75.2%)"],
+        "expected_messages": ["Device has reported a high CPU utilization: 75.2%"],
     },
 ]
 
@@ -225,7 +234,7 @@ INPUT_MEMORY_UTILIZATION: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["device report a high memory usage: 95.56%"],
+        "expected_messages": ["Device has reported a high memory usage: 95.56%"],
     },
 ]
 
@@ -257,8 +266,8 @@ none            294M   78M  217M  84% /.overlay
         "side_effect": [],
         "expected_result": "failure",
         "expected_messages": [
-            "mount point /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash is higher than 75% (reported 84)",
-            "mount point none            294M   78M  217M  84% /.overlay is higher than 75% (reported 84)",
+            "Mount point /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash is higher than 75%: reported 84%",
+            "Mount point none            294M   78M  217M  84% /.overlay is higher than 75%: reported 84%",
         ],
     },
 ]
@@ -285,6 +294,6 @@ poll interval unknown
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["not sync with NTP server (unsynchronised)"],
+        "expected_messages": ["NTP server is not synchronized: 'unsynchronised'"],
     },
 ]
