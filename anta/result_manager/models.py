@@ -17,7 +17,7 @@ class TestResult(BaseModel):
         test_category (List[str]): List of test categories the test belongs to.
         test_description (str): Test description.
         test_input_params (List[Dict[str, Any]]): List of input parameters provided to run the tests against.
-        template_params (List[Dict[str, Any]]): List of template parameters provided to generate templated AntaCommand.
+        template_params (List[Dict[str, Any]]): List of template parameters provided to generate a templated AntaCommand.
         results (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
         message (str, optional): Message to report after the test if any.
     """

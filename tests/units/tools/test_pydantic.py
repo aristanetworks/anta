@@ -14,12 +14,48 @@ if TYPE_CHECKING:
     from anta.result_manager.models import ListResult
 
 EXPECTED_ONE_ENTRY = [
-    {"name": "testdevice", "test": "VerifyTest0", "test_category": ["test"], "test_description": "Verifies Test 0", "result": "unset", "messages": []}
+    {
+        "name": "testdevice",
+        "test": "VerifyTest0",
+        "test_category": ["test"],
+        "test_description": "Verifies Test 0",
+        "test_input_params": [],
+        "template_params": [],
+        "result": "unset",
+        "messages": [],
+    }
 ]
 EXPECTED_THREE_ENTRIES = [
-    {"name": "testdevice", "test": "VerifyTest0", "test_category": ["test"], "test_description": "Verifies Test 0", "result": "unset", "messages": []},
-    {"name": "testdevice", "test": "VerifyTest1", "test_category": ["test"], "test_description": "Verifies Test 1", "result": "unset", "messages": []},
-    {"name": "testdevice", "test": "VerifyTest2", "test_category": ["test"], "test_description": "Verifies Test 2", "result": "unset", "messages": []},
+    {
+        "name": "testdevice",
+        "test": "VerifyTest0",
+        "test_category": ["test"],
+        "test_description": "Verifies Test 0",
+        "test_input_params": [],
+        "template_params": [],
+        "result": "unset",
+        "messages": [],
+    },
+    {
+        "name": "testdevice",
+        "test": "VerifyTest1",
+        "test_category": ["test"],
+        "test_description": "Verifies Test 1",
+        "test_input_params": [],
+        "template_params": [],
+        "result": "unset",
+        "messages": [],
+    },
+    {
+        "name": "testdevice",
+        "test": "VerifyTest2",
+        "test_category": ["test"],
+        "test_description": "Verifies Test 2",
+        "test_input_params": [],
+        "template_params": [],
+        "result": "unset",
+        "messages": [],
+    },
 ]
 
 
