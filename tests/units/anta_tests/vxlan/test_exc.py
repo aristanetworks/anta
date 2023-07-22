@@ -34,7 +34,7 @@ def test_VerifyVxlan1Interface(mocked_device: MagicMock, test_data: Any) -> None
 
 @pytest.mark.parametrize("test_data", INPUT_VXLAN_CONFIG_SANITY, ids=generate_test_ids_list(INPUT_VXLAN_CONFIG_SANITY))
 def test_VerifyVxlanConfigSanity(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyVxlan"""
+    """Check VerifyVxlanConfigSanity"""
 
     logging.info(f"Mocked device is: {mocked_device.host}")
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")

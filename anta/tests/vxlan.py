@@ -9,6 +9,9 @@ class VerifyVxlan1Interface(AntaTest):
     """
     This test verifies if the Vxlan1 interface is configured and 'up/up'.
 
+    !!! warning
+        The name of this test has been updated from 'VerifyVxlan' for better representation.
+
     Expected Results:
       * success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
       * failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.

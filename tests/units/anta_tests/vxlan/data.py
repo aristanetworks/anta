@@ -387,7 +387,7 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["Vxlan config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
+        "expected_messages": ["VXLAN config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
                               "'allCheckPass': False, 'detail': '', 'hasWarning': True, 'items': [{'name': 'Loopback IP Address', 'checkPass': True, "
                               "'hasWarning': False, 'detail': ''}, {'name': 'VLAN-VNI Map', 'checkPass': False, 'hasWarning': False, 'detail': "
                               "'No VLAN-VNI mapping in Vxlan1'}, {'name': 'Flood List', 'checkPass': False, 'hasWarning': True, 'detail': "
@@ -405,6 +405,6 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "side_effect": [],
         "expected_result": "skipped",
-        "expected_messages": ["VXLAN is not configured on this device"]
+        "expected_messages": ["VXLAN is not configured"]
     },
 ]
