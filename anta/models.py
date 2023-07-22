@@ -183,6 +183,7 @@ class AntaTest(ABC):
                 self.result.is_error("Command has template but no params were given")
                 return
             self.template_params = template_params
+            self.result.template_params = template_params
             for param in template_params:
                 try:
                     self.instance_commands.append(tpl.render(param))
@@ -255,6 +256,9 @@ class AntaTest(ABC):
             Returns:
                 TestResult: self.result, populated with the correct exit status
             """
+            if kwargs:
+                self.result.test_input_params.append(kwargs)
+
             if self.result.result != "unset":
                 return self.result
 

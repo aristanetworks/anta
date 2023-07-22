@@ -1,6 +1,6 @@
 """Models related to anta.result_manager module."""
 
-from typing import Iterator, List
+from typing import Any, Dict, Iterator, List
 
 from pydantic import BaseModel, RootModel, field_validator
 
@@ -16,6 +16,8 @@ class TestResult(BaseModel):
         test (str): Test name runs on the device.
         test_category (List[str]): List of test categories the test belongs to.
         test_description (str): Test description.
+        test_input_params (List[Dict[str, Any]]): List of input parameters provided to run the tests against.
+        template_params (List[Dict[str, Any]]): List of template parameters provided to generate templated AntaCommand.
         results (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
         message (str, optional): Message to report after the test if any.
     """
@@ -24,6 +26,8 @@ class TestResult(BaseModel):
     test: str
     test_category: List[str]
     test_description: str
+    test_input_params: List[Dict[str, Any]] = []
+    template_params: List[Dict[str, Any]] = []
     result: str = "unset"
     messages: List[str] = []
 
