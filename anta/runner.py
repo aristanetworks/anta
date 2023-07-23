@@ -15,11 +15,9 @@ from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
-# Key from YAML file tranfered to AntaTemplate of the test.
+# Keys from the ANTA test catalog file tranferred to kwargs for AntaTest initialization.
 TEST_CATALOG_PARAMS = [
-    "result_description",
-    "result_categories",
-    "result_custom_field",
+    "result_overwrite",
     "template_params",
 ]
 
@@ -37,8 +35,10 @@ async def main(
 
     Args:
         manager (ResultManager): ResultManager object to populate with the test results.
-        inventory (AntaInventory): Device inventory object.
-        tests (List[...]): Test catalog. Output of anta.loader.parse_catalog().
+        inventory (AntaInventory): AntaInventory object that includes the device(s).
+        tests (List[...]): ANTA test catalog. Output of anta.loader.parse_catalog().
+        tags (Optional[List[str]]): List of tags to filter devices from the inventory. Defaults to None.
+        established_only (bool): Include only established device(s). Defaults to True.
 
     Example:
         anta.tests.routing.bgp:
@@ -47,8 +47,19 @@ async def main(
             template_params:
                 - vrf: default
 
+        anta.tests.connectivity:
+        - VerifyReachability:
+            result_overwrite:
+              categories:
+                - "Overwritten category 1"
+              description: "Test with overwritten description"
+              custom_field: "Test run by John Doe"
+            template_params:
+              - src: Loopback0
+                dst: 10.1.0.1
+
     Returns:
-        any: List of results.
+        any: ResultManager object gets updated with the test results.
     """
     # Accept 6 arguments here
     # pylint: disable=R0913
@@ -61,7 +72,14 @@ async def main(
     coros = []
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         kwargs = {k: v for k, v in test[1].items() if k in TEST_CATALOG_PARAMS}
+
+        if "result_overwrite" in kwargs:
+            result_overwrite = kwargs.pop("result_overwrite")
+            result_overwrite = {"result_" + k: v for k, v in result_overwrite.items()}
+            kwargs.update(result_overwrite)
+
         test_params = {k: v for k, v in test[1].items() if k not in TEST_CATALOG_PARAMS}
+
         try:
             # Instantiate AntaTest object
             test_instance = test[0](device=device, **kwargs)
