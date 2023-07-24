@@ -42,13 +42,10 @@ Usage: anta nrfu text [OPTIONS]
   ANTA command to check network states with text result
 
 Options:
-  -t, --tags TEXT                 List of tags using comma as separator:
-                                  tag1,tag2,tag3
-  -s, --search TEXT               Regular expression to search in both name
-                                  and test
-  --skip-error / --no-skip-error  Hide tests in errors due to connectivity
-                                  issue  [default: no-skip-error]
-  --help                          Show this message and exit.
+  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
+  -s, --search TEXT  Regular expression to search in both name and test
+  --skip-error       Hide tests in errors due to connectivity issue
+  --help             Show this message and exit.
 ```
 
 The `--tags` option allows to target specific devices in your inventory, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
