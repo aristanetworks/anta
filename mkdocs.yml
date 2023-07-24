@@ -185,7 +185,7 @@ nav:
     - STP: api/tests.stp.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
-    - VxLAN: api/tests.vxlan.md
+    - VXLAN: api/tests.vxlan.md
   - API Documentation:
     - Inventory: 
       - Inventory module: api/inventory.md

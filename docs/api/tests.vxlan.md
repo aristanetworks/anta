@@ -1,4 +1,4 @@
-# ANTA catalog for VxLAN tests
+# ANTA catalog for VXLAN tests
 
 ::: anta.tests.vxlan
     options:
