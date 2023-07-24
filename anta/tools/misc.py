@@ -31,7 +31,10 @@ def anta_log_exception(exception: Exception, message: Optional[str] = None, call
     if __DEBUG__:
         calling_logger.exception(message)
     else:
-        calling_logger.error(f"{message} {exc_to_str(exception)}")
+        log_message = exc_to_str(exception)
+        if message is not None:
+            log_message = f"{message} {log_message}"
+        calling_logger.error(log_message)
 
 
 def exc_to_str(exception: Exception) -> str:

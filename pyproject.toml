@@ -203,6 +203,9 @@ exclude_lines = [
 
     # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
+
+    # Don't complain about TYPE_CHECKING blocks
+    "if TYPE_CHECKING:",
 ]
 
 ignore_errors = true

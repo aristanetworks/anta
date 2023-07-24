@@ -1,5 +1,5 @@
 """
-Tests for anta.cli.__init__.py
+Tests for anta.cli.__init__
 """
 
 from __future__ import annotations
