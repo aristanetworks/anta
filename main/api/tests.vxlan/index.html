@@ -23,7 +23,7 @@
     
     
       
-        <title>VxLAN - Arista Network Test Automation - ANTA</title>
+        <title>VXLAN - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -139,7 +139,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VxLAN
+              VXLAN
             
           </span>
         </div>
@@ -920,12 +920,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          VxLAN
+          VXLAN
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        VxLAN
+        VXLAN
       </a>
       
         
@@ -943,22 +943,22 @@
       
         <li class="md-nav__item">
   <a href="#anta-catalog-for-vxlan-tests" class="md-nav__link">
-    ANTA catalog for VxLAN tests
+    ANTA catalog for VXLAN tests
   </a>
   
-    <nav class="md-nav" aria-label="ANTA catalog for VxLAN tests">
+    <nav class="md-nav" aria-label="ANTA catalog for VXLAN tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.vxlan.VerifyVxlan" class="md-nav__link">
-    VerifyVxlan
+  <a href="#anta.tests.vxlan.VerifyVxlan1Interface" class="md-nav__link">
+    VerifyVxlan1Interface
   </a>
   
-    <nav class="md-nav" aria-label="VerifyVxlan">
+    <nav class="md-nav" aria-label="VerifyVxlan1Interface">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.vxlan.VerifyVxlan.test" class="md-nav__link">
+  <a href="#anta.tests.vxlan.VerifyVxlan1Interface.test" class="md-nav__link">
     test()
   </a>
   
@@ -1405,22 +1405,22 @@
       
         <li class="md-nav__item">
   <a href="#anta-catalog-for-vxlan-tests" class="md-nav__link">
-    ANTA catalog for VxLAN tests
+    ANTA catalog for VXLAN tests
   </a>
   
-    <nav class="md-nav" aria-label="ANTA catalog for VxLAN tests">
+    <nav class="md-nav" aria-label="ANTA catalog for VXLAN tests">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.vxlan.VerifyVxlan" class="md-nav__link">
-    VerifyVxlan
+  <a href="#anta.tests.vxlan.VerifyVxlan1Interface" class="md-nav__link">
+    VerifyVxlan1Interface
   </a>
   
-    <nav class="md-nav" aria-label="VerifyVxlan">
+    <nav class="md-nav" aria-label="VerifyVxlan1Interface">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.vxlan.VerifyVxlan.test" class="md-nav__link">
+  <a href="#anta.tests.vxlan.VerifyVxlan1Interface.test" class="md-nav__link">
     test()
   </a>
   
@@ -1474,9 +1474,9 @@
   
 
 
-  <h1>VxLAN</h1>
+  <h1>VXLAN</h1>
 
-<h3 id="anta-catalog-for-vxlan-tests">ANTA catalog for VxLAN tests<a class="headerlink" href="#anta-catalog-for-vxlan-tests" title="Permanent link">&para;</a></h3>
+<h3 id="anta-catalog-for-vxlan-tests">ANTA catalog for VXLAN tests<a class="headerlink" href="#anta-catalog-for-vxlan-tests" title="Permanent link">&para;</a></h3>
 
 
 <div class="doc doc-object doc-module">
@@ -1502,11 +1502,11 @@
 
 
 
-<h2 id="anta.tests.vxlan.VerifyVxlan" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlan</span>
+<h2 id="anta.tests.vxlan.VerifyVxlan1Interface" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">VerifyVxlan1Interface</span>
 
 
-<a href="#anta.tests.vxlan.VerifyVxlan" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.tests.vxlan.VerifyVxlan1Interface" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-contents ">
@@ -1514,8 +1514,20 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies if Vxlan1 interface is configured, and is up/up</p>
+      <p>This test verifies if the Vxlan1 interface is configured and &lsquo;up/up&rsquo;.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The name of this test has been updated from &lsquo;VerifyVxlan&rsquo; for better representation.</p>
+</div>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status &lsquo;up&rsquo;.</li>
+<li>failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not &lsquo;up&rsquo;.</li>
+<li>skipped: The test will be skipped if the Vxlan1 interface is not configured.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
@@ -1545,19 +1557,39 @@
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVxlan</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVxlan1Interface</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies if Vxlan1 interface is configured, and is up/up</span>
+<span class="sd">    This test verifies if the Vxlan1 interface is configured and &#39;up/up&#39;.</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        The name of this test has been updated from &#39;VerifyVxlan&#39; for better representation.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">      * success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status &#39;up&#39;.</span>
+<span class="sd">      * failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not &#39;up&#39;.</span>
+<span class="sd">      * skipped: The test will be skipped if the Vxlan1 interface is not configured.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyVxlan&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies Vxlan1 status&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyVxlan1Interface&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies if the Vxlan1 interface is configured and &#39;up/up&#39;.&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vxlan&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces description&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyVxlan validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyVxlan1Interface validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
@@ -1593,29 +1625,21 @@
 
 
 
-<h3 id="anta.tests.vxlan.VerifyVxlan.test" class="doc doc-heading">
+<h3 id="anta.tests.vxlan.VerifyVxlan1Interface.test" class="doc doc-heading">
           <span class="doc doc-object-name doc-function-name">test</span>
 
 
-<a href="#anta.tests.vxlan.VerifyVxlan.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.tests.vxlan.VerifyVxlan1Interface.test" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>Run VerifyVxlan validation</p>
+      <p>Run VerifyVxlan1Interface validation</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -1624,9 +1648,21 @@
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyVxlan validation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyVxlan1Interface validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
@@ -1672,21 +1708,19 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies that there are no VXLAN config-sanity issues flagged</p>
+      <p>This test verifies that no issues are detected with the VXLAN configuration.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>success: The test will pass if no issues are detected with the VXLAN configuration.</li>
+<li>failure: The test will fail if issues are detected with the VXLAN configuration.</li>
+<li>skipped: The test will be skipped if VXLAN is not configured on the device.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
@@ -1705,24 +1739,48 @@
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVxlanConfigSanity</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVxlanConfigSanity</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies that there are no VXLAN config-sanity issues flagged</span>
+<span class="sd">    This test verifies that no issues are detected with the VXLAN configuration.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">      * success: The test will pass if no issues are detected with the VXLAN configuration.</span>
+<span class="sd">      * failure: The test will fail if issues are detected with the VXLAN configuration.</span>
+<span class="sd">      * skipped: The test will be skipped if VXLAN is not configured on the device.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyVxlanConfigSanity&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies VXLAN config-sanity&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test verifies that no issues are detected with the VXLAN configuration.&quot;</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vxlan&quot;</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vxlan config-sanity&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyVxlanConfigSanity validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run VerifyVxlanConfigSanity validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">if</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;VXLAN is not configured on this device&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;VXLAN is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">failed_categories</span> <span class="o">=</span> <span class="p">{</span>
@@ -1732,7 +1790,7 @@
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_categories</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vxlan config sanity check is not passing: </span><span class="si">{</span><span class="n">failed_categories</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VXLAN config sanity check is not passing: </span><span class="si">{</span><span class="n">failed_categories</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -1769,33 +1827,37 @@
 
           <details class="quote">
             <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run VerifyVxlanConfigSanity validation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run VerifyVxlanConfigSanity validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
     <span class="k">if</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;VXLAN is not configured on this device&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;VXLAN is not configured&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="n">failed_categories</span> <span class="o">=</span> <span class="p">{</span>
@@ -1805,7 +1867,7 @@
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_categories</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vxlan config sanity check is not passing: </span><span class="si">{</span><span class="n">failed_categories</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VXLAN config sanity check is not passing: </span><span class="si">{</span><span class="n">failed_categories</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -1836,7 +1898,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 24, 2023</span>
       
     
   </small>
