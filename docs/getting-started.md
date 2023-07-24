@@ -122,38 +122,7 @@ This entrypoint has multiple options to manage test coverage and reporting.
 ```bash
 # Generic ANTA options
 $ anta
-Usage: anta [OPTIONS] COMMAND [ARGS]...
-
-  Arista Network Test Automation (ANTA) CLI
-
-Options:
-  --version                       Show the version and exit.
-  --username TEXT                 Username to connect to EOS  [env var:
-                                  ANTA_USERNAME; required]
-  --password TEXT                 Password to connect to EOS  [env var:
-                                  ANTA_PASSWORD; required]
-  --timeout INTEGER               Global connection timeout  [env var:
-                                  ANTA_TIMEOUT; default: 5]
-  --insecure                      Disable SSH Host Key validation  [env var:
-                                  ANTA_INSECURE]
-  --enable-password TEXT          Enable password if required to connect  [env
-                                  var: ANTA_ENABLE_PASSWORD]
-  -i, --inventory FILE            Path to the inventory YAML file  [env var:
-                                  ANTA_INVENTORY; required]
-  --log-level, --log [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  ANTA logging level  [env var:
-                                  ANTA_LOG_LEVEL; default: INFO]
-  --ignore-status                 Always exit with success  [env var:
-                                  ANTA_IGNORE_STATUS]
-  --ignore-error                  Only report failures and not errors  [env
-                                  var: ANTA_IGNORE_ERROR]
-  --help                          Show this message and exit.
-
-Commands:
-  debug  Debug commands for building ANTA
-  exec   Execute commands to inventory devices
-  get    Get data from/to ANTA
-  nrfu   Run NRFU against inventory devices
+--8<-- "anta_help.txt"
 ```
 
 ```bash
@@ -185,6 +154,7 @@ To run the NRFU, you need to select an output format amongst ["json", "table", "
 anta \
     --username tom \
     --password arista123 \
+    --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     nrfu --catalog .personal/tests-bases.yml table --tags leaf
@@ -224,6 +194,7 @@ anta \
 $ anta \
     --username tom \
     --password arista123 \
+    --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     nrfu --catalog .personal/tests-bases.yml text --tags leaf
@@ -252,6 +223,7 @@ leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
 $ anta \
     --username tom \
     --password arista123 \
+    --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     nrfu --catalog .personal/tests-bases.yml json --tags leaf
