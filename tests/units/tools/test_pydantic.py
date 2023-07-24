@@ -4,9 +4,7 @@ Tests for anta.tools.pydantic
 
 from __future__ import annotations
 
-import logging
-from typing import TYPE_CHECKING, Callable
-from unittest.mock import patch
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
@@ -36,7 +34,7 @@ EXPECTED_THREE_ENTRIES = [
 def test_pydantic_to_dict(
     list_result_factory: Callable[[int], ListResult],
     number_of_entries: int,
-    expected: dict,
+    expected: dict[str, Any],
 ) -> None:
     """
     Test pydantic_to_dict

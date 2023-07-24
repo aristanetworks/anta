@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from pytest import LogCaptureFixture
 
 
-def my_raising_function(exception) -> None:
+def my_raising_function(exception: Exception) -> None:
     """
     dummy function to raise Exception
     """

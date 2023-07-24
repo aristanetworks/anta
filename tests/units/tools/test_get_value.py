@@ -5,11 +5,11 @@ Tests for anta.tools.get_value
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
+from typing import Any, Optional
 
 import pytest
 
 from anta.tools.get_value import get_value
-
 
 INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
 
@@ -27,11 +27,21 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
         pytest.param(INPUT_DICT, "nested_test||nested_value", None, None, None, "||", 43, does_not_raise(), id="custom separator"),
     ],
 )
-def test_get_value(input_dict, key, default, required, org_key, separator, expected_result, expected_raise) -> None:
+def test_get_value(
+    input_dict: dict[Any, Any],
+    key: str,
+    default: Optional[str],
+    required: bool,
+    org_key: Optional[str],
+    separator: Optional[str],
+    expected_result: str,
+    expected_raise: Any,
+) -> None:
     """
     Test get_value
     """
+    # pylint: disable=too-many-arguments
     kwargs = {"default": default, "required": required, "org_key": org_key, "separator": separator}
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     with expected_raise:
-        assert get_value(input_dict, key, **kwargs) == expected_result
+        assert get_value(input_dict, key, **kwargs) == expected_result  # type: ignore
