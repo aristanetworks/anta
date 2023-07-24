@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
-    "--group-by", default=None, type=click.Choice(["none", "host", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
+    "--group-by", default=None, type=click.Choice(["device", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
 )
 def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], test: Optional[str], group_by: str) -> None:
     """ANTA command to check network states with table result"""

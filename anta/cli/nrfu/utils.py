@@ -43,7 +43,7 @@ def print_table(results: ResultManager, device: Optional[str] = None, test: Opti
         console.print("\n")
     if group_by is None:
         console.print(reporter.report_all(result_manager=results))
-    elif group_by == "host":
+    elif group_by == "device":
         console.print(reporter.report_summary_hosts(result_manager=results, host=None))
     elif group_by == "test":
         console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
