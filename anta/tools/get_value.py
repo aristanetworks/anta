@@ -39,7 +39,6 @@ def get_value(
 
     if org_key is None:
         org_key = key
-    print(separator)
     keys = str(key).split(separator)
     value = dictionary.get(keys[0])
     if value is None:
