@@ -170,6 +170,11 @@ class IgnoreRequiredWithHelp(click.Group):
         Ignore MissingParameter exception when parsing arguments if `--help`
         is present for a subcommand
         """
+        # Adding a flag for potential callbacks
+        ctx.ensure_object(dict)
+        if "--help" in args:
+            ctx.obj["_anta_help"] = True
+
         try:
             return super().parse_args(ctx, args)
         except click.MissingParameter:
@@ -179,7 +184,5 @@ class IgnoreRequiredWithHelp(click.Group):
             # remove the required params so that help can display
             for param in self.params:
                 param.required = False
-            # Adding a flag for potential callbacks
-            ctx.ensure_object(dict)
-            ctx.obj["_anta_help"] = True
+
             return super().parse_args(ctx, args)
