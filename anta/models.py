@@ -16,7 +16,7 @@ from rich.progress import Progress, TaskID
 from anta.result_manager.models import TestResult
 from anta.tools.misc import anta_log_exception, exc_to_str
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no_cover
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
