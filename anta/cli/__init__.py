@@ -124,26 +124,27 @@ def debug() -> None:
     """Debug commands for building ANTA"""
 
 
+# Load group commands
+_exec.add_command(exec_commands.clear_counters)
+_exec.add_command(exec_commands.snapshot)
+_exec.add_command(exec_commands.collect_tech_support)
+
+get.add_command(get_commands.from_cvp)
+get.add_command(get_commands.inventory)
+get.add_command(get_commands.tags)
+
+debug.add_command(debug_commands.run_cmd)
+debug.add_command(debug_commands.run_template)
+
+nrfu.add_command(check_commands.table)
+nrfu.add_command(check_commands.json)
+nrfu.add_command(check_commands.text)
+nrfu.add_command(check_commands.tpl_report)
+
+
 # ANTA CLI Execution
 def cli() -> None:
-    """Load ANTA CLI"""
-    # Load group commands
-    _exec.add_command(exec_commands.clear_counters)
-    _exec.add_command(exec_commands.snapshot)
-    _exec.add_command(exec_commands.collect_tech_support)
-
-    get.add_command(get_commands.from_cvp)
-    get.add_command(get_commands.inventory)
-    get.add_command(get_commands.tags)
-
-    debug.add_command(debug_commands.run_cmd)
-    debug.add_command(debug_commands.run_template)
-
-    nrfu.add_command(check_commands.table)
-    nrfu.add_command(check_commands.json)
-    nrfu.add_command(check_commands.text)
-    nrfu.add_command(check_commands.tpl_report)
-    # Load CLI
+    """Entrypoint for pyproject.toml"""
     anta(obj={}, auto_envvar_prefix="ANTA")
 
 

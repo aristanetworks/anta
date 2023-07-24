@@ -264,7 +264,7 @@ description = Generate coverage report
 deps = coverage[toml]
 commands =
   coverage --version
-  coverage report --rcfile=pyproject.toml
+  coverage html --rcfile=pyproject.toml
   coverage xml --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80

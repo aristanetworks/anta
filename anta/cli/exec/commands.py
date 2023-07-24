@@ -57,6 +57,7 @@ def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) ->
 )
 def snapshot(ctx: click.Context, tags: Optional[List[str]], commands_list: Path, output: Path) -> None:
     """Collect commands output from devices in inventory"""
+    print(commands_list)
     try:
         with open(commands_list, "r", encoding="UTF-8") as file:
             file_content = file.read()
