@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option("--tags", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
@@ -33,12 +33,10 @@ logger = logging.getLogger(__name__)
 )
 def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], test: Optional[str], group_by: str) -> None:
     """ANTA command to check network states with table result"""
-    console.print("\n")
     print_settings(ctx)
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    console.print("\n")
 
     print_table(results=results, device=device, group_by=group_by, test=test)
 

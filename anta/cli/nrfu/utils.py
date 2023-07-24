@@ -37,16 +37,16 @@ def print_settings(context: click.Context, report_template: Optional[pathlib.Pat
 def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None) -> None:
     """Print result in a table"""
     reporter = ReportTable()
-    if device or test:
-        message = "The test and device options are not supported yet."
-        console.print(Panel.fit(message, style="red", title="[red]Warning"))
-        console.print("\n")
-    if group_by is None:
-        console.print(reporter.report_all(result_manager=results))
+    if device:
+        console.print(reporter.report_all(result_manager=results, host=device))
+    elif test:
+        console.print(reporter.report_all(result_manager=results, testcase=test))
     elif group_by == "device":
         console.print(reporter.report_summary_hosts(result_manager=results, host=None))
     elif group_by == "test":
         console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
+    else:
+        console.print(reporter.report_all(result_manager=results))
 
 
 def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
