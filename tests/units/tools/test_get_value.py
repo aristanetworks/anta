@@ -32,6 +32,6 @@ def test_get_value(input_dict, key, default, required, org_key, separator, expec
     Test get_value
     """
     kwargs = {"default": default, "required": required, "org_key": org_key, "separator": separator}
-    kwargs = {k:v for k,v in kwargs.items() if v is not None}
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
     with expected_raise:
         assert get_value(input_dict, key, **kwargs) == expected_result
