@@ -75,7 +75,7 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
-@click.option("--skip-error/--no-skip-error", help="Hide tests in errors due to connectivity issue", default=False, show_default=True, required=False)
+@click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
 def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], skip_error: bool) -> None:
     """ANTA command to check network states with text result"""
     print_settings(ctx)
