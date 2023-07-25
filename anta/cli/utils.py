@@ -82,6 +82,10 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
     """
     Click option callback to parse an ANTA tests catalog YAML file
     """
+    if ctx.obj.get("_anta_help"):
+        # Currently looking for help for a subcommand so no
+        # need to parse the Catalog - return an empty list
+        return []
     try:
         with open(value, "r", encoding="UTF-8") as file:
             data = safe_load(file)

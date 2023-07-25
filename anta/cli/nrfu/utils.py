@@ -34,14 +34,18 @@ def print_settings(context: click.Context, report_template: Optional[pathlib.Pat
     console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
 
 
-def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None) -> None:
+def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None) -> None:
     """Print result in a table"""
     reporter = ReportTable()
     if device:
-        console.print(reporter.report_summary_hosts(result_manager=results, host=device))
-    if test:
-        console.print(reporter.report_summary_tests(result_manager=results, testcase=test))
-    if device is None and test is None:
+        console.print(reporter.report_all(result_manager=results, host=device))
+    elif test:
+        console.print(reporter.report_all(result_manager=results, testcase=test))
+    elif group_by == "device":
+        console.print(reporter.report_summary_hosts(result_manager=results, host=None))
+    elif group_by == "test":
+        console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
+    else:
         console.print(reporter.report_all(result_manager=results))
 
 
@@ -110,6 +114,7 @@ def anta_progress_bar() -> Progress:
     """
     Return a customized Progress for progress bar
     """
+    console.print("\n")
     return Progress(
         SpinnerColumn("anta"),
         TextColumn("•"),

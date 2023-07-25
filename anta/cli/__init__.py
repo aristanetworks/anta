@@ -93,7 +93,7 @@ def anta(ctx: click.Context, inventory: pathlib.Path, ignore_status: bool, ignor
     ctx.obj["ignore_error"] = ignore_error
 
 
-@anta.group()
+@anta.group(cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.option(
     "--catalog",

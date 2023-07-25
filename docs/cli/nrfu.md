@@ -75,17 +75,21 @@ Usage: anta nrfu table [OPTIONS]
   ANTA command to check network states with table result
 
 Options:
-  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
-  -d, --device TEXT  Show a summary for this device
-  -t, --test TEXT    Show a summary for this test
-  --help             Show this message and exit.
+  --tags TEXT               List of tags using comma as separator:
+                            tag1,tag2,tag3
+  -d, --device TEXT         Show a summary for this device
+  -t, --test TEXT           Show a summary for this test
+  --group-by [device|test]  Group result by test or host. default none
+  --help                    Show this message and exit.
 ```
 
 The `--tags` option can be used to target specific devices in your inventory.
 
 The `--device` and `--test` options show a summarized view of the test results for a specific host or test case, respectively.
 
-### Example
+The `--group-by` option show a summarized view of the test results per host or per test.
+
+### Examples
 
 ```bash
 anta nrfu table --tags LEAF
@@ -95,9 +99,26 @@ anta nrfu table --tags LEAF
 For larger setups, you can also group the results by host or test to get a summarized view:
 
 ```bash
-anta nrfu table --tags LEAF --device DC1-LEAF1A
+anta nrfu table --group-by device
 ```
-[![anta nrfu table per host results](../imgs/anta-nrfu-table-per-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-per-host-output.png)
+[![anta nrfu table group_by_host_output](../imgs/anta-nrfu-table-group-by-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-group-by-host-output.png)
+
+```bash
+anta nrfu table --group-by test
+```
+[![anta nrfu table group_by_test_output](../imgs/anta-nrfu-table-group-by-test-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-group-by-test-output.png)
+
+To get more specific information, it is possible to filter on a single device or a single test:
+
+```bash
+anta nrfu table --device spine1
+```
+[![anta nrfu table filter_host_output](../imgs/anta-nrfu-table-filter-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-host-output.png)
+
+```bash
+anta nrfu table --test VerifyZeroTouch
+```
+[![anta nrfu table filter_test_output](../imgs/anta-nrfu-table-filter-test-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-test-output.png)
 
 ## Performing NRFU with JSON rendering
 
