@@ -158,9 +158,9 @@ Options:
   -o, --output PATH              Path for tests catalog  [default: ./tech-
                                  support]
   --latest INTEGER               Number of scheduled show-tech to retrieve
-  --configure / --not-configure  Ensure device has 'aaa authorization exec
-                                 default local' configured (required for SCP)
-                                 [default: not-configure]
+  --configure        Ensure devices have 'aaa authorization exec default
+                     local' configured (required for SCP on EOS). THIS WILL
+                     CHANGE THE CONFIGURATION OF YOUR NETWORK.
   -t, --tags TEXT                List of tags using comma as separator:
                                  tag1,tag2,tag3
   --help                         Show this message and exit.

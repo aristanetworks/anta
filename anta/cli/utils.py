@@ -168,5 +168,6 @@ class IgnoreRequiredWithHelp(click.Group):
             for param in self.params:
                 param.required = False
             # Adding a flag for potential callbacks
+            ctx.ensure_object(dict)
             ctx.obj["_anta_help"] = True
             return super().parse_args(ctx, args)

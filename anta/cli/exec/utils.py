@@ -126,9 +126,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                         "configure terminal",
                         "aaa authorization exec default local",
                     ]
-                    command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                    logger.debug(f"Configuring 'aaa authorization exec default local' on device {device.name}")
-                    await device.session.cli(commands=commands)  # type: ignore[attr-defined]
+                    logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
+                    await device._session.cli(commands=commands)  # type: ignore[attr-defined] # pylint: disable=protected-access
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
                     logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")

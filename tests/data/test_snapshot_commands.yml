@@ -1,0 +1,8 @@
+---
+# list of EOS commands to collect in JSON format
+json_format:
+  - show version
+
+# list of EOS commands to collect in text format
+text_format:
+  - show version

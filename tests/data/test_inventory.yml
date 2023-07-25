@@ -1,0 +1,5 @@
+---
+anta_inventory:
+  hosts:
+    - name: dummy
+      host: dummy.anta.ninja
