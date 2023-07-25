@@ -479,8 +479,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
-    Example
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
   
 </li>
@@ -506,7 +506,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_2" class="md-nav__link">
+  <a href="#example_1" class="md-nav__link">
     Example
   </a>
   
@@ -533,7 +533,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_3" class="md-nav__link">
+  <a href="#example_2" class="md-nav__link">
     Example
   </a>
   
@@ -1536,8 +1536,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
-    Example
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
   
 </li>
@@ -1563,7 +1563,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_2" class="md-nav__link">
+  <a href="#example_1" class="md-nav__link">
     Example
   </a>
   
@@ -1590,7 +1590,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_3" class="md-nav__link">
+  <a href="#example_2" class="md-nav__link">
     Example
   </a>
   
@@ -1684,21 +1684,34 @@ Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> <
 <span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
 
 Options:
-<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">    </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:<span class="w"> </span>tag1,tag2,tag3
-<span class="w">  </span>-d,<span class="w"> </span>--device<span class="w"> </span>TEXT<span class="w">  </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>device
-<span class="w">  </span>-t,<span class="w"> </span>--test<span class="w"> </span>TEXT<span class="w">    </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span><span class="nb">test</span>
-<span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--tags<span class="w"> </span>TEXT<span class="w">               </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
+<span class="w">                            </span>tag1,tag2,tag3
+<span class="w">  </span>-d,<span class="w"> </span>--device<span class="w"> </span>TEXT<span class="w">         </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>device
+<span class="w">  </span>-t,<span class="w"> </span>--test<span class="w"> </span>TEXT<span class="w">           </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span><span class="nb">test</span>
+<span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>host.<span class="w"> </span>default<span class="w"> </span>none
+<span class="w">  </span>--help<span class="w">                    </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
 <p>The <code>--device</code> and <code>--test</code> options show a summarized view of the test results for a specific host or test case, respectively.</p>
-<h5 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h5>
+<p>The <code>--group-by</code> option show a summarized view of the test results per host or per test.</p>
+<h5 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--tags<span class="w"> </span>LEAF
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-table-output.png"><img alt="anta nrfu table results" loading="lazy" src="../../imgs/anta-nrfu-table-output.png" width="1600" /></a></p>
 <p>For larger setups, you can also group the results by host or test to get a summarized view:</p>
-<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>--device<span class="w"> </span>DC1-LEAF1A
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
 </code></pre></div>
-<a href="../../imgs/anta-nrfu-table-per-host-output.png"><img alt="anta nrfu table per host results" loading="lazy" src="../../imgs/anta-nrfu-table-per-host-output.png" width="1600" /></a></p>
+<a href="../../imgs/anta-nrfu-table-group-by-host-output.png"><img alt="anta nrfu table group_by_host_output" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-host-output.png" width="1600" /></a></p>
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<a href="../../imgs/anta-nrfu-table-group-by-test-output.png"><img alt="anta nrfu table group_by_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-test-output.png" width="1600" /></a></p>
+<p>To get more specific information, it is possible to filter on a single device or a single test:</p>
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--device<span class="w"> </span>spine1
+</code></pre></div>
+<a href="../../imgs/anta-nrfu-table-filter-host-output.png"><img alt="anta nrfu table filter_host_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-host-output.png" width="1600" /></a></p>
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--test<span class="w"> </span>VerifyZeroTouch
+</code></pre></div>
+<a href="../../imgs/anta-nrfu-table-filter-test-output.png"><img alt="anta nrfu table filter_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-test-output.png" width="1600" /></a></p>
 <h4 id="performing-nrfu-with-json-rendering">Performing NRFU with JSON rendering<a class="headerlink" href="#performing-nrfu-with-json-rendering" title="Permanent link">&para;</a></h4>
 <p>The JSON rendering command in NRFU testing is useful in generating a JSON output that can subsequently be passed on to another tool for reporting purposes.</p>
 <h5 id="command-overview_2">Command overview<a class="headerlink" href="#command-overview_2" title="Permanent link">&para;</a></h5>
@@ -1715,7 +1728,7 @@ Options:
 </code></pre></div>
 <p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
 <p>The <code>--output</code> option allows you to save the JSON report as a file.</p>
-<h5 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h5>
+<h5 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span>--tags<span class="w"> </span>LEAF
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-json-output.png"><img alt="anta nrfu json results" loading="lazy" src="../../imgs/anta-nrfu-json-output.png" width="1600" /></a></p>
@@ -1738,7 +1751,7 @@ Options:
 The <code>--template</code> option is used to specify the Jinja2 template file for generating the custom report.</p>
 <p>The <code>--output</code> option allows you to choose the path where the final report will be saved.</p>
 <p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
-<h5 id="example_3">Example<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h5>
+<h5 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>--template<span class="w"> </span>./custom_template.j2
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-tpl-report-output.png"><img alt="anta nrfu json results" loading="lazy" src="../../imgs/anta-nrfu-tpl-report-output.png" width="1600" /></a></p>
@@ -1764,7 +1777,7 @@ The <code>--template</code> option is used to specify the Jinja2 template file f
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
       
     
   </small>
