@@ -1661,13 +1661,10 @@ Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> <
 <span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
 
 Options:
-<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">                 </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
-<span class="w">                                  </span>tag1,tag2,tag3
-<span class="w">  </span>-s,<span class="w"> </span>--search<span class="w"> </span>TEXT<span class="w">               </span>Regular<span class="w"> </span>expression<span class="w"> </span>to<span class="w"> </span>search<span class="w"> </span><span class="k">in</span><span class="w"> </span>both<span class="w"> </span>name
-<span class="w">                                  </span>and<span class="w"> </span><span class="nb">test</span>
-<span class="w">  </span>--skip-error<span class="w"> </span>/<span class="w"> </span>--no-skip-error<span class="w">  </span>Hide<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>errors<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>connectivity
-<span class="w">                                  </span>issue<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span>no-skip-error<span class="o">]</span>
-<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">    </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:<span class="w"> </span>tag1,tag2,tag3
+<span class="w">  </span>-s,<span class="w"> </span>--search<span class="w"> </span>TEXT<span class="w">  </span>Regular<span class="w"> </span>expression<span class="w"> </span>to<span class="w"> </span>search<span class="w"> </span><span class="k">in</span><span class="w"> </span>both<span class="w"> </span>name<span class="w"> </span>and<span class="w"> </span><span class="nb">test</span>
+<span class="w">  </span>--skip-error<span class="w">       </span>Hide<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>errors<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>connectivity<span class="w"> </span>issue
+<span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <p>The <code>--tags</code> option allows to target specific devices in your inventory, while the <code>--search</code> option permits filtering based on a regular expression pattern in both the hostname and the test name.</p>
 <p>The <code>--skip-error</code> option can be used to exclude tests that failed due to connectivity issues or unsupported commands.</p>
