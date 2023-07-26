@@ -21,7 +21,7 @@ from anta.cli.console import console
 from anta.cli.utils import parse_tags
 from anta.models import DEFAULT_TAG
 
-from .utils import create_inventory, get_cv_token
+from .utils import create_inventory_from_cvp, get_cv_token, create_inventory_from_ansible
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,30 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
         # Get devices under a container
         logger.info(f"Getting inventory for container {cvp_container} from {cvp_ip}")
         cvp_inventory = clnt.api.get_devices_in_container(cvp_container)
-    create_inventory(cvp_inventory, out_dir, cvp_container)
+    create_inventory_from_cvp(cvp_inventory, out_dir, cvp_container)
+
+
+@click.command(no_args_is_help=True)
+@click.option("--ansible-group", "-g", default=None, help="Ansible group to filter", type=str, required=False)
+@click.option("--ansible-inventory", "-i", default=None, help="Path to your ansible inventory file to read", type=click.File())
+@click.option("--output", "-o", default='inventory-ansible.yml', help="Path to save inventory file", type=click.File(mode='w', lazy=True))
+@click.option("--inventory-directory", "-d", default='.', help="Directory to save inventory file", type=click.Path())
+def from_ansible(inventory_directory: str, output: str, ansible_inventory: str, ansible_group: str) -> None:
+    """Build ANTA inventory from an ansible inventory YAML file"""
+    logger.info(f"Building inventory from ansible file {ansible_inventory}")
+
+    # Create output directory
+    cwd = os.getcwd()
+    out_dir = os.path.dirname(f"{cwd}/{inventory_directory}/")
+    if not os.path.exists(out_dir):
+        logger.info(f"Creating inventory folder {out_dir}")
+        os.makedirs(out_dir)
+    create_inventory_from_ansible(
+        inventory=ansible_inventory.name,  # type: ignore
+        directory=inventory_directory,
+        output_file=output.name,  # type: ignore
+        ansible_root=ansible_group
+    )
 
 
 @click.command()

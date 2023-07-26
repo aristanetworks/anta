@@ -130,6 +130,7 @@ _exec.add_command(exec_commands.snapshot)
 _exec.add_command(exec_commands.collect_tech_support)
 
 get.add_command(get_commands.from_cvp)
+get.add_command(get_commands.from_ansible)
 get.add_command(get_commands.inventory)
 get.add_command(get_commands.tags)
 
