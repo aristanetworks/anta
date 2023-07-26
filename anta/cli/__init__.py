@@ -156,7 +156,7 @@ nrfu.add_command(check_commands.tpl_report)
 # ANTA CLI Execution
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
-    anta(obj={}, auto_envvar_prefix="ANTA")
+    anta(obj={}, auto_envvar_prefix="ANTA")  # pragma: no cover
 
 
 if __name__ == "__main__":

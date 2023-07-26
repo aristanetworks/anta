@@ -20,7 +20,7 @@ from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:  # pragma: no_cover
+if TYPE_CHECKING:
     from click import Option
 
     from anta.result_manager import ResultManager

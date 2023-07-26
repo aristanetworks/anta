@@ -9,6 +9,7 @@ from click.testing import CliRunner
 
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
+from anta.result_manager import ResultManager
 from anta.result_manager.models import ListResult, TestResult
 from tests.lib.utils import default_anta_env
 
@@ -69,6 +70,24 @@ def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Cal
         for i in range(size):
             result.append(test_result_factory(i))
         return result
+
+    return _factory
+
+
+@pytest.fixture
+def result_manager_factory(list_result_factory: Callable[[int], ListResult]) -> Callable[[int], ResultManager]:
+    """
+    Return a ResultManager factory that takes as input a number of tests
+    """
+    # pylint: disable=redefined-outer-name
+
+    def _factory(number: int = 0) -> ResultManager:
+        """
+        Factory for ListResult entry of size entries
+        """
+        result_manager = ResultManager()
+        result_manager.add_test_results(list_result_factory(number).root)
+        return result_manager
 
     return _factory
 

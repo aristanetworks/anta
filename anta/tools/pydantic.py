@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Sequence
 
-if TYPE_CHECKING:  # pragma: no_cover
+if TYPE_CHECKING:
     from anta.result_manager.models import ListResult
 
 logger = logging.getLogger(__name__)

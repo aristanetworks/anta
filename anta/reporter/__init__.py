@@ -81,6 +81,7 @@ class ReportTable:
         Returns:
             Any: Can be either str or Text with Style
         """
+        # TODO refactor this code as it looks quite surprising
         if len([result for result in self.colors if str(result.level).upper() == status.upper()]) == 1:
             code: ColorManager = [result for result in self.colors if str(result.level).upper() == status.upper()][0]
             return code.style_rich() if output_type == "Text" else code.string()
