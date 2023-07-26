@@ -7,6 +7,7 @@ Utils functions to use with anta.cli.get.commands module.
 
 import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Union
 
 import requests
@@ -49,7 +50,16 @@ def create_inventory_from_cvp(inv: List[Dict[str, Any]], directory: str, contain
     logger.info(f"Inventory file has been created in {out_file}")
 
 
-def create_inventory_from_ansible(inventory: str, directory: str, ansible_root: str = None, output_file: str = 'inventory.yml') -> None:
+def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_root: Union[str, None] = None) -> None:
+    """
+    Create an ANTA inventory from an Ansible inventory YAML file
+
+    Args:
+        inventory (str): Ansible Inventory file to read
+        output_file (str, optional): ANTA inventory file to generate.
+        ansible_root (Union[str, None], optional): Ansible group from where to extract data. Defaults to None.
+    """
+
     def deep_yaml_parsing(data: Dict[str, Any], hosts: Union[None, List[Dict[str, str]]] = None) -> Union[None, List[Dict[str, str]]]:
         """Deep parsing of YAML file to extract hosts and associated IPs"""
         if hosts is None:
@@ -60,24 +70,24 @@ def create_inventory_from_ansible(inventory: str, directory: str, ansible_root: 
             elif isinstance(value, dict):
                 deep_yaml_parsing(value, hosts)
             else:
-                # print(f"Key: {key}\n  Value: {value}")
                 return hosts
         return hosts
 
     i: Dict[str, Dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
-    ansible_inventory = yaml.safe_load(open(inventory))
+    with open(inventory, encoding="utf-8") as inv:
+        ansible_inventory = yaml.safe_load(inv)
     if ansible_root not in ansible_inventory.keys():
         logger.error(f"Group {ansible_root} not in ansible inventory {inventory}")
-        raise (f"Group {ansible_root} not in ansible inventory {inventory}")
+        raise ValueError(f"Group {ansible_root} not in ansible inventory {inventory}")
     if ansible_root is None:
         ansible_hosts = deep_yaml_parsing(ansible_inventory, hosts=[])
     else:
         ansible_hosts = deep_yaml_parsing(ansible_inventory[ansible_root], hosts=[])
+    if ansible_hosts is None:
+        ansible_hosts = []
     for dev in ansible_hosts:
         logger.info(f'   * adding entry for {dev["name"]}')
-        print(f"   * adding entry for {dev}")
         i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append({"host": dev["host"], "name": dev["name"]})
-    out_file = f"{directory}/{output_file}.yml"
-    with open(out_file, "w", encoding="UTF-8") as out_fd:
+    with open(output_file, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump(i))
-    logger.info(f"Inventory file has been created in {out_file}")
+    logger.info(f"Inventory file has been created in {output_file}")
