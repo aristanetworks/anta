@@ -10,6 +10,7 @@ import asyncio
 import json
 import logging
 import os
+import sys
 from typing import List, Optional
 
 import click
@@ -31,9 +32,13 @@ logger = logging.getLogger(__name__)
 @click.option("--cvp-username", "-u", default=None, help="CVP Username", type=str, required=True)
 @click.option("--cvp-password", "-p", default=None, help="CVP Password / token", type=str, required=True)
 @click.option("--cvp-container", "-c", default=None, help="Container where devices are configured", type=str, required=False)
-@click.option("--inventory-directory", "-d", default=None, help="Path to save inventory file", type=click.Path())
+@click.option("--inventory-directory", "-d", default="anta_inventory", help="Path to save inventory file", type=click.Path())
 def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_password: str, cvp_container: str) -> None:
-    """Build ANTA inventory from Cloudvision"""
+    """
+    Build ANTA inventory from Cloudvision
+
+    TODO - handle get_inventory and get_devices_in_container failure
+    """
     # pylint: disable=too-many-arguments
     logger.info(f"Getting auth token from {cvp_ip} for user {cvp_username}")
     token = get_cv_token(cvp_ip=cvp_ip, cvp_username=cvp_username, cvp_password=cvp_password)
@@ -46,10 +51,12 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
         os.makedirs(out_dir)
 
     clnt = CvpClient()
+    print(clnt)
     try:
         clnt.connect(nodes=[cvp_ip], username="", password="", api_token=token)
     except CvpApiError as error:
         logger.error(f"Error connecting to cvp: {error}")
+        sys.exit(1)
     logger.info(f"Connected to CVP {cvp_ip}")
 
     cvp_inventory = None
