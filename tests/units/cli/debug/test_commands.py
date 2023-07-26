@@ -5,8 +5,8 @@ Tests for anta.cli.debug.commands
 from __future__ import annotations
 
 from contextlib import nullcontext
-from typing import TYPE_CHECKING, Any, Optional, Literal
-from unittest.mock import ANY, AsyncMock, MagicMock, patch
+from typing import TYPE_CHECKING, Any, Literal, Optional
+from unittest.mock import MagicMock, patch
 
 import click
 import pytest
@@ -14,12 +14,13 @@ import pytest
 from anta.cli import anta
 from anta.cli.debug.commands import get_device
 from anta.device import AntaDevice
-from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
+
+    from anta.inventory import AntaInventory
 
 
 @pytest.mark.parametrize(
@@ -29,24 +30,19 @@ if TYPE_CHECKING:
         pytest.param("mocked_device", pytest.raises(click.exceptions.UsageError), id="non existing device"),
     ],
 )
-def test_get_device(device_name: str, expected_raise: Any) -> None:
+def test_get_device(test_inventory: AntaInventory, device_name: str, expected_raise: Any) -> None:
     """
     Test get_device
+
+    test_inventory is a fixture that returns an AntaInventory using the content of tests/data/test_inventory.yml
     """
-    env = default_anta_env()
-    # TODO see if this should be a fixture instead
-    inventory = AntaInventory.parse(
-        inventory_file=env["ANTA_INVENTORY"],
-        username=env["ANTA_USERNAME"],
-        password=env["ANTA_PASSWORD"],
-    )
     # build click Context
     ctx = click.Context(command=MagicMock())
     ctx.ensure_object(dict)
-    ctx.obj["inventory"] = inventory
+    ctx.obj["inventory"] = test_inventory
 
     with expected_raise:
-        result = get_device(ctx, None, device_name)
+        result = get_device(ctx, MagicMock(auto_spec=click.Option), device_name)
         assert isinstance(result, AntaDevice)
 
 
@@ -61,10 +57,13 @@ def test_get_device(device_name: str, expected_raise: Any) -> None:
         #    pytest.param("show version", None, None, 3, "mocked_device", id="non existing device"),
     ],
 )
-def test_run_cmd(click_runner: CliRunner, command: str, ofmt: str, version: Optional[Literal["1", "latest"]], revision: Optional[int], device: str) -> None:
+def test_run_cmd(
+    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Optional[Literal["1", "latest"]], revision: Optional[int], device: str
+) -> None:
     """
     Test `anta debug run-cmd`
     """
+    # pylint: disable=too-many-arguments
     env = default_anta_env()
     cli_args = ["debug", "run-cmd", "--command", command, "--device", device]
 
@@ -76,7 +75,7 @@ def test_run_cmd(click_runner: CliRunner, command: str, ofmt: str, version: Opti
         cli_args.extend(["--ofmt", ofmt])
 
     # version
-    expected_version = version
+    expected_version: Literal["latest", 1]
     if version is None:
         expected_version = "latest"
     else:
@@ -86,7 +85,7 @@ def test_run_cmd(click_runner: CliRunner, command: str, ofmt: str, version: Opti
 
     # revision
     if revision is not None:
-        cli_args.extend(["--revision", revision])
+        cli_args.extend(["--revision", str(revision)])
 
     def expected_result() -> Any:
         """
@@ -94,8 +93,9 @@ def test_run_cmd(click_runner: CliRunner, command: str, ofmt: str, version: Opti
         """
         if expected_ofmt == "json":
             return {"dummy": 42}
-        elif expected_ofmt == "text":
+        if expected_ofmt == "text":
             return "dummy"
+        raise ValueError("Unknown format")
 
     async def dummy_collect(c: AntaCommand) -> None:
         """
