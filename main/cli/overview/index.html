@@ -1457,7 +1457,7 @@
 <p>ANTA can also be used as a Python library, allowing you to build your own tools based on it. Visit this <a href="../../advanced_usages/as-python-lib/">page</a> for more details.</p>
 <p>To start using the ANTA CLI, open your terminal and type <code>anta</code>.</p>
 <h4 id="invoking-anta-cli">Invoking ANTA CLI<a class="headerlink" href="#invoking-anta-cli" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
 <span class="w">  </span>Arista<span class="w"> </span>Network<span class="w"> </span>Test<span class="w"> </span>Automation<span class="w"> </span><span class="o">(</span>ANTA<span class="o">)</span><span class="w"> </span>CLI
@@ -1472,8 +1472,11 @@ Options:
 <span class="w">                                  </span>ANTA_TIMEOUT<span class="p">;</span><span class="w"> </span>default:<span class="w"> </span><span class="m">5</span><span class="o">]</span>
 <span class="w">  </span>--insecure<span class="w">                      </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_INSECURE<span class="o">]</span>
-<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">          </span>Enable<span class="w"> </span>password<span class="w"> </span><span class="k">if</span><span class="w"> </span>required<span class="w"> </span>to<span class="w"> </span>connect<span class="w">  </span><span class="o">[</span>env
-<span class="w">                                  </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--enable<span class="w">                        </span>Add<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>mode<span class="w"> </span>towards<span class="w"> </span>the<span class="w"> </span>devices<span class="w"> </span><span class="k">if</span>
+<span class="w">                                  </span>required<span class="w"> </span>to<span class="w"> </span>connect<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE<span class="o">]</span>
+<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">          </span>Enable<span class="w"> </span>password<span class="w"> </span><span class="k">if</span><span class="w"> </span>required<span class="w"> </span>to<span class="w"> </span>connect,
+<span class="w">                                  </span>--enable<span class="w"> </span>MUST<span class="w"> </span>be<span class="w"> </span><span class="nb">set</span><span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
 <span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">            </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
 <span class="w">                                  </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
 <span class="w">  </span>--log-level,<span class="w"> </span>--log<span class="w"> </span><span class="o">[</span>CRITICAL<span class="p">|</span>ERROR<span class="p">|</span>WARNING<span class="p">|</span>INFO<span class="p">|</span>DEBUG<span class="o">]</span>
@@ -1538,7 +1541,7 @@ Commands:
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 26, 2023</span>
       
     
   </small>
