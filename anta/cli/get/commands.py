@@ -66,7 +66,7 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 
 
 @click.command(no_args_is_help=True)
-@click.option("--ansible-group", "-g", default=None, help="Ansible group to filter", type=str, required=False)
+@click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, required=False)
 @click.option(
     "--ansible-inventory",
     "-i",
