@@ -5,6 +5,7 @@ Tests for anta.cli.__init__
 from __future__ import annotations
 
 from click.testing import CliRunner
+from pytest import CaptureFixture
 
 from anta.cli import anta
 from tests.lib.utils import default_anta_env
@@ -35,6 +36,18 @@ def test_anta_nrfu_help(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "--help"])
     assert result.exit_code == 0
     assert "Usage: anta nrfu" in result.output
+
+
+def test_anta_nrfu(capsys: CaptureFixture, click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu table, catalog is given via env
+    """
+    # TODO this test should mock device connections...
+    env = default_anta_env()
+    with capsys.disabled():
+        result = click_runner.invoke(anta, ["nrfu", "table"], env=env, auto_envvar_prefix="ANTA")
+    assert result.exit_code == 0
+    assert "ANTA Inventory contains 3 devices" in result.output
 
 
 def test_anta_exec_help(click_runner: CliRunner) -> None:

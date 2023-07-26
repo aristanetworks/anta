@@ -3,3 +3,10 @@ anta_inventory:
   hosts:
     - name: dummy
       host: dummy.anta.ninja
+      tags: ["leaf"]
+    - name: dummy2
+      host: dummy2.anta.ninja
+      tags: ["leaf"]
+    - name: dummy3
+      host: dummy3.anta.ninja
+      tags: ["spine"]

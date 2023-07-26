@@ -124,26 +124,28 @@ def _exec() -> None:
 
 
 @anta.group("get")
-def get() -> None:
+def _get() -> None:
     """Get data from/to ANTA"""
 
 
 @anta.group("debug")
-def debug() -> None:
+def _debug() -> None:
     """Debug commands for building ANTA"""
 
 
 # Load group commands
+# Prefixing with `_` for avoiding the confusion when importing anta.cli.debug.commands as otherwise the debug group has
+# a commands attribute.
 _exec.add_command(exec_commands.clear_counters)
 _exec.add_command(exec_commands.snapshot)
 _exec.add_command(exec_commands.collect_tech_support)
 
-get.add_command(get_commands.from_cvp)
-get.add_command(get_commands.inventory)
-get.add_command(get_commands.tags)
+_get.add_command(get_commands.from_cvp)
+_get.add_command(get_commands.inventory)
+_get.add_command(get_commands.tags)
 
-debug.add_command(debug_commands.run_cmd)
-debug.add_command(debug_commands.run_template)
+_debug.add_command(debug_commands.run_cmd)
+_debug.add_command(debug_commands.run_template)
 
 nrfu.add_command(check_commands.table)
 nrfu.add_command(check_commands.json)
@@ -154,7 +156,7 @@ nrfu.add_command(check_commands.tpl_report)
 # ANTA CLI Execution
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
-    anta(obj={}, auto_envvar_prefix="ANTA")
+    anta(obj={}, auto_envvar_prefix="ANTA")  # pragma: no cover
 
 
 if __name__ == "__main__":

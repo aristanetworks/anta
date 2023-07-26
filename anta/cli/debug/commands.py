@@ -16,18 +16,23 @@ from click import Option
 from anta.cli.console import console
 from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate
+from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable-next=inconsistent-return-statements
 def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
-    # pylint: disable=unused-argument
     """
     Click option callback to get an AntaDevice instance from a string
     """
-    if value is not None:
+    # pylint: disable=unused-argument
+    try:
         return ctx.obj["inventory"][value]
-    return None
+    except KeyError as e:
+        message = f"Device {value} does not exist in Inventory"
+        anta_log_exception(e, message, logger)
+        ctx.fail(message)
 
 
 @click.command()

@@ -94,7 +94,7 @@ class ResultManager:
         """
         return len(self._result_entries)
 
-    def __update_status(self, test_status: str) -> None:
+    def _update_status(self, test_status: str) -> None:
         """
         Update ResultManager status based on the table above.
         """
@@ -119,7 +119,7 @@ class ResultManager:
         """
         logger.debug(entry)
         self._result_entries.append(entry)
-        self.__update_status(entry.result)
+        self._update_status(entry.result)
 
     def add_test_results(self, entries: List[TestResult]) -> None:
         """Add a list of results to the list
@@ -157,8 +157,10 @@ class ResultManager:
         if output_format == "json":
             return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
 
-        # Default return for native format.
-        return self._result_entries
+        if output_format == "native":
+            # Default return for native format.
+            return self._result_entries
+        raise ValueError(f"{output_format} is not a valid value ['list', 'json', 'native']")
 
     def get_result_by_test(self, test_name: str, output_format: str = "native") -> Any:
         """

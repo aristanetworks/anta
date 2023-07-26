@@ -8,7 +8,10 @@ from aioeapi import Device
 from click.testing import CliRunner
 
 from anta.device import AntaDevice
+from anta.inventory import AntaInventory
+from anta.result_manager import ResultManager
 from anta.result_manager.models import ListResult, TestResult
+from tests.lib.utils import default_anta_env
 
 
 @pytest.fixture
@@ -69,6 +72,37 @@ def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Cal
         return result
 
     return _factory
+
+
+@pytest.fixture
+def result_manager_factory(list_result_factory: Callable[[int], ListResult]) -> Callable[[int], ResultManager]:
+    """
+    Return a ResultManager factory that takes as input a number of tests
+    """
+    # pylint: disable=redefined-outer-name
+
+    def _factory(number: int = 0) -> ResultManager:
+        """
+        Factory for ListResult entry of size entries
+        """
+        result_manager = ResultManager()
+        result_manager.add_test_results(list_result_factory(number).root)
+        return result_manager
+
+    return _factory
+
+
+@pytest.fixture
+def test_inventory() -> AntaInventory:
+    """
+    Return the test_inventory
+    """
+    env = default_anta_env()
+    return AntaInventory.parse(
+        inventory_file=env["ANTA_INVENTORY"],
+        username=env["ANTA_USERNAME"],
+        password=env["ANTA_PASSWORD"],
+    )
 
 
 @pytest.fixture
