@@ -142,6 +142,8 @@ markdown_extensions:
       permalink: true
       baselevel: 3
   - pymdownx.highlight
+  - pymdownx.snippets:
+      base_path: docs/snippets
   - pymdownx.superfences
   - pymdownx.superfences
   - pymdownx.tabbed:

@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, requires_enable, setup_logging
 from anta.result_manager.models import TestResult
 
 
@@ -51,9 +51,18 @@ from anta.result_manager.models import TestResult
     show_default=True,
 )
 @click.option(
+    "--enable",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+    help="Add enable mode towards the devices if required to connect",
+    show_default=True,
+)
+@click.option(
     "--enable-password",
     show_envvar=True,
-    help="Enable password if required to connect",
+    help="Enable password if required to connect, --enable MUST be set",
+    callback=requires_enable,
 )
 @click.option(
     "--inventory",

@@ -172,6 +172,7 @@ class AsyncEOSDevice(AntaDevice):
         username: str,
         password: str,
         name: Optional[str] = None,
+        enable: bool = False,
         enable_password: Optional[str] = None,
         port: Optional[int] = None,
         ssh_port: Optional[int] = 22,
@@ -188,6 +189,7 @@ class AsyncEOSDevice(AntaDevice):
             username: Username to connect to eAPI and SSH
             password: Password to connect to eAPI and SSH
             name: Device name
+            enable: Device needs privileged access
             enable_password: Password used to gain privileged access on EOS
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port
@@ -199,6 +201,7 @@ class AsyncEOSDevice(AntaDevice):
         if name is None:
             name = f"{host}:{port}"
         super().__init__(name, tags)
+        self.enable = enable
         self._enable_password = enable_password
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: Dict[str, Any] = {}
@@ -216,6 +219,7 @@ class AsyncEOSDevice(AntaDevice):
         yield "eapi_port", self._session.port
         yield "username", self._ssh_opts.username
         yield "password", self._ssh_opts.password
+        yield "enable", self.enable
         yield "enable_password", self._enable_password
         yield "insecure", self._ssh_opts.known_hosts is None
         if __DEBUG__:
@@ -244,14 +248,15 @@ class AsyncEOSDevice(AntaDevice):
         """
         try:
             commands = []
-            if self._enable_password is not None:
+            if self.enable and self._enable_password is not None:
                 commands.append(
                     {
                         "cmd": "enable",
                         "input": str(self._enable_password),
                     }
                 )
-            else:
+            elif self.enable:
+                # No password
                 commands.append({"cmd": "enable"})
             if command.revision:
                 commands.append({"cmd": command.command, "revision": command.revision})
@@ -266,7 +271,7 @@ class AsyncEOSDevice(AntaDevice):
             # only applicable to json output
             if command.ofmt in ["json", "text"]:
                 # selecting only our command output
-                response = response[1]
+                response = response[-1]
             command.output = response
             logger.debug(f"{self.name}: {command}")
 
