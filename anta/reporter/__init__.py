@@ -116,8 +116,8 @@ class ReportTable:
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
                 state = self._color_result(status=str(result.result), output_type="str")
                 message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-                test_categories = ", ".join(result.test_category)
-                table.add_row(str(result.name), result.test, state, message, result.test_description, test_categories)
+                categories = ", ".join(result.categories)
+                table.add_row(str(result.name), result.test, state, message, result.description, categories)
         return table
 
     def report_summary_tests(
@@ -242,8 +242,8 @@ class ReportJinja:
                 test: ...,
                 result: ...,
                 messages: [...]
-                test_category: ...,
-                test_description: ...,
+                categories: ...,
+                description: ...,
             }
         ]
 

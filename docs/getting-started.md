@@ -242,22 +242,24 @@ $ anta \
   {
     "name": "leaf01",
     "test": "VerifyEOSVersion",
-    "test_category": [
+    "categories": [
       "software"
     ],
-    "test_description": "Verifies the device is running one of the allowed EOS version.",
+    "description": "Verifies the device is running one of the allowed EOS version.",
     "result": "success",
-    "messages": []
+    "messages": [],
+    "custom_field": "None",
   },
   {
     "name": "leaf01",
     "test": "VerifyTerminAttrVersion",
-    "test_category": [
+    "categories": [
       "software"
     ],
-    "test_description": "Verifies the device is running one of the allowed TerminAttr version.",
+    "description": "Verifies the device is running one of the allowed TerminAttr version.",
     "result": "success",
-    "messages": []
+    "messages": [],
+    "custom_field": "None",
   },
 [...]
 ]

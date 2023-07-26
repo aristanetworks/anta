@@ -16,7 +16,12 @@ from anta.tools.misc import anta_log_exception
 logger = logging.getLogger(__name__)
 
 # Key from YAML file tranfered to AntaTemplate of the test.
-TEST_TPL_PARAMS = "template_params"
+TEST_CATALOG_PARAMS = [
+    "result_description",
+    "result_categories",
+    "result_custom_field",
+    "template_params",
+]
 
 
 async def main(
@@ -55,11 +60,11 @@ async def main(
 
     coros = []
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
-        test_params = {k: v for k, v in test[1].items() if k != TEST_TPL_PARAMS}
-        template_params = test[1].get(TEST_TPL_PARAMS)
+        kwargs = {k: v for k, v in test[1].items() if k in TEST_CATALOG_PARAMS}
+        test_params = {k: v for k, v in test[1].items() if k not in TEST_CATALOG_PARAMS}
         try:
             # Instantiate AntaTest object
-            test_instance = test[0](device=device, template_params=template_params)
+            test_instance = test[0](device=device, **kwargs)
             coros.append(test_instance.test(eos_data=None, **test_params))
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
