@@ -139,6 +139,7 @@ Current inventory content is:
         eapi_port=443,
         username='arista',
         password='arista',
+        enable=True,
         enable_password='arista',
         insecure=False
     ),
@@ -152,6 +153,7 @@ Current inventory content is:
         eapi_port=443,
         username='arista',
         password='arista',
+        enable=True,
         enable_password='arista',
         insecure=False
     ),
@@ -165,6 +167,7 @@ Current inventory content is:
         eapi_port=443,
         username='arista',
         password='arista',
+        enable=True,
         enable_password='arista',
         insecure=False
     ),
@@ -178,6 +181,7 @@ Current inventory content is:
         eapi_port=443,
         username='arista',
         password='arista',
+        enable=True,
         enable_password='arista',
         insecure=False
     )

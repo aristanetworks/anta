@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, requires_enable, setup_logging
 from anta.result_manager.models import TestResult
 
 
@@ -51,9 +51,18 @@ from anta.result_manager.models import TestResult
     show_default=True,
 )
 @click.option(
+    "--enable",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+    help="Add enable mode towards the devices if required to connect",
+    show_default=True,
+)
+@click.option(
     "--enable-password",
     show_envvar=True,
-    help="Enable password if required to connect",
+    help="Enable password if required to connect, --enable MUST be set",
+    callback=requires_enable,
 )
 @click.option(
     "--inventory",
@@ -115,27 +124,30 @@ def _exec() -> None:
 
 
 @anta.group("get")
-def get() -> None:
+def _get() -> None:
     """Get data from/to ANTA"""
 
 
 @anta.group("debug")
-def debug() -> None:
+def _debug() -> None:
     """Debug commands for building ANTA"""
 
 
 # Load group commands
+# Prefixing with `_` for avoiding the confusion when importing anta.cli.debug.commands as otherwise the debug group has
+# a commands attribute.
 _exec.add_command(exec_commands.clear_counters)
 _exec.add_command(exec_commands.snapshot)
 _exec.add_command(exec_commands.collect_tech_support)
 
-get.add_command(get_commands.from_cvp)
-get.add_command(get_commands.from_ansible)
-get.add_command(get_commands.inventory)
-get.add_command(get_commands.tags)
 
-debug.add_command(debug_commands.run_cmd)
-debug.add_command(debug_commands.run_template)
+_get.add_command(get_commands.from_cvp)
+_get.add_command(get_commands.from_ansible)
+_get.add_command(get_commands.inventory)
+_get.add_command(get_commands.tags)
+
+_debug.add_command(debug_commands.run_cmd)
+_debug.add_command(debug_commands.run_template)
 
 nrfu.add_command(check_commands.table)
 nrfu.add_command(check_commands.json)
@@ -146,7 +158,7 @@ nrfu.add_command(check_commands.tpl_report)
 # ANTA CLI Execution
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
-    anta(obj={}, auto_envvar_prefix="ANTA")
+    anta(obj={}, auto_envvar_prefix="ANTA")  # pragma: no cover
 
 
 if __name__ == "__main__":

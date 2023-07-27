@@ -8,10 +8,9 @@ from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 import click
-from click import Option
 from yaml import safe_load
 
 import anta.loader
@@ -21,7 +20,9 @@ from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:  # pragma: no_cover
+if TYPE_CHECKING:
+    from click import Option
+
     from anta.result_manager import ResultManager
 
 
@@ -56,6 +57,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
             inventory_file=str(path),
             username=ctx.params["username"],
             password=ctx.params["password"],
+            enable=ctx.params["enable"],
             enable_password=ctx.params["enable_password"],
             timeout=ctx.params["timeout"],
             insecure=ctx.params["insecure"],
@@ -67,7 +69,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     return inventory
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
+def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[str]]:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA inventory tags
@@ -75,6 +77,16 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> List[str]:
     if value is not None:
         return value.split(",") if "," in value else [value]
     return None
+
+
+def requires_enable(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to ensure that enable is True when the option is set
+    """
+    if value is not None and ctx.params.get("enable") is not True:
+        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable' (or setting associated env variable)")
+    return value
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
@@ -158,6 +170,11 @@ class IgnoreRequiredWithHelp(click.Group):
         Ignore MissingParameter exception when parsing arguments if `--help`
         is present for a subcommand
         """
+        # Adding a flag for potential callbacks
+        ctx.ensure_object(dict)
+        if "--help" in args:
+            ctx.obj["_anta_help"] = True
+
         try:
             return super().parse_args(ctx, args)
         except click.MissingParameter:
@@ -167,7 +184,5 @@ class IgnoreRequiredWithHelp(click.Group):
             # remove the required params so that help can display
             for param in self.params:
                 param.required = False
-            # Adding a flag for potential callbacks
-            ctx.ensure_object(dict)
-            ctx.obj["_anta_help"] = True
+
             return super().parse_args(ctx, args)
