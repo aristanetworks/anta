@@ -1739,10 +1739,11 @@ In some cases a test would rely on some additional inputs from the user, for ins
 <ul>
 <li><code>name</code> (str): Device name where the test has run.</li>
 <li><code>test</code> (str): Test name runs on the device.</li>
-<li><code>test_category</code> (List[str]): List of test categories the test belongs to.</li>
-<li><code>test_description</code> (str): Test description.</li>
+<li><code>categories</code> (List[str]): List of categories the TestResult belongs to, by default the AntaTest categories.</li>
+<li><code>description</code> (str): TestResult description, by default the AntaTest description.</li>
 <li><code>results</code> (str): Result of the test. Can be one of [&ldquo;unset&rdquo;, &ldquo;success&rdquo;, &ldquo;failure&rdquo;, &ldquo;error&rdquo;, &ldquo;skipped&rdquo;].</li>
-<li><code>messages</code> (List[str], optional): Messages to report after the test if any.</li>
+<li><code>message</code> (str, optional): Message to report after the test if any.</li>
+<li><code>custom_field</code> (str, optional): Custom field to store a string for flexibility in integrating with ANTA</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.tests.hardware</span> <span class="kn">import</span> <span class="n">VerifyTemperature</span>
 
@@ -1817,7 +1818,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 27, 2023</span>
       
     
   </small>

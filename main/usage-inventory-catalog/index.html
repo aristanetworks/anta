@@ -380,8 +380,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#catalog-with-antatemplate" class="md-nav__link">
+    Catalog with AntaTemplate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-tests-catalog" class="md-nav__link">
     Custom tests catalog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customize-test-description-and-categories" class="md-nav__link">
+    Customize test description and categories
   </a>
   
 </li>
@@ -1442,8 +1456,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#catalog-with-antatemplate" class="md-nav__link">
+    Catalog with AntaTemplate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-tests-catalog" class="md-nav__link">
     Custom tests catalog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customize-test-description-and-categories" class="md-nav__link">
+    Customize test description and categories
   </a>
   
 </li>
@@ -1555,6 +1583,7 @@ Its format is a YAML file and keys are tests functions inherited from the python
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
+<h5 id="catalog-with-antatemplate">Catalog with AntaTemplate<a class="headerlink" href="#catalog-with-antatemplate" title="Permanent link">&para;</a></h5>
 <p>If your test is based on <a href=""><code>AntaTemplate</code></a>, you have to provide inputs for EOS CLI template by using <code>template_params</code> list:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing.bgp</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPIPv4UnicastCount</span><span class="p">:</span>
@@ -1605,13 +1634,34 @@ Its format is a YAML file and keys are tests functions inherited from the python
 <p class="admonition-title">How to create custom tests</p>
 <p>To create your custom tests, you should refer to this <a href="../advanced_usages/as-python-lib/">following documentation</a></p>
 </div>
+<h5 id="customize-test-description-and-categories">Customize test description and categories<a class="headerlink" href="#customize-test-description-and-categories" title="Permanent link">&para;</a></h5>
+<p>It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own <code>categories</code> and <code>description</code> in the report.</p>
+<p>In your test catalog, use <code>result_overwrite</code> dictionary with <code>categories</code> and <code>description</code> to just overwrite this values in your report:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span><span class="w"> </span><span class="c1"># Verifies ZeroTouch is disabled.</span>
+<span class="w">      </span><span class="nt">result_overwrite</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;demo&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;pr296&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A custom test</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
+<span class="nt">anta.tests.interfaces</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyInterfaceUtilization</span><span class="p">:</span>
+</code></pre></div>
+<p>Once you run <code>anta nrfu table</code>, you will see following output:</p>
+<div class="highlight"><pre><span></span><code>┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃<span class="w"> </span>Device<span class="w"> </span>IP<span class="w"> </span>┃<span class="w"> </span>Test<span class="w"> </span>Name<span class="w">                  </span>┃<span class="w"> </span>Test<span class="w"> </span>Status<span class="w"> </span>┃<span class="w"> </span>Message<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>┃<span class="w"> </span>Test<span class="w"> </span>description<span class="w">                              </span>┃<span class="w"> </span>Test<span class="w"> </span>category<span class="w"> </span>┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│<span class="w"> </span>spine01<span class="w">   </span>│<span class="w"> </span>VerifyZeroTouch<span class="w">            </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">            </span>│<span class="w"> </span>A<span class="w"> </span>custom<span class="w"> </span><span class="nb">test</span><span class="w">                                 </span>│<span class="w"> </span>demo,<span class="w"> </span>pr296<span class="w">   </span>│
+│<span class="w"> </span>spine01<span class="w">   </span>│<span class="w"> </span>VerifyRunningConfigDiffs<span class="w">   </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">            </span>│<span class="w">                                               </span>│<span class="w"> </span>configuration<span class="w"> </span>│
+│<span class="w"> </span>spine01<span class="w">   </span>│<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">            </span>│<span class="w"> </span>Verifies<span class="w"> </span>interfaces<span class="w"> </span>utilization<span class="w"> </span>is<span class="w"> </span>below<span class="w"> </span><span class="m">75</span>%.<span class="w"> </span>│<span class="w"> </span>interfaces<span class="w">    </span>│
+└───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
+</code></pre></div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 27, 2023</span>
       
     
   </small>
