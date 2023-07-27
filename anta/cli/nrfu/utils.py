@@ -32,11 +32,13 @@ def print_settings(context: click.Context, report_template: Optional[pathlib.Pat
     if report_output:
         message += f"\n- Report output: {report_output}"
     console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
+    console.print()
 
 
 def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None) -> None:
     """Print result in a table"""
     reporter = ReportTable()
+    console.print()
     if device:
         console.print(reporter.report_all(result_manager=results, host=device))
     elif test:
@@ -51,6 +53,7 @@ def print_table(results: ResultManager, device: Optional[str] = None, test: Opti
 
 def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
     """Print result in a json format"""
+    console.print()
     console.print(Panel("JSON results of all tests", style="cyan"))
     rich.print_json(results.get_results(output_format="json"))
     if output is not None:
@@ -60,6 +63,7 @@ def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) ->
 
 def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
     """Print result in a list"""
+    console.print()
     console.print(Panel.fit("List results of all tests", style="cyan"))
     pprint(results.get_results(output_format="list"))
     if output is not None:
@@ -69,6 +73,7 @@ def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) ->
 
 def print_text(results: ResultManager, search: Optional[str] = None, skip_error: bool = False) -> None:
     """Print results as simple text"""
+    console.print()
     regexp = re.compile(search if search else ".*")
     for line in results.get_results(output_format="list"):
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
@@ -78,6 +83,7 @@ def print_text(results: ResultManager, search: Optional[str] = None, skip_error:
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional[pathlib.Path] = None) -> None:
     """Print result based on template."""
+    console.print()
     reporter = ReportJinja(template_path=template)
     json_data = json.loads(results.get_results(output_format="json"))
     report = reporter.render(json_data)
@@ -114,7 +120,6 @@ def anta_progress_bar() -> Progress:
     """
     Return a customized Progress for progress bar
     """
-    console.print("\n")
     return Progress(
         SpinnerColumn("anta"),
         TextColumn("•"),
