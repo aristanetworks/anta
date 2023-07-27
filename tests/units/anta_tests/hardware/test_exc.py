@@ -57,6 +57,7 @@ def test_VerifyTemperature(mocked_device: MagicMock, test_data: Any) -> None:
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
 
 
 @pytest.mark.parametrize("test_data", INPUT_TEMPERATURE_TRANSCEIVER, ids=generate_test_ids_list(INPUT_TEMPERATURE_TRANSCEIVER))
@@ -73,6 +74,7 @@ def test_VerifyTransceiversTemperature(mocked_device: MagicMock, test_data: Any)
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
 
 
 @pytest.mark.parametrize("test_data", INPUT_SYSTEM_COOLING, ids=generate_test_ids_list(INPUT_SYSTEM_COOLING))
@@ -89,6 +91,7 @@ def test_VerifyEnvironmentSystemCooling(mocked_device: MagicMock, test_data: Any
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
 
 
 @pytest.mark.parametrize("test_data", INPUT_COOLING, ids=generate_test_ids_list(INPUT_COOLING))
@@ -105,6 +108,7 @@ def test_VerifyEnvironmentCooling(mocked_device: MagicMock, test_data: Any) -> N
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
 
 
 @pytest.mark.parametrize("test_data", INPUT_ENV_POWER, ids=generate_test_ids_list(INPUT_ENV_POWER))
@@ -121,6 +125,7 @@ def test_VerifyEnvironmentPower(mocked_device: MagicMock, test_data: Any) -> Non
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
 
 
 @pytest.mark.parametrize("test_data", INPUT_ADVERSE_COUNTER, ids=generate_test_ids_list(INPUT_ADVERSE_COUNTER))
@@ -137,3 +142,4 @@ def test_VerifyAdverseDrops(mocked_device: MagicMock, test_data: Any) -> None:
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
