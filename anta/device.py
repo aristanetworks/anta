@@ -19,41 +19,6 @@ from anta.tools.misc import anta_log_exception, exc_to_str
 logger = logging.getLogger(__name__)
 
 
-# For Python < 3.10, it is not possible to install a version of aio-eapi newer than 0.3.0
-# which sadly hardcodes version to 1 in its call to eAPI
-# This little piece of nasty hack patches the aio-eapi function to support using a different
-# version of the eAPI.
-# Hic Sunt Draconis.
-# Are we proud of this? No.
-# Waiting for: https://github.com/jeremyschulman/aio-eapi/issues/9
-def patched_jsoncrpc_command(self: Device, commands: List[str], ofmt: str, **kwargs: Any) -> Dict[str, Any]:
-    """
-    Used to create the JSON-RPC command dictionary object
-    """
-    version = kwargs.get("version", "latest")
-
-    cmd = {
-        "jsonrpc": "2.0",
-        "method": "runCmds",
-        "params": {
-            "version": version,
-            "cmds": commands,
-            "format": ofmt or self.EAPI_DEFAULT_OFMT,
-        },
-        "id": str(kwargs.get("req_id") or id(self)),
-    }
-    if "autoComplete" in kwargs:
-        cmd["params"]["autoComplete"] = kwargs["autoComplete"]  # type: ignore
-
-    if "expandAliases" in kwargs:
-        cmd["params"]["expandAliases"] = kwargs["expandAliases"]  # type: ignore
-
-    return cmd
-
-
-Device.jsoncrpc_command = patched_jsoncrpc_command
-
-
 class AntaDevice(ABC):
     """
     Abstract class representing a device in ANTA.

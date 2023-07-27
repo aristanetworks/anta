@@ -23,7 +23,7 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO)) -> None:
     """
     root = logging.getLogger()
     loglevel = getattr(logging, level.upper())
-    handler = RichHandler(markup=True, rich_tracebacks=True)
+    handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=True)
     if __DEBUG__:
         fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
     else:
