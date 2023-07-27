@@ -13,20 +13,24 @@
       
       
       
+        <link rel="prev" href="../inv-from-cvp/">
       
-      <link rel="icon" href="/imgs/favicon.ico">
+      
+        <link rel="next" href="../get-inventory-information/">
+      
+      <link rel="icon" href="../../imgs/favicon.ico">
       <meta name="generator" content="mkdocs-1.5.0, mkdocs-material-9.1.20">
     
     
       
-        <title>Arista Network Test Automation - ANTA</title>
+        <title>Inventory from Ansible - Arista Network Test Automation - ANTA</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.eebd395e.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.ecc896b0.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -42,11 +46,11 @@
       
     
     
-      <link rel="stylesheet" href="/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="/stylesheets/extra.material.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.material.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,6 +78,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#create-an-inventory-from-ansible-inventory" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -93,7 +102,7 @@
           if (current == "main") {
                 message = "This is the documentation from the 'main' branch which is not a stable release."
           }
-          message = message + '<a href="..//"> <strong>Click here to go to latest stable release.</strong> </a>'
+          message = message + '<a href="../../.."> <strong>Click here to go to latest stable release.</strong> </a>'
           document.getElementById("current-version").innerHTML = message;
    </script>
   
@@ -111,7 +120,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -130,7 +139,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Inventory from Ansible
             
           </span>
         </div>
@@ -235,7 +244,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -266,7 +275,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -281,7 +290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         Getting Started
       </a>
     </li>
@@ -296,7 +305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/requirements-and-installation/" class="md-nav__link">
+      <a href="../../requirements-and-installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -311,7 +320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/usage-inventory-catalog/" class="md-nav__link">
+      <a href="../../usage-inventory-catalog/" class="md-nav__link">
         Inventory & Tests catalog
       </a>
     </li>
@@ -324,14 +333,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
       
       
         
@@ -356,7 +367,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Anta CLI
@@ -369,7 +380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -383,7 +394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/nrfu/" class="md-nav__link">
+      <a href="../nrfu/" class="md-nav__link">
         NRFU
       </a>
     </li>
@@ -397,7 +408,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/exec/" class="md-nav__link">
+      <a href="../exec/" class="md-nav__link">
         Execute commands
       </a>
     </li>
@@ -411,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../inv-from-cvp/" class="md-nav__link">
         Inventory from CVP
       </a>
     </li>
@@ -423,11 +434,61 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="/cli/inv-from-ansible/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Inventory from Ansible
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Inventory from Ansible
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-an-inventory-from-ansible-inventory" class="md-nav__link">
+    Create an Inventory from Ansible inventory
+  </a>
+  
+    <nav class="md-nav" aria-label="Create an Inventory from Ansible inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -439,7 +500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/get-inventory-information/" class="md-nav__link">
+      <a href="../get-inventory-information/" class="md-nav__link">
         Get Inventory Information
       </a>
     </li>
@@ -453,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/debug/" class="md-nav__link">
+      <a href="../debug/" class="md-nav__link">
         Helpers
       </a>
     </li>
@@ -508,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/advanced_usages/custom-tests/" class="md-nav__link">
+      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
         Create your own Library
       </a>
     </li>
@@ -522,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
         ANTA as a Python Library
       </a>
     </li>
@@ -609,7 +670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -623,7 +684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.aaa/" class="md-nav__link">
+      <a href="../../api/tests.aaa/" class="md-nav__link">
         AAA
       </a>
     </li>
@@ -637,7 +698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -651,7 +712,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.connectivity/" class="md-nav__link">
+      <a href="../../api/tests.connectivity/" class="md-nav__link">
         Connectivity
       </a>
     </li>
@@ -665,7 +726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.field_notices/" class="md-nav__link">
+      <a href="../../api/tests.field_notices/" class="md-nav__link">
         Field Notices
       </a>
     </li>
@@ -679,7 +740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         Hardware
       </a>
     </li>
@@ -693,7 +754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         Interfaces
       </a>
     </li>
@@ -707,7 +768,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.logging/" class="md-nav__link">
+      <a href="../../api/tests.logging/" class="md-nav__link">
         Logging
       </a>
     </li>
@@ -721,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         MLAG
       </a>
     </li>
@@ -735,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.multicast/" class="md-nav__link">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         Multicast
       </a>
     </li>
@@ -749,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.profiles/" class="md-nav__link">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         Profiles
       </a>
     </li>
@@ -798,7 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -812,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         BGP
       </a>
     </li>
@@ -826,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         OSPF
       </a>
     </li>
@@ -847,7 +908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.security/" class="md-nav__link">
+      <a href="../../api/tests.security/" class="md-nav__link">
         Security
       </a>
     </li>
@@ -861,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.snmp/" class="md-nav__link">
+      <a href="../../api/tests.snmp/" class="md-nav__link">
         SNMP
       </a>
     </li>
@@ -875,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.stp/" class="md-nav__link">
+      <a href="../../api/tests.stp/" class="md-nav__link">
         STP
       </a>
     </li>
@@ -889,7 +950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         Software
       </a>
     </li>
@@ -903,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         System
       </a>
     </li>
@@ -917,7 +978,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/tests.vxlan/" class="md-nav__link">
+      <a href="../../api/tests.vxlan/" class="md-nav__link">
         VXLAN
       </a>
     </li>
@@ -1011,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         Inventory module
       </a>
     </li>
@@ -1025,7 +1086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         Inventory models
       </a>
     </li>
@@ -1077,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/device/" class="md-nav__link">
+      <a href="../../api/device/" class="md-nav__link">
         Device models
       </a>
     </li>
@@ -1129,7 +1190,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/models/" class="md-nav__link">
+      <a href="../../api/models/" class="md-nav__link">
         Test models
       </a>
     </li>
@@ -1183,7 +1244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         Result Manager module
       </a>
     </li>
@@ -1197,7 +1258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/result_manager_models/" class="md-nav__link">
+      <a href="../../api/result_manager_models/" class="md-nav__link">
         Result Manager models
       </a>
     </li>
@@ -1251,7 +1312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/report_manager/" class="md-nav__link">
+      <a href="../../api/report_manager/" class="md-nav__link">
         Report Manager module
       </a>
     </li>
@@ -1265,7 +1326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/report_manager_models/" class="md-nav__link">
+      <a href="../../api/report_manager_models/" class="md-nav__link">
         Report Manager models
       </a>
     </li>
@@ -1294,7 +1355,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/contribution/" class="md-nav__link">
+      <a href="../../contribution/" class="md-nav__link">
         Contributions
       </a>
     </li>
@@ -1319,6 +1380,34 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-an-inventory-from-ansible-inventory" class="md-nav__link">
+    Create an Inventory from Ansible inventory
+  </a>
+  
+    <nav class="md-nav" aria-label="Create an Inventory from Ansible inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    Command overview
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1329,8 +1418,83 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+  
+  
+
+
+  <h1>Inventory from Ansible</h1>
+
+<h3 id="create-an-inventory-from-ansible-inventory">Create an Inventory from Ansible inventory<a class="headerlink" href="#create-an-inventory-from-ansible-inventory" title="Permanent link">&para;</a></h3>
+<p>In large setups, it might be beneficial to construct your inventory based on your Ansible inventory. The <code>from-ansible</code> entrypoint of the <code>get</code> command enables the user to create an ANTA inventory from Ansible.</p>
+<h5 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>from-ansible<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-ansible<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+
+<span class="w">  </span>Build<span class="w"> </span>ANTA<span class="w"> </span>inventory<span class="w"> </span>from<span class="w"> </span>an<span class="w"> </span>ansible<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file
+
+Options:
+<span class="w">  </span>-g,<span class="w"> </span>--ansible-group<span class="w"> </span>TEXT<span class="w">        </span>Ansible<span class="w"> </span>group<span class="w"> </span>to<span class="w"> </span>filter
+<span class="w">  </span>-i,<span class="w"> </span>--ansible-inventory<span class="w"> </span>FILENAME
+<span class="w">                                  </span>Path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>ansible<span class="w"> </span>inventory<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span><span class="nb">read</span>
+<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>FILENAME<span class="w">           </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file
+<span class="w">  </span>-d,<span class="w"> </span>--inventory-directory<span class="w"> </span>PATH<span class="w">  </span>Directory<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</code></pre></div>
+<p>The output is an inventory where the name of the container is added as a tag for each host:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.41</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">srv-pod01</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.42</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">srv-pod02</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.43</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">srv-pod03</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritence when using the <code>--ansible-group</code> option.</p>
+</div>
+<p><code>host</code> value is coming from the <code>ansible_host</code> key in your inventory while <code>name</code> is the name you defined for your host. Below is an ansible inventory example used to generate previous inventory:</p>
+<div class="highlight"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">tooling</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">srv-pod01</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">ansible_httpapi_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9023</span>
+<span class="w">          </span><span class="nt">ansible_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9023</span>
+<span class="w">          </span><span class="nt">ansible_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.41</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">endpoint</span>
+<span class="w">        </span><span class="nt">srv-pod02</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">ansible_httpapi_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9024</span>
+<span class="w">          </span><span class="nt">ansible_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9024</span>
+<span class="w">          </span><span class="nt">ansible_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.42</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">endpoint</span>
+<span class="w">        </span><span class="nt">srv-pod03</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">ansible_httpapi_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9025</span>
+<span class="w">          </span><span class="nt">ansible_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9025</span>
+<span class="w">          </span><span class="nt">ansible_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.73.252.43</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">endpoint</span>
+</code></pre></div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 27, 2023</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -1410,10 +1574,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "/", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "/assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
-      <script src="/assets/javascripts/bundle.220ee61c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
         
           <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
