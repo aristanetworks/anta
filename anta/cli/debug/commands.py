@@ -70,15 +70,29 @@ def run_template(template: str, params: List[str], ofmt: Literal["json", "text"]
 
     anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
     """
-    template_params = dict(zip(params[::2], params[1::2]))
+    # Transform tuple from params into a list of dict
+    #
+    # WARNING: does not support multiple params in same dict
+    #
+    # Example:
+    # anta debug run-template -d spine01 -t "show interfaces Ethernet{eth_id}" eth_id 1 eth_id 2
+    # Params is type of <class 'tuple'> with a lenght of 4
+    # Params is ('eth_id', '1', 'eth_id', '2')
+    # template_params = [{'eth_id': '1'}, {'eth_id': '2'}]
+    template_params = [{list(params)[cpt]: list(params)[cpt + 1]} for cpt in range(0, len(list(params)), 2)]
+    loop = asyncio.new_event_loop()
+    for template_param in template_params:
+        console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_param}[/orange] on [red]{device.name}[/red]")
+        # I do not assume the following line, but click make me do it
+        v: Literal[1, "latest"] = version if version == "latest" else 1
+        t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
+        c = t.render(template_param)
+        loop.run_until_complete(device.collect(c))
 
-    console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
-    # I do not assume the following line, but click make me do it
-    v: Literal[1, "latest"] = version if version == "latest" else 1
-    t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
-    c = t.render(template_params)
-    asyncio.run(device.collect(c))
-    if ofmt == "json":
-        console.print(c.json_output)
-    if ofmt == "text":
-        console.print(c.text_output)
+        if c.failed:
+            console.print(c)
+        else:
+            if ofmt == "json":
+                console.print(c.json_output)
+            if ofmt == "text":
+                console.print(c.text_output)
