@@ -205,7 +205,7 @@ class VerifyEnvironmentPower(AntaTest):
         Run VerifyEnvironmentPower validation
 
         Args:
-            accepted_states: Accepted states list for power supplies status. Defaults to ['ok'].
+            accepted_states: Accepted states list for power supplies status.
         """
         if not accepted_states:
             self.result.is_skipped(f"{self.__class__.name} was not run because accepted_states list was not provided")
