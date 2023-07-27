@@ -12,7 +12,6 @@ from typing import List, Optional
 
 import click
 
-from anta.cli.console import console
 from anta.cli.utils import parse_tags, return_code
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -63,7 +62,6 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    console.print("\n")
     print_json(results=results, output=output)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -82,7 +80,6 @@ def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], s
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    console.print("\n")
     print_text(results=results, search=search, skip_error=skip_error)
 
     ignore_status = ctx.obj["ignore_status"]
@@ -115,7 +112,6 @@ def tpl_report(ctx: click.Context, tags: Optional[List[str]], template: pathlib.
     results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    console.print("\n")
     print_jinja(results=results, template=template, output=output)
 
     ignore_status = ctx.obj["ignore_status"]
