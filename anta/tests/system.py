@@ -112,7 +112,7 @@ class VerifyCoredump(AntaTest):
         if len(command_output) == 0:
             self.result.is_success()
         else:
-            command_output = command_output.replace('\n', '')
+            command_output = command_output.replace("\n", "")
             self.result.is_failure(f"Core-dump(s) have been found: {command_output}")
 
 
