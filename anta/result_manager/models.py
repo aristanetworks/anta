@@ -1,6 +1,6 @@
 """Models related to anta.result_manager module."""
 
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 from pydantic import BaseModel, RootModel, field_validator
 
@@ -14,18 +14,20 @@ class TestResult(BaseModel):
     Attributes:
         name (str): Device name where the test has run.
         test (str): Test name runs on the device.
-        test_category (List[str]): List of test categories the test belongs to.
-        test_description (str): Test description.
+        categories (List[str]): List of categories the TestResult belongs to, by default the AntaTest categories.
+        description (str): TestResult description, by default the AntaTest description.
         results (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
         message (str, optional): Message to report after the test if any.
+        custom_field (str, optional): Custom field to store a string for flexibility in integrating with ANTA
     """
 
     name: str
     test: str
-    test_category: List[str]
-    test_description: str
+    categories: List[str]
+    description: str
     result: str = "unset"
     messages: List[str] = []
+    custom_field: Optional[str] = None
 
     @classmethod
     @field_validator("result")

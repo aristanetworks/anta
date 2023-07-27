@@ -48,8 +48,8 @@ def test_result_factory(mocked_device: MagicMock) -> Callable[[int], TestResult]
         return TestResult(
             name=mocked_device.name,
             test=f"VerifyTest{index}",
-            test_category=["test"],
-            test_description=f"Verifies Test {index}",
+            categories=["test"],
+            description=f"Verifies Test {index}",
         )
 
     return _create

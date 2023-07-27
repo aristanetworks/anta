@@ -98,6 +98,8 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
+### Catalog with AntaTemplate
+
 If your test is based on [`AntaTemplate`](), you have to provide inputs for EOS CLI template by using `template_params` list:
 
 ```yaml
@@ -162,3 +164,32 @@ titom73.tests.system:
 
 !!! tip "How to create custom tests"
     To create your custom tests, you should refer to this [following documentation](advanced_usages/as-python-lib.md)
+
+### Customize test description and categories
+
+It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own `categories` and `description` in the report.
+
+In your test catalog, use `result_overwrite` dictionary with `categories` and `description` to just overwrite this values in your report:
+
+```yaml
+anta.tests.configuration:
+  - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
+      result_overwrite:
+        categories: ['demo', 'pr296']
+        description: A custom test
+  - VerifyRunningConfigDiffs:
+anta.tests.interfaces:
+  - VerifyInterfaceUtilization:
+```
+
+Once you run `anta nrfu table`, you will see following output:
+
+```bash
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Device IP ┃ Test Name                  ┃ Test Status ┃ Message(s) ┃ Test description                              ┃ Test category ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ spine01   │ VerifyZeroTouch            │ success     │            │ A custom test                                 │ demo, pr296   │
+│ spine01   │ VerifyRunningConfigDiffs   │ success     │            │                                               │ configuration │
+│ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
+└───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
+```

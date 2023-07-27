@@ -142,6 +142,8 @@ class AntaTest(ABC):
     TODO - complete doctstring with example
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     # Mandatory class attributes
     # TODO - find a way to tell mypy these are mandatory for child classes - maybe Protocol
     name: ClassVar[str]
@@ -161,16 +163,32 @@ class AntaTest(ABC):
         self,
         device: AntaDevice,
         template_params: list[dict[str, Any]] | None = None,
+        result_description: str | None = None,
+        result_categories: list[str] | None = None,
+        result_custom_field: str | None = None,
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
     ):
-        """Class constructor"""
+        """
+        AntaTest Constructor
+
+        Doc to be completed
+
+        Arguments:
+            result_custom_field (str): a free string that is included in the TestResult object
+        """
         # Accept 6 input arguments
         # pylint: disable=R0913
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
-        self.result: TestResult = TestResult(name=device.name, test=self.name, test_category=self.categories, test_description=self.description)
+        self.result: TestResult = TestResult(
+            name=device.name,
+            test=self.name,
+            categories=result_categories or self.categories,
+            description=result_description or self.description,
+            custom_field=result_custom_field,
+        )
         self.labels: List[str] = labels or []
         self.instance_commands: List[AntaCommand] = []
 

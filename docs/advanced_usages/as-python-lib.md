@@ -224,12 +224,14 @@ class VerifyTransceiversManufacturers(AntaTest):
 
 The test itself does not return any value, but the result is directly availble from your AntaTest object and exposes a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages:
 
+
 - `name` (str): Device name where the test has run.
 - `test` (str): Test name runs on the device.
-- `test_category` (List[str]): List of test categories the test belongs to.
-- `test_description` (str): Test description.
+- `categories` (List[str]): List of categories the TestResult belongs to, by default the AntaTest categories.
+- `description` (str): TestResult description, by default the AntaTest description.
 - `results` (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
-- `messages` (List[str], optional): Messages to report after the test if any.
+- `message` (str, optional): Message to report after the test if any.
+- `custom_field` (str, optional): Custom field to store a string for flexibility in integrating with ANTA
 
 ```python
 from anta.tests.hardware import VerifyTemperature
