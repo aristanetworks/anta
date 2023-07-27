@@ -199,7 +199,7 @@ class AsyncEOSDevice(AntaDevice):
             proto: eAPI protocol. Value can be 'http' or 'https'
         """
         if name is None:
-            name = f"{host}:{port}"
+            name = f"{host}{f':{port}' if port else ''}"
         super().__init__(name, tags)
         self.enable = enable
         self._enable_password = enable_password
