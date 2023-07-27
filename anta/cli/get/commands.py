@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import List, Optional
 
 import click
@@ -22,7 +23,7 @@ from anta.cli.console import console
 from anta.cli.utils import parse_tags
 from anta.models import DEFAULT_TAG
 
-from .utils import create_inventory, get_cv_token
+from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,36 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
         # Get devices under a container
         logger.info(f"Getting inventory for container {cvp_container} from {cvp_ip}")
         cvp_inventory = clnt.api.get_devices_in_container(cvp_container)
-    create_inventory(cvp_inventory, out_dir, cvp_container)
+    create_inventory_from_cvp(cvp_inventory, out_dir, cvp_container)
+
+
+@click.command(no_args_is_help=True)
+@click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, required=False)
+@click.option(
+    "--ansible-inventory",
+    "-i",
+    default=None,
+    help="Path to your ansible inventory file to read",
+    type=click.Path(file_okay=True, dir_okay=False, exists=True, path_type=Path),
+)
+@click.option(
+    "--output",
+    "-o",
+    default="inventory-ansible.yml",
+    help="Path to save inventory file",
+    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+)
+def from_ansible(output: Path, ansible_inventory: Path, ansible_group: str) -> None:
+    """Build ANTA inventory from an ansible inventory YAML file"""
+    logger.info(f"Building inventory from ansible file {ansible_inventory}")
+
+    # Create output directory
+    output.parent.mkdir(parents=True, exist_ok=True)
+    create_inventory_from_ansible(
+        inventory=ansible_inventory,
+        output_file=output,
+        ansible_root=ansible_group,
+    )
 
 
 @click.command()

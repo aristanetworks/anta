@@ -161,6 +161,7 @@ nav:
     - NRFU: cli/nrfu.md
     - Execute commands: cli/exec.md
     - Inventory from CVP: cli/inv-from-cvp.md
+    - Inventory from Ansible: cli/inv-from-ansible.md
     - Get Inventory Information: cli/get-inventory-information.md
     - Helpers: cli/debug.md
   - Advanced Usages:
@@ -189,7 +190,7 @@ nav:
     - System: api/tests.system.md
     - VXLAN: api/tests.vxlan.md
   - API Documentation:
-    - Inventory: 
+    - Inventory:
       - Inventory module: api/inventory.md
       - Inventory models: api/inventory.models.input.md
     - Device:
