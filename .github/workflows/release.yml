@@ -24,7 +24,7 @@ jobs:
       - name: Publish coverage badge to gh-pages branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # branch: coverage-badge
+          branch: coverage-badge
           folder: badge
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
