@@ -72,7 +72,7 @@ The documentation is published on [ANTA package website](https://www.anta.ninja)
 
 ## Contribution guide
 
-Contributions are welcome. Please refer to the [contribution guide](https://www.anta.ninja/main/contribution/)
+Contributions are welcome. Please refer to the [contribution guide](contribution.md)
 
 ## Credits
 

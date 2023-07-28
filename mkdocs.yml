@@ -58,7 +58,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/arista-netdevops-community/anta
     - icon: fontawesome/brands/docker
-      link: https://github.com/arista-netdevops-community/anta/pkgs/container/network-test-automation
+      link: https://github.com/arista-netdevops-community/anta/pkgs/container/anta
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/anta/
   version:
