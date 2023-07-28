@@ -1,6 +1,4 @@
-"""
-Arista Network Test Automation (ANTA) Framework
-"""
+"""Arista Network Test Automation (ANTA) Framework."""
 import importlib.metadata
 import os
 
