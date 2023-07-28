@@ -4,10 +4,12 @@ Tests for anta.cli.exec.commands
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
-from unittest.mock import ANY, patch
+from unittest.mock import ANY, MagicMock, patch
 
+import click
 import pytest
 
 from anta.cli import anta
@@ -51,6 +53,25 @@ def test_clear_counters(click_runner: CliRunner, tags: Optional[str]) -> None:
     assert result.exit_code == 0
 
 
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        pytest.param("anta_snapshot", "anta_snapshot_2023-05-04_00_42_42", id="default output dir"),
+        pytest.param("/tmp/custom_dir", "/tmp/custom_dir_2023-05-04_00_42_42", id="custom output dir"),
+    ],
+)
+def test__get_snapshot_dir(value: str, expected: str) -> None:
+    """
+    Test test__get_snapshot_dir
+    """
+    with patch("anta.cli.exec.commands.datetime") as mocked_datetime:
+        mocked_datetime.now.return_value = datetime(2023, 5, 4, 00, 42, 42, 368274)
+        # dummy ctx and params
+        ctx = MagicMock(auto_spec=click.Context)
+        params = MagicMock(auto_spec=click.Parameter)
+        assert str(_get_snapshot_dir(ctx, params, value)) in expected
+
+
 def test_snapshot_help(click_runner: CliRunner) -> None:
     """
     Test `anta exec snapshot --help`
@@ -81,21 +102,24 @@ def test_snapshot(click_runner: CliRunner, output: Optional[str], commands_path:
     cli_args = ["exec", "snapshot"]
 
     # Need to mock datetetime
-    expected_path = Path("")
-    if output is not None:
-        cli_args.extend(["--output", output])
-        expected_path = Path(f"{output}")
-    expected_commands = None
-    if commands_path is not None:
-        cli_args.extend(["--commands-list", str(commands_path)])
-        expected_commands = {"json_format": ["show version"], "text_format": ["show version"]}
-    expected_tags = None
-    if tags is not None:
-        cli_args.extend(["--tags", tags])
-        expected_tags = tags.split(",")
-    with patch("anta.cli.exec.commands.collect_commands") as mocked_subcommand:
-        mocked_subcommand.return_value = None
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+    with patch("anta.cli.exec.commands.datetime") as mocked_datetime:
+        mocked_datetime.now.return_value = datetime(2023, 5, 4, 00, 42, 42, 368274)
+
+        expected_path = Path("anta_snapshot_2023-05-04_00_42_42")
+        if output is not None:
+            cli_args.extend(["--output", output])
+            expected_path = Path(f"{output}")
+        expected_commands = None
+        if commands_path is not None:
+            cli_args.extend(["--commands-list", str(commands_path)])
+            expected_commands = {"json_format": ["show version"], "text_format": ["show version"]}
+        expected_tags = None
+        if tags is not None:
+            cli_args.extend(["--tags", tags])
+            expected_tags = tags.split(",")
+        with patch("anta.cli.exec.commands.collect_commands") as mocked_subcommand:
+            mocked_subcommand.return_value = None
+            result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
     # Failure scenarios
     if commands_path is None:
         assert result.exit_code == 2
@@ -104,11 +128,7 @@ def test_snapshot(click_runner: CliRunner, output: Optional[str], commands_path:
         assert result.exit_code == 2
         return
     # Successful scenarios
-    if output is not None:
-        mocked_subcommand.assert_called_once_with(ANY, expected_commands, expected_path, tags=expected_tags)
-    else:
-        mocked_subcommand.assert_called_once_with(ANY, expected_commands, ANY, tags=expected_tags)
-        # TODO should add check that path starts with "anta_snapshot_"
+    mocked_subcommand.assert_called_once_with(ANY, expected_commands, expected_path, tags=expected_tags)
     assert result.exit_code == 0
 
 
