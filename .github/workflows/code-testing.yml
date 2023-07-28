@@ -7,6 +7,28 @@ on:
   pull_request:
 
 jobs:
+  file-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'anta/*'
+              - 'anta/**'
+              - 'tests/*'
+              - 'tests/**'
+            docs:
+              - '.github/workflows/pull-request-management.yml'
+              - 'mkdocs.yml'
+              - 'docs/*'
+              - 'docs/**'
+              - 'README.md'
   check-requirements:
     runs-on: ubuntu-20.04
     strategy:
@@ -26,6 +48,8 @@ jobs:
   lint-yaml:
     name: Run linting for yaml files
     runs-on: ubuntu-20.04
+    needs: file-changes
+    if: needs.file-changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
@@ -40,6 +64,8 @@ jobs:
   lint-python:
     name: Run isort, black, flake8 and pylint
     runs-on: ubuntu-20.04
+    needs: file-changes
+    if: needs.file-changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -53,6 +79,8 @@ jobs:
   type-python:
     name: Run mypy
     runs-on: ubuntu-20.04
+    needs: file-changes
+    if: needs.file-changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
