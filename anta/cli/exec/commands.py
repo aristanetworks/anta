@@ -29,13 +29,6 @@ def clear_counters(ctx: click.Context, tags: Optional[List[str]]) -> None:
     asyncio.run(clear_counters_utils(ctx.obj["inventory"], tags=tags))
 
 
-def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) -> Path:  # pylint: disable=unused-argument
-    """Build directory name for command snapshots, including current time"""
-    if value != "anta_snapshot":
-        return Path(f"{value}")
-    return Path(f"anta_snapshot_{datetime.now().strftime('%Y-%m-%d_%H_%M_%S')}")
-
-
 @click.command()
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
@@ -51,11 +44,10 @@ def _get_snapshot_dir(ctx: click.Context, param: click.Parameter, value: str) ->
     "--output",
     "-o",
     show_envvar=True,
-    type=click.Path(file_okay=False, dir_okay=True, exists=False, writable=True),
+    type=click.Path(file_okay=False, dir_okay=True, exists=False, writable=True, path_type=Path),
     help="Directory to save commands output.",
-    default="anta_snapshot",
+    default=f"anta_snapshot_{datetime.now().strftime('%Y-%m-%d_%H_%M_%S')}",
     show_default=True,
-    callback=_get_snapshot_dir,
 )
 def snapshot(ctx: click.Context, tags: Optional[List[str]], commands_list: Path, output: Path) -> None:
     """Collect commands output from devices in inventory"""
