@@ -50,7 +50,7 @@ which anta
 
 # Chck ANTA version
 anta --version
-anta, version v0.6.0
+anta, version v0.7.0
 ```
 
 ## EOS Requirements
