@@ -78,8 +78,11 @@ async def collect_commands(
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags).values()
     logger.info("Collecting commands from remote devices")
-    coros = [collect(device, command, "json") for device, command in itertools.product(devices, commands["json_format"])]
-    coros += [collect(device, command, "text") for device, command in itertools.product(devices, commands["text_format"])]
+    coros = []
+    if "json_format" in commands:
+        coros += [collect(device, command, "json") for device, command in itertools.product(devices, commands["json_format"])]
+    if "text_format" in commands:
+        coros += [collect(device, command, "text") for device, command in itertools.product(devices, commands["text_format"])]
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
