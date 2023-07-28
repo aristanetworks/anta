@@ -1,37 +1,39 @@
-"""
-decorators for tests
-"""
+"""decorators for tests."""
+from __future__ import annotations
+
 from functools import wraps
-from typing import Any, Callable, List, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 from anta.models import AntaCommand, AntaTest
-from anta.result_manager.models import TestResult
 from anta.tools.misc import exc_to_str
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import TestResult
 
 # TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
-    """
-    Decorator factory to skip a test on a list of platforms
+def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
+    """Return a decorator factory to skip a test on a list of platforms.
 
     Args:
-    * platforms (List[str]): the list of platforms on which the decorated test should be skipped.
+    ----
+      platforms (List[str]): the list of platforms on which the decorated test should be skipped.
 
     """
 
     def decorator(function: F) -> F:
-        """
-        Decorator to skip a test ona list of platform
-        * func (Callable): the test to be decorated
+        """Implement the decorator to skip a test ona list of platform.
+
+        Args:
+        ----
+            function (F): the test to be decorated.
         """
 
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """
-            wrapper for func
-            """
+            """Implement the wrapper for func."""
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
@@ -51,25 +53,25 @@ def skip_on_platforms(platforms: List[str]) -> Callable[[F], F]:
 
 
 def check_bgp_family_enable(family: str) -> Callable[[F], F]:
-    """
-    Decorator factory to skip a test if BGP is enabled
+    """Return a decorator factory to skip a test if BGP is enabled.
 
     Args:
-    * family (str): BGP family to check. Can be ipv4 / ipv6 / evpn / rtc
+    ----
+        family (str): BGP family to check. Can be ipv4 / ipv6 / evpn / rtc
 
     """
 
     def decorator(function: F) -> F:
-        """
-        Decorator to skip a test if an address family is not configured
-        * func (Callable): the test to be decorated
+        """Implement the decorator to skip a test if an address family is not configured.
+
+        Args:
+        ----
+            function (F): the test to be decorated.
         """
 
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """
-            wrapper for func
-            """
+            """Implement the wrapper for func."""
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
