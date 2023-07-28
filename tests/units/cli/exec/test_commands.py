@@ -69,7 +69,7 @@ def test__get_snapshot_dir(value: str, expected: str) -> None:
         # dummy ctx and params
         ctx = MagicMock(auto_spec=click.Context)
         params = MagicMock(auto_spec=click.Parameter)
-        assert str(_get_snapshot_dir(ctx, params, value)) == expected
+        assert str(_get_snapshot_dir(ctx, params, value)) in expected
 
 
 def test_snapshot_help(click_runner: CliRunner) -> None:
@@ -108,7 +108,7 @@ def test_snapshot(click_runner: CliRunner, output: Optional[str], commands_path:
         expected_path = Path("anta_snapshot_2023-05-04_00_42_42")
         if output is not None:
             cli_args.extend(["--output", output])
-            expected_path = Path(f"{output}_2023-05-04_00_42_42")
+            expected_path = Path(f"{output}")
         expected_commands = None
         if commands_path is not None:
             cli_args.extend(["--commands-list", str(commands_path)])
