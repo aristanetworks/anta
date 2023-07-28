@@ -86,36 +86,35 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         " the actual number of BGP IPv4 unicast neighbors is the one we expect."
     )
     categories = ["routing", "bgp"]
-    template = AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")
+    commands = [AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")]
+
+    class Input(AntaTest.Input):
+        """Abstract class defining inputs for a test in ANTA"""
+        vrf: str
+        """VRF context"""
+        number: int
+        """The expected number of BGP IPv4 unicast neighbors"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render VerifyBGPIPv4UnicastCount template"""
+        return [template.render({"vrf": self.inputs.vrf})]
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None) -> None:
-        """
-        Run VerifyBGPIPv4UnicastCount validation
-
-        Args:
-            number: The expected number of BGP IPv4 unicast neighbors.
-            vrf: VRF to verify (template parameter)
-        """
-
-        if not number:
-            self.result.is_skipped("VerifyBGPIPv4UnicastCount could not run because number was not supplied")
-            return
+    def test(self) -> None:
+        """Run VerifyBGPIPv4UnicastCount validation"""
 
         self.result.is_success()
 
-        for command in self.instance_commands:
-            if command.params and "vrf" in command.params:
-                vrf = command.params["vrf"]
+        command = self.instance_commands[0]
 
-            peers = command.json_output["vrfs"][vrf]["peers"]
-            state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
+        peers = command.json_output["vrfs"][self.inputs.vrf]["peers"]
+        state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
 
-            if len(peers) != number:
-                self.result.is_failure(f"Expecting {number} BGP peer in vrf {vrf} and got {len(peers)}")
-            if state_issue:
-                self.result.is_failure(f"The following IPv4 peers are not established: {state_issue}")
+        if len(peers) != self.inputs.number:
+            self.result.is_failure(f"Expecting {self.inputs.number} BGP peer in vrf {self.inputs.vrf} and got {len(peers)}")
+        if state_issue:
+            self.result.is_failure(f"The following IPv4 peers are not established: {state_issue}")
 
 
 class VerifyBGPIPv6UnicastState(AntaTest):
