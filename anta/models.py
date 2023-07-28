@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union, Type
 
 from pydantic import BaseModel, ConfigDict, conint
 from rich.progress import Progress, TaskID
@@ -65,7 +65,10 @@ class AntaTemplate(BaseModel):
                           This AntaCommand instance have a template attribute that references this
                           AntaTemplate instance.
         """
-        return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
+        try:
+            return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
+        except KeyError as e:
+            raise AntaTemplateRenderError(self, e.args[0]) from e
 
 
 class AntaCommand(BaseModel):
@@ -138,8 +141,39 @@ class AntaTestFilter(ABC):
         """
 
 
+class AntaTestRenderError(Exception):
+    """
+    Raised when an AntaTest object could not be instantiated because AntaTemplate
+    instances were not rendered by the AntaTest.render() method
+    """
+
+    name: str
+    error: AntaTemplateRenderError
+
+
+class AntaTemplateRenderError(RuntimeError):
+    """
+    Exception class for EAPI command errors
+    """
+
+    def __init__(self, template: AntaTemplate, key: str):
+        """Constructor for AntaTemplateRenderError
+
+        Args:
+            template: The AntaTemplate instance that failed to render
+            key: Key that has not been provided to render the template
+        """
+        self.template = template
+        self.key = key
+        super().__init__()
+
+    def __str__(self) -> str:
+        """Returns the error message associated with the exception"""
+        return f"{self.template}: Missing template parameter {self.key}"
+
+
 class AntaTest(ABC):
-    """Abstract class defining a test for Anta
+    """Abstract class defining a test in ANTA
 
     The goal of this class is to handle the heavy lifting and make
     writing a test as simple as possible.
@@ -155,67 +189,83 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     # Or any child type
-    commands: ClassVar[list[AntaCommand]]
-    # TODO - today we support only one template per Test
-    template: ClassVar[AntaTemplate]
+    commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
     progress: Optional[Progress] = None
     nrfu_task: Optional[TaskID] = None
 
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
 
+    class Input(ABC, BaseModel):
+        """Abstract class defining inputs for a test in ANTA
+
+        anta.tests.connectivity:
+            - VerifyReachability:
+                src: Loopback0
+                dst: 10.1.0.1
+                result_overwrite:
+                    categories:
+                        - "Overwritten category 1"
+                    description: "Test with overwritten description"
+                    custom_field: "Test run by John Doe"
+
+        Args:
+            result_custom_field: a free string that is included in the TestResult object
+        """
+
+        class ResultOverwrite(BaseModel):
+            """Test inputs model to overwrite result fields"""
+
+            description: Optional[str] = None
+            categories: Optional[list[str]] = None
+            custom_field: Optional[str] = None
+
+        result_overwrite: Optional[ResultOverwrite] = None
+
     def __init__(
         self,
         device: AntaDevice,
-        template_params: list[dict[str, Any]] | None = None,
-        result_description: str | None = None,
-        result_categories: list[str] | None = None,
-        result_custom_field: str | None = None,
+        inputs: Type[Input],
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
     ):
-        """
-        AntaTest Constructor
-
-        Doc to be completed
-
-        Arguments:
-            result_custom_field (str): a free string that is included in the TestResult object
-        """
-        # Accept 6 input arguments
-        # pylint: disable=R0913
+        """AntaTest Constructor"""
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
+        self.inputs = inputs
+        inputs_result = self.inputs.result_overwrite
+
         self.result: TestResult = TestResult(
             name=device.name,
             test=self.name,
-            categories=result_categories or self.categories,
-            description=result_description or self.description,
-            custom_field=result_custom_field,
+            categories=inputs_result.categories if inputs_result and inputs_result.categories else self.categories,
+            description=inputs_result.description if inputs_result and inputs_result.description else self.description,
+            custom_field=inputs_result.custom_field if inputs_result else None,
         )
         self.labels: List[str] = labels or []
-        self.instance_commands: List[AntaCommand] = []
-
-        # TODO - check optimization for deepcopy
-        # Generating instance_commands from list of commands and template
-        if hasattr(self.__class__, "commands") and (cmds := self.__class__.commands) is not None:
-            self.instance_commands.extend(deepcopy(cmds))
-        if hasattr(self.__class__, "template") and (tpl := self.__class__.template) is not None:
-            if template_params is None:
-                self.result.is_error("Command has template but no params were given")
-                return
-            self.template_params = template_params
-            for param in template_params:
+        self.instance_commands: list[AntaCommand] = []
+        for cmd in self.__class__.commands:
+            if isinstance(cmd, AntaCommand):
+                self.instance_commands.append(deepcopy(cmd))
+            elif isinstance(cmd, AntaTemplate):
                 try:
-                    self.instance_commands.append(tpl.render(param))
-                except KeyError:
-                    self.result.is_error(f"Cannot render template '{tpl.template}': wrong parameters")
+                    self.instance_commands.extend(self.render(cmd))
+                except AntaTemplateRenderError as e:
+                    self.result.is_error(f"Cannot render template {{{e.template}}}")
                     return
 
         if eos_data is not None:
             self.logger.debug("Test initialized with input data")
             self.save_commands_data(eos_data)
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render an AntaTemplate instance of this AntaTest using the provided
+           AntaTest.Input instance at self.inputs.
+
+        This is not an abstract method because it does not need to be implemented if there is
+        no AntaTemplate for this test."""
+        raise NotImplementedError(f"render() method has not been implemented for {self.__module__}.{self.name}")
 
     def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
         """Called at init or at test execution time"""

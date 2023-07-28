@@ -10,12 +10,13 @@ import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
+from pydantic_core import ValidationError
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
-from anta.result_manager.models import TestResult
+from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +76,18 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
         logger.debug("ANTA Debug Mode enabled")
 
 
-def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
+def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[AntaTest, AntaTest.Input]]:
     """
-    Function to parse the catalog and return a list of tests
+    Function to parse the catalog and return a list of tests with their inputs
 
     Args:
         test_catalog (Dict[Any, Any]): List of tests defined in catalog YAML file
 
     Returns:
-        List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
+        tests: List of tuples (test, inputs) where test is a reference of an AntaTest subclass
+              and inputs is an instance of AntaTest.TestInput
     """
-    tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]] = []
+    tests: List[Tuple[AntaTest, AntaTest.Input]] = []
     if not test_catalog:
         return tests
     for key, value in test_catalog.items():
@@ -100,16 +102,22 @@ def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -
         if isinstance(value, list):
             # This is a list of tests
             for test in value:
-                for func_name, args in test.items():
+                for test_name, inputs in test.items():
                     try:
-                        func = getattr(module, func_name)
+                        test = getattr(module, test_name)
                     except AttributeError:
-                        logger.error(f"Wrong test function name '{func_name}' in '{module.__name__}'")
+                        logger.error(f"Wrong test name '{test_name}' in '{module.__name__}'")
                         sys.exit(1)
-                    if not callable(func):
-                        logger.error(f"'{func.__module__}.{func.__name__}' is not a function")
+                    if not issubclass(test, AntaTest):
+                        logger.error(f"'{test.__module__}.{test.__name__}' is not an AntaTest subclass")
                         sys.exit(1)
-                    tests.append((func, args if args is not None else {}))
+                    # Instantiate AntaTest.TestInput to validate test inputs from defined model
+                    try:
+                        inputs = test.Input(**inputs)
+                    except ValidationError as e:
+                        logger.error(f"'{test.__module__}.{test.__name__}' inputs are not valid: {e}")
+                        sys.exit(1)
+                    tests.append((test, inputs))
         if isinstance(value, dict):
             # This is an inner Python module
             tests.extend(parse_catalog(value, package=module.__name__))
