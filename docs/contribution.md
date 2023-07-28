@@ -20,7 +20,7 @@ $ pip install -e .[dev]
 $ pip list -e
 Package Version Editable project location
 ------- ------- -------------------------
-anta    0.6.0   /mnt/lab/projects/anta
+anta    0.7.0   /mnt/lab/projects/anta
 ```
 
 Then, [`tox`](https://tox.wiki/) is configued with few environments to run CI locally:
