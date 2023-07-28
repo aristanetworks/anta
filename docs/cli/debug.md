@@ -100,8 +100,20 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
     'sourceDetail': ''
 }
 ```
+
+You can provide a list of different values for the same key like in the example below:
+
+```bash
+anta debug run-template -d spine01 -t "show interfaces Ethernet{eth_id}" eth_id 1 eth_id 2
+...
+Run templated command 'show interfaces Ethernet{eth_id}' with {'eth_id': '1'} on spine01
+{...}
+Run templated command 'show interfaces Ethernet{eth_id}' with {'eth_id': '2'} on spine01
+{...}
+```
+
 !!! warning
-    If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
+    Only a single variable is supported in the template.
 
 ### Example of multiple arguments
 
@@ -109,7 +121,7 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
 > {'dst': '8.8.8.8', 'src': 'Loopback0'}
 
-anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1           
+anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1          
 > {'dst': '1.1.1.1', 'src': 'Loopback1'}
 # Notice how `src` and `dst` keep only the latest value
 ```
