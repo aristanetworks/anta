@@ -34,6 +34,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
+    needs: file-changes
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -48,7 +49,7 @@ jobs:
   lint-yaml:
     name: Run linting for yaml files
     runs-on: ubuntu-20.04
-    needs: file-changes
+    needs: [file-changes, check-requirements]
     if: needs.file-changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v3
