@@ -8,7 +8,7 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -74,12 +74,13 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     """
     Verifies all IPv4 unicast BGP sessions are established
     and all BGP messages queues for these sessions are empty
-    and the actual number of BGP IPv4 unicast neighbors is the one we expect.
+    and the actual number of BGP IPv4 unicast neighbors is the one we expect
+    in all VRFs specified as input.
 
-    * self.result = "skipped" if the `number` or `vrf` parameter is missing
     * self.result = "success" if all IPv4 unicast BGP sessions are established
                          and if all BGP messages queues for these sessions are empty
-                         and if the actual number of BGP IPv4 unicast neighbors is equal to `number.
+                         and if the actual number of BGP IPv4 unicast neighbors is equal to `number
+                         in all VRFs specified as input.
     * self.result = "failure" otherwise.
     """
 
@@ -94,14 +95,14 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     class Input(AntaTest.Input):
         """Abstract class defining inputs for a test in ANTA"""
 
-        vrf: str
+        vrfs: List[str]
         """VRF context"""
         number: int
         """The expected number of BGP IPv4 unicast neighbors"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render VerifyBGPIPv4UnicastCount template"""
-        return [template.render({"vrf": self.inputs.vrf})]
+        return [template.render({"vrf": vrf}) for vrf in self.inputs.vrfs]
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
@@ -110,15 +111,17 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
 
         self.result.is_success()
 
-        command = self.instance_commands[0]
+        for command in self.instance_commands:
+            if command.params and "vrf" in command.params:
+                vrf = command.params["vrf"]
 
-        peers = command.json_output["vrfs"][self.inputs.vrf]["peers"]
-        state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
+            peers = command.json_output["vrfs"][vrf]["peers"]
+            state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
 
-        if len(peers) != self.inputs.number:
-            self.result.is_failure(f"Expecting {self.inputs.number} BGP peer in vrf {self.inputs.vrf} and got {len(peers)}")
-        if state_issue:
-            self.result.is_failure(f"The following IPv4 peers are not established: {state_issue}")
+            if len(peers) != self.inputs.number:
+                self.result.is_failure(f"Expecting {self.inputs.number} BGP peer in vrf {vrf} and got {len(peers)}")
+            if state_issue:
+                self.result.is_failure(f"The following IPv4 peers are not established: {state_issue}")
 
 
 class VerifyBGPIPv6UnicastState(AntaTest):

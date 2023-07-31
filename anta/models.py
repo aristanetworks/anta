@@ -266,7 +266,7 @@ class AntaTest(ABC):
         no AntaTemplate for this test."""
         raise NotImplementedError(f"render() method has not been implemented for {self.__module__}.{self.name}")
 
-    def save_commands_data(self, eos_data: list[dict[Any, Any] | str]) -> None:
+    def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Called at init or at test execution time"""
         if len(eos_data) != len(self.instance_commands):
             self.result.is_error("Test initialization error: Trying to save more data than there are commands for the test")

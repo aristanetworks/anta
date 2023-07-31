@@ -7,7 +7,6 @@ Tests for anta.tests.routing.bgp.py
 from __future__ import annotations
 
 import asyncio
-import logging
 from functools import wraps
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -64,13 +63,8 @@ from .data import (  # noqa: E402
 def test_VerifyBGPIPv4UnicastState(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPIPv4UnicastState."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPIPv4UnicastState(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -81,17 +75,12 @@ def test_VerifyBGPIPv4UnicastState(mocked_device: MagicMock, test_data: Any) -> 
 def test_VerifyBGPIPv4UnicastCount(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPIPv4UnicastCount."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPIPv4UnicastCount(
         mocked_device,
+        inputs=test_data["inputs"],
         eos_data=test_data["eos_data"],
-        template_params=test_data["side_effect"]["template_params"],
     )
-    asyncio.run(test.test(number=test_data["side_effect"]["number"]))
-
-    logging.info(f"test result is: {test.result}")
+    asyncio.run(test.test())
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -102,13 +91,8 @@ def test_VerifyBGPIPv4UnicastCount(mocked_device: MagicMock, test_data: Any) -> 
 def test_VerifyBGPIPv6UnicastState(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPIPv6UnicastState."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPIPv6UnicastState(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -119,13 +103,8 @@ def test_VerifyBGPIPv6UnicastState(mocked_device: MagicMock, test_data: Any) -> 
 def test_VerifyBGPEVPNState(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPEVPNState."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPEVPNState(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -136,13 +115,8 @@ def test_VerifyBGPEVPNState(mocked_device: MagicMock, test_data: Any) -> None:
 def test_VerifyBGPEVPNCount(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPEVPNCount."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPEVPNCount(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test(number=test_data["side_effect"]["number"]))
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -153,13 +127,8 @@ def test_VerifyBGPEVPNCount(mocked_device: MagicMock, test_data: Any) -> None:
 def test_VerifyBGPRTCState(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPRTCState."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPRTCState(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
@@ -170,13 +139,8 @@ def test_VerifyBGPRTCState(mocked_device: MagicMock, test_data: Any) -> None:
 def test_VerifyBGPRTCCount(mocked_device: MagicMock, test_data: Any) -> None:
     """Check VerifyBGPRTCCount."""
 
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
     test = VerifyBGPRTCCount(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test(number=test_data["side_effect"]["number"]))
-
-    logging.info(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]

@@ -131,6 +131,7 @@ INPUT_BGP_IPV4_UNICAST_STATE: List[Dict[str, Any]] = [
 INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
     {
         "name": "success-vrfs",
+        "inputs": {"vrfs": ["BLAH", "BLIH"], "number": 1},
         "eos_data": [
             {
                 "vrfs": {
@@ -183,12 +184,12 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"template_params": [{"vrf": "BLAH"}, {"vrf": "BLIH"}], "number": 1},
         "expected_result": "success",
         "expected_messages": [],
     },
     {
         "name": "failure-count",
+        "inputs": {"vrfs": ["BLAH"], "number": 2},
         "eos_data": [
             {
                 "vrfs": {
@@ -216,12 +217,12 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": [{"vrf": "BLAH"}], "number": 2},
         "expected_result": "failure",
         "expected_messages": ["Expecting 2 BGP peer in vrf BLAH and got 1"],
     },
     {
         "name": "failure-Established",
+        "inputs": {"vrfs": ["BLAH"], "number": 1},
         "eos_data": [
             {
                 "vrfs": {
@@ -249,30 +250,39 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": [{"vrf": "BLAH"}], "number": 1},
         "expected_result": "failure",
         "expected_messages": ["The following IPv4 peers are not established: {'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"],
     },
     {
-        "name": "error-no-template-params",
+        "name": "error-empty-vrfs",
+        "inputs": {"vrfs": [], "number": 2},
         "eos_data": [{"vrfs": {}}],
-        "side_effect": {"template_params": None, "number": 1},
-        "expected_result": "error",
-        "expected_messages": ["Command has template but no params were given"],
-    },
-    {
-        "name": "error-empty-template-params",
-        "eos_data": [{"vrfs": {}}],
-        "side_effect": {"template_params": [], "number": 1},
         "expected_result": "error",
         "expected_messages": ["Test initialization error: Trying to save more data than there are commands for the test"],
     },
     {
-        "name": "skipped-number",
+        "name": "skipped-vrfs",
+        "inputs": {"vrfs": None, "number": 2},
         "eos_data": [{"vrfs": {}}],
-        "side_effect": {"template_params": [{"vrf": "BLAH"}], "number": None},
         "expected_result": "skipped",
-        "expected_messages": ["VerifyBGPIPv4UnicastCount could not run because number was not supplied"],
+        "expected_messages": [
+            """1 validation error for Input
+vrfs
+  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.1.2/v/list_type"""
+        ],
+    },
+    {
+        "name": "skipped-number",
+        "inputs": {"vrfs": ["BLAH"], "number": None},
+        "eos_data": [{"vrfs": {}}],
+        "expected_result": "skipped",
+        "expected_messages": [
+            """1 validation error for Input
+number
+  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.1.2/v/int_type"""
+        ],
     },
 ]
 
