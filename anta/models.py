@@ -255,6 +255,14 @@ class AntaTest(ABC):
                     except AntaTemplateRenderError as e:
                         self.result.is_error(f"Cannot render template {{{e.template}}}")
                         return
+                    except Exception as e:  # pylint: disable=broad-exception-caught
+                        # render() is user-defined code.
+                        # We need to catch everything if we want the AntaTest object
+                        # to live until the reporting
+                        message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
+                        anta_log_exception(e, message, logger)
+                        self.result.is_error(f"{message}: {exc_to_str(e)}")
+                        return
 
         if eos_data is not None:
             self.logger.debug(f"Test {self.name} initialized with input data")
