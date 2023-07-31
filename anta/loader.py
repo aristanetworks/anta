@@ -87,13 +87,32 @@ def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> l
     Example:
         anta.tests.connectivity:
             - VerifyReachability:
-                - 
+                hosts:
+                    - dst: 8.8.8.8
+                      src: 172.16.0.1
+                    - dst: 1.1.1.1
+                      src: 172.16.0.1
                 result_overwrite:
                     categories:
                         - "Overwritten category 1"
                     description: "Test with overwritten description"
                     custom_field: "Test run by John Doe"
-                
+
+    Also supports nesting for Python module definition:
+        anta.tests:
+            connectivity:
+                - VerifyReachability:
+                    hosts:
+                        - dst: 8.8.8.8
+                          src: 172.16.0.1
+                        - dst: 1.1.1.1
+                          src: 172.16.0.1
+                    result_overwrite:
+                        categories:
+                            - "Overwritten category 1"
+                        description: "Test with overwritten description"
+                        custom_field: "Test run by John Doe"
+
     Args:
         test_catalog: Python dictionary representing the test catalog YAML file
 
