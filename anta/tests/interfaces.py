@@ -44,27 +44,33 @@ class VerifyInterfaceUtilization(AntaTest):
 
 class VerifyInterfaceErrors(AntaTest):
     """
-    Verifies interfaces error counters are equal to zero.
+    This test verifies that interfaces error counters are equal to zero.
+
+    Expected Results:
+        * success: The test will pass if all interfaces have error counters equal to zero.
+        * failure: The test will fail if one or more interfaces have non-zero error counters.
     """
 
     name = "VerifyInterfaceErrors"
-    description = "Verifies interfaces error counters are equal to zero."
+    description = "Verifies that interfaces error counters are equal to zero."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces counters errors")]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyInterfaceUtilization validation"""
-
+        """
+        Run VerifyInterfaceErrors validation
+        """
         command_output = self.instance_commands[0].json_output
 
         wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
-        for interface, outer_v in command_output["interfaceErrorCounters"].items():
-            wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
+        for interface, counters in command_output["interfaceErrorCounters"].items():
+            if any(value > 0 for value in counters.values()) and not any(interface in wrong_interface for wrong_interface in wrong_interfaces):
+                wrong_interfaces.append({interface: counters})
         if not wrong_interfaces:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following interfaces have non 0 error counter(s): {wrong_interfaces}")
+            self.result.is_failure(f"The following interface(s) have non-zero error counters: {wrong_interfaces}")
 
 
 class VerifyInterfaceDiscards(AntaTest):

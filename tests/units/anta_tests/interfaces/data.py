@@ -45,7 +45,7 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
         "expected_messages": [],
     },
     {
-        "name": "failure",
+        "name": "failure-multiple-intfs",
         "eos_data": [
             {
                 "interfaceErrorCounters": {
@@ -57,9 +57,43 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
         "side_effect": [],
         "expected_result": "failure",
         "expected_messages": [
-            "The following interfaces have non 0 error counter(s): [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
+            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
             " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
+        ],
+    },
+    {
+        "name": "failure-multiple-intfs-multiple-errors",
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 10, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                    "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 6, "symbolErrors": 10},
+                }
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": [
+            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
+            " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
+            " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
+        ],
+    },
+    {
+        "name": "failure-single-intf-multiple-errors",
+        "eos_data": [
+            {
+                "interfaceErrorCounters": {
+                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
+                }
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": [
+            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
+            " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
         ],
     },
 ]
