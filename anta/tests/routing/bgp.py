@@ -4,6 +4,9 @@
 """
 BGP test functions
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
@@ -90,6 +93,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
 
     class Input(AntaTest.Input):
         """Abstract class defining inputs for a test in ANTA"""
+
         vrf: str
         """VRF context"""
         number: int

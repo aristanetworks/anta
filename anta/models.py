@@ -4,7 +4,6 @@
 """
 Models to define a TestStructure
 """
-
 from __future__ import annotations
 
 import logging
@@ -13,9 +12,9 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union, Type
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, conint
+from pydantic import BaseModel, ConfigDict, ValidationError, conint
 from rich.progress import Progress, TaskID
 
 from anta.result_manager.models import TestResult
@@ -53,7 +52,7 @@ class AntaTemplate(BaseModel):
     revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
 
-    def render(self, params: Dict[str, Any]) -> AntaCommand:
+    def render(self, params: dict[str, Any]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
         Keep the parameters used in the AntaTemplate instance.
 
@@ -97,7 +96,7 @@ class AntaCommand(BaseModel):
     params: Optional[Dict[str, Any]] = None
 
     @property
-    def json_output(self) -> Dict[str, Any]:
+    def json_output(self) -> dict[str, Any]:
         """Get the command output as JSON"""
         if self.output is None:
             raise RuntimeError(f"There is no output for command {self.command}")
@@ -141,19 +140,10 @@ class AntaTestFilter(ABC):
         """
 
 
-class AntaTestRenderError(Exception):
-    """
-    Raised when an AntaTest object could not be instantiated because AntaTemplate
-    instances were not rendered by the AntaTest.render() method
-    """
-
-    name: str
-    error: AntaTemplateRenderError
-
-
 class AntaTemplateRenderError(RuntimeError):
     """
-    Exception class for EAPI command errors
+    Raised when an AntaTemplate object could not be rendered
+    because of missing parameters
     """
 
     def __init__(self, template: AntaTemplate, key: str):
@@ -217,7 +207,7 @@ class AntaTest(ABC):
             """Test inputs model to overwrite result fields"""
 
             description: Optional[str] = None
-            categories: Optional[list[str]] = None
+            categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
 
         result_overwrite: Optional[ResultOverwrite] = None
@@ -225,7 +215,7 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
-        inputs: Type[Input],
+        inputs: dict[str, Any] | None,
         # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
         labels: list[str] | None = None,
@@ -233,30 +223,39 @@ class AntaTest(ABC):
         """AntaTest Constructor"""
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
-        self.inputs = inputs
-        inputs_result = self.inputs.result_overwrite
-
-        self.result: TestResult = TestResult(
-            name=device.name,
-            test=self.name,
-            categories=inputs_result.categories if inputs_result and inputs_result.categories else self.categories,
-            description=inputs_result.description if inputs_result and inputs_result.description else self.description,
-            custom_field=inputs_result.custom_field if inputs_result else None,
-        )
-        self.labels: List[str] = labels or []
+        self.labels: list[str] = labels or []
         self.instance_commands: list[AntaCommand] = []
-        for cmd in self.__class__.commands:
-            if isinstance(cmd, AntaCommand):
-                self.instance_commands.append(deepcopy(cmd))
-            elif isinstance(cmd, AntaTemplate):
-                try:
-                    self.instance_commands.extend(self.render(cmd))
-                except AntaTemplateRenderError as e:
-                    self.result.is_error(f"Cannot render template {{{e.template}}}")
-                    return
+        self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
+        # Instantiate AntaTest.TestInput to validate test inputs from defined model
+        try:
+            if inputs:
+                self.inputs = self.Input(**inputs)  # type: ignore[attr-defined]
+            else:
+                self.inputs = self.Input()  # type: ignore[attr-defined]
+        except ValidationError as e:
+            self.logger.error(f"{self.__module__}.{self.__class__.__name__}: inputs are not valid: {e}")
+            self.result.is_skipped(str(e))
+            return
+        if res_ow := self.inputs.result_overwrite:
+            if res_ow.categories:
+                self.result.categories = res_ow.categories
+            if res_ow.description:
+                self.result.description = res_ow.description
+            self.result.custom_field = res_ow.custom_field
+
+        if self.__class__.commands:
+            for cmd in self.__class__.commands:
+                if isinstance(cmd, AntaCommand):
+                    self.instance_commands.append(deepcopy(cmd))
+                elif isinstance(cmd, AntaTemplate):
+                    try:
+                        self.instance_commands.extend(self.render(cmd))
+                    except AntaTemplateRenderError as e:
+                        self.result.is_error(f"Cannot render template {{{e.template}}}")
+                        return
 
         if eos_data is not None:
-            self.logger.debug("Test initialized with input data")
+            self.logger.debug(f"Test {self.name} initialized with input data")
             self.save_commands_data(eos_data)
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -279,7 +278,7 @@ class AntaTest(ABC):
         """returns True if output is populated for every command"""
         return all(command.collected for command in self.instance_commands)
 
-    def get_failed_commands(self) -> List[AntaCommand]:
+    def get_failed_commands(self) -> list[AntaCommand]:
         """returns a list of all the commands that have a populated failed field"""
         return [command for command in self.instance_commands if command.failed is not None]
 
