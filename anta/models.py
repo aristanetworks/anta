@@ -260,7 +260,7 @@ class AntaTest(ABC):
                         # We need to catch everything if we want the AntaTest object
                         # to live until the reporting
                         message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
-                        anta_log_exception(e, message, logger)
+                        anta_log_exception(e, message, self.logger)
                         self.result.is_error(f"{message}: {exc_to_str(e)}")
                         return
 
