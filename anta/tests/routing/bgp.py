@@ -93,7 +93,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     commands = [AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")]
 
     class Input(AntaTest.Input):
-        """Abstract class defining inputs for a test in ANTA"""
+        """VerifyBGPIPv4UnicastCount inputs"""
 
         vrfs: List[str]
         """VRF context"""

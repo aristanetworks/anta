@@ -79,8 +79,23 @@ def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> l
     """
     Function to parse the catalog and return a list of tests with their inputs
 
+    A valid test catalog must follow the following structure:
+        <Python module>:
+            - <AntaTest subclass>:
+                <AntaTest.Input compliant dictionary>
+
+    Example:
+        anta.tests.connectivity:
+            - VerifyReachability:
+                - 
+                result_overwrite:
+                    categories:
+                        - "Overwritten category 1"
+                    description: "Test with overwritten description"
+                    custom_field: "Test run by John Doe"
+                
     Args:
-        test_catalog: YAML file parsed as a dictionary with test definitions
+        test_catalog: Python dictionary representing the test catalog YAML file
 
     Returns:
         tests: List of tuples (test, inputs) where test is a reference of an AntaTest subclass

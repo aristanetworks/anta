@@ -171,8 +171,6 @@ class AntaTest(ABC):
     TODO - complete doctstring with example
     """
 
-    # pylint: disable=too-many-instance-attributes
-
     # Mandatory class attributes
     # TODO - find a way to tell mypy these are mandatory for child classes - maybe Protocol
     name: ClassVar[str]
@@ -187,12 +185,12 @@ class AntaTest(ABC):
     test_filters: ClassVar[list[AntaTestFilter]]
 
     class Input(ABC, BaseModel):
-        """Abstract class defining inputs for a test in ANTA
+        """Abstract class defining inputs for a test in ANTA.
 
-        anta.tests.connectivity:
-            - VerifyReachability:
-                src: Loopback0
-                dst: 10.1.0.1
+        A valid test catalog will looks like:
+
+        <Python module>:
+            - <AntaTest subclass>:
                 result_overwrite:
                     categories:
                         - "Overwritten category 1"
@@ -200,11 +198,15 @@ class AntaTest(ABC):
                     custom_field: "Test run by John Doe"
 
         Args:
-            result_custom_field: a free string that is included in the TestResult object
+            result_overwrite: Define fields to overwrite in the TestResult object
         """
 
         class ResultOverwrite(BaseModel):
-            """Test inputs model to overwrite result fields"""
+            """Test inputs model to overwrite result fields
+
+            Args:
+                custom_field: a free string that will be included in the TestResult object
+            """
 
             description: Optional[str] = None
             categories: Optional[List[str]] = None
