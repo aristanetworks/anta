@@ -4,9 +4,18 @@
 """
 Test functions related to various connectivity checks
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, List
+
+from pydantic import BaseModel
+from ipaddress import IPv4Address
 from anta.models import AntaTemplate, AntaTest
+
+if TYPE_CHECKING:
+    from anta.models import AntaCommand
 
 
 class VerifyReachability(AntaTest):
@@ -16,13 +25,32 @@ class VerifyReachability(AntaTest):
     Expected Results:
         * success: The test will pass if all destination IP(s) are reachable.
         * failure: The test will fail if one or many destination IP(s) are unreachable.
-        * error: The test will give an error if the destination IP(s) or the source interface/IP(s) are not provided as template_params.
     """
 
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories = ["connectivity"]
-    template = AntaTemplate(template="ping {dst} source {src} repeat 2")
+    commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
+
+    class Input(AntaTest.Input):
+        """VerifyReachability inputs"""
+
+        hosts: List[Host]
+        """List of hosts to ping"""
+
+        class Host(BaseModel):
+            """Remote host to ping"""
+
+            dst: IPv4Address
+            """IPv4 address to ping"""
+            src: IPv4Address
+            """IPv4 address to use as source IP"""
+            vrf: str = 'default'
+            """VRF context"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render VerifyReachability template"""
+        return [template.render({"dst": host.dst, "src": host.src, "vrf": host.vrf}) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -35,12 +63,8 @@ class VerifyReachability(AntaTest):
         for command in self.instance_commands:
             if command.params and ("src" and "dst") in command.params:
                 src, dst = command.params["src"], command.params["dst"]
-            else:
-                self.result.is_error("The destination IP(s) or the source interface/IP(s) are not provided as template_params")
-                return
-
             if "2 received" not in command.json_output["messages"][0]:
-                failures.append((src, dst))
+                failures.append((str(src), str(dst)))
 
         if not failures:
             self.result.is_success()
