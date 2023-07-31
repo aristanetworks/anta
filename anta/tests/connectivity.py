@@ -8,10 +8,11 @@ Test functions related to various connectivity checks
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, List
 
 from pydantic import BaseModel
-from ipaddress import IPv4Address
+
 from anta.models import AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -45,7 +46,7 @@ class VerifyReachability(AntaTest):
             """IPv4 address to ping"""
             src: IPv4Address
             """IPv4 address to use as source IP"""
-            vrf: str = 'default'
+            vrf: str = "default"
             """VRF context"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:

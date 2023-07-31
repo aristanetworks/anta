@@ -228,12 +228,20 @@ class AntaTest(ABC):
         self.labels: list[str] = labels or []
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
-        # Instantiate AntaTest.TestInput to validate test inputs from defined model
+        self._init_inputs(inputs)
+        self._init_commands(eos_data)
+
+    def _init_inputs(self, inputs: dict[str, Any] | None) -> None:
+        """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance
+        to validate test inputs from defined model.
+        Overwrite result fields based on `ResultOverwrite` input definition.
+
+        Any input validation error will set this test result status as 'error'."""
         try:
             if inputs:
-                self.inputs = self.Input(**inputs)  # type: ignore[attr-defined]
+                self.inputs = self.Input(**inputs)
             else:
-                self.inputs = self.Input()  # type: ignore[attr-defined]
+                self.inputs = self.Input()
         except ValidationError as e:
             self.logger.error(f"{self.__module__}.{self.__class__.__name__}: inputs are not valid: {e}")
             self.result.is_error(str(e))
@@ -245,6 +253,14 @@ class AntaTest(ABC):
                 self.result.description = res_ow.description
             self.result.custom_field = res_ow.custom_field
 
+    def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
+        """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
+        - Copy of the `AntaCommand` instances
+        - Render all `AntaTemplate` instances using the `render()` method
+
+        Any template rendering error will set this test result status as 'error'.
+        Any exception in user code in `render()` will set this test result status as 'error'.
+        """
         if self.__class__.commands:
             for cmd in self.__class__.commands:
                 if isinstance(cmd, AntaCommand):
