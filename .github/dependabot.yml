@@ -19,7 +19,7 @@ updates:
     pull-request-branch-name:
       separator: "/"
     commit-message:
-      prefix: "bump: "
+      prefix: "chore: "
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -31,4 +31,4 @@ updates:
     labels:
       - 'CI'
     commit-message:
-      prefix: "ci: bump "
+      prefix: "ci: "
