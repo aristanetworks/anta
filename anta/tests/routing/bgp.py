@@ -8,7 +8,7 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -95,10 +95,8 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     class Input(AntaTest.Input):
         """VerifyBGPIPv4UnicastCount inputs"""
 
-        vrfs: List[str]
-        """VRF context"""
-        number: int
-        """The expected number of BGP IPv4 unicast neighbors"""
+        vrfs: Dict[str, int]
+        """VRFs associated with neighbors count to verify"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render VerifyBGPIPv4UnicastCount template"""
@@ -114,14 +112,19 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
         for command in self.instance_commands:
             if command.params and "vrf" in command.params:
                 vrf = command.params["vrf"]
+                count = self.inputs.vrfs[vrf]
 
-            peers = command.json_output["vrfs"][vrf]["peers"]
-            state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
+                if vrf not in command.json_output["vrfs"]:
+                    self.result.is_failure(f"VRF {vrf} is not configured")
+                    return
 
-            if len(peers) != self.inputs.number:
-                self.result.is_failure(f"Expecting {self.inputs.number} BGP peer in vrf {vrf} and got {len(peers)}")
-            if state_issue:
-                self.result.is_failure(f"The following IPv4 peers are not established: {state_issue}")
+                peers = command.json_output["vrfs"][vrf]["peers"]
+                state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
+
+                if len(peers) != count:
+                    self.result.is_failure(f"Expecting {count} BGP peer(s) in vrf {vrf} but got {len(peers)} peer(s)")
+                if state_issue:
+                    self.result.is_failure(f"The following IPv4 peer(s) are not established: {state_issue}")
 
 
 class VerifyBGPIPv6UnicastState(AntaTest):
