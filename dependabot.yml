@@ -1,0 +1,34 @@
+# Basic set up for three package managers
+
+version: 2
+updates:
+  # Maintain dependencies for Python
+  # Dependabot supports updates to pyproject.toml files
+  # if they follow the PEP 621 standard.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "titom73"
+      - "gmuloc"
+      - "mtache"
+      - "carl-baillargeon"
+    labels:
+      - 'dependencies'
+    pull-request-branch-name:
+      separator: "/"
+    commit-message:
+      prefix: "bump: "
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "titom73"
+      - "gmuloc"
+    labels:
+      - 'CI'
+    commit-message:
+      prefix: "ci: bump "
