@@ -236,7 +236,7 @@ class AntaTest(ABC):
                 self.inputs = self.Input()  # type: ignore[attr-defined]
         except ValidationError as e:
             self.logger.error(f"{self.__module__}.{self.__class__.__name__}: inputs are not valid: {e}")
-            self.result.is_skipped(str(e))
+            self.result.is_error(str(e))
             return
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
