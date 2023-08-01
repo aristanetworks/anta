@@ -12,7 +12,7 @@
 
 ### ::: anta.models.AntaTest
     options:
-        filters: ["!^_[^_]", "!__init_subclass__"]
+        filters: ["!^_[^_]", "!__init_subclass__", "!update_progress"]
 
 # Anta Command definition
 

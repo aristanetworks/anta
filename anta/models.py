@@ -28,17 +28,10 @@ DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
 
-# TODO: Notes on eAPI version/revision
-# eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
-# (revisions are numbers, default value is 1).
-# By default an eAPI request will return revision 1 of the model instance,
-# this ensures that older management software will not suddenly stop working when a switch is upgraded.
-# A "revision" applies to a particular CLI command whereas a "version" is global and is internally
-# translated to a specific "revision" for each CLI command in the rpc.
-
 
 class AntaTemplate(BaseModel):
-    """Class to define a test command with its API version
+    """Class to define a command template as Python f-string.
+    Can render a command from parameters.
 
     Attributes:
         template: Python f-string. Example: 'show vlan {vlan_id}'
@@ -56,13 +49,13 @@ class AntaTemplate(BaseModel):
         """Render an AntaCommand from an AntaTemplate instance.
         Keep the parameters used in the AntaTemplate instance.
 
-         Args:
-             params: dictionary of variables with string values to render the Python f-string
+        Args:
+            params: dictionary of variables with string values to render the Python f-string
 
-         Returns:
-             AntaCommand: The rendered AntaCommand.
-                          This AntaCommand instance have a template attribute that references this
-                          AntaTemplate instance.
+        Returns:
+            command: The rendered AntaCommand.
+                     This AntaCommand instance have a template attribute that references this
+                     AntaTemplate instance.
         """
         try:
             return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
@@ -71,12 +64,23 @@ class AntaTemplate(BaseModel):
 
 
 class AntaCommand(BaseModel):
-    """Class to define a test command with its API version
+    """Class to define a command.
+
+    !!! info
+        eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
+        (revisions are numbers, default value is 1).
+
+        By default an eAPI request will return revision 1 of the model instance,
+        this ensures that older management software will not suddenly stop working when a switch is upgraded.
+        A **revision** applies to a particular CLI command whereas a **version** is global and is internally
+        translated to a specific **revision** for each CLI command in the RPC.
+
+        __Revision has precedence over version.__
 
     Attributes:
         command: Device command
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
-        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
+        revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
         template: AntaTemplate object used to render this command
         params: dictionary of variables with string values to render the template
@@ -168,7 +172,44 @@ class AntaTest(ABC):
     The goal of this class is to handle the heavy lifting and make
     writing a test as simple as possible.
 
-    TODO - complete doctstring with example
+    Examples:
+    The following is an example of an AntaTest subclass implementation:
+        ```python
+            class VerifyReachability(AntaTest):
+                name = "VerifyReachability"
+                description = "Test the network reachability to one or many destination IP(s)."
+                categories = ["connectivity"]
+                commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
+
+                class Input(AntaTest.Input):
+                    hosts: List[Host]
+                    class Host(BaseModel):
+                        dst: IPv4Address
+                        src: IPv4Address
+                        vrf: str = "default"
+
+                def render(self, template: AntaTemplate) -> list[AntaCommand]:
+                    return [template.render({"dst": host.dst, "src": host.src, "vrf": host.vrf}) for host in self.inputs.hosts]
+
+                @AntaTest.anta_test
+                def test(self) -> None:
+                    failures = []
+                    for command in self.instance_commands:
+                        if command.params and ("src" and "dst") in command.params:
+                            src, dst = command.params["src"], command.params["dst"]
+                        if "2 received" not in command.json_output["messages"][0]:
+                            failures.append((str(src), str(dst)))
+                    if not failures:
+                        self.result.is_success()
+                    else:
+                        self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
+        ```
+    Attributes:
+        device: AntaDevice instance on which this test is run
+        inputs: AntaTest.Input instance carrying the test inputs
+        instance_commands: List of AntaCommand instances of this test
+        result: TestResult instance representing the result of this test
+        logger: Python logger for this test instance
     """
 
     # Mandatory class attributes
@@ -187,24 +228,29 @@ class AntaTest(ABC):
     class Input(ABC, BaseModel):
         """Abstract class defining inputs for a test in ANTA.
 
-        A valid test catalog will looks like:
-
-        <Python module>:
+        Examples:
+        A valid test catalog will look like the following:
+            ```yaml
+            <Python module>:
             - <AntaTest subclass>:
                 result_overwrite:
                     categories:
-                        - "Overwritten category 1"
+                    - "Overwritten category 1"
                     description: "Test with overwritten description"
                     custom_field: "Test run by John Doe"
-
-        Args:
+            ```
+        Attributes:
             result_overwrite: Define fields to overwrite in the TestResult object
         """
+
+        result_overwrite: Optional[ResultOverwrite] = None
 
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields
 
-            Args:
+            Attributes:
+                description: overwrite TestResult.description
+                categories: overwrite TestResult.categories
                 custom_field: a free string that will be included in the TestResult object
             """
 
@@ -212,20 +258,22 @@ class AntaTest(ABC):
             categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
 
-        result_overwrite: Optional[ResultOverwrite] = None
-
     def __init__(
         self,
         device: AntaDevice,
         inputs: dict[str, Any] | None,
-        # TODO document very well the order of eos_data
         eos_data: list[dict[Any, Any] | str] | None = None,
-        labels: list[str] | None = None,
     ):
-        """AntaTest Constructor"""
+        """AntaTest Constructor
+
+        Args:
+            device: AntaDevice instance on which the test will be run
+            inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
+            eos_data: Populate outputs of the test commands instead of collecting from devices.
+                      This list must have the same length and order than the `instance_commands` instance attribute.
+        """
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
-        self.labels: list[str] = labels or []
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
@@ -282,31 +330,15 @@ class AntaTest(ABC):
 
         if eos_data is not None:
             self.logger.debug(f"Test {self.name} initialized with input data")
-            self.save_commands_data(eos_data)
+            self._save_commands_data(eos_data)
 
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render an AntaTemplate instance of this AntaTest using the provided
-           AntaTest.Input instance at self.inputs.
-
-        This is not an abstract method because it does not need to be implemented if there is
-        no AntaTemplate for this test."""
-        raise NotImplementedError(f"render() method has not been implemented for {self.__module__}.{self.name}")
-
-    def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
+    def _save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Called at init or at test execution time"""
         if len(eos_data) != len(self.instance_commands):
             self.result.is_error("Test initialization error: Trying to save more data than there are commands for the test")
             return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data
-
-    def all_data_collected(self) -> bool:
-        """returns True if output is populated for every command"""
-        return all(command.collected for command in self.instance_commands)
-
-    def get_failed_commands(self) -> list[AntaCommand]:
-        """returns a list of all the commands that have a populated failed field"""
-        return [command for command in self.instance_commands if command.failed is not None]
 
     def __init_subclass__(cls) -> None:
         """
@@ -319,6 +351,24 @@ class AntaTest(ABC):
         # Check that either commands or template exist
         if not (hasattr(cls, "commands") or hasattr(cls, "template")):
             raise NotImplementedError(f"Class {cls} is missing required either commands or template attribute")
+
+    @property
+    def collected(self) -> bool:
+        """Returns True if all commands for this test have been collected."""
+        return all(command.collected for command in self.instance_commands)
+
+    @property
+    def failed_commands(self) -> list[AntaCommand]:
+        """Returns a list of all the commands that have failed."""
+        return [command for command in self.instance_commands if command.failed is not None]
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render an AntaTemplate instance of this AntaTest using the provided
+           AntaTest.Input instance at self.inputs.
+
+        This is not an abstract method because it does not need to be implemented if there is
+        no AntaTemplate for this test."""
+        raise NotImplementedError(f"render() method has not been implemented for {self.__module__}.{self.name}")
 
     async def collect(self) -> None:
         """
@@ -334,7 +384,14 @@ class AntaTest(ABC):
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """
-        Decorator for anta_test that handles injecting test data if given and collecting it using asyncio if missing
+        Decorator for the `test()` method.
+
+        This decorator implements (in this order):
+
+        1. Instantiate the command outputs if `eos_data` is provided to the `test()` method
+        2. Collect the commands from the device
+        3. Run the `test()` method
+        4. Catches any exception in `test()` user code and set the `result` instance attribute
         """
 
         @wraps(function)
@@ -344,14 +401,12 @@ class AntaTest(ABC):
             **kwargs: Any,
         ) -> TestResult:
             """
-            Wraps the test function and implement (in this order):
-            1. Instantiate the command outputs if `eos_data` is provided
-            2. Collect missing command outputs from the device
-            3. Run the test function
-            4. Catches and set the result if the test function raises an exception
+            Args:
+                eos_data: Populate outputs of the test commands instead of collecting from devices.
+                          This list must have the same length and order than the `instance_commands` instance attribute.
 
             Returns:
-                TestResult: self.result, populated with the correct exit status
+                result: TestResult instance attribute populated with error status if any
             """
 
             def format_td(seconds: float, digits: int = 3) -> str:
@@ -366,19 +421,20 @@ class AntaTest(ABC):
 
             # Data
             if eos_data is not None:
-                self.save_commands_data(eos_data)
+                self._save_commands_data(eos_data)
                 self.logger.debug(f"Test {self.name} initialized with input data {eos_data}")
 
             # If some data is missing, try to collect
-            if not self.all_data_collected():
+            if not self.collected:
                 await self.collect()
                 if self.result.result != "unset":
                     return self.result
 
             try:
-                if cmds := self.get_failed_commands():
+                if self.failed_commands:
                     self.result.is_error(
-                        "\n".join([f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in cmds])
+                        "\n".join([f"{cmd.command} has failed: {exc_to_str(cmd.failed)}"
+                                   if cmd.failed else f"{cmd.command} has failed" for cmd in self.failed_commands])
                     )
                     return self.result
                 function(self, **kwargs)
@@ -406,14 +462,18 @@ class AntaTest(ABC):
     @abstractmethod
     def test(self) -> Coroutine[Any, Any, TestResult]:
         """
-        This abstract method is the core of the test.
-        It MUST set the correct status of self.result with the appropriate error messages
+        This abstract method is the core of the test logic.
+        It must set the correct status of the `result` instance attribute
+        with the appropriate outcome of the test.
 
-        it must be implemented as follow
-
-        @AntaTest.anta_test
-        def test(self) -> None:
-           '''
-           assert code
-           '''
+        Examples:
+        It must be implemented using the `AntaTest.anta_test` decorator:
+            ```python
+            @AntaTest.anta_test
+            def test(self) -> None:
+                self.result.is_success()
+                for command in self.instance_commands:
+                    if not self._test_command(command): # _test_command() is an arbitrary test logic
+                        self.result.is_failure("Failure reson")
+            ```
         """

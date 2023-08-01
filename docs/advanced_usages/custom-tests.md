@@ -151,7 +151,6 @@ This class will inherit methods from AntaTest and specfically the `__init__(self
 - `device (InventoryDevice)`: Device object where to test happens.
 - `template_params`: If template is used in the test definition, then we provide data to build list of commands.
 - `eos_data`: Potential EOS data to pass if we don't want to connect to device to grab data.
-- `labels`: a list of labels. It is not used yet and it is for futur use.
 
 ### Function definition
 
