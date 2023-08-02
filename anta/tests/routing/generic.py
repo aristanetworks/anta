@@ -67,10 +67,10 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_skipped(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} was not provided")
             return
         if not isinstance(minimum, int) or not isinstance(maximum, int):
-            self.result.is_error(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} is not a valid value (integer)")
+            self.result.is_error(message=f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} is not a valid value (integer)")
             return
         if maximum < minimum:
-            self.result.is_error(f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
+            self.result.is_error(message=f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
             return
 
         command_output = self.instance_commands[0].json_output

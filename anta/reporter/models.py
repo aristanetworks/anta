@@ -3,10 +3,10 @@
 # that can be found in the LICENSE file.
 """Models related to anta.result_manager module."""
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from rich.text import Text
 
-from ..result_manager.models import RESULT_OPTIONS
+from ..result_manager.models import ResultString
 
 
 class ColorManager(BaseModel):
@@ -17,28 +17,8 @@ class ColorManager(BaseModel):
         color (str): Associated color.
     """
 
-    level: str
+    level: ResultString
     color: str
-
-    @validator("level", allow_reuse=True)
-    def name_must_be_in(cls, v: str) -> str:
-        """
-        Status validator
-
-        Validate status is a supported one
-
-        Args:
-            v (str): User defined level
-
-        Raises:
-            ValueError: If level is unsupported
-
-        Returns:
-            str: level value
-        """
-        if v not in RESULT_OPTIONS:
-            raise ValueError(f"must be one of {RESULT_OPTIONS}")
-        return v
 
     def style_rich(self) -> Text:
         """

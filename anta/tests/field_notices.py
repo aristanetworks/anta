@@ -165,5 +165,5 @@ class VerifyFieldNotice72Resolution(AntaTest):
                     self.result.is_success("FN72 is mitigated")
                 return
         # We should never hit this point
-        self.result.is_error("Error in running test - FixedSystemvrm1 not found")
+        self.result.is_error(message="Error in running test - FixedSystemvrm1 not found")
         return

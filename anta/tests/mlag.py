@@ -111,7 +111,7 @@ class VerifyMlagConfigSanity(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         if (mlag_status := get_value(command_output, "mlagActive")) is None:
-            self.result.is_error("Incorrect JSON response - 'mlagActive' state was not found")
+            self.result.is_error(message="Incorrect JSON response - 'mlagActive' state was not found")
             return
 
         if mlag_status is False:

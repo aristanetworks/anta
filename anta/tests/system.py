@@ -72,7 +72,7 @@ class VerifyReloadCause(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         if "resetCauses" not in command_output.keys():
-            self.result.is_error("No reload causes available")
+            self.result.is_error(message="No reload causes available")
             return
 
         if len(command_output["resetCauses"]) == 0:

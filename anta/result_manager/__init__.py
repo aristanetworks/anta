@@ -9,7 +9,7 @@ import json
 import logging
 from typing import Any, List
 
-from anta.result_manager.models import RESULT_OPTIONS, ListResult, TestResult
+from anta.result_manager.models import ResultString, ListResult, TestResult
 from anta.tools.pydantic import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
@@ -96,16 +96,13 @@ class ResultManager:
         """
         return len(self._result_entries)
 
-    def _update_status(self, test_status: str) -> None:
+    def _update_status(self, test_status: ResultString) -> None:
         """
         Update ResultManager status based on the table above.
         """
-        if test_status not in RESULT_OPTIONS:
-            raise ValueError("{test_status} is not a valid result option")
         if test_status == "error":
             self.error_status = True
             return
-
         if self.status == "unset":
             self.status = test_status
         elif self.status == "skipped" and test_status in {"success", "failure"}:
