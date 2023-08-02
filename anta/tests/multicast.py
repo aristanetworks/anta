@@ -38,7 +38,9 @@ class VerifyIGMPSnoopingVlans(AntaTest):
             self.result.is_skipped("VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given")
             return
         if configuration not in ["enabled", "disabled"]:
-            self.result.is_error(message=f"VerifyIGMPSnoopingVlans was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
+            self.result.is_error(
+                message=f"VerifyIGMPSnoopingVlans was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])"
+            )
             return
 
         command_output = self.instance_commands[0].json_output
@@ -81,7 +83,9 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
             return
 
         if configuration not in ["enabled", "disabled"]:
-            self.result.is_error(message=f"VerifyIGMPSnoopingGlobal was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])")
+            self.result.is_error(
+                message=f"VerifyIGMPSnoopingGlobal was not run as 'configuration': {configuration} is not in the allowed values: ['enabled', 'disabled'])"
+            )
             return
 
         command_output = self.instance_commands[0].json_output

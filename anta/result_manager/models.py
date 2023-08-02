@@ -4,9 +4,9 @@
 """Models related to anta.result_manager module."""
 from __future__ import annotations
 
-from typing import Iterator, List, Optional, Literal
+from typing import Iterator, List, Literal, Optional
 
-from pydantic import BaseModel, RootModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, RootModel
 
 ResultString = Literal["unset", "success", "failure", "error", "skipped"]
 

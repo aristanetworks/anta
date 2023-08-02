@@ -9,7 +9,7 @@ import json
 import logging
 from typing import Any, List
 
-from anta.result_manager.models import ResultString, ListResult, TestResult
+from anta.result_manager.models import ListResult, ResultString, TestResult
 from anta.tools.pydantic import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
