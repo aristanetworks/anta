@@ -45,7 +45,7 @@ class AntaTemplate(BaseModel):
     revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
 
-    def render(self, params: dict[str, Any]) -> AntaCommand:
+    def render(self, **params: dict[str, Any]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
         Keep the parameters used in the AntaTemplate instance.
 

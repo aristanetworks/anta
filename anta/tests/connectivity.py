@@ -51,7 +51,7 @@ class VerifyReachability(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render VerifyReachability template"""
-        return [template.render({"dst": host.dst, "src": host.src, "vrf": host.vrf}) for host in self.inputs.hosts]
+        return [template.render(dst=host.dst, src=host.src, vrf=host.vrf) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:

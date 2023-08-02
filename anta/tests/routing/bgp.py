@@ -100,7 +100,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render VerifyBGPIPv4UnicastCount template"""
-        return [template.render({"vrf": vrf}) for vrf in self.inputs.vrfs]
+        return [template.render(vrf=vrf) for vrf in self.inputs.vrfs]
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
