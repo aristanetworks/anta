@@ -291,8 +291,9 @@ class AntaTest(ABC):
             else:
                 self.inputs = self.Input()
         except ValidationError as e:
-            self.logger.error(f"{self.__module__}.{self.__class__.__name__}: inputs are not valid: {e}")
-            self.result.is_error(str(e))
+            message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
+            self.logger.error(message)
+            self.result.is_error(message=message, exception=e)
             return
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
@@ -317,7 +318,7 @@ class AntaTest(ABC):
                     try:
                         self.instance_commands.extend(self.render(cmd))
                     except AntaTemplateRenderError as e:
-                        self.result.is_error(f"Cannot render template {{{e.template}}}")
+                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
                         return
                     except Exception as e:  # pylint: disable=broad-exception-caught
                         # render() is user-defined code.
@@ -325,7 +326,7 @@ class AntaTest(ABC):
                         # to live until the reporting
                         message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
                         anta_log_exception(e, message, self.logger)
-                        self.result.is_error(f"{message}: {exc_to_str(e)}")
+                        self.result.is_error(message=f"{message}: {exc_to_str(e)}")
                         return
 
         if eos_data is not None:
@@ -335,7 +336,7 @@ class AntaTest(ABC):
     def _save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Called at init or at test execution time"""
         if len(eos_data) != len(self.instance_commands):
-            self.result.is_error("Test initialization error: Trying to save more data than there are commands for the test")
+            self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
             return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data
@@ -379,7 +380,7 @@ class AntaTest(ABC):
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
             anta_log_exception(e, message, self.logger)
-            self.result.is_error(exc_to_str(e))
+            self.result.is_error(message=exc_to_str(e))
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
@@ -433,15 +434,16 @@ class AntaTest(ABC):
             try:
                 if self.failed_commands:
                     self.result.is_error(
-                        "\n".join([f"{cmd.command} has failed: {exc_to_str(cmd.failed)}"
-                                   if cmd.failed else f"{cmd.command} has failed" for cmd in self.failed_commands])
+                        message="\n".join(
+                            [f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in self.failed_commands]
+                        )
                     )
                     return self.result
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
                 anta_log_exception(e, message, self.logger)
-                self.result.is_error(exc_to_str(e))
+                self.result.is_error(message=exc_to_str(e))
 
             test_duration = time.time() - start_time
             self.logger.debug(f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}")

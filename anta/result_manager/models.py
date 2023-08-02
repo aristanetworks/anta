@@ -73,7 +73,7 @@ class TestResult(BaseModel):
             exception: Optional Exception objet related to the error
         """
         self._set_status("error", message)
-        self.exception = exception
+        self.error = exception
 
     def _set_status(self, status: ResultString, message: str | None = None) -> None:
         """
