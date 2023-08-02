@@ -225,8 +225,8 @@ class AntaTest(ABC):
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
 
-    class Input(ABC, BaseModel):
-        """Abstract class defining inputs for a test in ANTA.
+    class Input(BaseModel):
+        """Class defining inputs for a test in ANTA.
 
         Examples:
         A valid test catalog will look like the following:
@@ -243,6 +243,7 @@ class AntaTest(ABC):
             result_overwrite: Define fields to overwrite in the TestResult object
         """
 
+        model_config = ConfigDict(extra="forbid")
         result_overwrite: Optional[ResultOverwrite] = None
 
         class ResultOverwrite(BaseModel):
@@ -286,7 +287,7 @@ class AntaTest(ABC):
 
         Any input validation error will set this test result status as 'error'."""
         try:
-            if inputs:
+            if inputs is not None:
                 self.inputs = self.Input(**inputs)
             else:
                 self.inputs = self.Input()
