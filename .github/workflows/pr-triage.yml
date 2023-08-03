@@ -18,7 +18,9 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
   check_pr_semantic:
+    name: Check PR semantic
     runs-on: ubuntu-latest
+    needs: [assign_author]
     steps:
       # Please look up the latest version from
       # https://github.com/amannn/action-semantic-pull-request/releases
@@ -71,3 +73,14 @@ jobs:
           ignoreLabels: |
             bot
             ignore-semantic-pull-request
+
+  assign_project_to_pr:
+    name: Assign Project to PR
+    runs-on: ubuntu-latest
+    needs: [assign_author]
+    steps:
+      - uses: actions/add-to-project@v0.5.0
+        with:
+          # You can target a project in a different organization
+          project-url: https://github.com/orgs/arista-netdevops-community/projects/2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
