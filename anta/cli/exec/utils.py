@@ -117,7 +117,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             outdir.mkdir(parents=True, exist_ok=True)
 
             # Check if 'aaa authorization exec default local' is present in the running-config
-            command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
+            command = AntaCommand(command="show running-config | include aaa authorization exec default", ofmt="text")
             await device.collect(command=command)
 
             if command.collected and not command.text_output:
