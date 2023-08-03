@@ -168,9 +168,11 @@ Options:
 
 When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the `--output` option.
 
-ANTA uses SCP to download files from devices; ensure that all SSH Host Keys are trusted before running the command. Use the `anta --insecure` option if they are not.
+ANTA uses SCP to download files from devices and will not trust unknown SSH hosts by default. Add the SSH public keys of your devices to your `known_hosts` file or use the `anta --insecure` option to ignore SSH host keys validation.
 
-The configuration `aaa authorization exec default local` must be enabled on devices for SCP to function. ANTA will not automatically configure this unless `--configure` is specified.
+The configuration `aaa authorization exec default` must be present on devices to be able to use SCP.
+ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option.
+If you require specific AAA configuration for `aaa authorization exec default`, like `aaa authorization exec default none` or `aaa authorization exec default group tacacs+`, you will need to configure it manually.
 
 The `--latest` option allows retrieval of a specific number of the most recent tech-support files.
 
