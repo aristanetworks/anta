@@ -159,11 +159,7 @@ class AntaTemplateRenderError(RuntimeError):
         """
         self.template = template
         self.key = key
-        super().__init__()
-
-    def __str__(self) -> str:
-        """Returns the error message associated with the exception"""
-        return f"{self.template}: Missing template parameter {self.key}"
+        super().__init__(f"'{self.key}' was not provided for template '{self.template.template}'")
 
 
 class AntaTest(ABC):
@@ -217,13 +213,12 @@ class AntaTest(ABC):
     name: ClassVar[str]
     description: ClassVar[str]
     categories: ClassVar[list[str]]
-    # Or any child type
     commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
-    progress: Optional[Progress] = None
-    nrfu_task: Optional[TaskID] = None
-
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
+    # Class attributes to handle the progress bar of ANTA CLI
+    progress: Optional[Progress] = None
+    nrfu_task: Optional[TaskID] = None
 
     class Input(BaseModel):
         """Class defining inputs for a test in ANTA.
@@ -278,7 +273,8 @@ class AntaTest(ABC):
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
-        self._init_commands(eos_data)
+        if hasattr(self, 'inputs'):
+            self._init_commands(eos_data)
 
     def _init_inputs(self, inputs: dict[str, Any] | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance
@@ -319,7 +315,10 @@ class AntaTest(ABC):
                     try:
                         self.instance_commands.extend(self.render(cmd))
                     except AntaTemplateRenderError as e:
-                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
+                        self.result.is_error(message=f"Cannot render template {{{e.template}}}", exception=e)
+                        return
+                    except NotImplementedError as e:
+                        self.result.is_error(message=e.args[0], exception=e)
                         return
                     except Exception as e:  # pylint: disable=broad-exception-caught
                         # render() is user-defined code.
@@ -327,7 +326,7 @@ class AntaTest(ABC):
                         # to live until the reporting
                         message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
                         anta_log_exception(e, message, self.logger)
-                        self.result.is_error(message=f"{message}: {exc_to_str(e)}")
+                        self.result.is_error(message=f"{message}: {exc_to_str(e)}", exception=e)
                         return
 
         if eos_data is not None:
@@ -335,7 +334,7 @@ class AntaTest(ABC):
             self._save_commands_data(eos_data)
 
     def _save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
-        """Called at init or at test execution time"""
+        """Populate output of all AntaCommand instances in `instance_commands`"""
         if len(eos_data) != len(self.instance_commands):
             self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
             return
@@ -343,16 +342,11 @@ class AntaTest(ABC):
             self.instance_commands[index].output = data
 
     def __init_subclass__(cls) -> None:
-        """
-        Verify that the mandatory class attributes are defined
-        """
-        mandatory_attributes = ["name", "description", "categories"]
+        """Verify that the mandatory class attributes are defined"""
+        mandatory_attributes = ["name", "description", "categories", "commands"]
         for attr in mandatory_attributes:
             if not hasattr(cls, attr):
-                raise NotImplementedError(f"Class {cls} is missing required class attribute {attr}")
-        # Check that either commands or template exist
-        if not (hasattr(cls, "commands") or hasattr(cls, "template")):
-            raise NotImplementedError(f"Class {cls} is missing required either commands or template attribute")
+                raise NotImplementedError(f"Class {cls.__module__}.{cls.__name__} is missing required class attribute {attr}")
 
     @property
     def collected(self) -> bool:
@@ -370,7 +364,7 @@ class AntaTest(ABC):
 
         This is not an abstract method because it does not need to be implemented if there is
         no AntaTemplate for this test."""
-        raise NotImplementedError(f"render() method has not been implemented for {self.__module__}.{self.name}")
+        raise NotImplementedError(f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}")
 
     async def collect(self) -> None:
         """
