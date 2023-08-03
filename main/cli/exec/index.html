@@ -19,7 +19,7 @@
         <link rel="next" href="../inv-from-cvp/">
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
@@ -1724,8 +1724,10 @@ Options:
 <span class="w">  </span>--help<span class="w">                         </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <p>When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the <code>--output</code> option.</p>
-<p>ANTA uses SCP to download files from devices; ensure that all SSH Host Keys are trusted before running the command. Use the <code>anta --insecure</code> option if they are not.</p>
-<p>The configuration <code>aaa authorization exec default local</code> must be enabled on devices for SCP to function. ANTA will not automatically configure this unless <code>--configure</code> is specified.</p>
+<p>ANTA uses SCP to download files from devices and will not trust unknown SSH hosts by default. Add the SSH public keys of your devices to your <code>known_hosts</code> file or use the <code>anta --insecure</code> option to ignore SSH host keys validation.</p>
+<p>The configuration <code>aaa authorization exec default</code> must be present on devices to be able to use SCP.
+ANTA can automatically configure <code>aaa authorization exec default local</code> using the <code>anta exec collect-tech-support --configure</code> option.
+If you require specific AAA configuration for <code>aaa authorization exec default</code>, like <code>aaa authorization exec default none</code> or <code>aaa authorization exec default group tacacs+</code>, you will need to configure it manually.</p>
 <p>The <code>--latest</code> option allows retrieval of a specific number of the most recent tech-support files.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1772,7 +1774,7 @@ tech-support/
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 3, 2023</span>
       
     
   </small>
