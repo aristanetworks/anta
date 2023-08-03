@@ -46,17 +46,6 @@ jobs:
           pip install .
       - name: install dev requirements
         run: pip install .[dev]
-  missing-documentation:
-    name: "Warning documentation is missing"
-    runs-on: ubuntu-20.04
-    needs: [file-changes]
-    if: needs.file-changes.outputs.code == 'true' && needs.file-changes.outputs.documentation == 'false'
-    steps:
-      - name: Documentation is missing
-        uses: GrantBirki/comment@v2.0.5
-        with:
-          body: |
-            Please consider documentation is missing under `docs/` folder
   lint-yaml:
     name: Run linting for yaml files
     runs-on: ubuntu-20.04
