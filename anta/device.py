@@ -179,17 +179,21 @@ class AsyncEOSDevice(AntaDevice):
         Implements Rich Repr Protocol
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
         """
+
+        PASSWORD_VALUE = "<removed>"
+
         yield from super().__rich_repr__()
         yield "host", self._session.host
         yield "eapi_port", self._session.port
         yield "username", self._ssh_opts.username
-        yield "password", self._ssh_opts.password
         yield "enable", self.enable
-        yield "enable_password", self._enable_password
         yield "insecure", self._ssh_opts.known_hosts is None
         if __DEBUG__:
+            _ssh_opts = vars(self._ssh_opts).copy()
+            _ssh_opts["password"] = PASSWORD_VALUE
+            _ssh_opts["kwargs"]["password"] = PASSWORD_VALUE
             yield "_session", vars(self._session)
-            yield "_ssh_opts", vars(self._ssh_opts)
+            yield "_ssh_opts", _ssh_opts
 
     def __eq__(self, other: object) -> bool:
         """
