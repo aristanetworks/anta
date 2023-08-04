@@ -79,10 +79,28 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[s
     return None
 
 
+def prompt_password(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
+    # pylint: disable=unused-argument
+    """
+    Click option callback to ensure that enable is True when the option is set
+    """
+    if ctx.obj.get("_anta_help"):
+        # Currently looking for help for a subcommand so no
+        # need to prompt the password
+        return None
+    if value is None:
+        return click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+    return value
+
+
 def prompt_enable_password(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
     """
     Click option callback to ensure that enable is True when the option is set
     """
+    if ctx.obj.get("_anta_help"):
+        # Currently looking for help for a subcommand so no
+        # need to prompt the password
+        return None
     if value is not None and ctx.params.get("enable") is not True:
         raise click.BadParameter(f"'{param.opts[0]}' requires '--enable'")
     if value is None and ctx.params.get("enable") is True:
