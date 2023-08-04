@@ -183,9 +183,7 @@ class AsyncEOSDevice(AntaDevice):
         yield "host", self._session.host
         yield "eapi_port", self._session.port
         yield "username", self._ssh_opts.username
-        yield "password", self._ssh_opts.password
         yield "enable", self.enable
-        yield "enable_password", self._enable_password
         yield "insecure", self._ssh_opts.known_hosts is None
         if __DEBUG__:
             yield "_session", vars(self._session)
