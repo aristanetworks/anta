@@ -79,14 +79,17 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[s
     return None
 
 
-def requires_enable(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
+def prompt_enable_password(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
     # pylint: disable=unused-argument
     """
     Click option callback to ensure that enable is True when the option is set
     """
     if value is not None and ctx.params.get("enable") is not True:
-        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable' (or setting associated env variable)")
-    return value
+        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable'")
+    if value is None and ctx.params.get("enable") is True:
+        return click.prompt("Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True)
+    else:
+        return value
 
 
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
