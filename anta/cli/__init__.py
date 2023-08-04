@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, requires_enable, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password, setup_logging
 from anta.result_manager.models import TestResult
 
 
@@ -29,11 +29,20 @@ from anta.result_manager.models import TestResult
     help="Username to connect to EOS",
     required=True,
 )
+@click.option("--password", show_envvar=True, help="Password to connect to EOS", callback=prompt_password)
 @click.option(
-    "--password",
+    "--enable",
     show_envvar=True,
-    help="Password to connect to EOS",
-    required=True,
+    is_flag=True,
+    default=False,
+    help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
+    show_default=True,
+)
+@click.option(
+    "--enable-password",
+    show_envvar=True,
+    help="If a password is required to access EOS Privileged EXEC mode, it must be provided. --enable must be set.",
+    callback=prompt_enable_password,
 )
 @click.option(
     "--timeout",
@@ -49,20 +58,6 @@ from anta.result_manager.models import TestResult
     default=False,
     help="Disable SSH Host Key validation",
     show_default=True,
-)
-@click.option(
-    "--enable",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-    help="Add enable mode towards the devices if required to connect",
-    show_default=True,
-)
-@click.option(
-    "--enable-password",
-    show_envvar=True,
-    help="Enable password if required to connect, --enable MUST be set",
-    callback=requires_enable,
 )
 @click.option(
     "--inventory",

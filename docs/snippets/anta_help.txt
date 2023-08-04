@@ -7,16 +7,19 @@ Options:
   --username TEXT                 Username to connect to EOS  [env var:
                                   ANTA_USERNAME; required]
   --password TEXT                 Password to connect to EOS  [env var:
-                                  ANTA_PASSWORD; required]
+                                  ANTA_PASSWORD]
+  --enable                        Some commands may require EOS Privileged
+                                  EXEC mode. This option tries to access this
+                                  mode before sending a command to the device.
+                                  [env var: ANTA_ENABLE]
+  --enable-password TEXT          If a password is required to access EOS
+                                  Privileged EXEC mode, it must be provided.
+                                  --enable must be set.  [env var:
+                                  ANTA_ENABLE_PASSWORD]
   --timeout INTEGER               Global connection timeout  [env var:
                                   ANTA_TIMEOUT; default: 5]
   --insecure                      Disable SSH Host Key validation  [env var:
                                   ANTA_INSECURE]
-  --enable                        Add enable mode towards the devices if
-                                  required to connect  [env var: ANTA_ENABLE]
-  --enable-password TEXT          Enable password if required to connect,
-                                  --enable MUST be set  [env var:
-                                  ANTA_ENABLE_PASSWORD]
   -i, --inventory FILE            Path to the inventory YAML file  [env var:
                                   ANTA_INVENTORY; required]
   --log-level, --log [CRITICAL|ERROR|WARNING|INFO|DEBUG]
