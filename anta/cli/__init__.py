@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_password, prompt_enable_password, setup_logging
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password, setup_logging
 from anta.result_manager.models import TestResult
 
 
@@ -29,12 +29,7 @@ from anta.result_manager.models import TestResult
     help="Username to connect to EOS",
     required=True,
 )
-@click.option(
-    "--password",
-    show_envvar=True,
-    help="Password to connect to EOS",
-    callback=prompt_password
-)
+@click.option("--password", show_envvar=True, help="Password to connect to EOS", callback=prompt_password)
 @click.option(
     "--enable",
     show_envvar=True,
