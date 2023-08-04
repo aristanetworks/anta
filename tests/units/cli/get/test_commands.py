@@ -10,8 +10,10 @@ from unittest.mock import ANY, patch
 import pytest
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
+from pathlib import Path
 
 from anta.cli import anta
+from anta.cli.get.commands import from_cvp
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
@@ -44,10 +46,17 @@ def test_from_cvp(
     env = default_anta_env()
     cli_args = ["get", "from-cvp", "--cvp-ip", "42.42.42.42", "--cvp-username", "anta", "--cvp-password", "anta"]
 
-    if cvp_container is not None:
-        cli_args.extend(["--cvp-container", cvp_container])
     if inventory_directory is not None:
         cli_args.extend(["--inventory-directory", inventory_directory])
+        out_dir = Path() / inventory_directory
+    else:
+        out_dir = Path() / from_cvp.params[4].default
+
+    if cvp_container is not None:
+        cli_args.extend(["--cvp-container", cvp_container])
+        out_file = out_dir / f"inventory-{cvp_container}.yml"
+    else:
+        out_file = out_dir / "inventory.yml"
 
     def mock_cvp_connect(self: CvpClient, *args: str, **kwargs: str) -> None:
         # pylint: disable=unused-argument
@@ -63,6 +72,12 @@ def test_from_cvp(
         # https://github.com/pallets/click/issues/824#issuecomment-1583293065
         with capsys.disabled():
             result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+
+    if not cvp_connect_failure:
+        assert out_file.exists()
+        # Remove generated inventory file and directory
+        out_file.unlink()
+        out_dir.rmdir()
 
     mocked_cvp_connect.assert_called_once()
     if not cvp_connect_failure:
