@@ -180,8 +180,7 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
         """
 
-        def hide_password(password: str) -> str:
-            return "*" * len(password)
+        PASSWORD_VALUE = "<removed>"
 
         yield from super().__rich_repr__()
         yield "host", self._session.host
@@ -191,8 +190,8 @@ class AsyncEOSDevice(AntaDevice):
         yield "insecure", self._ssh_opts.known_hosts is None
         if __DEBUG__:
             _ssh_opts = vars(self._ssh_opts).copy()
-            _ssh_opts["password"] = hide_password(_ssh_opts["password"])
-            _ssh_opts["kwargs"]["password"] = hide_password(_ssh_opts["kwargs"]["password"])
+            _ssh_opts["password"] = PASSWORD_VALUE
+            _ssh_opts["kwargs"]["password"] = PASSWORD_VALUE
             yield "_session", vars(self._session)
             yield "_ssh_opts", _ssh_opts
 
