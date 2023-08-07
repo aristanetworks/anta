@@ -276,7 +276,7 @@ class AntaTest(ABC):
                 TestResult: self.result, populated with the correct exit status
             """
 
-            def format_td(seconds, digits=3):
+            def format_td(seconds: float, digits: int = 3) -> str:
                 isec, fsec = divmod(round(seconds * 10**digits), 10**digits)
                 return f"{timedelta(seconds=isec)}.{fsec:0{digits}.0f}"
 
