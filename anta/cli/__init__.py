@@ -17,6 +17,7 @@ from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
 from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password, setup_logging
 from anta.result_manager.models import TestResult
+from anta.result_manager import ResultManager
 
 
 # @click.group()
@@ -111,6 +112,7 @@ def anta(ctx: click.Context, inventory: pathlib.Path, ignore_status: bool, ignor
 def nrfu(ctx: click.Context, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
+    ctx.obj["result_manager"] = ResultManager()
 
 
 @anta.group("exec")
