@@ -82,7 +82,6 @@ class ResultManager:
         If the status of the added test is error, the status is untouched and the
         error_status is set to True.
         """
-        logger.debug("Instantiate result-manager")
         self._result_entries = ListResult()
         # Initialize status
         self.status = "unset"
@@ -117,7 +116,6 @@ class ResultManager:
         Args:
             entry (TestResult): TestResult data to add to the report
         """
-        logger.debug(entry)
         self._result_entries.append(entry)
         self._update_status(entry.result)
 
