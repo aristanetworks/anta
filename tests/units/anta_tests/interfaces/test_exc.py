@@ -222,7 +222,7 @@ def test_VerifyL3MTU(mocked_device: MagicMock, test_data: Any) -> None:
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
     test = VerifyL3MTU(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test(mtu=test_data["side_effect"]["mtu"]))
+    asyncio.run(test.test(**test_data["side_effect"]))
 
     logging.info(f"test result is: {test.result}")
 

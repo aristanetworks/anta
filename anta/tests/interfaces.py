@@ -393,11 +393,8 @@ class VerifyL3MTU(AntaTest):
         else:
             specific_mtu = []
 
-        self.logger.warning(f"specific interfaces set to: {specific_interfaces}")
-        self.logger.warning("Running loop testing")
         for interface, values in command_output["interfaces"].items():
             if re.sub(r"\d+$", "", interface) not in ignored_interfaces:
-                self.logger.warning(f"Testing interface {interface} as it is not in ignored_interface ({specific_interfaces} / {specific_mtu})")
                 # If we are facing a custom MTU setting for a single interface
                 if interface in specific_interfaces:
                     wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
@@ -407,6 +404,8 @@ class VerifyL3MTU(AntaTest):
 
         if wrong_l3mtu_intf:
             self.result.is_failure(f"Some interfaces do not have correct MTU configured:\n{wrong_l3mtu_intf}")
+        else:
+            self.result.is_success()
 
 
 class VerifyIPProxyARP(AntaTest):
