@@ -33,22 +33,28 @@ Options:
   --version                       Show the version and exit.
   --username TEXT                 Username to connect to EOS  [env var:
                                   ANTA_USERNAME; required]
-  --password TEXT                 Password to connect to EOS  [env var:
-                                  ANTA_PASSWORD]
+  --password TEXT                 Password to connect to EOS that must be
+                                  provided. It can be prompted using '--
+                                  prompt' option.  [env var: ANTA_PASSWORD]
+  --enable-password TEXT          Password to access EOS Privileged EXEC mode.
+                                  It can be prompted using '--prompt' option.
+                                  Requires '--enable' option.  [env var:
+                                  ANTA_ENABLE_PASSWORD]
   --enable                        Some commands may require EOS Privileged
                                   EXEC mode. This option tries to access this
                                   mode before sending a command to the device.
                                   [env var: ANTA_ENABLE]
-  --enable-password TEXT          If a password is required to access EOS
-                                  Privileged EXEC mode, it must be provided.
-                                  --enable must be set.  [env var:
-                                  ANTA_ENABLE_PASSWORD]
+  -P, --prompt                    Prompt for passwords if they are not
+                                  provided.
   --timeout INTEGER               Global connection timeout  [env var:
-                                  ANTA_TIMEOUT; default: 5]
+                                  ANTA_TIMEOUT; default: 30]
   --insecure                      Disable SSH Host Key validation  [env var:
                                   ANTA_INSECURE]
   -i, --inventory FILE            Path to the inventory YAML file  [env var:
                                   ANTA_INVENTORY; required]
+  --log-file FILE                 Send the logs to a file. If logging level is
+                                  DEBUG, only INFO or higher will be sent to
+                                  stdout.  [env var: ANTA_LOG_FILE]
   --log-level, --log [CRITICAL|ERROR|WARNING|INFO|DEBUG]
                                   ANTA logging level  [env var:
                                   ANTA_LOG_LEVEL; default: INFO]
@@ -65,8 +71,8 @@ Commands:
   nrfu   Run NRFU against inventory devices
 ```
 
-!!! info
-    `username`, `password`, `enable`, and `enable-password` values are the same for all devices
+> [!NOTE]
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 
 ## Documentation
