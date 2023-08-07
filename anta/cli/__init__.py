@@ -15,7 +15,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory
 from anta.loader import setup_logging
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
@@ -27,60 +27,67 @@ from anta.result_manager.models import TestResult
 @click.version_option(__version__)
 @click.option(
     "--username",
-    show_envvar=True,
     help="Username to connect to EOS",
+    show_envvar=True,
     required=True,
 )
-@click.option("--password", show_envvar=True, help="Password to connect to EOS", callback=prompt_password)
+@click.option("--password", help="Password to connect to EOS that must be provided. It can be prompted using '--prompt' option.", show_envvar=True)
+@click.option(
+    "--enable-password",
+    help="Password to access EOS Privileged EXEC mode. It can be prompted using '--prompt' option. Requires '--enable' option.",
+    show_envvar=True,
+)
 @click.option(
     "--enable",
+    help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
+    default=False,
     show_envvar=True,
     is_flag=True,
-    default=False,
-    help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
     show_default=True,
 )
 @click.option(
-    "--enable-password",
-    show_envvar=True,
-    help="If a password is required to access EOS Privileged EXEC mode, it must be provided. --enable must be set.",
-    callback=prompt_enable_password,
+    "--prompt",
+    "-P",
+    help="Prompt for passwords if they are not provided.",
+    default=False,
+    is_flag=True,
+    show_default=True,
 )
 @click.option(
     "--timeout",
-    show_envvar=True,
-    default=5,
     help="Global connection timeout",
+    default=30,
+    show_envvar=True,
     show_default=True,
 )
 @click.option(
     "--insecure",
+    help="Disable SSH Host Key validation",
+    default=False,
     show_envvar=True,
     is_flag=True,
-    default=False,
-    help="Disable SSH Host Key validation",
     show_default=True,
 )
 @click.option(
     "--inventory",
     "-i",
+    help="Path to the inventory YAML file",
     show_envvar=True,
     required=True,
-    help="Path to the inventory YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
 )
 @click.option(
     "--log-file",
-    show_envvar=True,
     help="Send the logs to a file. If logging level is DEBUG, only INFO or higher will be sent to stdout.",
+    show_envvar=True,
     type=click.Path(file_okay=True, dir_okay=False, writable=True, path_type=pathlib.Path),
 )
 @click.option(
     "--log-level",
     "--log",
-    show_envvar=True,
     help="ANTA logging level",
     default=logging.getLevelName(logging.INFO),
+    show_envvar=True,
     show_default=True,
     type=click.Choice(
         [
@@ -93,14 +100,36 @@ from anta.result_manager.models import TestResult
         case_sensitive=False,
     ),
 )
-@click.option("--ignore-status", show_envvar=True, is_flag=True, default=False, help="Always exit with success")
-@click.option("--ignore-error", show_envvar=True, is_flag=True, default=False, help="Only report failures and not errors")
+@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
+@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
 def anta(
     ctx: click.Context, inventory: pathlib.Path, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any
 ) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
     setup_logging(log_level, log_file)
+    if not ctx.obj.get("_anta_help"):
+        # Ensure password is provided
+        if ctx.params.get("password") is None:
+            if ctx.params.get("prompt"):
+                # User asked for a password prompt
+                ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+            else:
+                raise click.BadParameter(
+                    f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
+                )
+
+        # Check if we need to prompt for an enable password
+        if ctx.params.get("enable"):
+            if ctx.params.get("prompt") and ctx.params.get("enable_password") is None:
+                # User asked for a password prompt
+                ctx.params["enable_password"] = click.prompt(
+                    "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
+                )
+        elif ctx.params.get("enable_password"):
+            raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
+
+    ctx.ensure_object(dict)
     ctx.obj["inventory"] = parse_inventory(ctx, inventory)
 
 
