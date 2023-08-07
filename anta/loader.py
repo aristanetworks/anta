@@ -38,11 +38,19 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
     """
     # Init root logger
     root = logging.getLogger()
-    loglevel = getattr(logging, level.upper())
+    # In ANTA debug mode, level is overriden to DEBUG
+    loglevel = getattr(logging, level.upper()) if not __DEBUG__ else logging.DEBUG
     root.setLevel(loglevel)
+    # Silence the logging of chatty Python modules when level is INFO
+    if loglevel == logging.INFO:
+        # asyncssh is really chatty
+        logging.getLogger("asyncssh").setLevel(logging.WARNING)
+        # httpx as well
+        logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout
     richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=True)
+    # In ANTA debug mode, show Python module in stdout
     if __DEBUG__:
         fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
     else:
@@ -60,19 +68,8 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
         if loglevel == logging.DEBUG:
             richHandler.setLevel(logging.INFO)
 
-    # In ANTA debug mode, level is overriden to DEBUG and tracebacks are logged
     if __DEBUG__:
-        if loglevel != logging.DEBUG:
-            root.setLevel(logging.DEBUG)
-            logger.debug(f"Override current logging level {level.upper()} with DEBUG")
         logger.debug("ANTA Debug Mode enabled")
-    # Otherwise, silence the logging of chatty Python modules
-    else:
-        if loglevel == logging.INFO:
-            # asyncssh is really chatty
-            logging.getLogger("asyncssh").setLevel(logging.WARNING)
-            # httpx as well
-            logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:

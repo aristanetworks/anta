@@ -298,7 +298,7 @@ class AntaTest(ABC):
                     return self.result
 
             collect_time = time.time()
-            self.logger.debug(f"Collecting commands took {format_td(collect_time-start_time)}s")
+            self.logger.debug(f"Collecting commands took {format_td(collect_time-start_time)}")
 
             try:
                 if cmds := self.get_failed_commands():
@@ -313,8 +313,7 @@ class AntaTest(ABC):
                 self.result.is_error(exc_to_str(e))
 
             test_time = time.time()
-            self.logger.debug(f"Executing test took {format_td(test_time-collect_time)}s")
-            self.logger.debug(f"Total test duration was {format_td(test_time-start_time)}s")
+            self.logger.debug(f"Executing test took {format_td(test_time-start_time)}")
 
             AntaTest.update_progress()
             return self.result
