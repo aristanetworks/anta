@@ -96,7 +96,7 @@ def test_anta_password(click_runner: CliRunner) -> None:
     env.pop("ANTA_PASSWORD")
     result = click_runner.invoke(anta, ["--password", "blah", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 0
-    result = click_runner.invoke(anta, ["--prompt", "get", "inventory"], input='password\npassword\n', env=env, auto_envvar_prefix="ANTA")
+    result = click_runner.invoke(anta, ["--prompt", "get", "inventory"], input="password\npassword\n", env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 0
 
 
@@ -107,7 +107,7 @@ def test_anta_enable_password(click_runner: CliRunner) -> None:
     env = default_anta_env()
     result = click_runner.invoke(anta, ["--enable", "--enable-password", "blah", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 0
-    result = click_runner.invoke(anta, ["--enable", "--prompt", "get", "inventory"], input='password\npassword\n', env=env, auto_envvar_prefix="ANTA")
+    result = click_runner.invoke(anta, ["--enable", "--prompt", "get", "inventory"], input="password\npassword\n", env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 0
     result = click_runner.invoke(anta, ["--enable-password", "blah", "--prompt", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 2
