@@ -324,18 +324,12 @@ class VerifySVI(AntaTest):
 class VerifyL3MTU(AntaTest):
 
     """
-    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all interfaces.
+    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
     Expected Results:
         * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
         * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
         * skipped: The test will be skipped if the MTU value is not provided.
-
-    Limitations:
-        * Only Ethernet, Port-Channel, Vlan interfaces are supported.
-
-    https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces
-
     """
 
     name = "VerifyL3MTU"
@@ -350,36 +344,22 @@ class VerifyL3MTU(AntaTest):
         """
         Verifies the global L3 Maximum Transfer Unit (MTU) for interfaces.
 
-        Test that interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
+        Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
         You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-        Input Example:
-
-            anta.tests.interfaces:
-            - VerifyL3MTU:
-                mtu: 1500
-            - VerifyL3MTU2:
-                mtu: 1500
-                ignored_interfaces:
-                    - Vxlan1
-                specific_mtu:
-                    - Ethernet1: 2500
-
         Args:
-            ignored_interfaces (List[str]): A list of interfaces to ignore. It will be added to the built-in exclusion.
-            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of interfaces with their specific MTU configured.
-            mtu (int, optional): Default MTU we should have configured on all excluded interfaces. Defaults to 1500.
+            mtu (int, optional): Default MTU we should have configured on all non-excluded interfaces. Defaults to 1500.
+            ignored_interfaces (List[str]): A list of L3 interfaces to ignore. It will replace the built-in exclusion.
+            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of L3 interfaces with their specific MTU configured.
         """
         if not mtu:
             self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
             return
 
-        if ignored_interfaces is not None:
-            ignored_interfaces += self.NOT_SUPPORTED_INTERFACES
-        else:
+        if ignored_interfaces is None:
             ignored_interfaces = self.NOT_SUPPORTED_INTERFACES
 
-        # Parameter to save incorrect interface settigns
+        # Parameter to save incorrect interface settings
         wrong_l3mtu_intf: List[Dict[str, int]] = []
 
         command_output = self.instance_commands[0].json_output
@@ -394,8 +374,7 @@ class VerifyL3MTU(AntaTest):
             specific_mtu = []
 
         for interface, values in command_output["interfaces"].items():
-            if re.sub(r"\d+$", "", interface) not in ignored_interfaces:
-                # If we are facing a custom MTU setting for a single interface
+            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in ignored_interfaces and values["forwardingModel"] == "routed":
                 if interface in specific_interfaces:
                     wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
                 # Comparison with generic setting

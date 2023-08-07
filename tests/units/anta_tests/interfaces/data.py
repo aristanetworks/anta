@@ -508,7 +508,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                    "Management0": {
+                    "Management1/1": {
                         "name": "Management0",
                         "forwardingModel": "routed",
                         "lineProtocolStatus": "up",
@@ -623,7 +623,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 1500, 'ignored_interfaces': ['Port-Channel2'], 'specific_mtu': [{'Ethernet10': 1501}]},
+        "side_effect": {"mtu": 1500, 'ignored_interfaces': ['Loopback', 'Port-Channel', 'Management', 'Vxlan'], 'specific_mtu': [{'Ethernet10': 1501}]},
         "expected_result": "success",
         "expected_messages": [],
     },
@@ -644,7 +644,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                     },
                     "Ethernet10": {
                         "name": "Ethernet10",
-                        "forwardingModel": "bridged",
+                        "forwardingModel": "routed",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "hardware": "ethernet",
