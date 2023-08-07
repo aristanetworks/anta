@@ -23,8 +23,6 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from click import Option
 
-    from anta.result_manager import ResultManager
-
 
 class ExitCode(enum.IntEnum):
     """
@@ -130,21 +128,6 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
     return anta.loader.parse_catalog(data)
 
 
-def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
-    # pylint: disable=unused-argument
-    """
-    Click option callback to set ANTA logging level
-    """
-    try:
-        anta.loader.setup_logging(value, ctx.params.get("log_file"))
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        message = f"Unable to set ANTA logging level '{value}'"
-        anta_log_exception(e, message, logger)
-        ctx.fail(message)
-
-    return value
-
-
 def exit_with_code(ctx: click.Context) -> None:
     """
     Exit the Click application with an exit code.
@@ -161,11 +144,11 @@ def exit_with_code(ctx: click.Context) -> None:
         ctx: Click Context
     """
 
-    if ctx.params.get('ignore_status'):
+    if ctx.params.get("ignore_status"):
         ctx.exit(0)
 
     # If ignore_error is True then status can never be "error"
-    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.params.get('ignore_error')))
+    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.params.get("ignore_error")))
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)

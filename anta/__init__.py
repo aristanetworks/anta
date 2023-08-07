@@ -15,7 +15,7 @@ __credits__ = [
 ]
 __copyright__ = "Copyright 2022, Arista EMEA AS"
 
-# Global ANTA debug environment variable. Can be set using the cli 'anta --debug'.
+# Global ANTA debug mode environment variable
 __DEBUG__ = bool(os.environ.get("ANTA_DEBUG", "").lower() == "true")
 
 

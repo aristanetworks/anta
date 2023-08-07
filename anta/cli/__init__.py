@@ -6,7 +6,7 @@ ANTA CLI
 
 import logging
 import pathlib
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Literal, Tuple
 
 import click
 
@@ -15,9 +15,10 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password, setup_logging
-from anta.result_manager.models import TestResult
+from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory, prompt_enable_password, prompt_password
+from anta.loader import setup_logging
 from anta.result_manager import ResultManager
+from anta.result_manager.models import TestResult
 
 
 # @click.group()
@@ -69,6 +70,12 @@ from anta.result_manager import ResultManager
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
 )
 @click.option(
+    "--log-file",
+    show_envvar=True,
+    help="Send the logs to a file. If logging level is DEBUG, only INFO or higher will be sent to stdout.",
+    type=click.Path(file_okay=True, dir_okay=False, writable=True, path_type=pathlib.Path),
+)
+@click.option(
     "--log-level",
     "--log",
     show_envvar=True,
@@ -85,17 +92,16 @@ from anta.result_manager import ResultManager
         ],
         case_sensitive=False,
     ),
-    callback=setup_logging,
 )
 @click.option("--ignore-status", show_envvar=True, is_flag=True, default=False, help="Always exit with success")
 @click.option("--ignore-error", show_envvar=True, is_flag=True, default=False, help="Only report failures and not errors")
-def anta(ctx: click.Context, inventory: pathlib.Path, ignore_status: bool, ignore_error: bool, **kwargs: Any) -> None:
+def anta(
+    ctx: click.Context, inventory: pathlib.Path, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any
+) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
-    ctx.ensure_object(dict)
+    setup_logging(log_level, log_file)
     ctx.obj["inventory"] = parse_inventory(ctx, inventory)
-    ctx.obj["ignore_status"] = ignore_status
-    ctx.obj["ignore_error"] = ignore_error
 
 
 @anta.group(cls=IgnoreRequiredWithHelp)

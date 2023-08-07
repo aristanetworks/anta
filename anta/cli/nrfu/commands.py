@@ -11,7 +11,7 @@ from typing import List, Optional
 
 import click
 
-from anta.cli.utils import parse_tags, exit_with_code
+from anta.cli.utils import exit_with_code, parse_tags
 from anta.models import AntaTest
 from anta.runner import main
 

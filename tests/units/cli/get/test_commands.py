@@ -4,13 +4,13 @@ Tests for anta.cli.get.commands
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 from unittest.mock import ANY, patch
 
 import pytest
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
-from pathlib import Path
 
 from anta.cli import anta
 from anta.cli.get.commands import from_cvp
