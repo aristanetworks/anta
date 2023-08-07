@@ -322,8 +322,9 @@ class VerifySVI(AntaTest):
 
 
 class VerifyL3MTU(AntaTest):
+
     """
-    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces.
+    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all interfaces.
 
     Expected Results:
         * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
@@ -332,7 +333,6 @@ class VerifyL3MTU(AntaTest):
 
     Limitations:
         * Only Ethernet, Port-Channel, Vlan interfaces are supported.
-        * Other interface types, like Management, Loopback, Vxlan, Tunnel are currently not supported.
 
     https://www.arista.com/en/support/toi/eos-4-23-1f/14388-global-knob-to-set-mtu-for-all-layer-3-interfaces
 
@@ -346,33 +346,67 @@ class VerifyL3MTU(AntaTest):
     NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
 
     @AntaTest.anta_test
-    def test(self, mtu: int = 1500) -> None:
+    def test(self, mtu: int = 1500, ignored_interfaces: Optional[List[str]] = None, specific_mtu: Optional[List[Dict[str, int]]] = None) -> None:
         """
-        Run VerifyL3MTU validation
+        Verifies the global L3 Maximum Transfer Unit (MTU) for interfaces.
+
+        Test that interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
+        You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
+
+        Input Example:
+
+            anta.tests.interfaces:
+            - VerifyL3MTU:
+                mtu: 1500
+            - VerifyL3MTU2:
+                mtu: 1500
+                ignored_interfaces:
+                    - Vxlan1
+                specific_mtu:
+                    - Ethernet1: 2500
 
         Args:
-          mtu: Layer 3 MTU to verify. Defaults to 1500.
-
+            ignored_interfaces (List[str]): A list of interfaces to ignore. It will be added to the built-in exclusion.
+            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of interfaces with their specific MTU configured.
+            mtu (int, optional): Default MTU we should have configured on all excluded interfaces. Defaults to 1500.
         """
-
         if not mtu:
             self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
             return
 
+        if ignored_interfaces is not None:
+            ignored_interfaces += self.NOT_SUPPORTED_INTERFACES
+        else:
+            ignored_interfaces = self.NOT_SUPPORTED_INTERFACES
+
+        # Parameter to save incorrect interface settigns
+        wrong_l3mtu_intf: List[Dict[str, int]] = []
+
         command_output = self.instance_commands[0].json_output
 
-        wrong_l3mtu_intf = []
-
-        for interface, values in command_output["interfaces"].items():
-            if re.sub(r"\d+$", "", interface) not in self.NOT_SUPPORTED_INTERFACES:
-                if values["forwardingModel"] == "routed" and values["mtu"] != mtu:
-                    wrong_l3mtu_intf.append(interface)
-
-        if not wrong_l3mtu_intf:
-            self.result.is_success()
-
+        # Set list of interfaces with specific settings
+        specific_interfaces: List[str] = []
+        if specific_mtu is not None:
+            for d in specific_mtu:
+                specific_interfaces.extend(d)
+        # Set default value if there is no specific settings.
         else:
-            self.result.is_failure(f"The following interface(s) have the wrong MTU configured: {wrong_l3mtu_intf}")
+            specific_mtu = []
+
+        self.logger.warning(f"specific interfaces set to: {specific_interfaces}")
+        self.logger.warning("Running loop testing")
+        for interface, values in command_output["interfaces"].items():
+            if re.sub(r"\d+$", "", interface) not in ignored_interfaces:
+                self.logger.warning(f"Testing interface {interface} as it is not in ignored_interface ({specific_interfaces} / {specific_mtu})")
+                # If we are facing a custom MTU setting for a single interface
+                if interface in specific_interfaces:
+                    wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
+                # Comparison with generic setting
+                elif values["mtu"] != mtu:
+                    wrong_l3mtu_intf.append({interface: values["mtu"]})
+
+        if wrong_l3mtu_intf:
+            self.result.is_failure(f"Some interfaces do not have correct MTU configured:\n{wrong_l3mtu_intf}")
 
 
 class VerifyIPProxyARP(AntaTest):
