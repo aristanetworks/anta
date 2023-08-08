@@ -297,9 +297,6 @@ class AntaTest(ABC):
                 if self.result.result != "unset":
                     return self.result
 
-            collect_time = time.time()
-            self.logger.debug(f"Collecting commands took {format_td(collect_time-start_time)}")
-
             try:
                 if cmds := self.get_failed_commands():
                     self.result.is_error(
@@ -312,8 +309,8 @@ class AntaTest(ABC):
                 anta_log_exception(e, message, self.logger)
                 self.result.is_error(exc_to_str(e))
 
-            test_time = time.time()
-            self.logger.debug(f"Executing test took {format_td(test_time-start_time)}")
+            test_duration = time.time() - start_time
+            self.logger.debug(f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}")
 
             AntaTest.update_progress()
             return self.result
