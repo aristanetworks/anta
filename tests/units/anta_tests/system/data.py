@@ -76,18 +76,52 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
 
 INPUT_COREDUMP: List[Dict[str, Any]] = [
     {
-        "name": "success",
-        "eos_data": [""],
+        "name": "success-without-minidump",
+        "eos_data": [
+            {
+                'mode': 'compressedDeferred',
+                'coreFiles': []
+            }
+        ],
         "side_effect": [],
         "expected_result": "success",
         "expected_messages": [],
     },
     {
-        "name": "failure",
-        "eos_data": ["kernelcrash.last.2023-04-20-16-13-33"],
+        "name": "success-with-minidump",
+        "eos_data": [
+            {
+                'mode': 'compressedDeferred',
+                'coreFiles': ['minidump']
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "success",
+        "expected_messages": [],
+    },
+    {
+        "name": "failure-without-minidump",
+        "eos_data": [
+            {
+                'mode': 'compressedDeferred',
+                'coreFiles': ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]
+            }
+        ],
         "side_effect": [],
         "expected_result": "failure",
-        "expected_messages": ["Core-dump(s) have been found: kernelcrash.last.2023-04-20-16-13-33"],
+        "expected_messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]
+    },
+    {
+        "name": "failure-with-minidump",
+        "eos_data": [
+            {
+                'mode': 'compressedDeferred',
+                'coreFiles': ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]
+            }
+        ],
+        "side_effect": [],
+        "expected_result": "failure",
+        "expected_messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]
     },
 ]
 
