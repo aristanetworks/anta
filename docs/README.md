@@ -71,7 +71,6 @@ Commands:
   nrfu   Run NRFU against inventory devices
 ```
 
-> [!NOTE]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 
