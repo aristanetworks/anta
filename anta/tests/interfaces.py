@@ -409,3 +409,74 @@ class VerifyIPProxyARP(AntaTest):
 
         else:
             self.result.is_success()
+
+
+class VerifyL2MTU(AntaTest):
+
+    """
+    Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
+
+    Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
+    You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
+
+    Default ignored interfaces: ["Management", "Loopback", "Tunnel", "Vxlan"]
+
+    Expected Results:
+        * success: The test will pass if all layer 2 interfaces have the proper MTU configured.
+        * failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
+        * skipped: The test will be skipped if the MTU value is not provided.
+    """
+
+    name = "VerifyL2MTU"
+    description = "Verifies the global layer 2 Maximum Transfer Unit (MTU) for all layer 2 interfaces."
+    categories = ["interfaces"]
+    commands = [AntaCommand(command="show interfaces")]
+
+    NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Tunnel", "Vxlan"]
+
+    @AntaTest.anta_test
+    def test(self, mtu: int = 9214, ignored_interfaces: Optional[List[str]] = None, specific_mtu: Optional[List[Dict[str, int]]] = None) -> None:
+        """
+        Verifies the global L2 Maximum Transfer Unit (MTU) for interfaces.
+
+        Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
+        You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
+
+        Args:
+            mtu (int, optional): Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214.
+            ignored_interfaces (List[str]): A list of L2 interfaces to ignore. It will replace the built-in exclusion.
+            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of L2 interfaces with their specific MTU configured.
+        """
+        if not mtu:
+            self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
+            return
+
+        if ignored_interfaces is None:
+            ignored_interfaces = self.NOT_SUPPORTED_INTERFACES
+
+        # Parameter to save incorrect interface settings
+        wrong_l2mtu_intf: List[Dict[str, int]] = []
+
+        command_output = self.instance_commands[0].json_output
+
+        # Set list of interfaces with specific settings
+        specific_interfaces: List[str] = []
+        if specific_mtu is not None:
+            for d in specific_mtu:
+                specific_interfaces.extend(d)
+        # Set default value if there is no specific settings.
+        else:
+            specific_mtu = []
+
+        for interface, values in command_output["interfaces"].items():
+            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in ignored_interfaces and values["forwardingModel"] == "bridged":
+                if interface in specific_interfaces:
+                    wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
+                # Comparison with generic setting
+                elif values["mtu"] != mtu:
+                    wrong_l2mtu_intf.append({interface: values["mtu"]})
+
+        if wrong_l2mtu_intf:
+            self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
+        else:
+            self.result.is_success()
