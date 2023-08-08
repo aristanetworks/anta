@@ -1677,7 +1677,7 @@
 <span class="sd">        Table: A fully populated rich Table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Device IP&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Message(s)&quot;</span><span class="p">,</span> <span class="s2">&quot;Test description&quot;</span><span class="p">,</span> <span class="s2">&quot;Test category&quot;</span><span class="p">]</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Device&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Message(s)&quot;</span><span class="p">,</span> <span class="s2">&quot;Test description&quot;</span><span class="p">,</span> <span class="s2">&quot;Test category&quot;</span><span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">):</span>
@@ -1864,7 +1864,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;Host IP&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Device&quot;</span><span class="p">,</span>
         <span class="s2">&quot;# of success&quot;</span><span class="p">,</span>
         <span class="s2">&quot;# of skipped&quot;</span><span class="p">,</span>
         <span class="s2">&quot;# of failure&quot;</span><span class="p">,</span>
