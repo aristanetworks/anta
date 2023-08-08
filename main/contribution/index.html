@@ -1402,6 +1402,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#build-class-diagram" class="md-nav__link">
+    Build class diagram
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#checking-links" class="md-nav__link">
     Checking links
   </a>
@@ -1524,6 +1531,13 @@
           <li class="md-nav__item">
   <a href="#testing-documentation" class="md-nav__link">
     Testing documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-class-diagram" class="md-nav__link">
+    Build class diagram
   </a>
   
 </li>
@@ -1732,6 +1746,11 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
 <p>By default, <code>mkdocs</code> listens to <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:</p>
 <div class="highlight"><pre><span></span><code>mkdocs<span class="w"> </span>serve<span class="w"> </span>--dev-addr<span class="o">=</span><span class="m">0</span>.0.0.0:8080
 </code></pre></div>
+<h5 id="build-class-diagram">Build class diagram<a class="headerlink" href="#build-class-diagram" title="Permanent link">&para;</a></h5>
+<p>To build class diagram to use in API documentation, you can use <code>pyreverse</code> part of <code>pylint</code> with <a href="https://graphviz.org/"><code>graphviz</code></a> installed for jpeg generation.</p>
+<div class="highlight"><pre><span></span><code>pyreverse<span class="w"> </span>anta<span class="w"> </span>--colorized<span class="w"> </span>-a1<span class="w"> </span>-s1<span class="w"> </span>-o<span class="w"> </span>jpeg<span class="w"> </span>-m<span class="w"> </span><span class="nb">true</span><span class="w"> </span>-k<span class="w"> </span>--output-directory<span class="w"> </span>docs/imgs/uml/<span class="w"> </span>-c<span class="w"> </span>&lt;FQDN<span class="w"> </span>anta<span class="w"> </span>class&gt;
+</code></pre></div>
+<p>Image will be generated under <code>docs/imgs/uml/</code> and can be inserted in your documentation.</p>
 <h5 id="checking-links">Checking links<a class="headerlink" href="#checking-links" title="Permanent link">&para;</a></h5>
 <p>Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use <a href="https://github.com/raviqqe/muffet"><code>muffet</code></a> with the following command:</p>
 <div class="highlight"><pre><span></span><code>muffet<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>--color<span class="o">=</span>always<span class="w"> </span>http://127.0.0.1:8000<span class="w"> </span>-e<span class="w"> </span>fonts.gstatic.com
@@ -1744,7 +1763,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 28, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 8, 2023</span>
       
     
   </small>
