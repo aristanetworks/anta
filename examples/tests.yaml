@@ -97,7 +97,11 @@ anta.tests.interfaces:
       number: 3
   - VerifySVI:
   - VerifyL3MTU:
-      mtu: 9214
+      mtu: 1500
+      ignored_interfaces:
+          - Vxlan1
+      specific_mtu:
+          - Ethernet1: 2500
   - VerifyIPProxyARP:
       template_params:
         - intf: Ethernet1
