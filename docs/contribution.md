@@ -198,6 +198,16 @@ By default, `mkdocs` listens to http://127.0.0.1:8000/, if you need to expose th
 mkdocs serve --dev-addr=0.0.0.0:8080
 ```
 
+### Build class diagram
+
+To build class diagram to use in API documentation, you can use `pyreverse` part of `pylint` with [`graphviz`](https://graphviz.org/) installed for jpeg generation.
+
+```bash
+pyreverse anta --colorized -a1 -s1 -o jpeg -m true -k --output-directory docs/imgs/uml/ -c <FQDN anta class>
+```
+
+Image will be generated under `docs/imgs/uml/` and can be inserted in your documentation.
+
 ### Checking links
 
 Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
