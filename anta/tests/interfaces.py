@@ -326,6 +326,11 @@ class VerifyL3MTU(AntaTest):
     """
     Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
+    Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
+    You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
+
+    Default ignored interfaces: ["Management", "Loopback", "Vxlan", "Tunnel"]
+
     Expected Results:
         * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
         * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
