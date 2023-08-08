@@ -108,26 +108,45 @@ def anta(
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
     setup_logging(log_level, log_file)
-    if not ctx.obj.get("_anta_help"):
-        # Ensure password is provided
-        if ctx.params.get("password") is None:
-            if ctx.params.get("prompt"):
-                # User asked for a password prompt
-                ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-            else:
-                raise click.BadParameter(
-                    f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
-                )
 
-        # Check if we need to prompt for an enable password
-        if ctx.params.get("enable"):
-            if ctx.params.get("prompt") and ctx.params.get("enable_password") is None:
-                # User asked for a password prompt
-                ctx.params["enable_password"] = click.prompt(
-                    "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
-                )
-        elif ctx.params.get("enable_password"):
+    if not ctx.obj.get("_anta_help"):
+        if ctx.params.get("prompt"):
+            # User asked for a password prompt
+            if ctx.params.get("password") is None:
+                ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+            if ctx.params.get("enable"):
+                if ctx.params.get("enable_password") is None:
+                    if click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
+                        ctx.params["enable_password"] = click.prompt("Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True)
+        if ctx.params.get("password") is None:
+            raise click.BadParameter(
+                f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
+            )
+        if not ctx.params.get("enable") and ctx.params.get("enable_password"):
             raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
+
+
+
+    # if not ctx.obj.get("_anta_help"):
+    #     # Ensure password is provided
+    #     if ctx.params.get("password") is None:
+    #         if ctx.params.get("prompt"):
+    #             # User asked for a password prompt
+    #             ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+    #         else:
+    #             raise click.BadParameter(
+    #                 f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
+    #             )
+
+    #     # Check if we need to prompt for an enable password
+    #     if ctx.params.get("enable"):
+    #         if ctx.params.get("prompt") and ctx.params.get("enable_password") is None:
+    #             # User asked for a password prompt
+    #             ctx.params["enable_password"] = click.prompt(
+    #                 "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
+    #             )
+    #     elif ctx.params.get("enable_password"):
+    #         raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
 
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = parse_inventory(ctx, inventory)
