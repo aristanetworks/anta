@@ -61,7 +61,7 @@ anta.tests.connectivity:
           dst: 10.0.0.1
         - src: Loopback0
           dst: 10.0.0.2
-          
+
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:
@@ -102,6 +102,13 @@ anta.tests.interfaces:
       template_params:
         - intf: Ethernet1
         - intf: Ethernet2
+  - VerifyL2MTU:
+      mtu: 1500
+      ignored_interfaces:
+        - Management1
+        - Vxlan1
+      specific_mtu:
+        - Ethernet1/1: 1500
 
 anta.tests.logging:
   - VerifyLoggingPersistent:
