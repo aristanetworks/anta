@@ -109,7 +109,7 @@ class ReportTable:
             Table: A fully populated rich Table
         """
         table = Table(title=title)
-        headers = ["Device IP", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
+        headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
         for result in result_manager.get_results(output_format="list"):
@@ -190,7 +190,7 @@ class ReportTable:
         """
         table = Table(title=title)
         headers = [
-            "Host IP",
+            "Device",
             "# of success",
             "# of skipped",
             "# of failure",
