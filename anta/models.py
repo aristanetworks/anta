@@ -5,8 +5,10 @@ Models to define a TestStructure
 from __future__ import annotations
 
 import logging
+import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from datetime import timedelta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
@@ -273,6 +275,12 @@ class AntaTest(ABC):
             Returns:
                 TestResult: self.result, populated with the correct exit status
             """
+
+            def format_td(seconds: float, digits: int = 3) -> str:
+                isec, fsec = divmod(round(seconds * 10**digits), 10**digits)
+                return f"{timedelta(seconds=isec)}.{fsec:0{digits}.0f}"
+
+            start_time = time.time()
             if self.result.result != "unset":
                 return self.result
 
@@ -300,6 +308,9 @@ class AntaTest(ABC):
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
                 anta_log_exception(e, message, self.logger)
                 self.result.is_error(exc_to_str(e))
+
+            test_duration = time.time() - start_time
+            self.logger.debug(f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}")
 
             AntaTest.update_progress()
             return self.result

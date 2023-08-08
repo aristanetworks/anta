@@ -23,8 +23,6 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from click import Option
 
-    from anta.result_manager import ResultManager
-
 
 class ExitCode(enum.IntEnum):
     """
@@ -79,35 +77,6 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[s
     return None
 
 
-def prompt_password(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
-    # pylint: disable=unused-argument
-    """
-    Click option callback to ensure that enable is True when the option is set
-    """
-    if ctx.obj.get("_anta_help"):
-        # Currently looking for help for a subcommand so no
-        # need to prompt the password
-        return None
-    if value is None:
-        return click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-    return value
-
-
-def prompt_enable_password(ctx: click.Context, param: Option, value: Optional[str]) -> Optional[str]:
-    """
-    Click option callback to ensure that enable is True when the option is set
-    """
-    if ctx.obj.get("_anta_help"):
-        # Currently looking for help for a subcommand so no
-        # need to prompt the password
-        return None
-    if value is not None and ctx.params.get("enable") is not True:
-        raise click.BadParameter(f"'{param.opts[0]}' requires '--enable'")
-    if value is None and ctx.params.get("enable") is True:
-        return click.prompt("Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True)
-    return value
-
-
 def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
     # pylint: disable=unused-argument
     """
@@ -130,47 +99,34 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[C
     return anta.loader.parse_catalog(data)
 
 
-def setup_logging(ctx: click.Context, param: Option, value: str) -> str:
-    # pylint: disable=unused-argument
+def exit_with_code(ctx: click.Context) -> None:
     """
-    Click option callback to set ANTA logging level
-    """
-    try:
-        anta.loader.setup_logging(value)
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        message = f"Unable to set ANTA logging level '{value}'"
-        anta_log_exception(e, message, logger)
-        ctx.fail(message)
+    Exit the Click application with an exit code.
+    This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
+    from the `ResultManger` instance.
+    If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
+    If flag `ignore_status` is set, the exit code will always be 0.
+    Exit the application with the following exit code:
+        * 0 if `ignore_status` is `True` or global test status is `unset`, `skipped` or `success`
+        * 1 if status is `failure`
+        * 2 if status is `error`
 
-    return value
-
-
-def return_code(result_manager: ResultManager, ignore_error: bool, ignore_status: bool) -> int:
-    """
     Args:
-        result_manager (ResultManager)
-        ignore_error (bool): Ignore error status
-        ignore_status (bool): Ignore status completely and always return 0
-
-    Returns:
-        exit_code (int):
-          * 0 if ignore_status is True or status is in ["unset", "skipped", "success"]
-          * 1 if status is "failure"
-          * 2 if status is "error"
+        ctx: Click Context
     """
 
-    if ignore_status:
-        return 0
+    if ctx.params.get("ignore_status"):
+        ctx.exit(0)
 
     # If ignore_error is True then status can never be "error"
-    status = result_manager.get_status(ignore_error=ignore_error)
+    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.params.get("ignore_error")))
 
     if status in {"unset", "skipped", "success"}:
-        return ExitCode.OK
+        ctx.exit(ExitCode.OK)
     if status == "failure":
-        return ExitCode.TESTS_FAILED
+        ctx.exit(ExitCode.TESTS_FAILED)
     if status == "error":
-        return ExitCode.TESTS_ERROR
+        ctx.exit(ExitCode.TESTS_ERROR)
 
     logger.error("Please gather logs and open an issue on Github.")
     raise ValueError(f"Unknown status returned by the ResultManager: {status}. Please gather logs and open an issue on Github.")

@@ -7,14 +7,12 @@ Commands for Anta CLI to run nrfu commands.
 import asyncio
 import logging
 import pathlib
-import sys
 from typing import List, Optional
 
 import click
 
-from anta.cli.utils import parse_tags, return_code
+from anta.cli.utils import exit_with_code, parse_tags
 from anta.models import AntaTest
-from anta.result_manager import ResultManager
 from anta.runner import main
 
 from .utils import anta_progress_bar, print_jinja, print_json, print_settings, print_table, print_text
@@ -33,16 +31,10 @@ logger = logging.getLogger(__name__)
 def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], test: Optional[str], group_by: str) -> None:
     """ANTA command to check network states with table result"""
     print_settings(ctx)
-    results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-
-    print_table(results=results, device=device, group_by=group_by, test=test)
-
-    # TODO make a util method to avoid repeating the same three line
-    ignore_status = ctx.obj["ignore_status"]
-    ignore_error = ctx.obj["ignore_error"]
-    sys.exit(return_code(results, ignore_error, ignore_status))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
+    exit_with_code(ctx)
 
 
 @click.command()
@@ -59,14 +51,10 @@ def table(ctx: click.Context, tags: Optional[List[str]], device: Optional[str], 
 def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib.Path]) -> None:
     """ANTA command to check network state with JSON result"""
     print_settings(ctx)
-    results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_json(results=results, output=output)
-
-    ignore_status = ctx.obj["ignore_status"]
-    ignore_error = ctx.obj["ignore_error"]
-    sys.exit(return_code(results, ignore_error, ignore_status))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    print_json(results=ctx.obj["result_manager"], output=output)
+    exit_with_code(ctx)
 
 
 @click.command()
@@ -77,14 +65,10 @@ def json(ctx: click.Context, tags: Optional[List[str]], output: Optional[pathlib
 def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], skip_error: bool) -> None:
     """ANTA command to check network states with text result"""
     print_settings(ctx)
-    results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_text(results=results, search=search, skip_error=skip_error)
-
-    ignore_status = ctx.obj["ignore_status"]
-    ignore_error = ctx.obj["ignore_error"]
-    sys.exit(return_code(results, ignore_error, ignore_status))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
+    exit_with_code(ctx)
 
 
 @click.command()
@@ -109,11 +93,7 @@ def text(ctx: click.Context, tags: Optional[List[str]], search: Optional[str], s
 def tpl_report(ctx: click.Context, tags: Optional[List[str]], template: pathlib.Path, output: Optional[pathlib.Path]) -> None:
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)
-    results = ResultManager()
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(results, ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_jinja(results=results, template=template, output=output)
-
-    ignore_status = ctx.obj["ignore_status"]
-    ignore_error = ctx.obj["ignore_error"]
-    sys.exit(return_code(results, ignore_error, ignore_status))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+    print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    exit_with_code(ctx)
