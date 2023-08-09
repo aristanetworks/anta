@@ -172,6 +172,18 @@ test.py:1:0: W0611: Unused import foobaz (unused-import)
 
 > NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.
 
+## Configure MYPYPATH
+
+In some cases, mypy can complain about not having `MYPYPATH` configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:
+
+```bash
+# Option 1: use local folder
+export MYPYPATH=.
+
+# Option 2: use absolute path
+export MYPYPATH=/path/to/your/local/anta/repository
+```
+
 ## Documentation
 
 [`mkdocs`](https://www.mkdocs.org/) is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.
