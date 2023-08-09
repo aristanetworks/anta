@@ -23,6 +23,17 @@ jobs:
               - 'anta/**'
               - 'tests/*'
               - 'tests/**'
+            core:
+              - 'anta/*'
+              - 'anta/reporter/*'
+              - 'anta/result_manager/*'
+              - 'anta/tools/*'
+            cli:
+              - 'anta/cli/*'
+              - 'anta/cli/**'
+            tests:
+              - 'anta/tests/*'
+              - 'anta/tests/**'
             docs:
               - '.github/workflows/pull-request-management.yml'
               - 'mkdocs.yml'
@@ -50,7 +61,7 @@ jobs:
     name: "Warning documentation is missing"
     runs-on: ubuntu-20.04
     needs: [file-changes]
-    if: needs.file-changes.outputs.code == 'true' && needs.file-changes.outputs.documentation == 'false'
+    if: needs.file-changes.outputs.cli == 'true' && needs.file-changes.outputs.docs == 'false'
     steps:
       - name: Documentation is missing
         uses: GrantBirki/comment@v2.0.5
