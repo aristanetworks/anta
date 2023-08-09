@@ -204,3 +204,4 @@ nav:
       - Report Manager module: api/report_manager.md
       - Report Manager models: api/report_manager_models.md
   - Contributions: contribution.md
+  - FAQ: faq.md

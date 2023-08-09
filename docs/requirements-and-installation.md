@@ -37,7 +37,7 @@ pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-
 
 ### Check installation
 
-Run these commands to verify:
+After installing ANTA, verify the installation with the following commands:
 
 ```bash
 # Check ANTA has been installed in your python path
@@ -47,8 +47,13 @@ pip list | grep anta
 # Path may differ but it means CLI is in your path
 which anta
 /home/tom/.pyenv/shims/anta
+```
 
-# Chck ANTA version
+!!! warning
+    Before running the `anta --version` command, please be aware that some users have reported issues related to the `urllib3` package. If you encounter an error at this step, please refer to our [FAQ](faq.md) page for guidance on resolving it.
+
+```bash
+# Check ANTA version
 anta --version
 anta, version v0.7.1
 ```
