@@ -128,6 +128,7 @@ anta.tests.logging:
   - VerifyLoggingHostname:
   - VerifyLoggingTimestamp:
   - VerifyLoggingAccounting:
+  - VerifyLoggingErrors:
 
 anta.tests.mlag:
   - VerifyMlagStatus:
@@ -221,7 +222,6 @@ anta.tests.system:
   - VerifyReloadCause:
   - VerifyCoredump:
   - VerifyAgentLogs:
-  - VerifySyslog:
   - VerifyCPUUtilization:
   - VerifyMemoryUtilization:
   - VerifyFileSystemUtilization:

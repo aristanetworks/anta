@@ -288,3 +288,30 @@ class VerifyLoggingAccounting(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("AAA accounting logs are not generated")
+
+
+class VerifyLoggingErrors(AntaTest):
+    """
+    This test verifies there are no syslog messages with a severity of ERRORS or higher.
+
+    Expected Results:
+      * success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
+      * failure: The test will fail if ERRORS or higher syslog messages are present.
+    """
+
+    name = "VerifyLoggingWarning"
+    description = "This test verifies there are no syslog messages with a severity of ERRORS or higher."
+    categories = ["logging"]
+    commands = [AntaCommand(command="show logging threshold errors", ofmt="text")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """
+        Run VerifyLoggingWarning validation
+        """
+        command_output = self.instance_commands[0].text_output
+
+        if len(command_output) == 0:
+            self.result.is_success()
+        else:
+            self.result.is_failure("Device has reported syslog messages with a severity of ERRORS or higher")

@@ -18,7 +18,6 @@ from anta.tests.system import (
     VerifyMemoryUtilization,
     VerifyNTP,
     VerifyReloadCause,
-    VerifySyslog,
     VerifyUptime,
 )
 from tests.lib.utils import generate_test_ids_list
@@ -31,7 +30,6 @@ from .data import (
     INPUT_MEMORY_UTILIZATION,
     INPUT_NTP,
     INPUT_RELOAD_CAUSE,
-    INPUT_SYSLOG,
     INPUT_UPTIME,
 )
 
@@ -95,23 +93,6 @@ def test_VerifyAgentLogs(mocked_device: MagicMock, test_data: Any) -> None:
     logging.info(f"Mocked HW is: {mocked_device.hw_model}")
 
     test = VerifyAgentLogs(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    logging.debug(f"test result is: {test.result}")
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_SYSLOG, ids=generate_test_ids_list(INPUT_SYSLOG))
-def test_VerifySyslog(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifySyslog."""
-
-    logging.info(f"Mocked device is: {mocked_device.host}")
-    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
-
-    test = VerifySyslog(mocked_device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
 
     logging.debug(f"test result is: {test.result}")

@@ -159,26 +159,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
     },
 ]
 
-INPUT_SYSLOG: List[Dict[str, Any]] = [
-    {
-        "name": "success",
-        "eos_data": [""],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
-    {
-        "name": "failure",
-        "eos_data": [
-            """May  4 10:23:59 Leaf1 Lldp: %LLDP-3-NEIGHBOR_NEW: LLDP neighbor with chassisId 5022.0057.d059 and portId "Ethernet1" added on interface
-Ethernet1
-"""
-        ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device has reported some log messages with WARNING or higher severity"],
-    },
-]
 
 INPUT_CPU_UTILIZATION: List[Dict[str, Any]] = [
     {
