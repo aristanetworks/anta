@@ -1380,6 +1380,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configure-mypypath" class="md-nav__link">
+    Configure MYPYPATH
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#documentation" class="md-nav__link">
     Documentation
   </a>
@@ -1509,6 +1516,13 @@
           <li class="md-nav__item">
   <a href="#git-pre-commit-hook" class="md-nav__link">
     Git Pre-commit hook
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-mypypath" class="md-nav__link">
+    Configure MYPYPATH
   </a>
   
 </li>
@@ -1733,6 +1747,14 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
 <blockquote>
 <p>NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.</p>
 </blockquote>
+<h4 id="configure-mypypath">Configure MYPYPATH<a class="headerlink" href="#configure-mypypath" title="Permanent link">&para;</a></h4>
+<p>In some cases, mypy can complain about not having <code>MYPYPATH</code> configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Option 1: use local folder</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">MYPYPATH</span><span class="o">=</span>.
+
+<span class="c1"># Option 2: use absolute path</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">MYPYPATH</span><span class="o">=</span>/path/to/your/local/anta/repository
+</code></pre></div>
 <h4 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h4>
 <p><a href="https://www.mkdocs.org/"><code>mkdocs</code></a> is used to generate the documentation. A PR should always update the documentation to avoid documentation debt.</p>
 <h5 id="install-documentation-requirements">Install documentation requirements<a class="headerlink" href="#install-documentation-requirements" title="Permanent link">&para;</a></h5>
@@ -1763,7 +1785,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 8, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 9, 2023</span>
       
     
   </small>
