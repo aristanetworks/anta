@@ -41,7 +41,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected_result": "failure",
-        "expected_messages": ["STP mode 'rstp' not configured for VLAN 10", "STP mode 'rstp' not configured for VLAN 20"]
+        "expected_messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10, 20]"]
     },
     {
         "name": "failure-wrong-mode",
@@ -67,10 +67,33 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected_result": "failure",
-        "expected_messages": ["Wrong STP mode configured for VLAN 10", "Wrong STP mode configured for VLAN 20"]
+        "expected_messages": ["Wrong STP mode configured for the following VLAN(s): [10, 20]"]
     },
     {
-        "name": "error",
+        "name": "failure-both",
+        "eos_data": [
+            {
+                "spanningTreeVlanInstances": {}
+            },
+            {
+                "spanningTreeVlanInstances": {
+                    "20": {
+                        "spanningTreeVlanInstance": {
+                            "protocol": "mstp"
+                        }
+                    }
+                }
+            },
+        ],
+        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected_result": "failure",
+        "expected_messages": [
+            "STP mode 'rstp' not configured for the following VLAN(s): [10]",
+            "Wrong STP mode configured for the following VLAN(s): [20]"
+            ]
+    },
+    {
+        "name": "error-wrong-mode",
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -96,7 +119,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         "expected_messages": ["ValueError (Wrong STP mode provided. Valid modes are: ['mstp', 'rstp', 'rapidPvst'])"]
     },
     {
-        "name": "error",
+        "name": "error-no-params",
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -122,7 +145,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
         "expected_messages": ["Command has template but no params were given"]
     },
     {
-        "name": "error",
+        "name": "error-wrong-params",
         "eos_data": [
             {
                 "spanningTreeVlanInstances": {
@@ -318,8 +341,7 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
         ],
         "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected_result": "failure",
-        "expected_messages": ["STP instance for VLAN 10 is not configured",
-                              "STP instance for VLAN 20 is not configured"]
+        "expected_messages": ["STP instance is not configured for the following VLAN(s): [10, 20]"]
     },
     {
         "name": "failure",
@@ -363,11 +385,11 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
         ],
         "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected_result": "failure",
-        "expected_messages": ["The following interface(s) are not in a forwarding state for VLAN 10: ['Ethernet10']",
-                              "The following interface(s) are not in a forwarding state for VLAN 20: ['Ethernet10']"]
+        "expected_messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: "
+                              "[{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"]
     },
     {
-        "name": "error",
+        "name": "error-no-params",
         "eos_data": [
             {
                 "unmappedVlans": [],
@@ -409,6 +431,50 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
         "side_effect": {"template_params": None},
         "expected_result": "error",
         "expected_messages": ["Command has template but no params were given"]
+    },
+    {
+        "name": "error-wrong-params",
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Mst10": {
+                        "vlans": [
+                            10
+                        ],
+                        "interfaces": {
+                            "Ethernet10": {
+                                "state": "forwarding"
+                            },
+                            "MplsTrunk1": {
+                                "state": "forwarding"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Mst20": {
+                        "vlans": [
+                            20
+                        ],
+                        "interfaces": {
+                            "Ethernet10": {
+                                "state": "forwarding"
+                            },
+                            "MplsTrunk1": {
+                                "state": "forwarding"
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "side_effect": {"template_params": [{"wrong": 10}, {"wrong": 20}]},
+        "expected_result": "error",
+        "expected_messages": ["Cannot render template 'show spanning-tree topology vlan {vlan} status': wrong parameters"]
     }
 ]
 

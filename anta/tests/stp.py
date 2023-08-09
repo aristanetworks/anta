@@ -52,16 +52,26 @@ class VerifySTPMode(AntaTest):
 
         self._check_stp_mode(mode)
 
-        self.result.is_success()
+        not_configured = []
+        wrong_stp_mode = []
 
         for command in self.instance_commands:
             if command.params and "vlan" in command.params:
                 vlan_id = command.params["vlan"]
             if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
-                self.result.is_failure(f"STP mode '{mode}' not configured for VLAN {vlan_id}")
+                not_configured.append(vlan_id)
 
             elif stp_mode != mode:
-                self.result.is_failure(f"Wrong STP mode configured for VLAN {vlan_id}")
+                wrong_stp_mode.append(vlan_id)
+
+        if not_configured:
+            self.result.is_failure(f"STP mode '{mode}' not configured for the following VLAN(s): {not_configured}")
+
+        if wrong_stp_mode:
+            self.result.is_failure(f"Wrong STP mode configured for the following VLAN(s): {wrong_stp_mode}")
+
+        if not not_configured and not wrong_stp_mode:
+            self.result.is_success()
 
 
 class VerifySTPBlockedPorts(AntaTest):
@@ -147,22 +157,31 @@ class VerifySTPForwardingPorts(AntaTest):
         Run VerifySTPForwardingPorts validation.
         """
 
-        self.result.is_success()
+        not_configured = []
+        not_forwarding = []
 
         for command in self.instance_commands:
             if command.params and "vlan" in command.params:
                 vlan_id = command.params["vlan"]
 
             if not (topologies := get_value(command.json_output, "topologies")):
-                self.result.is_failure(f"STP instance for VLAN {vlan_id} is not configured")
-
+                not_configured.append(vlan_id)
             else:
                 for value in topologies.values():
                     if int(vlan_id) in value["vlans"]:
                         interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]
 
                 if interfaces_not_forwarding:
-                    self.result.is_failure(f"The following interface(s) are not in a forwarding state for VLAN {vlan_id}: {interfaces_not_forwarding}")
+                    not_forwarding.append({f"VLAN {vlan_id}": interfaces_not_forwarding})
+
+        if not_configured:
+            self.result.is_failure(f"STP instance is not configured for the following VLAN(s): {not_configured}")
+
+        if not_forwarding:
+            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a fowarding state: {not_forwarding}")
+
+        if not not_configured and not interfaces_not_forwarding:
+            self.result.is_success()
 
 
 class VerifySTPRootPriority(AntaTest):

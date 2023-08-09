@@ -1160,7 +1160,7 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
         "expected_messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"],
     },
     {
-        "name": "error",
+        "name": "error-no-params",
         "eos_data": [
             {
                 "interfaces": {
@@ -1224,5 +1224,71 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
         "side_effect": {"template_params": None},
         "expected_result": "error",
         "expected_messages": ["Command has template but no params were given"],
+    },
+    {
+        "name": "error-wrong-params",
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "name": "Ethernet1",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "mtu": 1500,
+                        "interfaceAddressBrief": {
+                            "ipAddr": {
+                                "address": "10.1.0.0",
+                                "maskLen": 31
+                            }
+                        },
+                        "ipv4Routable240": False,
+                        "ipv4Routable0": False,
+                        "enabled": True,
+                        "description": "P2P_LINK_TO_NW-CORE_Ethernet1",
+                        "proxyArp": True,
+                        "localProxyArp": False,
+                        "gratuitousArp": False,
+                        "vrf": "default",
+                        "urpf": "disable",
+                        "addresslessForwarding": "isInvalid",
+                        "directedBroadcastEnabled": False,
+                        "maxMssIngress": 0,
+                        "maxMssEgress": 0
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "mtu": 1500,
+                        "interfaceAddressBrief": {
+                            "ipAddr": {
+                                "address": "10.1.0.2",
+                                "maskLen": 31
+                            }
+                        },
+                        "ipv4Routable240": False,
+                        "ipv4Routable0": False,
+                        "enabled": True,
+                        "description": "P2P_LINK_TO_SW-CORE_Ethernet1",
+                        "proxyArp": True,
+                        "localProxyArp": False,
+                        "gratuitousArp": False,
+                        "vrf": "default",
+                        "urpf": "disable",
+                        "addresslessForwarding": "isInvalid",
+                        "directedBroadcastEnabled": False,
+                        "maxMssIngress": 0,
+                        "maxMssEgress": 0
+                    }
+                }
+            }
+        ],
+        "side_effect": {"template_params": [{'wrong': 'Ethernet1'}]},
+        "expected_result": "error",
+        "expected_messages": ["Cannot render template 'show ip interface {intf}': wrong parameters"],
     },
 ]
