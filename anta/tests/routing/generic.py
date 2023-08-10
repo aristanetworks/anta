@@ -6,10 +6,11 @@ Generic routing test functions
 """
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from typing import Optional, Literal
+from typing import Literal, Optional
+
+from pydantic import model_validator
 
 from anta.models import AntaCommand, AntaTest
-from pydantic import model_validator
 
 
 class VerifyRoutingProtocolModel(AntaTest):
