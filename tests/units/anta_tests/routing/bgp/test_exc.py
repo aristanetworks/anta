@@ -6,14 +6,14 @@ Tests for anta.tests.routing.bgp.py
 """
 from __future__ import annotations
 
-import asyncio
 from functools import wraps
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from tests.lib.utils import generate_test_ids_list
+from tests.lib.utils import generate_test_ids
+from tests.units.anta_tests import test_case
 
 
 # Patching the decorator
@@ -46,102 +46,705 @@ from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPRTCState,
 )
 
-from .data import (  # noqa: E402
-    INPUT_BGP_EVPN_COUNT,
-    INPUT_BGP_EVPN_STATE,
-    INPUT_BGP_IPV4_UNICAST_COUNT,
-    INPUT_BGP_IPV4_UNICAST_STATE,
-    INPUT_BGP_IPV6_UNICAST_STATE,
-    INPUT_BGP_RTC_COUNT,
-    INPUT_BGP_RTC_STATE,
-)
 
-# pylint: enable=C0413
+DATA: list[dict[str, Any]] = [
+    {
+        "name": "success-no-vrf",
+        "test": VerifyBGPIPv4UnicastState,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPIPv4UnicastState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPIPv4UnicastState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some IPv4 Unicast BGP Peer are not up: {'default': {'7.7.7.7': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, 'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+            ],
+        },
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPIPv4UnicastCount,
+        "inputs": {"vrfs": {"BLAH": 1, "BLIH": 1}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            },
+            {
+                "vrfs": {
+                    "BLIH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "5.5.5.5": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLIH",
+                        "asn": "666",
+                    },
+                }
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-count",
+        "test": VerifyBGPIPv4UnicastCount,
+        "inputs": {"vrfs": {"BLAH": 2}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP peer(s) in vrf BLAH but got 1 peer(s)"]},
+    },
+    {
+        "name": "failure-Established",
+        "test": VerifyBGPIPv4UnicastCount,
+        "inputs": {"vrfs": {"BLAH": 1}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": ["The following IPv4 peer(s) are not established: {'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"],
+        },
+    },
+    {
+        "name": "success-no-vrf",
+        "test": VerifyBGPIPv6UnicastState,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPIPv6UnicastState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "2001:db8::cafe": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "2001:db8::beef::cafe": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPIPv6UnicastState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "2001:db8::cafe": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                    "BLAH": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "2001:db8::beef:cafe": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "BLAH",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some IPv4 Unicast BGP Peer are not up: {'default': {'2001:db8::cafe': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, 'BLAH': {'2001:db8::beef:cafe': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPEVPNState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    }
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPEVPNState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following EVPN peers are not established: ['7.7.7.7']"]},
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPEVPNCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": {"number": 1},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-count",
+        "test": VerifyBGPEVPNCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 42,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": {"number": 2},
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP EVPN peers and got 1"]},
+    },
+    {
+        "name": "failure-Established",
+        "test": VerifyBGPEVPNCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": {"number": 1},
+        "expected": {"result": "failure", "messages": ["The following EVPN peers are not established: ['8.8.8.8']"]},
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPRTCState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 42,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    }
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPRTCState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "7.7.7.7": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206265.363882,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "65000",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following RTC peers are not established: ['7.7.7.7']"]},
+    },
+    {
+        "name": "success-vrfs",
+        "test": VerifyBGPRTCCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 42,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": {"number": 1},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-count",
+        "test": VerifyBGPRTCCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 42,
+                                "prefixAccepted": 0,
+                                "peerState": "Established",
+                                "outMsgQueue": 42,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "inputs": {"number": 2},
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP RTC peers and got 1"]},
+    },
+    {
+        "name": "failure-Established",
+        "test": VerifyBGPRTCCount,
+        "inputs": {"number": 1},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routerId": "3.3.3.3",
+                        "peers": {
+                            "8.8.8.8": {
+                                "msgSent": 0,
+                                "inMsgQueue": 0,
+                                "peerStateIdleReason": "NoInterface",
+                                "prefixReceived": 0,
+                                "upDownTime": 1683206557.031003,
+                                "version": 4,
+                                "msgReceived": 0,
+                                "prefixAccepted": 0,
+                                "peerState": "Idle",
+                                "outMsgQueue": 0,
+                                "underMaintenance": False,
+                                "asn": "12345",
+                            }
+                        },
+                        "vrf": "default",
+                        "asn": "666",
+                    },
+                }
+            }
+        ],
+        "expected": {"result": "failure", "messages": ["The following RTC peers are not established: ['8.8.8.8']"]},
+    },
+]
 
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_IPV4_UNICAST_STATE, ids=generate_test_ids_list(INPUT_BGP_IPV4_UNICAST_STATE))
-def test_VerifyBGPIPv4UnicastState(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPIPv4UnicastState."""
-
-    test = VerifyBGPIPv4UnicastState(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_IPV4_UNICAST_COUNT, ids=generate_test_ids_list(INPUT_BGP_IPV4_UNICAST_COUNT))
-def test_VerifyBGPIPv4UnicastCount(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPIPv4UnicastCount."""
-
-    test = VerifyBGPIPv4UnicastCount(
-        mocked_device,
-        inputs=test_data["inputs"],
-        eos_data=test_data["eos_data"],
-    )
-    asyncio.run(test.test())
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_IPV6_UNICAST_STATE, ids=generate_test_ids_list(INPUT_BGP_IPV6_UNICAST_STATE))
-def test_VerifyBGPIPv6UnicastState(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPIPv6UnicastState."""
-
-    test = VerifyBGPIPv6UnicastState(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_EVPN_STATE, ids=generate_test_ids_list(INPUT_BGP_EVPN_STATE))
-def test_VerifyBGPEVPNState(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPEVPNState."""
-
-    test = VerifyBGPEVPNState(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_EVPN_COUNT, ids=generate_test_ids_list(INPUT_BGP_EVPN_COUNT))
-def test_VerifyBGPEVPNCount(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPEVPNCount."""
-
-    test = VerifyBGPEVPNCount(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test(number=test_data["side_effect"]["number"]))
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_RTC_STATE, ids=generate_test_ids_list(INPUT_BGP_RTC_STATE))
-def test_VerifyBGPRTCState(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPRTCState."""
-
-    test = VerifyBGPRTCState(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
-
-
-@pytest.mark.parametrize("test_data", INPUT_BGP_RTC_COUNT, ids=generate_test_ids_list(INPUT_BGP_RTC_COUNT))
-def test_VerifyBGPRTCCount(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check VerifyBGPRTCCount."""
-
-    test = VerifyBGPRTCCount(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test(number=test_data["side_effect"]["number"]))
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-    assert test.result.messages == test_data["expected_messages"]
+pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test_case)

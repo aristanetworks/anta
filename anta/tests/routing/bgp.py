@@ -8,17 +8,30 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
-def _check_bgp_vrfs(bgp_vrfs: Dict[str, Any]) -> Dict[str, Any]:
+def _check_bgp_vrfs(bgp_vrfs: dict[str, Any]) -> dict[str, Any]:
+    """Parse the output of 'show bgp [ADDR FAMILY] summary vrf [VRF]'
+    and returns a dictionary with the following structure:
+    {
+        "VRF_NAME": {
+            "PEER":
+                {
+                    "peerState": BGP_STATE,
+                    "inMsgQueue": MSG_COUNT,
+                    "outMsgQueue": MSG_COUNT,
+                }
+        }
+    }
+
+    Args:
+        bgp_vrfs: output of 'show bgp [ADDR FAMILY] summary vrf [VRF]'
     """
-    TODO
-    """
-    state_issue: Dict[str, Any] = {}
+    state_issue: dict[str, Any] = {}
     for vrf in bgp_vrfs:
         for peer in bgp_vrfs[vrf]["peers"]:
             if (
@@ -59,11 +72,8 @@ class VerifyBGPIPv4UnicastState(AntaTest):
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBGPIPv4UnicastState validation"""
-
         command_output = self.instance_commands[0].json_output
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
-
         if not state_issue:
             self.result.is_success()
         else:
@@ -95,32 +105,25 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     class Input(AntaTest.Input):
         """VerifyBGPIPv4UnicastCount inputs"""
 
-        vrfs: Dict[str, int]
+        vrfs: dict[str, int]
         """VRFs associated with neighbors count to verify"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render VerifyBGPIPv4UnicastCount template"""
         return [template.render(vrf=vrf) for vrf in self.inputs.vrfs]
 
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBGPIPv4UnicastCount validation"""
-
         self.result.is_success()
-
         for command in self.instance_commands:
             if command.params and "vrf" in command.params:
                 vrf = command.params["vrf"]
                 count = self.inputs.vrfs[vrf]
-
                 if vrf not in command.json_output["vrfs"]:
                     self.result.is_failure(f"VRF {vrf} is not configured")
                     return
-
                 peers = command.json_output["vrfs"][vrf]["peers"]
                 state_issue = _check_bgp_vrfs(command.json_output["vrfs"])
-
                 if len(peers) != count:
                     self.result.is_failure(f"Expecting {count} BGP peer(s) in vrf {vrf} but got {len(peers)} peer(s)")
                 if state_issue:
@@ -146,12 +149,8 @@ class VerifyBGPIPv6UnicastState(AntaTest):
     @check_bgp_family_enable("ipv6")
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBGPIPv6UnicastState validation"""
-
         command_output = self.instance_commands[0].json_output
-
         state_issue = _check_bgp_vrfs(command_output["vrfs"])
-
         if not state_issue:
             self.result.is_success()
         else:
@@ -175,15 +174,10 @@ class VerifyBGPEVPNState(AntaTest):
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBGPEVPNState validation"""
-
         command_output = self.instance_commands[0].json_output
-
         bgp_vrfs = command_output["vrfs"]
-
         peers = bgp_vrfs["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
-
         if not non_established_peers:
             self.result.is_success()
         else:
@@ -195,7 +189,6 @@ class VerifyBGPEVPNCount(AntaTest):
     Verifies all EVPN BGP sessions are established (default VRF)
     and the actual number of BGP EVPN neighbors is the one we expect (default VRF).
 
-    * self.result = "skipped" if the `number` parameter is missing
     * self.result = "success" if all EVPN BGP sessions are Established and if the actual
                          number of BGP EVPN neighbors is the one we expect.
     * self.result = "failure" otherwise.
@@ -206,30 +199,24 @@ class VerifyBGPEVPNCount(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp evpn summary")]
 
+    class Input(AntaTest.Input):
+        """VerifyBGPIPv4UnicastCount inputs"""
+
+        number: int
+        """The expected number of BGP EVPN neighbors in the default VRF"""
+
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None) -> None:
-        """
-        Run VerifyBGPEVPNCount validation
-
-        Args:
-            number: The expected number of BGP EVPN neighbors in the default VRF.
-        """
-        if not number:
-            self.result.is_skipped("VerifyBGPEVPNCount could not run because number was not supplied.")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
-
-        if not non_established_peers and len(peers) == number:
+        if not non_established_peers and len(peers) == self.inputs.number:
             self.result.is_success()
         else:
             self.result.is_failure()
-            if len(peers) != number:
-                self.result.is_failure(f"Expecting {number} BGP EVPN peers and got {len(peers)}")
+            if len(peers) != self.inputs.number:
+                self.result.is_failure(f"Expecting {self.inputs.number} BGP EVPN peers and got {len(peers)}")
             if non_established_peers:
                 self.result.is_failure(f"The following EVPN peers are not established: {non_established_peers}")
 
@@ -251,15 +238,10 @@ class VerifyBGPRTCState(AntaTest):
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBGPRTCState validation"""
-
         command_output = self.instance_commands[0].json_output
-
         bgp_vrfs = command_output["vrfs"]
-
         peers = bgp_vrfs["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
-
         if not non_established_peers:
             self.result.is_success()
         else:
@@ -271,7 +253,6 @@ class VerifyBGPRTCCount(AntaTest):
     Verifies all RTC BGP sessions are established (default VRF)
     and the actual number of BGP RTC neighbors is the one we expect (default VRF).
 
-    * self.result = "skipped" if the `number` parameter is missing
     * self.result = "success" if all RTC BGP sessions are Established and if the actual
                          number of BGP RTC neighbors is the one we expect.
     * self.result = "failure" otherwise.
@@ -282,29 +263,23 @@ class VerifyBGPRTCCount(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp rt-membership summary")]
 
+    class Input(AntaTest.Input):
+        """VerifyBGPIPv4UnicastCount inputs"""
+
+        number: int
+        """The expected number of BGP RTC neighbors in the default VRF"""
+
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None) -> None:
-        """
-        Run VerifyBGPRTCCount validation
-
-        Args:
-            number: The expected number of BGP RTC neighbors (default VRF).
-        """
-        if not number:
-            self.result.is_skipped("VerifyBGPRTCCount could not run because number was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         peers = command_output["vrfs"]["default"]["peers"]
         non_established_peers = [peer for peer, peer_dict in peers.items() if peer_dict["peerState"] != "Established"]
-
-        if not non_established_peers and len(peers) == number:
+        if not non_established_peers and len(peers) == self.inputs.number:
             self.result.is_success()
         else:
             self.result.is_failure()
-            if len(peers) != number:
-                self.result.is_failure(f"Expecting {number} BGP RTC peers and got {len(peers)}")
+            if len(peers) != self.inputs.number:
+                self.result.is_failure(f"Expecting {self.inputs.number} BGP RTC peers and got {len(peers)}")
             if non_established_peers:
                 self.result.is_failure(f"The following RTC peers are not established: {non_established_peers}")
