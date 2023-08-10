@@ -17,9 +17,8 @@ INPUT_MANUFACTURER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["Arista Networks"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -31,8 +30,7 @@ INPUT_MANUFACTURER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["Arista"],
-        "expected_result": "failure",
-        "expected_messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"],
+        "expected": {"result": "failure", "messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"]},
     },
     {
         "name": "skipped",
@@ -44,7 +42,7 @@ INPUT_MANUFACTURER: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["VerifyTransceiversManufacturers was not run because manufacturers list was not provided"],
     },
@@ -65,9 +63,8 @@ INPUT_TEMPERATURE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -81,8 +78,7 @@ INPUT_TEMPERATURE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "failure",
-        "expected_messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"],
+        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"]},
     },
 ]
 
@@ -114,9 +110,8 @@ INPUT_TEMPERATURE_TRANSCEIVER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-hwStatus",
         "eos_data": [
@@ -144,7 +139,7 @@ INPUT_TEMPERATURE_TRANSCEIVER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
             "{'DomTemperatureSensor54': "
@@ -178,7 +173,7 @@ INPUT_TEMPERATURE_TRANSCEIVER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
             "{'DomTemperatureSensor54': "
@@ -208,9 +203,8 @@ INPUT_SYSTEM_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -231,8 +225,7 @@ INPUT_SYSTEM_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "",
-        "expected_result": "failure",
-        "expected_messages": ["Device system cooling is not OK: 'coolingKo'"],
+        "expected": {"result": "failure", "messages": ["Device system cooling is not OK: 'coolingKo'"]},
     },
 ]
 
@@ -367,9 +360,8 @@ INPUT_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-additional-states",
         "eos_data": [
@@ -500,9 +492,8 @@ INPUT_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok", "Not Inserted"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-fan-tray",
         "eos_data": [
@@ -633,8 +624,7 @@ INPUT_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok", "Not Inserted"],
-        "expected_result": "failure",
-        "expected_messages": ["Fan 1/1 on Fan Tray 1 is: 'down'"],
+        "expected": {"result": "failure", "messages": ["Fan 1/1 on Fan Tray 1 is: 'down'"]},
     },
     {
         "name": "failure-power-supply",
@@ -766,8 +756,7 @@ INPUT_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok", "Not Inserted"],
-        "expected_result": "failure",
-        "expected_messages": ["Fan PowerSupply1/1 on PowerSupply PowerSupply1 is: 'down'"],
+        "expected": {"result": "failure", "messages": ["Fan PowerSupply1/1 on PowerSupply PowerSupply1 is: 'down'"]},
     },
     {
         "name": "skipped",
@@ -898,7 +887,7 @@ INPUT_COOLING: List[Dict[str, Any]] = [
                 "systemStatus": "CoolingKo",
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["VerifyEnvironmentCooling was not run because accepted_states list was not provided"],
     },
@@ -949,9 +938,8 @@ INPUT_ENV_POWER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-additional-states",
         "eos_data": [
@@ -996,9 +984,8 @@ INPUT_ENV_POWER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok", "Not Inserted"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -1043,8 +1030,7 @@ INPUT_ENV_POWER: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["ok"],
-        "expected_result": "failure",
-        "expected_messages": ["The following power supplies status are not in the accepted states list: {'1': {'state': 'powerLoss'}}"],
+        "expected": {"result": "failure", "messages": ["The following power supplies status are not in the accepted states list: {'1': {'state': 'powerLoss'}}"]},
     },
     {
         "name": "skipped",
@@ -1089,7 +1075,7 @@ INPUT_ENV_POWER: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["VerifyEnvironmentPower was not run because accepted_states list was not provided"],
     },
@@ -1101,12 +1087,12 @@ INPUT_ADVERSE_COUNTER: List[Dict[str, Any]] = [
         "name": "success",
         "eos_data": [{"totalAdverseDrops": 0}],
         "side_effect": "",
-        "expected_result": "success", "expected_messages": []
+        "expected": {"result": "success"}, "expected_messages": []
     },
     {
         "name": "failure",
         "eos_data": [{"totalAdverseDrops": 10}],
         "side_effect": "",
-        "expected_result": "failure", "expected_messages": ["Device totalAdverseDrops counter is: '10'"]
+        "expected": {"result": "failure"}, "expected_messages": ["Device totalAdverseDrops counter is: '10'"]
     },
 ]

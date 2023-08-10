@@ -26,7 +26,7 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "2",
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -42,8 +42,7 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "3",
-        "expected_result": "failure",
-        "expected_messages": ["Device is not running correct UFT mode (expected: 3 / running: 2)"]
+        "expected": {"result": "failure", "messages": ["Device is not running correct UFT mode (expected: 3 / running: 2)"]}
     },
 ]
 
@@ -71,7 +70,7 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "test",
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -90,7 +89,6 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "test",
-        "expected_result": "failure",
-        "expected_messages": ["Incorrect profile running on device: default"]
+        "expected": {"result": "failure", "messages": ["Incorrect profile running on device: default"]}
     },
 ]

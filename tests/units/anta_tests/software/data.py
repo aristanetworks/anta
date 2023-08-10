@@ -16,9 +16,8 @@ INPUT_VERIFY_EOS_VERSION: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["4.27.0F", "4.28.0F"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -29,8 +28,7 @@ INPUT_VERIFY_EOS_VERSION: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["4.27.1F"],
-        "expected_result": "failure",
-        "expected_messages": ["device is running version 4.27.0F not in expected versions: ['4.27.1F']"],
+        "expected": {"result": "failure", "messages": ["device is running version 4.27.0F not in expected versions: ['4.27.1F']"]},
     },
 ]
 
@@ -53,9 +51,8 @@ INPUT_VERIFY_TERMINATTR_VERSION: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["v1.17.0", "v1.18.1"],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -74,8 +71,7 @@ INPUT_VERIFY_TERMINATTR_VERSION: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["v1.17.1", "v1.18.1"],
-        "expected_result": "failure",
-        "expected_messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"],
+        "expected": {"result": "failure", "messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"]},
     },
 ]
 
@@ -86,18 +82,16 @@ INPUT_VERIFY_EOS_EXTENSIONS: List[Dict[str, Any]] = [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": []},
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": ["dummy"]},
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Missing EOS extensions: installed [] / configured: ['dummy']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Missing EOS extensions: installed [] / configured: ['dummy']"]},
     },
 ]

@@ -12,7 +12,7 @@ INPUT_SSH_STATUS: List[Dict[str, Any]] = [
             "SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"
         ],
         "side_effect": None,
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -21,8 +21,7 @@ INPUT_SSH_STATUS: List[Dict[str, Any]] = [
             "SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"
         ],
         "side_effect": None,
-        "expected_result": "failure",
-        "expected_messages": ["SSHD status for Default VRF is enabled"]
+        "expected": {"result": "failure", "messages": ["SSHD status for Default VRF is enabled"]}
     },
 ]
 
@@ -42,7 +41,7 @@ INPUT_SSH_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -55,8 +54,7 @@ INPUT_SSH_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Expected 1 SSH IPv4 ACL(s) in vrf MGMT but got 0"]
+        "expected": {"result": "failure", "messages": ["Expected 1 SSH IPv4 ACL(s) in vrf MGMT but got 0"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -73,8 +71,7 @@ INPUT_SSH_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["SSH IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SSH']"]
+        "expected": {"result": "failure", "messages": ["SSH IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SSH']"]}
     },
     {
         "name": "skipped-no-vrf",
@@ -130,7 +127,7 @@ INPUT_SSH_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -143,8 +140,7 @@ INPUT_SSH_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Expected 1 SSH IPv6 ACL(s) in vrf MGMT but got 0"]
+        "expected": {"result": "failure", "messages": ["Expected 1 SSH IPv6 ACL(s) in vrf MGMT but got 0"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -161,8 +157,7 @@ INPUT_SSH_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["SSH IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SSH']"]
+        "expected": {"result": "failure", "messages": ["SSH IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SSH']"]}
     },
     {
         "name": "skipped-no-vrf",
@@ -214,7 +209,7 @@ INPUT_TELNET_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": None,
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -228,8 +223,7 @@ INPUT_TELNET_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": None,
-        "expected_result": "failure",
-        "expected_messages": ["Telnet status for Default VRF is enabled"]
+        "expected": {"result": "failure", "messages": ["Telnet status for Default VRF is enabled"]}
     },
 ]
 
@@ -248,7 +242,7 @@ INPUT_HTTP_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": None,
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -265,8 +259,7 @@ INPUT_HTTP_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": None,
-        "expected_result": "failure",
-        "expected_messages": ["eAPI HTTP server is enabled globally"]
+        "expected": {"result": "failure", "messages": ["eAPI HTTP server is enabled globally"]}
     },
 ]
 
@@ -285,7 +278,7 @@ INPUT_HTTPS_SSL_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "API_SSL_Profile",
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -301,8 +294,7 @@ INPUT_HTTPS_SSL_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "API_SSL_Profile",
-        "expected_result": "failure",
-        "expected_messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is not configured"]
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is not configured"]}
     },
     {
         "name": "failure-misconfigured-invalid",
@@ -318,8 +310,7 @@ INPUT_HTTPS_SSL_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "API_SSL_Profile",
-        "expected_result": "failure",
-        "expected_messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is misconfigured or invalid"]
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is misconfigured or invalid"]}
     },
     {
         "name": "skipped",
@@ -356,7 +347,7 @@ INPUT_API_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -369,8 +360,7 @@ INPUT_API_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Expected 1 eAPI IPv4 ACL(s) in vrf MGMT but got 0"]
+        "expected": {"result": "failure", "messages": ["Expected 1 eAPI IPv4 ACL(s) in vrf MGMT but got 0"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -387,8 +377,7 @@ INPUT_API_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["eAPI IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_API']"]
+        "expected": {"result": "failure", "messages": ["eAPI IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_API']"]}
     },
     {
         "name": "skipped-no-vrf",
@@ -444,7 +433,7 @@ INPUT_API_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -457,8 +446,7 @@ INPUT_API_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Expected 1 eAPI IPv6 ACL(s) in vrf MGMT but got 0"]
+        "expected": {"result": "failure", "messages": ["Expected 1 eAPI IPv6 ACL(s) in vrf MGMT but got 0"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -475,8 +463,7 @@ INPUT_API_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (1, "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_API']"]
+        "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_API']"]}
     },
     {
         "name": "skipped-no-vrf",

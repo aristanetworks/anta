@@ -10,15 +10,13 @@ INPUT_UPTIME: List[Dict[str, Any]] = [
         "name": "success",
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "side_effect": 666,
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "side_effect": 666,
-        "expected_result": "failure",
-        "expected_messages": ["Device uptime is 665.15 seconds"],
+        "expected": {"result": "failure", "messages": ["Device uptime is 665.15 seconds"]},
     },
     {
         "name": "skipped-no-minimum",
@@ -33,10 +31,9 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
     {
         "name": "success-no-reload",
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-valid-cause",
         "eos_data": [
@@ -47,10 +44,9 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
                 "full": False,
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         # The failure cause is made up
@@ -62,16 +58,15 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
                 "full": False,
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Reload cause is: 'Reload after crash.'"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Reload cause is: 'Reload after crash.'"]},
     },
     {
         "name": "error",
         "eos_data": [
             {}
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "error",
         "expected_messages": ["No reload causes available"],
     },
@@ -86,10 +81,9 @@ INPUT_COREDUMP: List[Dict[str, Any]] = [
                 'coreFiles': []
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-with-minidump",
         "eos_data": [
@@ -98,10 +92,9 @@ INPUT_COREDUMP: List[Dict[str, Any]] = [
                 'coreFiles': ['minidump']
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-without-minidump",
         "eos_data": [
@@ -110,9 +103,8 @@ INPUT_COREDUMP: List[Dict[str, Any]] = [
                 'coreFiles': ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]}
     },
     {
         "name": "failure-with-minidump",
@@ -122,9 +114,8 @@ INPUT_COREDUMP: List[Dict[str, Any]] = [
                 'coreFiles': ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]}
     },
 ]
 
@@ -132,10 +123,9 @@ INPUT_AGENT_LOGS: List[Dict[str, Any]] = [
     {
         "name": "success",
         "eos_data": [""],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -151,8 +141,8 @@ EntityManager::doBackoff waiting for remote sysdb version ....ok
 EntityManager::doBackoff waiting for remote sysdb version ...................ok
 """
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             'Device has reported agent crashes:\n'
             ' * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n'
@@ -162,6 +152,24 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
     },
 ]
 
+INPUT_SYSLOG: List[Dict[str, Any]] = [
+    {
+        "name": "success",
+        "eos_data": [""],
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
+    {
+        "name": "failure",
+        "eos_data": [
+            """May  4 10:23:59 Leaf1 Lldp: %LLDP-3-NEIGHBOR_NEW: LLDP neighbor with chassisId 5022.0057.d059 and portId "Ethernet1" added on interface
+Ethernet1
+"""
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device has reported some log messages with WARNING or higher severity"]},
+    },
+]
 
 INPUT_CPU_UTILIZATION: List[Dict[str, Any]] = [
     {
@@ -187,10 +195,9 @@ INPUT_CPU_UTILIZATION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -214,9 +221,8 @@ INPUT_CPU_UTILIZATION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device has reported a high CPU utilization: 75.2%"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization: 75.2%"]},
     },
 ]
 
@@ -233,10 +239,9 @@ INPUT_MEMORY_UTILIZATION: List[Dict[str, Any]] = [
                 "version": "4.27.3F",
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -249,9 +254,8 @@ INPUT_MEMORY_UTILIZATION: List[Dict[str, Any]] = [
                 "version": "4.27.3F",
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device has reported a high memory usage: 95.56%"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage: 95.56%"]},
     },
 ]
 
@@ -266,10 +270,9 @@ none            294M   78M  217M  27% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
 """
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -280,8 +283,8 @@ none            294M   78M  217M  84% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
 """
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "Mount point /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash is higher than 75%: reported 84%",
             "Mount point none            294M   78M  217M  84% /.overlay is higher than 75%: reported 84%",
@@ -298,10 +301,9 @@ INPUT_NTP: List[Dict[str, Any]] = [
 poll interval unknown
 """
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -309,8 +311,7 @@ poll interval unknown
 poll interval unknown
 """
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["NTP server is not synchronized: 'unsynchronised'"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["NTP server is not synchronized: 'unsynchronised'"]},
     },
 ]

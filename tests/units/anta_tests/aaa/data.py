@@ -20,7 +20,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ("Management0", "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -33,8 +33,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ("Management0", "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Source-interface Management0 is not configured in VRF MGMT"]
+        "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]}
     },
     {
         "name": "failure-wrong-intf",
@@ -50,8 +49,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ("Management0", "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Wrong source-interface configured in VRF MGMT"]
+        "expected": {"result": "failure", "messages": ["Wrong source-interface configured in VRF MGMT"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -67,8 +65,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ("Management0", "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["Source-interface Management0 is not configured in VRF MGMT"]
+        "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]}
     },
     {
         "name": "skipped-no-vrf",
@@ -113,7 +110,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["10.22.10.91"], "MGMT"),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -126,8 +123,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["10.22.10.91"], "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["No TACACS servers are configured"]
+        "expected": {"result": "failure", "messages": ["No TACACS servers are configured"]}
     },
     {
         "name": "failure-not-configured",
@@ -143,8 +139,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["10.22.10.91", "10.22.10.92"], "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["TACACS servers ['10.22.10.92'] are not configured in VRF MGMT"]
+        "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.92'] are not configured in VRF MGMT"]}
     },
     {
         "name": "failure-wrong-vrf",
@@ -160,8 +155,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["10.22.10.91"], "MGMT"),
-        "expected_result": "failure",
-        "expected_messages": ["TACACS servers ['10.22.10.91'] are not configured in VRF MGMT"]
+        "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.91'] are not configured in VRF MGMT"]}
     },
     {
         "name": "skipped-no-servers",
@@ -206,7 +200,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["GROUP1"],
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -219,8 +213,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["GROUP1"],
-        "expected_result": "failure",
-        "expected_messages": ["No TACACS server group(s) are configured"]
+        "expected": {"result": "failure", "messages": ["No TACACS server group(s) are configured"]}
     },
     {
         "name": "failure-not-configured",
@@ -236,8 +229,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": ["GROUP1"],
-        "expected_result": "failure",
-        "expected_messages": ["TACACS server group(s) ['GROUP1'] are not configured"]
+        "expected": {"result": "failure", "messages": ["TACACS server group(s) ['GROUP1'] are not configured"]}
     },
     {
         "name": "skipped-no-server-groups",
@@ -248,7 +240,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["VerifyTacacsServerGroups did not run because groups were not supplied"]
     },
@@ -291,7 +283,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
               }
         ],
         "side_effect": (["tacacs+", "local"], ["login", "enable"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -330,7 +322,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
               }
         ],
         "side_effect": (["radius"], ["dot1x"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -363,8 +355,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
               }
         ],
         "side_effect": (["tacacs+", "local"], ["login", "enable"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA authentication methods are not configured for login console"]
+        "expected": {"result": "failure", "messages": ["AAA authentication methods are not configured for login console"]}
     },
     {
         "name": "failure-login-console",
@@ -402,8 +393,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
               }
         ],
         "side_effect": (["tacacs+", "local"], ["login", "enable"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for login console"]
+        "expected": {"result": "failure", "messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for login console"]}
     },
     {
         "name": "failure-login-default",
@@ -441,8 +431,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
               }
         ],
         "side_effect": (["tacacs+", "local"], ["login", "enable"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for ['login']"]
+        "expected": {"result": "failure", "messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for ['login']"]}
     },
     {
         "name": "error-wrong-auth-type",
@@ -522,7 +511,7 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -548,8 +537,7 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['commands']"]
+        "expected": {"result": "failure", "messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['commands']"]}
     },
     {
         "name": "failure-exec",
@@ -574,8 +562,7 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['exec']"]
+        "expected": {"result": "failure", "messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['exec']"]}
     },
     {
         "name": "error-wrong-auth-type",
@@ -671,7 +658,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -721,7 +708,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["radius", "logging"], ["dot1x"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -763,8 +750,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA default accounting is not configured for ['commands']"]
+        "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for ['commands']"]}
     },
     {
         "name": "failure-not-matching",
@@ -809,8 +795,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA accounting default methods ['tacacs+', 'logging'] are not matching for ['commands']"]
+        "expected": {"result": "failure", "messages": ["AAA accounting default methods ['tacacs+', 'logging'] are not matching for ['commands']"]}
     },
     {
         "name": "error-wrong-auth-type",
@@ -914,7 +899,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -964,7 +949,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["dot1x"]),
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -1006,8 +991,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA console accounting is not configured for ['commands']"]
+        "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for ['commands']"]}
     },
     {
         "name": "failure-not-matching",
@@ -1052,8 +1036,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
-        "expected_result": "failure",
-        "expected_messages": ["AAA accounting console methods ['tacacs+', 'logging'] are not matching for ['commands']"]
+        "expected": {"result": "failure", "messages": ["AAA accounting console methods ['tacacs+', 'logging'] are not matching for ['commands']"]}
     },
     {
         "name": "error-wrong-auth-type",

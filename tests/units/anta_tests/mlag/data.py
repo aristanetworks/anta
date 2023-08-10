@@ -16,8 +16,8 @@ INPUT_MLAG_STATUS: List[Dict[str, Any]] = [
                 "localIntfStatus": "up"
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
+        "inputs": None,
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -27,7 +27,7 @@ INPUT_MLAG_STATUS: List[Dict[str, Any]] = [
                 "state": "disabled",
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["MLAG is disabled"]
     },
@@ -41,9 +41,8 @@ INPUT_MLAG_STATUS: List[Dict[str, Any]] = [
                 "localIntfStatus": "up"
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["MLAG status is not OK: {'state': 'active', 'negStatus': 'connected', 'localIntfStatus': 'up', 'peerLinkStatus': 'down'}"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MLAG status is not OK: {'state': 'active', 'negStatus': 'connected', 'localIntfStatus': 'up', 'peerLinkStatus': 'down'}"]}
     },
 ]
 
@@ -62,8 +61,8 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
+        "inputs": None,
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -73,7 +72,7 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
                 "state": "disabled",
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["MLAG is disabled"]
     },
@@ -91,9 +90,8 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 0, 'Active-partial': 1, 'Active-full': 1}"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 0, 'Active-partial': 1, 'Active-full': 1}"]}
     },
     {
         "name": "failure-inactive",
@@ -109,9 +107,8 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 1, 'Active-partial': 1, 'Active-full': 1}"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 1, 'Active-partial': 1, 'Active-full': 1}"]}
     },
 ]
 
@@ -126,8 +123,8 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
                 "mlagConnected": True
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
+        "inputs": None,
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -137,7 +134,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
                 "mlagActive": False,
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["MLAG is disabled"]
     },
@@ -148,7 +145,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
                 "dummy": False,
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "error",
         "expected_messages": ["Incorrect JSON response - 'mlagActive' state was not found"]
     },
@@ -171,8 +168,8 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
                 "mlagConnected": True
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": ["MLAG config-sanity returned inconsistencies: "
                               "{'globalConfiguration': {'mlag': {'globalParameters': "
                               "{'dual-primary-detection-delay': {'localValue': '0', 'peerValue': '200'}}}}, "
@@ -197,8 +194,8 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
                 "mlagConnected": True
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": ["MLAG config-sanity returned inconsistencies: "
                               "{'globalConfiguration': {}, "
                               "'interfaceConfiguration': {'trunk-native-vlan mlag30': "
@@ -217,7 +214,7 @@ INPUT_MLAG_RELOAD_DELAY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"reload_delay": 300, "reload_delay_non_mlag": 330},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -252,8 +249,7 @@ INPUT_MLAG_RELOAD_DELAY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"reload_delay": 300, "reload_delay_non_mlag": 330},
-        "expected_result": "failure",
-        "expected_messages": ["The reload-delay parameters are not configured properly: {'reloadDelay': 400, 'reloadDelayNonMlag': 430}"]
+        "expected": {"result": "failure", "messages": ["The reload-delay parameters are not configured properly: {'reloadDelay': 400, 'reloadDelayNonMlag': 430}"]}
     }
 ]
 
@@ -274,7 +270,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -309,8 +305,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "failure",
-        "expected_messages": ["Dual-primary detection is disabled"]
+        "expected": {"result": "failure", "messages": ["Dual-primary detection is disabled"]}
     },
     {
         "name": "failure-wrong-timers",
@@ -328,7 +323,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [("The dual-primary parameters are not configured properly: "
                                "{'detail.dualPrimaryDetectionDelay': 300, "
                                "'detail.dualPrimaryAction': 'none', "
@@ -351,7 +346,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"detection_delay": 200, "errdisabled": True, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [("The dual-primary parameters are not configured properly: "
                                "{'detail.dualPrimaryDetectionDelay': 200, "
                                "'detail.dualPrimaryAction': 'none', "

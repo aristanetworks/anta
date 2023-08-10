@@ -10,22 +10,19 @@ INPUT_ROUTING_PROTOCOL_MODEL: List[Dict[str, Any]] = [
         "name": "success",
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "multi-agent"}}],
         "side_effect": "multi-agent",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-wrong-configured-model",
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "ribd", "operatingProtoModel": "ribd"}}],
         "side_effect": "multi-agent",
-        "expected_result": "failure",
-        "expected_messages": ["routing model is misconfigured: configured: ribd - operating: ribd - expected: multi-agent"],
+        "expected": {"result": "failure", "messages": ["routing model is misconfigured: configured: ribd - operating: ribd - expected: multi-agent"]},
     },
     {
         "name": "failure-mismatch-operating-model",
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "ribd"}}],
         "side_effect": "multi-agent",
-        "expected_result": "failure",
-        "expected_messages": ["routing model is misconfigured: configured: multi-agent - operating: ribd - expected: multi-agent"],
+        "expected": {"result": "failure", "messages": ["routing model is misconfigured: configured: multi-agent - operating: ribd - expected: multi-agent"]},
     },
     {
         "name": "skipped",
@@ -51,9 +48,8 @@ INPUT_ROUTING_TABLE_SIZE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"minimum": 42, "maximum": 666},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -68,8 +64,7 @@ INPUT_ROUTING_TABLE_SIZE: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"minimum": 42, "maximum": 666},
-        "expected_result": "failure",
-        "expected_messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"],
+        "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"]},
     },
     {
         "name": "error-max-smaller-than-min",
@@ -98,10 +93,9 @@ INPUT_BFD: List[Dict[str, Any]] = [
     {
         "name": "success-no-peer",
         "eos_data": [{"vrfs": {}}],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-peers-up",
         "eos_data": [
@@ -155,10 +149,9 @@ INPUT_BFD: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -212,8 +205,7 @@ INPUT_BFD: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["bfd state for peer '' is down (expected up)."],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["bfd state for peer '' is down (expected up)."]},
     },
 ]

@@ -18,8 +18,8 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
+        "inputs": None,
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -34,7 +34,7 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["Vxlan1 interface is not configured"]
     },
@@ -50,9 +50,8 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Vxlan1 interface is down/up"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/up"]}
     },
     {
         "name": "failure",
@@ -66,9 +65,8 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Vxlan1 interface is up/down"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Vxlan1 interface is up/down"]}
     },
     {
         "name": "failure",
@@ -82,9 +80,8 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Vxlan1 interface is down/down"]
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/down"]}
     },
 ]
 
@@ -235,8 +232,8 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
 
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
+        "inputs": None,
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -388,8 +385,8 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
 
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": ["VXLAN config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
                               "'allCheckPass': False, 'detail': '', 'hasWarning': True, 'items': [{'name': 'Loopback IP Address', 'checkPass': True, "
                               "'hasWarning': False, 'detail': ''}, {'name': 'VLAN-VNI Map', 'checkPass': False, 'hasWarning': False, 'detail': "
@@ -406,7 +403,7 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
 
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["VXLAN is not configured"]
     },

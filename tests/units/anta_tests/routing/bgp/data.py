@@ -9,10 +9,9 @@ INPUT_BGP_IPV4_UNICAST_STATE: List[Dict[str, Any]] = [
     {
         "name": "success-no-vrf",
         "eos_data": [{"vrfs": {}}],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-vrfs",
         "eos_data": [
@@ -63,10 +62,9 @@ INPUT_BGP_IPV4_UNICAST_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -117,8 +115,8 @@ INPUT_BGP_IPV4_UNICAST_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             (
                 "Some IPv4 Unicast BGP Peer are not up: {'default': {'7.7.7.7': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}},"
@@ -184,9 +182,8 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-count",
         "inputs": {"vrfs": ["BLAH"], "number": 2},
@@ -217,8 +214,7 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "expected_result": "failure",
-        "expected_messages": ["Expecting 2 BGP peer in vrf BLAH and got 1"],
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP peer in vrf BLAH and got 1"]},
     },
     {
         "name": "failure-Established",
@@ -250,8 +246,7 @@ INPUT_BGP_IPV4_UNICAST_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "expected_result": "failure",
-        "expected_messages": ["The following IPv4 peers are not established: {'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"],
+        "expected": {"result": "failure", "messages": ["The following IPv4 peers are not established: {'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"]},
     },
     {
         "name": "error-empty-vrfs",
@@ -290,10 +285,9 @@ INPUT_BGP_IPV6_UNICAST_STATE: List[Dict[str, Any]] = [
     {
         "name": "success-no-vrf",
         "eos_data": [{"vrfs": {}}],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-vrfs",
         "eos_data": [
@@ -344,10 +338,9 @@ INPUT_BGP_IPV6_UNICAST_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -398,8 +391,8 @@ INPUT_BGP_IPV6_UNICAST_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             (
                 "Some IPv4 Unicast BGP Peer are not up: {'default': {'2001:db8::cafe': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
@@ -439,10 +432,9 @@ INPUT_BGP_EVPN_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -472,9 +464,8 @@ INPUT_BGP_EVPN_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following EVPN peers are not established: ['7.7.7.7']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following EVPN peers are not established: ['7.7.7.7']"]},
     },
 ]
 
@@ -509,9 +500,8 @@ INPUT_BGP_EVPN_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 1},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-count",
         "eos_data": [
@@ -542,8 +532,7 @@ INPUT_BGP_EVPN_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 2},
-        "expected_result": "failure",
-        "expected_messages": ["Expecting 2 BGP EVPN peers and got 1"],
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP EVPN peers and got 1"]},
     },
     {
         "name": "failure-Established",
@@ -575,8 +564,7 @@ INPUT_BGP_EVPN_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 1},
-        "expected_result": "failure",
-        "expected_messages": ["The following EVPN peers are not established: ['8.8.8.8']"],
+        "expected": {"result": "failure", "messages": ["The following EVPN peers are not established: ['8.8.8.8']"]},
     },
     {
         "name": "skipped-number",
@@ -617,10 +605,9 @@ INPUT_BGP_RTC_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -650,9 +637,8 @@ INPUT_BGP_RTC_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following RTC peers are not established: ['7.7.7.7']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following RTC peers are not established: ['7.7.7.7']"]},
     },
 ]
 
@@ -687,9 +673,8 @@ INPUT_BGP_RTC_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 1},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-count",
         "eos_data": [
@@ -720,8 +705,7 @@ INPUT_BGP_RTC_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 2},
-        "expected_result": "failure",
-        "expected_messages": ["Expecting 2 BGP RTC peers and got 1"],
+        "expected": {"result": "failure", "messages": ["Expecting 2 BGP RTC peers and got 1"]},
     },
     {
         "name": "failure-Established",
@@ -753,8 +737,7 @@ INPUT_BGP_RTC_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"number": 1},
-        "expected_result": "failure",
-        "expected_messages": ["The following RTC peers are not established: ['8.8.8.8']"],
+        "expected": {"result": "failure", "messages": ["The following RTC peers are not established: ['8.8.8.8']"]},
     },
     {
         "name": "skipped-number",

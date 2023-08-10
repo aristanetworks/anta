@@ -57,10 +57,9 @@ INPUT_OSPF_NEIGHBOR_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -112,8 +111,8 @@ INPUT_OSPF_NEIGHBOR_STATE: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
             " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
@@ -174,9 +173,8 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 3,
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-wrong-number",
         "eos_data": [
@@ -203,8 +201,7 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 3,
-        "expected_result": "failure",
-        "expected_messages": ["device has 1 neighbors (expected 3)"],
+        "expected": {"result": "failure", "messages": ["device has 1 neighbors (expected 3)"]},
     },
     {
         "name": "failure-good-number-wrong-state",
@@ -258,7 +255,7 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 3,
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [
             "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
             " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."

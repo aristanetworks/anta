@@ -19,10 +19,9 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-4.0",
         "eos_data": [
@@ -36,9 +35,8 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["device is running incorrect version of aboot (4.0.1)"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (4.0.1)"]},
     },
     {
         "name": "failure-4.1",
@@ -53,9 +51,8 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["device is running incorrect version of aboot (4.1.0)"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (4.1.0)"]},
     },
     {
         "name": "failure-6.0",
@@ -70,9 +67,8 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["device is running incorrect version of aboot (6.0.1)"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (6.0.1)"]},
     },
     {
         "name": "failure-6.1",
@@ -87,9 +83,8 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["device is running incorrect version of aboot (6.1.1)"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (6.1.1)"]},
     },
     {
         "name": "skipped-model",
@@ -104,7 +99,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["device is not impacted by FN044"],
     },
@@ -123,9 +118,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": ["FN72 is mitigated"],
+        "inputs": None,
+        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
         "name": "success-JAS",
@@ -139,9 +133,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": ["FN72 is mitigated"],
+        "inputs": None,
+        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
         "name": "success-K-JPE",
@@ -155,9 +148,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": ["FN72 is mitigated"],
+        "inputs": None,
+        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
         "name": "success-K-JAS",
@@ -171,9 +163,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": ["FN72 is mitigated"],
+        "inputs": None,
+        "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
         "name": "skipped-Serial",
@@ -187,7 +178,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["Device not exposed"],
     },
@@ -203,7 +194,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["Platform is not impacted by FN072"],
     },
@@ -219,7 +210,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["Device not exposed"],
     },
@@ -235,7 +226,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "skipped",
         "expected_messages": ["Device not exposed"],
     },
@@ -251,9 +242,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device is exposed to FN72"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
     },
     {
         "name": "failed-JAS",
@@ -267,9 +257,8 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device is exposed to FN72"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
     },
     {
         "name": "error",
@@ -283,7 +272,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
+        "inputs": None,
         "expected_result": "error",
         "expected_messages": ["Error in running test - FixedSystemvrm1 not found"],
     },

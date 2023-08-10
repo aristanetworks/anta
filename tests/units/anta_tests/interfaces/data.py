@@ -14,10 +14,9 @@ Et1                    5:00       0.0   0.0%        0       0.0   0.0%        0
 Et4                    5:00       0.0   0.0%        0       0.0   0.0%        0
 """
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -26,9 +25,8 @@ Et1                    5:00       0.0   0.0%        0       0.0  80.0%        0
 Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
 """
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following interfaces have a usage > 75%: {'Et1': '80.0%', 'Et4': '99.9%'}"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following interfaces have a usage > 75%: {'Et1': '80.0%', 'Et4': '99.9%'}"]},
     },
 ]
 
@@ -43,10 +41,9 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-multiple-intfs",
         "eos_data": [
@@ -57,8 +54,8 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
@@ -75,8 +72,8 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
@@ -92,8 +89,8 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
@@ -115,10 +112,9 @@ INPUT_INTERFACE_DISCARDS: List[Dict[str, Any]] = [
                 "outDiscardsTotal": 0,
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -131,8 +127,8 @@ INPUT_INTERFACE_DISCARDS: List[Dict[str, Any]] = [
                 "outDiscardsTotal": 0,
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
+        "inputs": None,
+        "expected": {"result": "failure"},
         "expected_messages": [
             "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
             " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
@@ -155,10 +151,9 @@ INPUT_INTERFACE_ERR_DISABLED: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -173,9 +168,8 @@ INPUT_INTERFACE_ERR_DISABLED: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
     },
 ]
 
@@ -192,9 +186,8 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 3,
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -207,8 +200,7 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 3,
-        "expected_result": "failure",
-        "expected_messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"],
+        "expected": {"result": "failure", "messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"]},
     },
     {
         "name": "skipped",
@@ -244,10 +236,9 @@ INPUT_STORM_CONTROL_DROPS: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -263,9 +254,8 @@ INPUT_STORM_CONTROL_DROPS: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
     },
 ]
 
@@ -289,10 +279,9 @@ INPUT_PORT_CHANNELS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -312,9 +301,8 @@ INPUT_PORT_CHANNELS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
     },
 ]
 
@@ -342,10 +330,9 @@ INPUT_ILLEGAL_LACP: List[Dict[str, Any]] = [
                 "orphanPorts": {},
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -369,9 +356,8 @@ INPUT_ILLEGAL_LACP: List[Dict[str, Any]] = [
                 "orphanPorts": {},
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"]},
     },
 ]
 
@@ -402,9 +388,8 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 2,
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-loopback-down",
         "eos_data": [
@@ -430,8 +415,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 2,
-        "expected_result": "failure",
-        "expected_messages": ["The following Loopbacks are not up: ['Loopback666']"],
+        "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
     },
     {
         "name": "failure-count-loopback",
@@ -450,8 +434,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": 2,
-        "expected_result": "failure",
-        "expected_messages": ["Found 1 Loopbacks when expecting 2"],
+        "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
     },
     {
         "name": "skipped",
@@ -493,10 +476,9 @@ INPUT_SVI: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "inputs": None,
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -513,9 +495,8 @@ INPUT_SVI: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["The following SVIs are not up: ['Vlan42']"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
     },
 ]
 
@@ -589,9 +570,8 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"mtu": 1500},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "success",
         "eos_data": [
@@ -661,9 +641,8 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"mtu": 1500, 'ignored_interfaces': ['Loopback', 'Port-Channel', 'Management', 'Vxlan'], 'specific_mtu': [{'Ethernet10': 1501}]},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -733,8 +712,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"mtu": 1500},
-        "expected_result": "failure",
-        "expected_messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"],
+        "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
     },
     {
         "name": "skipped",
@@ -880,9 +858,8 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"mtu": 9214},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -952,8 +929,7 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"mtu": 1500},
-        "expected_result": "failure",
-        "expected_messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"],
+        "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
     },
     {
         "name": "skipped",
@@ -1093,9 +1069,8 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure",
         "eos_data": [
@@ -1159,8 +1134,7 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
-        "expected_result": "failure",
-        "expected_messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"],
+        "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
     },
     {
         "name": "error-no-params",

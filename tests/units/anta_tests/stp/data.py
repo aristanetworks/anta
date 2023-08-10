@@ -29,7 +29,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -43,8 +43,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "failure",
-        "expected_messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10, 20]"]
+        "expected": {"result": "failure", "messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10, 20]"]}
     },
     {
         "name": "failure-wrong-mode",
@@ -69,8 +68,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "failure",
-        "expected_messages": ["Wrong STP mode configured for the following VLAN(s): [10, 20]"]
+        "expected": {"result": "failure", "messages": ["Wrong STP mode configured for the following VLAN(s): [10, 20]"]}
     },
     {
         "name": "failure-both",
@@ -89,7 +87,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": [
             "STP mode 'rstp' not configured for the following VLAN(s): [10]",
             "Wrong STP mode configured for the following VLAN(s): [20]"
@@ -210,7 +208,7 @@ INPUT_STP_BLOCKED_PORTS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -232,8 +230,7 @@ INPUT_STP_BLOCKED_PORTS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {},
-        "expected_result": "failure",
-        "expected_messages": ["The following ports are blocked by STP: {'MST0': ['Ethernet10'], 'MST10': ['Ethernet10']}"]
+        "expected": {"result": "failure", "messages": ["The following ports are blocked by STP: {'MST0': ['Ethernet10'], 'MST10': ['Ethernet10']}"]}
     },
 ]
 
@@ -254,7 +251,7 @@ INPUT_STP_COUNTERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -280,8 +277,7 @@ INPUT_STP_COUNTERS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {},
-        "expected_result": "failure",
-        "expected_messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]
+        "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]}
     },
 ]
 
@@ -327,7 +323,7 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
             },
         ],
         "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -343,8 +339,7 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "failure",
-        "expected_messages": ["STP instance is not configured for the following VLAN(s): [10, 20]"]
+        "expected": {"result": "failure", "messages": ["STP instance is not configured for the following VLAN(s): [10, 20]"]}
     },
     {
         "name": "failure",
@@ -387,7 +382,7 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "failure",
+        "expected": {"result": "failure"},
         "expected_messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: "
                               "[{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"]
     },
@@ -521,7 +516,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"priority": 32768, "instances": [10, 20]},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -563,7 +558,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"priority": 32768, "instances": None},
-        "expected_result": "success",
+        "expected": {"result": "success"},
         "expected_messages": []
     },
     {
@@ -574,8 +569,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"priority": 32768, "instances": [10, 20]},
-        "expected_result": "failure",
-        "expected_messages": ["No STP instances configured"]
+        "expected": {"result": "failure", "messages": ["No STP instances configured"]}
     },
     {
         "name": "failure-wrong-priority",
@@ -616,8 +610,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"priority": 32768, "instances": [10, 20, 30]},
-        "expected_result": "failure",
-        "expected_messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]
+        "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]}
     },
     {
         "name": "skipped",

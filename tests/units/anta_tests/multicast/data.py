@@ -42,9 +42,8 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"vlans": ["1", "42"], "configuration": "enabled"},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-disabled",
         "eos_data": [
@@ -70,9 +69,8 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"vlans": ["42"], "configuration": "disabled"},
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-missing-vlan",
         "eos_data": [
@@ -98,8 +96,7 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"vlans": ["1", "42"], "configuration": "disabled"},
-        "expected_result": "failure",
-        "expected_messages": ["IGMP state for vlan 1 is enabled", "Supplied vlan 42 is not present on the device."],
+        "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is enabled", "Supplied vlan 42 is not present on the device."]},
     },
     {
         "name": "failure-wrong-state",
@@ -126,8 +123,7 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": {"vlans": ["1"], "configuration": "enabled"},
-        "expected_result": "failure",
-        "expected_messages": ["IGMP state for vlan 1 is disabled"],
+        "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is disabled"]},
     },
     {
         "name": "skipped-missing-vlans",
@@ -165,9 +161,8 @@ INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "enabled",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "success-disabled",
         "eos_data": [
@@ -177,9 +172,8 @@ INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "disabled",
-        "expected_result": "success",
-        "expected_messages": [],
-    },
+        "expected": {"result": "success"},
+            },
     {
         "name": "failure-wrong-state",
         "eos_data": [
@@ -189,8 +183,7 @@ INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
             }
         ],
         "side_effect": "enabled",
-        "expected_result": "failure",
-        "expected_messages": ["IGMP state is not valid: disabled"],
+        "expected": {"result": "failure", "messages": ["IGMP state is not valid: disabled"]},
     },
     {
         "name": "skipped-missing-confguration",
