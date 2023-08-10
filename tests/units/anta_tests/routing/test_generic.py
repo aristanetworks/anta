@@ -8,11 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from anta.tests.routing.generic import VerifyBFD, VerifyRoutingProtocolModel, VerifyRoutingTableSize
-from tests.lib.utils import generate_test_ids
-from tests.units.anta_tests import test_case
+from tests.units.anta_tests.test_case import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -204,5 +201,3 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["bfd state for peer '' is down (expected up)."]},
     },
 ]
-
-pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test_case)

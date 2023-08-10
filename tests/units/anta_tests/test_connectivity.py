@@ -8,11 +8,9 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from anta.tests.connectivity import VerifyReachability
-from tests.lib.utils import generate_test_ids
-from tests.units.anta_tests import test_case
+from tests.units.anta_tests.test_case import test
+
 
 DATA: list[dict[str, Any]] = [
     {
@@ -84,5 +82,3 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('10.0.0.5', '10.0.0.11')]"]},
     },
 ]
-
-pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test_case)

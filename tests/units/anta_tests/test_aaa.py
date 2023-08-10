@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from anta.tests.aaa import (
     VerifyAcctConsoleMethods,
     VerifyAcctDefaultMethods,
@@ -16,7 +14,6 @@ from anta.tests.aaa import (
     VerifyTacacsServers,
     VerifyTacacsSourceIntf,
 )
-from tests.lib.utils import generate_test_ids
 from tests.units.anta_tests.test_case import test
 
 DATA: list[dict[str, Any]] = [
@@ -514,5 +511,3 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["AAA accounting console methods ['group tacacs+', 'logging'] are not matching for ['commands']"]},
     },
 ]
-
-pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test)

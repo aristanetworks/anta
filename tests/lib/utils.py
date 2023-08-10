@@ -24,19 +24,6 @@ def generate_test_ids_list(val: list[dict[str, Any]], key: str = "name") -> list
     return [entry[key] if key in entry.keys() else "unamed_test" for entry in val]
 
 
-def generate_test_ids(val: list[dict[str, Any]]) -> list[str]:
-    """
-    generate_test_ids Helper to generate test ID for parametrize
-
-    [{
-        "name": "meaniful test name",
-        "test": <AntaTest instance>,
-        ...
-    }]
-    """
-    return [f"{entry['test'].__module__}.{entry['test'].__name__}-{entry['name']}" for entry in val]
-
-
 def default_anta_env() -> Dict[str, str]:
     """
     Return a default_anta_environement which can be passed to a cliRunner.invoke method

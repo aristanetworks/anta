@@ -10,10 +10,7 @@ from functools import wraps
 from typing import Any
 from unittest.mock import patch
 
-import pytest
-
-from tests.lib.utils import generate_test_ids
-from tests.units.anta_tests import test_case
+from tests.units.anta_tests.test_case import test
 
 
 # Patching the decorator
@@ -745,5 +742,3 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The following RTC peers are not established: ['8.8.8.8']"]},
     },
 ]
-
-pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test_case)
