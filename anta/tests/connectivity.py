@@ -50,25 +50,17 @@ class VerifyReachability(AntaTest):
             """VRF context"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render VerifyReachability template"""
         return [template.render(dst=host.dst, src=host.src, vrf=host.vrf) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyReachability validation.
-        """
-
         failures = []
-
         for command in self.instance_commands:
             if command.params and ("src" and "dst") in command.params:
                 src, dst = command.params["src"], command.params["dst"]
             if "2 received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))
-
         if not failures:
             self.result.is_success()
-
         else:
             self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
