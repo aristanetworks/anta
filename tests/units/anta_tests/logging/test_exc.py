@@ -12,6 +12,7 @@ import pytest
 
 from anta.tests.logging import (
     VerifyLoggingAccounting,
+    VerifyLoggingErrors,
     VerifyLoggingHostname,
     VerifyLoggingHosts,
     VerifyLoggingLogsGeneration,
@@ -23,6 +24,7 @@ from tests.lib.utils import generate_test_ids_list
 
 from .data import (
     INPUT_LOGGING_ACCOUNTING,
+    INPUT_LOGGING_ERRORS,
     INPUT_LOGGING_HOSTNAME,
     INPUT_LOGGING_HOSTS,
     INPUT_LOGGING_LOGS_GEN,
@@ -145,6 +147,23 @@ def test_VerifyLoggingAccounting(mocked_device: MagicMock, test_data: Any) -> No
     asyncio.run(test.test())
 
     logging.info(f"Test result is: {test.result}")
+
+    assert str(test.result.name) == mocked_device.name
+    assert test.result.result == test_data["expected_result"]
+    assert test.result.messages == test_data["expected_messages"]
+
+
+@pytest.mark.parametrize("test_data", INPUT_LOGGING_ERRORS, ids=generate_test_ids_list(INPUT_LOGGING_ERRORS))
+def test_VerifyLoggingErrors(mocked_device: MagicMock, test_data: Any) -> None:
+    """Check VerifyLoggingErrors."""
+
+    logging.info(f"Mocked device is: {mocked_device.host}")
+    logging.info(f"Mocked HW is: {mocked_device.hw_model}")
+
+    test = VerifyLoggingErrors(mocked_device, eos_data=test_data["eos_data"])
+    asyncio.run(test.test())
+
+    logging.debug(f"test result is: {test.result}")
 
     assert str(test.result.name) == mocked_device.name
     assert test.result.result == test_data["expected_result"]
