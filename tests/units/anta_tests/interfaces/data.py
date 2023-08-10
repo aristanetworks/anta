@@ -55,8 +55,7 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
             " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
@@ -73,8 +72,7 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
             " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
@@ -90,8 +88,7 @@ INPUT_INTERFACE_ERRORS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
             " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
         ],
@@ -128,8 +125,7 @@ INPUT_INTERFACE_DISCARDS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
             " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
         ],
@@ -185,7 +181,7 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": 3,
+        "inputs": 3,
         "expected": {"result": "success"},
             },
     {
@@ -199,7 +195,7 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": 3,
+        "inputs": 3,
         "expected": {"result": "failure", "messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"]},
     },
     {
@@ -214,9 +210,8 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": -1,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyInterfacesStatus was not run as an invalid minimum value was given -1."],
+        "inputs": -1,
+        "expected_result": "skipped", "messages": ["VerifyInterfacesStatus was not run as an invalid minimum value was given -1."],
     },
 ]
 
@@ -387,7 +382,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": 2,
+        "inputs": 2,
         "expected": {"result": "success"},
             },
     {
@@ -414,7 +409,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": 2,
+        "inputs": 2,
         "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
     },
     {
@@ -433,7 +428,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": 2,
+        "inputs": 2,
         "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
     },
     {
@@ -452,9 +447,8 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyLoopbackCount was not run as no number value was given."],
+        "inputs": None,
+        "expected_result": "skipped", "messages": ["VerifyLoopbackCount was not run as no number value was given."],
     },
 ]
 
@@ -569,7 +563,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 1500},
+        "inputs": {"mtu": 1500},
         "expected": {"result": "success"},
             },
     {
@@ -640,7 +634,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 1500, 'ignored_interfaces': ['Loopback', 'Port-Channel', 'Management', 'Vxlan'], 'specific_mtu': [{'Ethernet10': 1501}]},
+        "inputs": {"mtu": 1500, 'ignored_interfaces': ['Loopback', 'Port-Channel', 'Management', 'Vxlan'], 'specific_mtu': [{'Ethernet10': 1501}]},
         "expected": {"result": "success"},
             },
     {
@@ -711,7 +705,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 1500},
+        "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
     },
     {
@@ -782,9 +776,8 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": None},
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyL3MTU did not run because mtu was not supplied"],
+        "inputs": {"mtu": None},
+        "expected_result": "skipped", "messages": ["VerifyL3MTU did not run because mtu was not supplied"],
     },
 ]
 
@@ -857,7 +850,7 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 9214},
+        "inputs": {"mtu": 9214},
         "expected": {"result": "success"},
             },
     {
@@ -928,7 +921,7 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": 1500},
+        "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
     },
     {
@@ -999,9 +992,8 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": {"mtu": None},
-        "expected_result": "skipped",
-        "expected_messages": ['VerifyL2MTU did not run because mtu was not supplied'],
+        "inputs": {"mtu": None},
+        "expected_result": "skipped", "messages": ['VerifyL2MTU did not run because mtu was not supplied'],
     },
 ]
 
@@ -1068,7 +1060,7 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
+        "inputs": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
         "expected": {"result": "success"},
             },
     {
@@ -1133,7 +1125,7 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
+        "inputs": {"template_params": [{"intf": "Ethernet1"}, {"intf": "Ethernet2"}]},
         "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
     },
     {
@@ -1198,9 +1190,8 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": None},
-        "expected_result": "error",
-        "expected_messages": ["Command has template but no params were given"],
+        "inputs": {"template_params": None},
+        "expected": {"result": "error"}, "messages": ["Command has template but no params were given"],
     },
     {
         "name": "error-wrong-params",
@@ -1264,8 +1255,7 @@ INPUT_IP_PROXY_ARP: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": [{'wrong': 'Ethernet1'}]},
-        "expected_result": "error",
-        "expected_messages": ["Cannot render template 'show ip interface {intf}': wrong parameters"],
+        "inputs": {"template_params": [{'wrong': 'Ethernet1'}]},
+        "expected": {"result": "error"}, "messages": ["Cannot render template 'show ip interface {intf}': wrong parameters"],
     },
 ]

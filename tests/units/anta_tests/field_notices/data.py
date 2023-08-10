@@ -100,8 +100,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["device is not impacted by FN044"],
+        "expected_result": "skipped", "messages": ["device is not impacted by FN044"],
     },
 ]
 
@@ -179,8 +178,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["Device not exposed"],
+        "expected_result": "skipped", "messages": ["Device not exposed"],
     },
     {
         "name": "skipped-Platform",
@@ -195,8 +193,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["Platform is not impacted by FN072"],
+        "expected_result": "skipped", "messages": ["Platform is not impacted by FN072"],
     },
     {
         "name": "skipped-range-JPE",
@@ -211,8 +208,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["Device not exposed"],
+        "expected_result": "skipped", "messages": ["Device not exposed"],
     },
     {
         "name": "skipped-range-K-JAS",
@@ -227,8 +223,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["Device not exposed"],
+        "expected_result": "skipped", "messages": ["Device not exposed"],
     },
     {
         "name": "failed-JPE",
@@ -273,7 +268,6 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "error",
-        "expected_messages": ["Error in running test - FixedSystemvrm1 not found"],
+        "expected": {"result": "error"}, "messages": ["Error in running test - FixedSystemvrm1 not found"],
     },
 ]

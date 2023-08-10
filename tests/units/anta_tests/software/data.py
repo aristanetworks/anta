@@ -15,7 +15,7 @@ INPUT_VERIFY_EOS_VERSION: List[Dict[str, Any]] = [
                 "version": "4.27.0F",
             }
         ],
-        "side_effect": ["4.27.0F", "4.28.0F"],
+        "inputs": ["4.27.0F", "4.28.0F"],
         "expected": {"result": "success"},
             },
     {
@@ -27,7 +27,7 @@ INPUT_VERIFY_EOS_VERSION: List[Dict[str, Any]] = [
                 "version": "4.27.0F",
             }
         ],
-        "side_effect": ["4.27.1F"],
+        "inputs": ["4.27.1F"],
         "expected": {"result": "failure", "messages": ["device is running version 4.27.0F not in expected versions: ['4.27.1F']"]},
     },
 ]
@@ -50,7 +50,7 @@ INPUT_VERIFY_TERMINATTR_VERSION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": ["v1.17.0", "v1.18.1"],
+        "inputs": ["v1.17.0", "v1.18.1"],
         "expected": {"result": "success"},
             },
     {
@@ -70,7 +70,7 @@ INPUT_VERIFY_TERMINATTR_VERSION: List[Dict[str, Any]] = [
                 },
             }
         ],
-        "side_effect": ["v1.17.1", "v1.18.1"],
+        "inputs": ["v1.17.1", "v1.18.1"],
         "expected": {"result": "failure", "messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"]},
     },
 ]

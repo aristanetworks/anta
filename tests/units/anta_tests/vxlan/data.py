@@ -20,7 +20,6 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "skipped",
@@ -35,8 +34,7 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["Vxlan1 interface is not configured"]
+        "expected_result": "skipped", "messages": ["Vxlan1 interface is not configured"]
     },
     {
         "name": "failure",
@@ -234,7 +232,6 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure",
@@ -386,8 +383,7 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": ["VXLAN config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
+        "expected": {"result": "failure"}, "messages": ["VXLAN config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
                               "'allCheckPass': False, 'detail': '', 'hasWarning': True, 'items': [{'name': 'Loopback IP Address', 'checkPass': True, "
                               "'hasWarning': False, 'detail': ''}, {'name': 'VLAN-VNI Map', 'checkPass': False, 'hasWarning': False, 'detail': "
                               "'No VLAN-VNI mapping in Vxlan1'}, {'name': 'Flood List', 'checkPass': False, 'hasWarning': True, 'detail': "
@@ -404,7 +400,6 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VXLAN is not configured"]
+        "expected_result": "skipped", "messages": ["VXLAN is not configured"]
     },
 ]

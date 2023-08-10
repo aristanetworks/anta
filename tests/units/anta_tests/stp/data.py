@@ -28,9 +28,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "inputs": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-instances",
@@ -42,7 +41,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 "spanningTreeVlanInstances": {}
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "inputs": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected": {"result": "failure", "messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10, 20]"]}
     },
     {
@@ -67,7 +66,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "inputs": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected": {"result": "failure", "messages": ["Wrong STP mode configured for the following VLAN(s): [10, 20]"]}
     },
     {
@@ -86,9 +85,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "inputs": {"mode": "rstp", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected": {"result": "failure"}, "messages": [
             "STP mode 'rstp' not configured for the following VLAN(s): [10]",
             "Wrong STP mode configured for the following VLAN(s): [20]"
             ]
@@ -115,9 +113,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "incompatible_mode", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Wrong STP mode provided. Valid modes are: ['mstp', 'rstp', 'rapidPvst'])"]
+        "inputs": {"mode": "incompatible_mode", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected": {"result": "error"}, "messages": ["ValueError (Wrong STP mode provided. Valid modes are: ['mstp', 'rstp', 'rapidPvst'])"]
     },
     {
         "name": "error-no-params",
@@ -141,9 +138,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": None},
-        "expected_result": "error",
-        "expected_messages": ["Command has template but no params were given"]
+        "inputs": {"mode": "rstp", "template_params": None},
+        "expected": {"result": "error"}, "messages": ["Command has template but no params were given"]
     },
     {
         "name": "error-wrong-params",
@@ -167,9 +163,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "rstp", "template_params": [{'plop': 1}]},
-        "expected_result": "error",
-        "expected_messages": ["Cannot render template 'show spanning-tree vlan {vlan}': wrong parameters"]
+        "inputs": {"mode": "rstp", "template_params": [{'plop': 1}]},
+        "expected": {"result": "error"}, "messages": ["Cannot render template 'show spanning-tree vlan {vlan}': wrong parameters"]
     },
     {
         "name": "skipped",
@@ -193,9 +188,8 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"mode": "", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySTPMode did not run because mode was not supplied"]
+        "inputs": {"mode": "", "template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected_result": "skipped", "messages": ["VerifySTPMode did not run because mode was not supplied"]
     }
 ]
 
@@ -207,9 +201,8 @@ INPUT_STP_BLOCKED_PORTS: List[Dict[str, Any]] = [
                 "spanningTreeInstances": {}
             }
         ],
-        "side_effect": {},
+        "inputs": {},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure",
@@ -229,7 +222,7 @@ INPUT_STP_BLOCKED_PORTS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {},
+        "inputs": {},
         "expected": {"result": "failure", "messages": ["The following ports are blocked by STP: {'MST0': ['Ethernet10'], 'MST10': ['Ethernet10']}"]}
     },
 ]
@@ -250,9 +243,8 @@ INPUT_STP_COUNTERS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {},
+        "inputs": {},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure",
@@ -276,7 +268,7 @@ INPUT_STP_COUNTERS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {},
+        "inputs": {},
         "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]}
     },
 ]
@@ -322,9 +314,8 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "inputs": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-instances",
@@ -338,7 +329,7 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
                 "topologies": {}
             }
         ],
-        "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "inputs": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
         "expected": {"result": "failure", "messages": ["STP instance is not configured for the following VLAN(s): [10, 20]"]}
     },
     {
@@ -381,9 +372,8 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected": {"result": "failure"},
-        "expected_messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: "
+        "inputs": {"template_params": [{"vlan": 10}, {"vlan": 20}]},
+        "expected": {"result": "failure"}, "messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: "
                               "[{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"]
     },
     {
@@ -426,9 +416,8 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"template_params": None},
-        "expected_result": "error",
-        "expected_messages": ["Command has template but no params were given"]
+        "inputs": {"template_params": None},
+        "expected": {"result": "error"}, "messages": ["Command has template but no params were given"]
     },
     {
         "name": "error-wrong-params",
@@ -470,9 +459,8 @@ INPUT_STP_FORWARDING_PORTS: List[Dict[str, Any]] = [
                 }
             },
         ],
-        "side_effect": {"template_params": [{"wrong": 10}, {"wrong": 20}]},
-        "expected_result": "error",
-        "expected_messages": ["Cannot render template 'show spanning-tree topology vlan {vlan} status': wrong parameters"]
+        "inputs": {"template_params": [{"wrong": 10}, {"wrong": 20}]},
+        "expected": {"result": "error"}, "messages": ["Cannot render template 'show spanning-tree topology vlan {vlan} status': wrong parameters"]
     }
 ]
 
@@ -515,9 +503,8 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"priority": 32768, "instances": [10, 20]},
+        "inputs": {"priority": 32768, "instances": [10, 20]},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "success-all-instances",
@@ -557,9 +544,8 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"priority": 32768, "instances": None},
+        "inputs": {"priority": 32768, "instances": None},
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-instances",
@@ -568,7 +554,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
                 "instances": {}
             }
         ],
-        "side_effect": {"priority": 32768, "instances": [10, 20]},
+        "inputs": {"priority": 32768, "instances": [10, 20]},
         "expected": {"result": "failure", "messages": ["No STP instances configured"]}
     },
     {
@@ -609,7 +595,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"priority": 32768, "instances": [10, 20, 30]},
+        "inputs": {"priority": 32768, "instances": [10, 20, 30]},
         "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]}
     },
     {
@@ -650,8 +636,7 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": {"priority": None, "instances": [10, 20, 30]},
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySTPRootPriority did not run because priority was not supplied"]
+        "inputs": {"priority": None, "instances": [10, 20, 30]},
+        "expected_result": "skipped", "messages": ["VerifySTPRootPriority did not run because priority was not supplied"]
     },
 ]

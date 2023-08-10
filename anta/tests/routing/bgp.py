@@ -103,8 +103,6 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     commands = [AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")]
 
     class Input(AntaTest.Input):
-        """VerifyBGPIPv4UnicastCount inputs"""
-
         vrfs: dict[str, int]
         """VRFs associated with neighbors count to verify"""
 
@@ -200,8 +198,6 @@ class VerifyBGPEVPNCount(AntaTest):
     commands = [AntaCommand(command="show bgp evpn summary")]
 
     class Input(AntaTest.Input):
-        """VerifyBGPIPv4UnicastCount inputs"""
-
         number: int
         """The expected number of BGP EVPN neighbors in the default VRF"""
 
@@ -264,8 +260,6 @@ class VerifyBGPRTCCount(AntaTest):
     commands = [AntaCommand(command="show bgp rt-membership summary")]
 
     class Input(AntaTest.Input):
-        """VerifyBGPIPv4UnicastCount inputs"""
-
         number: int
         """The expected number of BGP RTC neighbors in the default VRF"""
 

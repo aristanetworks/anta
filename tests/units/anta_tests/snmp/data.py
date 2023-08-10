@@ -14,9 +14,8 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
                 'enabled': True
             }
         ],
-        "side_effect": "MGMT",
+        "inputs": "MGMT",
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-wrong-vrf",
@@ -26,7 +25,7 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
                 'enabled': True
             }
         ],
-        "side_effect": "MGMT",
+        "inputs": "MGMT",
         "expected": {"result": "failure", "messages": ["SNMP agent disabled in vrf MGMT"]}
     },
     {
@@ -37,7 +36,7 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
                 'enabled': False
             }
         ],
-        "side_effect": "default",
+        "inputs": "default",
         "expected": {"result": "failure", "messages": ["SNMP agent disabled in vrf default"]}
     },
     {
@@ -48,9 +47,8 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
                 'enabled': True
             }
         ],
-        "side_effect": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySnmpStatus did not run because vrf was not supplied"]
+        "inputs": None,
+        "expected_result": "skipped", "messages": ["VerifySnmpStatus did not run because vrf was not supplied"]
     },
 ]
 
@@ -69,9 +67,8 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-wrong-number",
@@ -82,7 +79,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "failure", "messages": ["Expected 1 SNMP IPv4 ACL(s) in vrf MGMT but got 0"]}
     },
     {
@@ -99,7 +96,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "failure", "messages": ["SNMP IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SNMP']"]}
     },
     {
@@ -116,9 +113,8 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, None),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
+        "inputs": (1, None),
+        "expected_result": "skipped", "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -134,9 +130,8 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (None, "MGMT"),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
+        "inputs": (None, "MGMT"),
+        "expected_result": "skipped", "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
     }
 ]
 
@@ -155,9 +150,8 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-wrong-number",
@@ -168,7 +162,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "failure", "messages": ["Expected 1 SNMP IPv6 ACL(s) in vrf MGMT but got 0"]}
     },
     {
@@ -185,7 +179,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, "MGMT"),
+        "inputs": (1, "MGMT"),
         "expected": {"result": "failure", "messages": ["SNMP IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SNMP']"]}
     },
     {
@@ -202,9 +196,8 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (1, None),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
+        "inputs": (1, None),
+        "expected_result": "skipped", "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -220,8 +213,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (None, "MGMT"),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
+        "inputs": (None, "MGMT"),
+        "expected_result": "skipped", "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
     }
 ]

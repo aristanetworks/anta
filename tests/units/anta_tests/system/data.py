@@ -9,21 +9,20 @@ INPUT_UPTIME: List[Dict[str, Any]] = [
     {
         "name": "success",
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-        "side_effect": 666,
+        "inputs": 666,
         "expected": {"result": "success"},
             },
     {
         "name": "failure",
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-        "side_effect": 666,
+        "inputs": 666,
         "expected": {"result": "failure", "messages": ["Device uptime is 665.15 seconds"]},
     },
     {
         "name": "skipped-no-minimum",
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
-        "side_effect": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyUptime was not run since the provided uptime value is invalid or negative"],
+        "inputs": None,
+        "expected_result": "skipped", "messages": ["VerifyUptime was not run since the provided uptime value is invalid or negative"],
     },
 ]
 
@@ -67,8 +66,7 @@ INPUT_RELOAD_CAUSE: List[Dict[str, Any]] = [
             {}
         ],
         "inputs": None,
-        "expected_result": "error",
-        "expected_messages": ["No reload causes available"],
+        "expected": {"result": "error"}, "messages": ["No reload causes available"],
     },
 ]
 
@@ -142,8 +140,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
 """
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             'Device has reported agent crashes:\n'
             ' * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n'
             ' * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n'
@@ -284,8 +281,7 @@ none            294M   78M  217M  84% /.overlay
 """
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "expected_messages": [
+        "expected": {"result": "failure"}, "messages": [
             "Mount point /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash is higher than 75%: reported 84%",
             "Mount point none            294M   78M  217M  84% /.overlay is higher than 75%: reported 84%",
         ],

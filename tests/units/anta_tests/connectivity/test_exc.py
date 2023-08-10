@@ -11,9 +11,8 @@ from typing import Any
 import pytest
 
 from anta.tests.connectivity import VerifyReachability
-from tests.units.anta_tests import test_case
 from tests.lib.utils import generate_test_ids
-
+from tests.units.anta_tests import test_case
 
 DATA: list[dict[str, Any]] = [
     {
@@ -22,8 +21,8 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"hosts": [{"dst": "10.0.0.1", "src": "10.0.0.5"}, {"dst": "10.0.0.2", "src": "10.0.0.5"}]},
         "eos_data": [
             {
-              "messages": [
-                """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
                 80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
                 80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
 
@@ -32,11 +31,11 @@ DATA: list[dict[str, Any]] = [
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
                 """
-              ]
+                ]
             },
             {
-              "messages": [
-                """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
+                "messages": [
+                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
                 80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
                 80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
 
@@ -45,10 +44,10 @@ DATA: list[dict[str, Any]] = [
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
                 """
-              ]
+                ]
             },
         ],
-        "expected": {"result": "success"}
+        "expected": {"result": "success"},
     },
     {
         "name": "failure",
@@ -56,8 +55,8 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"hosts": [{"dst": "10.0.0.11", "src": "10.0.0.5"}, {"dst": "10.0.0.2", "src": "10.0.0.5"}]},
         "eos_data": [
             {
-              "messages": [
-                """ping: sendmsg: Network is unreachable
+                "messages": [
+                    """ping: sendmsg: Network is unreachable
                 ping: sendmsg: Network is unreachable
                 PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.
 
@@ -66,11 +65,11 @@ DATA: list[dict[str, Any]] = [
 
 
                 """
-              ]
+                ]
             },
             {
-              "messages": [
-                """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
+                "messages": [
+                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
                 80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
                 80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
 
@@ -79,11 +78,10 @@ DATA: list[dict[str, Any]] = [
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
                 """
-              ]
+                ]
             },
         ],
-        "expected": {"result": "failure",
-                     "messages": ["Connectivity test failed for the following source-destination pairs: [('10.0.0.5', '10.0.0.11')]"]},
+        "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('10.0.0.5', '10.0.0.11')]"]},
     },
 ]
 

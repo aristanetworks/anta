@@ -34,8 +34,6 @@ class VerifyReachability(AntaTest):
     commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
 
     class Input(AntaTest.Input):
-        """VerifyReachability inputs"""
-
         hosts: List[Host]
         """List of hosts to ping"""
 

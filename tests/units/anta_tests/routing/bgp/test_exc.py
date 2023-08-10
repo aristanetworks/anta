@@ -46,7 +46,6 @@ from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPRTCState,
 )
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success-no-vrf",

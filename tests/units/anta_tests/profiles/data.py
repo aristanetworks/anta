@@ -9,9 +9,8 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
     {
         "name": "skipped",
         "eos_data": [{}],
-        "side_effect": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyUnifiedForwardingTableMode was not run as no mode was given"]
+        "inputs": None,
+        "expected_result": "skipped", "messages": ["VerifyUnifiedForwardingTableMode was not run as no mode was given"]
     },
     {
         "name": "success",
@@ -25,9 +24,8 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
                 "lpmTableSize": 32768
             }
         ],
-        "side_effect": "2",
+        "inputs": "2",
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure",
@@ -41,7 +39,7 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
                 "lpmTableSize": 32768
             }
         ],
-        "side_effect": "3",
+        "inputs": "3",
         "expected": {"result": "failure", "messages": ["Device is not running correct UFT mode (expected: 3 / running: 2)"]}
     },
 ]
@@ -50,9 +48,8 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
     {
         "name": "skipped",
         "eos_data": [{}],
-        "side_effect": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTcamProfile was not run as no profile was given"]
+        "inputs": None,
+        "expected_result": "skipped", "messages": ["VerifyTcamProfile was not run as no profile was given"]
     },
     {
         "name": "success",
@@ -69,9 +66,8 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
                 "lastProgrammingStatus": {}
             }
         ],
-        "side_effect": "test",
+        "inputs": "test",
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure",
@@ -88,7 +84,7 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
                 "lastProgrammingStatus": {}
             }
         ],
-        "side_effect": "test",
+        "inputs": "test",
         "expected": {"result": "failure", "messages": ["Incorrect profile running on device: default"]}
     },
 ]

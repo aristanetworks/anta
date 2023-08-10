@@ -273,7 +273,7 @@ class AntaTest(ABC):
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
-        if hasattr(self, 'inputs'):
+        if hasattr(self, "inputs"):
             self._init_commands(eos_data)
 
     def _init_inputs(self, inputs: dict[str, Any] | None) -> None:

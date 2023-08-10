@@ -19,9 +19,8 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": ("Management0", "MGMT"),
+        "inputs": ("Management0", "MGMT"),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-not-configured",
@@ -32,7 +31,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": ("Management0", "MGMT"),
+        "inputs": ("Management0", "MGMT"),
         "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]}
     },
     {
@@ -48,7 +47,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management1'},
             }
         ],
-        "side_effect": ("Management0", "MGMT"),
+        "inputs": ("Management0", "MGMT"),
         "expected": {"result": "failure", "messages": ["Wrong source-interface configured in VRF MGMT"]}
     },
     {
@@ -64,7 +63,7 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {'PROD': 'Management0'},
             }
         ],
-        "side_effect": ("Management0", "MGMT"),
+        "inputs": ("Management0", "MGMT"),
         "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]}
     },
     {
@@ -76,9 +75,8 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": ("Management0", ""),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTacacsSourceIntf did not run because intf or vrf was not supplied"]
+        "inputs": ("Management0", ""),
+        "expected_result": "skipped", "messages": ["VerifyTacacsSourceIntf did not run because intf or vrf was not supplied"]
     },
     {
         "name": "skipped-no-intf",
@@ -89,9 +87,8 @@ INPUT_TACACS_SRC_INTF: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": ("", "MGMT"),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTacacsSourceIntf did not run because intf or vrf was not supplied"]
+        "inputs": ("", "MGMT"),
+        "expected_result": "skipped", "messages": ["VerifyTacacsSourceIntf did not run because intf or vrf was not supplied"]
     },
 ]
 
@@ -109,9 +106,8 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": (["10.22.10.91"], "MGMT"),
+        "inputs": (["10.22.10.91"], "MGMT"),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-servers",
@@ -122,7 +118,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": (["10.22.10.91"], "MGMT"),
+        "inputs": (["10.22.10.91"], "MGMT"),
         "expected": {"result": "failure", "messages": ["No TACACS servers are configured"]}
     },
     {
@@ -138,7 +134,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": (["10.22.10.91", "10.22.10.92"], "MGMT"),
+        "inputs": (["10.22.10.91", "10.22.10.92"], "MGMT"),
         "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.92'] are not configured in VRF MGMT"]}
     },
     {
@@ -154,7 +150,7 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": (["10.22.10.91"], "MGMT"),
+        "inputs": (["10.22.10.91"], "MGMT"),
         "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.91'] are not configured in VRF MGMT"]}
     },
     {
@@ -166,9 +162,8 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": ([], "MGMT"),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTacacsServers did not run because servers or vrf were not supplied"]
+        "inputs": ([], "MGMT"),
+        "expected_result": "skipped", "messages": ["VerifyTacacsServers did not run because servers or vrf were not supplied"]
     },
     {
         "name": "skipped-no-vrf",
@@ -179,9 +174,8 @@ INPUT_TACACS_SERVERS: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": (["10.22.10.91"], ""),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTacacsServers did not run because servers or vrf were not supplied"]
+        "inputs": (["10.22.10.91"], ""),
+        "expected_result": "skipped", "messages": ["VerifyTacacsServers did not run because servers or vrf were not supplied"]
     },
 ]
 
@@ -199,9 +193,8 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": ["GROUP1"],
+        "inputs": ["GROUP1"],
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-server-groups",
@@ -212,7 +205,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
                 'srcIntf': {},
             }
         ],
-        "side_effect": ["GROUP1"],
+        "inputs": ["GROUP1"],
         "expected": {"result": "failure", "messages": ["No TACACS server group(s) are configured"]}
     },
     {
@@ -228,7 +221,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
                 'srcIntf': {'MGMT': 'Management0'},
             }
         ],
-        "side_effect": ["GROUP1"],
+        "inputs": ["GROUP1"],
         "expected": {"result": "failure", "messages": ["TACACS server group(s) ['GROUP1'] are not configured"]}
     },
     {
@@ -241,8 +234,7 @@ INPUT_TACACS_SERVER_GROUPS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyTacacsServerGroups did not run because groups were not supplied"]
+        "expected_result": "skipped", "messages": ["VerifyTacacsServerGroups did not run because groups were not supplied"]
     },
 ]
 
@@ -282,9 +274,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 }
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable"]),
+        "inputs": (["tacacs+", "local"], ["login", "enable"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "success-dot1x",
@@ -321,9 +312,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 }
               }
         ],
-        "side_effect": (["radius"], ["dot1x"]),
+        "inputs": (["radius"], ["dot1x"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-no-login-console",
@@ -354,7 +344,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 }
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable"]),
+        "inputs": (["tacacs+", "local"], ["login", "enable"]),
         "expected": {"result": "failure", "messages": ["AAA authentication methods are not configured for login console"]}
     },
     {
@@ -392,7 +382,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 }
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable"]),
+        "inputs": (["tacacs+", "local"], ["login", "enable"]),
         "expected": {"result": "failure", "messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for login console"]}
     },
     {
@@ -430,7 +420,7 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 }
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable"]),
+        "inputs": (["tacacs+", "local"], ["login", "enable"]),
         "expected": {"result": "failure", "messages": ["AAA authentication methods ['tacacs+', 'local'] are not matching for ['login']"]}
     },
     {
@@ -442,9 +432,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 "dot1xAuthenMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['login', 'enable', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["login", "enable", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['login', 'enable', 'dot1x'])"]
     },
     {
         "name": "error-too-many-auth-type",
@@ -455,9 +444,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 "dot1xAuthenMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], ["login", "enable", "dot1x", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['login', 'enable', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["login", "enable", "dot1x", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['login', 'enable', 'dot1x'])"]
     },
     {
         "name": "skipped-no-methods",
@@ -468,9 +456,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 "dot1xAuthenMethods": {}
               }
         ],
-        "side_effect": ([], ["login", "enable"]),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAuthenMethods did not run because methods or auth_types were not supplied"]
+        "inputs": ([], ["login", "enable"]),
+        "expected_result": "skipped", "messages": ["VerifyAuthenMethods did not run because methods or auth_types were not supplied"]
     },
     {
         "name": "skipped-no-auth-types",
@@ -481,9 +468,8 @@ INPUT_AUTHEN_METHODS: List[Dict[str, Any]] = [
                 "dot1xAuthenMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], []),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAuthenMethods did not run because methods or auth_types were not supplied"]
+        "inputs": (["tacacs+", "local"], []),
+        "expected_result": "skipped", "messages": ["VerifyAuthenMethods did not run because methods or auth_types were not supplied"]
     },
 ]
 
@@ -510,9 +496,8 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
+        "inputs": (["tacacs+", "local"], ["commands", "exec"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-commands",
@@ -536,7 +521,7 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
+        "inputs": (["tacacs+", "local"], ["commands", "exec"]),
         "expected": {"result": "failure", "messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['commands']"]}
     },
     {
@@ -561,7 +546,7 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec"]),
+        "inputs": (["tacacs+", "local"], ["commands", "exec"]),
         "expected": {"result": "failure", "messages": ["AAA authorization methods ['tacacs+', 'local'] are not matching for ['exec']"]}
     },
     {
@@ -572,9 +557,8 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 "execAuthzMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['commands', 'exec'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['commands', 'exec'])"]
     },
     {
         "name": "error-too-many-auth-type",
@@ -584,9 +568,8 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 "execAuthzMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['commands', 'exec'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "exec", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['commands', 'exec'])"]
     },
     {
         "name": "skipped-no-methods",
@@ -596,9 +579,8 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 "execAuthzMethods": {}
               }
         ],
-        "side_effect": ([], ["commands", "exec"]),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAuthzMethods did not run because methods or auth_types were not supplied"]
+        "inputs": ([], ["commands", "exec"]),
+        "expected_result": "skipped", "messages": ["VerifyAuthzMethods did not run because methods or auth_types were not supplied"]
     },
     {
         "name": "skipped-no-auth-types",
@@ -608,9 +590,8 @@ INPUT_AUTHZ_METHODS: List[Dict[str, Any]] = [
                 "execAuthzMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], []),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAuthzMethods did not run because methods or auth_types were not supplied"]
+        "inputs": (["tacacs+", "local"], []),
+        "expected_result": "skipped", "messages": ["VerifyAuthzMethods did not run because methods or auth_types were not supplied"]
     },
 ]
 
@@ -657,9 +638,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "success-dot1x",
@@ -707,9 +687,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["radius", "logging"], ["dot1x"]),
+        "inputs": (["radius", "logging"], ["dot1x"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-not-configured",
@@ -749,7 +728,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for ['commands']"]}
     },
     {
@@ -794,7 +773,7 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "failure", "messages": ["AAA accounting default methods ['tacacs+', 'logging'] are not matching for ['commands']"]}
     },
     {
@@ -807,9 +786,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec", "system", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "exec", "system", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
     },
     {
         "name": "error-too-many-auth-type",
@@ -821,9 +799,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec", "system", "dot1x", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "exec", "system", "dot1x", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
     },
     {
         "name": "skipped-no-methods",
@@ -835,9 +812,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
               }
         ],
-        "side_effect": ([], ["commands", "exec", "system"]),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAcctDefaultMethods did not run because methods or auth_types were not supplied"]
+        "inputs": ([], ["commands", "exec", "system"]),
+        "expected_result": "skipped", "messages": ["VerifyAcctDefaultMethods did not run because methods or auth_types were not supplied"]
     },
     {
         "name": "skipped-no-auth-types",
@@ -849,9 +825,8 @@ INPUT_ACCT_DEFAULT_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], []),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAcctDefaultMethods did not run because methods or auth_types were not supplied"]
+        "inputs": (["tacacs+", "local"], []),
+        "expected_result": "skipped", "messages": ["VerifyAcctDefaultMethods did not run because methods or auth_types were not supplied"]
     },
 ]
 
@@ -898,9 +873,8 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "success-dot1x",
@@ -948,9 +922,8 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["dot1x"]),
+        "inputs": (["tacacs+", "logging"], ["dot1x"]),
         "expected": {"result": "success"},
-        "expected_messages": []
     },
     {
         "name": "failure-not-configured",
@@ -990,7 +963,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for ['commands']"]}
     },
     {
@@ -1035,7 +1008,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "side_effect": (["tacacs+", "logging"], ["commands", "exec", "system"]),
+        "inputs": (["tacacs+", "logging"], ["commands", "exec", "system"]),
         "expected": {"result": "failure", "messages": ["AAA accounting console methods ['tacacs+', 'logging'] are not matching for ['commands']"]}
     },
     {
@@ -1048,9 +1021,8 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec", "system", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "exec", "system", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Wrong parameter provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
     },
     {
         "name": "error-too-many-auth-type",
@@ -1062,9 +1034,8 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
             }
         ],
-        "side_effect": (["tacacs+", "local"], ["commands", "exec", "system", "dot1x", "bad"]),
-        "expected_result": "error",
-        "expected_messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
+        "inputs": (["tacacs+", "local"], ["commands", "exec", "system", "dot1x", "bad"]),
+        "expected": {"result": "error"}, "messages": ["ValueError (Too many parameters provided in auth_types. Valid parameters are: ['system', 'exec', 'commands', 'dot1x'])"]
     },
     {
         "name": "skipped-no-methods",
@@ -1076,9 +1047,8 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
               }
         ],
-        "side_effect": ([], ["commands", "exec", "system"]),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAcctConsoleMethods did not run because methods or auth_types were not supplied"]
+        "inputs": ([], ["commands", "exec", "system"]),
+        "expected_result": "skipped", "messages": ["VerifyAcctConsoleMethods did not run because methods or auth_types were not supplied"]
     },
     {
         "name": "skipped-no-auth-types",
@@ -1090,8 +1060,7 @@ INPUT_ACCT_CONSOLE_METHODS: List[Dict[str, Any]] = [
                 "dot1xAcctMethods": {}
               }
         ],
-        "side_effect": (["tacacs+", "local"], []),
-        "expected_result": "skipped",
-        "expected_messages": ["VerifyAcctConsoleMethods did not run because methods or auth_types were not supplied"]
+        "inputs": (["tacacs+", "local"], []),
+        "expected_result": "skipped", "messages": ["VerifyAcctConsoleMethods did not run because methods or auth_types were not supplied"]
     },
 ]

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from click import Option
+
     from anta.models import AntaTest
 
 

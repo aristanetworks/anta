@@ -10,9 +10,9 @@ from typing import Any, Dict, List
 from unittest.mock import MagicMock
 
 import pytest
-
 from pydantic import ValidationError
-from anta.models import AntaCommand, AntaTemplate, AntaTest, AntaTemplateRenderError
+
+from anta.models import AntaCommand, AntaTemplate, AntaTemplateRenderError, AntaTest
 from tests.lib.utils import generate_test_ids
 
 
