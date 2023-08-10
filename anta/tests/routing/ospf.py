@@ -4,14 +4,16 @@
 """
 OSPF test functions
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from anta.models import AntaCommand, AntaTest
 
 
-def _count_ospf_neighbor(ospf_neighbor_json: Dict[str, Any]) -> int:
+def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
     """
     Count the number of OSPF neighbors
     """
@@ -22,7 +24,7 @@ def _count_ospf_neighbor(ospf_neighbor_json: Dict[str, Any]) -> int:
     return count
 
 
-def _get_not_full_ospf_neighbors(ospf_neighbor_json: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Return the OSPF neighbors whose adjacency state is not "full"
     """
@@ -39,7 +41,6 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: Dict[str, Any]) -> List[Dic
                             "state": state,
                         }
                     )
-
     return not_full_neighbors
 
 
@@ -55,16 +56,11 @@ class VerifyOSPFNeighborState(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyOSPFNeighborState validation"""
-
         command_output = self.instance_commands[0].json_output
-
         if _count_ospf_neighbor(command_output) == 0:
             self.result.is_skipped("no OSPF neighbor found")
             return
-
         self.result.is_success()
-
         not_full_neighbors = _get_not_full_ospf_neighbors(command_output)
         if not_full_neighbors:
             self.result.is_failure(f"Some neighbors are not correctly configured: {not_full_neighbors}.")
@@ -73,9 +69,6 @@ class VerifyOSPFNeighborState(AntaTest):
 class VerifyOSPFNeighborCount(AntaTest):
     """
     Verifies the number of OSPF neighbors in FULL state is the one we expect.
-
-    Args:
-        number (int): The expected number of OSPF neighbors in FULL state.
     """
 
     name = "VerifyOSPFNeighborCount"
@@ -83,24 +76,19 @@ class VerifyOSPFNeighborCount(AntaTest):
     categories = ["routing", "ospf"]
     commands = [AntaCommand(command="show ip ospf neighbor")]
 
+    class Input(AntaTest.Input):
+        number: int
+        """The expected number of OSPF neighbors in FULL state"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None) -> None:
-        """Run VerifyOSPFNeighborCount validation"""
-        if not (isinstance(number, int) and number >= 0):
-            self.result.is_skipped(f"VerifyOSPFNeighborCount was not run as the number given '{number}' is not a valid value.")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         if (neighbor_count := _count_ospf_neighbor(command_output)) == 0:
             self.result.is_skipped("no OSPF neighbor found")
             return
-
         self.result.is_success()
-
-        if neighbor_count != number:
-            self.result.is_failure(f"device has {neighbor_count} neighbors (expected {number})")
-
+        if neighbor_count != self.inputs.number:
+            self.result.is_failure(f"device has {neighbor_count} neighbors (expected {self.inputs.number})")
         not_full_neighbors = _get_not_full_ospf_neighbors(command_output)
         print(not_full_neighbors)
         if not_full_neighbors:

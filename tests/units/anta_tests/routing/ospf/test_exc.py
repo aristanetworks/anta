@@ -6,19 +6,18 @@ Tests for anta.tests.routing.ospf.py
 """
 from __future__ import annotations
 
-import asyncio
-import logging
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 
 from anta.tests.routing.ospf import VerifyOSPFNeighborCount, VerifyOSPFNeighborState
 from tests.lib.utils import generate_test_ids
+from tests.units.anta_tests import test_case
 
-INPUT_OSPF_NEIGHBOR_STATE: list[dict[str, Any]] = [
+DATA: list[dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyOSPFNeighborState,
         "eos_data": [
             {
                 "vrfs": {
@@ -73,6 +72,7 @@ INPUT_OSPF_NEIGHBOR_STATE: list[dict[str, Any]] = [
     },
     {
         "name": "failure",
+        "test": VerifyOSPFNeighborState,
         "eos_data": [
             {
                 "vrfs": {
@@ -123,17 +123,17 @@ INPUT_OSPF_NEIGHBOR_STATE: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
-        "messages": [
-            "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-            " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
-        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+            ],
+        },
     },
-]
-
-INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyOSPFNeighborCount,
         "eos_data": [
             {
                 "vrfs": {
@@ -183,11 +183,12 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": 3,
+        "inputs": {"number": 3},
         "expected": {"result": "success"},
     },
     {
         "name": "failure-wrong-number",
+        "test": VerifyOSPFNeighborCount,
         "eos_data": [
             {
                 "vrfs": {
@@ -211,11 +212,12 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": 3,
+        "inputs": {"number": 3},
         "expected": {"result": "failure", "messages": ["device has 1 neighbors (expected 3)"]},
     },
     {
         "name": "failure-good-number-wrong-state",
+        "test": VerifyOSPFNeighborCount,
         "eos_data": [
             {
                 "vrfs": {
@@ -265,18 +267,15 @@ INPUT_OSPF_NEIGHBOR_COUNT: List[Dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": 3,
-        "expected": {"result": "failure"},
-        "messages": [
-            "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-            " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
-        ],
-    },
-    {
-        "name": "skipped",
-        "eos_data": [{}],
-        "inputs": None,
-        "expected_result": "skipped",
-        "messages": ["VerifyOSPFNeighborCount was not run as the number given 'None' is not a valid value."],
+        "inputs": {"number": 3},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+            ],
+        },
     },
 ]
+
+pytest.mark.parametrize("data", DATA, ids=generate_test_ids(DATA))(test_case)
