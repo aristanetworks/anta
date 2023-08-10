@@ -1,5 +1,6 @@
+name: 'Build docker on-demand'
 on:
-  workflow_run:
+  workflow_dispatch:
     inputs:
       tag:
         description: 'docker container tag'
