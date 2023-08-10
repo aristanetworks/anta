@@ -1401,6 +1401,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1527,7 +1542,7 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/arista-netdevops-community/anta.git@&lt;more-or-less-cool-hash&gt;
 </code></pre></div>
 <h5 id="check-installation">Check installation<a class="headerlink" href="#check-installation" title="Permanent link">&para;</a></h5>
-<p>Run these commands to verify:</p>
+<p>After installing ANTA, verify the installation with the following commands:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Check ANTA has been installed in your python path</span>
 pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>anta
 
@@ -1535,8 +1550,12 @@ pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><
 <span class="c1"># Path may differ but it means CLI is in your path</span>
 which<span class="w"> </span>anta
 /home/tom/.pyenv/shims/anta
-
-<span class="c1"># Chck ANTA version</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Before running the <code>anta --version</code> command, please be aware that some users have reported issues related to the <code>urllib3</code> package. If you encounter an error at this step, please refer to our <a href="../faq/">FAQ</a> page for guidance on resolving it.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check ANTA version</span>
 anta<span class="w"> </span>--version
 anta,<span class="w"> </span>version<span class="w"> </span>v0.7.1
 </code></pre></div>
@@ -1575,7 +1594,7 @@ show management api http-commands
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 28, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 10, 2023</span>
       
     
   </small>
