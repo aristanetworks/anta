@@ -4,39 +4,25 @@
 """
 Test functions related to the EOS various AAA settings
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import List, Optional
+from ipaddress import IPv4Address
+from typing import Literal
+
+from pydantic.functional_validators import AfterValidator
+from typing_extensions import Annotated
 
 from anta.models import AntaCommand, AntaTest
 
 
-def _check_group_methods(methods: List[str]) -> List[str]:
-    """
-    Verifies if the provided methods in various AAA tests start with 'group'.
-
-    Args:
-        methods: List of AAA methods. Methods should be in the right order.
-    """
+def aaa_group_prefix(v: str) -> str:
     built_in_methods = ["local", "none", "logging"]
+    return f"group {v}" if v not in built_in_methods and not v.startswith("group ") else v
 
-    return [f"group {method}" if method not in built_in_methods and not method.startswith("group ") else method for method in methods]
 
-
-def _check_auth_type(auth_types: List[str], valid_auth_types: List[str]) -> None:
-    """
-    Verifies if the provided auth types in various AAA tests are valid.
-
-    Args:
-        auth_types: List of AAA auth types to validate.
-        valid_auth_types: List of valid AAA auth types to validate against.
-    """
-    if len(auth_types) > len(valid_auth_types):
-        raise ValueError(f"Too many parameters provided in auth_types. Valid parameters are: {valid_auth_types}")
-
-    for auth_type in auth_types:
-        if auth_type not in valid_auth_types:
-            raise ValueError(f"Wrong parameter provided in auth_types. Valid parameters are: {valid_auth_types}")
+AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 
 
 class VerifyTacacsSourceIntf(AntaTest):
@@ -46,7 +32,6 @@ class VerifyTacacsSourceIntf(AntaTest):
     Expected Results:
         * success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
         * failure: The test will fail if the provided TACACS source-interface is NOT configured in the specified VRF.
-        * skipped: The test will be skipped if source-interface or VRF is not provided.
     """
 
     name = "VerifyTacacsSourceIntf"
@@ -54,29 +39,22 @@ class VerifyTacacsSourceIntf(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
+    class Input(AntaTest.Input):
+        intf: str
+        """Source-interface to use as source IP of TACACS messages"""
+        vrf: str = "default"
+        """The name of the VRF to transport TACACS messages"""
+
     @AntaTest.anta_test
-    def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyTacacsSourceIntf validation.
-
-        Args:
-            intf: Source-interface to use as source IP of TACACS messages.
-            vrf: The name of the VRF to transport TACACS messages. Defaults to 'default'.
-        """
-        if not intf or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         try:
-            if command_output["srcIntf"][vrf] == intf:
+            if command_output["srcIntf"][self.inputs.vrf] == self.inputs.intf:
                 self.result.is_success()
             else:
-                self.result.is_failure(f"Wrong source-interface configured in VRF {vrf}")
-
+                self.result.is_failure(f"Wrong source-interface configured in VRF {self.inputs.vrf}")
         except KeyError:
-            self.result.is_failure(f"Source-interface {intf} is not configured in VRF {vrf}")
+            self.result.is_failure(f"Source-interface {self.inputs.intf} is not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyTacacsServers(AntaTest):
@@ -86,7 +64,6 @@ class VerifyTacacsServers(AntaTest):
     Expected Results:
         * success: The test will pass if the provided TACACS servers are configured in the specified VRF.
         * failure: The test will fail if the provided TACACS servers are NOT configured in the specified VRF.
-        * skipped: The test will be skipped if TACACS servers or VRF are not provided.
     """
 
     name = "VerifyTacacsServers"
@@ -94,37 +71,30 @@ class VerifyTacacsServers(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
+    class Input(AntaTest.Input):
+        servers: list[IPv4Address]
+        """List of TACACS servers"""
+        vrf: str = "default"
+        """The name of the VRF to transport TACACS messages"""
+
     @AntaTest.anta_test
-    def test(self, servers: Optional[List[str]] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyTacacsServers validation.
-
-        Args:
-            servers: List of TACACS servers IP addresses.
-            vrf: The name of the VRF to transport TACACS messages. Defaults to 'default'.
-        """
-        if not servers or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because servers or vrf were not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         tacacs_servers = command_output["tacacsServers"]
-
         if not tacacs_servers:
             self.result.is_failure("No TACACS servers are configured")
             return
-
         not_configured = [
-            server
-            for server in servers
-            if not any(server == tacacs_server["serverInfo"]["hostname"] and vrf == tacacs_server["serverInfo"]["vrf"] for tacacs_server in tacacs_servers)
+            str(server)
+            for server in self.inputs.servers
+            if not any(
+                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"] for tacacs_server in tacacs_servers
+            )
         ]
-
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"TACACS servers {not_configured} are not configured in VRF {vrf}")
+            self.result.is_failure(f"TACACS servers {not_configured} are not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyTacacsServerGroups(AntaTest):
@@ -134,7 +104,6 @@ class VerifyTacacsServerGroups(AntaTest):
     Expected Results:
         * success: The test will pass if the provided TACACS server group(s) are configured.
         * failure: The test will fail if one or all the provided TACACS server group(s) are NOT configured.
-        * skipped: The test will be skipped if TACACS server group(s) are not provided.
     """
 
     name = "VerifyTacacsServerGroups"
@@ -142,28 +111,18 @@ class VerifyTacacsServerGroups(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
+    class Input(AntaTest.Input):
+        groups: list[str]
+        """List of TACACS server group"""
+
     @AntaTest.anta_test
-    def test(self, groups: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyTacacsServerGroups validation.
-
-        Args:
-            groups: List of TACACS server group.
-        """
-        if not groups:
-            self.result.is_skipped(f"{self.__class__.name} did not run because groups were not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         tacacs_groups = command_output["groups"]
-
         if not tacacs_groups:
             self.result.is_failure("No TACACS server group(s) are configured")
             return
-
-        not_configured = [group for group in groups if group not in tacacs_groups]
-
+        not_configured = [group for group in self.inputs.groups if group not in tacacs_groups]
         if not not_configured:
             self.result.is_success()
         else:
@@ -177,7 +136,6 @@ class VerifyAuthenMethods(AntaTest):
     Expected Results:
         * success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
         * failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
-        * skipped: The test will be skipped if the AAA authentication method list or authentication type list are not provided.
     """
 
     name = "VerifyAuthenMethods"
@@ -185,46 +143,35 @@ class VerifyAuthenMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods authentication")]
 
+    class Input(AntaTest.Input):
+        methods: list[AAAAuthMethod]
+        """List of AAA authentication methods. Methods should be in the right order"""
+        types: set[Literal["login", "enable", "dot1x"]]
+        """List of authentication types to verify"""
+
     @AntaTest.anta_test
-    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyAuthenMethods validation.
-
-        Args:
-            methods: List of AAA authentication methods. Methods should be in the right order.
-            auth_types: List of authentication types to verify. List elements must be: login, enable, dot1x.
-        """
-        if not methods or not auth_types:
-            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
-            return
-
-        methods_with_group = _check_group_methods(methods)
-
-        _check_auth_type(auth_types, ["login", "enable", "dot1x"])
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         not_matching = []
-
-        for auth_type in auth_types:
-            auth_type_key = f"{auth_type}AuthenMethods"
-
-            if auth_type_key == "loginAuthenMethods":
-                if not command_output[auth_type_key].get("login"):
+        for k, v in command_output.items():
+            auth_type = k.replace("AuthenMethods", "")
+            if auth_type not in self.inputs.types:
+                # We do not need to verify this accounting type
+                continue
+            if auth_type == "login":
+                if "login" not in v:
                     self.result.is_failure("AAA authentication methods are not configured for login console")
                     return
-
-                if command_output[auth_type_key]["login"]["methods"] != methods_with_group:
-                    self.result.is_failure(f"AAA authentication methods {methods} are not matching for login console")
+                if v["login"]["methods"] != self.inputs.methods:
+                    self.result.is_failure(f"AAA authentication methods {self.inputs.methods} are not matching for login console")
                     return
-
-            if command_output[auth_type_key]["default"]["methods"] != methods_with_group:
-                not_matching.append(auth_type)
-
+            for methods in v.values():
+                if methods["methods"] != self.inputs.methods:
+                    not_matching.append(auth_type)
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA authentication methods {methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA authentication methods {self.inputs.methods} are not matching for {not_matching}")
 
 
 class VerifyAuthzMethods(AntaTest):
@@ -234,7 +181,6 @@ class VerifyAuthzMethods(AntaTest):
     Expected Results:
         * success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
         * failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
-        * skipped: The test will be skipped if the AAA authentication method list or authorization type list are not provided.
     """
 
     name = "VerifyAuthzMethods"
@@ -242,39 +188,28 @@ class VerifyAuthzMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods authorization")]
 
+    class Input(AntaTest.Input):
+        methods: list[AAAAuthMethod]
+        """List of AAA authorization methods. Methods should be in the right order"""
+        types: set[Literal["commands", "exec"]]
+        """List of authorization types to verify"""
+
     @AntaTest.anta_test
-    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyAuthzMethods validation.
-
-        Args:
-            methods: List of AAA authorization methods. Methods should be in the right order.
-            auth_types: List of authorization types to verify. List elements must be: commands, exec.
-        """
-        if not methods or not auth_types:
-            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
-            return
-
-        _check_auth_type(auth_types, ["commands", "exec"])
-
-        methods_with_group = _check_group_methods(methods)
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         not_matching = []
-
-        for auth_type in auth_types:
-            auth_type_key = f"{auth_type}AuthzMethods"
-
-            method_key = list(command_output[auth_type_key].keys())[0]
-
-            if command_output[auth_type_key][method_key]["methods"] != methods_with_group:
-                not_matching.append(auth_type)
-
+        for k, v in command_output.items():
+            authz_type = k.replace("AuthzMethods", "")
+            if authz_type not in self.inputs.types:
+                # We do not need to verify this accounting type
+                continue
+            for methods in v.values():
+                if methods["methods"] != self.inputs.methods:
+                    not_matching.append(authz_type)
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA authorization methods {methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA authorization methods {self.inputs.methods} are not matching for {not_matching}")
 
 
 class VerifyAcctDefaultMethods(AntaTest):
@@ -284,7 +219,6 @@ class VerifyAcctDefaultMethods(AntaTest):
     Expected Results:
         * success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
         * failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
-        * skipped: The test will be skipped if the AAA accounting default method list or accounting type list are not provided.
     """
 
     name = "VerifyAcctDefaultMethods"
@@ -292,47 +226,34 @@ class VerifyAcctDefaultMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods accounting")]
 
+    class Input(AntaTest.Input):
+        methods: list[AAAAuthMethod]
+        """List of AAA accounting methods. Methods should be in the right order"""
+        types: set[Literal["commands", "exec", "system", "dot1x"]]
+        """List of accounting types to verify"""
+
     @AntaTest.anta_test
-    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyAcctDefaultMethods validation.
-
-        Args:
-            methods: List of AAA accounting default methods. Methods should be in the right order.
-            auth_types: List of accounting types to verify. List elements must be: commands, exec, system, dot1x.
-        """
-        if not methods or not auth_types:
-            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
-            return
-
-        methods_with_group = _check_group_methods(methods)
-
-        _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         not_matching = []
         not_configured = []
-
-        for auth_type in auth_types:
-            auth_type_key = f"{auth_type}AcctMethods"
-
-            method_key = list(command_output[auth_type_key].keys())[0]
-
-            if not command_output[auth_type_key][method_key].get("defaultAction"):
-                not_configured.append(auth_type)
-
-            if command_output[auth_type_key][method_key]["defaultMethods"] != methods_with_group:
-                not_matching.append(auth_type)
-
+        for k, v in command_output.items():
+            acct_type = k.replace("AcctMethods", "")
+            if acct_type not in self.inputs.types:
+                # We do not need to verify this accounting type
+                continue
+            for methods in v.values():
+                if "defaultAction" not in methods:
+                    not_configured.append(acct_type)
+                if methods["defaultMethods"] != self.inputs.methods:
+                    not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA default accounting is not configured for {not_configured}")
             return
-
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA accounting default methods {methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA accounting default methods {self.inputs.methods} are not matching for {not_matching}")
 
 
 class VerifyAcctConsoleMethods(AntaTest):
@@ -342,7 +263,6 @@ class VerifyAcctConsoleMethods(AntaTest):
     Expected Results:
         * success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
         * failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
-        * skipped: The test will be skipped if the AAA accounting console method list or accounting type list are not provided.
     """
 
     name = "VerifyAcctConsoleMethods"
@@ -350,44 +270,31 @@ class VerifyAcctConsoleMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods accounting")]
 
+    class Input(AntaTest.Input):
+        methods: list[AAAAuthMethod]
+        """List of AAA accounting console methods. Methods should be in the right order"""
+        types: set[Literal["commands", "exec", "system", "dot1x"]]
+        """List of accounting console types to verify"""
+
     @AntaTest.anta_test
-    def test(self, methods: Optional[List[str]] = None, auth_types: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyAcctConsoleMethods validation.
-
-        Args:
-            methods: List of AAA accounting console methods. Methods should be in the right order.
-            auth_types: List of accounting types to verify. List elements must be: commands, exec, system, dot1x.
-        """
-        if not methods or not auth_types:
-            self.result.is_skipped(f"{self.__class__.name} did not run because methods or auth_types were not supplied")
-            return
-
-        methods_with_group = _check_group_methods(methods)
-
-        _check_auth_type(auth_types, ["system", "exec", "commands", "dot1x"])
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         not_matching = []
         not_configured = []
-
-        for auth_type in auth_types:
-            auth_type_key = f"{auth_type}AcctMethods"
-
-            method_key = list(command_output[auth_type_key].keys())[0]
-
-            if not command_output[auth_type_key][method_key].get("consoleAction"):
-                not_configured.append(auth_type)
-
-            if command_output[auth_type_key][method_key]["consoleMethods"] != methods_with_group:
-                not_matching.append(auth_type)
-
+        for k, v in command_output.items():
+            acct_type = k.replace("AcctMethods", "")
+            if acct_type not in self.inputs.types:
+                # We do not need to verify this accounting type
+                continue
+            for methods in v.values():
+                if "consoleAction" not in methods:
+                    not_configured.append(acct_type)
+                if methods["consoleMethods"] != self.inputs.methods:
+                    not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA console accounting is not configured for {not_configured}")
             return
-
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA accounting console methods {methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA accounting console methods {self.inputs.methods} are not matching for {not_matching}")
