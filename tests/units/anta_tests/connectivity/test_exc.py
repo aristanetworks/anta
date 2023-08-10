@@ -6,7 +6,7 @@ Tests for anta.tests.connectivity.py
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -15,7 +15,7 @@ from tests.units.anta_tests import test_case
 from tests.lib.utils import generate_test_ids
 
 
-DATA: List[Dict[str, Any]] = [
+DATA: list[dict[str, Any]] = [
     {
         "name": "success",
         "test": VerifyReachability,
