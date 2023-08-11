@@ -6,9 +6,12 @@ Test functions related to the EOS various logging settings
 
 NOTE: 'show logging' does not support json output yet
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 import logging
+from ipaddress import IPv4Address
 import re
 from typing import List, Optional
 
@@ -47,21 +50,14 @@ class VerifyLoggingPersistent(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingPersistent validation.
-        """
         self.result.is_success()
-
         log_output = self.instance_commands[0].text_output
         dir_flash_output = self.instance_commands[1].text_output
-
         if "Persistent logging: disabled" in _get_logging_states(self.logger, log_output):
             self.result.is_failure("Persistent logging is disabled")
             return
-
         pattern = r"-rw-\s+(\d+)"
         persist_logs = re.search(pattern, dir_flash_output)
-
         if not persist_logs or int(persist_logs.group(1)) == 0:
             self.result.is_failure("No persistent logs are saved in flash")
 
@@ -73,7 +69,6 @@ class VerifyLoggingSourceIntf(AntaTest):
     Expected Results:
         * success: The test will pass if the provided logging source-interface is configured in the specified VRF.
         * failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
-        * skipped: The test will be skipped if source-interface or VRF is not provided.
     """
 
     name = "VerifyLoggingSourceInt"
@@ -81,27 +76,20 @@ class VerifyLoggingSourceIntf(AntaTest):
     categories = ["logging"]
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
+    class Input(AntaTest.Input):
+        interface: str
+        """Source-interface to use as source IP of log messages"""
+        vrf: str = 'default'
+        """The name of the VRF to transport log messages"""
+
     @AntaTest.anta_test
-    def test(self, intf: Optional[str] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyLoggingSrcDst validation.
-
-        Args:
-            intf: Source-interface to use as source IP of log messages.
-            vrf: The name of the VRF to transport log messages. Defaults to 'default'.
-        """
-        if not intf or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because intf or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         output = self.instance_commands[0].text_output
-
-        pattern = rf"Logging source-interface '{intf}'.*VRF {vrf}"
-
+        pattern = rf"Logging source-interface '{self.inputs.interface}'.*VRF {self.inputs.vrf}"
         if re.search(pattern, _get_logging_states(self.logger, output)):
             self.result.is_success()
         else:
-            self.result.is_failure(f"Source-interface '{intf}' is not configured in VRF {vrf}")
+            self.result.is_failure(f"Source-interface '{self.inputs.interface}' is not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyLoggingHosts(AntaTest):
@@ -111,7 +99,6 @@ class VerifyLoggingHosts(AntaTest):
     Expected Results:
         * success: The test will pass if the provided syslog servers are configured in the specified VRF.
         * failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
-        * skipped: The test will be skipped if syslog servers or VRF are not provided.
     """
 
     name = "VerifyLoggingHosts"
@@ -119,32 +106,25 @@ class VerifyLoggingHosts(AntaTest):
     categories = ["logging"]
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
+    class Input(AntaTest.Input):
+        hosts: list[IPv4Address]
+        """List of hosts (syslog servers) IP addresses"""
+        vrf: str = 'default'
+        """The name of the VRF to transport log messages"""
+
     @AntaTest.anta_test
-    def test(self, hosts: Optional[List[str]] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyLoggingHosts validation.
-
-        Args:
-            hosts: List of hosts (syslog servers) IP addresses.
-            vrf: The name of the VRF to transport log messages. Defaults to 'default'.
-        """
-        if not hosts or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because hosts or vrf were not supplied")
-            return
-
+    def test(self) -> None:
         output = self.instance_commands[0].text_output
-
         not_configured = []
-
-        for host in hosts:
-            pattern = rf"Logging to '{host}'.*VRF {vrf}"
+        for host in self.inputs.hosts:
+            pattern = rf"Logging to '{str(host)}'.*VRF {self.inputs.vrf}"
             if not re.search(pattern, _get_logging_states(self.logger, output)):
-                not_configured.append(host)
+                not_configured.append(str(host))
 
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {vrf}")
+            self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyLoggingLogsGeneration(AntaTest):
@@ -166,19 +146,13 @@ class VerifyLoggingLogsGeneration(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingLogs validation.
-        """
         log_pattern = r"ANTA VerifyLoggingLogsGeneration validation"
-
         output = self.instance_commands[1].text_output
         lines = output.strip().split("\n")[::-1]
-
         for line in lines:
             if re.search(log_pattern, line):
                 self.result.is_success()
                 return
-
         self.result.is_failure("Logs are not generated")
 
 
@@ -202,22 +176,16 @@ class VerifyLoggingHostname(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingHostname validation.
-        """
         output_hostname = self.instance_commands[0].json_output
         output_logging = self.instance_commands[2].text_output
         fqdn = output_hostname["fqdn"]
         lines = output_logging.strip().split("\n")[::-1]
-
         log_pattern = r"ANTA VerifyLoggingHostname validation"
-
         last_line_with_pattern = ""
         for line in lines:
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
-
         if fqdn in last_line_with_pattern:
             self.result.is_success()
         else:
@@ -243,22 +211,15 @@ class VerifyLoggingTimestamp(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingTimestamp validation.
-        """
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
         timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}-\d{2}:\d{2}"
-
         output = self.instance_commands[1].text_output
-
         lines = output.strip().split("\n")[::-1]
-
         last_line_with_pattern = ""
         for line in lines:
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
-
         if re.search(timestamp_pattern, last_line_with_pattern):
             self.result.is_success()
         else:
@@ -281,12 +242,8 @@ class VerifyLoggingAccounting(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingAccountingvalidation.
-        """
         pattern = r"cmd=show aaa accounting logs"
         output = self.instance_commands[0].text_output
-
         if re.search(pattern, output):
             self.result.is_success()
         else:

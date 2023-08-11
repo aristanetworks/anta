@@ -2,12 +2,26 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.logging"""
+from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
+from anta.tests.logging import (
+    VerifyLoggingAccounting,
+    VerifyLoggingHostname,
+    VerifyLoggingHosts,
+    VerifyLoggingLogsGeneration,
+    VerifyLoggingPersistent,
+    VerifyLoggingSourceIntf,
+    VerifyLoggingTimestamp,
+)
+from tests.units.anta_tests.test_case import test
+
+
+DATA: list[dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingPersistent,
         "eos_data": [
             "Persistent logging: level debugging\n",
             """Directory of flash:/persist/messages
@@ -23,6 +37,7 @@ INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
     },
     {
         "name": "failure-disabled",
+        "test": VerifyLoggingPersistent,
         "eos_data": [
             "Persistent logging: disabled\n",
             """Directory of flash:/persist/messages
@@ -38,6 +53,7 @@ INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
     },
     {
         "name": "failure-not-saved",
+        "test": VerifyLoggingPersistent,
         "eos_data": [
             "Persistent logging: level debugging\n",
             """Directory of flash:/persist/messages
@@ -51,11 +67,9 @@ INPUT_LOGGING_PERSISTENT: List[Dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["No persistent logs are saved in flash"]}
     },
-]
-
-INPUT_LOGGING_SOURCE_INTF: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingSourceIntf,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management0', IP Address 172.20.20.12 in VRF MGMT
@@ -65,11 +79,12 @@ INPUT_LOGGING_SOURCE_INTF: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": ("Management0", "MGMT"),
+        "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "success"},
     },
     {
         "name": "failure-intf",
+        "test": VerifyLoggingSourceIntf,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management1', IP Address 172.20.20.12 in VRF MGMT
@@ -79,11 +94,12 @@ INPUT_LOGGING_SOURCE_INTF: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": ("Management0", "MGMT"),
+        "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]}
     },
     {
         "name": "failure-vrf",
+        "test": VerifyLoggingSourceIntf,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management0', IP Address 172.20.20.12 in VRF default
@@ -93,26 +109,12 @@ INPUT_LOGGING_SOURCE_INTF: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": ("Management0", "MGMT"),
+        "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]}
     },
     {
-        "name": "skipped-no-vrf",
-        "eos_data": [""],
-        "inputs": ("Management0", None),
-        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
-    },
-    {
-        "name": "skipped-no-intf",
-        "eos_data": [""],
-        "inputs": (None, "MGMT"),
-        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
-    },
-]
-
-INPUT_LOGGING_HOSTS: List[Dict[str, Any]] = [
-    {
         "name": "success",
+        "test": VerifyLoggingHosts,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management0', IP Address 172.20.20.12 in VRF MGMT
@@ -122,11 +124,12 @@ INPUT_LOGGING_HOSTS: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": (["10.22.10.92", "10.22.10.93", "10.22.10.94"], "MGMT"),
+        "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "success"},
     },
     {
         "name": "failure-hosts",
+        "test": VerifyLoggingHosts,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management1', IP Address 172.20.20.12 in VRF MGMT
@@ -136,11 +139,12 @@ INPUT_LOGGING_HOSTS: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": (["10.22.10.92", "10.22.10.93", "10.22.10.94"], "MGMT"),
+        "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]}
     },
     {
         "name": "failure-vrf",
+        "test": VerifyLoggingHosts,
         "eos_data": [
             """Trap logging: level informational
                 Logging source-interface 'Management0', IP Address 172.20.20.12 in VRF MGMT
@@ -150,26 +154,12 @@ INPUT_LOGGING_HOSTS: List[Dict[str, Any]] = [
 
                 """
         ],
-        "inputs": (["10.22.10.92", "10.22.10.93", "10.22.10.94"], "MGMT"),
+        "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]}
     },
     {
-        "name": "skipped-no-vrf",
-        "eos_data": [""],
-        "inputs": (["10.22.10.92", "10.22.10.93", "10.22.10.94"], None),
-        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
-    },
-    {
-        "name": "skipped-no-hosts",
-        "eos_data": [""],
-        "inputs": (None, "MGMT"),
-        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
-    },
-]
-
-INPUT_LOGGING_LOGS_GEN: List[Dict[str, Any]] = [
-    {
         "name": "success",
+        "test": VerifyLoggingLogsGeneration,
         "eos_data": [
             "",
             "2023-05-10T13:54:21.463497-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
@@ -180,6 +170,7 @@ INPUT_LOGGING_LOGS_GEN: List[Dict[str, Any]] = [
     },
     {
         "name": "failure",
+        "test": VerifyLoggingLogsGeneration,
         "eos_data": [
             "",
             "Log Buffer:\n"
@@ -187,11 +178,9 @@ INPUT_LOGGING_LOGS_GEN: List[Dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated"]}
     },
-]
-
-INPUT_LOGGING_HOSTNAME: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingHostname,
         "eos_data": [
             {
                "hostname": "NW-CORE",
@@ -206,6 +195,7 @@ INPUT_LOGGING_HOSTNAME: List[Dict[str, Any]] = [
     },
     {
         "name": "failure",
+        "test": VerifyLoggingHostname,
         "eos_data": [
             {
                "hostname": "NW-CORE",
@@ -218,11 +208,9 @@ INPUT_LOGGING_HOSTNAME: List[Dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated with the device FQDN"]}
     },
-]
-
-INPUT_LOGGING_TIMESTAMP: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingTimestamp,
         "eos_data": [
             "",
             "2023-05-10T15:41:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
@@ -233,6 +221,7 @@ INPUT_LOGGING_TIMESTAMP: List[Dict[str, Any]] = [
     },
     {
         "name": "failure",
+        "test": VerifyLoggingTimestamp,
         "eos_data": [
             "",
             "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
@@ -241,12 +230,9 @@ INPUT_LOGGING_TIMESTAMP: List[Dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]}
     },
-]
-
-
-INPUT_LOGGING_ACCOUNTING: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingAccounting,
         "eos_data": [
             "2023 May 10 15:50:31 arista   command-api 10.22.1.107     stop   service=shell priv-lvl=15 cmd=show aaa accounting logs | tail\n"
         ],
@@ -255,6 +241,7 @@ INPUT_LOGGING_ACCOUNTING: List[Dict[str, Any]] = [
     },
     {
         "name": "failure",
+        "test": VerifyLoggingAccounting,
         "eos_data": [
             "2023 May 10 15:52:26 arista   vty14       10.22.1.107     stop   service=shell priv-lvl=15 cmd=show bgp summary\n"
         ],
