@@ -195,26 +195,8 @@ class Test_AntaInventoryInputModel:
         }
 
         """
-        inventory = AntaInventoryInput()
         try:
-            if "hosts" in inventory_def["input"].keys():
-                logging.info(
-                    "Loading %s into AntaInventoryInput hosts section",
-                    str(inventory_def["input"]["hosts"]),
-                )
-                inventory.hosts = inventory_def["input"]["hosts"]
-            if "networks" in inventory_def["input"].keys():
-                logging.info(
-                    "Loading %s into AntaInventoryInput networks section",
-                    str(inventory_def["input"]["networks"]),
-                )
-                inventory.hosts = inventory_def["input"]["networks"]
-            if "ranges" in inventory_def["input"].keys():
-                logging.info(
-                    "Loading %s into AntaInventoryInput ranges section",
-                    str(inventory_def["input"]["ranges"]),
-                )
-                inventory.hosts = inventory_def["input"]["ranges"]
+            inventory = AntaInventoryInput(**inventory_def["input"])
         except ValidationError as exc:
             logging.warning("Error: %s", str(exc))
             assert False
