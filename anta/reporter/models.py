@@ -6,7 +6,7 @@
 from pydantic import BaseModel
 from rich.text import Text
 
-from ..result_manager.models import ResultString
+from anta.types import TestStatus
 
 
 class ColorManager(BaseModel):
@@ -17,7 +17,7 @@ class ColorManager(BaseModel):
         color (str): Associated color.
     """
 
-    level: ResultString
+    level: TestStatus
     color: str
 
     def style_rich(self) -> Text:
