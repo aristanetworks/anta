@@ -25,7 +25,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     commands = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
     class Input(AntaTest.Input):
-        mode: Literal[0, 1, 2, 3, 4, 'flexible']
+        mode: Literal[0, 1, 2, 3, 4, "flexible"]
         """Expected UFT mode"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
