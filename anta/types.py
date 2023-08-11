@@ -9,6 +9,7 @@ from typing_extensions import Annotated
 
 
 def aaa_group_prefix(v: str) -> str:
+    """Prefix the AAA method with 'group' if it is known"""
     built_in_methods = ["local", "none", "logging"]
     return f"group {v}" if v not in built_in_methods and not v.startswith("group ") else v
 

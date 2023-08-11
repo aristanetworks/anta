@@ -29,7 +29,7 @@ class VerifyUptime(AntaTest):
     categories = ["system"]
     commands = [AntaCommand(command="show uptime")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         minimum: conint(ge=0)  # type: ignore
         """Minimum uptime in seconds"""
 

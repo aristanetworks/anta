@@ -76,7 +76,7 @@ class VerifyOSPFNeighborCount(AntaTest):
     categories = ["routing", "ospf"]
     commands = [AntaCommand(command="show ip ospf neighbor")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: int
         """The expected number of OSPF neighbors in FULL state"""
 

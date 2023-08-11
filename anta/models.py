@@ -331,9 +331,9 @@ class AntaTest(ABC):
 
         if eos_data is not None:
             self.logger.debug(f"Test {self.name} initialized with input data")
-            self._save_commands_data(eos_data)
+            self.save_commands_data(eos_data)
 
-    def _save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
+    def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Populate output of all AntaCommand instances in `instance_commands`"""
         if len(eos_data) != len(self.instance_commands):
             self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
@@ -417,7 +417,7 @@ class AntaTest(ABC):
 
             # Data
             if eos_data is not None:
-                self._save_commands_data(eos_data)
+                self.save_commands_data(eos_data)
                 self.logger.debug(f"Test {self.name} initialized with input data {eos_data}")
 
             # If some data is missing, try to collect

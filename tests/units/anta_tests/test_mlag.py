@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagReloadDelay, VerifyMlagStatus
-from tests.lib.test_case import test
+from tests.lib.test_case import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

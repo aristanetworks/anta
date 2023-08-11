@@ -29,7 +29,7 @@ class VerifyTacacsSourceIntf(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         intf: str
         """Source-interface to use as source IP of TACACS messages"""
         vrf: str = "default"
@@ -61,7 +61,7 @@ class VerifyTacacsServers(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         servers: list[IPv4Address]
         """List of TACACS servers"""
         vrf: str = "default"
@@ -101,7 +101,7 @@ class VerifyTacacsServerGroups(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         groups: list[str]
         """List of TACACS server group"""
 
@@ -133,7 +133,7 @@ class VerifyAuthenMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods authentication")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         methods: list[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order"""
         types: set[Literal["login", "enable", "dot1x"]]
@@ -178,7 +178,7 @@ class VerifyAuthzMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods authorization")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         methods: list[AAAAuthMethod]
         """List of AAA authorization methods. Methods should be in the right order"""
         types: set[Literal["commands", "exec"]]
@@ -216,7 +216,7 @@ class VerifyAcctDefaultMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods accounting")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         methods: list[AAAAuthMethod]
         """List of AAA accounting methods. Methods should be in the right order"""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
@@ -260,7 +260,7 @@ class VerifyAcctConsoleMethods(AntaTest):
     categories = ["aaa"]
     commands = [AntaCommand(command="show aaa methods accounting")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         methods: list[AAAAuthMethod]
         """List of AAA accounting console methods. Methods should be in the right order"""
         types: set[Literal["commands", "exec", "system", "dot1x"]]

@@ -24,7 +24,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     categories = ["profiles"]
     commands = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
         """Expected UFT mode"""
 
@@ -48,7 +48,7 @@ class VerifyTcamProfile(AntaTest):
     categories = ["profiles"]
     commands = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         profile: str
         """Expected TCAM profile"""
 

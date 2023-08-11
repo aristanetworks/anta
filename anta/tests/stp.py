@@ -29,7 +29,7 @@ class VerifySTPMode(AntaTest):
     categories = ["stp"]
     commands = [AntaTemplate(template="show spanning-tree vlan {vlan}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
         """STP mode to verify"""
         vlans: list[Vlan]
@@ -122,7 +122,7 @@ class VerifySTPForwardingPorts(AntaTest):
     categories = ["stp"]
     commands = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vlans: list[Vlan]
         """List of VLAN on which to verify forwarding states"""
 
@@ -166,7 +166,7 @@ class VerifySTPRootPriority(AntaTest):
     categories = ["stp"]
     commands = [AntaCommand(command="show spanning-tree root detail")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         priority: int
         """STP root priority to verify"""
         instances: list[Vlan] = []

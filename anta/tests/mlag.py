@@ -125,7 +125,7 @@ class VerifyMlagReloadDelay(AntaTest):
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         reload_delay: conint(ge=0)  # type: ignore
         """Delay (seconds) after reboot until non peer-link ports that are part of an MLAG are enabled"""
         reload_delay_non_mlag: conint(ge=0)  # type: ignore
@@ -161,7 +161,7 @@ class VerifyMlagDualPrimary(AntaTest):
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag detail", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         detection_delay: conint(ge=0)  # type: ignore
         """Delay detection (seconds)"""
         errdisabled: bool = False

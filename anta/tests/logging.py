@@ -75,7 +75,7 @@ class VerifyLoggingSourceIntf(AntaTest):
     categories = ["logging"]
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interface: str
         """Source-interface to use as source IP of log messages"""
         vrf: str = "default"
@@ -105,7 +105,7 @@ class VerifyLoggingHosts(AntaTest):
     categories = ["logging"]
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: list[IPv4Address]
         """List of hosts (syslog servers) IP addresses"""
         vrf: str = "default"

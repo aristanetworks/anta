@@ -21,7 +21,7 @@ class VerifyEOSVersion(AntaTest):
     categories = ["software"]
     commands = [AntaCommand(command="show version")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         versions: list[str]
         """List of allowed EOS versions"""
 
@@ -44,7 +44,7 @@ class VerifyTerminAttrVersion(AntaTest):
     categories = ["software"]
     commands = [AntaCommand(command="show version detail")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         versions: list[str]
         """List of allowed TerminAttr versions"""
 

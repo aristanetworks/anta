@@ -123,7 +123,7 @@ class VerifyInterfacesStatus(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         minimum: conint(ge=0)  # type: ignore
         """Expected minimum number of Ethernet interfaces up/up"""
 
@@ -230,7 +230,7 @@ class VerifyLoopbackCount(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: conint(ge=0)  # type: ignore
         """Number of loopback interfaces expected to be present"""
 
@@ -297,7 +297,7 @@ class VerifyL3MTU(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 1500
         """Default MTU we should have configured on all non-excluded interfaces"""
         ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
@@ -342,7 +342,7 @@ class VerifyIPProxyARP(AntaTest):
     categories = ["interfaces"]
     commands = [AntaTemplate(template="show ip interface {intf}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interfaces: list[str]
         """List of interfaces to be tested"""
 
@@ -380,7 +380,7 @@ class VerifyL2MTU(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 9214
         """Default MTU we should have configured on all non-excluded interfaces"""
         ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]

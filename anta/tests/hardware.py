@@ -26,7 +26,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         manufacturers: list[str]
         """List of approved transceivers manufacturers"""
 
@@ -139,7 +139,7 @@ class VerifyEnvironmentCooling(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         states: list[str]
         """Accepted states list for fan status"""
 
@@ -174,7 +174,7 @@ class VerifyEnvironmentPower(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         states: list[str]
         """Accepted states list for power supplies status"""
 

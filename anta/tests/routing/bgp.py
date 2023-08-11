@@ -102,7 +102,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vrfs: dict[str, int]
         """VRFs associated with neighbors count to verify"""
 
@@ -197,7 +197,7 @@ class VerifyBGPEVPNCount(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp evpn summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: int
         """The expected number of BGP EVPN neighbors in the default VRF"""
 
@@ -259,7 +259,7 @@ class VerifyBGPRTCCount(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp rt-membership summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: int
         """The expected number of BGP RTC neighbors in the default VRF"""
 

@@ -22,7 +22,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     categories = ["multicast", "igmp"]
     commands = [AntaCommand(command="show ip igmp snooping")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vlans: dict[Vlan, bool]
         """Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)"""
 
@@ -50,7 +50,7 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     categories = ["multicast", "igmp"]
     commands = [AntaCommand(command="show ip igmp snooping")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         enabled: bool
         """Expected global IGMP snooping configuration (True=enabled, False=disabled)"""
 

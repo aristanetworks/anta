@@ -33,7 +33,7 @@ class VerifyReachability(AntaTest):
     categories = ["connectivity"]
     commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: list[Host]
         """List of hosts to ping"""
 

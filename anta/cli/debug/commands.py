@@ -79,7 +79,7 @@ def run_template(template: str, params: List[str], ofmt: Literal["json", "text"]
     # I do not assume the following line, but click make me do it
     v: Literal[1, "latest"] = version if version == "latest" else 1
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
-    c = t.render(template_params)
+    c = t.render(**template_params)
     asyncio.run(device.collect(c))
     if ofmt == "json":
         console.print(c.json_output)

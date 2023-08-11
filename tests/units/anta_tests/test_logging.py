@@ -16,7 +16,7 @@ from anta.tests.logging import (
     VerifyLoggingSourceIntf,
     VerifyLoggingTimestamp,
 )
-from tests.lib.test_case import test
+from tests.lib.test_case import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

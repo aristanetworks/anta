@@ -26,7 +26,7 @@ class VerifyRoutingProtocolModel(AntaTest):
     categories = ["routing", "generic"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         model: Literal["multi-agent", "ribd"] = "multi-agent"
         """Expected routing protocol model"""
 
@@ -52,7 +52,7 @@ class VerifyRoutingTableSize(AntaTest):
     categories = ["routing", "generic"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         minimum: int
         """Expected minimum routing table (default VRF) size"""
         maximum: int
@@ -60,6 +60,7 @@ class VerifyRoutingTableSize(AntaTest):
 
         @model_validator(mode="after")
         def check_min_max(self) -> AntaTest.Input:
+            """Validate that maximum is greater than minimum"""
             if self.minimum > self.maximum:
                 raise ValueError(f"Minimum {self.minimum} is greater than maximum {self.maximum}")
             return self

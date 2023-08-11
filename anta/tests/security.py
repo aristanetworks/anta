@@ -54,7 +54,7 @@ class VerifySSHIPv4Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: conint(ge=0)  # type:ignore
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
@@ -92,7 +92,7 @@ class VerifySSHIPv6Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: conint(ge=0)  # type:ignore
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
@@ -176,7 +176,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         profile: str
         """SSL profile to verify"""
 
@@ -207,7 +207,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: conint(ge=0)  # type:ignore
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
@@ -246,7 +246,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: conint(ge=0)  # type:ignore
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
