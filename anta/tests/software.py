@@ -4,8 +4,9 @@
 """
 Test functions related to the EOS software
 """
-
-from typing import List, Optional
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
 from anta.models import AntaCommand, AntaTest
 
@@ -20,24 +21,17 @@ class VerifyEOSVersion(AntaTest):
     categories = ["software"]
     commands = [AntaCommand(command="show version")]
 
+    class Input(AntaTest.Input):
+        versions: list[str]
+        """List of allowed EOS versions"""
+
     @AntaTest.anta_test
-    def test(self, versions: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyEOSVersion validation
-
-        Args:
-            versions: List of allowed EOS versions.
-        """
-        if not versions:
-            self.result.is_skipped("VerifyEOSVersion was not run as no versions were given")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
-        if command_output["version"] in versions:
+        if command_output["version"] in self.inputs.versions:
             self.result.is_success()
         else:
-            self.result.is_failure(f'device is running version {command_output["version"]} not in expected versions: {versions}')
+            self.result.is_failure(f'device is running version {command_output["version"]} not in expected versions: {self.inputs.versions}')
 
 
 class VerifyTerminAttrVersion(AntaTest):
@@ -50,26 +44,18 @@ class VerifyTerminAttrVersion(AntaTest):
     categories = ["software"]
     commands = [AntaCommand(command="show version detail")]
 
+    class Input(AntaTest.Input):
+        versions: list[str]
+        """List of allowed TerminAttr versions"""
+
     @AntaTest.anta_test
-    def test(self, versions: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyTerminAttrVersion validation
-
-        Args:
-            versions: List of allowed TerminAttr versions.
-        """
-
-        if not versions:
-            self.result.is_skipped("VerifyTerminAttrVersion was not run as no versions were given")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         command_output_data = command_output["details"]["packages"]["TerminAttr-core"]["version"]
-        if command_output_data in versions:
+        if command_output_data in self.inputs.versions:
             self.result.is_success()
         else:
-            self.result.is_failure(f"device is running TerminAttr version {command_output_data} and is not in the allowed list: {versions}")
+            self.result.is_failure(f"device is running TerminAttr version {command_output_data} and is not in the allowed list: {self.inputs.versions}")
 
 
 class VerifyEOSExtensions(AntaTest):
@@ -84,22 +70,16 @@ class VerifyEOSExtensions(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyEOSExtensions validation"""
-
         boot_extensions = []
-
         show_extensions_command_output = self.instance_commands[0].json_output
         show_boot_extensions_command_output = self.instance_commands[1].json_output
-
         installed_extensions = [
             extension for extension, extension_data in show_extensions_command_output["extensions"].items() if extension_data["status"] == "installed"
         ]
-
         for extension in show_boot_extensions_command_output["extensions"]:
             extension = extension.strip("\n")
             if extension != "":
                 boot_extensions.append(extension)
-
         installed_extensions.sort()
         boot_extensions.sort()
         if installed_extensions == boot_extensions:
