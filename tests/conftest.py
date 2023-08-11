@@ -7,6 +7,7 @@ conftest.py - used to store anta specific fixtures used for tests
 from __future__ import annotations
 
 import logging
+import pytest
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -39,3 +40,5 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
     if "tests.units.anta_tests" in metafunc.module.__package__:
         # This is a unit test for an AntaTest subclass
         metafunc.parametrize("data", metafunc.module.DATA, ids=build_test_id)
+    elif "tests.lib" in metafunc.module.__package__:
+        metafunc.parametrize(pytest.skip("Do not execute tests in tests.lib"))
