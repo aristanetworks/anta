@@ -8,8 +8,6 @@ Test functions related to the hardware or environment
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Literal
-
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 

@@ -6,7 +6,7 @@ Generic routing test functions
 """
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import model_validator
 
@@ -31,14 +31,14 @@ class VerifyRoutingProtocolModel(AntaTest):
         """Expected routing protocol model"""
 
     @AntaTest.anta_test
-    def test(self, model: Optional[str] = "multi-agent") -> None:
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
         configured_model = command_output["protoModelStatus"]["configuredProtoModel"]
         operating_model = command_output["protoModelStatus"]["operatingProtoModel"]
-        if configured_model == operating_model == model:
+        if configured_model == operating_model == self.inputs.model:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {model}")
+            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
 
 
 class VerifyRoutingTableSize(AntaTest):
