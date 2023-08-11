@@ -2,12 +2,18 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.field_notices"""
+from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
+from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
+from tests.units.anta_tests.test_case import test
+
+
+DATA: list[dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -21,9 +27,10 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure-4.0",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -40,6 +47,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "failure-4.1",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -56,6 +64,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "failure-6.0",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -72,6 +81,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "failure-6.1",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -88,6 +98,7 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "skipped-model",
+        "test": VerifyFieldNotice44Resolution,
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -100,13 +111,11 @@ INPUT_FIELD_NOTICE_44_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["device is not impacted by FN044"],
+        "expected": {"result": "skipped", "messages": ["device is not impacted by FN044"]},
     },
-]
-
-INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     {
         "name": "success-JPE",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
@@ -122,6 +131,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "success-JAS",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
@@ -137,6 +147,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "success-K-JPE",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
@@ -152,6 +163,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "success-K-JAS",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
@@ -167,6 +179,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "skipped-Serial",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
@@ -178,10 +191,11 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["Device not exposed"],
+        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
         "name": "skipped-Platform",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7150-52-CL",
@@ -193,10 +207,11 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["Platform is not impacted by FN072"],
+        "expected": {"result": "skipped", "messages": ["Platform is not impacted by FN072"]},
     },
     {
         "name": "skipped-range-JPE",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
@@ -208,10 +223,11 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["Device not exposed"],
+        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
         "name": "skipped-range-K-JAS",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
@@ -223,10 +239,11 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["Device not exposed"],
+        "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
         "name": "failed-JPE",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3K-48YC8",
@@ -242,6 +259,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "failed-JAS",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
@@ -257,6 +275,7 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
     },
     {
         "name": "error",
+        "test": VerifyFieldNotice72Resolution,
         "eos_data": [
             {
                 "modelName": "DCS-7280SR3-48YC8",
@@ -268,6 +287,6 @@ INPUT_FIELD_NOTICE_72_RESOLUTION: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "error"}, "messages": ["Error in running test - FixedSystemvrm1 not found"],
+        "expected": {"result": "error", "messages": ["Error in running test - FixedSystemvrm1 not found"]},
     },
 ]

@@ -27,8 +27,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
-        """Run VerifyFieldNotice44Resolution validation"""
+    def test(self) -> None:
 
         command_output = self.instance_commands[0].json_output
 
@@ -117,8 +116,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
-        """Run VerifyFieldNotice72Resolution validation"""
+    def test(self) -> None:
 
         command_output = self.instance_commands[0].json_output
 
