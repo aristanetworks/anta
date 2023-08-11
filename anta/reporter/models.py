@@ -6,7 +6,7 @@
 from pydantic import BaseModel
 from rich.text import Text
 
-from anta.types import TestStatus
+from anta.custom_types import TestStatus
 
 
 class ColorManager(BaseModel):

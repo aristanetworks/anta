@@ -8,8 +8,8 @@ Test functions related to multicast
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
-from anta.types import Vlan
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):

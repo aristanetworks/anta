@@ -11,8 +11,8 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 from typing import Literal
 
+from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
-from anta.types import AAAAuthMethod
 
 
 class VerifyTacacsSourceIntf(AntaTest):

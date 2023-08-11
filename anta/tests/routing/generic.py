@@ -58,7 +58,7 @@ class VerifyRoutingTableSize(AntaTest):
         maximum: int
         """Expected maximum routing table (default VRF) size"""
 
-        @model_validator(mode="after")
+        @model_validator(mode="after")  # type: ignore
         def check_min_max(self) -> AntaTest.Input:
             """Validate that maximum is greater than minimum"""
             if self.minimum > self.maximum:

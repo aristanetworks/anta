@@ -11,9 +11,9 @@ from typing import Any, List
 
 from pydantic import TypeAdapter
 
+from anta.custom_types import TestStatus
 from anta.result_manager.models import ListResult, TestResult
 from anta.tools.pydantic import pydantic_to_dict
-from anta.types import TestStatus
 
 logger = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ from typing import Iterator, List, Optional
 
 from pydantic import BaseModel, ConfigDict, RootModel
 
-from anta.types import TestStatus
+from anta.custom_types import TestStatus
 
 
 class TestResult(BaseModel):

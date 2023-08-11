@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from typing import Literal
 
+from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-from anta.types import Vlan
 
 
 class VerifySTPMode(AntaTest):
