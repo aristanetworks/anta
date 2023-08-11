@@ -132,29 +132,6 @@ class VerifyAgentLogs(AntaTest):
             self.result.is_failure(f"Device has reported agent crashes:\n * {agents}")
 
 
-class VerifySyslog(AntaTest):
-    """
-    This test verifies there are no syslog messages with a severity of WARNING or higher in the last 7 days.
-
-    Expected Results:
-      * success: The test will pass if there are NO syslog messages with a severity of WARNING or higher in the last 7 days.
-      * failure: The test will fail if WARNING or higher syslog messages are present in the last 7 days.
-    """
-
-    name = "VerifySyslog"
-    description = "This test verifies there are no syslog messages with a severity of WARNING or higher in the last 7 days."
-    categories = ["system"]
-    commands = [AntaCommand(command="show logging last 7 days threshold warnings", ofmt="text")]
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        command_output = self.instance_commands[0].text_output
-        if len(command_output) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure("Device has reported some log messages with WARNING or higher severity")
-
-
 class VerifyCPUUtilization(AntaTest):
     """
     This test verifies whether the CPU utilization is below 75%.

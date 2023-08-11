@@ -8,6 +8,7 @@ from typing import Any
 
 from anta.tests.logging import (
     VerifyLoggingAccounting,
+    VerifyLoggingErrors,
     VerifyLoggingHostname,
     VerifyLoggingHosts,
     VerifyLoggingLogsGeneration,
@@ -234,24 +235,20 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["AAA accounting logs are not generated"]},
     },
-]
-
-
-INPUT_LOGGING_ERRORS: List[Dict[str, Any]] = [
     {
         "name": "success",
+        "test": VerifyLoggingErrors,
         "eos_data": [""],
-        "side_effect": [],
-        "expected_result": "success",
-        "expected_messages": [],
+        "inputs": None,
+        "expected": {"result": "success"},
     },
     {
         "name": "failure",
+        "test": VerifyLoggingErrors,
         "eos_data": [
-          "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
+            "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
         ],
-        "side_effect": [],
-        "expected_result": "failure",
-        "expected_messages": ["Device has reported syslog messages with a severity of ERRORS or higher"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Device has reported syslog messages with a severity of ERRORS or higher"]},
     },
 ]

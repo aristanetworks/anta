@@ -14,7 +14,6 @@ from anta.tests.system import (
     VerifyMemoryUtilization,
     VerifyNTP,
     VerifyReloadCause,
-    VerifySyslog,
     VerifyUptime,
 )
 from tests.lib.test_case import test
@@ -138,24 +137,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 " * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023",
             ],
         },
-    },
-    {
-        "name": "success",
-        "test": VerifySyslog,
-        "eos_data": [""],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifySyslog,
-        "eos_data": [
-            """May  4 10:23:59 Leaf1 Lldp: %LLDP-3-NEIGHBOR_NEW: LLDP neighbor with chassisId 5022.0057.d059 and portId "Ethernet1" added on interface
-Ethernet1
-"""
-        ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported some log messages with WARNING or higher severity"]},
     },
     {
         "name": "success",
