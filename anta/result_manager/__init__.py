@@ -9,8 +9,11 @@ import json
 import logging
 from typing import Any, List
 
-from anta.result_manager.models import ListResult, ResultString, TestResult
+from pydantic import TypeAdapter
+
+from anta.result_manager.models import ListResult, TestResult
 from anta.tools.pydantic import pydantic_to_dict
+from anta.types import TestStatus
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +90,7 @@ class ResultManager:
         """
         self._result_entries = ListResult()
         # Initialize status
-        self.status = "unset"
+        self.status: TestStatus = "unset"
         self.error_status = False
 
     def __len__(self) -> int:
@@ -96,10 +99,12 @@ class ResultManager:
         """
         return len(self._result_entries)
 
-    def _update_status(self, test_status: ResultString) -> None:
+    def _update_status(self, test_status: TestStatus) -> None:
         """
         Update ResultManager status based on the table above.
         """
+        ResultValidator = TypeAdapter(TestStatus)
+        ResultValidator.validate_python(test_status)
         if test_status == "error":
             self.error_status = True
             return

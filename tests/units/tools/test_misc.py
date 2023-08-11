@@ -30,10 +30,10 @@ def my_raising_function(exception: Exception) -> None:
     "exception, message, calling_logger, __DEBUG__value, expected_message",
     [
         pytest.param(ValueError("exception message"), None, None, False, "ValueError (exception message)", id="exception only"),
-        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message ValueError (exception message)", id="custom message"),
+        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message: ValueError (exception message)", id="custom message"),
         pytest.param(
             ValueError("exception message"),
-            "custom logger:",
+            "custom logger",
             logging.getLogger("custom"),
             False,
             "custom logger: ValueError (exception message)",
@@ -77,7 +77,10 @@ def test_anta_log_exception(
     else:
         assert logger == "anta.tools.misc"
 
-    assert level == logging.ERROR
+    if __DEBUG__value:
+        assert level == logging.ERROR
+    else:
+        assert level == logging.CRITICAL
     assert message == expected_message
     # the only place where we can see the stracktrace is in the capture.text
     if __DEBUG__value is True:

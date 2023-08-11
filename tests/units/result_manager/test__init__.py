@@ -9,12 +9,15 @@ from __future__ import annotations
 
 import json
 from contextlib import nullcontext
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
 from anta.result_manager import ResultManager
-from anta.result_manager.models import ListResult, TestResult
+from anta.result_manager.models import ListResult
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import TestResult
 
 
 class Test_ResultManager:
@@ -53,7 +56,7 @@ class Test_ResultManager:
             pytest.param("failure", "skipped", "failure", nullcontext(), id="failure, add unset"),
             pytest.param("failure", "success", "failure", nullcontext(), id="failure, add skipped"),
             pytest.param("failure", "failure", "failure", nullcontext(), id="failure, add success"),
-            pytest.param("unset", "unknown", "unset", pytest.raises(ValueError), id="wrong status"),
+            pytest.param("unset", "unknown", None, pytest.raises(ValueError), id="wrong status"),
         ],
     )
     def test__update_status(self, starting_status: str, test_status: str, expected_status: str, expected_raise: Any) -> None:

@@ -44,7 +44,7 @@ def exc_to_str(exception: Exception) -> str:
     """
     Helper function that returns a human readable string from an Exception object
     """
-    return f"{type(exception).__name__} ({exception})"
+    return f"{type(exception).__name__}{f' ({exception})' if str(exception) else ''}"
 
 
 def tb_to_str(exception: Exception) -> str:

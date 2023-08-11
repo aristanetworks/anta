@@ -4,11 +4,11 @@
 """Models related to anta.result_manager module."""
 from __future__ import annotations
 
-from typing import Iterator, List, Literal, Optional
+from typing import Iterator, List, Optional
 
 from pydantic import BaseModel, ConfigDict, RootModel
 
-ResultString = Literal["unset", "success", "failure", "error", "skipped"]
+from anta.types import TestStatus
 
 
 class TestResult(BaseModel):
@@ -33,7 +33,7 @@ class TestResult(BaseModel):
     test: str
     categories: List[str]
     description: str
-    result: ResultString = "unset"
+    result: TestStatus = "unset"
     messages: List[str] = []
     error: Optional[Exception] = None
     custom_field: Optional[str] = None
@@ -75,7 +75,7 @@ class TestResult(BaseModel):
         self._set_status("error", message)
         self.error = exception
 
-    def _set_status(self, status: ResultString, message: str | None = None) -> None:
+    def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """
         Set status and insert optional message
 
