@@ -11,9 +11,8 @@ NOTE: 'show logging' does not support json output yet
 from __future__ import annotations
 
 import logging
-from ipaddress import IPv4Address
 import re
-from typing import List, Optional
+from ipaddress import IPv4Address
 
 from anta.models import AntaCommand, AntaTest
 
@@ -79,7 +78,7 @@ class VerifyLoggingSourceIntf(AntaTest):
     class Input(AntaTest.Input):
         interface: str
         """Source-interface to use as source IP of log messages"""
-        vrf: str = 'default'
+        vrf: str = "default"
         """The name of the VRF to transport log messages"""
 
     @AntaTest.anta_test
@@ -109,7 +108,7 @@ class VerifyLoggingHosts(AntaTest):
     class Input(AntaTest.Input):
         hosts: list[IPv4Address]
         """List of hosts (syslog servers) IP addresses"""
-        vrf: str = 'default'
+        vrf: str = "default"
         """The name of the VRF to transport log messages"""
 
     @AntaTest.anta_test
