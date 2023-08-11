@@ -4,12 +4,14 @@
 """
 Test functions related to the device interfaces
 """
-
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from pydantic import conint
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -25,10 +27,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyInterfaceUtilization validation"""
-
         command_output = self.instance_commands[0].text_output
-
         wrong_interfaces = {}
         for line in command_output.split("\n")[1:]:
             if len(line) > 0:
@@ -38,7 +37,6 @@ class VerifyInterfaceUtilization(AntaTest):
                     wrong_interfaces[line.split()[0]] = line.split()[-5]
                 elif float(line.split()[-2].replace("%", "")) > 75.0:
                     wrong_interfaces[line.split()[0]] = line.split()[-2]
-
         if not wrong_interfaces:
             self.result.is_success()
         else:
@@ -61,12 +59,8 @@ class VerifyInterfaceErrors(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyInterfaceErrors validation
-        """
         command_output = self.instance_commands[0].json_output
-
-        wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
+        wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, counters in command_output["interfaceErrorCounters"].items():
             if any(value > 0 for value in counters.values()) and not any(interface in wrong_interface for wrong_interface in wrong_interfaces):
                 wrong_interfaces.append({interface: counters})
@@ -88,12 +82,8 @@ class VerifyInterfaceDiscards(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyInterfaceDiscards validation"""
-
         command_output = self.instance_commands[0].json_output
-
-        wrong_interfaces: List[Dict[str, Dict[str, int]]] = []
-
+        wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, outer_v in command_output["interfaces"].items():
             wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
         if not wrong_interfaces:
@@ -114,12 +104,8 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyInterfaceErrDisabled validation"""
-
         command_output = self.instance_commands[0].json_output
-
         errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
-
         if errdisabled_interfaces:
             self.result.is_failure(f"The following interfaces are in error disabled state: {errdisabled_interfaces}")
         else:
@@ -136,24 +122,15 @@ class VerifyInterfacesStatus(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
+    class Input(AntaTest.Input):
+        minimum: conint(ge=0)  # type: ignore
+        """Expected minimum number of Ethernet interfaces up/up"""
+
     @AntaTest.anta_test
-    def test(self, minimum: Optional[int] = None) -> None:
-        """
-        Run VerifyInterfacesStatus validation
-
-        Args:
-            minimum: Expected minimum number of Ethernet interfaces up/up.
-        """
-
-        if minimum is None or minimum < 0:
-            self.result.is_skipped(f"VerifyInterfacesStatus was not run as an invalid minimum value was given {minimum}.")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         count_up_up = 0
         other_ethernet_interfaces = []
-
         for interface in command_output["interfaceDescriptions"]:
             interface_dict = command_output["interfaceDescriptions"][interface]
             if "Ethernet" in interface:
@@ -161,11 +138,10 @@ class VerifyInterfacesStatus(AntaTest):
                     count_up_up += 1
                 else:
                     other_ethernet_interfaces.append(interface)
-
-        if count_up_up >= minimum:
+        if count_up_up >= self.inputs.minimum:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Only {count_up_up}, less than {minimum} Ethernet interfaces are UP/UP")
+            self.result.is_failure(f"Only {count_up_up}, less than {self.inputs.minimum} Ethernet interfaces are UP/UP")
             self.result.messages.append(f"The following Ethernet interfaces are not UP/UP: {other_ethernet_interfaces}")
 
 
@@ -182,17 +158,13 @@ class VerifyStormControlDrops(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyStormControlDrops validation"""
-
         command_output = self.instance_commands[0].json_output
-
-        storm_controlled_interfaces: Dict[str, Dict[str, Any]] = {}
+        storm_controlled_interfaces: dict[str, dict[str, Any]] = {}
         for interface, interface_dict in command_output["interfaces"].items():
             for traffic_type, traffic_type_dict in interface_dict["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
                     storm_controlled_interface_dict = storm_controlled_interfaces.setdefault(interface, {})
                     storm_controlled_interface_dict.update({traffic_type: traffic_type_dict["drop"]})
-
         if not storm_controlled_interfaces:
             self.result.is_success()
         else:
@@ -212,15 +184,11 @@ class VerifyPortChannels(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyPortChannels validation"""
-
         command_output = self.instance_commands[0].json_output
-
-        po_with_invactive_ports: List[Dict[str, str]] = []
+        po_with_invactive_ports: list[dict[str, str]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
             if len(portchannel_dict["inactivePorts"]) != 0:
                 po_with_invactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
-
         if not po_with_invactive_ports:
             self.result.is_success()
         else:
@@ -239,16 +207,12 @@ class VerifyIllegalLACP(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyIllegalLACP validation"""
-
         command_output = self.instance_commands[0].json_output
-
-        po_with_illegal_lacp: List[Dict[str, Dict[str, int]]] = []
+        po_with_illegal_lacp: list[dict[str, dict[str, int]]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
             po_with_illegal_lacp.extend(
                 {portchannel: interface} for interface, interface_dict in portchannel_dict["interfaces"].items() if interface_dict["illegalRxCount"] != 0
             )
-
         if not po_with_illegal_lacp:
             self.result.is_success()
         else:
@@ -265,37 +229,27 @@ class VerifyLoopbackCount(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
+    class Input(AntaTest.Input):
+        number: int
+        """Number of loopback interfaces expected to be present"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None) -> None:
-        """
-        Run VerifyLoopbackCount validation
-
-        Args:
-            number: Number of loopback interfaces expected to be present.
-        """
-
-        if number is None:
-            self.result.is_skipped("VerifyLoopbackCount was not run as no number value was given.")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         loopback_count = 0
         down_loopback_interfaces = []
-
         for interface in command_output["interfaces"]:
             interface_dict = command_output["interfaces"][interface]
             if "Loopback" in interface:
                 loopback_count += 1
                 if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
                     down_loopback_interfaces.append(interface)
-
-        if loopback_count == number and len(down_loopback_interfaces) == 0:
+        if loopback_count == self.inputs.number and len(down_loopback_interfaces) == 0:
             self.result.is_success()
         else:
             self.result.is_failure()
-            if loopback_count != number:
-                self.result.is_failure(f"Found {loopback_count} Loopbacks when expecting {number}")
+            if loopback_count != self.inputs.number:
+                self.result.is_failure(f"Found {loopback_count} Loopbacks when expecting {self.inputs.number}")
             elif len(down_loopback_interfaces) != 0:
                 self.result.is_failure(f"The following Loopbacks are not up: {down_loopback_interfaces}")
 
@@ -312,18 +266,13 @@ class VerifySVI(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifySVI validation"""
-
         command_output = self.instance_commands[0].json_output
-
         down_svis = []
-
         for interface in command_output["interfaces"]:
             interface_dict = command_output["interfaces"][interface]
             if "Vlan" in interface:
                 if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
                     down_svis.append(interface)
-
         if len(down_svis) == 0:
             self.result.is_success()
         else:
@@ -331,19 +280,15 @@ class VerifySVI(AntaTest):
 
 
 class VerifyL3MTU(AntaTest):
-
     """
     Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
     Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-    Default ignored interfaces: ["Management", "Loopback", "Vxlan", "Tunnel"]
-
     Expected Results:
         * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
         * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
-        * skipped: The test will be skipped if the MTU value is not provided.
     """
 
     name = "VerifyL3MTU"
@@ -351,50 +296,31 @@ class VerifyL3MTU(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
-    NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+    class Input(AntaTest.Input):
+        mtu: int = 1500
+        """Default MTU we should have configured on all non-excluded interfaces"""
+        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        """A list of L3 interfaces to ignore"""
+        specific_mtu: list[dict[str, int]] = []
+        """A list of dictionary of L3 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
-    def test(self, mtu: int = 1500, ignored_interfaces: Optional[List[str]] = None, specific_mtu: Optional[List[Dict[str, int]]] = None) -> None:
-        """
-        Verifies the global L3 Maximum Transfer Unit (MTU) for interfaces.
-
-        Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
-        You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
-
-        Args:
-            mtu (int, optional): Default MTU we should have configured on all non-excluded interfaces. Defaults to 1500.
-            ignored_interfaces (List[str]): A list of L3 interfaces to ignore. It will replace the built-in exclusion.
-            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of L3 interfaces with their specific MTU configured.
-        """
-        if not mtu:
-            self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
-            return
-
-        if ignored_interfaces is None:
-            ignored_interfaces = self.NOT_SUPPORTED_INTERFACES
-
+    def test(self) -> None:
         # Parameter to save incorrect interface settings
-        wrong_l3mtu_intf: List[Dict[str, int]] = []
-
+        wrong_l3mtu_intf: list[dict[str, int]] = []
         command_output = self.instance_commands[0].json_output
-
         # Set list of interfaces with specific settings
-        specific_interfaces: List[str] = []
-        if specific_mtu is not None:
-            for d in specific_mtu:
+        specific_interfaces: list[str] = []
+        if self.inputs.specific_mtu:
+            for d in self.inputs.specific_mtu:
                 specific_interfaces.extend(d)
-        # Set default value if there is no specific settings.
-        else:
-            specific_mtu = []
-
         for interface, values in command_output["interfaces"].items():
-            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in ignored_interfaces and values["forwardingModel"] == "routed":
+            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "routed":
                 if interface in specific_interfaces:
-                    wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
+                    wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
                 # Comparison with generic setting
-                elif values["mtu"] != mtu:
+                elif values["mtu"] != self.inputs.mtu:
                     wrong_l3mtu_intf.append({interface: values["mtu"]})
-
         if wrong_l3mtu_intf:
             self.result.is_failure(f"Some interfaces do not have correct MTU configured:\n{wrong_l3mtu_intf}")
         else:
@@ -408,49 +334,44 @@ class VerifyIPProxyARP(AntaTest):
     Expected Results:
         * success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
         * failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
-        * error: The test will give an error if a list of interface(s) is not provided as template_params.
-
     """
 
     name = "VerifyIPProxyARP"
     description = "Verifies if Proxy-ARP is enabled for the provided list of interface(s)."
     categories = ["interfaces"]
-    template = AntaTemplate(template="show ip interface {intf}")
+    commands = [AntaTemplate(template="show ip interface {intf}")]
+
+    class Input(AntaTest.Input):
+        interfaces: list[str]
+        """List of interfaces to be tested"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(intf=intf) for intf in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyIPProxyARP validation.
-        """
-
         disabled_intf = []
         for command in self.instance_commands:
             if command.params and "intf" in command.params:
                 intf = command.params["intf"]
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
-
         if disabled_intf:
             self.result.is_failure(f"The following interface(s) have Proxy-ARP disabled: {disabled_intf}")
-
         else:
             self.result.is_success()
 
 
 class VerifyL2MTU(AntaTest):
-
     """
     Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
 
     Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-    Default ignored interfaces: ["Management", "Loopback", "Tunnel", "Vxlan"]
-
     Expected Results:
         * success: The test will pass if all layer 2 interfaces have the proper MTU configured.
         * failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
-        * skipped: The test will be skipped if the MTU value is not provided.
     """
 
     name = "VerifyL2MTU"
@@ -458,50 +379,31 @@ class VerifyL2MTU(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
-    NOT_SUPPORTED_INTERFACES: List[str] = ["Management", "Loopback", "Tunnel", "Vxlan"]
+    class Input(AntaTest.Input):
+        mtu: int = 9214
+        """Default MTU we should have configured on all non-excluded interfaces"""
+        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        """A list of L2 interfaces to ignore"""
+        specific_mtu: list[dict[str, int]] = []
+        """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
-    def test(self, mtu: int = 9214, ignored_interfaces: Optional[List[str]] = None, specific_mtu: Optional[List[Dict[str, int]]] = None) -> None:
-        """
-        Verifies the global L2 Maximum Transfer Unit (MTU) for interfaces.
-
-        Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
-        You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
-
-        Args:
-            mtu (int, optional): Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214.
-            ignored_interfaces (List[str]): A list of L2 interfaces to ignore. It will replace the built-in exclusion.
-            specific_mtu (Optional[List[Dict[str, int]]]): A list of dictionary of L2 interfaces with their specific MTU configured.
-        """
-        if not mtu:
-            self.result.is_skipped(f"{self.__class__.name} did not run because mtu was not supplied")
-            return
-
-        if ignored_interfaces is None:
-            ignored_interfaces = self.NOT_SUPPORTED_INTERFACES
-
+    def test(self) -> None:
         # Parameter to save incorrect interface settings
-        wrong_l2mtu_intf: List[Dict[str, int]] = []
-
+        wrong_l2mtu_intf: list[dict[str, int]] = []
         command_output = self.instance_commands[0].json_output
-
         # Set list of interfaces with specific settings
-        specific_interfaces: List[str] = []
-        if specific_mtu is not None:
-            for d in specific_mtu:
+        specific_interfaces: list[str] = []
+        if self.inputs.specific_mtu:
+            for d in self.inputs.specific_mtu:
                 specific_interfaces.extend(d)
-        # Set default value if there is no specific settings.
-        else:
-            specific_mtu = []
-
         for interface, values in command_output["interfaces"].items():
-            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in ignored_interfaces and values["forwardingModel"] == "bridged":
+            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "bridged":
                 if interface in specific_interfaces:
-                    wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in specific_mtu if values["mtu"] != custom_data[interface])
+                    wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
                 # Comparison with generic setting
-                elif values["mtu"] != mtu:
+                elif values["mtu"] != self.inputs.mtu:
                     wrong_l2mtu_intf.append({interface: values["mtu"]})
-
         if wrong_l2mtu_intf:
             self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
         else:
