@@ -231,7 +231,7 @@ class VerifyLoopbackCount(AntaTest):
     commands = [AntaCommand(command="show ip interface brief")]
 
     class Input(AntaTest.Input):
-        number: int
+        number: conint(ge=0)  # type: ignore
         """Number of loopback interfaces expected to be present"""
 
     @AntaTest.anta_test
