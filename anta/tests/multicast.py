@@ -8,9 +8,8 @@ Test functions related to multicast
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from pydantic import conint
-
 from anta.models import AntaCommand, AntaTest
+from anta.types import Vlan
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):
@@ -24,7 +23,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     commands = [AntaCommand(command="show ip igmp snooping")]
 
     class Input(AntaTest.Input):
-        vlans: dict[conint(ge=0, le=4094), bool]  # type: ignore
+        vlans: dict[Vlan, bool]
         """Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)"""
 
     @AntaTest.anta_test
