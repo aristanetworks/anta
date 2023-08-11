@@ -34,7 +34,9 @@ class VerifyTransceiversManufacturers(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        wrong_manufacturers = {interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in self.inputs.manufacturers}
+        wrong_manufacturers = {
+            interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in self.inputs.manufacturers
+        }
         if not wrong_manufacturers:
             self.result.is_success()
         else:

@@ -23,7 +23,6 @@ from anta.tests.interfaces import (
 )
 from tests.units.anta_tests.test_case import test
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
@@ -36,7 +35,7 @@ Et4                    5:00       0.0   0.0%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyInterfaceUtilization,
@@ -62,7 +61,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure-multiple-intfs",
         "test": VerifyInterfaceErrors,
@@ -75,11 +74,14 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": [
-            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
-            " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-            " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
-        ]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
+                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
+            ],
+        },
     },
     {
         "name": "failure-multiple-intfs-multiple-errors",
@@ -93,11 +95,14 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": [
-            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
-            " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-            " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
-        ]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
+                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
+            ],
+        },
     },
     {
         "name": "failure-single-intf-multiple-errors",
@@ -110,10 +115,13 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": [
-            "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-            " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
-        ]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
+                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
+            ],
+        },
     },
     {
         "name": "success",
@@ -130,7 +138,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyInterfaceDiscards,
@@ -145,10 +153,13 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": [
-            "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-            " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
-        ]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
+                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
+            ],
+        },
     },
     {
         "name": "success",
@@ -167,7 +178,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyInterfaceErrDisabled,
@@ -200,7 +211,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"minimum": 3},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyInterfacesStatus,
@@ -214,7 +225,10 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": {"minimum": 3},
-        "expected": {"result": "failure", "messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"],
+        },
     },
     {
         "name": "success",
@@ -234,7 +248,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyStormControlDrops,
@@ -276,7 +290,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyPortChannels,
@@ -326,7 +340,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyIllegalLACP,
@@ -352,7 +366,10 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+        },
     },
     {
         "name": "success",
@@ -381,7 +398,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"number": 2},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure-loopback-down",
         "test": VerifyLoopbackCount,
@@ -449,7 +466,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": None,
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifySVI,
@@ -475,7 +492,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "test": VerifyL3MTU,
         "eos_data": [
             {
-              "interfaces": {
+                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "forwardingModel": "routed",
@@ -541,13 +558,13 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "success",
         "test": VerifyL3MTU,
         "eos_data": [
             {
-              "interfaces": {
+                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "forwardingModel": "routed",
@@ -611,15 +628,15 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 },
             }
         ],
-        "inputs": {"mtu": 1500, 'ignored_interfaces': ['Loopback', 'Port-Channel', 'Management', 'Vxlan'], 'specific_mtu': [{'Ethernet10': 1501}]},
+        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyL3MTU,
         "eos_data": [
             {
-              "interfaces": {
+                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "forwardingModel": "routed",
@@ -691,7 +708,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "test": VerifyL2MTU,
         "eos_data": [
             {
-              "interfaces": {
+                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "forwardingModel": "routed",
@@ -757,13 +774,13 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"mtu": 9214},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyL2MTU,
         "eos_data": [
             {
-              "interfaces": {
+                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "forwardingModel": "routed",
@@ -841,12 +858,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "mtu": 1500,
-                        "interfaceAddressBrief": {
-                            "ipAddr": {
-                                "address": "10.1.0.0",
-                                "maskLen": 31
-                            }
-                        },
+                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.0", "maskLen": 31}},
                         "ipv4Routable240": False,
                         "ipv4Routable0": False,
                         "enabled": True,
@@ -859,7 +871,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "addresslessForwarding": "isInvalid",
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
-                        "maxMssEgress": 0
+                        "maxMssEgress": 0,
                     }
                 }
             },
@@ -870,12 +882,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "mtu": 1500,
-                        "interfaceAddressBrief": {
-                            "ipAddr": {
-                                "address": "10.1.0.2",
-                                "maskLen": 31
-                            }
-                        },
+                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.2", "maskLen": 31}},
                         "ipv4Routable240": False,
                         "ipv4Routable0": False,
                         "enabled": True,
@@ -888,14 +895,14 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "addresslessForwarding": "isInvalid",
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
-                        "maxMssEgress": 0
+                        "maxMssEgress": 0,
                     }
                 }
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure",
         "test": VerifyIPProxyARP,
@@ -907,12 +914,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "mtu": 1500,
-                        "interfaceAddressBrief": {
-                            "ipAddr": {
-                                "address": "10.1.0.0",
-                                "maskLen": 31
-                            }
-                        },
+                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.0", "maskLen": 31}},
                         "ipv4Routable240": False,
                         "ipv4Routable0": False,
                         "enabled": True,
@@ -925,7 +927,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "addresslessForwarding": "isInvalid",
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
-                        "maxMssEgress": 0
+                        "maxMssEgress": 0,
                     }
                 }
             },
@@ -936,12 +938,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
                         "mtu": 1500,
-                        "interfaceAddressBrief": {
-                            "ipAddr": {
-                                "address": "10.1.0.2",
-                                "maskLen": 31
-                            }
-                        },
+                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.2", "maskLen": 31}},
                         "ipv4Routable240": False,
                         "ipv4Routable0": False,
                         "enabled": True,
@@ -954,10 +951,10 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "addresslessForwarding": "isInvalid",
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
-                        "maxMssEgress": 0
+                        "maxMssEgress": 0,
                     }
                 }
-            }
+            },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},

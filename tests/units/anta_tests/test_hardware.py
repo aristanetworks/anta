@@ -17,7 +17,6 @@ from anta.tests.hardware import (
 )
 from tests.units.anta_tests.test_case import test
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
@@ -44,7 +43,7 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-       "inputs": {"manufacturers": ["Arista"]},
+        "inputs": {"manufacturers": ["Arista"]},
         "expected": {"result": "failure", "messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"]},
     },
     {

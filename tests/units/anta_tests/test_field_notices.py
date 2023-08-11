@@ -9,7 +9,6 @@ from typing import Any
 from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
 from tests.units.anta_tests.test_case import test
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",

@@ -15,7 +15,6 @@ from typing import Any
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyZeroTouch
 from tests.units.anta_tests.test_case import test
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
@@ -29,20 +28,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyZeroTouch,
         "eos_data": [{"mode": "enabled"}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]}
+        "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]},
     },
     {
         "name": "success",
         "test": VerifyRunningConfigDiffs,
-        "eos_data": [''],
+        "eos_data": [""],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyRunningConfigDiffs,
-        "eos_data": ["blah blah"],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["blah blah"]}
-    },
+    {"name": "failure", "test": VerifyRunningConfigDiffs, "eos_data": ["blah blah"], "inputs": None, "expected": {"result": "failure", "messages": ["blah blah"]}},
 ]

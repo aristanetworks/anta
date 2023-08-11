@@ -11,7 +11,6 @@ from typing import Any
 from anta.tests.connectivity import VerifyReachability
 from tests.units.anta_tests.test_case import test
 
-
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",

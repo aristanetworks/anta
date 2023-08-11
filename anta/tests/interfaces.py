@@ -9,9 +9,10 @@ Test functions related to the device interfaces
 import re
 from typing import Any
 
+from pydantic import conint
+
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from pydantic import conint
 
 
 class VerifyInterfaceUtilization(AntaTest):

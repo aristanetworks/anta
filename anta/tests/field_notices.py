@@ -28,7 +28,6 @@ class VerifyFieldNotice44Resolution(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-
         command_output = self.instance_commands[0].json_output
 
         devices = [
@@ -117,7 +116,6 @@ class VerifyFieldNotice72Resolution(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-
         command_output = self.instance_commands[0].json_output
 
         devices = ["DCS-7280SR3-48YC8", "DCS-7280SR3K-48YC8"]
