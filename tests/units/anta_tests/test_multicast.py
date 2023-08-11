@@ -2,12 +2,17 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.multicast"""
+from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
+from anta.tests.multicast import VerifyIGMPSnoopingGlobal, VerifyIGMPSnoopingVlans
+from tests.units.anta_tests.test_case import test
+
+DATA: list[dict[str, Any]] = [
     {
         "name": "success-enabled",
+        "test": VerifyIGMPSnoopingVlans,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -41,11 +46,12 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
                 "reportFloodingSwitchPorts": [],
             }
         ],
-        "inputs": {"vlans": ["1", "42"], "configuration": "enabled"},
+        "inputs": {"vlans": {1: True, 42: True}},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "success-disabled",
+        "test": VerifyIGMPSnoopingVlans,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -68,11 +74,12 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
                 "reportFloodingSwitchPorts": [],
             }
         ],
-        "inputs": {"vlans": ["42"], "configuration": "disabled"},
+        "inputs": {"vlans": {42: False}},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure-missing-vlan",
+        "test": VerifyIGMPSnoopingVlans,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -95,11 +102,12 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
                 "reportFloodingSwitchPorts": [],
             }
         ],
-        "inputs": {"vlans": ["1", "42"], "configuration": "disabled"},
+        "inputs": {"vlans": {1: False, 42: False}},
         "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is enabled", "Supplied vlan 42 is not present on the device."]},
     },
     {
         "name": "failure-wrong-state",
+        "test": VerifyIGMPSnoopingVlans,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -122,32 +130,12 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
                 "reportFloodingSwitchPorts": [],
             }
         ],
-        "inputs": {"vlans": ["1"], "configuration": "enabled"},
+        "inputs": {"vlans": {1: True}},
         "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is disabled"]},
     },
     {
-        "name": "skipped-missing-vlans",
-        "eos_data": [{}],
-        "inputs": {"vlans": None, "configuration": "disabled"},
-        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
-    },
-    {
-        "name": "skipped-missing-confguration",
-        "eos_data": [{}],
-        "inputs": {"vlans": ["1"], "configuration": None},
-        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
-    },
-    {
-        "name": "error-wrong-confguration",
-        "eos_data": [{}],
-        "inputs": {"vlans": ["1"], "configuration": "wrong"},
-        "expected": {"result": "error"}, "messages": ["VerifyIGMPSnoopingVlans was not run as 'configuration': wrong is not in the allowed values: ['enabled', 'disabled'])"],
-    },
-]
-
-INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
-    {
         "name": "success-enabled",
+        "test": VerifyIGMPSnoopingGlobal,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
@@ -157,41 +145,31 @@ INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
                 "reportFloodingSwitchPorts": [],
             }
         ],
-        "inputs": "enabled",
+        "inputs": {"enabled": True},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "success-disabled",
+        "test": VerifyIGMPSnoopingGlobal,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
                 "igmpSnoopingState": "disabled",
             }
         ],
-        "inputs": "disabled",
+        "inputs": {"enabled": False},
         "expected": {"result": "success"},
-            },
+    },
     {
         "name": "failure-wrong-state",
+        "test": VerifyIGMPSnoopingGlobal,
         "eos_data": [
             {
                 "reportFlooding": "disabled",
                 "igmpSnoopingState": "disabled",
             }
         ],
-        "inputs": "enabled",
+        "inputs": {"enabled": True},
         "expected": {"result": "failure", "messages": ["IGMP state is not valid: disabled"]},
-    },
-    {
-        "name": "skipped-missing-confguration",
-        "eos_data": [{}],
-        "inputs": None,
-        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingGlobal was not run as no configuration was given"],
-    },
-    {
-        "name": "error-wrong-confguration",
-        "eos_data": [{}],
-        "inputs": "wrong",
-        "expected": {"result": "error"}, "messages": ["VerifyIGMPSnoopingGlobal was not run as 'configuration': wrong is not in the allowed values: ['enabled', 'disabled'])"],
     },
 ]
