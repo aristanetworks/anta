@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.multicast import VerifyIGMPSnoopingGlobal, VerifyIGMPSnoopingVlans
-from tests.units.anta_tests.test_case import test
+from tests.lib.test_case import test
 
 DATA: list[dict[str, Any]] = [
     {

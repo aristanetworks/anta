@@ -21,7 +21,7 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.units.anta_tests.test_case import test
+from tests.lib.test_case import test
 
 DATA: list[dict[str, Any]] = [
     {

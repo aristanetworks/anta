@@ -15,7 +15,7 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.units.anta_tests.test_case import test
+from tests.lib.test_case import test
 
 DATA: list[dict[str, Any]] = [
     {

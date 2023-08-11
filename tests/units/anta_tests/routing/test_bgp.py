@@ -10,7 +10,7 @@ from functools import wraps
 from typing import Any
 from unittest.mock import patch
 
-from tests.units.anta_tests.test_case import test
+from tests.lib.test_case import test
 
 
 # Patching the decorator
