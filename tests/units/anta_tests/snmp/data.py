@@ -48,7 +48,7 @@ INPUT_SNMP_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifySnmpStatus did not run because vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySnmpStatus did not run because vrf was not supplied"]
     },
 ]
 
@@ -114,7 +114,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -131,7 +131,7 @@ INPUT_SNMP_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySnmpIPv4Acl did not run because number or vrf was not supplied"]
     }
 ]
 
@@ -197,7 +197,7 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -214,6 +214,6 @@ INPUT_SNMP_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySnmpIPv6Acl did not run because number or vrf was not supplied"]
     }
 ]

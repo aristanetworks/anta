@@ -10,7 +10,7 @@ INPUT_UFT_SETTING: List[Dict[str, Any]] = [
         "name": "skipped",
         "eos_data": [{}],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyUnifiedForwardingTableMode was not run as no mode was given"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyUnifiedForwardingTableMode was not run as no mode was given"]
     },
     {
         "name": "success",
@@ -49,7 +49,7 @@ INPUT_TCAM_PROFILE: List[Dict[str, Any]] = [
         "name": "skipped",
         "eos_data": [{}],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyTcamProfile was not run as no profile was given"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyTcamProfile was not run as no profile was given"]
     },
     {
         "name": "success",

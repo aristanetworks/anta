@@ -34,7 +34,7 @@ INPUT_VXLAN_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["Vxlan1 interface is not configured"]
+        "expected": {"result":"skipped"}, "messages": ["Vxlan1 interface is not configured"]
     },
     {
         "name": "failure",
@@ -400,6 +400,6 @@ INPUT_VXLAN_CONFIG_SANITY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VXLAN is not configured"]
+        "expected": {"result":"skipped"}, "messages": ["VXLAN is not configured"]
     },
 ]

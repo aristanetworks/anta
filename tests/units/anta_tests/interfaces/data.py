@@ -211,7 +211,7 @@ INPUT_INTERFACES_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": -1,
-        "expected_result": "skipped", "messages": ["VerifyInterfacesStatus was not run as an invalid minimum value was given -1."],
+        "expected": {"result":"skipped"}, "messages": ["VerifyInterfacesStatus was not run as an invalid minimum value was given -1."],
     },
 ]
 
@@ -448,7 +448,7 @@ INPUT_LOOPBACK_COUNT: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyLoopbackCount was not run as no number value was given."],
+        "expected": {"result":"skipped"}, "messages": ["VerifyLoopbackCount was not run as no number value was given."],
     },
 ]
 
@@ -777,7 +777,7 @@ INPUT_L3MTU: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"mtu": None},
-        "expected_result": "skipped", "messages": ["VerifyL3MTU did not run because mtu was not supplied"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyL3MTU did not run because mtu was not supplied"],
     },
 ]
 
@@ -993,7 +993,7 @@ INPUT_L2MTU: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"mtu": None},
-        "expected_result": "skipped", "messages": ['VerifyL2MTU did not run because mtu was not supplied'],
+        "expected": {"result":"skipped"}, "messages": ['VerifyL2MTU did not run because mtu was not supplied'],
     },
 ]
 

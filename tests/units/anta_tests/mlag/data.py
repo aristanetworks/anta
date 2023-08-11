@@ -27,7 +27,7 @@ INPUT_MLAG_STATUS: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["MLAG is disabled"]
+        "expected": {"result":"skipped"}, "messages": ["MLAG is disabled"]
     },
     {
         "name": "failure",
@@ -70,7 +70,7 @@ INPUT_MLAG_INTERFACES: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["MLAG is disabled"]
+        "expected": {"result":"skipped"}, "messages": ["MLAG is disabled"]
     },
     {
         "name": "failure-active-partial",
@@ -130,7 +130,7 @@ INPUT_MLAG_CONFIG_SANITY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["MLAG is disabled"]
+        "expected": {"result":"skipped"}, "messages": ["MLAG is disabled"]
     },
     {
         "name": "error",
@@ -215,7 +215,7 @@ INPUT_MLAG_RELOAD_DELAY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"reload_delay": 300, "reload_delay_non_mlag": 330},
-        "expected_result": "skipped", "messages": ["MLAG is disabled"]
+        "expected": {"result":"skipped"}, "messages": ["MLAG is disabled"]
     },
     {
         "name": "skipped-no-params",
@@ -225,7 +225,7 @@ INPUT_MLAG_RELOAD_DELAY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"reload_delay": None, "reload_delay_non_mlag": None},
-        "expected_result": "skipped", "messages": ["VerifyMlagReloadDelay did not run because reload_delay or reload_delay_non_mlag were not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyMlagReloadDelay did not run because reload_delay or reload_delay_non_mlag were not supplied"]
     },
     {
         "name": "failure",
@@ -268,7 +268,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "skipped", "messages": ["MLAG is disabled"]
+        "expected": {"result":"skipped"}, "messages": ["MLAG is disabled"]
     },
     {
         "name": "skipped-no-params",
@@ -278,7 +278,7 @@ INPUT_MLAG_DUAL_PRIMARY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"detection_delay": None, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
-        "expected_result": "skipped", "messages": ["VerifyMlagDualPrimary did not run because detection_delay, errdisabled, recovery_delay or recovery_delay_non_mlag were not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyMlagDualPrimary did not run because detection_delay, errdisabled, recovery_delay or recovery_delay_non_mlag were not supplied"]
     },
     {
         "name": "failure-disabled",

@@ -129,13 +129,13 @@ INPUT_IGMP_SNOOPING_VLANS: List[Dict[str, Any]] = [
         "name": "skipped-missing-vlans",
         "eos_data": [{}],
         "inputs": {"vlans": None, "configuration": "disabled"},
-        "expected_result": "skipped", "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
     },
     {
         "name": "skipped-missing-confguration",
         "eos_data": [{}],
         "inputs": {"vlans": ["1"], "configuration": None},
-        "expected_result": "skipped", "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingVlans was not run as no vlans or configuration was given"],
     },
     {
         "name": "error-wrong-confguration",
@@ -186,7 +186,7 @@ INPUT_IGMP_SNOOPING_GLOBAL: List[Dict[str, Any]] = [
         "name": "skipped-missing-confguration",
         "eos_data": [{}],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyIGMPSnoopingGlobal was not run as no configuration was given"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyIGMPSnoopingGlobal was not run as no configuration was given"],
     },
     {
         "name": "error-wrong-confguration",

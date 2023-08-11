@@ -100,13 +100,13 @@ INPUT_LOGGING_SOURCE_INTF: List[Dict[str, Any]] = [
         "name": "skipped-no-vrf",
         "eos_data": [""],
         "inputs": ("Management0", None),
-        "expected_result": "skipped", "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
     },
     {
         "name": "skipped-no-intf",
         "eos_data": [""],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingSourceInt did not run because intf or vrf was not supplied"]
     },
 ]
 
@@ -157,13 +157,13 @@ INPUT_LOGGING_HOSTS: List[Dict[str, Any]] = [
         "name": "skipped-no-vrf",
         "eos_data": [""],
         "inputs": (["10.22.10.92", "10.22.10.93", "10.22.10.94"], None),
-        "expected_result": "skipped", "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
     },
     {
         "name": "skipped-no-hosts",
         "eos_data": [""],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyLoggingHosts did not run because hosts or vrf were not supplied"]
     },
 ]
 

@@ -43,7 +43,7 @@ INPUT_MANUFACTURER: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyTransceiversManufacturers was not run because manufacturers list was not provided"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyTransceiversManufacturers was not run because manufacturers list was not provided"],
     },
 ]
 
@@ -885,7 +885,7 @@ INPUT_COOLING: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyEnvironmentCooling was not run because accepted_states list was not provided"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyEnvironmentCooling was not run because accepted_states list was not provided"],
     },
 ]
 
@@ -1072,7 +1072,7 @@ INPUT_ENV_POWER: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyEnvironmentPower was not run because accepted_states list was not provided"],
+        "expected": {"result":"skipped"}, "messages": ["VerifyEnvironmentPower was not run because accepted_states list was not provided"],
     },
 ]
 

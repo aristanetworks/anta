@@ -189,7 +189,7 @@ INPUT_STP_MODE: List[Dict[str, Any]] = [
             },
         ],
         "inputs": {"mode": "", "template_params": [{"vlan": 10}, {"vlan": 20}]},
-        "expected_result": "skipped", "messages": ["VerifySTPMode did not run because mode was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySTPMode did not run because mode was not supplied"]
     }
 ]
 
@@ -637,6 +637,6 @@ INPUT_STP_ROOT_PRIORITY: List[Dict[str, Any]] = [
             }
         ],
         "inputs": {"priority": None, "instances": [10, 20, 30]},
-        "expected_result": "skipped", "messages": ["VerifySTPRootPriority did not run because priority was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySTPRootPriority did not run because priority was not supplied"]
     },
 ]

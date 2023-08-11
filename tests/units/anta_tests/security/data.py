@@ -86,7 +86,7 @@ INPUT_SSH_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifySSHIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySSHIPv4Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -103,7 +103,7 @@ INPUT_SSH_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifySSHIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySSHIPv4Acl did not run because number or vrf was not supplied"]
     }
 ]
 
@@ -169,7 +169,7 @@ INPUT_SSH_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifySSHIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySSHIPv6Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -186,7 +186,7 @@ INPUT_SSH_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifySSHIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifySSHIPv6Acl did not run because number or vrf was not supplied"]
     }
 ]
 
@@ -316,7 +316,7 @@ INPUT_HTTPS_SSL_PROFILE: List[Dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected_result": "skipped", "messages": ["VerifyAPIHttpsSSL did not run because profile was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyAPIHttpsSSL did not run because profile was not supplied"]
     },
 ]
 
@@ -382,7 +382,7 @@ INPUT_API_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifyAPIIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyAPIIPv4Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -399,7 +399,7 @@ INPUT_API_IPV4_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifyAPIIPv4Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyAPIIPv4Acl did not run because number or vrf was not supplied"]
     }
 ]
 
@@ -465,7 +465,7 @@ INPUT_API_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (1, None),
-        "expected_result": "skipped", "messages": ["VerifyAPIIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyAPIIPv6Acl did not run because number or vrf was not supplied"]
     },
     {
         "name": "skipped-no-number",
@@ -482,6 +482,6 @@ INPUT_API_IPV6_ACL: List[Dict[str, Any]] = [
             }
         ],
         "inputs": (None, "MGMT"),
-        "expected_result": "skipped", "messages": ["VerifyAPIIPv6Acl did not run because number or vrf was not supplied"]
+        "expected": {"result":"skipped"}, "messages": ["VerifyAPIIPv6Acl did not run because number or vrf was not supplied"]
     }
 ]
