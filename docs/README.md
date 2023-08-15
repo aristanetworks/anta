@@ -3,7 +3,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/arista-netdevops-community/anta)
 [![github release](https://img.shields.io/github/release/arista-netdevops-community/anta.svg)](https://github.com/arista-netdevops-community/anta/releases/)
-![PyPI - Downloads/month](https://img.shields.io/pypi/dm/eos-downloader)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/anta)
 ![coverage](https://raw.githubusercontent.com/arista-netdevops-community/anta/coverage-badge/latest-release-coverage.svg)
 
 # Arista Network Test Automation (ANTA) Framework
