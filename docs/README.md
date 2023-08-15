@@ -76,7 +76,7 @@ Commands:
 
 ## Documentation
 
-The documentation is published on [ANTA package website](https://www.anta.ninja)
+The documentation is published on [ANTA package website](https://www.anta.ninja). Also, a [demo repository](https://github.com/titom73/atd-anta-demo) is available to facilitate your journey with ANTA.
 
 ## Contribution guide
 
