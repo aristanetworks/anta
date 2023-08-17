@@ -12,6 +12,48 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
 
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - name: Check and insert license on Python files
+        id: insert-license
+        # exclude:
+        files: .*\.py$
+        args:
+          - --license-filepath
+          - ./license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --no-extra-eol
+
+      - name: Check and insert license on Jinja2 files
+        id: insert-license
+        files: .*\.j2$
+        # exclude:
+        args:
+          - --license-filepath
+          - ./license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --comment-style
+          - '{#||#}'
+          - --no-extra-eol
+
+      - name: Check and insert license on Markdown files
+        id: insert-license
+        files: .*\.md$
+        # exclude:
+        args:
+          - --license-filepath
+          - ./license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --comment-style
+          - '<!--|  ~|  -->'
+
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
