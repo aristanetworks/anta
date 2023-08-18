@@ -21,7 +21,7 @@ repos:
         files: .*\.py$
         args:
           - --license-filepath
-          - ./license-short.txt
+          - .github/license-short.txt
           - --use-current-year
           - --allow-past-years
           - --fuzzy-match-generates-todo
@@ -33,7 +33,7 @@ repos:
         # exclude:
         args:
           - --license-filepath
-          - ./license-short.txt
+          - .github/license-short.txt
           - --use-current-year
           - --allow-past-years
           - --fuzzy-match-generates-todo
@@ -47,7 +47,7 @@ repos:
         # exclude:
         args:
           - --license-filepath
-          - ./license-short.txt
+          - .github/license-short.txt
           - --use-current-year
           - --allow-past-years
           - --fuzzy-match-generates-todo
