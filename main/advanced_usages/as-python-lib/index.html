@@ -1549,6 +1549,12 @@
 
   <h1>ANTA as a Python Library</h1>
 
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 <p>ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -1791,7 +1797,7 @@ In some cases a test would rely on some additional inputs from the user, for ins
 <li>A <strong>revision takes precedence over a version</strong> (e.g. if a command is run with version=&rdquo;latest&rdquo; and revision=1, the first revision of the model is returned)</li>
 <li>By default eAPI returns the first revision of each model to ensure that when upgrading, intergation with existing tools is not broken. This is done by using by default <code>version=1</code> in eAPI calls.</li>
 </ul>
-<p>ANTA uses by default <code>version="latest"</code> in AntaCommand. For some commands, you may want to run them with a different revision or version. </p>
+<p>ANTA uses by default <code>version="latest"</code> in AntaCommand. For some commands, you may want to run them with a different revision or version.</p>
 <p>For instance the <code>VerifyRoutingTableSize</code> test leverages the first revision of <code>show bfd peers</code>:</p>
 <div class="highlight"><pre><span></span><code># revision 1 as later revision introduce additional nesting for type
 commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
@@ -1833,7 +1839,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
       
     
   </small>

@@ -1549,6 +1549,12 @@
 
   <h1>Helpers</h1>
 
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 <h3 id="anta-debug-commands">ANTA debug commands<a class="headerlink" href="#anta-debug-commands" title="Permanent link">&para;</a></h3>
 <p>The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the <code>debug</code> subcommand and offers the following options:</p>
 <ul>
@@ -1641,7 +1647,7 @@ Run<span class="w"> </span>templated<span class="w"> </span><span class="nb">com
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--log<span class="w"> </span>DEBUG<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;ping {dst} source {src}&quot;</span><span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>--device<span class="w"> </span>DC1-SPINE1<span class="w">    </span>
 &gt;<span class="w"> </span><span class="o">{</span><span class="s1">&#39;dst&#39;</span>:<span class="w"> </span><span class="s1">&#39;8.8.8.8&#39;</span>,<span class="w"> </span><span class="s1">&#39;src&#39;</span>:<span class="w"> </span><span class="s1">&#39;Loopback0&#39;</span><span class="o">}</span>
 
-anta<span class="w"> </span>--log<span class="w"> </span>DEBUG<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;ping {dst} source {src}&quot;</span><span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;1.1.1.1&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback1<span class="w"> </span>--device<span class="w"> </span>DC1-SPINE1<span class="w">           </span>
+anta<span class="w"> </span>--log<span class="w"> </span>DEBUG<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;ping {dst} source {src}&quot;</span><span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;1.1.1.1&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback1<span class="w"> </span>--device<span class="w"> </span>DC1-SPINE1<span class="w">          </span>
 &gt;<span class="w"> </span><span class="o">{</span><span class="s1">&#39;dst&#39;</span>:<span class="w"> </span><span class="s1">&#39;1.1.1.1&#39;</span>,<span class="w"> </span><span class="s1">&#39;src&#39;</span>:<span class="w"> </span><span class="s1">&#39;Loopback1&#39;</span><span class="o">}</span>
 <span class="c1"># Notice how `src` and `dst` keep only the latest value</span>
 </code></pre></div>
@@ -1651,7 +1657,7 @@ anta<span class="w"> </span>--log<span class="w"> </span>DEBUG<span class="w"> <
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 19, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
       
     
   </small>
