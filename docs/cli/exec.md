@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 # Executing Commands on Devices
 
 ANTA CLI provides a set of entrypoints to facilitate remote command execution on EOS devices.

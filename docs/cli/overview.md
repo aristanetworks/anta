@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 # Overview of ANTA's Command-Line Interface (CLI)
 
 ANTA provides a powerful Command-Line Interface (CLI) to perform a wide range of operations. This document provides a comprehensive overview of ANTA CLI usage and its commands.

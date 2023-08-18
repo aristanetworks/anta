@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 # Retrieving Inventory Information
 
 The ANTA CLI offers multiple entrypoints to access data from your local inventory.
@@ -13,15 +19,15 @@ anta_inventory:
     - host: 172.20.20.101
       name: DC1-SPINE1
       tags: ["SPINE", "DC1"]
-    
+
     - host: 172.20.20.102
       name: DC1-SPINE2
       tags: ["SPINE", "DC1"]
-    
+
     - host: 172.20.20.111
       name: DC1-LEAF1A
       tags: ["LEAF", "DC1"]
-    
+
     - host: 172.20.20.112
       name: DC1-LEAF1B
       tags: ["LEAF", "DC1"]
@@ -53,7 +59,7 @@ anta_inventory:
     - host: 172.20.20.221
       name: DC2-BL1
       tags: ["BL", "DC2"]
-      
+
     - host: 172.20.20.222
       name: DC2-BL2
       tags: ["BL", "DC2"]
