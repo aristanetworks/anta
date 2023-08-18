@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 # ANTA debug commands
 
 The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` subcommand and offers the following options:
@@ -109,7 +115,7 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
 > {'dst': '8.8.8.8', 'src': 'Loopback0'}
 
-anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1           
+anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1          
 > {'dst': '1.1.1.1', 'src': 'Loopback1'}
 # Notice how `src` and `dst` keep only the latest value
 ```

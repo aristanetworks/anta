@@ -1,7 +1,7 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-files: ^(anta|scripts|tests)/
+files: ^(anta|docs|scripts|tests)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -11,6 +11,34 @@ repos:
       - id: end-of-file-fixer
       - id: check-added-large-files
       - id: check-merge-conflict
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - name: Check and insert license on Python files
+        id: insert-license
+        # exclude:
+        files: .*\.py$
+        args:
+          - --license-filepath
+          - .github/license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --no-extra-eol
+
+      - name: Check and insert license on Markdown files
+        id: insert-license
+        files: .*\.md$
+        # exclude:
+        args:
+          - --license-filepath
+          - .github/license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --comment-style
+          - '<!--|  ~|  -->'
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0

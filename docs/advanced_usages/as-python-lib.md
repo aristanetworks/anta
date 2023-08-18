@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
 !!! tip
@@ -270,8 +276,8 @@ cmd2 = AntaCommand(command="show running-config diffs", ofmt="text")
     * A __revision takes precedence over a version__ (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
     * By default eAPI returns the first revision of each model to ensure that when upgrading, intergation with existing tools is not broken. This is done by using by default `version=1` in eAPI calls.
 
-    ANTA uses by default `version="latest"` in AntaCommand. For some commands, you may want to run them with a different revision or version. 
-  
+    ANTA uses by default `version="latest"` in AntaCommand. For some commands, you may want to run them with a different revision or version.
+
     For instance the `VerifyRoutingTableSize` test leverages the first revision of `show bfd peers`:
 
     ```
