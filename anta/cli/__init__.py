@@ -18,7 +18,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as check_commands
-from anta.cli.utils import IgnoreRequiredWithHelp, parse_catalog, parse_inventory
+from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
 from anta.loader import setup_logging
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
@@ -151,17 +151,17 @@ def nrfu(ctx: click.Context, catalog: List[Tuple[Callable[..., TestResult], Dict
     ctx.obj["result_manager"] = ResultManager()
 
 
-@anta.group("exec")
+@anta.group("exec", cls=AliasedGroup)
 def _exec() -> None:
     """Execute commands to inventory devices"""
 
 
-@anta.group("get")
+@anta.group("get", cls=AliasedGroup)
 def _get() -> None:
     """Get data from/to ANTA"""
 
 
-@anta.group("debug")
+@anta.group("debug", cls=AliasedGroup)
 def _debug() -> None:
     """Debug commands for building ANTA"""
 

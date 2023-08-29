@@ -164,3 +164,49 @@ class IgnoreRequiredWithHelp(click.Group):
                 param.required = False
 
             return super().parse_args(ctx, args)
+
+    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
+        """Todo: document code"""
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        if len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
+        return None
+
+    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
+        """Todo: document code"""
+        # always return the full command name
+        _, cmd, args = super().resolve_command(ctx, args)
+        return cmd.name, cmd, args  # type: ignore
+
+
+class AliasedGroup(click.Group):
+    """
+    Implements a subclass of Group that accepts a prefix for a command.
+    If there were a command called push, it would accept pus as an alias (so long as it was unique)
+    From Click documentation
+    """
+
+    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
+        """Todo: document code"""
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        if len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
+        return None
+
+    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
+        """Todo: document code"""
+        # always return the full command name
+        _, cmd, args = super().resolve_command(ctx, args)
+        return cmd.name, cmd, args  # type: ignore
