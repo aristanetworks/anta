@@ -11,7 +11,7 @@ authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
 maintainers = [
   { name = "Khelil Sator", email = "ksator@arista.com" },
   { name = "Matthieu Tâche", email = "mtache@arista.com" },
-  { name = "Khelil Sator", email = "ksator@arista.com" },
+  { name = "Thomas Grimonet", email = "tgrimonet@arista.com" },
   { name = "Guillaume Mulocher", email = "gmulocher@arista.com" },
 ]
 description = "Arista Network Test Automation (ANTA) Framework"
