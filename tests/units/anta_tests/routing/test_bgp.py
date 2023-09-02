@@ -36,7 +36,7 @@ patch("anta.decorators.check_bgp_family_enable", mock_decorator).start()
 from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPEVPNCount,
     VerifyBGPEVPNState,
-    VerifyBGPIPv4UnicastCount,
+    VerifyBGPIPv4UnicastPeers,
     VerifyBGPIPv4UnicastState,
     VerifyBGPIPv6UnicastState,
     VerifyBGPRTCCount,
@@ -166,130 +166,907 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "success-vrfs",
-        "test": VerifyBGPIPv4UnicastCount,
-        "inputs": {"vrfs": {"BLAH": 1, "BLIH": 1}},
+        "name": "success-count-only",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 2, "PROD": 1}},
         "eos_data": [
             {
                 "vrfs": {
-                    "BLAH": {
-                        "routerId": "3.3.3.3",
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
                         "peers": {
-                            "8.8.8.8": {
-                                "msgSent": 0,
-                                "inMsgQueue": 0,
-                                "peerStateIdleReason": "NoInterface",
-                                "prefixReceived": 0,
-                                "upDownTime": 1683206557.031003,
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
                                 "version": 4,
-                                "msgReceived": 42,
-                                "prefixAccepted": 0,
-                                "peerState": "Established",
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
                                 "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
                                 "underMaintenance": False,
-                                "asn": "12345",
-                            }
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
                         },
-                        "vrf": "BLAH",
-                        "asn": "666",
-                    },
+                    }
                 }
             },
             {
                 "vrfs": {
-                    "BLIH": {
-                        "routerId": "3.3.3.3",
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
                         "peers": {
-                            "5.5.5.5": {
-                                "msgSent": 0,
-                                "inMsgQueue": 0,
-                                "peerStateIdleReason": "NoInterface",
-                                "prefixReceived": 0,
-                                "upDownTime": 1683206557.031003,
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
                                 "version": 4,
-                                "msgReceived": 42,
-                                "prefixAccepted": 0,
-                                "peerState": "Established",
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
                                 "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
                                 "underMaintenance": False,
-                                "asn": "12345",
+                                "peerState": "Established",
                             }
                         },
-                        "vrf": "BLIH",
-                        "asn": "666",
-                    },
+                    }
                 }
             },
         ],
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-count",
-        "test": VerifyBGPIPv4UnicastCount,
-        "inputs": {"vrfs": {"BLAH": 2}},
+        "name": "success-peers",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "PROD": ["10.1.254.0"]}, "count_only": False},
         "eos_data": [
             {
                 "vrfs": {
-                    "BLAH": {
-                        "routerId": "3.3.3.3",
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
                         "peers": {
-                            "8.8.8.8": {
-                                "msgSent": 0,
-                                "inMsgQueue": 0,
-                                "peerStateIdleReason": "NoInterface",
-                                "prefixReceived": 0,
-                                "upDownTime": 1683206557.031003,
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
                                 "version": 4,
-                                "msgReceived": 0,
-                                "prefixAccepted": 0,
-                                "peerState": "Established",
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
                                 "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
                                 "underMaintenance": False,
-                                "asn": "12345",
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
                             }
                         },
-                        "vrf": "BLAH",
-                        "asn": "666",
-                    },
+                    }
                 }
-            }
+            },
         ],
-        "expected": {"result": "failure", "messages": ["Expecting 2 BGP peer(s) in vrf BLAH but got 1 peer(s)"]},
+        "expected": {"result": "success"},
     },
     {
-        "name": "failure-Established",
-        "test": VerifyBGPIPv4UnicastCount,
-        "inputs": {"vrfs": {"BLAH": 1}},
+        "name": "failure-count-only",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 3, "PROD": 2}},
         "eos_data": [
             {
                 "vrfs": {
-                    "BLAH": {
-                        "routerId": "3.3.3.3",
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
                         "peers": {
-                            "8.8.8.8": {
-                                "msgSent": 0,
-                                "inMsgQueue": 0,
-                                "peerStateIdleReason": "NoInterface",
-                                "prefixReceived": 0,
-                                "upDownTime": 1683206557.031003,
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
                                 "version": 4,
-                                "msgReceived": 0,
-                                "prefixAccepted": 0,
-                                "peerState": "Idle",
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
                                 "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
                                 "underMaintenance": False,
-                                "asn": "12345",
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
                             }
                         },
-                        "vrf": "BLAH",
-                        "asn": "666",
-                    },
+                    }
                 }
-            }
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["The following failure(s) occured: {'Wrong number of peers': {'default': 2, 'PROD': 1}}"]},
+    },
+    {
+        "name": "failure-count-only-established",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 2, "PROD": 1}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
         ],
         "expected": {
             "result": "failure",
-            "messages": ["The following IPv4 peer(s) are not established: {'BLAH': {'8.8.8.8': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"],
+            "messages": [
+                "The following failure(s) occured: {'Peer(s) issues': [{'default': {'10.1.255.6': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}]}"
+            ],
+        },
+    },
+    {
+        "name": "failure-count-only-msg-queue",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 2, "PROD": 1}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 100,
+                                "outMsgQueue": 200,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following failure(s) occured: "
+                "{'Peer(s) issues': [{'default': {'10.1.255.6': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}]}"
+            ],
+        },
+    },
+    {
+        "name": "failure-count-only-vrf-not-configured",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 2, "DEV": 1}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["The following failure(s) occured: {'VRF(s) not configured': ['DEV']}"]},
+    },
+    {
+        "name": "failure-count-only-multiple-failures",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": 2, "PROD": 2, "DEV": 5}},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+            {"vrfs": {}},
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following failure(s) occured: "
+                "{'VRF(s) not configured': ['DEV'], "
+                "'Wrong number of peers': {'PROD': 1}, "
+                "'Peer(s) issues': [{'default': {'10.1.255.6': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}]}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peers",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "PROD": ["10.1.254.0", "10.1.254.2"]}, "count_only": False},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["The following failure(s) occured: {'Peer(s) not configured': {'PROD': ['10.1.254.2']}}"]},
+    },
+    {
+        "name": "failure-peers-established",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "PROD": ["10.1.254.0"]}, "count_only": False},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Idle",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following failure(s) occured: {'Peer(s) issues': [{'PROD': {'10.1.254.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}]}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peers-msg-queue",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "PROD": ["10.1.254.0"]}, "count_only": False},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 100,
+                                "outMsgQueue": 200,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following failure(s) occured: "
+                "{'Peer(s) issues': [{'PROD': {'10.1.254.0': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}]}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peers-vrf-not-configured",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "DEV": ["10.1.254.0"]}, "count_only": False},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 100,
+                                "outMsgQueue": 200,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["The following failure(s) occured: {'VRF(s) not configured': ['DEV']}"]},
+    },
+    {
+        "name": "failure-peers-multiple-failures",
+        "test": VerifyBGPIPv4UnicastPeers,
+        "inputs": {"vrfs": {"default": ["10.1.255.4", "10.1.255.6"], "PROD": ["10.1.254.0", "10.1.254.2"], "DEV": ["10.1.254.0"]}, "count_only": False},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.255.4": {
+                                "description": "DC1-SPINE1_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 8269,
+                                "msgSent": 8272,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694094940.980473,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.6": {
+                                "description": "DC1-SPINE2_Ethernet2",
+                                "version": 4,
+                                "msgReceived": 6504,
+                                "msgSent": 6509,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65100",
+                                "prefixAccepted": 14,
+                                "prefixReceived": 14,
+                                "upDownTime": 1694038182.927187,
+                                "underMaintenance": False,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "PROD": {
+                        "vrf": "PROD",
+                        "routerId": "10.1.0.4",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.0": {
+                                "description": "DC1-LEAF1A",
+                                "version": 4,
+                                "msgReceived": 7832,
+                                "msgSent": 7809,
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "asn": "65120",
+                                "prefixAccepted": 4,
+                                "prefixReceived": 4,
+                                "upDownTime": 1694127109.561448,
+                                "underMaintenance": False,
+                                "peerState": "Established",
+                            }
+                        },
+                    }
+                }
+            },
+            {"vrfs": {}},
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following failure(s) occured: "
+                "{'VRF(s) not configured': ['DEV'], "
+                "'Peer(s) issues': [{'default': {'10.1.255.6': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}], "
+                "'Peer(s) not configured': {'PROD': ['10.1.254.2']}}"
+            ],
         },
     },
     {

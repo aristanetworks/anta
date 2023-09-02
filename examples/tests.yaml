@@ -258,7 +258,13 @@ anta.tests.routing:
           - 10.1.0.2
   bgp:
     - VerifyBGPIPv4UnicastState:
-    - VerifyBGPIPv4UnicastCount:
+    - VerifyBGPIPv4UnicastPeers:
+        vrfs:
+          default:
+            - 10.2.255.4
+            - 10.2.255.6
+        count_only: False
+    - VerifyBGPIPv4UnicastPeers:
         vrfs:
           default: 2
     - VerifyBGPIPv6UnicastState:

@@ -274,10 +274,13 @@ ERROR    Exception raised for test VerifyTemperature (on device 192.168.0.10) - 
 
 ### Test decorators
 
-Besides the `AntaTest.anta_tests` mandatory decorator, ANTA provides some additional and optional decorators:
+In addition to the required `AntaTest.anta_tests` decorator, ANTA offers a set of optional decorators for further test customization:
 
-- `anta.decorators.skip_on_platforms`: To skip a test for a function not available for some platform
-- `anta.decorators.check_bgp_family_enable`: To run tests only if specific BGP family is active.
+- `anta.decorators.skip_on_platforms`: Use this to conditionally skip or mark as 'failure' (see note below) tests for functionalities that are not supported on specific platforms.
+- `anta.decorators.check_bgp_family_enable`: Use this to conditionally skip or mark as 'failure' (see note below) tests when a particular BGP address family is not configured on the device.
+
+!!! note
+    To enforce strict mode and mark skipped tests as 'failures', modify the test definition in the ANTA catalog. For more details, see [How to Enable Strict Mode for Test Decorators](../usage-inventory-catalog.md#enabling-strict-mode-for-test-decorators).
 
 ```python
 from anta.decorators import skip_on_platforms
@@ -289,6 +292,7 @@ class VerifyTemperature(AntaTest):
     def test(self) -> None:
         pass
 ```
+This setup is particularly useful for tailoring tests according to platform-specific capabilities or configuration nuances.
 
 ## Access your custom tests in the test catalog
 

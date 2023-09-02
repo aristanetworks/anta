@@ -122,7 +122,7 @@ titom73.tests.system:
 ```
 
 !!! tip "How to create custom tests"
-    To create your custom tests, you should refer to this [following documentation](advanced_usages/as-python-lib.md)
+    To create your custom tests, you should refer to this [following documentation](advanced_usages/custom-tests.md)
 
 ### Customize test description and categories
 
@@ -152,3 +152,28 @@ Once you run `anta nrfu table`, you will see following output:
 │ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
 └───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
 ```
+### Enabling Strict Mode for Test Decorators
+
+In ANTA, some tests can be dynamically skipped to prevent false positives or incorrect results. This is done through the use of decorators. However, you may want these tests to be explicitly marked as 'failures' rather than 'skipped' in your report. To achieve this, set the `strict` input variable to `True` within the test definition in your catalog. When you enable strict mode, any test that would normally be skipped will instead be recorded as a failure.
+
+Here's a catalog example to illustrate:
+```yaml
+anta.tests.routing:
+  bgp:
+    - VerifyBGPIPv4UnicastPeers:
+        vrfs:
+          default: 10
+          prod: 10
+        strict: True
+```
+
+In this example, the decorator [`check_bgp_family_enable`](advanced_usages/custom-tests.md#test-decorators) would, by default, mark the test status as 'skipped' if there is no IPv4 address family configuration for BGP on the device. When `strict` is set to `True`, the test status will change to 'failure' instead.
+
+```bash
+┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Device     ┃ Test Name                 ┃ Test Status ┃ Message(s)                                         ┃ Test description                                      ┃ Test category ┃
+┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ DC1-LEAF1A │ VerifyBGPIPv4UnicastPeers │ failure     │ No BGP peer for address family ipv4 on this device │ Verifies the BGP IPv4 unicast peers for specific VRFs │ routing, bgp  │
+└────────────┴───────────────────────────┴─────────────┴────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┴───────────────┘
+```
+You may find strict mode beneficial in environments where a skipped test is considered a configuration or operational oversight that needs immediate attention.
