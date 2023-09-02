@@ -103,12 +103,12 @@ class VerifyBGPIPv4UnicastPeers(AntaTest):
 
     The `count_only` input attribute modifies the behavior of this test as follows:
 
-    If set to True (default):
+    If set to True (default):\n
     1. Verifies that the specified VRFs are configured.
     2. Validates the actual count of BGP IPv4 unicast neighbors against the expected count for each specified VRF.
     3. Verifies that all IPv4 unicast BGP sessions in the specified VRFs are established and all message queues for these BGP sessions are empty.
 
-    If set to False:
+    If set to False:\n
     1. Verifies that the specified VRFs are configured.
     2. Checks that each specified BGP IPv4 unicast peer is present in the corresponding VRF.
     3. Verifies that the BGP session for the specified peers are established and all message queues for these BGP sessions are empty.
@@ -134,16 +134,16 @@ class VerifyBGPIPv4UnicastPeers(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vrfs: Dict[str, Union[List[IPv4Address], int]]
         """
-        Dictionary mapping VRF names to either:
-          - A list of expected IPv4 addresses for the BGP peers, or
-          - An expected integer count of BGP peers
+        Dictionary mapping VRF names to either:\n
+        - A list of expected IPv4 addresses for the BGP peers, or
+        - An expected integer count of BGP peers
 
         The VRF name cannot be 'all'
         """
         count_only: bool = True
         """
         Flag to indicate whether to only validate the count of BGP peers.
-        If set to True, the test will only check the count of peers and not the specific peer IPs
+        If set to True, the test will only check the count of peers and not the specific peer IPs.
         """
 
         @model_validator(mode="after")  # type: ignore
