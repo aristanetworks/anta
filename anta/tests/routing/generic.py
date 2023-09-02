@@ -106,15 +106,15 @@ class VerifyBFD(AntaTest):
 
 class VerifyRoutingTableEntry(AntaTest):
     """
-    This test verifies that the provided route is present in the routing table of a specified VRF.
+    This test verifies that the provided routes are present in the routing table of a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided route is present in the routing table.
-        * failure: The test will fail if the provided route is missing from the routing table.
+        * success: The test will pass if the provided routes are present in the routing table.
+        * failure: The test will fail if one or many provided routes are missing from the routing table.
     """
 
     name = "VerifyRoutingTableEntry"
-    description = "Verifies that the provided route is present in the routing table of a specified VRF."
+    description = "Verifies that the provided routes are present in the routing table of a specified VRF."
     categories = ["routing", "generic"]
     commands = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
 
