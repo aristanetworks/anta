@@ -9,15 +9,12 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-from anta.models import AntaTemplate, AntaTest
-
-if TYPE_CHECKING:
-    from anta.models import AntaCommand
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyReachability(AntaTest):
@@ -63,3 +60,59 @@ class VerifyReachability(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
+
+
+class VerifyLLDPNeighbors(AntaTest):
+    """
+    This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.
+
+    Expected Results:
+        * success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
+        * failure: The test will fail if any of the following conditions are met:
+            - The provided LLDP neighbor is not found.
+            - The system name or port of the LLDP neighbor does not match the provided information.
+    """
+
+    name = "VerifyLLDPNeighbors"
+    description = "Verifies that the provided LLDP neighbors are present and connected with the correct configuration."
+    categories = ["connectivity"]
+    commands = [AntaCommand(command="show lldp neighbors detail")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        neighbors: List[Neighbor]
+        """List of LLDP neighbors"""
+
+        class Neighbor(BaseModel):
+            """LLDP neighbor"""
+
+            port: Interface
+            """LLDP port"""
+            neighbor_device: str
+            """LLDP neighbor device"""
+            neighbor_port: Interface
+            """LLDP neighbor port"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output
+
+        self.result.is_success()
+
+        no_lldp_neighbor = []
+        wrong_lldp_neighbor = []
+
+        for neighbor in self.inputs.neighbors:
+            if len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
+                no_lldp_neighbor.append(neighbor.port)
+
+            elif (
+                lldp_neighbor_info[0]["systemName"] != neighbor.neighbor_device
+                or lldp_neighbor_info[0]["neighborInterfaceInfo"]["interfaceId_v2"] != neighbor.neighbor_port
+            ):
+                wrong_lldp_neighbor.append(neighbor.port)
+
+        if no_lldp_neighbor:
+            self.result.is_failure(f"The following port(s) have no LLDP neighbor: {no_lldp_neighbor}")
+
+        if wrong_lldp_neighbor:
+            self.result.is_failure(f"The following port(s) have the wrong LLDP neighbor: {wrong_lldp_neighbor}")

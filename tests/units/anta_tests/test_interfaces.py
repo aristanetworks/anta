@@ -209,25 +209,42 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"minimum": 3},
+        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-not-configured",
         "test": VerifyInterfacesStatus,
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"minimum": 3},
+        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
         "expected": {
             "result": "failure",
-            "messages": ["Only 2, less than 3 Ethernet interfaces are UP/UP", "The following Ethernet interfaces are not UP/UP: ['Ethernet8']"],
+            "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
+        },
+    },
+    {
+        "name": "failure-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not up/up: ['Ethernet8']"],
         },
     },
     {

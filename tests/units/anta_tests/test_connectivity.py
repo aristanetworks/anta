@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.connectivity import VerifyReachability
+from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -147,5 +147,171 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.11')]"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ]
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73f7.d138",
+                                "systemName": "DC1-SPINE2",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-neighbor",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ]
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {"lldpNeighborInfo": []},
+                }
+            }
+        ],
+        "expected": {"result": "failure", "messages": ["The following port(s) have no LLDP neighbor: ['Ethernet2']"]},
+    },
+    {
+        "name": "failure-wrong-neighbor",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ]
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73f7.d138",
+                                "systemName": "DC1-SPINE2",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet2"',
+                                    "interfaceId_v2": "Ethernet2",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "expected": {"result": "failure", "messages": ["The following port(s) have the wrong LLDP neighbor: ['Ethernet2']"]},
+    },
+    {
+        "name": "failure-wrong-and-no-neighbor",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ]
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet2"',
+                                    "interfaceId_v2": "Ethernet2",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            }
+                        ]
+                    },
+                    "Ethernet2": {"lldpNeighborInfo": []},
+                }
+            }
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following port(s) have no LLDP neighbor: ['Ethernet2']",
+                "The following port(s) have the wrong LLDP neighbor: ['Ethernet1']",
+            ],
+        },
     },
 ]

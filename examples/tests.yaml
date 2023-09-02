@@ -63,6 +63,14 @@ anta.tests.connectivity:
         - source: Management0
           destination: 8.8.8.8
           vrf: MGMT
+  - VerifyLLDPNeighbors:
+      neighbors:
+        - port: Ethernet1
+          neighbor_device: DC1-SPINE1
+          neighbor_port: Ethernet1
+        - port: Ethernet2
+          neighbor_device: DC1-SPINE2
+          neighbor_port: Ethernet1
 
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
@@ -91,7 +99,10 @@ anta.tests.interfaces:
   - VerifyInterfaceDiscards:
   - VerifyInterfaceErrDisabled:
   - VerifyInterfacesStatus:
-      minimum: 4
+      interfaces:
+        - Ethernet1
+        - Ethernet2
+        - Vlan10
   - VerifyStormControlDrops:
   - VerifyPortChannels:
   - VerifyIllegalLACP:
@@ -240,6 +251,11 @@ anta.tests.routing:
         minimum: 2
         maximum: 20
     - VerifyBFD:
+    - VerifyRoutingTableEntry:
+        vrf: default
+        routes:
+          - 10.1.0.1
+          - 10.1.0.2
   bgp:
     - VerifyBGPIPv4UnicastState:
     - VerifyBGPIPv4UnicastCount:
