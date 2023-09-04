@@ -9,6 +9,7 @@ dist
 scripts/test*.py
 examples/tests_*
 .personal/*
+*.env
 *.swp
 
 # Distribution / packaging
