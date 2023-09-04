@@ -10,6 +10,8 @@ NOTE: 'show logging' does not support json output yet
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import List
+
 import logging
 import re
 from ipaddress import IPv4Address
@@ -106,7 +108,7 @@ class VerifyLoggingHosts(AntaTest):
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        hosts: list[IPv4Address]
+        hosts: List[IPv4Address]
         """List of hosts (syslog servers) IP addresses"""
         vrf: str = "default"
         """The name of the VRF to transport log messages"""

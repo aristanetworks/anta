@@ -74,11 +74,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"minimum": 666, "maximum": 42},
         "expected": {
             "result": "error",
-            "messages": [
-                "anta.tests.routing.generic.VerifyRoutingTableSize: Inputs are not valid\n1 validation error for Input\n  Value error, "
-                "Minimum 666 is greater than maximum 42 [type=value_error, input_value={'minimum': 666, 'maximum': 42}, input_type=dict]\n"
-                "    For further information visit https://errors.pydantic.dev/2.1/v/value_error"
-            ],
+            "messages": ["Minimum 666 is greater than maximum 42"],
         },
     },
     {

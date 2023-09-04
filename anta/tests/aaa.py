@@ -9,7 +9,7 @@ Test functions related to the EOS various AAA settings
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import Literal, List, Set
 
 from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
@@ -62,7 +62,7 @@ class VerifyTacacsServers(AntaTest):
     commands = [AntaCommand(command="show tacacs")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        servers: list[IPv4Address]
+        servers: List[IPv4Address]
         """List of TACACS servers"""
         vrf: str = "default"
         """The name of the VRF to transport TACACS messages"""
@@ -102,7 +102,7 @@ class VerifyTacacsServerGroups(AntaTest):
     commands = [AntaCommand(command="show tacacs")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        groups: list[str]
+        groups: List[str]
         """List of TACACS server group"""
 
     @AntaTest.anta_test
@@ -134,9 +134,9 @@ class VerifyAuthenMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods authentication")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: list[AAAAuthMethod]
+        methods: List[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order"""
-        types: set[Literal["login", "enable", "dot1x"]]
+        types: Set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify"""
 
     @AntaTest.anta_test
@@ -179,9 +179,9 @@ class VerifyAuthzMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods authorization")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: list[AAAAuthMethod]
+        methods: List[AAAAuthMethod]
         """List of AAA authorization methods. Methods should be in the right order"""
-        types: set[Literal["commands", "exec"]]
+        types: Set[Literal["commands", "exec"]]
         """List of authorization types to verify"""
 
     @AntaTest.anta_test
@@ -217,9 +217,9 @@ class VerifyAcctDefaultMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods accounting")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: list[AAAAuthMethod]
+        methods: List[AAAAuthMethod]
         """List of AAA accounting methods. Methods should be in the right order"""
-        types: set[Literal["commands", "exec", "system", "dot1x"]]
+        types: Set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting types to verify"""
 
     @AntaTest.anta_test
@@ -261,9 +261,9 @@ class VerifyAcctConsoleMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods accounting")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: list[AAAAuthMethod]
+        methods: List[AAAAuthMethod]
         """List of AAA accounting console methods. Methods should be in the right order"""
-        types: set[Literal["commands", "exec", "system", "dot1x"]]
+        types: Set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting console types to verify"""
 
     @AntaTest.anta_test

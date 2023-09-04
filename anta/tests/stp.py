@@ -8,7 +8,7 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, List
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -32,7 +32,7 @@ class VerifySTPMode(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
         """STP mode to verify"""
-        vlans: list[Vlan]
+        vlans: List[Vlan]
         """List of VLAN on which to verify STP mode"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -123,7 +123,7 @@ class VerifySTPForwardingPorts(AntaTest):
     commands = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vlans: list[Vlan]
+        vlans: List[Vlan]
         """List of VLAN on which to verify forwarding states"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -169,7 +169,7 @@ class VerifySTPRootPriority(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         priority: int
         """STP root priority to verify"""
-        instances: list[Vlan] = []
+        instances: List[Vlan] = []
         """List of VLAN or MST instance ID(s). If empty, ALL VLAN or MST instance ID(s) will be verified."""
 
     @AntaTest.anta_test

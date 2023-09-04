@@ -13,6 +13,11 @@ def test(mocked_device: MagicMock, data: dict[str, Any]) -> None:
     # Assert expected result
     assert test.result.result == data["expected"]["result"], test.result.messages
     if "messages" in data["expected"]:
-        assert test.result.messages == data["expected"]["messages"]
+        # We expect messages in test result
+        assert len(test.result.messages) == len(data["expected"]["messages"])
+        # Test will pass if the expected message is included in the test result message
+        for message, expected in zip(test.result.messages, data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+            assert expected in message
     else:
+        # Test result should not have messages
         assert test.result.messages == []

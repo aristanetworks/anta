@@ -8,6 +8,8 @@ Test functions related to the hardware or environment
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import List
+
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
@@ -27,7 +29,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        manufacturers: list[str]
+        manufacturers: List[str]
         """List of approved transceivers manufacturers"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -140,7 +142,7 @@ class VerifyEnvironmentCooling(AntaTest):
     commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: list[str]
+        states: List[str]
         """Accepted states list for fan status"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -175,7 +177,7 @@ class VerifyEnvironmentPower(AntaTest):
     commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: list[str]
+        states: List[str]
         """Accepted states list for power supplies status"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])

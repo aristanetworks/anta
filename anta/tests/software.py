@@ -8,6 +8,8 @@ Test functions related to the EOS software
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import List
+
 from anta.models import AntaCommand, AntaTest
 
 
@@ -22,7 +24,7 @@ class VerifyEOSVersion(AntaTest):
     commands = [AntaCommand(command="show version")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: list[str]
+        versions: List[str]
         """List of allowed EOS versions"""
 
     @AntaTest.anta_test
@@ -45,7 +47,7 @@ class VerifyTerminAttrVersion(AntaTest):
     commands = [AntaCommand(command="show version detail")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: list[str]
+        versions: List[str]
         """List of allowed TerminAttr versions"""
 
     @AntaTest.anta_test

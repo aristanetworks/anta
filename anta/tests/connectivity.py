@@ -9,7 +9,7 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from pydantic import BaseModel
 
@@ -34,7 +34,7 @@ class VerifyReachability(AntaTest):
     commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        hosts: list[Host]
+        hosts: List[Host]
         """List of hosts to ping"""
 
         class Host(BaseModel):

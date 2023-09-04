@@ -8,7 +8,7 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict
 
 from anta.decorators import check_bgp_family_enable
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -103,7 +103,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     commands = [AntaTemplate(template="show bgp ipv4 unicast summary vrf {vrf}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vrfs: dict[str, int]
+        vrfs: Dict[str, int]
         """VRFs associated with neighbors count to verify"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:

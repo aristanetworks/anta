@@ -6,8 +6,9 @@ Test functions related to the device interfaces
 """
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
 import re
-from typing import Any
+from typing import Any, List, Dict
 
 from pydantic import conint
 
@@ -300,9 +301,9 @@ class VerifyL3MTU(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 1500
         """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
         """A list of L3 interfaces to ignore"""
-        specific_mtu: list[dict[str, int]] = []
+        specific_mtu: List[Dict[str, int]] = []
         """A list of dictionary of L3 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
@@ -343,7 +344,7 @@ class VerifyIPProxyARP(AntaTest):
     commands = [AntaTemplate(template="show ip interface {intf}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: list[str]
+        interfaces: List[str]
         """List of interfaces to be tested"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -383,9 +384,9 @@ class VerifyL2MTU(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 9214
         """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
         """A list of L2 interfaces to ignore"""
-        specific_mtu: list[dict[str, int]] = []
+        specific_mtu: List[Dict[str, int]] = []
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
