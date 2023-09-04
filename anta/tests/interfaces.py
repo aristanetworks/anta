@@ -7,8 +7,9 @@ Test functions related to the device interfaces
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
+
 import re
-from typing import Any, List, Dict
+from typing import Any, Dict, List
 
 from pydantic import conint
 

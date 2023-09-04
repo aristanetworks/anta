@@ -9,7 +9,7 @@ Test functions related to the EOS various AAA settings
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal, List, Set
+from typing import List, Literal, Set
 
 from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest

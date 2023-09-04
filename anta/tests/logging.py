@@ -10,11 +10,10 @@ NOTE: 'show logging' does not support json output yet
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import List
-
 import logging
 import re
 from ipaddress import IPv4Address
+from typing import List
 
 from anta.models import AntaCommand, AntaTest
 

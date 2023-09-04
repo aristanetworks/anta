@@ -8,7 +8,7 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Literal, List
+from typing import List, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
