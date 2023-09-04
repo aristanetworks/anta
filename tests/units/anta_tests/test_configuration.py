@@ -1,14 +1,8 @@
-<<<<<<< HEAD:tests/units/anta_tests/configuration/data.py
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.configuration"""
-=======
-"""
-Tests for anta.tests.hardware.py
-"""
 from __future__ import annotations
->>>>>>> 6bdc890 (anta.tests.configuration: refactor tests):tests/units/anta_tests/test_configuration.py
 
 from typing import Any
 
