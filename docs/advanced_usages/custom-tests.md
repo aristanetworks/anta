@@ -229,7 +229,7 @@ ERROR    Exception raised for test verify_dynamic_vlan (on device 192.168.0.10) 
 !!! info "Get stack trace for debugging"
     If you want to access to the full exception stack, you can run your test with logging level set to `DEBUG`. With ANTA cli, it is available with following option:
     ```bash
-    $ ANTA_DEBUG=true anta nrfu --catalog test_custom.yml text 
+    $ ANTA_DEBUG=true anta nrfu --catalog test_custom.yml text
     ```
 
 ## Create your catalog
