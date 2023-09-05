@@ -9,10 +9,11 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
+from anta.custom_types import Interface
 from anta.models import AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -31,7 +32,8 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories = ["connectivity"]
-    commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
+    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat 2"),
+                AntaTemplate(template="ping vrf {vrf} {destination} interface {interface} repeat 2")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: List[Host]
@@ -40,24 +42,45 @@ class VerifyReachability(AntaTest):
         class Host(BaseModel):
             """Remote host to ping"""
 
-            dst: IPv4Address
+            destination: IPv4Address
             """IPv4 address to ping"""
-            src: IPv4Address
+            source: Optional[IPv4Address] = None
             """IPv4 address to use as source IP"""
+            interface: Optional[Interface] = None
+            """Egress interface to use"""
             vrf: str = "default"
             """VRF context"""
 
+            @model_validator(mode='after')
+            def check_source_or_interface(self) -> 'Host':
+                if not self.source and not self.interface:
+                    raise ValueError('either source or interface is required')
+                elif self.source and self.interface:
+                    raise ValueError('source and interface cannot be provided simultaneously')
+                return self
+
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        return [template.render(dst=host.dst, src=host.src, vrf=host.vrf) for host in self.inputs.hosts]
+        commands = []
+        for host in self.inputs.hosts:
+            if template == VerifyReachability.commands[0] and host.source:
+                # We are rendering a ping command with source IP
+                commands.append(template.render(destination=host.destination, source=host.source, vrf=host.vrf))
+            elif template == VerifyReachability.commands[1] and host.interface:
+                # We are rendering a ping command with source interface
+                commands.append(template.render(destination=host.destination, interface=host.interface, vrf=host.vrf))
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
         failures = []
         for command in self.instance_commands:
-            if command.params and ("src" and "dst") in command.params:
-                src, dst = command.params["src"], command.params["dst"]
-            if "2 received" not in command.json_output["messages"][0]:
-                failures.append((str(src), str(dst)))
+            if command.params:
+                if "source" in command.params and "destination" in command.params:
+                    src, dst = command.params["source"], command.params["destination"]
+                elif "interface" in command.params and "destination" in command.params:
+                    src, dst = command.params["interface"], command.params["destination"]
+                if "2 received" not in command.json_output["messages"][0]:
+                    failures.append((str(src), str(dst)))
         if not failures:
             self.result.is_success()
         else:

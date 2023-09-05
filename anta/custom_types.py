@@ -6,7 +6,7 @@ Module that provides predefined types for AntaTest.Input instances
 """
 from typing import Literal
 
-from pydantic import conint
+from pydantic import conint, constr
 from pydantic.functional_validators import AfterValidator
 from typing_extensions import Annotated, TypeAlias
 
@@ -20,3 +20,4 @@ def aaa_group_prefix(v: str) -> str:
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan: TypeAlias = conint(ge=0, le=4094)  # type: ignore
 TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
+Interface: TypeAlias = constr(pattern=r'(Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*')  # type: ignore
