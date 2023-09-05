@@ -270,10 +270,11 @@ class AntaTest(ABC):
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
+        self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
-        if hasattr(self, "inputs"):
+        if self.result.result == "unset":
             self._init_commands(eos_data)
 
     def _init_inputs(self, inputs: dict[str, Any] | None) -> None:
