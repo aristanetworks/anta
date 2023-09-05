@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """
 Tests for anta.tests.security.py
 """
@@ -15,7 +18,7 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

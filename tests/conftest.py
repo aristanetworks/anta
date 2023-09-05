@@ -9,8 +9,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-import pytest
-
 if TYPE_CHECKING:
     from pytest import Metafunc
 
@@ -38,8 +36,14 @@ def build_test_id(val: dict[str, Any]) -> str:
 
 
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    """
+    This function is called during test collection.
+    It will parametrize test cases based on the DATA data structure defined in tests.units.anta_tests modules.
+    See tests.units.anta_tests.README.md for test parameters definition.
+    Test IDs are generated using the build_test_id function above.
+
+    See: https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
+    """
     if "tests.units.anta_tests" in metafunc.module.__package__:
         # This is a unit test for an AntaTest subclass
         metafunc.parametrize("data", metafunc.module.DATA, ids=build_test_id)
-    elif "tests.lib" in metafunc.module.__package__:
-        metafunc.parametrize(pytest.skip("Do not execute tests in tests.lib"))

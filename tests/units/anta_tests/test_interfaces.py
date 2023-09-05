@@ -21,7 +21,7 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

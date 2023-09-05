@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.routing.generic import VerifyBFD, VerifyRoutingProtocolModel, VerifyRoutingTableSize
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

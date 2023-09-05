@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """
 Tests for anta.tests.snmp.py
 """
@@ -6,7 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.snmp import VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpStatus
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

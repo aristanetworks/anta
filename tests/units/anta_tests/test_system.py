@@ -16,7 +16,7 @@ from anta.tests.system import (
     VerifyReloadCause,
     VerifyUptime,
 )
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {

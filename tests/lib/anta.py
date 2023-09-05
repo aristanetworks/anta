@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 from __future__ import annotations
 
 import asyncio
@@ -6,6 +9,10 @@ from unittest.mock import MagicMock
 
 
 def test(mocked_device: MagicMock, data: dict[str, Any]) -> None:
+    """
+    Generic test case for AntaTest subclass.
+    See tests/units/anta_tests/README.md for more information on how to use it.
+    """
     # Instantiate the AntaTest subclass
     test = data["test"](mocked_device, inputs=data["inputs"], eos_data=data["eos_data"])
     # Run the test() method

@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyZeroTouch
-from tests.lib.test_case import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401
 
 DATA: list[dict[str, Any]] = [
     {
