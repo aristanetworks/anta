@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 
 def test(mocked_device: MagicMock, data: dict[str, Any]) -> None:
     """
-    Generic test case for AntaTest subclass.
-    See tests/units/anta_tests/README.md for more information on how to use it.
+    Generic test function for AntaTest subclass.
+    See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
     # Instantiate the AntaTest subclass
     test = data["test"](mocked_device, inputs=data["inputs"], eos_data=data["eos_data"])
