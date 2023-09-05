@@ -32,8 +32,10 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories = ["connectivity"]
-    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat 2"),
-                AntaTemplate(template="ping vrf {vrf} {destination} interface {interface} repeat 2")]
+    commands = [
+        AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat 2"),
+        AntaTemplate(template="ping vrf {vrf} {destination} interface {interface} repeat 2"),
+    ]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: List[Host]
@@ -51,12 +53,13 @@ class VerifyReachability(AntaTest):
             vrf: str = "default"
             """VRF context"""
 
-            @model_validator(mode='after')
-            def check_source_or_interface(self) -> 'Host':
+            @model_validator(mode="after")
+            def check_source_or_interface(self: BaseModel) -> BaseModel:
+                """Ensure either source or interface is provided but not both fields"""
                 if not self.source and not self.interface:
-                    raise ValueError('either source or interface is required')
-                elif self.source and self.interface:
-                    raise ValueError('source and interface cannot be provided simultaneously')
+                    raise ValueError("either source or interface is required")
+                if self.source and self.interface:
+                    raise ValueError("source and interface cannot be provided simultaneously")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
