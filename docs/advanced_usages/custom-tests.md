@@ -139,7 +139,7 @@ Below is a high level description of the test execution flow in ANTA:
 
 3. If there is any [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instance in the `commands` class attribute, [render()](../api/models.md#anta.models.AntaTest.render) will be called for every occurrence. At this moment, the `instance_commands` attribute has been initialized. If any rendering error occurs, the test execution will be stopped.
 
-4. The `AntaTest.anta_test` decorator will collect the commands from the device and update the `instance_commands` attribute with the outputs. If any collection error occurs, the text execution will be stopped.
+4. The `AntaTest.anta_test` decorator will collect the commands from the device and update the `instance_commands` attribute with the outputs. If any collection error occurs, the test execution will be stopped.
 
 5. The [test()](../api/models.md#anta.models.AntaTest.test) method is executed.
 
@@ -215,7 +215,7 @@ You can access test inputs and render as many [AntaCommand](../api/models.md#ant
 
 ### Test definition
 
-The code here can be very simple as well as very complex and will depend of what you expect to do. But in all situation, the same baseline can be leverage:
+Implement the `test()` method with your test logic:
 
 ```python
 class <YourTestName>(AntaTest):
@@ -225,7 +225,10 @@ class <YourTestName>(AntaTest):
         pass
 ```
 
-Here you implement your own logic. In general, the first action is to send command to devices and capture its response.
+The logic usually includes the following different stages:
+1. Parse the command outputs using the `self.instance_commands` instance attribute.
+2. If needed, access the test inputs using the `self.inputs` instance attribute and write your conditional logic.
+3. Set the `result` instance attribute to reflect the test result by either calling `self.result.is_success()` or `self.result.is_failure("<FAILURE REASON>")`. Sometimes, setting the test result to `skipped` using `self.result.is_skipped("<SKIPPED REASON>")` can make sense (e.g. testing the OSPF neighbor states but no neighbor was found). However, you should not need to catch any exception and set the test result to `error` since the error handling is done by the framework, see below.
 
 The example below is based on the [VerifyTemperature](../../api/tests.hardware/#anta.tests.hardware.VerifyTemperature) test.
 
@@ -245,7 +248,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
 ```
 
-As you can see there is no error management to do in your code. Everything is packaged in the `AntaTest.anta_tests` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
+As you can see there is no error handling to do in your code. Everything is packaged in the `AntaTest.anta_tests` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
 
 ```python
 class VerifyTemperature(AntaTest):
@@ -294,7 +297,7 @@ class VerifyTemperature(AntaTest):
 
 For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be impartable by ANTA hence available in the module search path `sys.path` (you can use `PYTHONPATH` for example).
 
-It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
+It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.2
 
 Let say the custom Python package is `anta_titom73` and the test is defined in `anta_titom73.dc_project` Python module, the test catalog would look like:
 
