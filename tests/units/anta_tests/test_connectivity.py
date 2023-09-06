@@ -49,7 +49,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "success-interface",
         "test": VerifyReachability,
-        "inputs": {"hosts": [{"destination": "10.0.0.1", "interface": "Management0"}, {"destination": "10.0.0.2", "interface": "Management0"}]},
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
         "eos_data": [
             {
                 "messages": [
@@ -117,7 +117,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-interface",
         "test": VerifyReachability,
-        "inputs": {"hosts": [{"destination": "10.0.0.11", "interface": "Management0"}, {"destination": "10.0.0.2", "interface": "Management0"}]},
+        "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
         "eos_data": [
             {
                 "messages": [
