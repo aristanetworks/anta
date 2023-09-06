@@ -11,7 +11,7 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, List, Union
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 
 from anta.custom_types import Interface
 from anta.models import AntaTemplate, AntaTest
