@@ -2,12 +2,13 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models related to anta.result_manager module."""
+from __future__ import annotations
 
 from typing import Iterator, List, Optional
 
-from pydantic import BaseModel, RootModel, field_validator
+from pydantic import BaseModel, ConfigDict, RootModel
 
-RESULT_OPTIONS = ["unset", "success", "failure", "error", "skipped"]
+from anta.custom_types import TestStatus
 
 
 class TestResult(BaseModel):
@@ -15,107 +16,76 @@ class TestResult(BaseModel):
     Describe the result of a test from a single device.
 
     Attributes:
-        name (str): Device name where the test has run.
-        test (str): Test name runs on the device.
-        categories (List[str]): List of categories the TestResult belongs to, by default the AntaTest categories.
-        description (str): TestResult description, by default the AntaTest description.
-        results (str): Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
-        message (str, optional): Message to report after the test if any.
-        custom_field (str, optional): Custom field to store a string for flexibility in integrating with ANTA
+        name: Device name where the test has run.
+        test: Test name runs on the device.
+        categories: List of categories the TestResult belongs to, by default the AntaTest categories.
+        description: TestResult description, by default the AntaTest description.
+        results: Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
+        message: Message to report after the test if any.
+        error: Exception object if the test result is "error" and an Exception occured
+        custom_field: Custom field to store a string for flexibility in integrating with ANTA
     """
+
+    # This is required if we want to keep an Exception object in the error field
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
     test: str
     categories: List[str]
     description: str
-    result: str = "unset"
+    result: TestStatus = "unset"
     messages: List[str] = []
+    error: Optional[Exception] = None
     custom_field: Optional[str] = None
 
-    @classmethod
-    @field_validator("result")
-    def name_must_be_in(cls, v: str) -> str:
-        """
-        Status validator
-
-        Validate status is a supported one
-
-        Args:
-            v (str): User defined status
-
-        Raises:
-            ValueError: If status is unsupported
-
-        Returns:
-            str: status value
-        """
-        if v not in RESULT_OPTIONS:
-            raise ValueError(f"must be one of {RESULT_OPTIONS}")
-        return v
-
-    def is_success(self, message: str = "") -> bool:
+    def is_success(self, message: str | None = None) -> None:
         """
         Helper to set status to success
 
         Args:
-            message (str): Optional message related to the test
-
-        Returns:
-            bool: Always true
+            message: Optional message related to the test
         """
-        return self._set_status("success", message)
+        self._set_status("success", message)
 
-    def is_failure(self, message: str = "") -> bool:
+    def is_failure(self, message: str | None = None) -> None:
         """
         Helper to set status to failure
 
         Args:
-            message (str): Optional message related to the test
-
-        Returns:
-            bool: Always true
+            message: Optional message related to the test
         """
-        return self._set_status("failure", message)
+        self._set_status("failure", message)
 
-    def is_skipped(self, message: str = "") -> bool:
+    def is_skipped(self, message: str | None = None) -> None:
         """
         Helper to set status to skipped
 
         Args:
-            message (str): Optional message related to the test
-
-        Returns:
-            bool: Always true
+            message: Optional message related to the test
         """
-        return self._set_status("skipped", message)
+        self._set_status("skipped", message)
 
-    def is_error(self, message: str = "") -> bool:
+    def is_error(self, message: str | None = None, exception: Exception | None = None) -> None:
         """
         Helper to set status to error
 
         Args:
-            message (str): Optional message related to the test
-
-        Returns:
-            bool: Always true
+            exception: Optional Exception objet related to the error
         """
-        return self._set_status("error", message)
+        self._set_status("error", message)
+        self.error = exception
 
-    def _set_status(self, status: str, message: str = "") -> bool:
+    def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """
         Set status and insert optional message
 
         Args:
-            status (str): status of the test
-            message (str): optional message
-
-        Returns:
-            bool: Always true
+            status: status of the test
+            message: optional message
         """
         self.result = status
-        if message != "":
+        if message is not None:
             self.messages.append(message)
-        return True
 
     def __str__(self) -> str:
         """

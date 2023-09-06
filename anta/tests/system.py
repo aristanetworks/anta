@@ -4,10 +4,13 @@
 """
 Test functions related to system-level features and protocols
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 import re
-from typing import Optional
+
+from pydantic import conint
 
 from anta.models import AntaCommand, AntaTest
 
@@ -19,7 +22,6 @@ class VerifyUptime(AntaTest):
     Expected Results:
       * success: The test will pass if the device uptime is higher than the provided value.
       * failure: The test will fail if the device uptime is lower than the provided value.
-      * skipped: The test will be skipped if the provided uptime value is invalid or negative.
     """
 
     name = "VerifyUptime"
@@ -27,22 +29,14 @@ class VerifyUptime(AntaTest):
     categories = ["system"]
     commands = [AntaCommand(command="show uptime")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        minimum: conint(ge=0)  # type: ignore
+        """Minimum uptime in seconds"""
+
     @AntaTest.anta_test
-    def test(self, minimum: Optional[int] = None) -> None:
-        """
-        Run VerifyUptime validation
-
-        Args:
-            minimum: Minimum uptime in seconds.
-        """
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
-        if not (isinstance(minimum, (int, float))) or minimum < 0:
-            self.result.is_skipped(f"{self.__class__.name} was not run since the provided uptime value is invalid or negative")
-            return
-
-        if command_output["upTime"] > minimum:
+        if command_output["upTime"] > self.inputs.minimum:
             self.result.is_success()
         else:
             self.result.is_failure(f"Device uptime is {command_output['upTime']} seconds")
@@ -52,7 +46,7 @@ class VerifyReloadCause(AntaTest):
     """
     This test verifies the last reload cause of the device.
 
-    Expected Results:
+    Expected results:
       * success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
       * failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
       * error: The test will report an error if the reload cause is NOT available.
@@ -65,21 +59,14 @@ class VerifyReloadCause(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyReloadCause validation
-        """
-
         command_output = self.instance_commands[0].json_output
-
         if "resetCauses" not in command_output.keys():
-            self.result.is_error("No reload causes available")
+            self.result.is_error(message="No reload causes available")
             return
-
         if len(command_output["resetCauses"]) == 0:
             # No reload causes
             self.result.is_success()
             return
-
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
         if command_output_data in [
@@ -110,16 +97,10 @@ class VerifyCoredump(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyCoredump validation
-        """
         command_output = self.instance_commands[0].json_output
-
         core_files = command_output["coreFiles"]
-
         if "minidump" in core_files:
             core_files.remove("minidump")
-
         if not core_files:
             self.result.is_success()
         else:
@@ -142,11 +123,7 @@ class VerifyAgentLogs(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyAgentLogs validation
-        """
         command_output = self.instance_commands[0].text_output
-
         if len(command_output) == 0:
             self.result.is_success()
         else:
@@ -171,12 +148,8 @@ class VerifyCPUUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyCPUUtilization validation
-        """
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
-
         if command_output_data > 25:
             self.result.is_success()
         else:
@@ -199,11 +172,7 @@ class VerifyMemoryUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyMemoryUtilization validation
-        """
         command_output = self.instance_commands[0].json_output
-
         memory_usage = command_output["memFree"] / command_output["memTotal"]
         if memory_usage > 0.25:
             self.result.is_success()
@@ -227,13 +196,8 @@ class VerifyFileSystemUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyFileSystemUtilization validation
-        """
         command_output = self.instance_commands[0].text_output
-
         self.result.is_success()
-
         for line in command_output.split("\n")[1:]:
             if "loop" not in line and len(line) > 0 and (percentage := int(line.split()[4].replace("%", ""))) > 75:
                 self.result.is_failure(f"Mount point {line} is higher than 75%: reported {percentage}%")
@@ -255,11 +219,7 @@ class VerifyNTP(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyNTP validation
-        """
         command_output = self.instance_commands[0].text_output
-
         if command_output.split("\n")[0].split(" ")[0] == "synchronised":
             self.result.is_success()
         else:

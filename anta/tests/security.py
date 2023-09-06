@@ -4,9 +4,11 @@
 """
 Test functions related to the EOS various security settings
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Optional
+from pydantic import conint
 
 from anta.models import AntaCommand, AntaTest
 
@@ -27,10 +29,6 @@ class VerifySSHStatus(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifySSHStatus validation.
-        """
-
         command_output = self.instance_commands[0].text_output
 
         line = [line for line in command_output.split("\n") if line.startswith("SSHD status")][0]
@@ -49,7 +47,6 @@ class VerifySSHIPv4Acl(AntaTest):
     Expected results:
         * success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
         * failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
-        * skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySSHIPv4Acl"
@@ -57,35 +54,26 @@ class VerifySSHIPv4Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        number: conint(ge=0)  # type:ignore
+        """The number of expected IPv4 ACL(s)"""
+        vrf: str = "default"
+        """The name of the VRF in which to check for the SSHD agent"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
-        """
-        Run VerifySSHIPv4Acl validation.
-
-        Args:
-            number: The number of expected IPv4 ACL(s).
-            vrf: The name of the VRF in which to check for the SSHD agent. Defaults to 'default'.
-        """
-        if not number or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
         not_configured_acl_list = []
-
-        if ipv4_acl_number != number:
-            self.result.is_failure(f"Expected {number} SSH IPv4 ACL(s) in vrf {vrf} but got {ipv4_acl_number}")
+        if ipv4_acl_number != self.inputs.number:
+            self.result.is_failure(f"Expected {self.inputs.number} SSH IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
             return
-
         for ipv4_acl in ipv4_acl_list:
-            if vrf not in ipv4_acl["configuredVrfs"] or vrf not in ipv4_acl["activeVrfs"]:
+            if self.inputs.vrf not in ipv4_acl["configuredVrfs"] or self.inputs.vrf not in ipv4_acl["activeVrfs"]:
                 not_configured_acl_list.append(ipv4_acl["name"])
-
         if not_configured_acl_list:
-            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
 
@@ -97,7 +85,6 @@ class VerifySSHIPv6Acl(AntaTest):
     Expected results:
         * success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
         * failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
-        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifySSHIPv6Acl"
@@ -105,35 +92,26 @@ class VerifySSHIPv6Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        number: conint(ge=0)  # type:ignore
+        """The number of expected IPv6 ACL(s)"""
+        vrf: str = "default"
+        """The name of the VRF in which to check for the SSHD agent"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
-        """
-        Run VerifySSHIPv6Acl validation.
-
-        Args:
-            number: The number of expected IPv6 ACL(s).
-            vrf: The name of the VRF in which to check for the SSHD agent. Defaults to 'default'.
-        """
-        if not number or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
         not_configured_acl_list = []
-
-        if ipv6_acl_number != number:
-            self.result.is_failure(f"Expected {number} SSH IPv6 ACL(s) in vrf {vrf} but got {ipv6_acl_number}")
+        if ipv6_acl_number != self.inputs.number:
+            self.result.is_failure(f"Expected {self.inputs.number} SSH IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
             return
-
         for ipv6_acl in ipv6_acl_list:
-            if vrf not in ipv6_acl["configuredVrfs"] or vrf not in ipv6_acl["activeVrfs"]:
+            if self.inputs.vrf not in ipv6_acl["configuredVrfs"] or self.inputs.vrf not in ipv6_acl["activeVrfs"]:
                 not_configured_acl_list.append(ipv6_acl["name"])
-
         if not_configured_acl_list:
-            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
 
@@ -154,12 +132,7 @@ class VerifyTelnetStatus(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyTelnetStatus validation.
-        """
-
         command_output = self.instance_commands[0].json_output
-
         if command_output["serverState"] == "disabled":
             self.result.is_success()
         else:
@@ -182,12 +155,7 @@ class VerifyAPIHttpStatus(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyAPIHTTPStatus validation.
-        """
-
         command_output = self.instance_commands[0].json_output
-
         if command_output["enabled"] and not command_output["httpServer"]["running"]:
             self.result.is_success()
         else:
@@ -201,7 +169,6 @@ class VerifyAPIHttpsSSL(AntaTest):
     Expected results:
         * success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
         * failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
-        * skipped: The test will be skipped if the SSL profile is not provided.
     """
 
     name = "VerifyAPIHttpsSSL"
@@ -209,28 +176,21 @@ class VerifyAPIHttpsSSL(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        profile: str
+        """SSL profile to verify"""
+
     @AntaTest.anta_test
-    def test(self, profile: Optional[str] = None) -> None:
-        """
-        Run VerifyAPIHttpsSSL validation.
-
-        Args:
-            profile: SSL profile to verify.
-        """
-        if not profile:
-            self.result.is_skipped(f"{self.__class__.name} did not run because profile was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         try:
-            if command_output["sslProfile"]["name"] == profile and command_output["sslProfile"]["state"] == "valid":
+            if command_output["sslProfile"]["name"] == self.inputs.profile and command_output["sslProfile"]["state"] == "valid":
                 self.result.is_success()
             else:
-                self.result.is_failure(f"eAPI HTTPS server SSL profile ({profile}) is misconfigured or invalid")
+                self.result.is_failure(f"eAPI HTTPS server SSL profile ({self.inputs.profile}) is misconfigured or invalid")
 
         except KeyError:
-            self.result.is_failure(f"eAPI HTTPS server SSL profile ({profile}) is not configured")
+            self.result.is_failure(f"eAPI HTTPS server SSL profile ({self.inputs.profile}) is not configured")
 
 
 class VerifyAPIIPv4Acl(AntaTest):
@@ -240,7 +200,6 @@ class VerifyAPIIPv4Acl(AntaTest):
     Expected results:
         * success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
         * failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
-        * skipped: The test will be skipped if the number of IPv4 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifyAPIIPv4Acl"
@@ -248,35 +207,26 @@ class VerifyAPIIPv4Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        number: conint(ge=0)  # type:ignore
+        """The number of expected IPv4 ACL(s)"""
+        vrf: str = "default"
+        """The name of the VRF in which to check for eAPI"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyAPIIPv4Acl validation.
-
-        Args:
-            number: The number of expected IPv4 ACL(s).
-            vrf: The name of the VRF in which to check for eAPI. Defaults to 'default'.
-        """
-        if not number or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
         not_configured_acl_list = []
-
-        if ipv4_acl_number != number:
-            self.result.is_failure(f"Expected {number} eAPI IPv4 ACL(s) in vrf {vrf} but got {ipv4_acl_number}")
+        if ipv4_acl_number != self.inputs.number:
+            self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
             return
-
         for ipv4_acl in ipv4_acl_list:
-            if vrf not in ipv4_acl["configuredVrfs"] or vrf not in ipv4_acl["activeVrfs"]:
+            if self.inputs.vrf not in ipv4_acl["configuredVrfs"] or self.inputs.vrf not in ipv4_acl["activeVrfs"]:
                 not_configured_acl_list.append(ipv4_acl["name"])
-
         if not_configured_acl_list:
-            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
 
@@ -296,34 +246,25 @@ class VerifyAPIIPv6Acl(AntaTest):
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        number: conint(ge=0)  # type:ignore
+        """The number of expected IPv6 ACL(s)"""
+        vrf: str = "default"
+        """The name of the VRF in which to check for eAPI"""
+
     @AntaTest.anta_test
-    def test(self, number: Optional[int] = None, vrf: str = "default") -> None:
-        """
-        Run VerifyAPIIPv6Acl validation.
-
-        Args:
-            number: The number of expected IPv6 ACL(s).
-            vrf: The name of the VRF in which to check for eAPI. Defaults to 'default'.
-        """
-        if not number or not vrf:
-            self.result.is_skipped(f"{self.__class__.name} did not run because number or vrf was not supplied")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
         not_configured_acl_list = []
-
-        if ipv6_acl_number != number:
-            self.result.is_failure(f"Expected {number} eAPI IPv6 ACL(s) in vrf {vrf} but got {ipv6_acl_number}")
+        if ipv6_acl_number != self.inputs.number:
+            self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
             return
-
         for ipv6_acl in ipv6_acl_list:
-            if vrf not in ipv6_acl["configuredVrfs"] or vrf not in ipv6_acl["activeVrfs"]:
+            if self.inputs.vrf not in ipv6_acl["configuredVrfs"] or self.inputs.vrf not in ipv6_acl["activeVrfs"]:
                 not_configured_acl_list.append(ipv6_acl["name"])
-
         if not_configured_acl_list:
-            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {vrf}: {not_configured_acl_list}")
+            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()

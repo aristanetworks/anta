@@ -10,12 +10,12 @@ import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Tuple
 
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
-from anta.result_manager.models import TestResult
+from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +75,52 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
         logger.debug("ANTA Debug Mode enabled")
 
 
-def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
+def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> list[Tuple[AntaTest, dict[str, Any] | None]]:
     """
-    Function to parse the catalog and return a list of tests
+    Function to parse the catalog and return a list of tests with their inputs
+
+    A valid test catalog must follow the following structure:
+        <Python module>:
+            - <AntaTest subclass>:
+                <AntaTest.Input compliant dictionary>
+
+    Example:
+        anta.tests.connectivity:
+            - VerifyReachability:
+                hosts:
+                    - dst: 8.8.8.8
+                      src: 172.16.0.1
+                    - dst: 1.1.1.1
+                      src: 172.16.0.1
+                result_overwrite:
+                    categories:
+                        - "Overwritten category 1"
+                    description: "Test with overwritten description"
+                    custom_field: "Test run by John Doe"
+
+    Also supports nesting for Python module definition:
+        anta.tests:
+            connectivity:
+                - VerifyReachability:
+                    hosts:
+                        - dst: 8.8.8.8
+                          src: 172.16.0.1
+                        - dst: 1.1.1.1
+                          src: 172.16.0.1
+                    result_overwrite:
+                        categories:
+                            - "Overwritten category 1"
+                        description: "Test with overwritten description"
+                        custom_field: "Test run by John Doe"
 
     Args:
-        test_catalog (Dict[Any, Any]): List of tests defined in catalog YAML file
+        test_catalog: Python dictionary representing the test catalog YAML file
 
     Returns:
-        List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]: List of python function tests to run.
+        tests: List of tuples (test, inputs) where test is a reference of an AntaTest subclass
+              and inputs is a dictionary
     """
-    tests: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]] = []
+    tests: list[Tuple[AntaTest, dict[str, Any] | None]] = []
     if not test_catalog:
         return tests
     for key, value in test_catalog.items():
@@ -95,21 +130,27 @@ def parse_catalog(test_catalog: Dict[Any, Any], package: Optional[str] = None) -
         try:
             module = importlib.import_module(f"{key}")
         except ModuleNotFoundError:
-            logger.error(f"No test module named '{key}'")
+            logger.critical(f"No test module named '{key}'")
             sys.exit(1)
         if isinstance(value, list):
             # This is a list of tests
             for test in value:
-                for func_name, args in test.items():
+                for test_name, inputs in test.items():
+                    # A test must be a subclass of AntaTest as defined in the Python module
                     try:
-                        func = getattr(module, func_name)
+                        test = getattr(module, test_name)
                     except AttributeError:
-                        logger.error(f"Wrong test function name '{func_name}' in '{module.__name__}'")
+                        logger.critical(f"Wrong test name '{test_name}' in '{module.__name__}'")
                         sys.exit(1)
-                    if not callable(func):
-                        logger.error(f"'{func.__module__}.{func.__name__}' is not a function")
+                    if not issubclass(test, AntaTest):
+                        logger.critical(f"'{test.__module__}.{test.__name__}' is not an AntaTest subclass")
                         sys.exit(1)
-                    tests.append((func, args if args is not None else {}))
+                    # Test inputs can be either None or a dictionary
+                    if inputs is None or isinstance(inputs, dict):
+                        tests.append((test, inputs))
+                    else:
+                        logger.critical(f"'{test.__module__}.{test.__name__}' inputs must be a dictionary")
+                        sys.exit(1)
         if isinstance(value, dict):
             # This is an inner Python module
             tests.extend(parse_catalog(value, package=module.__name__))

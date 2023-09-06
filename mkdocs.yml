@@ -165,7 +165,7 @@ nav:
     - Get Inventory Information: cli/get-inventory-information.md
     - Helpers: cli/debug.md
   - Advanced Usages:
-    - Create your own Library: advanced_usages/custom-tests.md
+    - Developing ANTA tests: advanced_usages/custom-tests.md
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Catalog Documentation:
     - Overview: api/tests.md
@@ -197,6 +197,7 @@ nav:
       - Device models: api/device.md
     - Test:
       - Test models: api/models.md
+      - Input Types:  api/types.md
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md

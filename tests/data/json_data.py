@@ -75,7 +75,7 @@ INVENTORY_MODEL_VALID = [
     {
         "name": "Valid_Ranges_Only",
         "input": {
-            "networks": [
+            "ranges": [
                 {"start": "10.1.0.1", "end": "10.1.0.10"},
                 {"start": "10.2.0.1", "end": "10.2.1.10"},
             ]

@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Anta Test definition
+# Test definition
 
 ## UML Diagram
 
@@ -12,16 +12,16 @@
 
 ### ::: anta.models.AntaTest
     options:
-        filters: ["!^_[^_]", "!__init_subclass__"]
+        filters: ["!^_[^_]", "!__init_subclass__", "!update_progress"]
 
-# Anta Command definition
+# Command definition
 
 ## UML Diagram
 
 ![](../imgs/uml/anta.models.AntaCommand.jpeg)
 ### ::: anta.models.AntaCommand
 
-# Template command definition
+# Template definition
 
 ## UML Diagram
 

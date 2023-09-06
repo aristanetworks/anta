@@ -4,9 +4,11 @@
 """
 Test functions related to the hardware or environment
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
@@ -19,7 +21,6 @@ class VerifyTransceiversManufacturers(AntaTest):
     Expected Results:
       * success: The test will pass if all transceivers are from approved manufacturers.
       * failure: The test will fail if some transceivers are from unapproved manufacturers.
-      * skipped: The test will be skipped if a list of approved manufacturers is not provided or if it's run on a virtualized platform.
     """
 
     name = "VerifyTransceiversManufacturers"
@@ -27,21 +28,17 @@ class VerifyTransceiversManufacturers(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        manufacturers: List[str]
+        """List of approved transceivers manufacturers"""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self, manufacturers: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyTransceiversManufacturers validation
-
-        Args:
-            manufacturers: List of approved transceivers manufacturers.
-        """
-        if not manufacturers:
-            self.result.is_skipped(f"{self.__class__.name} was not run because manufacturers list was not provided")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        wrong_manufacturers = {interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in manufacturers}
+        wrong_manufacturers = {
+            interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in self.inputs.manufacturers
+        }
         if not wrong_manufacturers:
             self.result.is_success()
         else:
@@ -55,7 +52,6 @@ class VerifyTemperature(AntaTest):
     Expected Results:
       * success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
       * failure: The test will fail if the device temperature is NOT OK.
-      * skipped: Test test will be skipped if it's run on a virtualized platform.
     """
 
     name = "VerifyTemperature"
@@ -66,9 +62,6 @@ class VerifyTemperature(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyTemperature validation
-        """
         command_output = self.instance_commands[0].json_output
         temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
         if temperature_status == "temperatureOk":
@@ -84,7 +77,6 @@ class VerifyTransceiversTemperature(AntaTest):
     Expected Results:
           * success: The test will pass if all transceivers status are OK: 'ok'.
           * failure: The test will fail if some transceivers are NOT OK.
-          * skipped: Test test will be skipped if it's run on a virtualized platform.
     """
 
     name = "VerifyTransceiversTemperature"
@@ -95,9 +87,6 @@ class VerifyTransceiversTemperature(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyTransceiversTemperature validation
-        """
         command_output = self.instance_commands[0].json_output
         sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
         wrong_sensors = {
@@ -121,7 +110,6 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     Expected Results:
       * success: The test will pass if the system cooling status is OK: 'coolingOk'.
       * failure: The test will fail if the system cooling status is NOT OK.
-      * skipped: The test will be skipped if it's run on a virtualized platform.
     """
 
     name = "VerifyEnvironmentSystemCooling"
@@ -132,13 +120,8 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyEnvironmentCooling validation
-        """
-
         command_output = self.instance_commands[0].json_output
         sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
-
         self.result.is_success()
         if sys_status != "coolingOk":
             self.result.is_failure(f"Device system cooling is not OK: '{sys_status}'")
@@ -151,7 +134,6 @@ class VerifyEnvironmentCooling(AntaTest):
     Expected Results:
       * success: The test will pass if the fans status are within the accepted states list.
       * failure: The test will fail if some fans status is not within the accepted states list.
-      * skipped: The test will be skipped if the accepted states list is not provided or if it's run on a virtualized platform.
     """
 
     name = "VerifyEnvironmentCooling"
@@ -159,30 +141,24 @@ class VerifyEnvironmentCooling(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        states: List[str]
+        """Accepted states list for fan status"""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self, accepted_states: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyEnvironmentCooling validation
-
-        Args:
-            accepted_states: Accepted states list for fan status.
-        """
-        if not accepted_states:
-            self.result.is_skipped(f"{self.__class__.name} was not run because accepted_states list was not provided")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         # First go through power supplies fans
         for power_supply in command_output.get("powerSupplySlots", []):
             for fan in power_supply.get("fans", []):
-                if (state := fan["status"]) not in accepted_states:
+                if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(f"Fan {fan['label']} on PowerSupply {power_supply['label']} is: '{state}'")
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
             for fan in fan_tray.get("fans", []):
-                if (state := fan["status"]) not in accepted_states:
+                if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(f"Fan {fan['label']} on Fan Tray {fan_tray['label']} is: '{state}'")
 
 
@@ -193,7 +169,6 @@ class VerifyEnvironmentPower(AntaTest):
     Expected Results:
       * success: The test will pass if the power supplies status are within the accepted states list.
       * failure: The test will fail if some power supplies status is not within the accepted states list.
-      * skipped: The test will be skipped if the accepted states list is not provided or if it's run on a virtualized platform.
     """
 
     name = "VerifyEnvironmentPower"
@@ -201,23 +176,17 @@ class VerifyEnvironmentPower(AntaTest):
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        states: List[str]
+        """Accepted states list for power supplies status"""
+
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self, accepted_states: Optional[List[str]] = None) -> None:
-        """
-        Run VerifyEnvironmentPower validation
-
-        Args:
-            accepted_states: Accepted states list for power supplies status.
-        """
-        if not accepted_states:
-            self.result.is_skipped(f"{self.__class__.name} was not run because accepted_states list was not provided")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
         power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
         wrong_power_supplies = {
-            powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in accepted_states
+            powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in self.inputs.states
         }
         if not wrong_power_supplies:
             self.result.is_success()
@@ -232,7 +201,6 @@ class VerifyAdverseDrops(AntaTest):
     Expected Results:
       * success: The test will pass if there are no adverse drops.
       * failure: The test will fail if there are adverse drops.
-      * skipped: The test will be skipped if it's run on a virtualized platform.
     """
 
     name = "VerifyAdverseDrops"
@@ -243,9 +211,6 @@ class VerifyAdverseDrops(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyAdverseDrops validation
-        """
         command_output = self.instance_commands[0].json_output
         total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
         if total_adverse_drop == 0:

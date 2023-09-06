@@ -27,9 +27,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
-        """Run VerifyFieldNotice44Resolution validation"""
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
 
         devices = [
@@ -117,9 +115,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
-    def test(self) -> None:  # type: ignore[override]
-        """Run VerifyFieldNotice72Resolution validation"""
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
 
         devices = ["DCS-7280SR3-48YC8", "DCS-7280SR3K-48YC8"]
@@ -165,5 +161,5 @@ class VerifyFieldNotice72Resolution(AntaTest):
                     self.result.is_success("FN72 is mitigated")
                 return
         # We should never hit this point
-        self.result.is_error("Error in running test - FixedSystemvrm1 not found")
+        self.result.is_error(message="Error in running test - FixedSystemvrm1 not found")
         return

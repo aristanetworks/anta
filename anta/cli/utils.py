@@ -11,20 +11,21 @@ from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
 import click
 from yaml import safe_load
 
 import anta.loader
 from anta.inventory import AntaInventory
-from anta.result_manager.models import TestResult
 from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from click import Option
+
+    from anta.models import AntaTest
 
 
 class ExitCode(enum.IntEnum):
@@ -80,7 +81,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[s
     return None
 
 
-def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]:
+def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[AntaTest, dict[str, Any] | None]]:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file

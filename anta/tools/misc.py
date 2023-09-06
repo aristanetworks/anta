@@ -32,25 +32,19 @@ def anta_log_exception(exception: Exception, message: Optional[str] = None, call
     if calling_logger is None:
         calling_logger = logger
     if __DEBUG__:
-        calling_logger.exception(message)
+        calling_logger.exception(message, exc_info=exception)
     else:
         log_message = exc_to_str(exception)
         if message is not None:
-            log_message = f"{message} {log_message}"
-        calling_logger.error(log_message)
+            log_message = f"{message}: {log_message}"
+        calling_logger.critical(log_message)
 
 
 def exc_to_str(exception: Exception) -> str:
     """
     Helper function that returns a human readable string from an Exception object
     """
-    res = f"{type(exception).__name__}"
-    if str(exception):
-        res += f" ({str(exception)})"
-    elif hasattr(exception, "errmsg"):
-        # TODO - remove when we bump aio-eapi once our PR is merged there
-        res += f" ({exception.errmsg})"
-    return res
+    return f"{type(exception).__name__}{f' ({exception})' if str(exception) else ''}"
 
 
 def tb_to_str(exception: Exception) -> str:

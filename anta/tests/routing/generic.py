@@ -4,8 +4,11 @@
 """
 Generic routing test functions
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
+from typing import Literal
 
-from typing import Optional
+from pydantic import model_validator
 
 from anta.models import AntaCommand, AntaTest
 
@@ -14,8 +17,6 @@ class VerifyRoutingProtocolModel(AntaTest):
     """
     Verifies the configured routing protocol model is the one we expect.
     And if there is no mismatch between the configured and operating routing protocol model.
-
-        model(str): Expected routing protocol model (multi-agent or ribd). Default is multi-agent
     """
 
     name = "VerifyRoutingProtocolModel"
@@ -23,62 +24,55 @@ class VerifyRoutingProtocolModel(AntaTest):
         "Verifies the configured routing protocol model is the expected one and if there is no mismatch between the configured and operating routing protocol model."
     )
     categories = ["routing", "generic"]
-    # "revision": 3
-    commands = [AntaCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary", revision=3)]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        model: Literal["multi-agent", "ribd"] = "multi-agent"
+        """Expected routing protocol model"""
 
     @AntaTest.anta_test
-    def test(self, model: Optional[str] = "multi-agent") -> None:
-        """Run VerifyRoutingProtocolModel validation"""
-
-        if not model:
-            self.result.is_skipped("VerifyRoutingProtocolModel was not run as no model was given")
-            return
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
         configured_model = command_output["protoModelStatus"]["configuredProtoModel"]
         operating_model = command_output["protoModelStatus"]["operatingProtoModel"]
-        if configured_model == operating_model == model:
+        if configured_model == operating_model == self.inputs.model:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {model}")
+            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
 
 
 class VerifyRoutingTableSize(AntaTest):
     """
     Verifies the size of the IP routing table (default VRF).
     Should be between the two provided thresholds.
-
-    Args:
-        minimum(int): Expected minimum routing table (default VRF) size.
-        maximum(int): Expected maximum routing table (default VRF) size.
     """
 
     name = "VerifyRoutingTableSize"
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
     categories = ["routing", "generic"]
-    # "revision": 3
-    commands = [AntaCommand(command="show ip route summary")]
+    commands = [AntaCommand(command="show ip route summary", revision=3)]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        minimum: int
+        """Expected minimum routing table (default VRF) size"""
+        maximum: int
+        """Expected maximum routing table (default VRF) size"""
+
+        @model_validator(mode="after")  # type: ignore
+        def check_min_max(self) -> AntaTest.Input:
+            """Validate that maximum is greater than minimum"""
+            if self.minimum > self.maximum:
+                raise ValueError(f"Minimum {self.minimum} is greater than maximum {self.maximum}")
+            return self
 
     @AntaTest.anta_test
-    def test(self, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
-        """Run VerifyRoutingTableSize validation"""
-
-        if not minimum or not maximum:
-            self.result.is_skipped(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} was not provided")
-            return
-        if not isinstance(minimum, int) or not isinstance(maximum, int):
-            self.result.is_error(f"VerifyRoutingTableSize was not run as either minimum {minimum} or maximum {maximum} is not a valid value (integer)")
-            return
-        if maximum < minimum:
-            self.result.is_error(f"VerifyRoutingTableSize was not run as minimum {minimum} is greate than maximum {maximum}.")
-            return
-
+    def test(self) -> None:
         command_output = self.instance_commands[0].json_output
         total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
-        if minimum <= total_routes <= maximum:
+        if self.inputs.minimum <= total_routes <= self.inputs.maximum:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({minimum}) and maximum ({maximum})")
+            self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
 
 
 class VerifyBFD(AntaTest):
@@ -94,12 +88,8 @@ class VerifyBFD(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Run VerifyBFD validation"""
-
         command_output = self.instance_commands[0].json_output
-
         self.result.is_success()
-
         for _, vrf_data in command_output["vrfs"].items():
             for _, neighbor_data in vrf_data["ipv4Neighbors"].items():
                 for peer, peer_data in neighbor_data["peerStats"].items():

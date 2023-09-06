@@ -247,15 +247,15 @@ asyncio.run(test.test())
 assert test.result.result == "success"
 ```
 
-### Commands for test
+### Classes for commands
 
-To make it easier to get data, ANTA defines 2 different classes to manage commands to send to device:
+To make it easier to get data, ANTA defines 2 different classes to manage commands to send to devices:
 
-#### `anta.models.AntaCommand`
+#### [AntaCommand](../api/models.md#anta.models.AntaCommand) Class
 
-Abstract a command with following information:
+Represent a command with following information:
 
-- Command to run,
+- Command to run
 - Ouput format expected
 - eAPI version
 - Output of the command
@@ -285,14 +285,9 @@ cmd2 = AntaCommand(command="show running-config diffs", ofmt="text")
     commands = [AntaCommand(command="show bfd peers", revision=1)]
     ```
 
-
-#### `anta.models.AntaTemplate`
+#### [AntaTemplate](../api/models.md#anta.models.AntaTemplate) Class
 
 Because some command can require more dynamic than just a command with no parameter provided by user, ANTA supports command template: you define a template in your test class and user provide parameters when creating test object.
-
-!!! warning "Warning on AntaTemplate"
-    * In its current versiom, an AntaTest class supports only __ONE__ AntaTemplate.
-    * The current interface to pass template parameter to a template is an area of future improvements. Feedbacks are welcome.
 
 ```python
 
