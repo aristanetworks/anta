@@ -49,14 +49,16 @@ async def main(
     coros = []
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         test_class = test[0]
-        test_inputs = test[1]
-        try:
-            # Instantiate AntaTest object
-            test_instance = test_class(device=device, inputs=test_inputs)
-            coros.append(test_instance.test(eos_data=None))
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            message = "Error when creating ANTA tests"
-            anta_log_exception(e, message, logger)
+        test_inputs = test[1] or {}
+        test_tags = test_inputs.get("tags") if "tags" in test_inputs.keys() else ["all"]
+        if any(t in test_tags for t in tags):
+            try:
+                # Instantiate AntaTest object
+                test_instance = test_class(device=device, inputs=test_inputs)
+                coros.append(test_instance.test(eos_data=None))
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                message = "Error when creating ANTA tests"
+                anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))

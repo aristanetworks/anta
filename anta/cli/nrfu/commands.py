@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 def table(ctx: click.Context, tags: Optional[list[str]], device: Optional[str], test: Optional[str], group_by: str) -> None:
     """ANTA command to check network states with table result"""
     print_settings(ctx)
+    if tags is None:
+        tags = ["all"]
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
