@@ -4,6 +4,8 @@
 """
 Generic routing test functions
 """
+from __future__ import annotations
+
 from ipaddress import IPv4Address, ip_interface
 
 # Mypy does not understand AntaTest.Input typing
