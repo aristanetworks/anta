@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.snmp import VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpStatus
-from tests.lib.anta import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {

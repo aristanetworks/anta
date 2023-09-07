@@ -8,7 +8,7 @@ Tests for anta.cli.get.commands
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, cast
 from unittest.mock import ANY, patch
 
 import pytest
@@ -21,7 +21,7 @@ from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
-    from pytest import CapsysFixture, LogCaptureFixture
+    from pytest import CaptureFixture, LogCaptureFixture
 
 
 # Not testing for required parameter, click does this well.
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 # pylint: disable-next=too-many-arguments
 def test_from_cvp(
     caplog: LogCaptureFixture,
-    capsys: CapsysFixture,
+    capsys: CaptureFixture[str],
     click_runner: CliRunner,
     cvp_container: Optional[str],
     inventory_directory: Optional[str],
@@ -53,7 +53,9 @@ def test_from_cvp(
         cli_args.extend(["--inventory-directory", inventory_directory])
         out_dir = Path() / inventory_directory
     else:
-        out_dir = Path() / from_cvp.params[4].default
+        # Get inventory-directory default
+        default_dir: Path = cast(Path, from_cvp.params[4].default)
+        out_dir = Path() / default_dir
 
     if cvp_container is not None:
         cli_args.extend(["--cvp-container", cvp_container])

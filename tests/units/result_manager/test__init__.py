@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
+from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
 from anta.result_manager.models import ListResult
 
@@ -59,7 +60,7 @@ class Test_ResultManager:
             pytest.param("unset", "unknown", None, pytest.raises(ValueError), id="wrong status"),
         ],
     )
-    def test__update_status(self, starting_status: str, test_status: str, expected_status: str, expected_raise: Any) -> None:
+    def test__update_status(self, starting_status: TestStatus, test_status: TestStatus, expected_status: str, expected_raise: Any) -> None:
         """
         Test ResultManager._update_status
         """
@@ -150,7 +151,7 @@ class Test_ResultManager:
             pytest.param("success", True, False, "error", id="error, do not ignore error"),
         ],
     )
-    def test_get_status(self, status: str, error_status: bool, ignore_error: bool, expected_status: str) -> None:
+    def test_get_status(self, status: TestStatus, error_status: bool, ignore_error: bool, expected_status: str) -> None:
         """
         test ResultManager.get_status
         """

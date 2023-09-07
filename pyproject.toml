@@ -252,11 +252,13 @@ commands =
   isort --check --diff --color .
   flake8 --max-line-length=165 --config=/dev/null anta tests
   pylint anta
+  pylint tests
 
 [testenv:type]
 description = Check typing
 commands =
-  type: mypy --config-file=pyproject.toml anta
+  mypy --config-file=pyproject.toml anta
+  mypy --config-file=pyproject.toml tests
 
 [testenv:clean]
 description = Erase previous coverage reports

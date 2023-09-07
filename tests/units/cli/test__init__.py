@@ -68,7 +68,7 @@ def test_anta_get_help(click_runner: CliRunner) -> None:
     assert "Usage: anta get" in result.output
 
 
-def test_anta_nrfu(capsys: CaptureFixture, click_runner: CliRunner) -> None:
+def test_anta_nrfu(capsys: CaptureFixture[str], click_runner: CliRunner) -> None:
     """
     Test anta nrfu table, catalog is given via env
     """

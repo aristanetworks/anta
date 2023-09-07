@@ -10,7 +10,7 @@ from functools import wraps
 from typing import Any
 from unittest.mock import patch
 
-from tests.lib.anta import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 
 # Patching the decorator

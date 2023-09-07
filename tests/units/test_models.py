@@ -40,7 +40,7 @@ class FakeTestWithInput(AntaTest):
     categories = []
     commands = []
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         string: str
 
     @AntaTest.anta_test
@@ -56,7 +56,7 @@ class FakeTestWithTemplate(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -75,7 +75,7 @@ class FakeTestWithTemplateNoRender(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interface: str
 
     @AntaTest.anta_test
@@ -91,7 +91,7 @@ class FakeTestWithTemplateWrongRender(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -171,6 +171,9 @@ class Test_AntaTest:
     """
 
     def test__init_subclass__name(self) -> None:
+        """Test __init_subclass__"""
+        # Pylint detects all the classes in here as unused which is on purpose
+        # pylint: disable=unused-variable
         with pytest.raises(NotImplementedError) as exec_info:
 
             class WrongTestNoName(AntaTest):
@@ -233,29 +236,30 @@ class Test_AntaTest:
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test__init__(self, mocked_device: MagicMock, data: Dict[str, Any]) -> None:
+        """Test __init__"""
         test = data["test"](mocked_device, inputs=data["inputs"])
         assert test.result.result == data["expected"]["__init__"]["result"]
         # If provided, test that the Exception message matches what is expected
         if "error" in data["expected"]["__init__"]:
-            if hasattr(test.result, "error"):
-                if isinstance(test.result.error, data["expected"]["__init__"]["error"]):
-                    if isinstance(test.result.error, ValidationError):
-                        for err in test.result.error.errors():
-                            if err["type"] == "missing" or any(err["input"] == input for input in data["inputs"].values()):
-                                assert err["msg"] == data["expected"]["__init__"]["message"]
-                                return
-                        pytest.fail("Did not find expected ValidationError when instantiating AntaTest")
-                    if isinstance(test.result.error, AntaTemplateRenderError):
-                        assert test.result.error.template == data["expected"]["__init__"]["template"]
-                        assert test.result.error.key == data["expected"]["__init__"]["key"]
-                        return
-                    if isinstance(test.result.error, Exception):
-                        assert test.result.error.args[0] == data["expected"]["__init__"]["message"]
-                        return
+            if hasattr(test.result, "error") and isinstance(test.result.error, data["expected"]["__init__"]["error"]):
+                if isinstance(test.result.error, ValidationError):
+                    for err in test.result.error.errors():
+                        if err["type"] == "missing" or any(err["input"] == input for input in data["inputs"].values()):
+                            assert err["msg"] == data["expected"]["__init__"]["message"]
+                            return
+                    pytest.fail("Did not find expected ValidationError when instantiating AntaTest")
+                if isinstance(test.result.error, AntaTemplateRenderError):
+                    assert test.result.error.template == data["expected"]["__init__"]["template"]
+                    assert test.result.error.key == data["expected"]["__init__"]["key"]
+                    return
+                if isinstance(test.result.error, Exception):
+                    assert test.result.error.args[0] == data["expected"]["__init__"]["message"]
+                    return
             pytest.fail("Did not find expected Exception when instantiating AntaTest")
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test_test(self, mocked_device: MagicMock, data: Dict[str, Any]) -> None:
+        """Test the AntaTest.test method"""
         test = data["test"](mocked_device, inputs=data["inputs"])
         asyncio.run(test.test())
         assert test.result.result == data["expected"]["test"]["result"]

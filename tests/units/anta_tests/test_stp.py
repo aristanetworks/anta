@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority
-from tests.lib.anta import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {
@@ -129,7 +129,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: " "[{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"],
+            "messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: [{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"],
         },
     },
     {
