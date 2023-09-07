@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.generic import VerifyBFD, VerifyRoutingProtocolModel, VerifyRoutingTableSize
+from anta.tests.routing.generic import VerifyBFD, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -197,5 +197,155 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["bfd state for peer '' is down (expected up)."]},
+    },
+    {
+        "name": "success",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.2/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-missing-route",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.2/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.1']"]},
+    },
+    {
+        "name": "failure-wrong-route",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.55/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            }
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
     },
 ]

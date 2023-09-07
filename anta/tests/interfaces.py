@@ -13,8 +13,10 @@ from typing import Any, Dict, List
 
 from pydantic import conint
 
+from anta.custom_types import Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_value import get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -117,35 +119,43 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 class VerifyInterfacesStatus(AntaTest):
     """
-    Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value.
+    This test verifies if the provided list of interfaces are all up/up.
+
+    Expected Results:
+        * success: The test will pass if the provided interfaces are all up/up.
+        * failure: The test will fail if one or many interfaces are not up/up.
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies the number of Ethernet interfaces up/up on the device is higher or equal than a value."
+    description = "Verifies if the provided list of interfaces are all up/up."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        minimum: conint(ge=0)  # type: ignore
-        """Expected minimum number of Ethernet interfaces up/up"""
+        interfaces: List[Interface]
+        """List of interfaces to validate"""
 
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        count_up_up = 0
-        other_ethernet_interfaces = []
-        for interface in command_output["interfaceDescriptions"]:
-            interface_dict = command_output["interfaceDescriptions"][interface]
-            if "Ethernet" in interface:
-                if re.match(r"connected|up", interface_dict["lineProtocolStatus"]) and re.match(r"connected|up", interface_dict["interfaceStatus"]):
-                    count_up_up += 1
-                else:
-                    other_ethernet_interfaces.append(interface)
-        if count_up_up >= self.inputs.minimum:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Only {count_up_up}, less than {self.inputs.minimum} Ethernet interfaces are UP/UP")
-            self.result.messages.append(f"The following Ethernet interfaces are not UP/UP: {other_ethernet_interfaces}")
+
+        self.result.is_success()
+
+        intf_not_configured = []
+        intf_down = []
+
+        for interface in self.inputs.interfaces:
+            intf_status = get_value(command_output["interfaceDescriptions"], interface)
+            if intf_status is None:
+                intf_not_configured.append(interface)
+            elif not re.match(r"connected|up", intf_status["lineProtocolStatus"]) and not re.match(r"connected|up", intf_status["interfaceStatus"]):
+                intf_down.append(interface)
+
+        if intf_not_configured:
+            self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
+
+        if intf_down:
+            self.result.is_failure(f"The following interface(s) are not up/up: {intf_down}")
 
 
 class VerifyStormControlDrops(AntaTest):

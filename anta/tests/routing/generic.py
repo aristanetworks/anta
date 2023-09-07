@@ -4,13 +4,17 @@
 """
 Generic routing test functions
 """
+from __future__ import annotations
+
+from ipaddress import IPv4Address, ip_interface
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from typing import Literal
+from typing import List, Literal
 
 from pydantic import model_validator
 
-from anta.models import AntaCommand, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -98,3 +102,42 @@ class VerifyBFD(AntaTest):
                         if (peer_l3intf := peer_data.get("l3intf")) is not None and peer_l3intf != "":
                             failure_message += f" Interface: {peer_l3intf}."
                         self.result.is_failure(failure_message)
+
+
+class VerifyRoutingTableEntry(AntaTest):
+    """
+    This test verifies that the provided routes are present in the routing table of a specified VRF.
+
+    Expected Results:
+        * success: The test will pass if the provided routes are present in the routing table.
+        * failure: The test will fail if one or many provided routes are missing from the routing table.
+    """
+
+    name = "VerifyRoutingTableEntry"
+    description = "Verifies that the provided routes are present in the routing table of a specified VRF."
+    categories = ["routing", "generic"]
+    commands = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        vrf: str = "default"
+        """VRF context"""
+        routes: List[IPv4Address]
+        """Routes to verify"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        missing_routes = []
+
+        for command in self.instance_commands:
+            if command.params and "vrf" in command.params and "route" in command.params:
+                vrf, route = command.params["vrf"], command.params["route"]
+                if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(list(routes)[0]).ip:
+                    missing_routes.append(str(route))
+
+        if not missing_routes:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
