@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
+from rich.console import Console
 
 
 def custom_progress_bar():
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     # stolen from https://github.com/ewels/rich-click/blob/main/src/rich_click/cli.py
     args = sys.argv[1:]
-    script_name = "anta"
+    script_name = args[0]
     scripts = {script.name: script for script in entry_points().get("console_scripts")}
 
     if script_name in scripts:
@@ -47,17 +48,34 @@ if __name__ == "__main__":
     else:
         print("This is supposed to be used with anta only")
         print("Usage: python generate_svg.py anta <options>")
+        exit(1)
 
     sys.argv = [prog, *args[1:]]
     module = import_module(module_path)
     function = getattr(module, function_name)
 
-    # Record what is happening in ANTA console
+    # This looks complex for not much
+
+    # Console to captur everything
+    new_console = Console(record=True)
+
+    # tweaks to record and redirect to a dummy file
+    pipe = io.StringIO()
     console.record = True
+    console.file = pipe
 
-    # redirect potential progress bar output to console by patching
-    with patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar):
-        with suppress(SystemExit):
-            function()
+    # Redirect stdout of the program towards another StringIO to capture help
+    # that is not part or anta rich console
+    with redirect_stdout(io.StringIO()) as f:
+        # redirect potential progress bar output to console by patching
+        with patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar):
+            with suppress(SystemExit):
+                function()
+    # print to our new console the output of anta console
+    new_console.print(console.export_text())
+    # print the content of the stdout to our new_console
+    new_console.print(f.getvalue())
 
-    console.save_svg("command.svg", title=" ".join(args))
+    # console.save_svg("command.svg", title=" ".join(args))
+    filename = f"{'_'.join(args)}.svg"
+    new_console.save_svg(filename, title=" ".join(args))
