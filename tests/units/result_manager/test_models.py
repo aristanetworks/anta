@@ -164,7 +164,7 @@ class Test_InventoryUnitModels:
         e = Exception()
         result.is_error(exception=e)
         assert result.result == "error"
-        assert result.exception == e
+        assert result.error == e
 
     @pytest.mark.parametrize("test_definition", TEST_RESULT_UNIT, ids=generate_test_ids_dict)
     def test_anta_result_set_status_skipped(self, test_definition: Dict[str, Any]) -> None:

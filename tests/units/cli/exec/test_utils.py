@@ -18,7 +18,7 @@ from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 
 if TYPE_CHECKING:
-    from pytest import CaptureFixture
+    from pytest import LogCaptureFixture
 
 
 # TODO complete test cases
@@ -53,7 +53,7 @@ if TYPE_CHECKING:
     ],
 )
 async def test_clear_counters_utils(
-    caplog: CaptureFixture,
+    caplog: LogCaptureFixture,
     test_inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],

@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Use of this source code is governed by the Apache License 2.0
+  ~ that can be found in the LICENSE file.
+  -->
+
 ## How to write a unit test for an AntaTest subclass
 
 The Python modules in this folder define test parameters for AntaTest subclasses unit tests.
@@ -19,7 +25,7 @@ from anta.tests.system import VerifyUptime
 
 # Define test parameters
 DATA: list[dict[str, Any]] = [
-   {    
+   {
         # Arbitrary test name
         "name": "success",
         # Must be an AntaTest definition
@@ -37,7 +43,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
         # If the test returns messages, it needs to be expected otherwise test will fail.
-        # NB: expected messages only needs to be included in messages returned by the test. Exact match is not required. 
+        # NB: expected messages only needs to be included in messages returned by the test. Exact match is not required.
         "expected": {"result": "failure", "messages": ["Device uptime is 665.15 seconds"]},
     },
 ]

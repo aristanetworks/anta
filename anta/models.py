@@ -24,6 +24,11 @@ if TYPE_CHECKING:
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
+# Proper way to type input class - revisit this later if we get any issue @gmuloc
+# This would imply overhead to define classes
+# https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
+# N = TypeVar("N", bound="AntaTest.Input")
+
 DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
@@ -284,10 +289,7 @@ class AntaTest(ABC):
 
         Any input validation error will set this test result status as 'error'."""
         try:
-            if inputs is not None:
-                self.inputs = self.Input(**inputs)
-            else:
-                self.inputs = self.Input()
+            self.inputs = self.Input(**inputs) if inputs is not None else self.Input()
         except ValidationError as e:
             message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
             self.logger.error(message)

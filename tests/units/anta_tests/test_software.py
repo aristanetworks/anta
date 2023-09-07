@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTerminAttrVersion
-from tests.lib.anta import test  # noqa: F401
+from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {
