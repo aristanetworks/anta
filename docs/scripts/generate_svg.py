@@ -1,4 +1,12 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """
+A script to generate svg files from anta command
+
+usage:
+
+python generate_svg.py anta ...
 """
 
 import io
@@ -9,9 +17,10 @@ from importlib import import_module
 from importlib.metadata import entry_points
 from unittest.mock import patch
 
+from rich.console import Console
+
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
-from rich.console import Console
 
 
 def custom_progress_bar():
@@ -48,7 +57,7 @@ if __name__ == "__main__":
     else:
         print("This is supposed to be used with anta only")
         print("Usage: python generate_svg.py anta <options>")
-        exit(1)
+        sys.exit(1)
 
     sys.argv = [prog, *args[1:]]
     module = import_module(module_path)
