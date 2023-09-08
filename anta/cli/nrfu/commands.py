@@ -57,6 +57,8 @@ def table(ctx: click.Context, tags: Optional[list[str]], device: Optional[str], 
 def json(ctx: click.Context, tags: Optional[list[str]], output: Optional[pathlib.Path]) -> None:
     """ANTA command to check network state with JSON result"""
     print_settings(ctx)
+    if tags is None:
+        tags = ["all"]
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_json(results=ctx.obj["result_manager"], output=output)
@@ -71,6 +73,8 @@ def json(ctx: click.Context, tags: Optional[list[str]], output: Optional[pathlib
 def text(ctx: click.Context, tags: Optional[list[str]], search: Optional[str], skip_error: bool) -> None:
     """ANTA command to check network states with text result"""
     print_settings(ctx)
+    if tags is None:
+        tags = ["all"]
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
@@ -99,6 +103,8 @@ def text(ctx: click.Context, tags: Optional[list[str]], search: Optional[str], s
 def tpl_report(ctx: click.Context, tags: Optional[list[str]], template: pathlib.Path, output: Optional[pathlib.Path]) -> None:
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)
+    if tags is None:
+        tags = ["all"]
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
