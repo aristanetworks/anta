@@ -104,6 +104,20 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
+All tests can be configure with a list of user's defined tags. These tags will be mapped with devices tags when cli is used with `--tags` option. If test is configure without a list of tags, the default one will be used: `['all']`
+
+```yaml
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 10
+      tags: ['demo', 'leaf']
+  - VerifyReloadCause:
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+  - VerifyCPUUtilization:
+      tags: ['all', 'leaf']
+```
+
 ### Custom tests catalog
 
 In case you want to leverage your own tests collection, you can use the following syntax:
