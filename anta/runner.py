@@ -51,7 +51,9 @@ async def main(
         test_class = test[0]
         test_inputs = test[1] or {}
         test_tags = test_inputs.get("tags") if "tags" in test_inputs.keys() else ["all"]
-        if any(t in test_tags for t in tags):
+        if tags is None:
+            tags = []
+        if any(t in test_tags for t in tags):  # type: ignore
             try:
                 # Instantiate AntaTest object
                 test_instance = test_class(device=device, inputs=test_inputs)

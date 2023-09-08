@@ -104,7 +104,7 @@ class ResultManager:
         """
         Update ResultManager status based on the table above.
         """
-        ResultValidator = TypeAdapter(TestStatus)
+        ResultValidator = TypeAdapter(TestStatus)  # type: ignore
         ResultValidator.validate_python(test_status)
         if test_status == "error":
             self.error_status = True
