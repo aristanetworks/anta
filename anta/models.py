@@ -238,16 +238,13 @@ class AntaTest(ABC):
                     - "Overwritten category 1"
                     description: "Test with overwritten description"
                     custom_field: "Test run by John Doe"
-                strict: True
             ```
         Attributes:
             result_overwrite: Define fields to overwrite in the TestResult object
-            strict: If set to True, the test status will be set to "failure" instead of "skipped" in the test decorators.
         """
 
         model_config = ConfigDict(extra="forbid")
         result_overwrite: Optional[ResultOverwrite] = None
-        strict: bool = False
 
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields

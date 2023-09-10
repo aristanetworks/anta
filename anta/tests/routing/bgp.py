@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 from pydantic import BaseModel, PositiveInt, model_validator
 
 from anta.custom_types import Afi, Safi
-from anta.decorators import check_bgp_family_enable
+from anta.decorators import check_bgp_family_enable, deprecated_test
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
 
@@ -147,6 +147,7 @@ class VerifyBGPIPv4UnicastState(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp ipv4 unicast summary vrf all")]
 
+    @deprecated_test(new_tests=["VerifyBGPPeersHealth"])
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -187,6 +188,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         return [template.render(vrf=vrf) for vrf in self.inputs.vrfs]
 
+    @deprecated_test(new_tests=["VerifyBGPPeerCount", "VerifyBGPPeersHealth"])
     @check_bgp_family_enable("ipv4")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -222,6 +224,7 @@ class VerifyBGPIPv6UnicastState(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp ipv6 unicast summary vrf all")]
 
+    @deprecated_test(new_tests=["VerifyBGPPeersHealth"])
     @check_bgp_family_enable("ipv6")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -247,6 +250,7 @@ class VerifyBGPEVPNState(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp evpn summary")]
 
+    @deprecated_test(new_tests=["VerifyBGPPeersHealth"])
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -279,6 +283,7 @@ class VerifyBGPEVPNCount(AntaTest):
         number: int
         """The expected number of BGP EVPN neighbors in the default VRF"""
 
+    @deprecated_test(new_tests=["VerifyBGPPeerCount", "VerifyBGPPeersHealth"])
     @check_bgp_family_enable("evpn")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -309,6 +314,7 @@ class VerifyBGPRTCState(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaCommand(command="show bgp rt-membership summary")]
 
+    @deprecated_test(new_tests=["VerifyBGPPeersHealth"])
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -341,6 +347,7 @@ class VerifyBGPRTCCount(AntaTest):
         number: int
         """The expected number of BGP RTC neighbors in the default VRF"""
 
+    @deprecated_test(new_tests=["VerifyBGPPeerCount", "VerifyBGPPeersHealth"])
     @check_bgp_family_enable("rtc")
     @AntaTest.anta_test
     def test(self) -> None:
@@ -473,7 +480,7 @@ class VerifyBGPPeersHealth(AntaTest):
     """
 
     name = "VerifyBGPPeersHealth"
-    description = "Description"
+    description = "Verifies the health of BGP peers"
     categories = ["routing", "bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
@@ -520,9 +527,9 @@ class VerifyBGPPeersHealth(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf))
-            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf))
         return commands
 
@@ -563,11 +570,11 @@ class VerifyBGPPeersHealth(AntaTest):
             self.result.is_failure(f"Failures: {list(failures.values())}")
 
 
-class VerifyBGPSpecificPeer(AntaTest):
+class VerifyBGPSpecificPeers(AntaTest):
     """
     This test verifies the health of specific BGP peer(s).
 
-    It will validate that the BGP session is established and all message queues for this BGP session are empty for a given peer.
+    It will validate that the BGP session is established and all message queues for this BGP session are empty for the given peer(s).
 
     It supports multiple types of address families (AFI) and subsequent service families (SAFI).
     Please refer to the Input class attributes below for details.
@@ -577,8 +584,8 @@ class VerifyBGPSpecificPeer(AntaTest):
         * failure: If the BGP session has issues or is not configured, or if BGP is not configured for an expected VRF or address family.
     """
 
-    name = "VerifyBGPSpecificPeer"
-    description = "Description"
+    name = "VerifyBGPSpecificPeers"
+    description = "Verifies the health of specific BGP peer(s)."
     categories = ["routing", "bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
@@ -631,9 +638,9 @@ class VerifyBGPSpecificPeer(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf, peers=afi.peers))
-            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, peers=afi.peers))
         return commands
 
@@ -652,12 +659,11 @@ class VerifyBGPSpecificPeer(AntaTest):
                 afi_vrf = cast(str, command.params.get("vrf"))
                 afi_peers = cast(List[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
 
-                peer_issues = {}
-
                 if not (vrfs := command_output.get("vrfs")):
                     _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
                     continue
 
+                peer_issues = {}
                 for peer in afi_peers:
                     peer_ip = str(peer)
                     peer_data = get_value(dictionary=vrfs, key=f"{afi_vrf}_peers_{peer_ip}", separator="_")
