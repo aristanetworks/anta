@@ -400,9 +400,9 @@ class VerifyBGPPeerCount(AntaTest):
             """
             vrf: str = "default"
             """
-            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `defaults`.
+            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
 
-            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, a non-default `vrf` must not be provided.
+            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
             """
             num_peers: PositiveInt
             """Number of expected BGP peer(s)"""
@@ -412,15 +412,17 @@ class VerifyBGPPeerCount(AntaTest):
                 """
                 Validate the inputs provided to the BgpAfi class.
 
-                Checks include:
-                - If afi is either ipv4 or ipv6, safi must be provided.
-                - If afi is not ipv4 or ipv6, safi and a non-default vrf must not be provided.
+                If afi is either ipv4 or ipv6, safi must be provided.
+
+                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
                         raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
-                elif self.safi is not None or self.vrf != "default":
-                    raise ValueError("'safi' and 'vrf' must not be provided when afi is not ipv4 or ipv6")
+                elif self.safi is not None:
+                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                elif self.vrf != "default":
+                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -503,9 +505,9 @@ class VerifyBGPPeersHealth(AntaTest):
             """
             vrf: str = "default"
             """
-            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `defaults`.
+            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
 
-            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, a non-default `vrf` must not be provided.
+            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
             """
 
             @model_validator(mode="after")
@@ -513,15 +515,17 @@ class VerifyBGPPeersHealth(AntaTest):
                 """
                 Validate the inputs provided to the BgpAfi class.
 
-                Checks include:
-                - If afi is either ipv4 or ipv6, safi must be provided.
-                - If afi is not ipv4 or ipv6, safi and a non-default vrf must not be provided.
+                If afi is either ipv4 or ipv6, safi must be provided.
+
+                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
                         raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
-                elif self.safi is not None or self.vrf != "default":
-                    raise ValueError("'safi' and 'vrf' must not be provided when afi is not ipv4 or ipv6")
+                elif self.safi is not None:
+                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                elif self.vrf != "default":
+                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -608,11 +612,11 @@ class VerifyBGPSpecificPeers(AntaTest):
             """
             vrf: str = "default"
             """
-            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `defaults`.
+            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
 
-            `all` is not supported.
+            `all` is NOT supported.
 
-            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, a non-default `vrf` must not be provided.
+            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
             """
             peers: List[Union[IPv4Address, IPv6Address]]
             """List of BGP IPv4 or IPv6 peer"""
@@ -622,17 +626,19 @@ class VerifyBGPSpecificPeers(AntaTest):
                 """
                 Validate the inputs provided to the BgpAfi class.
 
-                Checks include:
-                - If afi is either ipv4 or ipv6, safi must be provided and vrf must not be all.
-                - If afi is not ipv4 or ipv6, safi and a non-default vrf must not be provided.
+                If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
+
+                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
                         raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
                     if self.vrf == "all":
                         raise ValueError("'all' is not supported in this test. Use VerifyBGPPeersHealth test instead.")
-                elif self.safi is not None or self.vrf != "default":
-                    raise ValueError("'safi' and 'vrf' must not be provided when afi is not ipv4 or ipv6")
+                elif self.safi is not None:
+                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                elif self.vrf != "default":
+                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
