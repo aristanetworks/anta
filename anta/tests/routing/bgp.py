@@ -400,8 +400,8 @@ class VerifyBGPPeerCount(AntaTest):
             num_peers: PositiveInt
             """Number of expected BGP peer(s)"""
 
-            @model_validator(mode="after")  # type: ignore
-            def validate_inputs(self: BaseModel) -> BaseModel:  # type: ignore
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
                 """
                 Validate the inputs provided to the BgpAfi class.
 
@@ -501,8 +501,8 @@ class VerifyBGPPeersHealth(AntaTest):
             If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, a non-default `vrf` must not be provided.
             """
 
-            @model_validator(mode="after")  # type: ignore
-            def validate_inputs(self: BaseModel) -> BaseModel:  # type: ignore
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
                 """
                 Validate the inputs provided to the BgpAfi class.
 
@@ -610,8 +610,8 @@ class VerifyBGPSpecificPeer(AntaTest):
             peers: List[Union[IPv4Address, IPv6Address]]
             """List of BGP IPv4 or IPv6 peer"""
 
-            @model_validator(mode="after")  # type: ignore
-            def validate_inputs(self: BaseModel) -> BaseModel:  # type: ignore
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
                 """
                 Validate the inputs provided to the BgpAfi class.
 
