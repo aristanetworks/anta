@@ -85,74 +85,62 @@ Success: no issues found in 52 source files
 
 To keep high quality code, we require to provide a Pytest for every tests implemented in ANTA.
 
-All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>`. In this directory, you should have 3 files:
+All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 
-- `__init__.py`: Just because it is used as a python module
-- `data.py`: Where all your parametrize go. So all your test information should be located here
-- `test_exc.py`: Pytest file with test definition.
+### How to write a unit test for an AntaTest subclass
 
-A pytest definition should be similar to this template:
+The Python modules in the `tests/units/anta_tests` folder  define test parameters for AntaTest subclasses unit tests.
+A generic test function is written for all unit tests in `tests.lib.anta` module.
+The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
+The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
+See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
 
-```python
-"""
-Tests for anta.tests.hardware.py
-"""
-from __future__ import annotations
+The `DATA` structure is a list of dictionaries used to parametrize the test.
+The list elements have the following keys:
+- `name` (str): Test name as displayed by Pytest.
+- `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
+- `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
+- `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
+- `expected` (dict): Expected test result structure, a dictionary containing a key
+    `result` containing one of the allowed status (`Literal['success', 'failure', 'unset', 'skipped', 'error']`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
 
-import asyncio
-import logging
-from typing import Any
-from unittest.mock import MagicMock
 
-import pytest
+In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
 
-from anta.tests.hardware import VerifyAdverseDrops
-from tests.lib.utils import generate_test_ids_list
+Test example for `anta.tests.system.VerifyUptime` AntaTest.
 
-from .data import INPUT_<TEST_NAME>
+``` python
+# Import the generic test function
+from tests.lib.anta import test  # noqa: F401
 
-@pytest.mark.parametrize("test_data", INPUT_<TEST_NAME>, ids=generate_test_ids_list(INPUT_<TEST_NAME>))
-def test_<TEST_CASE>(mocked_device: MagicMock, test_data: Any) -> None:
-    """Check <TEST_CASE>."""
+# Import your AntaTest
+from anta.tests.system import VerifyUptime
 
-    test = <TEST_CASE>(mocked_device, eos_data=test_data["eos_data"])
-    asyncio.run(test.test())
-
-    logging.debug(f"test result is: {test.result}")
-
-    assert str(test.result.name) == mocked_device.name
-    assert test.result.result == test_data["expected_result"]
-```
-
-The `mocked_device` object is a fixture defined in Pytest to represent an InventoryDevice and the parametrize `test_data` is a list of dictionries with structure:
-
-```python
-INPUT_RUNNING_CONFIG: List[Dict[str, Any]] = [
-  # Test Case #1
+# Define test parameters
+DATA: list[dict[str, Any]] = [
+   {
+        # Arbitrary test name
+        "name": "success",
+        # Must be an AntaTest definition
+        "test": VerifyUptime,
+        # Data returned by EOS on which the AntaTest is tested
+        "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        # Dictionary to instantiate VerifyUptime.Input
+        "inputs": {"minimum": 666},
+        # Expected test result
+        "expected": {"result": "success"},
+    },
     {
         "name": "failure",
-        "eos_data": ["blah blah"],
-        "side_effect": None,
-        "expected_result": "failure",
-        "expected_messages": ["blah blah"]
-    },
-    # Test Case #2
-    {
-      ...
+        "test": VerifyUptime,
+        "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
+        "inputs": {"minimum": 666},
+        # If the test returns messages, it needs to be expected otherwise test will fail.
+        # NB: expected messages only needs to be included in messages returned by the test. Exact match is not required.
+        "expected": {"result": "failure", "messages": ["Device uptime is 665.15 seconds"]},
     },
 ]
 ```
-
-Where we have:
-
-- `name`: Name of the test displayed by Pytest
-- `eos_data`: a list of data coming from EOS.
-- `side_effect`: used to inject template and test parameters (look for some examples in the existing tests)
-- `expected_result`: Result we expect for this test
-- `expected_messages`: Optional messages we expect for the test.
-
-!!! info "Use Anta CLI to get test data"
-    To complete this block, you can use [`anta debug`](./cli/debug.md) commands to get `AntaCommand` output to use in your test.
 
 ## Git Pre-commit hook
 
