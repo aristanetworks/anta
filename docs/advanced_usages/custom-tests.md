@@ -293,7 +293,6 @@ class VerifyTemperature(AntaTest):
     def test(self) -> None:
         pass
 ```
-This setup is particularly useful for tailoring tests according to platform-specific capabilities or configuration nuances.
 
 ## Access your custom tests in the test catalog
 
