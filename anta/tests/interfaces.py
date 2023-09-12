@@ -9,9 +9,9 @@ Test functions related to the device interfaces
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal
 
-from pydantic import conint
+from pydantic import BaseModel, conint
 
 from anta.custom_types import Interface
 from anta.decorators import skip_on_platforms
@@ -67,7 +67,7 @@ class VerifyInterfaceErrors(AntaTest):
         command_output = self.instance_commands[0].json_output
         wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, counters in command_output["interfaceErrorCounters"].items():
-            if any(value > 0 for value in counters.values()) and not any(interface in wrong_interface for wrong_interface in wrong_interfaces):
+            if any(value > 0 for value in counters.values()) and all(interface not in wrong_interface for wrong_interface in wrong_interfaces):
                 wrong_interfaces.append({interface: counters})
         if not wrong_interfaces:
             self.result.is_success()
@@ -119,21 +119,26 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 class VerifyInterfacesStatus(AntaTest):
     """
-    This test verifies if the provided list of interfaces are all up/up.
+    This test verifies if the provided list of interfaces are in the expected state,
+      either up/up or down/disabled.
 
     Expected Results:
-        * success: The test will pass if the provided interfaces are all up/up.
-        * failure: The test will fail if one or many interfaces are not up/up.
+        * success: The test will pass if the provided interfaces are all in the expected state.
+        * failure: The test will fail if any interface is not in the expteced state .
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies if the provided list of interfaces are all up/up."
+    description = "Verifies if the provided list of interfaces are all in the expected state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: List[Interface]
-        """List of interfaces to validate"""
+        interfaces: list[InterfaceStatus]
+        """List of interfaces to validate with the expected state, either 'up' or 'disabled'"""
+
+        class InterfaceStatus(BaseModel):  # pylint: disable=missing-class-docstring
+            interface: Interface
+            state: Literal["up", "disabled"]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -142,20 +147,28 @@ class VerifyInterfacesStatus(AntaTest):
         self.result.is_success()
 
         intf_not_configured = []
-        intf_down = []
+        intf_wrong_state = []
 
-        for interface in self.inputs.interfaces:
+        for interface_status in self.inputs.interfaces:
+            interface, expected_state = interface_status.interface, interface_status.state
             intf_status = get_value(command_output["interfaceDescriptions"], interface)
             if intf_status is None:
                 intf_not_configured.append(interface)
-            elif not re.match(r"connected|up", intf_status["lineProtocolStatus"]) and not re.match(r"connected|up", intf_status["interfaceStatus"]):
-                intf_down.append(interface)
+            elif expected_state == "up" and not (
+                re.match(r"connected|up", intf_status["lineProtocolStatus"]) and re.match(r"connected|up", intf_status["interfaceStatus"])
+            ):
+                intf_wrong_state.append((interface, expected_state, intf_status["lineProtocolStatus"], intf_status["interfaceStatus"]))
+            elif expected_state == "disabled" and not (
+                re.match(r"down", intf_status["lineProtocolStatus"]) and re.match(r"disabled", intf_status["interfaceStatus"])
+            ):
+                intf_wrong_state.append((interface, expected_state, intf_status["lineProtocolStatus"], intf_status["interfaceStatus"]))
 
         if intf_not_configured:
             self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
 
-        if intf_down:
-            self.result.is_failure(f"The following interface(s) are not up/up: {intf_down}")
+        if intf_wrong_state:
+            formated_wrong_state = [f"{int} is {proto}/{status} expected {exp if exp == 'up' else 'down'}/{exp}" for int, exp, proto, status in intf_wrong_state]
+            self.result.is_failure(f"The following interface(s) are not in the expected state: {formated_wrong_state}")
 
 
 class VerifyStormControlDrops(AntaTest):

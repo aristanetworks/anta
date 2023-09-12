@@ -204,12 +204,14 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "disabled", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
+        "inputs": {
+            "interfaces": [{"interface": "Ethernet2", "state": "disabled"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -223,7 +225,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
+        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
         "expected": {
             "result": "failure",
             "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
@@ -235,16 +237,40 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet8": {"interfaceStatus": "disabled", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": ["Ethernet2", "Ethernet8", "Ethernet3"]},
+        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not up/up: ['Ethernet8']"],
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/disabled expected up/up'"],
+        },
+    },
+    {
+        "name": "failure-up",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "disabled", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet2", "state": "disabled"},
+                {"interface": "Ethernet8", "state": "disabled"},
+                {"interface": "Ethernet3", "state": "up"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/up expected down/disabled'"],
         },
     },
     {
