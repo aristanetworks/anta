@@ -119,22 +119,21 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 class VerifyInterfacesStatus(AntaTest):
     """
-    This test verifies if the provided list of interfaces are in the expected state,
-      either up/up or down/disabled.
+    This test verifies if the provided list of interfaces are all in the expected state.
 
     Expected Results:
         * success: The test will pass if the provided interfaces are all in the expected state.
-        * failure: The test will fail if any interface is not in the expteced state .
+        * failure: The test will fail if any interface is not in the expected state.
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies if the provided list of interfaces are all in the expected state."
+    description = "Verifies if the provided list of interfaces are in the expected state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: list[InterfaceStatus]
-        """List of interfaces to validate with the expected state, either 'up' or 'disabled'"""
+        interfaces: List[InterfaceStatus]
+        """List of interfaces to validate with the expected state"""
 
         class InterfaceStatus(BaseModel):  # pylint: disable=missing-class-docstring
             interface: Interface
