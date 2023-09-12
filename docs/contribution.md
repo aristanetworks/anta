@@ -102,7 +102,7 @@ The list elements have the following keys:
 - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
 - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
 - `expected` (dict): Expected test result structure, a dictionary containing a key
-    `result` and optionally a key `messages`
+    `result` containing one of the allowed status (`Literal['success', 'failure', 'unset', 'skipped', 'error']`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
 
 
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
