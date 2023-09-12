@@ -127,7 +127,7 @@ class VerifyInterfacesStatus(AntaTest):
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies if the provided list of interfaces are in the expected state."
+    description = "Verifies if the provided list of interfaces are all in the expected state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
