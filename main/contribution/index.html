@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.8">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -1724,6 +1724,19 @@
     Unit tests
   </a>
   
+    <nav class="md-nav" aria-label="Unit tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-write-a-unit-test-for-an-antatest-subclass" class="md-nav__link">
+    How to write a unit test for an AntaTest subclass
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1884,6 +1897,19 @@
     Unit tests
   </a>
   
+    <nav class="md-nav" aria-label="Unit tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-write-a-unit-test-for-an-antatest-subclass" class="md-nav__link">
+    How to write a unit test for an AntaTest subclass
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2043,70 +2069,54 @@ Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w">
 </blockquote>
 <h4 id="unit-tests">Unit tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h4>
 <p>To keep high quality code, we require to provide a Pytest for every tests implemented in ANTA.</p>
-<p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;</code>. In this directory, you should have 3 files:</p>
-<ul>
-<li><code>__init__.py</code>: Just because it is used as a python module</li>
-<li><code>data.py</code>: Where all your parametrize go. So all your test information should be located here</li>
-<li><code>test_exc.py</code>: Pytest file with test definition.</li>
-</ul>
-<p>A pytest definition should be similar to this template:</p>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Tests for anta.tests.hardware.py</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;.py</code>.</p>
+<h5 id="how-to-write-a-unit-test-for-an-antatest-subclass">How to write a unit test for an AntaTest subclass<a class="headerlink" href="#how-to-write-a-unit-test-for-an-antatest-subclass" title="Permanent link">&para;</a></h5>
+<p>The Python modules in the <code>tests/units/anta_tests</code> folder  define test parameters for AntaTest subclasses unit tests.
+A generic test function is written for all unit tests in <code>tests.lib.anta</code> module.
+The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.
+The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> data structure defined in <code>tests.units.anta_tests</code> modules.
+See <a href="https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
+<p>The <code>DATA</code> structure is a list of dictionaries used to parametrize the test.
+The list elements have the following keys:
+- <code>name</code> (str): Test name as displayed by Pytest.
+- <code>test</code> (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
+- <code>eos_data</code> (list[dict]): List of data mocking EOS returned data to be passed to the test.
+- <code>inputs</code> (dict): Dictionary to instantiate the <code>test</code> inputs as defined in the class from <code>test</code>.
+- <code>expected</code> (dict): Expected test result structure, a dictionary containing a key
+    <code>result</code> containing one of the allowed status (<code>Literal['success', 'failure', 'unset', 'skipped', 'error']</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.</p>
+<p>In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
+<p>Test example for <code>anta.tests.system.VerifyUptime</code> AntaTest.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Import the generic test function</span>
+<span class="kn">from</span> <span class="nn">tests.lib.anta</span> <span class="kn">import</span> <span class="n">test</span>  <span class="c1"># noqa: F401</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span>
+<span class="c1"># Import your AntaTest</span>
+<span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="n">VerifyUptime</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-
-<span class="kn">from</span> <span class="nn">anta.tests.hardware</span> <span class="kn">import</span> <span class="n">VerifyAdverseDrops</span>
-<span class="kn">from</span> <span class="nn">tests.lib.utils</span> <span class="kn">import</span> <span class="n">generate_test_ids_list</span>
-
-<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">INPUT_</span><span class="o">&lt;</span><span class="n">TEST_NAME</span><span class="o">&gt;</span>
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;test_data&quot;</span><span class="p">,</span> <span class="n">INPUT_</span><span class="o">&lt;</span><span class="n">TEST_NAME</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">generate_test_ids_list</span><span class="p">(</span><span class="n">INPUT_</span><span class="o">&lt;</span><span class="n">TEST_NAME</span><span class="o">&gt;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">test_</span><span class="o">&lt;</span><span class="n">TEST_CASE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mocked_device</span><span class="p">:</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">test_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check &lt;TEST_CASE&gt;.&quot;&quot;&quot;</span>
-
-    <span class="n">test</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">TEST_CASE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mocked_device</span><span class="p">,</span> <span class="n">eos_data</span><span class="o">=</span><span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;eos_data&quot;</span><span class="p">])</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
-
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test result is: </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="n">mocked_device</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;expected_result&quot;</span><span class="p">]</span>
-</code></pre></div>
-<p>The <code>mocked_device</code> object is a fixture defined in Pytest to represent an InventoryDevice and the parametrize <code>test_data</code> is a list of dictionries with structure:</p>
-<div class="highlight"><pre><span></span><code><span class="n">INPUT_RUNNING_CONFIG</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="c1"># Test Case #1</span>
+<span class="c1"># Define test parameters</span>
+<span class="n">DATA</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="p">{</span>
+        <span class="c1"># Arbitrary test name</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+        <span class="c1"># Must be an AntaTest definition</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">VerifyUptime</span><span class="p">,</span>
+        <span class="c1"># Data returned by EOS on which the AntaTest is tested</span>
+        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;upTime&quot;</span><span class="p">:</span> <span class="mf">1186689.15</span><span class="p">,</span> <span class="s2">&quot;loadAvg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;currentTime&quot;</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
+        <span class="c1"># Dictionary to instantiate VerifyUptime.Input</span>
+        <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
+        <span class="c1"># Expected test result</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">},</span>
+    <span class="p">},</span>
     <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;blah blah&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;side_effect&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;expected_result&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;expected_messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;blah blah&quot;</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="c1"># Test Case #2</span>
-    <span class="p">{</span>
-      <span class="o">...</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">VerifyUptime</span><span class="p">,</span>
+        <span class="s2">&quot;eos_data&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;upTime&quot;</span><span class="p">:</span> <span class="mf">665.15</span><span class="p">,</span> <span class="s2">&quot;loadAvg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">],</span> <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;currentTime&quot;</span><span class="p">:</span> <span class="mf">1683186659.139859</span><span class="p">}],</span>
+        <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="mi">666</span><span class="p">},</span>
+        <span class="c1"># If the test returns messages, it needs to be expected otherwise test will fail.</span>
+        <span class="c1"># NB: expected messages only needs to be included in messages returned by the test. Exact match is not required.</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Device uptime is 665.15 seconds&quot;</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">]</span>
 </code></pre></div>
-<p>Where we have:</p>
-<ul>
-<li><code>name</code>: Name of the test displayed by Pytest</li>
-<li><code>eos_data</code>: a list of data coming from EOS.</li>
-<li><code>side_effect</code>: used to inject template and test parameters (look for some examples in the existing tests)</li>
-<li><code>expected_result</code>: Result we expect for this test</li>
-<li><code>expected_messages</code>: Optional messages we expect for the test.</li>
-</ul>
-<div class="admonition info">
-<p class="admonition-title">Use Anta CLI to get test data</p>
-<p>To complete this block, you can use <a href="../cli/debug/"><code>anta debug</code></a> commands to get <code>AntaCommand</code> output to use in your test.</p>
-</div>
 <h4 id="git-pre-commit-hook">Git Pre-commit hook<a class="headerlink" href="#git-pre-commit-hook" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
 pre-commit<span class="w"> </span>install
@@ -2164,7 +2174,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 12, 2023</span>
       
     
   </small>
