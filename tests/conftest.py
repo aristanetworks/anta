@@ -9,6 +9,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
+import pytest
+
 if TYPE_CHECKING:
     from pytest import Metafunc
 
@@ -16,6 +18,10 @@ if TYPE_CHECKING:
 pytest_plugins = [
     "tests.lib.fixture",
 ]
+
+# Enable nice assert messages
+# https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#assertion-rewriting
+pytest.register_assert_rewrite("tests.lib.anta")
 
 # Placeholder to disable logging of some external libs
 for _ in ("asyncio", "httpx"):
