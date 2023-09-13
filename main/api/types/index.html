@@ -1493,8 +1493,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.custom_types.Afi" class="md-nav__link">
+    Afi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.custom_types.Interface" class="md-nav__link">
     Interface
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.custom_types.Safi" class="md-nav__link">
+    Safi
   </a>
   
 </li>
@@ -1803,8 +1817,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.custom_types.Afi" class="md-nav__link">
+    Afi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.custom_types.Interface" class="md-nav__link">
     Interface
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.custom_types.Safi" class="md-nav__link">
+    Safi
   </a>
   
 </li>
@@ -1915,6 +1943,28 @@
 
 
 
+<h3 id="anta.custom_types.Afi" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">Afi</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.Afi" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Afi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ipv4&#39;</span><span class="p">,</span> <span class="s1">&#39;ipv6&#39;</span><span class="p">,</span> <span class="s1">&#39;vpn-ipv4&#39;</span><span class="p">,</span> <span class="s1">&#39;vpn-ipv6&#39;</span><span class="p">,</span> <span class="s1">&#39;evpn&#39;</span><span class="p">,</span> <span class="s1">&#39;rt-membership&#39;</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
 <h3 id="anta.custom_types.Interface" class="doc doc-heading">
           <span class="doc doc-object-name doc-attribute-name">Interface</span>
 
@@ -1925,6 +1975,28 @@
 
 <a href="#anta.custom_types.Interface" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">Interface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;^(Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(</span><span class="se">\\</span><span class="s1">/[0-9]+)*$&#39;</span><span class="p">)]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="anta.custom_types.Safi" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">Safi</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.Safi" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Safi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;unicast&#39;</span><span class="p">,</span> <span class="s1">&#39;multicast&#39;</span><span class="p">,</span> <span class="s1">&#39;labeled-unicast&#39;</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
