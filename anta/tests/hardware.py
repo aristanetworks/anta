@@ -8,6 +8,7 @@ Test functions related to the hardware or environment
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+# Need to keep List for pydantic in python 3.8
 from typing import List
 
 from anta.decorators import skip_on_platforms

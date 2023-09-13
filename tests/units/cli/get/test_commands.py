@@ -8,7 +8,7 @@ Tests for anta.cli.get.commands
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 from unittest.mock import ANY, patch
 
 import pytest
@@ -39,8 +39,8 @@ def test_from_cvp(
     caplog: LogCaptureFixture,
     capsys: CaptureFixture[str],
     click_runner: CliRunner,
-    cvp_container: Optional[str],
-    inventory_directory: Optional[str],
+    cvp_container: str | None,
+    inventory_directory: str | None,
     cvp_connect_failure: bool,
 ) -> None:
     """

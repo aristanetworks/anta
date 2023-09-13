@@ -8,7 +8,7 @@ Toolkit for ANTA to play with Pydantic.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:
     from anta.result_manager.models import ListResult
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def pydantic_to_dict(pydantic_list: ListResult) -> List[Dict[str, Sequence[Any]]]:
+def pydantic_to_dict(pydantic_list: ListResult) -> list[dict[str, Sequence[Any]]]:
     """
     Convert Pydantic object into a list of dict
 
@@ -26,10 +26,10 @@ def pydantic_to_dict(pydantic_list: ListResult) -> List[Dict[str, Sequence[Any]]
         pydantic_list: Iterable pydantic object
 
     Returns:
-        List[Dict[str, str]]: the list of dict
+        list[dict[str, str]]: the list of dict
     """
     result = []
     for device in pydantic_list:
-        dev_dict = {k: str(v) if not isinstance(v, list) else v for k, v in device}
+        dev_dict = {k: v if isinstance(v, list) else str(v) for k, v in device}
         result.append(dev_dict)
     return result

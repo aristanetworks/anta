@@ -7,10 +7,10 @@ tests.lib.utils
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
-def generate_test_ids_dict(val: Dict[str, Any], key: str = "name") -> str:
+def generate_test_ids_dict(val: dict[str, Any], key: str = "name") -> str:
     """
     generate_test_ids Helper to generate test ID for parametrize
     """
@@ -37,7 +37,7 @@ def generate_test_ids(data: list[dict[str, Any]]) -> list[str]:
     return [f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}" for val in data]
 
 
-def default_anta_env() -> Dict[str, str]:
+def default_anta_env() -> dict[str, str]:
     """
     Return a default_anta_environement which can be passed to a cliRunner.invoke method
     """

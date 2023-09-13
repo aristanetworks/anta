@@ -8,7 +8,7 @@ Tests for anta.tools.get_value
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
-from typing import Any, Optional
+from typing import Any
 
 import pytest
 
@@ -33,10 +33,10 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
 def test_get_value(
     input_dict: dict[Any, Any],
     key: str,
-    default: Optional[str],
+    default: str | None,
     required: bool,
-    org_key: Optional[str],
-    separator: Optional[str],
+    org_key: str | None,
+    separator: str | None,
     expected_result: str,
     expected_raise: Any,
 ) -> None:

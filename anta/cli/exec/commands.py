@@ -1,19 +1,18 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 
 """
 Commands for Anta CLI to execute EOS commands.
 """
+from __future__ import annotations
 
 import asyncio
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import click
 from yaml import safe_load
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 @click.command()
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
-def clear_counters(ctx: click.Context, tags: Optional[List[str]]) -> None:
+def clear_counters(ctx: click.Context, tags: Optional[list[str]]) -> None:
     """Clear counter statistics on EOS devices"""
     asyncio.run(clear_counters_utils(ctx.obj["inventory"], tags=tags))
 
@@ -52,7 +51,7 @@ def clear_counters(ctx: click.Context, tags: Optional[List[str]]) -> None:
     default=f"anta_snapshot_{datetime.now().strftime('%Y-%m-%d_%H_%M_%S')}",
     show_default=True,
 )
-def snapshot(ctx: click.Context, tags: Optional[List[str]], commands_list: Path, output: Path) -> None:
+def snapshot(ctx: click.Context, tags: Optional[list[str]], commands_list: Path, output: Path) -> None:
     """Collect commands output from devices in inventory"""
     print(f"Collecting data for {commands_list}")
     print(f"Output directory is {output}")
@@ -78,6 +77,6 @@ def snapshot(ctx: click.Context, tags: Optional[List[str]], commands_list: Path,
     show_default=True,
 )
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
-def collect_tech_support(ctx: click.Context, tags: Optional[List[str]], output: Path, latest: Optional[int], configure: bool) -> None:
+def collect_tech_support(ctx: click.Context, tags: Optional[list[str]], output: Path, latest: Optional[int], configure: bool) -> None:
     """Collect scheduled tech-support from EOS devices"""
     asyncio.run(collect_scheduled_show_tech(ctx.obj["inventory"], output, configure, tags=tags, latest=latest))

@@ -6,10 +6,11 @@
 """
 ANTA CLI
 """
+from __future__ import annotations
 
 import logging
 import pathlib
-from typing import Any, Callable, Dict, List, Literal, Tuple
+from typing import Any, Callable, Literal
 
 import click
 
@@ -24,7 +25,6 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 
 
-# @click.group()
 @click.group(cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.version_option(__version__)
@@ -145,7 +145,7 @@ def anta(
     required=True,
     callback=parse_catalog,
 )
-def nrfu(ctx: click.Context, catalog: List[Tuple[Callable[..., TestResult], Dict[Any, Any]]]) -> None:
+def nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()

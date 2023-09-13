@@ -13,6 +13,8 @@ from __future__ import annotations
 import logging
 import re
 from ipaddress import IPv4Address
+
+# Need to keep List for pydantic in python 3.8
 from typing import List
 
 from anta.models import AntaCommand, AntaTest
@@ -108,7 +110,7 @@ class VerifyLoggingHosts(AntaTest):
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: List[IPv4Address]
-        """List of hosts (syslog servers) IP addresses"""
+        """list of hosts (syslog servers) IP addresses"""
         vrf: str = "default"
         """The name of the VRF to transport log messages"""
 

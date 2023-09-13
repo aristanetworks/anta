@@ -1,17 +1,16 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 
 """
 Utils functions to use with anta.cli.get.commands module.
 """
+from __future__ import annotations
 
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import requests
 import urllib3
@@ -36,11 +35,11 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     return response.json()["sessionId"]
 
 
-def create_inventory_from_cvp(inv: List[Dict[str, Any]], directory: str, container: str) -> None:
+def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, container: str) -> None:
     """
     create an inventory file from Arista CloudVision
     """
-    i: Dict[str, Dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
+    i: dict[str, dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
     logger.debug(f"Received {len(inv)} device(s) from CVP")
     for dev in inv:
         logger.info(f'   * adding entry for {dev["hostname"]}')
@@ -63,7 +62,7 @@ def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_ro
         ansible_root (Union[str, None], optional): Ansible group from where to extract data. Defaults to None.
     """
 
-    def deep_yaml_parsing(data: Dict[str, Any], hosts: Union[None, List[Dict[str, str]]] = None) -> Union[None, List[Dict[str, str]]]:
+    def deep_yaml_parsing(data: dict[str, Any], hosts: Union[None, list[dict[str, str]]] = None) -> Union[None, list[dict[str, str]]]:
         """Deep parsing of YAML file to extract hosts and associated IPs"""
         if hosts is None:
             hosts = []
@@ -76,7 +75,7 @@ def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_ro
                 return hosts
         return hosts
 
-    i: Dict[str, Dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
+    i: dict[str, dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
     with open(inventory, encoding="utf-8") as inv:
         ansible_inventory = yaml.safe_load(inv)
     if ansible_root not in ansible_inventory.keys():

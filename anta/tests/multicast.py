@@ -8,6 +8,7 @@ Test functions related to multicast
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+# Need to keep Dict for pydantic in python 3.8
 from typing import Dict
 
 from anta.custom_types import Vlan

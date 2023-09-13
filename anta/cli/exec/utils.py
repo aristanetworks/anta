@@ -1,19 +1,18 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 
 """
 Exec CLI helpers
 """
+from __future__ import annotations
 
 import asyncio
 import itertools
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Literal, Optional
 
 from aioeapi import EapiCommandError
 
@@ -27,7 +26,7 @@ EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[List[str]] = None) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[list[str]] = None) -> None:
     """
     Clear counters
     """
@@ -51,9 +50,9 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[Lis
 
 async def collect_commands(
     inv: AntaInventory,
-    commands: Dict[str, str],
+    commands: dict[str, str],
     root_dir: Path,
-    tags: Optional[List[str]] = None,
+    tags: Optional[list[str]] = None,
 ) -> None:
     """
     Collect EOS commands
@@ -93,7 +92,7 @@ async def collect_commands(
             anta_log_exception(r, message, logger)
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[List[str]] = None, latest: Optional[int] = None) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[list[str]] = None, latest: Optional[int] = None) -> None:
     """
     Collect scheduled show-tech on devices
     """

@@ -8,7 +8,7 @@ Tests for anta.cli.debug.commands
 from __future__ import annotations
 
 from contextlib import nullcontext
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal
 from unittest.mock import MagicMock, patch
 
 import click
@@ -61,7 +61,7 @@ def test_get_device(test_inventory: AntaInventory, device_name: str, expected_ra
     ],
 )
 def test_run_cmd(
-    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Optional[Literal["1", "latest"]], revision: Optional[int], device: str
+    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"] | None, revision: int | None, device: str
 ) -> None:
     """
     Test `anta debug run-cmd`

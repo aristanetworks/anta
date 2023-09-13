@@ -9,6 +9,8 @@ Test functions related to various connectivity checks
 from __future__ import annotations
 
 from ipaddress import IPv4Address
+
+# Need to keep List for pydantic in python 3.8
 from typing import List, Union
 
 from pydantic import BaseModel

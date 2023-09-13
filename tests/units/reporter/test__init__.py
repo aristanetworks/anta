@@ -7,8 +7,6 @@ Test anta.report.__init__.py
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 import pytest
 from rich.table import Table
 from rich.text import Text
@@ -35,7 +33,7 @@ class Test_ReportTable:
             pytest.param(["elem1", "elem2"], "&", "& elem1\n& elem2", id="two elems list with delimiter"),
         ],
     )
-    def test__split_list_to_txt_list(self, usr_list: List[str], delimiter: Optional[str], expected_output: str) -> None:
+    def test__split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None, expected_output: str) -> None:
         """
         test _split_list_to_txt_list
         """
@@ -51,7 +49,7 @@ class Test_ReportTable:
             pytest.param(["elem1", "elem2"], id="two elemst"),
         ],
     )
-    def test__build_headers(self, headers: List[str]) -> None:
+    def test__build_headers(self, headers: list[str]) -> None:
         """
         test _build_headers
         """

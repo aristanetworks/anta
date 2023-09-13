@@ -8,7 +8,7 @@ Tests for anta.tools.misc
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -45,8 +45,8 @@ def my_raising_function(exception: Exception) -> None:
 def test_anta_log_exception(
     caplog: LogCaptureFixture,
     exception: Exception,
-    message: Optional[str],
-    calling_logger: Optional[logging.Logger],
+    message: str | None,
+    calling_logger: logging.Logger | None,
     __DEBUG__value: bool,
     expected_message: str,
 ) -> None:

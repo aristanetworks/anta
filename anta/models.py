@@ -12,6 +12,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
+
+# Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict, ValidationError, conint
@@ -183,7 +185,7 @@ class AntaTest(ABC):
                 commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
 
                 class Input(AntaTest.Input):
-                    hosts: List[Host]
+                    hosts: list[Host]
                     class Host(BaseModel):
                         dst: IPv4Address
                         src: IPv4Address
@@ -262,8 +264,8 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
-        inputs: dict[str, Any] | None,
-        eos_data: list[dict[Any, Any] | str] | None = None,
+        inputs: Optional[dict[str, Any]],
+        eos_data: Optional[list[dict[Any, Any] | str]] = None,
     ):
         """AntaTest Constructor
 
@@ -282,7 +284,7 @@ class AntaTest(ABC):
         if self.result.result == "unset":
             self._init_commands(eos_data)
 
-    def _init_inputs(self, inputs: dict[str, Any] | None) -> None:
+    def _init_inputs(self, inputs: Optional[dict[str, Any]]) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance
         to validate test inputs from defined model.
         Overwrite result fields based on `ResultOverwrite` input definition.
@@ -302,7 +304,7 @@ class AntaTest(ABC):
                 self.result.description = res_ow.description
             self.result.custom_field = res_ow.custom_field
 
-    def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
+    def _init_commands(self, eos_data: Optional[list[dict[Any, Any] | str]]) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
         - Copy of the `AntaCommand` instances
         - Render all `AntaTemplate` instances using the `render()` method
@@ -396,7 +398,7 @@ class AntaTest(ABC):
         @wraps(function)
         async def wrapper(
             self: AntaTest,
-            eos_data: list[dict[Any, Any] | str] | None = None,
+            eos_data: Optional[list[dict[Any, Any] | str]] = None,
             **kwargs: Any,
         ) -> TestResult:
             """

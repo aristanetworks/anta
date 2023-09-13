@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 from typing import List, Optional, Union
 
+# Need to keep List for pydantic in python 3.8
 from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class AntaInventoryHost(BaseModel):
         host (IPvAnyAddress): IPv4 or IPv6 address of the device
         port (int): (Optional) eAPI port to use Default is 443.
         name (str): (Optional) Name to display during tests report. Default is hostname:port
-        tags (List[str]): List of attached tags read from inventory file.
+        tags (list[str]): list of attached tags read from inventory file.
     """
 
     name: Optional[str] = None
@@ -40,7 +41,7 @@ class AntaInventoryNetwork(BaseModel):
 
     Attributes:
         network (IPvAnyNetwork): Subnet to use for testing.
-        tags (List[str]): List of attached tags read from inventory file.
+        tags (list[str]): list of attached tags read from inventory file.
     """
 
     network: IPvAnyNetwork
@@ -54,7 +55,7 @@ class AntaInventoryRange(BaseModel):
     Attributes:
         start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
-        tags (List[str]): List of attached tags read from inventory file.
+        tags (list[str]): list of attached tags read from inventory file.
     """
 
     start: IPvAnyAddress
@@ -67,9 +68,9 @@ class AntaInventoryInput(BaseModel):
     User's inventory model.
 
     Attributes:
-        networks (List[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
-        hosts (List[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
-        range (List[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
+        networks (list[AntaInventoryNetwork],Optional): list of AntaInventoryNetwork objects for networks.
+        hosts (list[AntaInventoryHost],Optional): list of AntaInventoryHost objects for hosts.
+        range (list[AntaInventoryRange],Optional): list of AntaInventoryRange objects for ranges.
     """
 
     networks: Optional[List[AntaInventoryNetwork]] = None

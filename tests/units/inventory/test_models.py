@@ -2,9 +2,10 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Inventory models unit tests."""
+from __future__ import annotations
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -30,7 +31,7 @@ class Test_InventoryUnitModels:
     """Test components of AntaInventoryInput model."""
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_host_valid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_host_valid(self, test_definition: dict[str, Any]) -> None:
         """Test host input model.
 
         Test structure:
@@ -52,7 +53,7 @@ class Test_InventoryUnitModels:
             assert test_definition["input"] == str(host_inventory.host)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_host_invalid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_host_invalid(self, test_definition: dict[str, Any]) -> None:
         """Test host input model.
 
         Test structure:
@@ -69,7 +70,7 @@ class Test_InventoryUnitModels:
             AntaInventoryHost(host=test_definition["input"])
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_network_valid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_network_valid(self, test_definition: dict[str, Any]) -> None:
         """Test Network input model with valid data.
 
         Test structure:
@@ -91,7 +92,7 @@ class Test_InventoryUnitModels:
             assert test_definition["input"] == str(network_inventory.network)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_network_invalid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_network_invalid(self, test_definition: dict[str, Any]) -> None:
         """Test Network input model with invalid data.
 
         Test structure:
@@ -112,7 +113,7 @@ class Test_InventoryUnitModels:
             assert False
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_range_valid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_range_valid(self, test_definition: dict[str, Any]) -> None:
         """Test range input model.
 
         Test structure:
@@ -138,7 +139,7 @@ class Test_InventoryUnitModels:
             assert test_definition["input"]["end"] == str(range_inventory.end)
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_range_invalid(self, test_definition: Dict[str, Any]) -> None:
+    def test_anta_inventory_range_invalid(self, test_definition: dict[str, Any]) -> None:
         """Test range input model.
 
         Test structure:
@@ -173,7 +174,7 @@ class Test_AntaInventoryInputModel:
         assert all(elem in inventory.model_dump().keys() for elem in ["hosts", "networks", "ranges"])
 
     @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_intput_valid(self, inventory_def: Dict[str, Any]) -> None:
+    def test_anta_inventory_intput_valid(self, inventory_def: dict[str, Any]) -> None:
         """Test loading valid data to inventory class.
 
         Test structure:
@@ -205,7 +206,7 @@ class Test_AntaInventoryInputModel:
             assert all(elem in inventory.model_dump().keys() for elem in inventory_def["input"].keys())
 
     @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_intput_invalid(self, inventory_def: Dict[str, Any]) -> None:
+    def test_anta_inventory_intput_invalid(self, inventory_def: dict[str, Any]) -> None:
         """Test loading invalid data to inventory class.
 
         Test structure:
@@ -257,7 +258,7 @@ class Test_InventoryDeviceModel:
     """Unit test of InventoryDevice model."""
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_VALID, ids=generate_test_ids_dict)
-    def test_inventory_device_valid(self, test_definition: Dict[str, Any]) -> None:
+    def test_inventory_device_valid(self, test_definition: dict[str, Any]) -> None:
         """Test loading valid data to InventoryDevice class.
 
          Test structure:
@@ -292,7 +293,7 @@ class Test_InventoryDeviceModel:
                 assert False
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_INVALID, ids=generate_test_ids_dict)
-    def test_inventory_device_invalid(self, test_definition: Dict[str, Any]) -> None:
+    def test_inventory_device_invalid(self, test_definition: dict[str, Any]) -> None:
         """Test loading invalid data to InventoryDevice class.
 
          Test structure:
