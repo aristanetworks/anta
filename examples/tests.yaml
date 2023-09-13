@@ -100,9 +100,14 @@ anta.tests.interfaces:
   - VerifyInterfaceErrDisabled:
   - VerifyInterfacesStatus:
       interfaces:
-        - Ethernet1
-        - Ethernet2
-        - Vlan10
+        - interface: Ethernet1
+          state: up
+        - interface: Ethernet2
+          state: up
+          protocol_status: up
+        - interface: Vlan10
+          state: adminDown
+          protocol_status: down
   - VerifyStormControlDrops:
   - VerifyPortChannels:
   - VerifyIllegalLACP:
