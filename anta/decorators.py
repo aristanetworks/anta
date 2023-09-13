@@ -5,9 +5,9 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, cast
 
-from anta.models import AntaCommand, AntaTest
+from anta.models import AntaCommand, AntaTest, logger
 from anta.tools.misc import exc_to_str
 
 if TYPE_CHECKING:
@@ -17,26 +17,76 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
-    """Return a decorator factory to skip a test on a list of platforms.
+def deprecated_test(new_tests: Optional[list[str]] = None) -> Callable[[F], F]:
+    """
+    Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Args:
-    ----
-      platforms (List[str]): the list of platforms on which the decorated test should be skipped.
+        new_tests (Optional[list[str]]): A list of new test classes that should replace the deprecated test.
 
+    Returns:
+        Callable[[F], F]: A decorator that can be used to wrap test functions.
     """
 
     def decorator(function: F) -> F:
-        """Implement the decorator to skip a test ona list of platform.
+        """
+        Actual decorator that logs the message.
 
         Args:
-        ----
-            function (F): the test to be decorated.
+            function (F): The test function to be decorated.
+
+        Returns:
+            F: The decorated function.
+        """
+
+        @wraps(function)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            anta_test = args[0]
+            if new_tests:
+                new_test_names = ", ".join(new_tests)
+                logger.warning(f"{anta_test.name} test is deprecated. Consider using the following new tests: {new_test_names}.")
+            else:
+                logger.warning(f"{anta_test.name} test is deprecated.")
+            return await function(*args, **kwargs)
+
+        return cast(F, wrapper)
+
+    return decorator
+
+
+def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
+    """
+    Return a decorator to skip a test based on the device's hardware model.
+
+    This decorator factory generates a decorator that will check the hardware model of the device
+    the test is run on. If the model is in the list of platforms specified, the test will be skipped.
+
+    Args:
+        platforms (list[str]): List of hardware models on which the test should be skipped.
+
+    Returns:
+        Callable[[F], F]: A decorator that can be used to wrap test functions.
+    """
+
+    def decorator(function: F) -> F:
+        """
+        Actual decorator that either runs the test or skips it based on the device's hardware model.
+
+        Args:
+            function (F): The test function to be decorated.
+
+        Returns:
+            F: The decorated function.
         """
 
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """Implement the wrapper for func."""
+            """
+            Check the device's hardware model and conditionally run or skip the test.
+
+            This wrapper inspects the hardware model of the device the test is run on.
+            If the model is in the list of specified platforms, the test is either skipped.
+            """
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
@@ -56,25 +106,42 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
 
 def check_bgp_family_enable(family: str) -> Callable[[F], F]:
-    """Return a decorator factory to skip a test if BGP is enabled.
+    """
+    Return a decorator to conditionally skip a test based on BGP address family availability.
+
+    This is a decorator factory that generates a decorator that will skip the test
+    if there's no BGP configuration or peer for the given address family.
+
+    !!! warning
+        This decorator is deprecated and will eventually be removed in a future major release of ANTA.
+        New BGP tests have been created to address this. For more details, please refer to the BGP tests documentation.
 
     Args:
-    ----
-        family (str): BGP family to check. Can be ipv4 / ipv6 / evpn / rtc
+        family (str): BGP address family to check. Accepted values are 'ipv4', 'ipv6', 'evpn', 'rtc'.
 
+    Returns:
+        Callable[[F], F]: A decorator that can be used to wrap test functions.
     """
 
     def decorator(function: F) -> F:
-        """Implement the decorator to skip a test if an address family is not configured.
+        """
+        Actual decorator that either runs the test or skips it based on BGP address family state.
 
         Args:
-        ----
-            function (F): the test to be decorated.
+            function (F): The test function to be decorated.
+
+        Returns:
+            F: The decorated function.
         """
 
         @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """Implement the wrapper for func."""
+        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:  # pylint: disable=too-many-branches
+            """
+            Check BGP address family and conditionally run or skip the test.
+
+            This wrapper checks the BGP address family state on the device.
+            If the required BGP configuration or peer is not found, the test is either skipped.
+            """
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
@@ -90,7 +157,7 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
             elif family == "rtc":
                 command = AntaCommand(command="show bgp rt-membership summary")
             else:
-                anta_test.result.is_error(message=f"Wrong address family for bgp decorator: {family}")
+                anta_test.result.is_error(message=f"Wrong address family for BGP decorator: {family}")
                 return anta_test.result
 
             await anta_test.device.collect(command=command)
@@ -99,12 +166,12 @@ def check_bgp_family_enable(family: str) -> Callable[[F], F]:
                 anta_test.result.is_error(message=f"{command.command}: {exc_to_str(command.failed)}")
                 return anta_test.result
             if "vrfs" not in command.json_output:
-                anta_test.result.is_skipped(f"no BGP configuration for {family} on this device")
+                anta_test.result.is_skipped(f"No BGP configuration for address family {family} on this device")
                 AntaTest.update_progress()
                 return anta_test.result
             if len(bgp_vrfs := command.json_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
                 # No VRF
-                anta_test.result.is_skipped(f"no {family} peer on this device")
+                anta_test.result.is_skipped(f"No BGP peer for address family {family} on this device")
                 AntaTest.update_progress()
                 return anta_test.result
 

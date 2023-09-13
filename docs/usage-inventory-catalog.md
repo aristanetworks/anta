@@ -122,7 +122,7 @@ titom73.tests.system:
 ```
 
 !!! tip "How to create custom tests"
-    To create your custom tests, you should refer to this [following documentation](advanced_usages/as-python-lib.md)
+    To create your custom tests, you should refer to this [following documentation](advanced_usages/custom-tests.md)
 
 ### Customize test description and categories
 

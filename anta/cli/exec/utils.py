@@ -130,8 +130,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                     assert isinstance(device, AsyncEOSDevice)
                     # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.
                     commands = []
-                    if device.enable and device._enable_password is not None:  # type: ignore[attr-defined] # pylint: disable=protected-access
-                        commands.append({"cmd": "enable", "input": device._enable_password})  # type: ignore[attr-defined] # pylint: disable=protected-access
+                    if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
+                        commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
                     elif device.enable:
                         commands.append({"cmd": "enable"})
                     commands.extend(

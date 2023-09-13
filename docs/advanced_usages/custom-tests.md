@@ -274,10 +274,14 @@ ERROR    Exception raised for test VerifyTemperature (on device 192.168.0.10) - 
 
 ### Test decorators
 
-Besides the `AntaTest.anta_tests` mandatory decorator, ANTA provides some additional and optional decorators:
+In addition to the required `AntaTest.anta_tests` decorator, ANTA offers a set of optional decorators for further test customization:
 
-- `anta.decorators.skip_on_platforms`: To skip a test for a function not available for some platform
-- `anta.decorators.check_bgp_family_enable`: To run tests only if specific BGP family is active.
+- `anta.decorators.deprecated_test`: Use this to log a message of WARNING severity when a test is deprecated.
+- `anta.decorators.skip_on_platforms`: Use this to skip tests for functionalities that are not supported on specific platforms.
+- `anta.decorators.check_bgp_family_enable`: Use this to skip tests when a particular BGP address family is not configured on the device.
+
+!!! warning
+    The `check_bgp_family_enable` decorator is deprecated and will eventually be removed in a future major release of ANTA. For more details, please refer to the [BGP tests section](../api/tests.routing.bgp.md).
 
 ```python
 from anta.decorators import skip_on_platforms

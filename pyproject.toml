@@ -54,7 +54,7 @@ dev = [
   "black==23.9.1",
   "flake8==6.1.0",
   "isort==5.12.0",
-  "mypy~=1.4",
+  "mypy~=1.5",
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",
   "pylint>=2.17.5",
@@ -148,7 +148,7 @@ ignore_missing_imports = true
 warn_redundant_casts = true
 # Note: tox find some unused type ignore which are required for pre-commit
 # To investigate
-# warn_unused_ignores = true
+warn_unused_ignores = true
 disallow_any_generics = true
 check_untyped_defs = true
 no_implicit_reexport = true
