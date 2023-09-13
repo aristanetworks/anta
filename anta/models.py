@@ -6,6 +6,7 @@ Models to define a TestStructure
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import time
 from abc import ABC, abstractmethod
@@ -87,8 +88,9 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
+        output: Output of the command
         template: AntaTemplate object used to render this command
-        params: dictionary of variables with string values to render the template
+        params: Dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
     """
 
@@ -103,6 +105,12 @@ class AntaCommand(BaseModel):
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
     params: Optional[Dict[str, Any]] = None
+
+    @property
+    def uid(self) -> str:
+        """Generate a unique identifier for this command"""
+        uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
+        return hashlib.md5(uid_str.encode()).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:

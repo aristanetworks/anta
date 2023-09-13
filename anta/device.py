@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
 
 import asyncssh
+from aiocache import Cache
+from aiocache.serializers import PickleSerializer
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
@@ -49,6 +51,7 @@ class AntaDevice(ABC):
         self.tags: List[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
+        self.cache = Cache(cache_class=Cache.REDIS, ttl=60, serializer=PickleSerializer(), namespace=self.name, endpoint="10.22.10.6", password="secret")
 
         # Ensure tag 'all' is always set
         if DEFAULT_TAG not in self.tags:
@@ -96,7 +99,21 @@ class AntaDevice(ABC):
         Args:
             commands: the commands to collect
         """
-        await asyncio.gather(*(self.collect(command=command) for command in commands))
+        non_cached_commands = []
+        for command in commands:
+            cached_output = await self.cache.get(command.uid)
+            if cached_output is not None:
+                print("Cache hit!")
+                command.output = cached_output
+            else:
+                print("Cache miss")
+                non_cached_commands.append(command)
+
+        await asyncio.gather(*(self.collect(command=command) for command in non_cached_commands))
+
+        for command in non_cached_commands:
+            print(f"Adding command {command.uid} to cache")
+            await self.cache.set(command.uid, command.output, ttl=60)
 
     @abstractmethod
     async def refresh(self) -> None:
