@@ -63,7 +63,7 @@ def json(ctx: click.Context, tags: Optional[list[str]], output: Optional[pathlib
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", help="list of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option("--tags", "-t", help=Llist of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
 def text(ctx: click.Context, tags: Optional[list[str]], search: Optional[str], skip_error: bool) -> None:
@@ -93,7 +93,7 @@ def text(ctx: click.Context, tags: Optional[list[str]], search: Optional[str], s
     required=False,
     help="Path to save report as a file",
 )
-@click.option("--tags", "-t", help="list of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 def tpl_report(ctx: click.Context, tags: Optional[list[str]], template: pathlib.Path, output: Optional[pathlib.Path]) -> None:
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)

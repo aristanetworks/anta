@@ -22,7 +22,7 @@ def deprecated_test(new_tests: Optional[list[str]] = None) -> Callable[[F], F]:
     Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Args:
-        new_tests (list[str] | None): A list of new test classes that should replace the deprecated test.
+        new_tests (Optional[list[str]]): A list of new test classes that should replace the deprecated test.
 
     Returns:
         Callable[[F], F]: A decorator that can be used to wrap test functions.

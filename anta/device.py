@@ -36,7 +36,7 @@ class AntaDevice(ABC):
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
-        tags: list of tags for this device
+        tags: List of tags for this device
     """
 
     def __init__(self, name: str, tags: Optional[list[str]] = None) -> None:
@@ -118,7 +118,7 @@ class AntaDevice(ABC):
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
         Args:
-            sources: list of files to copy to or from the device.
+            sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
         """
@@ -134,7 +134,7 @@ class AsyncEOSDevice(AntaDevice):
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
-        tags: list of tags for this device
+        tags: List of tags for this device
     """
 
     def __init__(  # pylint: disable=R0913
@@ -164,7 +164,7 @@ class AsyncEOSDevice(AntaDevice):
             enable_password: Password used to gain privileged access on EOS
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port
-            tags: list of tags for this device
+            tags: List of tags for this device
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
             insecure: Disable SSH Host Key validation
             proto: eAPI protocol. Value can be 'http' or 'https'
@@ -300,7 +300,7 @@ class AsyncEOSDevice(AntaDevice):
         Copy files to and from the device using asyncssh.scp().
 
         Args:
-            sources: list of files to copy to or from the device.
+            sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
         """

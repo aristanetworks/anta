@@ -21,7 +21,7 @@ class TestResult(BaseModel):
     Attributes:
         name: Device name where the test has run.
         test: Test name runs on the device.
-        categories: list of categories the TestResult belongs to, by default the AntaTest categories.
+        categories: List of categories the TestResult belongs to, by default the AntaTest categories.
         description: TestResult description, by default the AntaTest description.
         results: Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
         message: Message to report after the test if any.

@@ -151,7 +151,7 @@ class ReportTable:
             "# of skipped",
             "# of failure",
             "# of errors",
-            "list of failed or error nodes",
+            "List of failed or error nodes",
         ]
         table = self._build_headers(headers=headers, table=table)
         for testcase_read in result_manager.get_testcases():
@@ -252,7 +252,7 @@ class ReportJinja:
         ]
 
         Args:
-            data (list[dict[str, Any]]): list of results from ResultManager.get_results
+            data (list[dict[str, Any]]): List of results from ResultManager.get_results
             trim_blocks (bool, optional): enable trim_blocks for J2 rendering. Defaults to True.
             lstrip_blocks (bool, optional): enable lstrip_blocks for J2 rendering. Defaults to True.
 

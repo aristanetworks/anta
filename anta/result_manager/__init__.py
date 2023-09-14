@@ -129,7 +129,7 @@ class ResultManager:
         """Add a list of results to the list
 
         Args:
-            entries (list[TestResult]): list of TestResult data to add to the report
+            entries (list[TestResult]): List of TestResult data to add to the report
         """
         for e in entries:
             self.add_test_result(e)

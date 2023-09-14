@@ -26,7 +26,7 @@ class AntaInventoryHost(BaseModel):
         host (IPvAnyAddress): IPv4 or IPv6 address of the device
         port (int): (Optional) eAPI port to use Default is 443.
         name (str): (Optional) Name to display during tests report. Default is hostname:port
-        tags (list[str]): list of attached tags read from inventory file.
+        tags (list[str]): List of attached tags read from inventory file.
     """
 
     name: Optional[str] = None
@@ -41,7 +41,7 @@ class AntaInventoryNetwork(BaseModel):
 
     Attributes:
         network (IPvAnyNetwork): Subnet to use for testing.
-        tags (list[str]): list of attached tags read from inventory file.
+        tags (list[str]): List of attached tags read from inventory file.
     """
 
     network: IPvAnyNetwork
@@ -55,7 +55,7 @@ class AntaInventoryRange(BaseModel):
     Attributes:
         start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
-        tags (list[str]): list of attached tags read from inventory file.
+        tags (list[str]): List of attached tags read from inventory file.
     """
 
     start: IPvAnyAddress
@@ -68,9 +68,9 @@ class AntaInventoryInput(BaseModel):
     User's inventory model.
 
     Attributes:
-        networks (list[AntaInventoryNetwork],Optional): list of AntaInventoryNetwork objects for networks.
-        hosts (list[AntaInventoryHost],Optional): list of AntaInventoryHost objects for hosts.
-        range (list[AntaInventoryRange],Optional): list of AntaInventoryRange objects for ranges.
+        networks (list[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
+        hosts (list[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
+        range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
 
     networks: Optional[List[AntaInventoryNetwork]] = None
