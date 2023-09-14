@@ -26,7 +26,7 @@ def pydantic_to_dict(pydantic_list: ListResult) -> list[dict[str, Sequence[Any]]
         pydantic_list: Iterable pydantic object
 
     Returns:
-        list[dict[str, str]]: the list of dict
+        list[dict[str, str]]: The list of dict
     """
     result = []
     for device in pydantic_list:
