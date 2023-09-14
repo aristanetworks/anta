@@ -41,7 +41,7 @@ class TestResult(BaseModel):
     error: Optional[Exception] = None
     custom_field: Optional[str] = None
 
-    def is_success(self, message: Optional[str] = None) -> None:
+    def is_success(self, message: str | None = None) -> None:
         """
         Helper to set status to success
 
@@ -50,7 +50,7 @@ class TestResult(BaseModel):
         """
         self._set_status("success", message)
 
-    def is_failure(self, message: Optional[str] = None) -> None:
+    def is_failure(self, message: str | None = None) -> None:
         """
         Helper to set status to failure
 
@@ -59,7 +59,7 @@ class TestResult(BaseModel):
         """
         self._set_status("failure", message)
 
-    def is_skipped(self, message: Optional[str] = None) -> None:
+    def is_skipped(self, message: str | None = None) -> None:
         """
         Helper to set status to skipped
 
@@ -68,7 +68,7 @@ class TestResult(BaseModel):
         """
         self._set_status("skipped", message)
 
-    def is_error(self, message: Optional[str] = None, exception: Optional[Exception] = None) -> None:
+    def is_error(self, message: str | None = None, exception: Optional[Exception] = None) -> None:
         """
         Helper to set status to error
 
@@ -78,7 +78,7 @@ class TestResult(BaseModel):
         self._set_status("error", message)
         self.error = exception
 
-    def _set_status(self, status: TestStatus, message: Optional[str] = None) -> None:
+    def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """
         Set status and insert optional message
 
