@@ -110,7 +110,7 @@ class VerifyLoggingHosts(AntaTest):
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: List[IPv4Address]
-        """list of hosts (syslog servers) IP addresses"""
+        """List of hosts (syslog servers) IP addresses"""
         vrf: str = "default"
         """The name of the VRF to transport log messages"""
 
