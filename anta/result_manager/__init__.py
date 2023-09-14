@@ -140,7 +140,16 @@ class ResultManager:
         """
         return "error" if self.error_status and not ignore_error else self.status
 
-    def get_results(self, output_format: str = "native") -> Any:
+    def _maybe_expand_test_result(self, test_result: TestResult) -> list[TestResult]:
+        """
+        Expand a list of atomic test_results if test_result object has atomic test results
+
+        Args:
+            test_result (TestResult): The TestResult object to maybe expand
+        """
+        return test_result.atomic_results if test_result.has_atomic_result() else [test_result]
+
+    def get_results(self, output_format: str = "native", expand_atomic: bool = False) -> Any:
         """
         Expose list of all test results in different format
 
@@ -151,59 +160,77 @@ class ResultManager:
 
         Args:
             output_format (str, optional): format selector. Can be either native/list/json. Defaults to 'native'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             any: List of results.
         """
+        if expand_atomic:
+            result_entries = ListResult()
+            for re in self._result_entries:
+                result_entries.extend(self._maybe_expand_test_result(re))
+        else:
+            result_entries = self._result_entries
+
         if output_format == "list":
-            return list(self._result_entries)
+            return list(result_entries)
 
         if output_format == "json":
-            return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
+            return json.dumps(pydantic_to_dict(result_entries), indent=4)
 
         if output_format == "native":
             # Default return for native format.
-            return self._result_entries
+            return result_entries
         raise ValueError(f"{output_format} is not a valid value ['list', 'json', 'native']")
 
-    def get_result_by_test(self, test_name: str, output_format: str = "native") -> Any:
+    def get_result_by_test(self, test_name: str, output_format: str = "native", expand_atomic: bool = False) -> Any:
         """
         Get list of test result for a given test.
 
         Args:
             test_name (str): Test name to use to filter results
             output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             list[TestResult]: List of results related to the test.
         """
-        if output_format == "list":
-            return [result for result in self._result_entries if str(result.test) == test_name]
-
         result_manager_filtered = ListResult()
         for result in self._result_entries:
             if result.test == test_name:
-                result_manager_filtered.append(result)
+                if expand_atomic:
+                    result_manager_filtered.extend(self._maybe_expand_test_result(result))
+                else:
+                    result_manager_filtered.append(result)
+
+        if output_format == "list":
+            return list(result_manager_filtered)
+
         return result_manager_filtered
 
-    def get_result_by_host(self, host_ip: str, output_format: str = "native") -> Any:
+    def get_result_by_host(self, host_ip: str, output_format: str = "native", expand_atomic: bool = False) -> Any:
         """
         Get list of test result for a given host.
 
         Args:
             host_ip (str): IP Address of the host to use to filter results.
             output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             Any: List of results related to the host.
         """
-        if output_format == "list":
-            return [result for result in self._result_entries if str(result.name) == host_ip]
-
         result_manager_filtered = ListResult()
         for result in self._result_entries:
             if str(result.name) == host_ip:
-                result_manager_filtered.append(result)
+                if expand_atomic:
+                    result_manager_filtered.extend(self._maybe_expand_test_result(result))
+                else:
+                    result_manager_filtered.append(result)
+
+        if output_format == "list":
+            return list(result_manager_filtered)
+
         return result_manager_filtered
 
     def get_testcases(self) -> list[str]:

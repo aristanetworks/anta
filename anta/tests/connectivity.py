@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from anta.custom_types import Interface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import TestResult
 
 
 class VerifyReachability(AntaTest):
@@ -54,10 +55,19 @@ class VerifyReachability(AntaTest):
     def test(self) -> None:
         failures = []
         for command in self.instance_commands:
+            # TODO see if this makes sense
+            atomic_tr = TestResult(name=self.result.name, test=self.result.test, categories=self.result.categories, description=self.result.description)
+
             if command.params and "source" in command.params and "destination" in command.params:
                 src, dst = command.params["source"], command.params["destination"]
             if "2 received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))
+                atomic_tr.is_failure(f"Connectivity test failed for the following source-destination pair: {failures[-1]}")
+            else:
+                atomic_tr.is_success()
+
+            self.result.append_atomic_result(atomic_tr)
+
         if not failures:
             self.result.is_success()
         else:

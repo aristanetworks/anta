@@ -145,6 +145,15 @@ def anta(
     required=True,
     callback=parse_catalog,
 )
+@click.option(
+    "--expand-atomic",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be rendered",
+)
 def nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog

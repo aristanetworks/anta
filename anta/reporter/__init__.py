@@ -96,6 +96,7 @@ class ReportTable:
         host: Optional[str] = None,
         testcase: Optional[str] = None,
         title: str = "All tests results",
+        expand_atomic: bool = False,
     ) -> Table:
         """
         Create a table report with all tests for one or all devices.
@@ -107,6 +108,7 @@ class ReportTable:
             host (str, optional): IP Address of a host to search for. Defaults to None.
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             Table: A fully populated rich Table
@@ -115,7 +117,7 @@ class ReportTable:
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
-        for result in result_manager.get_results(output_format="list"):
+        for result in result_manager.get_results(output_format="list", expand_atomic=expand_atomic):
             # pylint: disable=R0916
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
                 state = self._color_result(status=str(result.result), output_type="str")
@@ -129,6 +131,7 @@ class ReportTable:
         result_manager: ResultManager,
         testcase: Optional[str] = None,
         title: str = "Summary per test case",
+        expand_atomic: bool = False,
     ) -> Table:
         """
         Create a table report with result agregated per test.
@@ -139,6 +142,7 @@ class ReportTable:
             result_manager (ResultManager): A manager with a list of tests.
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             Table: A fully populated rich Table
@@ -156,7 +160,7 @@ class ReportTable:
         table = self._build_headers(headers=headers, table=table)
         for testcase_read in result_manager.get_testcases():
             if testcase is None or str(testcase_read) == testcase:
-                results = result_manager.get_result_by_test(testcase_read)
+                results = result_manager.get_result_by_test(testcase_read, expand_atomic=expand_atomic)
                 nb_failure = len([result for result in results if result.result == "failure"])
                 nb_error = len([result for result in results if result.result == "error"])
                 list_failure = [str(result.name) for result in results if result.result in ["failure", "error"]]
@@ -177,6 +181,7 @@ class ReportTable:
         result_manager: ResultManager,
         host: Optional[str] = None,
         title: str = "Summary per host",
+        expand_atomic: bool = False,
     ) -> Table:
         """
         Create a table report with result agregated per host.
@@ -187,6 +192,7 @@ class ReportTable:
             result_manager (ResultManager): A manager with a list of tests.
             host (str, optional): IP Address of a host to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
+            expand_atomic (bool, optional): indicates if atomic test_results should be expanded
 
         Returns:
             Table: A fully populated rich Table
@@ -203,7 +209,7 @@ class ReportTable:
         table = self._build_headers(headers=headers, table=table)
         for host_read in result_manager.get_hosts():
             if host is None or str(host_read) == host:
-                results = result_manager.get_result_by_host(host_read)
+                results = result_manager.get_result_by_host(host_read, expand_atomic=expand_atomic)
                 logger.debug("data to use for computation")
                 logger.debug(f"{host}: {results}")
                 nb_failure = len([result for result in results if result.result == "failure"])

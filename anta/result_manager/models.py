@@ -27,6 +27,8 @@ class TestResult(BaseModel):
         message: Message to report after the test if any.
         error: Exception object if the test result is "error" and an Exception occured
         custom_field: Custom field to store a string for flexibility in integrating with ANTA
+        atomic_results: A list of TestResult which can be used to store atomic TestResult object for tests running list of similar commands
+                        It can then be leveraged in the report to render atomic results over the test global TestResult
     """
 
     # This is required if we want to keep an Exception object in the error field
@@ -40,6 +42,7 @@ class TestResult(BaseModel):
     messages: List[str] = []
     error: Optional[Exception] = None
     custom_field: Optional[str] = None
+    atomic_results: list[TestResult] = []
 
     def is_success(self, message: str | None = None) -> None:
         """
@@ -95,6 +98,21 @@ class TestResult(BaseModel):
         Returns a human readable string of this TestResult
         """
         return f"Test {self.test} on device {self.name} has result {self.result}"
+
+    def has_atomic_result(self) -> bool:
+        """
+        Returns if this TestResult object has atomic_results
+        """
+        return len(self.atomic_results) > 0
+
+    def append_atomic_result(self, test_result: TestResult) -> None:
+        """
+        Append the test_result object to the atomic_results
+
+        Args:
+            test_result (TestResult): The TestResult object to append
+        """
+        self.atomic_results.append(test_result)
 
 
 class ListResult(RootModel[List[TestResult]]):
