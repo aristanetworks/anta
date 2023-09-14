@@ -7,12 +7,12 @@ ANTA Device Abstraction Module
 import asyncio
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
+from typing import Any, DefaultDict, Dict, Iterator, List, Literal, Optional, Tuple, Union
 
 import asyncssh
 from aiocache import Cache
-from aiocache.serializers import PickleSerializer
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
@@ -51,8 +51,8 @@ class AntaDevice(ABC):
         self.tags: List[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
-        self.cache = Cache(cache_class=Cache.REDIS, ttl=60, serializer=PickleSerializer(), namespace=self.name, endpoint="10.22.10.6", password="secret")
-        self.cache_lock = asyncio.Lock()
+        self.cache: Cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name)
+        self.cache_locks: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
         # Ensure tag 'all' is always set
         if DEFAULT_TAG not in self.tags:
@@ -102,14 +102,14 @@ class AntaDevice(ABC):
         """
 
         async def collect_command(command: AntaCommand) -> None:
-            async with self.cache_lock:
-                cached_output = await self.cache.get(command.uid)
+            async with self.cache_locks[command.uid]:
+                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
                 if cached_output is not None:
                     print(f"Cache hit for {command.command} on {self.name}")
                     command.output = cached_output
                 else:
                     await self.collect(command=command)
-                    await self.cache.set(command.uid, command.output, ttl=60)
+                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
 
         tasks = [collect_command(command) for command in commands]
         await asyncio.gather(*tasks)

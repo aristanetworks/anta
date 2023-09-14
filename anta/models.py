@@ -88,7 +88,7 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
-        output: Output of the command
+        output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
         params: Dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
