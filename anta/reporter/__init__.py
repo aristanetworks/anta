@@ -113,6 +113,7 @@ class ReportTable:
         Returns:
             Table: A fully populated rich Table
         """
+        # pylint: disable=too-many-arguments
         table = Table(title=title)
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)

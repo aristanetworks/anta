@@ -37,7 +37,7 @@ def table(ctx: click.Context, tags: Optional[list[str]], device: Optional[str], 
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
+    print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test, expand_atomic=ctx.obj["expand_atomic"])
     exit_with_code(ctx)
 
 
@@ -57,7 +57,7 @@ def json(ctx: click.Context, tags: Optional[list[str]], output: Optional[pathlib
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_json(results=ctx.obj["result_manager"], output=output)
+    print_json(results=ctx.obj["result_manager"], output=output, expand_atomic=ctx.obj["expand_atomic"])
     exit_with_code(ctx)
 
 
@@ -71,7 +71,7 @@ def text(ctx: click.Context, tags: Optional[list[str]], search: Optional[str], s
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
+    print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error, expand_atomic=ctx.obj["expand_atomic"])
     exit_with_code(ctx)
 
 
@@ -99,5 +99,5 @@ def tpl_report(ctx: click.Context, tags: Optional[list[str]], template: pathlib.
     print_settings(ctx, template, output)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
-    print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    print_jinja(results=ctx.obj["result_manager"], template=template, output=output, expand_atomic=ctx.obj["expand_atomic"])
     exit_with_code(ctx)

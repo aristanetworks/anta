@@ -38,57 +38,59 @@ def print_settings(context: click.Context, report_template: Optional[pathlib.Pat
     console.print()
 
 
-def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None) -> None:
+def print_table(
+    results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None, expand_atomic: bool = False
+) -> None:
     """Print result in a table"""
     reporter = ReportTable()
     console.print()
     if device:
-        console.print(reporter.report_all(result_manager=results, host=device))
+        console.print(reporter.report_all(result_manager=results, host=device, expand_atomic=expand_atomic))
     elif test:
-        console.print(reporter.report_all(result_manager=results, testcase=test))
+        console.print(reporter.report_all(result_manager=results, testcase=test, expand_atomic=expand_atomic))
     elif group_by == "device":
-        console.print(reporter.report_summary_hosts(result_manager=results, host=None))
+        console.print(reporter.report_summary_hosts(result_manager=results, host=None, expand_atomic=expand_atomic))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
+        console.print(reporter.report_summary_tests(result_manager=results, testcase=None, expand_atomic=expand_atomic))
     else:
-        console.print(reporter.report_all(result_manager=results))
+        console.print(reporter.report_all(result_manager=results, expand_atomic=expand_atomic))
 
 
-def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+def print_json(results: ResultManager, output: Optional[pathlib.Path] = None, expand_atomic: bool = False) -> None:
     """Print result in a json format"""
     console.print()
     console.print(Panel("JSON results of all tests", style="cyan"))
-    rich.print_json(results.get_results(output_format="json"))
+    rich.print_json(results.get_results(output_format="json", expand_atomic=expand_atomic))
     if output is not None:
         with open(output, "w", encoding="utf-8") as fout:
-            fout.write(results.get_results(output_format="json"))
+            fout.write(results.get_results(output_format="json", expand_atomic=expand_atomic))
 
 
-def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+def print_list(results: ResultManager, output: Optional[pathlib.Path] = None, expand_atomic: bool = False) -> None:
     """Print result in a list"""
     console.print()
     console.print(Panel.fit("List results of all tests", style="cyan"))
-    pprint(results.get_results(output_format="list"))
+    pprint(results.get_results(output_format="list", expand_atomic=expand_atomic))
     if output is not None:
         with open(output, "w", encoding="utf-8") as fout:
             fout.write(str(results.get_results(output_format="list")))
 
 
-def print_text(results: ResultManager, search: Optional[str] = None, skip_error: bool = False) -> None:
+def print_text(results: ResultManager, search: Optional[str] = None, skip_error: bool = False, expand_atomic: bool = False) -> None:
     """Print results as simple text"""
     console.print()
     regexp = re.compile(search if search else ".*")
-    for line in results.get_results(output_format="list"):
+    for line in results.get_results(output_format="list", expand_atomic=expand_atomic):
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
 
 
-def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional[pathlib.Path] = None) -> None:
+def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional[pathlib.Path] = None, expand_atomic: bool = False) -> None:
     """Print result based on template."""
     console.print()
     reporter = ReportJinja(template_path=template)
-    json_data = json.loads(results.get_results(output_format="json"))
+    json_data = json.loads(results.get_results(output_format="json", expand_atomic=expand_atomic))
     report = reporter.render(json_data)
     console.print(report)
     if output is not None:

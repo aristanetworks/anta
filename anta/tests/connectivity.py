@@ -64,7 +64,7 @@ class VerifyReachability(AntaTest):
                 failures.append((str(src), str(dst)))
                 atomic_tr.is_failure(f"Connectivity test failed for the following source-destination pair: {failures[-1]}")
             else:
-                atomic_tr.is_success()
+                atomic_tr.is_success(f"Connectivity test succesful for the following source-destination pair: {str(src), str(dst)}")
 
             self.result.append_atomic_result(atomic_tr)
 

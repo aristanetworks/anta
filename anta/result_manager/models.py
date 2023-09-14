@@ -42,7 +42,7 @@ class TestResult(BaseModel):
     messages: List[str] = []
     error: Optional[Exception] = None
     custom_field: Optional[str] = None
-    atomic_results: list[TestResult] = []
+    atomic_results: List[TestResult] = []
 
     def is_success(self, message: str | None = None) -> None:
         """

@@ -154,9 +154,10 @@ def anta(
     show_default=True,
     help="Flag to indicate if atomic results should be rendered",
 )
-def nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
+def nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]], expand_atomic: bool) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
+    ctx.obj["expand_atomic"] = expand_atomic
     ctx.obj["result_manager"] = ResultManager()
 
 
