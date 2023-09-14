@@ -7,7 +7,7 @@ Tests for anta.cli.exec.utils
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any
 from unittest.mock import call, patch
 
 import pytest
@@ -57,7 +57,7 @@ async def test_clear_counters_utils(
     test_inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],
-    tags: Optional[List[str]],
+    tags: list[str] | None,
 ) -> None:
     """
     Test anta.cli.exec.utils.clear_counters_utils

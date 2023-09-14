@@ -8,6 +8,7 @@ Test functions related to various Spanning Tree Protocol (STP) settings
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+# Need to keep List for pydantic in python 3.8
 from typing import List, Literal
 
 from anta.custom_types import Vlan

@@ -4,10 +4,11 @@
 """
 Result Manager Module for ANTA.
 """
+from __future__ import annotations
 
 import json
 import logging
-from typing import Any, List
+from typing import Any
 
 from pydantic import TypeAdapter
 
@@ -124,11 +125,11 @@ class ResultManager:
         self._result_entries.append(entry)
         self._update_status(entry.result)
 
-    def add_test_results(self, entries: List[TestResult]) -> None:
+    def add_test_results(self, entries: list[TestResult]) -> None:
         """Add a list of results to the list
 
         Args:
-            entries (List[TestResult]): list of TestResult data to add to the report
+            entries (list[TestResult]): List of TestResult data to add to the report
         """
         for e in entries:
             self.add_test_result(e)
@@ -205,12 +206,12 @@ class ResultManager:
                 result_manager_filtered.append(result)
         return result_manager_filtered
 
-    def get_testcases(self) -> List[str]:
+    def get_testcases(self) -> list[str]:
         """
         Get list of name of all test cases in current manager.
 
         Returns:
-            List[str]: List of names for all tests.
+            list[str]: List of names for all tests.
         """
         result_list = []
         for testcase in self._result_entries:
@@ -218,12 +219,12 @@ class ResultManager:
                 result_list.append(str(testcase.test))
         return result_list
 
-    def get_hosts(self) -> List[str]:
+    def get_hosts(self) -> list[str]:
         """
         Get list of IP addresses in current manager.
 
         Returns:
-            List[str]: List of IP addresses.
+            list[str]: List of IP addresses.
         """
         result_list = []
         for testcase in self._result_entries:

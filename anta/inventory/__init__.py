@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import ValidationError
 from yaml import safe_load
@@ -148,7 +148,7 @@ class AntaInventory(dict):  # type: ignore
         """
 
         inventory = AntaInventory()
-        kwargs: Dict[str, Any] = {
+        kwargs: dict[str, Any] = {
             "username": username,
             "password": password,
             "enable": enable,
@@ -186,7 +186,7 @@ class AntaInventory(dict):  # type: ignore
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, established_only: bool = False, tags: Optional[List[str]] = None) -> AntaInventory:
+    def get_inventory(self, established_only: bool = False, tags: Optional[list[str]] = None) -> AntaInventory:
         """
         Returns a filtered inventory.
 
@@ -207,7 +207,7 @@ class AntaInventory(dict):  # type: ignore
                 return False
             return bool(not established_only or device.established)
 
-        devices: List[AntaDevice] = list(filter(_filter_devices, self.values()))
+        devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
         result = AntaInventory()
         for device in devices:
             result.add_device(device)

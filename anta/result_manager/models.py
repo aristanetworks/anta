@@ -4,7 +4,10 @@
 """Models related to anta.result_manager module."""
 from __future__ import annotations
 
-from typing import Iterator, List, Optional
+from collections.abc import Iterator
+
+# Need to keep List for pydantic in 3.8
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, RootModel
 
@@ -96,15 +99,15 @@ class TestResult(BaseModel):
 
 class ListResult(RootModel[List[TestResult]]):
     """
-    List result for all tests on all devices.
+    list result for all tests on all devices.
 
     Attributes:
-        __root__ (List[TestResult]): A list of TestResult objects.
+        __root__ (list[TestResult]): A list of TestResult objects.
     """
 
     root: List[TestResult] = []
 
-    def extend(self, values: List[TestResult]) -> None:
+    def extend(self, values: list[TestResult]) -> None:
         """Add support for extend method."""
         self.root.extend(values)
 

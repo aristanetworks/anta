@@ -9,7 +9,7 @@ from __future__ import annotations
 import asyncio
 import itertools
 import logging
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
-    tests: List[Tuple[AntaTest, AntaTest.Input]],
-    tags: Optional[List[str]] = None,
+    tests: list[tuple[AntaTest, AntaTest.Input]],
+    tags: Optional[list[str]] = None,
     established_only: bool = True,
 ) -> None:
     """

@@ -9,6 +9,8 @@ BGP test functions
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
+
+# Need to keep Dict and List for pydantic in python 3.8
 from typing import Any, Dict, List, Optional, Union, cast
 
 from pydantic import BaseModel, PositiveInt, model_validator

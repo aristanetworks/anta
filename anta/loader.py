@@ -10,7 +10,7 @@ import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any
 
 from rich.logging import RichHandler
 
@@ -75,7 +75,7 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
         logger.debug("ANTA Debug Mode enabled")
 
 
-def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> list[Tuple[AntaTest, dict[str, Any] | None]]:
+def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> list[tuple[AntaTest, dict[str, Any] | None]]:
     """
     Function to parse the catalog and return a list of tests with their inputs
 
@@ -120,7 +120,7 @@ def parse_catalog(test_catalog: dict[str, Any], package: str | None = None) -> l
         tests: List of tuples (test, inputs) where test is a reference of an AntaTest subclass
               and inputs is a dictionary
     """
-    tests: list[Tuple[AntaTest, dict[str, Any] | None]] = []
+    tests: list[tuple[AntaTest, dict[str, Any] | None]] = []
     if not test_catalog:
         return tests
     for key, value in test_catalog.items():

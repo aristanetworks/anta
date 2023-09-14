@@ -4,11 +4,14 @@
 """
 ANTA Device Abstraction Module
 """
+from __future__ import annotations
+
 import asyncio
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union
+from typing import Any, Literal, Optional, Union
 
 import asyncssh
 from aioeapi import Device, EapiCommandError
@@ -36,17 +39,17 @@ class AntaDevice(ABC):
         tags: List of tags for this device
     """
 
-    def __init__(self, name: str, tags: Optional[List[str]] = None) -> None:
+    def __init__(self, name: str, tags: Optional[list[str]] = None) -> None:
         """
         Constructor of AntaDevice
 
         Args:
             name: Device name
-            tags: List of tags for this device
+            tags: list of tags for this device
         """
         self.name: str = name
         self.hw_model: Optional[str] = None
-        self.tags: List[str] = tags if tags is not None else []
+        self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
 
@@ -54,7 +57,7 @@ class AntaDevice(ABC):
         if DEFAULT_TAG not in self.tags:
             self.tags.append(DEFAULT_TAG)
 
-    def __rich_repr__(self) -> Iterator[Tuple[str, Any]]:
+    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
         Implements Rich Repr Protocol
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
@@ -89,7 +92,7 @@ class AntaDevice(ABC):
             command: the command to collect
         """
 
-    async def collect_commands(self, commands: List[AntaCommand]) -> None:
+    async def collect_commands(self, commands: list[AntaCommand]) -> None:
         """
         Collect multiple commands.
 
@@ -109,7 +112,7 @@ class AntaDevice(ABC):
             - `hw_model`: The hardware model of the device
         """
 
-    async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
+    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """
         Copy files to and from the device, usually through SCP.
         It is not mandatory to implement this for a valid AntaDevice subclass.
@@ -144,7 +147,7 @@ class AsyncEOSDevice(AntaDevice):
         enable_password: Optional[str] = None,
         port: Optional[int] = None,
         ssh_port: Optional[int] = 22,
-        tags: Optional[List[str]] = None,
+        tags: Optional[list[str]] = None,
         timeout: Optional[float] = None,
         insecure: bool = False,
         proto: Literal["http", "https"] = "https",
@@ -172,12 +175,12 @@ class AsyncEOSDevice(AntaDevice):
         self.enable = enable
         self._enable_password = enable_password
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: Dict[str, Any] = {}
+        ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params.update({"known_hosts": None})
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
 
-    def __rich_repr__(self) -> Iterator[Tuple[str, Any]]:
+    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
         Implements Rich Repr Protocol
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
@@ -292,7 +295,7 @@ class AsyncEOSDevice(AntaDevice):
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
         self.established = bool(self.is_online and self.hw_model)
 
-    async def copy(self, sources: List[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
+    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """
         Copy files to and from the device using asyncssh.scp().
 
@@ -309,8 +312,8 @@ class AsyncEOSDevice(AntaDevice):
             local_addr=self._ssh_opts.local_addr,
             options=self._ssh_opts,
         ) as conn:
-            src: Union[List[Tuple[SSHClientConnection, Path]], List[Path]]
-            dst: Union[Tuple[SSHClientConnection, Path], Path]
+            src: Union[list[tuple[SSHClientConnection, Path]], list[Path]]
+            dst: Union[tuple[SSHClientConnection, Path], Path]
             if direction == "from":
                 src = [(conn, file) for file in sources]
                 dst = destination

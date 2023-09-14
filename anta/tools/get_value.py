@@ -4,12 +4,14 @@
 """
 Get a value from a dictionary or nested dictionaries.
 """
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 
 # pylint: disable=too-many-arguments
 def get_value(
-    dictionary: Dict[Any, Any], key: str, default: Optional[Any] = None, required: bool = False, org_key: Optional[str] = None, separator: str = "."
+    dictionary: dict[Any, Any], key: str, default: Optional[Any] = None, required: bool = False, org_key: Optional[str] = None, separator: str = "."
 ) -> Any:
     """
     Get a value from a dictionary or nested dictionaries.
@@ -42,10 +44,10 @@ def get_value(
 
     if org_key is None:
         org_key = key
-    keys = str(key).split(separator)
+    keys = key.split(separator)
     value = dictionary.get(keys[0])
     if value is None:
-        if required is True:
+        if required:
             raise ValueError(org_key)
         return default
 
