@@ -68,7 +68,7 @@ class TestResult(BaseModel):
         """
         self._set_status("skipped", message)
 
-    def is_error(self, message: str | None = None, exception: Optional[Exception] = None) -> None:
+    def is_error(self, message: str | None = None, exception: Exception | None = None) -> None:
         """
         Helper to set status to error
 
