@@ -150,8 +150,6 @@ Commands:
   tpl-report  ANTA command to check network state with templated report
 ```
 
-> Currently to be able to run `anta nrfu --help` you need to have given to ANTA the mandatory input parameters: username, password and inventory otherwise the CLI will report an issue. This is tracked in: https://github.com/arista-netdevops-community/anta/issues/263
-
 To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
 ### Default report using table
@@ -223,7 +221,7 @@ leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
 [...]
 ```
 
-### Report per host
+### Report in JSON format
 
 ```bash
 $ anta \

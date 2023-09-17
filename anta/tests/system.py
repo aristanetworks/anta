@@ -224,4 +224,4 @@ class VerifyNTP(AntaTest):
             self.result.is_success()
         else:
             data = command_output.split("\n")[0]
-            self.result.is_failure(f"NTP server is not synchronized: '{data}'")
+            self.result.is_failure(f"The device is not synchronized with the configured NTP server(s): '{data}'")

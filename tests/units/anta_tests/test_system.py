@@ -278,6 +278,6 @@ poll interval unknown
 """
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["NTP server is not synchronized: 'unsynchronised'"]},
+        "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
     },
 ]

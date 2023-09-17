@@ -7,14 +7,14 @@ test anta.device.py
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
 from anta.device import AsyncEOSDevice
 from tests.lib.utils import generate_test_ids_list
 
-INIT_DEVICE_DATA: List[Dict[str, Any]] = [
+INIT_DEVICE_DATA: list[dict[str, Any]] = [
     {
         "name": "no name, no port",
         "device": {
@@ -80,7 +80,7 @@ class Test_AsyncEOSDevice:
     """
 
     @pytest.mark.parametrize("device_data", INIT_DEVICE_DATA, ids=generate_test_ids_list(INIT_DEVICE_DATA))
-    def test__init__(self, device_data: Dict[str, Any]) -> None:
+    def test__init__(self, device_data: dict[str, Any]) -> None:
         """
         Checking name only for now
         """

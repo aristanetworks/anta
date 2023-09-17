@@ -4,13 +4,13 @@
 """
 Report management for ANTA.
 """
-
 # pylint: disable = too-few-public-methods
+from __future__ import annotations
 
 import logging
 import os.path
 import pathlib
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from jinja2 import Template
 from rich.table import Table
@@ -36,12 +36,12 @@ class ReportTable:
         self.colors.append(ColorManager(level="error", color=RICH_COLOR_PALETTE.ERROR))
         self.colors.append(ColorManager(level="skipped", color=RICH_COLOR_PALETTE.SKIPPED))
 
-    def _split_list_to_txt_list(self, usr_list: List[str], delimiter: Optional[str] = None) -> str:
+    def _split_list_to_txt_list(self, usr_list: list[str], delimiter: Optional[str] = None) -> str:
         """
         Split list to multi-lines string
 
         Args:
-            usr_list (List[str]): List of string to concatenate
+            usr_list (list[str]): List of string to concatenate
             delimiter (str, optional): A delimiter to use to start string. Defaults to None.
 
         Returns:
@@ -51,14 +51,14 @@ class ReportTable:
             return "\n".join(f"{delimiter} {line}" for line in usr_list)
         return "\n".join(f"{line}" for line in usr_list)
 
-    def _build_headers(self, headers: List[str], table: Table) -> Table:
+    def _build_headers(self, headers: list[str], table: Table) -> Table:
         """
         Create headers for a table.
 
         First key is considered as header and is colored using RICH_COLOR_PALETTE.HEADER
 
         Args:
-            headers (List[str]): List of headers
+            headers (list[str]): List of headers
             table (Table): A rich Table instance
 
         Returns:
@@ -231,7 +231,7 @@ class ReportJinja:
         else:
             raise FileNotFoundError(f"template file is not found: {template_path}")
 
-    def render(self, data: List[Dict[str, Any]], trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
+    def render(self, data: list[dict[str, Any]], trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
         """
         Build a report based on a Jinja2 template
 
@@ -252,7 +252,7 @@ class ReportJinja:
         ]
 
         Args:
-            data (List[Dict[str, Any]]): List of results from ResultManager.get_results
+            data (list[dict[str, Any]]): List of results from ResultManager.get_results
             trim_blocks (bool, optional): enable trim_blocks for J2 rendering. Defaults to True.
             lstrip_blocks (bool, optional): enable lstrip_blocks for J2 rendering. Defaults to True.
 

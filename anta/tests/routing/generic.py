@@ -8,13 +8,15 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_interface
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
+# Need to keep List for pydantic in python 3.8
 from typing import List, Literal
 
 from pydantic import model_validator
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -132,7 +134,7 @@ class VerifyRoutingTableEntry(AntaTest):
         missing_routes = []
 
         for command in self.instance_commands:
-            if command.params and "vrf" in command.params and "route" in command.params:
+            if "vrf" in command.params and "route" in command.params:
                 vrf, route = command.params["vrf"], command.params["route"]
                 if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(list(routes)[0]).ip:
                     missing_routes.append(str(route))

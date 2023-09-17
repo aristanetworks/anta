@@ -2,10 +2,11 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Inventory unit tests."""
+from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 import yaml
@@ -28,12 +29,12 @@ class Test_AntaInventory:
         tmp_inventory.write_text(yaml.dump(content, allow_unicode=True))
         return str(tmp_inventory)
 
-    def check_parameter(self, parameter: str, test_definition: Dict[Any, Any]) -> bool:
+    def check_parameter(self, parameter: str, test_definition: dict[Any, Any]) -> bool:
         """Check if parameter is configured in testbed."""
         return "parameters" in test_definition and parameter in test_definition["parameters"].keys()
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_VALID, ids=generate_test_ids_dict)
-    def test_init_valid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
+    def test_init_valid(self, test_definition: dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with valid data.
 
         Test structure:
@@ -58,7 +59,7 @@ class Test_AntaInventory:
             assert False
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict)
-    def test_init_invalid(self, test_definition: Dict[str, Any], tmp_path: Path) -> None:
+    def test_init_invalid(self, test_definition: dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with invalid data.
 
         Test structure:

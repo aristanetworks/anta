@@ -1,13 +1,12 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 # pylint: disable = redefined-outer-name
 
 """
 Commands for Anta CLI to run check commands.
 """
+from __future__ import annotations
 
 import asyncio
 import json
@@ -15,7 +14,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import click
 from cvprac.cvp_client import CvpClient
@@ -108,7 +107,7 @@ def from_ansible(output: Path, ansible_inventory: Path, ansible_group: str) -> N
 @click.pass_context
 @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(ctx: click.Context, tags: Optional[List[str]], connected: bool) -> None:
+def inventory(ctx: click.Context, tags: Optional[list[str]], connected: bool) -> None:
     """Show inventory loaded in ANTA."""
 
     logger.debug(f"Requesting devices for tags: {tags}")

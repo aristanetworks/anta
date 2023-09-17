@@ -9,6 +9,8 @@ Test functions related to the device interfaces
 from __future__ import annotations
 
 import re
+
+# Need to keep Dict and List for pydantic in python 3.8
 from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel, conint
@@ -371,7 +373,7 @@ class VerifyIPProxyARP(AntaTest):
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interfaces: List[str]
-        """List of interfaces to be tested"""
+        """list of interfaces to be tested"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         return [template.render(intf=intf) for intf in self.inputs.interfaces]
@@ -380,7 +382,7 @@ class VerifyIPProxyARP(AntaTest):
     def test(self) -> None:
         disabled_intf = []
         for command in self.instance_commands:
-            if command.params and "intf" in command.params:
+            if "intf" in command.params:
                 intf = command.params["intf"]
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)

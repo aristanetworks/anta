@@ -8,7 +8,7 @@ Tests for anta.cli.debug.commands
 from __future__ import annotations
 
 from contextlib import nullcontext
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal
 from unittest.mock import MagicMock, patch
 
 import click
@@ -49,19 +49,25 @@ def test_get_device(test_inventory: AntaInventory, device_name: str, expected_ra
         assert isinstance(result, AntaDevice)
 
 
+class TestEAPIException(Exception):
+    """
+    Dummy exception for the tests
+    """
+
+
 # TODO complete test cases
 @pytest.mark.parametrize(
-    "command, ofmt, version, revision, device",
+    "command, ofmt, version, revision, device, failed",
     [
-        pytest.param("show version", "json", None, None, "dummy", id="json command"),
-        pytest.param("show version", "text", None, None, "dummy", id="text command"),
-        pytest.param("show version", None, "1", None, "dummy", id="version"),
-        pytest.param("show version", None, None, 3, "dummy", id="revision"),
-        #    pytest.param("show version", None, None, 3, "mocked_device", id="non existing device"),
+        pytest.param("show version", "json", None, None, "dummy", False, id="json command"),
+        pytest.param("show version", "text", None, None, "dummy", False, id="text command"),
+        pytest.param("show version", None, "1", None, "dummy", False, id="version"),
+        pytest.param("show version", None, None, 3, "dummy", False, id="revision"),
+        pytest.param("show version", None, None, None, "dummy", True, id="command fails"),
     ],
 )
 def test_run_cmd(
-    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Optional[Literal["1", "latest"]], revision: Optional[int], device: str
+    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"] | None, revision: int | None, device: str, failed: bool
 ) -> None:
     """
     Test `anta debug run-cmd`
@@ -90,10 +96,20 @@ def test_run_cmd(
     if revision is not None:
         cli_args.extend(["--revision", str(revision)])
 
+    # failed
+    expected_failed = None
+    if failed:
+        expected_failed = TestEAPIException("Command failed to run")
+
+    # exit code
+    expected_exit_code = 1 if failed else 0
+
     def expected_result() -> Any:
         """
         Helper to return some dummy payload for collect depending on outformat
         """
+        if failed:
+            return None
         if expected_ofmt == "json":
             return {"dummy": 42}
         if expected_ofmt == "text":
@@ -105,6 +121,8 @@ def test_run_cmd(
         mocking collect coroutine
         """
         c.output = expected_result()
+        if c.output is None:
+            c.failed = expected_failed
 
     with patch("anta.device.AsyncEOSDevice.collect") as mocked_collect:
         mocked_collect.side_effect = dummy_collect
@@ -112,7 +130,14 @@ def test_run_cmd(
 
     mocked_collect.assert_awaited_with(
         AntaCommand(
-            command=command, version=expected_version, revision=revision, ofmt=expected_ofmt, output=expected_result(), template=None, failed=None, params=None
+            command=command,
+            version=expected_version,
+            revision=revision,
+            ofmt=expected_ofmt,
+            output=expected_result(),
+            template=None,
+            failed=expected_failed,
+            params={},
         )
     )
-    assert result.exit_code == 0
+    assert result.exit_code == expected_exit_code

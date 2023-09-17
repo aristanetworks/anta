@@ -1,17 +1,16 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 # pylint: disable = redefined-outer-name
-
 """
 Commands for Anta CLI to run debug commands.
 """
+from __future__ import annotations
 
 import asyncio
 import logging
-from typing import List, Literal
+import sys
+from typing import Literal
 
 import click
 from click import Option
@@ -25,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable-next=inconsistent-return-statements
-def get_device(ctx: click.Context, param: Option, value: str) -> List[str]:
+def get_device(ctx: click.Context, param: Option, value: str) -> list[str]:
     """
     Click option callback to get an AntaDevice instance from a string
     """
@@ -51,9 +50,12 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
     v: Literal[1, "latest"] = version if version == "latest" else 1
     c = AntaCommand(command=command, ofmt=ofmt, version=v, revision=revision)
     asyncio.run(device.collect(c))
-    if ofmt == "json":
+    if c.failed:
+        console.print(f"[bold red] Command '{c.command}' failed to execute!")
+        sys.exit(1)
+    elif ofmt == "json":
         console.print(c.json_output)
-    if ofmt == "text":
+    elif ofmt == "text":
         console.print(c.text_output)
 
 
@@ -64,7 +66,7 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
 @click.option("--revision", "-r", type=int, help="eAPI command revision", required=False)
 @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use", callback=get_device)
 @click.argument("params", required=True, nargs=-1)
-def run_template(template: str, params: List[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
+def run_template(template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
     # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.
 
@@ -81,7 +83,10 @@ def run_template(template: str, params: List[str], ofmt: Literal["json", "text"]
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
     c = t.render(**template_params)  # type: ignore
     asyncio.run(device.collect(c))
-    if ofmt == "json":
+    if c.failed:
+        console.print(f"[bold red] Command '{c.command}' failed to execute!")
+        sys.exit(1)
+    elif ofmt == "json":
         console.print(c.json_output)
-    if ofmt == "text":
+    elif ofmt == "text":
         console.print(c.text_output)

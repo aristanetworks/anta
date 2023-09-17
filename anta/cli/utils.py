@@ -11,7 +11,7 @@ from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any
 
 import click
 from yaml import safe_load
@@ -71,7 +71,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     return inventory
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[str]]:
+def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA inventory tags
@@ -81,7 +81,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> Optional[List[s
     return None
 
 
-def parse_catalog(ctx: click.Context, param: Option, value: str) -> List[Tuple[AntaTest, dict[str, Any] | None]]:
+def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[AntaTest, dict[str, Any] | None]]:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file
@@ -144,7 +144,7 @@ class IgnoreRequiredWithHelp(click.Group):
     This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
     """
 
-    def parse_args(self, ctx: click.Context, args: List[str]) -> List[str]:
+    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         """
         Ignore MissingParameter exception when parsing arguments if `--help`
         is present for a subcommand

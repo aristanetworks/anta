@@ -9,7 +9,7 @@ test anta.models.py
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -102,7 +102,7 @@ class FakeTestWithTemplateWrongRender(AntaTest):
         self.result.is_success(self.instance_commands[0].command)
 
 
-ANTATEST_DATA: List[Dict[str, Any]] = [
+ANTATEST_DATA: list[dict[str, Any]] = [
     {"name": "no input", "test": FakeTest, "inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
     {
         "name": "good input",
@@ -235,7 +235,7 @@ class Test_AntaTest:
         assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
-    def test__init__(self, mocked_device: MagicMock, data: Dict[str, Any]) -> None:
+    def test__init__(self, mocked_device: MagicMock, data: dict[str, Any]) -> None:
         """Test __init__"""
         test = data["test"](mocked_device, inputs=data["inputs"])
         assert test.result.result == data["expected"]["__init__"]["result"]
@@ -258,7 +258,7 @@ class Test_AntaTest:
             pytest.fail("Did not find expected Exception when instantiating AntaTest")
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
-    def test_test(self, mocked_device: MagicMock, data: Dict[str, Any]) -> None:
+    def test_test(self, mocked_device: MagicMock, data: dict[str, Any]) -> None:
         """Test the AntaTest.test method"""
         test = data["test"](mocked_device, inputs=data["inputs"])
         asyncio.run(test.test())

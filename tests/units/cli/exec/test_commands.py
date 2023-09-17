@@ -8,7 +8,7 @@ Tests for anta.cli.exec.commands
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from unittest.mock import ANY, patch
 
 import pytest
@@ -37,7 +37,7 @@ def test_clear_counters_help(click_runner: CliRunner) -> None:
         pytest.param("leaf,spine", id="with tags"),
     ],
 )
-def test_clear_counters(click_runner: CliRunner, tags: Optional[str]) -> None:
+def test_clear_counters(click_runner: CliRunner, tags: str | None) -> None:
     """
     Test `anta exec clear-counters`
     """
@@ -76,7 +76,7 @@ COMMAND_LIST_PATH_FILE = Path(__file__).parent.parent.parent.parent / "data" / "
         pytest.param(None, COMMAND_LIST_PATH_FILE, "leaf,spine", id="with tags"),
     ],
 )
-def test_snapshot(click_runner: CliRunner, output: Optional[str], commands_path: Optional[Path], tags: Optional[str]) -> None:
+def test_snapshot(click_runner: CliRunner, output: str | None, commands_path: Path | None, tags: str | None) -> None:
     """
     Test `anta exec snapshot`
     """
@@ -134,7 +134,7 @@ def test_collect_tech_support_help(click_runner: CliRunner) -> None:
         pytest.param(None, None, False, "leaf,spine", id="with tags"),
     ],
 )
-def test_collect_tech_support(click_runner: CliRunner, output: Optional[str], latest: Optional[str], configure: Optional[bool], tags: Optional[str]) -> None:
+def test_collect_tech_support(click_runner: CliRunner, output: str | None, latest: str | None, configure: bool | None, tags: str | None) -> None:
     """
     Test `anta exec collect-tech-support`
     """
