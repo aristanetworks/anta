@@ -152,7 +152,7 @@ class VerifyInterfacesStatus(AntaTest):
         intf_wrong_state = []
 
         for interface_status in self.inputs.interfaces:
-            intf_status = get_value(command_output["interfaceDescriptions"], interface_status.interface)
+            intf_status = get_value(command_output["interfaceDescriptions"], interface_status.interface, separator=";")
             if intf_status is None:
                 intf_not_configured.append(interface_status.interface)
                 continue

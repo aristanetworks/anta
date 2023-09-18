@@ -215,6 +215,19 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {"result": "success"},
     },
     {
+        "name": "success-sub-interfaces",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet52/1.1963", "state": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-not-configured",
         "test": VerifyInterfacesStatus,
         "eos_data": [
