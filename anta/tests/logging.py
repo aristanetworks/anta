@@ -143,7 +143,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
     categories = ["logging"]
     commands = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", cache=False),
     ]
 
     @AntaTest.anta_test
@@ -173,7 +173,7 @@ class VerifyLoggingHostname(AntaTest):
     commands = [
         AntaCommand(command="show hostname"),
         AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", cache=False),
     ]
 
     @AntaTest.anta_test
@@ -208,7 +208,7 @@ class VerifyLoggingTimestamp(AntaTest):
     categories = ["logging"]
     commands = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", cache=False),
     ]
 
     @AntaTest.anta_test

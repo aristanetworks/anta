@@ -16,6 +16,7 @@ from typing import Any, DefaultDict, Literal, Optional, Union
 
 import asyncssh
 from aiocache import Cache
+from aiocache.plugins import HitMissRatioPlugin
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
@@ -54,12 +55,20 @@ class AntaDevice(ABC):
         self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
-        self.cache: Cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name)
+        self.cache: Cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
         self.cache_locks: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
         # Ensure tag 'all' is always set
         if DEFAULT_TAG not in self.tags:
             self.tags.append(DEFAULT_TAG)
+
+    @property
+    def statistics(self) -> dict[str, Any]:
+        """
+        Returns the device tests statistics for logging
+        """
+        stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
+        return {"total_tests": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
@@ -79,22 +88,50 @@ class AntaDevice(ABC):
         """
 
     @abstractmethod
-    async def collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:
         """
         Collect device command output.
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
 
-        The `collect()` implementation needs to populate the `output` attribute
+        The `_collect()` implementation needs to populate the `output` attribute
         of the `AntaCommand` object passed as argument.
 
-        If a failure occurs, the `collect()` implementation is expected to catch the
+        If a failure occurs, the `_collect()` implementation is expected to catch the
         exception and implement proper logging, the `output` attribute of the
         `AntaCommand` object passed as argument would be `None` in this case.
 
         Args:
             command: the command to collect
         """
+
+    async def collect(self, command: AntaCommand) -> None:
+        """
+        Collects the output of a given command. If caching is enabled for the command,
+        this method first checks the cache. If not found or caching is off, the output is
+        collected and stored in the cache. The collection is done by the private method `_collect`.
+
+        Ensures thread-safety for cache access using asynchronous locks on the command's UID.
+
+        Args:
+            command (AntaCommand): The command to process.
+
+        Effects:
+            - Updates `command.output` with the cached or collected data.
+            - Logs when data is retrieved from cache.
+        """
+        async with self.cache_locks[command.uid]:
+            cached_output = None
+
+            if command.cache:
+                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+
+            if cached_output is not None:
+                logger.debug(f"Cache hit for {command.command} on {self.name}")
+                command.output = cached_output
+            else:
+                await self._collect(command=command)
+                await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
 
     async def collect_commands(self, commands: list[AntaCommand]) -> None:
         """
@@ -103,19 +140,7 @@ class AntaDevice(ABC):
         Args:
             commands: the commands to collect
         """
-
-        async def collect_command(command: AntaCommand) -> None:
-            async with self.cache_locks[command.uid]:
-                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
-                if cached_output is not None:
-                    print(f"Cache hit for {command.command} on {self.name}")
-                    command.output = cached_output
-                else:
-                    await self.collect(command=command)
-                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
-
-        tasks = [collect_command(command) for command in commands]
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*(self.collect(command=command) for command in commands))
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -226,7 +251,7 @@ class AsyncEOSDevice(AntaDevice):
             return False
         return self._session.host == other._session.host and self._session.port == other._session.port
 
-    async def collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:
         """
         Collect device command output from EOS using aio-eapi.
 
