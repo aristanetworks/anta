@@ -104,7 +104,7 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
-All tests can be configure with a list of user's defined tags. These tags will be mapped with devices tags when cli is used with `--tags` option. If test is configure without a list of tags, the default one will be used: `['all']`
+All tests can be configured with a list of user defined tags. These tags will be mapped with device tags when `nrfu` cli is called with the `--tags` option. If a test is configured in the catalog without a list of tags, the default one will be used: `['all']`
 
 ```yaml
 anta.tests.system:
