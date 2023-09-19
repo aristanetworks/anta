@@ -11,7 +11,7 @@ import itertools
 import logging
 
 from anta.inventory import AntaInventory
-from anta.models import AntaTest
+from anta.models import DEFAULT_TAG, AntaTest
 from anta.result_manager import ResultManager
 from anta.tools.misc import anta_log_exception
 
@@ -22,7 +22,7 @@ async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     tests: list[tuple[AntaTest, AntaTest.Input]],
-    tags: list[str],
+    tags_cli: list[str],
     established_only: bool = True,
 ) -> None:
     """
@@ -46,18 +46,20 @@ async def main(
     # we get the cross product of the devices and tests to build that iterator.
 
     coros = []
-    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
+    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags_cli).values(), tests):
         test_class = test[0]
         test_inputs = test[1] or {}
-        test_tags = test_inputs.get("tags", ["all"])
-        if any(t in test_tags for t in tags):
-            try:
-                # Instantiate AntaTest object
-                test_instance = test_class(device=device, inputs=test_inputs)
-                coros.append(test_instance.test(eos_data=None))
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                message = "Error when creating ANTA tests"
-                anta_log_exception(e, message, logger)
+        test_tags = test_inputs.get("tags", [DEFAULT_TAG])
+        # if any(t in test_tags for t in tags):
+        for t in tags_cli:
+            if t in test_tags and t in device.tags:
+                try:
+                    # Instantiate AntaTest object
+                    test_instance = test_class(device=device, inputs=test_inputs)
+                    coros.append(test_instance.test(eos_data=None))
+                except Exception as e:  # pylint: disable=broad-exception-caught
+                    message = "Error when creating ANTA tests"
+                    anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))

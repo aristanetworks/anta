@@ -221,7 +221,6 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
-    # tags: ClassVar[list[str]]
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
     # Class attributes to handle the progress bar of ANTA CLI
@@ -247,7 +246,7 @@ class AntaTest(ABC):
         """
 
         model_config = ConfigDict(extra="forbid")
-        tags: List[str] = ["all"]
+        tags: List[str] = [DEFAULT_TAG]
         result_overwrite: Optional[ResultOverwrite] = None
 
         class ResultOverwrite(BaseModel):
@@ -299,6 +298,8 @@ class AntaTest(ABC):
             self.logger.error(message)
             self.result.is_error(message=message, exception=e)
             return
+        if DEFAULT_TAG not in self.inputs.tags:
+            self.inputs.tags.append(DEFAULT_TAG)
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
                 self.result.categories = res_ow.categories
@@ -419,6 +420,10 @@ class AntaTest(ABC):
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
+
+            # Tags
+            self.logger.debug(f"Test {self.name} has following tags: {self.inputs.tags}")
+            self.logger.debug(f"Device {self.device.name} has tags: {self.device.tags}")
 
             # Data
             if eos_data is not None:
