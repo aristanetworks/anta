@@ -23,7 +23,7 @@ def mocked_device(hw_model: str = "unknown_hw") -> MagicMock:
     Returns a mocked device with initiazlied fields
     """
 
-    mock = create_autospec(AntaDevice)
+    mock = create_autospec(AntaDevice, tags=["all"])
     mock.host = "42.42.42.42"
     mock.name = "testdevice"
     mock.username = "toto"
@@ -33,7 +33,6 @@ def mocked_device(hw_model: str = "unknown_hw") -> MagicMock:
     mock.is_online = True
     mock.established = True
     mock.hw_model = hw_model
-
     return mock
 
 

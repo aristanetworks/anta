@@ -16,7 +16,7 @@ from functools import wraps
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, ValidationError, conint
+from pydantic import BaseModel, ConfigDict, ValidationError, conint, validator
 from rich.progress import Progress, TaskID
 
 from anta.result_manager.models import TestResult
@@ -246,8 +246,18 @@ class AntaTest(ABC):
         """
 
         model_config = ConfigDict(extra="forbid")
-        tags: List[str] = [DEFAULT_TAG]
+        tags: List[str] = ["all"]
         result_overwrite: Optional[ResultOverwrite] = None
+
+        @validator("tags")
+        def validate_tags(cls, v: List[str]) -> List[str]:
+            """
+            Custom validator for tags.
+            If provided tags do not contain default tag, then it is injected.
+            """
+            if DEFAULT_TAG not in v:
+                v.append(DEFAULT_TAG)
+            return v
 
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields
@@ -298,8 +308,6 @@ class AntaTest(ABC):
             self.logger.error(message)
             self.result.is_error(message=message, exception=e)
             return
-        if DEFAULT_TAG not in self.inputs.tags:
-            self.inputs.tags.append(DEFAULT_TAG)
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
                 self.result.categories = res_ow.categories
@@ -420,10 +428,9 @@ class AntaTest(ABC):
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
-
-            # Tags
-            self.logger.debug(f"Test {self.name} has following tags: {self.inputs.tags}")
-            self.logger.debug(f"Device {self.device.name} has tags: {self.device.tags}")
+            # tags
+            self.logger.debug(f"test {self.name} has tags: {self.inputs.tags}")
+            self.logger.debug(f"device {self.device.name} has tags: {self.device.tags}")
 
             # Data
             if eos_data is not None:
