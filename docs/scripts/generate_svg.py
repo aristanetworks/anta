@@ -11,6 +11,7 @@ python generate_svg.py anta ...
 
 import io
 import os
+import pathlib
 import sys
 from contextlib import redirect_stdout, suppress
 from importlib import import_module
@@ -22,8 +23,10 @@ from rich.console import Console
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
 
+OUTPUT_DIR = pathlib.Path(__file__).parent.parent / "imgs"
 
-def custom_progress_bar():
+
+def custom_progress_bar() -> None:
     """
     Set the console of progress_bar to main anta console
 
@@ -63,8 +66,6 @@ if __name__ == "__main__":
     module = import_module(module_path)
     function = getattr(module, function_name)
 
-    # This looks complex for not much
-
     # Console to captur everything
     new_console = Console(record=True)
 
@@ -85,6 +86,7 @@ if __name__ == "__main__":
     # print the content of the stdout to our new_console
     new_console.print(f.getvalue())
 
-    # console.save_svg("command.svg", title=" ".join(args))
-    filename = f"{'_'.join(args)}.svg"
+    filename = f"{'_'.join(map(lambda x: x.replace('/', '_').replace('-', '_').replace('.', '_'), args))}.svg"
+    filename = f"{OUTPUT_DIR}/{filename}"
+    print(f"File saved at {filename}")
     new_console.save_svg(filename, title=" ".join(args))
