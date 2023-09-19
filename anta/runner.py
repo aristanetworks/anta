@@ -9,7 +9,6 @@ from __future__ import annotations
 import asyncio
 import itertools
 import logging
-from typing import Optional
 
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
@@ -23,7 +22,7 @@ async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     tests: list[tuple[AntaTest, AntaTest.Input]],
-    tags: Optional[list[str]] = None,
+    tags: list[str],
     established_only: bool = True,
 ) -> None:
     """
@@ -50,10 +49,8 @@ async def main(
     for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         test_class = test[0]
         test_inputs = test[1] or {}
-        test_tags = test_inputs.get("tags") if "tags" in test_inputs.keys() else ["all"]
-        if tags is None:
-            tags = ["all"]
-        if any(t in test_tags for t in tags):  # type: ignore
+        test_tags = test_inputs.get("tags", ["all"])
+        if any(t in test_tags for t in tags):
             try:
                 # Instantiate AntaTest object
                 test_instance = test_class(device=device, inputs=test_inputs)

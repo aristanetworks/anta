@@ -221,7 +221,7 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
-    tags: ClassVar[list[str]]
+    # tags: ClassVar[list[str]]
     # Optional class attributes
     test_filters: ClassVar[list[AntaTestFilter]]
     # Class attributes to handle the progress bar of ANTA CLI
@@ -247,7 +247,7 @@ class AntaTest(ABC):
         """
 
         model_config = ConfigDict(extra="forbid")
-        tags: Optional[List[str]] = ["all"]
+        tags: List[str] = ["all"]
         result_overwrite: Optional[ResultOverwrite] = None
 
         class ResultOverwrite(BaseModel):
@@ -419,8 +419,6 @@ class AntaTest(ABC):
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
-
-            # TODO maybe_skip decorators
 
             # Data
             if eos_data is not None:
