@@ -37,38 +37,7 @@ All commands under the `anta nrfu` namespace require a catalog yaml file specifi
 
 ## Tag management
 
-The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to `all` and is implicit.
-
-__Catalog Example__
-
-```yaml
-anta.tests.system:
-  - VerifyUptime:
-      minimum: 10
-      tags: ['fabric']
-  - VerifyReloadCause:
-      tags: ['leaf', spine']
-  - VerifyCoredump:
-```
-
-__Device inventory__
-
-```yaml
----
-anta_inventory:
-  hosts:
-  - host: 192.168.0.10
-    name: spine01
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.11
-    name: spine02
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.12
-    name: leaf01
-    tags: ['fabric', 'leaf']
-```
-
-Expected behaviour is provided below:
+The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to `all` and is implicit. Expected behaviour is provided below:
 
 | Command | Description |
 | ------- | ----------- |
@@ -76,6 +45,9 @@ Expected behaviour is provided below:
 | `--tags all` | Run all tests on all devices |
 | `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
 | `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
+
+!!! info
+    [More examples](tag-management.md) available on this dedicated page.
 
 ## Performing NRFU with text rendering
 
