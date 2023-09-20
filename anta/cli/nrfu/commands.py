@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.pass_context
-@click.option("--tags", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option(
+    "--tags", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags, show_default=True
+)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
@@ -40,7 +42,9 @@ def table(ctx: click.Context, tags: list[str], device: str | None, test: str | N
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option(
+    "--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags, show_default=True
+)
 @click.option(
     "--output",
     "-o",
@@ -62,7 +66,9 @@ def json(ctx: click.Context, tags: list[str], output: pathlib.Path | None) -> No
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option(
+    "--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags, show_default=True
+)
 @click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
 def text(ctx: click.Context, tags: list[str], search: str | None, skip_error: bool) -> None:
@@ -92,7 +98,9 @@ def text(ctx: click.Context, tags: list[str], search: str | None, skip_error: bo
     required=False,
     help="Path to save report as a file",
 )
-@click.option("--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@click.option(
+    "--tags", "-t", default="all", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags, show_default=True
+)
 def tpl_report(ctx: click.Context, tags: list[str], template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)
