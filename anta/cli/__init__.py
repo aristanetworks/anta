@@ -134,7 +134,7 @@ def anta(
     ctx.obj["inventory"] = parse_inventory(ctx, inventory)
 
 
-@anta.group(cls=IgnoreRequiredWithHelp)
+@anta.group("nrfu", cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.option(
     "--catalog",
@@ -145,7 +145,7 @@ def anta(
     required=True,
     callback=parse_catalog,
 )
-def nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
+def _nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()
@@ -182,10 +182,10 @@ _get.add_command(get_commands.tags)
 _debug.add_command(debug_commands.run_cmd)
 _debug.add_command(debug_commands.run_template)
 
-nrfu.add_command(check_commands.table)
-nrfu.add_command(check_commands.json)
-nrfu.add_command(check_commands.text)
-nrfu.add_command(check_commands.tpl_report)
+_nrfu.add_command(check_commands.table)
+_nrfu.add_command(check_commands.json)
+_nrfu.add_command(check_commands.text)
+_nrfu.add_command(check_commands.tpl_report)
 
 
 # ANTA CLI Execution
