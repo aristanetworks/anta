@@ -137,7 +137,7 @@ def test_run_cmd(
             output=expected_result(),
             template=None,
             failed=expected_failed,
-            params=None,
+            params={},
         )
     )
     assert result.exit_code == expected_exit_code

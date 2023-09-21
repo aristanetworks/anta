@@ -36,6 +36,24 @@ DEFAULT_TAG = "all"
 logger = logging.getLogger(__name__)
 
 
+class AntaMissingParamException(Exception):
+    """
+    This Exception should be used when an expected key in an AntaCommand.params dictionary
+    was not found.
+
+    This Exception should in general never be raised in normal usage of ANTA.
+    """
+
+    GITHUB_SUGGESTION = [
+        "This Exception should not have been raised in a normal usage of ANTA.",
+        "Please reach out to the maintainer team on Github: https://github.com/arista-netdevops-community/anta.",
+    ]
+
+    def __init__(self, message: str) -> None:
+        self.message = "\n".join([message] + AntaMissingParamException.GITHUB_SUGGESTION)
+        super().__init__(self.message)
+
+
 class AntaTemplate(BaseModel):
     """Class to define a command template as Python f-string.
     Can render a command from parameters.
@@ -104,7 +122,7 @@ class AntaCommand(BaseModel):
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
-    params: Optional[Dict[str, Any]] = None
+    params: Dict[str, Any] = {}
 
     @property
     def json_output(self) -> dict[str, Any]:

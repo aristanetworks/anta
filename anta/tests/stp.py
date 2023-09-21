@@ -44,7 +44,7 @@ class VerifySTPMode(AntaTest):
         not_configured = []
         wrong_stp_mode = []
         for command in self.instance_commands:
-            if command.params and "vlan" in command.params:
+            if "vlan" in command.params:
                 vlan_id = command.params["vlan"]
             if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 not_configured.append(vlan_id)
@@ -135,7 +135,7 @@ class VerifySTPForwardingPorts(AntaTest):
         not_configured = []
         not_forwarding = []
         for command in self.instance_commands:
-            if command.params and "vlan" in command.params:
+            if "vlan" in command.params:
                 vlan_id = command.params["vlan"]
             if not (topologies := get_value(command.json_output, "topologies")):
                 not_configured.append(vlan_id)
