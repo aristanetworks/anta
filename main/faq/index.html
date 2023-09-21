@@ -1730,6 +1730,34 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#why-am-i-seeing-attributeerror-module-lib-has-no-attribute-openssl_add_all_algorithms-when-running-anta" class="md-nav__link">
+    Why am I seeing AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms' when running ANTA
+  </a>
+  
+    <nav class="md-nav" aria-label="Why am I seeing AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms' when running ANTA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-resolve-this-error_1" class="md-nav__link">
+    How can I resolve this error?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pip-install-u-pyopenssl220" class="md-nav__link">
+    pip install -U pyopenssl&gt;22.0
+
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#still-facing-issues" class="md-nav__link">
     Still facing issues?
   </a>
@@ -1802,6 +1830,34 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#why-am-i-seeing-attributeerror-module-lib-has-no-attribute-openssl_add_all_algorithms-when-running-anta" class="md-nav__link">
+    Why am I seeing AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms' when running ANTA
+  </a>
+  
+    <nav class="md-nav" aria-label="Why am I seeing AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms' when running ANTA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-resolve-this-error_1" class="md-nav__link">
+    How can I resolve this error?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pip-install-u-pyopenssl220" class="md-nav__link">
+    pip install -U pyopenssl&gt;22.0
+
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#still-facing-issues" class="md-nav__link">
     Still facing issues?
   </a>
@@ -1860,8 +1916,20 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <p>As per the <a href="https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html">urllib3 v2 migration guide</a>, the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.</p>
 </li>
 </ol>
-<hr />
+<h4 id="why-am-i-seeing-attributeerror-module-lib-has-no-attribute-openssl_add_all_algorithms-when-running-anta">Why am I seeing <code>AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'</code> when running ANTA<a class="headerlink" href="#why-am-i-seeing-attributeerror-module-lib-has-no-attribute-openssl_add_all_algorithms-when-running-anta" title="Permanent link">&para;</a></h4>
+<p>When running the <code>anta</code> commands after installation, some users might encounter the following error:</p>
+<div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
+</code></pre></div>
+<p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
+<h5 id="how-can-i-resolve-this-error_1">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error_1" title="Permanent link">&para;</a></h5>
+<ol>
+<li>
+<p>Upgrade <code>pyopenssl</code></p>
+<h4 id="pip-install-u-pyopenssl220"><div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pyopenssl&gt;22.0
+</code></pre></div><a class="headerlink" href="#pip-install-u-pyopenssl220" title="Permanent link">&para;</a></h4>
 <h4 id="still-facing-issues">Still facing issues?<a class="headerlink" href="#still-facing-issues" title="Permanent link">&para;</a></h4>
+</li>
+</ol>
 <p>If you&rsquo;ve tried the above solutions and continue to experience problems, please report the issue in our <a href="https://github.com/arista-netdevops-community/anta">GitHub repository</a>.</p>
 
   <hr>
@@ -1869,7 +1937,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 21, 2023</span>
       
     
   </small>

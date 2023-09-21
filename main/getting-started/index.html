@@ -402,8 +402,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#report-per-host" class="md-nav__link">
-    Report per host
+  <a href="#report-in-json-format" class="md-nav__link">
+    Report in JSON format
   </a>
   
 </li>
@@ -1869,8 +1869,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#report-per-host" class="md-nav__link">
-    Report per host
+  <a href="#report-in-json-format" class="md-nav__link">
+    Report in JSON format
   </a>
   
 </li>
@@ -2069,9 +2069,6 @@ Commands:
 <span class="w">  </span>text<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
 <span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report
 </code></pre></div>
-<blockquote>
-<p>Currently to be able to run <code>anta nrfu --help</code> you need to have given to ANTA the mandatory input parameters: username, password and inventory otherwise the CLI will report an issue. This is tracked in: <a href="https://github.com/arista-netdevops-community/anta/issues/263">https://github.com/arista-netdevops-community/anta/issues/263</a></p>
-</blockquote>
 <p>To run the NRFU, you need to select an output format amongst [&ldquo;json&rdquo;, &ldquo;table&rdquo;, &ldquo;text&rdquo;, &ldquo;tpl-report&rdquo;]. For a first usage, <code>table</code> is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host</p>
 <h5 id="default-report-using-table">Default report using table<a class="headerlink" href="#default-report-using-table" title="Permanent link">&para;</a></h5>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span><span class="se">\</span>
@@ -2136,7 +2133,7 @@ leaf01<span class="w"> </span>::<span class="w"> </span>VerifyMlagInterfaces<spa
 leaf01<span class="w"> </span>::<span class="w"> </span>VerifyMlagConfigSanity<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>MLAG<span class="w"> </span>is<span class="w"> </span>disabled<span class="o">)</span>
 <span class="o">[</span>...<span class="o">]</span>
 </code></pre></div>
-<h5 id="report-per-host">Report per host<a class="headerlink" href="#report-per-host" title="Permanent link">&para;</a></h5>
+<h5 id="report-in-json-format">Report in JSON format<a class="headerlink" href="#report-in-json-format" title="Permanent link">&para;</a></h5>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--username<span class="w"> </span>tom<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--password<span class="w"> </span>arista123<span class="w"> </span><span class="se">\</span>
@@ -2188,7 +2185,7 @@ leaf01<span class="w"> </span>::<span class="w"> </span>VerifyMlagConfigSanity<s
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 21, 2023</span>
       
     
   </small>
