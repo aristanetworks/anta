@@ -39,6 +39,7 @@ When running the `anta` commands after installation, some users might encounter 
 ```bash
 AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'
 ```
+
 The error is a result of incompatibility between `cryptography` and `pyopenssl` when installing `asyncssh` which is a requirement of ANTA.
 
 ### How can I resolve this error?
