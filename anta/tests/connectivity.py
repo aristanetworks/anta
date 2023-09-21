@@ -31,7 +31,7 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories = ["connectivity"]
-    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat 2")]
+    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: List[Host]
@@ -46,18 +46,32 @@ class VerifyReachability(AntaTest):
             """IPv4 address source IP or Egress interface to use"""
             vrf: str = "default"
             """VRF context"""
+            repeat: int = 2
+            """Number of ping repetition (default=2)"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        return [template.render(destination=host.destination, source=host.source, vrf=host.vrf) for host in self.inputs.hosts]
+        return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:
         failures = []
         for command in self.instance_commands:
-            if command.params and "source" in command.params and "destination" in command.params:
-                src, dst = command.params["source"], command.params["destination"]
-            if "2 received" not in command.json_output["messages"][0]:
+            # Make sure command has params
+            if not command.params:
+                self.logger.error("Missing parameters in the AntaCommand object for command {command.command}, skipping")
+                continue
+
+            src = command.params.get("source")
+            dst = command.params.get("destination")
+            repeat = command.params.get("repeat")
+
+            if any(elem is None for elem in (src, dst, repeat)):
+                self.logger.error("Missing parameters in the AntaCommand object for command {command.command}, skipping")
+                continue
+
+            if f"{repeat} received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))
+
         if not failures:
             self.result.is_success()
         else:
