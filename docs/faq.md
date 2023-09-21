@@ -32,6 +32,22 @@ This error arises due to a compatibility issue between `urllib3` v2.0 and older 
 
     As per the [urllib3 v2 migration guide](https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html), the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.
 
+## Why am I seeing `AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA
+
+When running the `anta` commands after installation, some users might encounter the following error:
+
+```bash
+AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'
+```
+The error is a result of incompatibility between `cryptography` and `pyopenssl` when installing `asyncssh` which is a requirement of ANTA.
+
+### How can I resolve this error?
+
+1. Upgrade `pyopenssl`
+
+    ```bash
+    pip install -U pyopenssl>22.0
+    ```
 ---
 ## Still facing issues?
 
