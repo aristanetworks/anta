@@ -382,7 +382,7 @@ class VerifyIPProxyARP(AntaTest):
     def test(self) -> None:
         disabled_intf = []
         for command in self.instance_commands:
-            if command.params and "intf" in command.params:
+            if "intf" in command.params:
                 intf = command.params["intf"]
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)

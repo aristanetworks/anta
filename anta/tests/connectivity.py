@@ -16,7 +16,7 @@ from typing import List, Union
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaMissingParamException, AntaTemplate, AntaTest
 
 
 class VerifyReachability(AntaTest):
@@ -56,18 +56,12 @@ class VerifyReachability(AntaTest):
     def test(self) -> None:
         failures = []
         for command in self.instance_commands:
-            # Make sure command has params
-            if not command.params:
-                self.logger.error("Missing parameters in the AntaCommand object for command {command.command}, skipping")
-                continue
-
             src = command.params.get("source")
             dst = command.params.get("destination")
             repeat = command.params.get("repeat")
 
             if any(elem is None for elem in (src, dst, repeat)):
-                self.logger.error("Missing parameters in the AntaCommand object for command {command.command}, skipping")
-                continue
+                raise AntaMissingParamException(f"A parameter is missing to execute the test for command {command}")
 
             if f"{repeat} received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))

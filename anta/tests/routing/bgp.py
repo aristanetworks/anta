@@ -196,7 +196,7 @@ class VerifyBGPIPv4UnicastCount(AntaTest):
     def test(self) -> None:
         self.result.is_success()
         for command in self.instance_commands:
-            if command.params and "vrf" in command.params:
+            if "vrf" in command.params:
                 vrf = command.params["vrf"]
                 count = self.inputs.vrfs[vrf]
                 if vrf not in command.json_output["vrfs"]:
@@ -443,27 +443,26 @@ class VerifyBGPPeerCount(AntaTest):
         failures: dict[tuple[str, Any], dict[str, Any]] = {}
 
         for command in self.instance_commands:
-            if command.params:
-                peer_count = 0
-                command_output = command.json_output
+            peer_count = 0
+            command_output = command.json_output
 
-                afi = cast(Afi, command.params.get("afi"))
-                safi = cast(Optional[Safi], command.params.get("safi"))
-                afi_vrf = cast(str, command.params.get("vrf"))
-                num_peers = cast(PositiveInt, command.params.get("num_peers"))
+            afi = cast(Afi, command.params.get("afi"))
+            safi = cast(Optional[Safi], command.params.get("safi"))
+            afi_vrf = cast(str, command.params.get("vrf"))
+            num_peers = cast(PositiveInt, command.params.get("num_peers"))
 
-                if not (vrfs := command_output.get("vrfs")):
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
-                    continue
+            if not (vrfs := command_output.get("vrfs")):
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                continue
 
-                if afi_vrf == "all":
-                    for vrf_data in vrfs.values():
-                        peer_count += len(vrf_data["peers"])
-                else:
-                    peer_count += len(command_output["vrfs"][afi_vrf]["peers"])
+            if afi_vrf == "all":
+                for vrf_data in vrfs.values():
+                    peer_count += len(vrf_data["peers"])
+            else:
+                peer_count += len(command_output["vrfs"][afi_vrf]["peers"])
 
-                if peer_count != num_peers:
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=f"Expected: {num_peers}, Actual: {peer_count}")
+            if peer_count != num_peers:
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=f"Expected: {num_peers}, Actual: {peer_count}")
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -546,31 +545,30 @@ class VerifyBGPPeersHealth(AntaTest):
         failures: dict[tuple[str, Any], dict[str, Any]] = {}
 
         for command in self.instance_commands:
-            if command.params:
-                command_output = command.json_output
+            command_output = command.json_output
 
-                afi = cast(Afi, command.params.get("afi"))
-                safi = cast(Optional[Safi], command.params.get("safi"))
-                afi_vrf = cast(str, command.params.get("vrf"))
+            afi = cast(Afi, command.params.get("afi"))
+            safi = cast(Optional[Safi], command.params.get("safi"))
+            afi_vrf = cast(str, command.params.get("vrf"))
 
-                if not (vrfs := command_output.get("vrfs")):
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+            if not (vrfs := command_output.get("vrfs")):
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                continue
+
+            for vrf, vrf_data in vrfs.items():
+                if not (peers := vrf_data.get("peers")):
+                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="No Peers")
                     continue
 
-                for vrf, vrf_data in vrfs.items():
-                    if not (peers := vrf_data.get("peers")):
-                        _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="No Peers")
-                        continue
+                peer_issues = {}
+                for peer, peer_data in peers.items():
+                    issues = _check_peer_issues(peer_data)
 
-                    peer_issues = {}
-                    for peer, peer_data in peers.items():
-                        issues = _check_peer_issues(peer_data)
+                    if issues:
+                        peer_issues[peer] = issues
 
-                        if issues:
-                            peer_issues[peer] = issues
-
-                    if peer_issues:
-                        _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=vrf, issue=peer_issues)
+                if peer_issues:
+                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=vrf, issue=peer_issues)
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -659,28 +657,27 @@ class VerifyBGPSpecificPeers(AntaTest):
         failures: dict[tuple[str, Any], dict[str, Any]] = {}
 
         for command in self.instance_commands:
-            if command.params:
-                command_output = command.json_output
+            command_output = command.json_output
 
-                afi = cast(Afi, command.params.get("afi"))
-                safi = cast(Optional[Safi], command.params.get("safi"))
-                afi_vrf = cast(str, command.params.get("vrf"))
-                afi_peers = cast(List[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
+            afi = cast(Afi, command.params.get("afi"))
+            safi = cast(Optional[Safi], command.params.get("safi"))
+            afi_vrf = cast(str, command.params.get("vrf"))
+            afi_peers = cast(List[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
 
-                if not (vrfs := command_output.get("vrfs")):
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
-                    continue
+            if not (vrfs := command_output.get("vrfs")):
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                continue
 
-                peer_issues = {}
-                for peer in afi_peers:
-                    peer_ip = str(peer)
-                    peer_data = get_value(dictionary=vrfs, key=f"{afi_vrf}_peers_{peer_ip}", separator="_")
-                    issues = _check_peer_issues(peer_data)
-                    if issues:
-                        peer_issues[peer_ip] = issues
+            peer_issues = {}
+            for peer in afi_peers:
+                peer_ip = str(peer)
+                peer_data = get_value(dictionary=vrfs, key=f"{afi_vrf}_peers_{peer_ip}", separator="_")
+                issues = _check_peer_issues(peer_data)
+                if issues:
+                    peer_issues[peer_ip] = issues
 
-                if peer_issues:
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=peer_issues)
+            if peer_issues:
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=peer_issues)
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")

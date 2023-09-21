@@ -106,7 +106,7 @@ async def test_clear_counters_utils(
                             output=per_device_command_output.get(device.name, ""),
                             template=None,
                             failed=None,
-                            params=None,
+                            params={},
                         )
                     },
                 )
@@ -124,7 +124,7 @@ async def test_clear_counters_utils(
                                 output=per_device_command_output.get(device.name, ""),
                                 template=None,
                                 failed=None,
-                                params=None,
+                                params={},
                             )
                         },
                     )
