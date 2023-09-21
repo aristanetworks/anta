@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sys
 from typing import Literal
 
 import click
@@ -49,9 +50,12 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
     v: Literal[1, "latest"] = version if version == "latest" else 1
     c = AntaCommand(command=command, ofmt=ofmt, version=v, revision=revision)
     asyncio.run(device.collect(c))
-    if ofmt == "json":
+    if c.failed:
+        console.print(f"[bold red] Command '{c.command}' failed to execute!")
+        sys.exit(1)
+    elif ofmt == "json":
         console.print(c.json_output)
-    if ofmt == "text":
+    elif ofmt == "text":
         console.print(c.text_output)
 
 
@@ -79,7 +83,10 @@ def run_template(template: str, params: list[str], ofmt: Literal["json", "text"]
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
     c = t.render(**template_params)  # type: ignore
     asyncio.run(device.collect(c))
-    if ofmt == "json":
+    if c.failed:
+        console.print(f"[bold red] Command '{c.command}' failed to execute!")
+        sys.exit(1)
+    elif ofmt == "json":
         console.print(c.json_output)
-    if ofmt == "text":
+    elif ofmt == "text":
         console.print(c.text_output)
