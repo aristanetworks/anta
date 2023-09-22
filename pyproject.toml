@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v0.7.2"
+version = "v0.8.0"
 readme = "docs/README.md"
 authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
 maintainers = [
@@ -106,7 +106,7 @@ namespaces = false
 # Version
 ################################
 [tool.bumpver]
-current_version = "0.7.2"
+current_version = "0.8.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
