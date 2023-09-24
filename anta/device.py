@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 class AntaDevice(ABC):
     """
     Abstract class representing a device in ANTA.
-    An implementation of this class needs must override the abstract coroutines `collect()` and
+    An implementation of this class must override the abstract coroutines `_collect()` and
     `refresh()`.
 
     Attributes:
@@ -40,6 +40,8 @@ class AntaDevice(ABC):
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
         tags: List of tags for this device
+        cache: In-memory cache from aiocache library for this device
+        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache (self.cache)
     """
 
     def __init__(self, name: str, tags: Optional[list[str]] = None) -> None:
@@ -123,7 +125,7 @@ class AntaDevice(ABC):
         async with self.cache_locks[command.uid]:
             cached_output = None
 
-            if command.cache:
+            if command.use_cache:
                 cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
 
             if cached_output is not None:

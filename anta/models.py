@@ -112,7 +112,7 @@ class AntaCommand(BaseModel):
         template: AntaTemplate object used to render this command
         params: Dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
-        cache: Enable or disable caching for this AntaCommand
+        use_cache: Enable or disable caching for this AntaCommand - default is True
     """
 
     # This is required if we want to keep an Exception object in the failed field
@@ -126,7 +126,7 @@ class AntaCommand(BaseModel):
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
     params: Dict[str, Any] = {}
-    cache: bool = True
+    use_cache: bool = True
 
     @property
     def uid(self) -> str:
