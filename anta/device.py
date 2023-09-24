@@ -40,37 +40,57 @@ class AntaDevice(ABC):
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
         tags: List of tags for this device
-        cache: In-memory cache from aiocache library for this device
-        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache (self.cache)
+        cache: In-memory cache from aiocache library for this device (None if cache is disabled)
+        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled
     """
 
-    def __init__(self, name: str, tags: Optional[list[str]] = None) -> None:
+    def __init__(self, name: str, tags: Optional[list[str]] = None, disable_cache: bool = False) -> None:
         """
         Constructor of AntaDevice
 
         Args:
             name: Device name
-            tags: list of tags for this device
+            tags: List of tags for this device
+            disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
         self.name: str = name
         self.hw_model: Optional[str] = None
         self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
-        self.cache: Cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-        self.cache_locks: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+
+        # Initialize cache attributes
+        self._init_cache(disable_cache)
 
         # Ensure tag 'all' is always set
         if DEFAULT_TAG not in self.tags:
             self.tags.append(DEFAULT_TAG)
 
+    def _init_cache(self, disable_cache: bool) -> None:
+        """
+        Initializes cache attributes for the device.
+
+        Args:
+            disable_cache (bool): If true, caching will be disabled.
+
+        TODO: Error handling
+        """
+        if not disable_cache:
+            self.cache: Optional[Cache] = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
+            self.cache_locks: Optional[DefaultDict[str, asyncio.Lock]] = defaultdict(asyncio.Lock)
+        else:
+            self.cache = None
+            self.cache_locks = None
+
     @property
-    def statistics(self) -> dict[str, Any]:
+    def cache_statistics(self) -> dict[str, Any] | str:
         """
-        Returns the device tests statistics for logging
+        Returns the device cache statistics for logging purposes
         """
-        stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
-        return {"total_tests": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
+        if self.cache is not None:
+            stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
+            return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
+        return "Cache is disabled"
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
@@ -109,31 +129,32 @@ class AntaDevice(ABC):
 
     async def collect(self, command: AntaCommand) -> None:
         """
-        Collects the output of a given command. If caching is enabled for the command,
-        this method first checks the cache. If not found or caching is off, the output is
-        collected and stored in the cache. The collection is done by the private method `_collect`.
+        Collects the output for a specified command. If caching is activated on both the device and the command,
+        this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
+        it will be freshly collected and then stored in the cache for future access.
 
-        Ensures thread-safety for cache access using asynchronous locks on the command's UID.
+        When caching is not enabled, either at the device or command level, the method directly collects the output
+        via the private `_collect` method without interacting with the cache.
+
+        The method employs asynchronous locks based on the command's UID to guarantee exclusive access to the cache.
 
         Args:
             command (AntaCommand): The command to process.
 
-        Effects:
-            - Updates `command.output` with the cached or collected data.
-            - Logs when data is retrieved from cache.
+        TODO: Error handling
         """
-        async with self.cache_locks[command.uid]:
-            cached_output = None
-
-            if command.use_cache:
+        if self.cache is not None and self.cache_locks is not None and command.use_cache:
+            async with self.cache_locks[command.uid]:
                 cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
 
-            if cached_output is not None:
-                logger.debug(f"Cache hit for {command.command} on {self.name}")
-                command.output = cached_output
-            else:
-                await self._collect(command=command)
-                await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+                if cached_output is not None:
+                    logger.debug(f"Cache hit for {command.command} on {self.name}")
+                    command.output = cached_output
+                else:
+                    await self._collect(command=command)
+                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+        else:
+            await self._collect(command=command)
 
     async def collect_commands(self, commands: list[AntaCommand]) -> None:
         """
@@ -194,6 +215,7 @@ class AsyncEOSDevice(AntaDevice):
         timeout: Optional[float] = None,
         insecure: bool = False,
         proto: Literal["http", "https"] = "https",
+        disable_cache: bool = False,
     ) -> None:
         """
         Constructor of AsyncEOSDevice
@@ -211,10 +233,11 @@ class AsyncEOSDevice(AntaDevice):
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
             insecure: Disable SSH Host Key validation
             proto: eAPI protocol. Value can be 'http' or 'https'
+            disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
-        super().__init__(name, tags)
+        super().__init__(name, tags, disable_cache)
         self.enable = enable
         self._enable_password = enable_password
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
