@@ -72,15 +72,13 @@ class AntaDevice(ABC):
 
         Args:
             disable_cache (bool): If true, caching will be disabled.
-
-        TODO: Error handling
         """
-        if not disable_cache:
-            self.cache: Optional[Cache] = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-            self.cache_locks: Optional[DefaultDict[str, asyncio.Lock]] = defaultdict(asyncio.Lock)
+        if disable_cache:
+            self.cache: Optional[Cache] = None
+            self.cache_locks: Optional[DefaultDict[str, asyncio.Lock]] = None
         else:
-            self.cache = None
-            self.cache_locks = None
+            self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
+            self.cache_locks = defaultdict(asyncio.Lock)
 
     @property
     def cache_statistics(self) -> dict[str, Any] | str:
@@ -140,8 +138,6 @@ class AntaDevice(ABC):
 
         Args:
             command (AntaCommand): The command to process.
-
-        TODO: Error handling
         """
         if self.cache is not None and self.cache_locks is not None and command.use_cache:
             async with self.cache_locks[command.uid]:
