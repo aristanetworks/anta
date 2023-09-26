@@ -42,6 +42,8 @@ Then, run the CLI:
 ```bash
 anta <anta cli>
 ```
+!!! info
+    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 

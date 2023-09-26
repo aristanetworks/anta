@@ -64,12 +64,14 @@ class AntaTemplate(BaseModel):
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
+        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it - default is True
     """
 
     template: str
     version: Literal[1, "latest"] = "latest"
     revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
+    use_cache: bool = True
 
     def render(self, **params: dict[str, Any]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
@@ -84,7 +86,15 @@ class AntaTemplate(BaseModel):
                      AntaTemplate instance.
         """
         try:
-            return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
+            return AntaCommand(
+                command=self.template.format(**params),
+                ofmt=self.ofmt,
+                version=self.version,
+                revision=self.revision,
+                template=self,
+                params=params,
+                use_cache=self.use_cache,
+            )
         except KeyError as e:
             raise AntaTemplateRenderError(self, e.args[0]) from e
 

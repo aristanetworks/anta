@@ -152,6 +152,9 @@ In this section, we will go into all the details of writing an [AntaTest](../api
 Import [anta.models.AntaTest](../api/models.md#anta.models.AntaTest) and define your own class.
 Define the mandatory class attributes using [anta.models.AntaCommand](../api/models.md#anta.models.AntaCommand), [anta.models.AntaTemplate](../api/models.md#anta.models.AntaTemplate) or both.
 
+!!! info
+    Caching can be disabled per `AntaCommand` or `AntaTemplate` by setting the `use_cache` argument to `False`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
+
 ```python
 from anta.models import AntaTest, AntaCommand, AntaTemplate
 
@@ -170,12 +173,14 @@ class <YourTestName>(AntaTest):
             ofmt="<command format output>",
             version="<eAPI version to use>",
             revision="<revision to use for the command>",           # revision has precedence over version
+            use_cache="<Use cache for the command>",
         ),
         AntaTemplate(
             template="<Python f-string to render an EOS command>",
             ofmt="<command format output>",
             version="<eAPI version to use>",
             revision="<revision to use for the command>",           # revision has precedence over version
+            use_cache="<Use cache for the command>",
         )
     ]
 ```
@@ -230,7 +235,7 @@ The logic usually includes the following different stages:
 2. If needed, access the test inputs using the `self.inputs` instance attribute and write your conditional logic.
 3. Set the `result` instance attribute to reflect the test result by either calling `self.result.is_success()` or `self.result.is_failure("<FAILURE REASON>")`. Sometimes, setting the test result to `skipped` using `self.result.is_skipped("<SKIPPED REASON>")` can make sense (e.g. testing the OSPF neighbor states but no neighbor was found). However, you should not need to catch any exception and set the test result to `error` since the error handling is done by the framework, see below.
 
-The example below is based on the [VerifyTemperature](../../api/tests.hardware/#anta.tests.hardware.VerifyTemperature) test.
+The example below is based on the [VerifyTemperature](../api/tests.hardware.md#anta.tests.hardware.VerifyTemperature) test.
 
 ```python
 class VerifyTemperature(AntaTest):
