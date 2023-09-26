@@ -73,13 +73,15 @@ There might be scenarios where caching is not wanted. You can disable caching in
 
 3. For tests developpers, caching can be disabled for a specific [`AntaCommand`](../advanced_usages/as-python-lib.md#antacommand-class) or [`AntaTemplate`](../advanced_usages/as-python-lib.md#antatemplate-class) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 
-    Also, since caching is implemented at the `AntaDevice` abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of `AntaDevice` outside of the ANTA framework, you must initialize `AntaDevice` with `disable_cache` set to `True`:
+### Disable caching in a child class of `AntaDevice`
 
-    ```python
-    class AnsibleEOSDevice(AntaDevice):
-      """
-      Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.
-      """
-      def __init__(self, name: str, connection: ConnectionBase, tags: list = None) -> None:
-          super().__init__(name, tags, disable_cache=True)
-    ```
+Since caching is implemented at the `AntaDevice` abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of `AntaDevice` outside of the ANTA framework, you must initialize `AntaDevice` with `disable_cache` set to `True`:
+
+```python
+class AnsibleEOSDevice(AntaDevice):
+  """
+  Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.
+  """
+  def __init__(self, name: str, connection: ConnectionBase, tags: list = None) -> None:
+      super().__init__(name, tags, disable_cache=True)
+```
