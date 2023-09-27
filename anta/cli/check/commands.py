@@ -12,11 +12,10 @@ import logging
 
 import click
 
+from anta.catalog import is_catalog_valid
 from anta.cli.console import console
 from anta.cli.utils import parse_catalog
-from anta.device import AsyncEOSDevice
 from anta.models import AntaTest
-from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
 
@@ -37,14 +36,7 @@ def catalog(ctx: click.Context, catalog: list[tuple[AntaTest, AntaTest.Input]]) 
     Check that the catalog is valid
     """
     logger.info(f"Checking syntax of catalog {ctx.obj['catalog_path']}")
-    mock_device = AsyncEOSDevice(name="mock", host="127.0.0.1", username="mock", password="mock")
-    manager = ResultManager()
-    # Instantiate each test to verify the Inputs are correct
-    for test_class, test_inputs in catalog:
-        # TODO - this is the same code with typing as in runner.py but somehow mypy complains that test_class
-        # ot type AntaTest is not callable
-        test_instance = test_class(device=mock_device, inputs=test_inputs)  # type: ignore[operator]
-        manager.add_test_result(test_instance.result)
+    manager = is_catalog_valid(catalog)
     if manager.error_status:
         console.print(f"[bold][red]Catalog {ctx.obj['catalog_path']} is invalid")
         # TODO print nice report
