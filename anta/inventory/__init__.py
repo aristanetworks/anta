@@ -45,6 +45,19 @@ class AntaInventory(dict):  # type: ignore
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
 
     @staticmethod
+    def _update_disable_cache(inventory_disable_cache: bool, kwargs: dict[str, Any]) -> dict[str, Any]:
+        """
+        Return new dictionary, replacing kwargs with added disable_cache value from inventory_value
+        if disable_cache has not been set by CLI.
+        Args:
+            inventory_disable_cache (bool): The value of disable_cache in the inventory
+            kwargs: The kwargs to instantiate the device
+        """
+        updated_kwargs = kwargs.copy()
+        updated_kwargs["disable_cache"] = inventory_disable_cache or kwargs.get("disable_cache")
+        return updated_kwargs
+
+    @staticmethod
     def _parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
         """
         Parses the host section of an AntaInventoryInput and add the devices to the inventory
@@ -57,11 +70,8 @@ class AntaInventory(dict):  # type: ignore
             return
 
         for host in inventory_input.hosts:
-            local_kwargs = kwargs.copy()
-            # Disable cache per host in the inventory
-            if host.disable_cache and not kwargs["disable_cache"]:
-                local_kwargs["disable_cache"] = host.disable_cache
-            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **local_kwargs)
+            kwargs = AntaInventory._update_disable_cache(host.disable_cache, kwargs)
+            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **kwargs)
             inventory.add_device(device)
 
     @staticmethod
@@ -81,12 +91,9 @@ class AntaInventory(dict):  # type: ignore
 
         for network in inventory_input.networks:
             try:
-                local_kwargs = kwargs.copy()
-                # Disable cache per network in the inventory
-                if network.disable_cache and not kwargs["disable_cache"]:
-                    local_kwargs["disable_cache"] = network.disable_cache
+                kwargs = AntaInventory._update_disable_cache(network.disable_cache, kwargs)
                 for host_ip in ip_network(str(network.network)):
-                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **local_kwargs)
+                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **kwargs)
                     inventory.add_device(device)
             except ValueError as e:
                 message = "Could not parse network {network.network} in the inventory"
@@ -110,16 +117,13 @@ class AntaInventory(dict):  # type: ignore
 
         for range_def in inventory_input.ranges:
             try:
-                local_kwargs = kwargs.copy()
-                # Disable cache per range of hosts in the inventory
-                if range_def.disable_cache and not kwargs["disable_cache"]:
-                    local_kwargs["disable_cache"] = range_def.disable_cache
+                kwargs = AntaInventory._update_disable_cache(range_def.disable_cache, kwargs)
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]
                     # mypy raise an issue about comparing IPv4Address and IPv6Address
                     # but this is handled by the ipaddress module natively by raising a TypeError
-                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **local_kwargs)
+                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **kwargs)
                     inventory.add_device(device)
                     range_increment += 1
             except ValueError as e:

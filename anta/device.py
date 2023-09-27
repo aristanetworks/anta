@@ -58,37 +58,35 @@ class AntaDevice(ABC):
         self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
+        self.cache: Optional[Cache] = None
+        self.cache_locks: Optional[defaultdict[str, asyncio.Lock]] = None
 
-        # Initialize cache attributes
-        self._init_cache(disable_cache)
+        # Initialize cache if not disabled
+        if not disable_cache:
+            self._init_cache()
 
         # Ensure tag 'all' is always set
         if DEFAULT_TAG not in self.tags:
             self.tags.append(DEFAULT_TAG)
 
-    def _init_cache(self, disable_cache: bool) -> None:
+    def _init_cache(self) -> None:
         """
-        Initializes cache attributes for the device.
-
-        Args:
-            disable_cache (bool): If true, caching will be disabled.
+        Initialize cache for the device, can be overriden by subclasses to manipulate how it works
         """
-        if disable_cache:
-            self.cache: Optional[Cache] = None
-            self.cache_locks: Optional[defaultdict[str, asyncio.Lock]] = None
-        else:
-            self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-            self.cache_locks = defaultdict(asyncio.Lock)
+        self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
+        self.cache_locks = defaultdict(asyncio.Lock)
 
     @property
-    def cache_statistics(self) -> dict[str, Any] | str:
+    def cache_statistics(self) -> dict[str, Any] | None:
         """
         Returns the device cache statistics for logging purposes
         """
+        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
+        # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None:
             stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
             return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
-        return "Cache is disabled"
+        return None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
@@ -100,6 +98,7 @@ class AntaDevice(ABC):
         yield "hw_model", self.hw_model
         yield "is_online", self.is_online
         yield "established", self.established
+        yield "disable_cache", self.cache is None
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
@@ -127,18 +126,21 @@ class AntaDevice(ABC):
 
     async def collect(self, command: AntaCommand) -> None:
         """
-        Collects the output for a specified command. If caching is activated on both the device and the command,
+        Collects the output for a specified command.
+
+        When caching is activated on both the device and the command,
         this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
         it will be freshly collected and then stored in the cache for future access.
-
-        When caching is not enabled, either at the device or command level, the method directly collects the output
-        via the private `_collect` method without interacting with the cache.
-
         The method employs asynchronous locks based on the command's UID to guarantee exclusive access to the cache.
+
+        When caching is NOT enabled, either at the device or command level, the method directly collects the output
+        via the private `_collect` method without interacting with the cache.
 
         Args:
             command (AntaCommand): The command to process.
         """
+        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
+        # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None and self.cache_locks is not None and command.use_cache:
             async with self.cache_locks[command.uid]:
                 cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member

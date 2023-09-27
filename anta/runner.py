@@ -74,7 +74,7 @@ async def main(
 
     # Get each device statistics
     for device in devices:
-        if hasattr(device, "cache_statistics"):
+        if device.cache_statistics is not None:
             logger.info(f"Cache statistics for {device.name}: {device.cache_statistics}")
         else:
-            logger.warning(f"{device.name} does not have a cache_statistics attribute.")
+            logger.info(f"Caching is not enabled on {device.name}")

@@ -112,7 +112,7 @@ class AntaCommand(BaseModel):
         template: AntaTemplate object used to render this command
         params: Dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
-        use_cache: Enable or disable caching for this AntaCommand - default is True
+        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
     """
 
     # This is required if we want to keep an Exception object in the failed field
@@ -132,7 +132,7 @@ class AntaCommand(BaseModel):
     def uid(self) -> str:
         """Generate a unique identifier for this command"""
         uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
-        return hashlib.md5(uid_str.encode()).hexdigest()
+        return hashlib.sha1(uid_str.encode()).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:
