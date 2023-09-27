@@ -118,3 +118,17 @@ def test_anta_enable_password(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["--enable-password", "blah", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 2
     assert "Providing a password to access EOS Privileged EXEC mode requires '--enable' option." in result.output
+
+
+def test_disable_cache(click_runner: CliRunner) -> None:
+    """
+    Test that disable_cache is working on inventory
+    """
+    env = default_anta_env()
+    result = click_runner.invoke(anta, ["--disable-cache", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
+    stdout_lines = result.stdout.split("\n")
+    # All caches should be disabled from the inventory
+    for line in stdout_lines:
+        if "disable_cache" in line:
+            assert "True" in line
+    assert result.exit_code == 0
