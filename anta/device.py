@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, DefaultDict, Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import asyncssh
 from aiocache import Cache
@@ -75,7 +75,7 @@ class AntaDevice(ABC):
         """
         if disable_cache:
             self.cache: Optional[Cache] = None
-            self.cache_locks: Optional[DefaultDict[str, asyncio.Lock]] = None
+            self.cache_locks: Optional[defaultdict[str, asyncio.Lock]] = None
         else:
             self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
             self.cache_locks = defaultdict(asyncio.Lock)
