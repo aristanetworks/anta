@@ -86,6 +86,8 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[A
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file
+
+    Store the orignal value (catalog path) in the ctx.obj
     """
     if ctx.obj.get("_anta_help"):
         # Currently looking for help for a subcommand so no
@@ -101,6 +103,8 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[A
         anta_log_exception(e, message, logger)
         ctx.fail(message)
 
+    # Storing catalog path
+    ctx.obj["catalog_path"] = value
     return anta.loader.parse_catalog(data)
 
 
