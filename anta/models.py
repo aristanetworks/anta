@@ -34,6 +34,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 DEFAULT_TAG = "all"
 
+# TODO - make this configurable - with an env var maybe?
 BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
 
 logger = logging.getLogger(__name__)
