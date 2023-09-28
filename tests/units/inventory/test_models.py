@@ -15,11 +15,14 @@ from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInv
 from tests.data.json_data import (
     INVENTORY_DEVICE_MODEL_INVALID,
     INVENTORY_DEVICE_MODEL_VALID,
+    INVENTORY_MODEL_HOST_CACHE,
     INVENTORY_MODEL_HOST_INVALID,
     INVENTORY_MODEL_HOST_VALID,
     INVENTORY_MODEL_INVALID,
+    INVENTORY_MODEL_NETWORK_CACHE,
     INVENTORY_MODEL_NETWORK_INVALID,
     INVENTORY_MODEL_NETWORK_VALID,
+    INVENTORY_MODEL_RANGE_CACHE,
     INVENTORY_MODEL_RANGE_INVALID,
     INVENTORY_MODEL_RANGE_VALID,
     INVENTORY_MODEL_VALID,
@@ -69,6 +72,26 @@ class Test_InventoryUnitModels:
         with pytest.raises(ValidationError):
             AntaInventoryHost(host=test_definition["input"])
 
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_CACHE, ids=generate_test_ids_dict)
+    def test_anta_inventory_host_cache(self, test_definition: dict[str, Any]) -> None:
+        """Test host disable_cache.
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'Cache',
+            'input': {"host": '1.1.1.1', "disable_cache": True},
+            'expected_result': True
+         }
+
+        """
+        if "disable_cache" in test_definition["input"]:
+            host_inventory = AntaInventoryHost(host=test_definition["input"]["host"], disable_cache=test_definition["input"]["disable_cache"])
+        else:
+            host_inventory = AntaInventoryHost(host=test_definition["input"]["host"])
+        assert test_definition["expected_result"] == host_inventory.disable_cache
+
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_network_valid(self, test_definition: dict[str, Any]) -> None:
         """Test Network input model with valid data.
@@ -111,6 +134,26 @@ class Test_InventoryUnitModels:
             logging.warning("Error: %s", str(exc))
         else:
             assert False
+
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_CACHE, ids=generate_test_ids_dict)
+    def test_anta_inventory_network_cache(self, test_definition: dict[str, Any]) -> None:
+        """Test network disable_cache
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'Cache',
+            'input': {"network": '1.1.1.1/24', "disable_cache": True},
+            'expected_result': True
+         }
+
+        """
+        if "disable_cache" in test_definition["input"]:
+            network_inventory = AntaInventoryNetwork(network=test_definition["input"]["network"], disable_cache=test_definition["input"]["disable_cache"])
+        else:
+            network_inventory = AntaInventoryNetwork(network=test_definition["input"]["network"])
+        assert test_definition["expected_result"] == network_inventory.disable_cache
 
     @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_VALID, ids=generate_test_ids_dict)
     def test_anta_inventory_range_valid(self, test_definition: dict[str, Any]) -> None:
@@ -161,6 +204,28 @@ class Test_InventoryUnitModels:
             logging.warning("Error: %s", str(exc))
         else:
             assert False
+
+    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_CACHE, ids=generate_test_ids_dict)
+    def test_anta_inventory_range_cache(self, test_definition: dict[str, Any]) -> None:
+        """Test range disable_cache
+
+        Test structure:
+        ---------------
+
+        {
+            'name': 'Cache',
+            'input': {"start": '1.1.1.1', "end": "1.1.1.10", "disable_cache": True},
+            'expected_result': True
+         }
+
+        """
+        if "disable_cache" in test_definition["input"]:
+            range_inventory = AntaInventoryRange(
+                start=test_definition["input"]["start"], end=test_definition["input"]["end"], disable_cache=test_definition["input"]["disable_cache"]
+            )
+        else:
+            range_inventory = AntaInventoryRange(start=test_definition["input"]["start"], end=test_definition["input"]["end"])
+        assert test_definition["expected_result"] == range_inventory.disable_cache
 
 
 class Test_AntaInventoryInputModel:

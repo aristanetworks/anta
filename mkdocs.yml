@@ -165,6 +165,7 @@ nav:
     - Get Inventory Information: cli/get-inventory-information.md
     - Helpers: cli/debug.md
   - Advanced Usages:
+    - Caching in ANTA: advanced_usages/caching.md
     - Developing ANTA tests: advanced_usages/custom-tests.md
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Catalog Documentation:

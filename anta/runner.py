@@ -45,9 +45,10 @@ async def main(
 
     # asyncio.gather takes an iterator of the function to run concurrently.
     # we get the cross product of the devices and tests to build that iterator.
-
+    devices = inventory.get_inventory(established_only=established_only, tags=tags).values()
     coros = []
-    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
+
+    for device, test in itertools.product(devices, tests):
         test_class = test[0]
         test_inputs = test[1]
         try:
@@ -70,3 +71,10 @@ async def main(
             anta_log_exception(r, message, logger)
         else:
             manager.add_test_result(r)
+
+    # Get each device statistics
+    for device in devices:
+        if device.cache_statistics is not None:
+            logger.info(f"Cache statistics for {device.name}: {device.cache_statistics}")
+        else:
+            logger.info(f"Caching is not enabled on {device.name}")

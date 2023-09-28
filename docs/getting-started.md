@@ -6,7 +6,7 @@
 
 # Getting Started
 
-This section shows how to use ANTA with basic configuration. All examples are based on Arista Test Drive (ATD) topology you can access by reaching out to your prefered SE.
+This section shows how to use ANTA with basic configuration. All examples are based on Arista Test Drive (ATD) topology you can access by reaching out to your preferred SE.
 
 ## Installation
 
@@ -72,7 +72,7 @@ anta_inventory:
     tags: ['fabric', 'leaf']
 ```
 
-> You can read more details about how to build your inventory [here](../usage-inventory-catalog/#create-an-inventory-file)
+> You can read more details about how to build your inventory [here](usage-inventory-catalog.md#create-an-inventory-file)
 
 ## Test Catalog
 
@@ -87,7 +87,7 @@ The structure to follow is like:
         <test function option value>
 ```
 
-> You can read more details about how to build your catalog [here](../usage-inventory-catalog/#test-catalog)
+> You can read more details about how to build your catalog [here](usage-inventory-catalog.md#test-catalog)
 
 Here is an example for basic tests:
 

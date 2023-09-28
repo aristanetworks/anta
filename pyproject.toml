@@ -17,6 +17,7 @@ maintainers = [
 description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
 dependencies = [
+  "aiocache~=0.12.2",
   "aio-eapi==0.6.3",
   "click~=8.1.6",
   "click-help-colors~=0.9",

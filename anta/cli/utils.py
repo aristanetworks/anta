@@ -63,6 +63,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
             enable_password=ctx.params["enable_password"],
             timeout=ctx.params["timeout"],
             insecure=ctx.params["insecure"],
+            disable_cache=ctx.params["disable_cache"],
         )
     except Exception as e:  # pylint: disable=broad-exception-caught
         message = f"Unable to parse ANTA Inventory file '{path}'"
