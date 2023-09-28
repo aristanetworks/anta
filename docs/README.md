@@ -69,6 +69,8 @@ Options:
                                   ANTA_IGNORE_STATUS]
   --ignore-error                  Only report failures and not errors  [env
                                   var: ANTA_IGNORE_ERROR]
+  --disable-cache                 Disable cache globally  [env var:
+                                  ANTA_DISABLE_CACHE]
   --help                          Show this message and exit.
 
 Commands:
@@ -77,7 +79,6 @@ Commands:
   get    Get data from/to ANTA
   nrfu   Run NRFU against inventory devices
 ```
-
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 

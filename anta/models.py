@@ -6,6 +6,7 @@ Models to define a TestStructure
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import time
 from abc import ABC, abstractmethod
@@ -35,6 +36,24 @@ F = TypeVar("F", bound=Callable[..., Any])
 logger = logging.getLogger(__name__)
 
 
+class AntaMissingParamException(Exception):
+    """
+    This Exception should be used when an expected key in an AntaCommand.params dictionary
+    was not found.
+
+    This Exception should in general never be raised in normal usage of ANTA.
+    """
+
+    GITHUB_SUGGESTION = [
+        "This Exception should not have been raised in a normal usage of ANTA.",
+        "Please reach out to the maintainer team on Github: https://github.com/arista-netdevops-community/anta.",
+    ]
+
+    def __init__(self, message: str) -> None:
+        self.message = "\n".join([message] + AntaMissingParamException.GITHUB_SUGGESTION)
+        super().__init__(self.message)
+
+
 class AntaTemplate(BaseModel):
     """Class to define a command template as Python f-string.
     Can render a command from parameters.
@@ -44,12 +63,14 @@ class AntaTemplate(BaseModel):
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
+        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it - default is True
     """
 
     template: str
     version: Literal[1, "latest"] = "latest"
     revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
     ofmt: Literal["json", "text"] = "json"
+    use_cache: bool = True
 
     def render(self, **params: dict[str, Any]) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
@@ -64,7 +85,15 @@ class AntaTemplate(BaseModel):
                      AntaTemplate instance.
         """
         try:
-            return AntaCommand(command=self.template.format(**params), ofmt=self.ofmt, version=self.version, revision=self.revision, template=self, params=params)
+            return AntaCommand(
+                command=self.template.format(**params),
+                ofmt=self.ofmt,
+                version=self.version,
+                revision=self.revision,
+                template=self,
+                params=params,
+                use_cache=self.use_cache,
+            )
         except KeyError as e:
             raise AntaTemplateRenderError(self, e.args[0]) from e
 
@@ -88,9 +117,11 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are 1 or "latest" - default is "latest"
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
+        output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
-        params: dictionary of variables with string values to render the template
+        params: Dictionary of variables with string values to render the template
         failed: If the command execution fails, the Exception object is stored in this field
+        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
     """
 
     # This is required if we want to keep an Exception object in the failed field
@@ -103,7 +134,14 @@ class AntaCommand(BaseModel):
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
     failed: Optional[Exception] = None
-    params: Optional[Dict[str, Any]] = None
+    params: Dict[str, Any] = {}
+    use_cache: bool = True
+
+    @property
+    def uid(self) -> str:
+        """Generate a unique identifier for this command"""
+        uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
+        return hashlib.sha1(uid_str.encode()).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:
@@ -351,8 +389,11 @@ class AntaTest(ABC):
 
     def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Populate output of all AntaCommand instances in `instance_commands`"""
-        if len(eos_data) != len(self.instance_commands):
+        if len(eos_data) > len(self.instance_commands):
             self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
+            return
+        if len(eos_data) < len(self.instance_commands):
+            self.result.is_error(message="Test initialization error: Trying to save less data than there are commands for the test")
             return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data

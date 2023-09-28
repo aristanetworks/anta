@@ -9,11 +9,14 @@ from __future__ import annotations
 import asyncio
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
 
 import asyncssh
+from aiocache import Cache
+from aiocache.plugins import HitMissRatioPlugin
 from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
@@ -28,7 +31,7 @@ logger = logging.getLogger(__name__)
 class AntaDevice(ABC):
     """
     Abstract class representing a device in ANTA.
-    An implementation of this class needs must override the abstract coroutines `collect()` and
+    An implementation of this class must override the abstract coroutines `_collect()` and
     `refresh()`.
 
     Attributes:
@@ -37,21 +40,49 @@ class AntaDevice(ABC):
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
         tags: List of tags for this device
+        cache: In-memory cache from aiocache library for this device (None if cache is disabled)
+        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled
     """
 
-    def __init__(self, name: str, tags: Optional[list[str]] = None) -> None:
+    def __init__(self, name: str, tags: Optional[list[str]] = None, disable_cache: bool = False) -> None:
         """
         Constructor of AntaDevice
 
         Args:
             name: Device name
-            tags: list of tags for this device
+            tags: List of tags for this device
+            disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
         self.name: str = name
         self.hw_model: Optional[str] = None
         self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
+        self.cache: Optional[Cache] = None
+        self.cache_locks: Optional[defaultdict[str, asyncio.Lock]] = None
+
+        # Initialize cache if not disabled
+        if not disable_cache:
+            self._init_cache()
+
+    def _init_cache(self) -> None:
+        """
+        Initialize cache for the device, can be overriden by subclasses to manipulate how it works
+        """
+        self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
+        self.cache_locks = defaultdict(asyncio.Lock)
+
+    @property
+    def cache_statistics(self) -> dict[str, Any] | None:
+        """
+        Returns the device cache statistics for logging purposes
+        """
+        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
+        # https://github.com/pylint-dev/pylint/issues/7258
+        if self.cache is not None:
+            stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
+            return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
+        return None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """
@@ -63,6 +94,7 @@ class AntaDevice(ABC):
         yield "hw_model", self.hw_model
         yield "is_online", self.is_online
         yield "established", self.established
+        yield "disable_cache", self.cache is None
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
@@ -71,22 +103,52 @@ class AntaDevice(ABC):
         """
 
     @abstractmethod
-    async def collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:
         """
         Collect device command output.
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
 
-        The `collect()` implementation needs to populate the `output` attribute
+        The `_collect()` implementation needs to populate the `output` attribute
         of the `AntaCommand` object passed as argument.
 
-        If a failure occurs, the `collect()` implementation is expected to catch the
+        If a failure occurs, the `_collect()` implementation is expected to catch the
         exception and implement proper logging, the `output` attribute of the
         `AntaCommand` object passed as argument would be `None` in this case.
 
         Args:
             command: the command to collect
         """
+
+    async def collect(self, command: AntaCommand) -> None:
+        """
+        Collects the output for a specified command.
+
+        When caching is activated on both the device and the command,
+        this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
+        it will be freshly collected and then stored in the cache for future access.
+        The method employs asynchronous locks based on the command's UID to guarantee exclusive access to the cache.
+
+        When caching is NOT enabled, either at the device or command level, the method directly collects the output
+        via the private `_collect` method without interacting with the cache.
+
+        Args:
+            command (AntaCommand): The command to process.
+        """
+        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
+        # https://github.com/pylint-dev/pylint/issues/7258
+        if self.cache is not None and self.cache_locks is not None and command.use_cache:
+            async with self.cache_locks[command.uid]:
+                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+
+                if cached_output is not None:
+                    logger.debug(f"Cache hit for {command.command} on {self.name}")
+                    command.output = cached_output
+                else:
+                    await self._collect(command=command)
+                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+        else:
+            await self._collect(command=command)
 
     async def collect_commands(self, commands: list[AntaCommand]) -> None:
         """
@@ -147,6 +209,7 @@ class AsyncEOSDevice(AntaDevice):
         timeout: Optional[float] = None,
         insecure: bool = False,
         proto: Literal["http", "https"] = "https",
+        disable_cache: bool = False,
     ) -> None:
         """
         Constructor of AsyncEOSDevice
@@ -164,10 +227,11 @@ class AsyncEOSDevice(AntaDevice):
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
             insecure: Disable SSH Host Key validation
             proto: eAPI protocol. Value can be 'http' or 'https'
+            disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
-        super().__init__(name, tags)
+        super().__init__(name, tags, disable_cache)
         self.enable = enable
         self._enable_password = enable_password
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
@@ -206,7 +270,7 @@ class AsyncEOSDevice(AntaDevice):
             return False
         return self._session.host == other._session.host and self._session.port == other._session.port
 
-    async def collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:
         """
         Collect device command output from EOS using aio-eapi.
 

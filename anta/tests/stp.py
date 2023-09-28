@@ -44,7 +44,7 @@ class VerifySTPMode(AntaTest):
         not_configured = []
         wrong_stp_mode = []
         for command in self.instance_commands:
-            if command.params and "vlan" in command.params:
+            if "vlan" in command.params:
                 vlan_id = command.params["vlan"]
             if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
                 not_configured.append(vlan_id)
@@ -135,7 +135,7 @@ class VerifySTPForwardingPorts(AntaTest):
         not_configured = []
         not_forwarding = []
         for command in self.instance_commands:
-            if command.params and "vlan" in command.params:
+            if "vlan" in command.params:
                 vlan_id = command.params["vlan"]
             if not (topologies := get_value(command.json_output, "topologies")):
                 not_configured.append(vlan_id)
@@ -179,13 +179,15 @@ class VerifySTPRootPriority(AntaTest):
         if not (stp_instances := command_output["instances"]):
             self.result.is_failure("No STP instances configured")
             return
-        for instance in stp_instances:
-            if instance.startswith("MST"):
-                prefix = "MST"
-                break
-            if instance.startswith("VL"):
-                prefix = "VL"
-                break
+        # Checking the type of instances based on first instance
+        first_name = list(stp_instances)[0]
+        if first_name.startswith("MST"):
+            prefix = "MST"
+        elif first_name.startswith("VL"):
+            prefix = "VL"
+        else:
+            self.result.is_failure(f"Unsupported STP instance type: {first_name}")
+            return
         check_instances = [f"{prefix}{instance_id}" for instance_id in self.inputs.instances] if self.inputs.instances else command_output["instances"].keys()
         wrong_priority_instances = [
             instance for instance in check_instances if get_value(command_output, f"instances.{instance}.rootBridge.priority") != self.inputs.priority

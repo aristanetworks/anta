@@ -45,6 +45,20 @@ class AntaInventory(dict):  # type: ignore
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
 
     @staticmethod
+    def _update_disable_cache(inventory_disable_cache: bool, kwargs: dict[str, Any]) -> dict[str, Any]:
+        """
+        Return new dictionary, replacing kwargs with added disable_cache value from inventory_value
+        if disable_cache has not been set by CLI.
+
+        Args:
+            inventory_disable_cache (bool): The value of disable_cache in the inventory
+            kwargs: The kwargs to instantiate the device
+        """
+        updated_kwargs = kwargs.copy()
+        updated_kwargs["disable_cache"] = inventory_disable_cache or kwargs.get("disable_cache")
+        return updated_kwargs
+
+    @staticmethod
     def _parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: Any) -> None:
         """
         Parses the host section of an AntaInventoryInput and add the devices to the inventory
@@ -57,7 +71,8 @@ class AntaInventory(dict):  # type: ignore
             return
 
         for host in inventory_input.hosts:
-            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **kwargs)
+            updated_kwargs = AntaInventory._update_disable_cache(host.disable_cache, kwargs)
+            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **updated_kwargs)
             inventory.add_device(device)
 
     @staticmethod
@@ -77,8 +92,9 @@ class AntaInventory(dict):  # type: ignore
 
         for network in inventory_input.networks:
             try:
+                updated_kwargs = AntaInventory._update_disable_cache(network.disable_cache, kwargs)
                 for host_ip in ip_network(str(network.network)):
-                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **kwargs)
+                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
                     inventory.add_device(device)
             except ValueError as e:
                 message = "Could not parse network {network.network} in the inventory"
@@ -102,12 +118,13 @@ class AntaInventory(dict):  # type: ignore
 
         for range_def in inventory_input.ranges:
             try:
+                updated_kwargs = AntaInventory._update_disable_cache(range_def.disable_cache, kwargs)
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]
                     # mypy raise an issue about comparing IPv4Address and IPv6Address
                     # but this is handled by the ipaddress module natively by raising a TypeError
-                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **kwargs)
+                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **updated_kwargs)
                     inventory.add_device(device)
                     range_increment += 1
             except ValueError as e:
@@ -128,6 +145,7 @@ class AntaInventory(dict):  # type: ignore
         enable_password: Optional[str] = None,
         timeout: Optional[float] = None,
         insecure: bool = False,
+        disable_cache: bool = False,
     ) -> AntaInventory:
         # pylint: disable=too-many-arguments
         """
@@ -139,7 +157,10 @@ class AntaInventory(dict):  # type: ignore
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
             enable (bool): Whether or not the commands need to be run in enable mode towards the devices
+            enable_password (str, optional): Enable password to use if required
             timeout (float, optional): timeout in seconds for every API call.
+            insecure (bool): Disable SSH Host Key validation
+            disable_cache (bool): Disable cache globally
 
         Raises:
             InventoryRootKeyError: Root key of inventory is missing.
@@ -155,6 +176,7 @@ class AntaInventory(dict):  # type: ignore
             "enable_password": enable_password,
             "timeout": timeout,
             "insecure": insecure,
+            "disable_cache": disable_cache,
         }
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 

@@ -31,6 +31,12 @@ INVENTORY_MODEL_HOST_INVALID = [
     },
 ]
 
+INVENTORY_MODEL_HOST_CACHE = [
+    {"name": "Host cache default", "input": {"host": "1.1.1.1"}, "expected_result": False},
+    {"name": "Host cache enabled", "input": {"host": "1.1.1.1", "disable_cache": False}, "expected_result": False},
+    {"name": "Host cache disabled", "input": {"host": "1.1.1.1", "disable_cache": True}, "expected_result": True},
+]
+
 INVENTORY_MODEL_NETWORK_VALID = [
     {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/24", "expected_result": "valid"},
     {"name": "ValidIPv6_Subnet", "input": "2001:db8::/32", "expected_result": "valid"},
@@ -43,6 +49,12 @@ INVENTORY_MODEL_NETWORK_INVALID = [
         "input": "2001:db8::/16",
         "expected_result": "invalid",
     },
+]
+
+INVENTORY_MODEL_NETWORK_CACHE = [
+    {"name": "Network cache default", "input": {"network": "1.1.1.0/24"}, "expected_result": False},
+    {"name": "Network cache enabled", "input": {"network": "1.1.1.0/24", "disable_cache": False}, "expected_result": False},
+    {"name": "Network cache disabled", "input": {"network": "1.1.1.0/24", "disable_cache": True}, "expected_result": True},
 ]
 
 INVENTORY_MODEL_RANGE_VALID = [
@@ -59,6 +71,12 @@ INVENTORY_MODEL_RANGE_INVALID = [
         "input": {"start": "toto", "end": "10.1.0.1"},
         "expected_result": "invalid",
     },
+]
+
+INVENTORY_MODEL_RANGE_CACHE = [
+    {"name": "Range cache default", "input": {"start": "1.1.1.1", "end": "1.1.1.10"}, "expected_result": False},
+    {"name": "Range cache enabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": False}, "expected_result": False},
+    {"name": "Range cache disabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": True}, "expected_result": True},
 ]
 
 INVENTORY_MODEL_VALID = [

@@ -107,6 +107,22 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-vlan-not-in-topology",  # Should it succeed really ? TODO - this output should be impossible
+        "test": VerifySTPForwardingPorts,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {"Mst10": {"vlans": [10], "interfaces": {"Ethernet10": {"state": "forwarding"}, "MplsTrunk1": {"state": "forwarding"}}}},
+            },
+            {
+                "unmappedVlans": [],
+                "topologies": {"Mst10": {"vlans": [10], "interfaces": {"Ethernet10": {"state": "forwarding"}, "MplsTrunk1": {"state": "forwarding"}}}},
+            },
+        ],
+        "inputs": {"vlans": [10, 20]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-instances",
         "test": VerifySTPForwardingPorts,
         "eos_data": [{"unmappedVlans": [], "topologies": {}}, {"unmappedVlans": [], "topologies": {}}],
@@ -217,7 +233,51 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-MST",
+        "test": VerifySTPRootPriority,
+        "eos_data": [
+            {
+                "instances": {
+                    "MST0": {
+                        "rootBridge": {
+                            "priority": 16384,
+                            "systemIdExtension": 0,
+                            "macAddress": "02:1c:73:8b:93:ac",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15,
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"priority": 16384, "instances": [0]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-instances",
+        "test": VerifySTPRootPriority,
+        "eos_data": [
+            {
+                "instances": {
+                    "WRONG0": {
+                        "rootBridge": {
+                            "priority": 16384,
+                            "systemIdExtension": 0,
+                            "macAddress": "02:1c:73:8b:93:ac",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15,
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {"priority": 32768, "instances": [0]},
+        "expected": {"result": "failure", "messages": ["Unsupported STP instance type: WRONG0"]},
+    },
+    {
+        "name": "failure-wrong-instance-type",
         "test": VerifySTPRootPriority,
         "eos_data": [{"instances": {}}],
         "inputs": {"priority": 32768, "instances": [10, 20]},

@@ -105,6 +105,7 @@ from anta.result_manager.models import TestResult
 )
 @click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
 @click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
+@click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
 def anta(
     ctx: click.Context, inventory: pathlib.Path, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any
 ) -> None:

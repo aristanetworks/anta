@@ -129,7 +129,7 @@ Options:
 
 ### Example
 
-To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your [inventory file](../../usage-inventory-catalog/).
+To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your [inventory file](../usage-inventory-catalog.md).
 
 ```bash
 anta get inventory --tags SPINE
@@ -141,6 +141,7 @@ Current inventory content is:
         hw_model=None,
         is_online=False,
         established=False,
+        disable_cache=False,
         host='172.20.20.101',
         eapi_port=443,
         username='arista',
@@ -155,6 +156,7 @@ Current inventory content is:
         hw_model=None,
         is_online=False,
         established=False,
+        disable_cache=False,
         host='172.20.20.102',
         eapi_port=443,
         username='arista',
@@ -169,6 +171,7 @@ Current inventory content is:
         hw_model=None,
         is_online=False,
         established=False,
+        disable_cache=False,
         host='172.20.20.201',
         eapi_port=443,
         username='arista',
@@ -183,6 +186,7 @@ Current inventory content is:
         hw_model=None,
         is_online=False,
         established=False,
+        disable_cache=False,
         host='172.20.20.202',
         eapi_port=443,
         username='arista',

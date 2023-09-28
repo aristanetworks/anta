@@ -19,16 +19,22 @@ anta_inventory:
       port: < TCP port for eAPI. Default is 443 (Optional)>
       name: < name to display in report. Default is host:port (Optional) >
       tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      disable_cache: < Disable cache per hosts. Default is False. >
   networks:
     - network: < network using CIDR notation >
       tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      disable_cache: < Disable cache per network. Default is False. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
       tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      disable_cache: < Disable cache per range. Default is False. >
 ```
 
-Your inventory file can be based on any of these 3 keys and MUST start with `anta_inventory` key. A full description of the inventory model is available in [API documentation](../api/inventory.models.input/)
+Your inventory file can be based on any of these 3 keys and MUST start with `anta_inventory` key. A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
+
+!!! info
+    Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
 
 An inventory example:
 

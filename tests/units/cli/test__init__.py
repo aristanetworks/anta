@@ -108,13 +108,56 @@ def test_anta_enable_password(click_runner: CliRunner) -> None:
     Test that enable password can be provided either via --enable-password or --prompt
     """
     env = default_anta_env()
+
+    # Both enable and enable-password
     result = click_runner.invoke(anta, ["--enable", "--enable-password", "blah", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 0
-    result = click_runner.invoke(anta, ["--enable", "--prompt", "get", "inventory"], input="password\npassword\n", env=env, auto_envvar_prefix="ANTA")
+
+    # enable and prompt y
+    result = click_runner.invoke(anta, ["--enable", "--prompt", "get", "inventory"], input="y\npassword\npassword\n", env=env, auto_envvar_prefix="ANTA")
+    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" in result.output
+    assert "Please enter a password to enter EOS privileged EXEC mode" in result.output
     assert result.exit_code == 0
-    result = click_runner.invoke(anta, ["--enable-password", "blah", "--prompt", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
-    assert result.exit_code == 2
-    assert "Providing a password to access EOS Privileged EXEC mode requires '--enable' option." in result.output
+
+    # enable and prompt N
+    result = click_runner.invoke(anta, ["--enable", "--prompt", "get", "inventory"], input="N\n", env=env, auto_envvar_prefix="ANTA")
+    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" in result.output
+    assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
+    assert result.exit_code == 0
+
+    # enable and enable-password and prompt (redundant)
+    result = click_runner.invoke(
+        anta, ["--enable", "--enable-password", "blah", "--prompt", "get", "inventory"], input="y\npassword\npassword\n", env=env, auto_envvar_prefix="ANTA"
+    )
+    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" not in result.output
+    assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
+    assert result.exit_code == 0
+
+    # enabled-password without enable
     result = click_runner.invoke(anta, ["--enable-password", "blah", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 2
     assert "Providing a password to access EOS Privileged EXEC mode requires '--enable' option." in result.output
+
+
+def test_anta_enable_alone(click_runner: CliRunner) -> None:
+    """
+    Test that enable can be provided either without enable-password
+    """
+    env = default_anta_env()
+    # enabled without enable-password and without prompt this is
+    result = click_runner.invoke(anta, ["--enable", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
+    assert result.exit_code == 0
+
+
+def test_disable_cache(click_runner: CliRunner) -> None:
+    """
+    Test that disable_cache is working on inventory
+    """
+    env = default_anta_env()
+    result = click_runner.invoke(anta, ["--disable-cache", "get", "inventory"], env=env, auto_envvar_prefix="ANTA")
+    stdout_lines = result.stdout.split("\n")
+    # All caches should be disabled from the inventory
+    for line in stdout_lines:
+        if "disable_cache" in line:
+            assert "True" in line
+    assert result.exit_code == 0

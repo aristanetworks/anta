@@ -27,12 +27,14 @@ class AntaInventoryHost(BaseModel):
         port (int): (Optional) eAPI port to use Default is 443.
         name (str): (Optional) Name to display during tests report. Default is hostname:port
         tags (list[str]): List of attached tags read from inventory file.
+        disable_cache (bool): Disable cache per host. Defaults to False.
     """
 
     name: Optional[str] = None
     host: Union[constr(pattern=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     port: Optional[conint(gt=1, lt=65535)] = None  # type: ignore
     tags: Optional[List[str]] = None
+    disable_cache: bool = False
 
 
 class AntaInventoryNetwork(BaseModel):
@@ -42,10 +44,12 @@ class AntaInventoryNetwork(BaseModel):
     Attributes:
         network (IPvAnyNetwork): Subnet to use for testing.
         tags (list[str]): List of attached tags read from inventory file.
+        disable_cache (bool): Disable cache per network. Defaults to False.
     """
 
     network: IPvAnyNetwork
     tags: Optional[List[str]] = None
+    disable_cache: bool = False
 
 
 class AntaInventoryRange(BaseModel):
@@ -56,11 +60,13 @@ class AntaInventoryRange(BaseModel):
         start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
         tags (list[str]): List of attached tags read from inventory file.
+        disable_cache (bool): Disable cache per range of hosts. Defaults to False.
     """
 
     start: IPvAnyAddress
     end: IPvAnyAddress
     tags: Optional[List[str]] = None
+    disable_cache: bool = False
 
 
 class AntaInventoryInput(BaseModel):

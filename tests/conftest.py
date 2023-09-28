@@ -15,8 +15,10 @@ if TYPE_CHECKING:
     from pytest import Metafunc
 
 # Load fixtures from dedicated file tests/lib/fixture.py
+# As well as pytest_asyncio plugin to test co-routines
 pytest_plugins = [
     "tests.lib.fixture",
+    "pytest_asyncio",
 ]
 
 # Enable nice assert messages
