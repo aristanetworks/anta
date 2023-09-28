@@ -7,6 +7,7 @@ Models to define a TestStructure
 from __future__ import annotations
 
 import logging
+import re
 import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -32,6 +33,8 @@ F = TypeVar("F", bound=Callable[..., Any])
 # N = TypeVar("N", bound="AntaTest.Input")
 
 DEFAULT_TAG = "all"
+
+BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
 
 logger = logging.getLogger(__name__)
 
@@ -389,12 +392,26 @@ class AntaTest(ABC):
         no AntaTemplate for this test."""
         raise NotImplementedError(f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}")
 
+    def is_blocked(self, commands: List[AntaCommand]) -> bool:
+        """Check if CLI commands contain a blocked keyword.
+        It is based on regex comparison.
+        """
+        for command in commands:
+            for pattern in BLACKLIST_REGEX:
+                if re.match(pattern, command.command):
+                    self.logger.critical(f"Command {command.command} is blocked")
+                    return True
+        return False
+
     async def collect(self) -> None:
         """
         Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
         try:
-            await self.device.collect_commands(self.instance_commands)
+            if self.is_blocked(commands=self.instance_commands) is False:
+                await self.device.collect_commands(self.instance_commands)
+            else:
+                self.result.is_error(message="Test has blocked command")
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
             anta_log_exception(e, message, self.logger)
