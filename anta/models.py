@@ -428,9 +428,6 @@ class AntaTest(ABC):
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
-            # tags
-            self.logger.debug(f"test {self.name} has tags: {self.inputs.filters}")
-            self.logger.debug(f"device {self.device.name} has tags: {self.device.tags}")
 
             # Data
             if eos_data is not None:
