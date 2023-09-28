@@ -176,8 +176,6 @@ COLLECT_ANTADEVICE_DATA: list[dict[str, Any]] = [
     },
 ]
 
-pytest_plugins = ("pytest_asyncio",)
-
 
 class TestAntaDevice:
     """
