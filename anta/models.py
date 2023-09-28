@@ -31,7 +31,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
 # N = TypeVar("N", bound="AntaTest.Input")
 
-DEFAULT_TAG = "all"
 
 logger = logging.getLogger(__name__)
 

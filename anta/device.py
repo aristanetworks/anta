@@ -19,7 +19,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
-from anta.models import DEFAULT_TAG, AntaCommand
+from anta.models import AntaCommand
 from anta.tools.misc import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
@@ -52,10 +52,6 @@ class AntaDevice(ABC):
         self.tags: list[str] = tags if tags is not None else []
         self.is_online: bool = False
         self.established: bool = False
-
-        # Ensure tag 'all' is always set
-        if DEFAULT_TAG not in self.tags:
-            self.tags.append(DEFAULT_TAG)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """

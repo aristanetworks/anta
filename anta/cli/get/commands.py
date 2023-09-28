@@ -23,7 +23,6 @@ from rich.pretty import pretty_repr
 
 from anta.cli.console import console
 from anta.cli.utils import parse_tags
-from anta.models import DEFAULT_TAG
 
 from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
 
@@ -130,4 +129,3 @@ def tags(ctx: click.Context) -> None:
     tags_found = sorted(set(tags_found))
     console.print("Tags found:")
     console.print_json(json.dumps(tags_found, indent=2))
-    console.print(f"\n* note that tag [green]{DEFAULT_TAG}[/green] has been added by anta")
