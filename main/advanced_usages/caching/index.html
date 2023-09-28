@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../tests.multicast/">
+        <link rel="prev" href="../../cli/debug/">
       
       
-        <link rel="next" href="../tests.routing.generic/">
+        <link rel="next" href="../custom-tests/">
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Profiles - Arista Network Test Automation - ANTA</title>
+        <title>Caching in ANTA - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-catalog-for-profiles-tests" class="md-skip">
+        <a href="#configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -144,7 +144,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Profiles
+              Caching in ANTA
             
           </span>
         </div>
@@ -556,6 +556,8 @@
       
   
   
+    
+  
   
     
     
@@ -570,12 +572,12 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -589,7 +591,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Advanced Usages
@@ -600,9 +602,27 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../advanced_usages/caching/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Caching in ANTA
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -611,6 +631,65 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cache-key-design" class="md-nav__link">
+    Cache key design
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mechanisms" class="md-nav__link">
+    Mechanisms
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-disable-caching" class="md-nav__link">
+    How to disable caching
+  </a>
+  
+    <nav class="md-nav" aria-label="How to disable caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disable-caching-in-a-child-class-of-antadevice" class="md-nav__link">
+    Disable caching in a child class of AntaDevice
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -622,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
+      <a href="../custom-tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -642,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../as-python-lib/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -667,8 +746,6 @@
       
   
   
-    
-  
   
     
     
@@ -713,12 +790,12 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -732,7 +809,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Tests Catalog Documentation
@@ -745,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests/" class="md-nav__link">
+      <a href="../../api/tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -765,7 +842,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.aaa/" class="md-nav__link">
+      <a href="../../api/tests.aaa/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -785,7 +862,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.configuration/" class="md-nav__link">
+      <a href="../../api/tests.configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -805,7 +882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.connectivity/" class="md-nav__link">
+      <a href="../../api/tests.connectivity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -825,7 +902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.field_notices/" class="md-nav__link">
+      <a href="../../api/tests.field_notices/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -845,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.hardware/" class="md-nav__link">
+      <a href="../../api/tests.hardware/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -865,7 +942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.interfaces/" class="md-nav__link">
+      <a href="../../api/tests.interfaces/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -885,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.logging/" class="md-nav__link">
+      <a href="../../api/tests.logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -905,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.mlag/" class="md-nav__link">
+      <a href="../../api/tests.mlag/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -925,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.multicast/" class="md-nav__link">
+      <a href="../../api/tests.multicast/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -943,27 +1020,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Profiles
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../api/tests.profiles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -972,103 +1031,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#anta-catalog-for-profiles-tests" class="md-nav__link">
-    ANTA catalog for profiles tests
-  </a>
-  
-    <nav class="md-nav" aria-label="ANTA catalog for profiles tests">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile" class="md-nav__link">
-    VerifyTcamProfile
-  </a>
-  
-    <nav class="md-nav" aria-label="VerifyTcamProfile">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile.Input" class="md-nav__link">
-    Input
-  </a>
-  
-    <nav class="md-nav" aria-label="Input">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile.Input.profile" class="md-nav__link">
-    profile
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="md-nav__link">
-    VerifyUnifiedForwardingTableMode
-  </a>
-  
-    <nav class="md-nav" aria-label="VerifyUnifiedForwardingTableMode">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input" class="md-nav__link">
-    Input
-  </a>
-  
-    <nav class="md-nav" aria-label="Input">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input.mode" class="md-nav__link">
-    mode
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1124,7 +1086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.generic/" class="md-nav__link">
+      <a href="../../api/tests.routing.generic/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1144,7 +1106,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.bgp/" class="md-nav__link">
+      <a href="../../api/tests.routing.bgp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1164,7 +1126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.ospf/" class="md-nav__link">
+      <a href="../../api/tests.routing.ospf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1192,7 +1154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.security/" class="md-nav__link">
+      <a href="../../api/tests.security/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1212,7 +1174,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.snmp/" class="md-nav__link">
+      <a href="../../api/tests.snmp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1232,7 +1194,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.stp/" class="md-nav__link">
+      <a href="../../api/tests.stp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1252,7 +1214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.software/" class="md-nav__link">
+      <a href="../../api/tests.software/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1272,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.system/" class="md-nav__link">
+      <a href="../../api/tests.system/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1292,7 +1254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.vxlan/" class="md-nav__link">
+      <a href="../../api/tests.vxlan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1409,7 +1371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory/" class="md-nav__link">
+      <a href="../../api/inventory/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1429,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input/" class="md-nav__link">
+      <a href="../../api/inventory.models.input/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1497,7 +1459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../device/" class="md-nav__link">
+      <a href="../../api/device/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1567,7 +1529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../models/" class="md-nav__link">
+      <a href="../../api/models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1587,7 +1549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
+      <a href="../../api/types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1657,7 +1619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager/" class="md-nav__link">
+      <a href="../../api/result_manager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1677,7 +1639,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager_models/" class="md-nav__link">
+      <a href="../../api/result_manager_models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1747,7 +1709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../../api/report_manager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1767,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report_manager_models/" class="md-nav__link">
+      <a href="../../api/report_manager_models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1859,76 +1821,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#anta-catalog-for-profiles-tests" class="md-nav__link">
-    ANTA catalog for profiles tests
-  </a>
-  
-    <nav class="md-nav" aria-label="ANTA catalog for profiles tests">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile" class="md-nav__link">
-    VerifyTcamProfile
-  </a>
-  
-    <nav class="md-nav" aria-label="VerifyTcamProfile">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile.Input" class="md-nav__link">
-    Input
-  </a>
-  
-    <nav class="md-nav" aria-label="Input">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyTcamProfile.Input.profile" class="md-nav__link">
-    profile
+  <a href="#configuration" class="md-nav__link">
+    Configuration
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="md-nav__link">
-    VerifyUnifiedForwardingTableMode
+      
+        <li class="md-nav__item">
+  <a href="#cache-key-design" class="md-nav__link">
+    Cache key design
   </a>
   
-    <nav class="md-nav" aria-label="VerifyUnifiedForwardingTableMode">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mechanisms" class="md-nav__link">
+    Mechanisms
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-disable-caching" class="md-nav__link">
+    How to disable caching
+  </a>
+  
+    <nav class="md-nav" aria-label="How to disable caching">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input" class="md-nav__link">
-    Input
+  <a href="#disable-caching-in-a-child-class-of-antadevice" class="md-nav__link">
+    Disable caching in a child class of AntaDevice
   </a>
-  
-    <nav class="md-nav" aria-label="Input">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input.mode" class="md-nav__link">
-    mode
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1955,7 +1879,7 @@
   
 
 
-  <h1>Profiles</h1>
+  <h1>Caching in ANTA</h1>
 
 <!--
   ~ Copyright (c) 2023 Arista Networks, Inc.
@@ -1963,360 +1887,76 @@
   ~ that can be found in the LICENSE file.
   -->
 
-<h3 id="anta-catalog-for-profiles-tests">ANTA catalog for profiles tests<a class="headerlink" href="#anta-catalog-for-profiles-tests" title="Permanent link">&para;</a></h3>
-
-
-<div class="doc doc-object doc-module">
-
-
-
-
-  <div class="doc doc-contents first">
-  
-      <p>Test functions related to ASIC profiles</p>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-
-<h2 id="anta.tests.profiles.VerifyTcamProfile" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyTcamProfile</span>
-
-
-<a href="#anta.tests.profiles.VerifyTcamProfile" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
-
-  
-      <p>Verifies the device is using the configured TCAM profile.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTcamProfile</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<p>ANTA is a streamlined Python framework designed for efficient interaction with network devices. This section outlines how ANTA incorporates caching mechanisms to collect command outputs from network devices.</p>
+<h4 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h4>
+<p>By default, ANTA utilizes <a href="https://github.com/aio-libs/aiocache">aiocache</a>&rsquo;s memory cache backend, also called <a href="https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache"><code>SimpleMemoryCache</code></a>. This library aims for simplicity and supports asynchronous operations to go along with Python <code>asyncio</code> used in ANTA.</p>
+<p>The <code>_init_cache()</code> method of the <a href="../as-python-lib/#antadevice-abstract-class">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the device is using the configured TCAM profile.</span>
+<span class="sd">    Initialize cache for the device, can be overridden by subclasses to manipulate how it works</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTcamProfile&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verify that the assigned TCAM profile is actually running on the device&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
-
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-        <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile&quot;&quot;&quot;</span>
-
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">profile</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect profile running on device: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;pmfProfiles&#39;</span><span class="p">][</span><span class="s1">&#39;FixedSystem&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-
-<h3 id="anta.tests.profiles.VerifyTcamProfile.Input" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">Input</span>
-
-
-<a href="#anta.tests.profiles.VerifyTcamProfile.Input" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile&quot;&quot;&quot;</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-
-<h4 id="anta.tests.profiles.VerifyTcamProfile.Input.profile" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">profile</span>
-
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#anta.tests.profiles.VerifyTcamProfile.Input.profile" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">cache_class</span><span class="o">=</span><span class="n">Cache</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">HitMissRatioPlugin</span><span class="p">()])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cache_locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span>
 </code></pre></div>
-
-  <div class="doc doc-contents ">
-  
-      <p>Expected TCAM profile</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-
-<h2 id="anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyUnifiedForwardingTableMode</span>
-
-
-<a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
-
-  
-      <p>Verifies the device is using the expected Unified Forwarding Table mode.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyUnifiedForwardingTableMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the device is using the expected Unified Forwarding Table mode.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyUnifiedForwardingTableMode&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
-
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;flexible&quot;</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected UFT mode&quot;&quot;&quot;</span>
-
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;uftMode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mode</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;uftMode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-
-<h3 id="anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">Input</span>
-
-
-<a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;flexible&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected UFT mode&quot;&quot;&quot;</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-
-<h4 id="anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input.mode" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">mode</span>
-
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.Input.mode" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;flexible&#39;</span><span class="p">]</span>
+<p>The cache is also configured with <code>aiocache</code>&rsquo;s <a href="https://aiocache.aio-libs.org/en/v0.12.2/plugins.html#hitmissratioplugin"><code>HitMissRatioPlugin</code></a> plugin to calculate the ratio of hits the cache has and give useful statistics for logging purposes in ANTA.</p>
+<h4 id="cache-key-design">Cache key design<a class="headerlink" href="#cache-key-design" title="Permanent link">&para;</a></h4>
+<p>The cache is initialized per <code>AntaDevice</code> and uses the following cache key design:</p>
+<p><code>&lt;device_name&gt;:&lt;uid&gt;</code></p>
+<p>The <code>uid</code> is an attribute of <a href="../as-python-lib/#antacommand-class">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
+<p>Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the <code>self.cache_locks</code> dictionary.</p>
+<h4 id="mechanisms">Mechanisms<a class="headerlink" href="#mechanisms" title="Permanent link">&para;</a></h4>
+<p>By default, once the cache is initialized, it is used in the <code>collect()</code> method of <code>AntaDevice</code>. The <code>collect()</code> method prioritizes retrieving the output of the command from the cache. If the output is not in the cache, the private <code>_collect()</code> method will retrieve and then store it for future access.</p>
+<h4 id="how-to-disable-caching">How to disable caching<a class="headerlink" href="#how-to-disable-caching" title="Permanent link">&para;</a></h4>
+<p>Caching is enabled by default in ANTA following the previous configuration and mechanisms.</p>
+<p>There might be scenarios where caching is not wanted. You can disable caching in multiple ways in ANTA:</p>
+<ol>
+<li>Caching can be disabled globally, for <strong>ALL</strong> commands on <strong>ALL</strong> devices, using the <code>--disable-cache</code> global flag when invoking anta at the <a href="../../cli/overview/#invoking-anta-cli">CLI</a>:
+    <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--disable-cache<span class="w"> </span>--username<span class="w"> </span>arista<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>nrfu<span class="w"> </span>table
+</code></pre></div></li>
+<li>
+<p>Caching can be disabled per device, network or range by setting the <code>disable_cache</code> key to <code>True</code> when definining the ANTA <a href="../../usage-inventory-catalog/#create-an-inventory-file">Inventory</a> file:
+    <div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.20.20.101</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE1</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;SPINE&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;DC1&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w">  </span><span class="c1"># Set this key to True</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.20.20.102</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE2</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;SPINE&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;DC1&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># Optional since it&#39;s the default</span>
+
+<span class="w">  </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;172.21.21.0/24&quot;</span>
+<span class="w">    </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+
+<span class="w">  </span><span class="nt">ranges</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.22.22.10</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.22.22.19</span>
+<span class="w">    </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 </code></pre></div>
-
-  <div class="doc doc-contents ">
-  
-      <p>Expected UFT mode</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
+    This approach effectively disables caching for <strong>ALL</strong> commands sent to devices targeted by the <code>disable_cache</code> key.</p>
+</li>
+<li>
+<p>For tests developpers, caching can be disabled for a specific <a href="../as-python-lib/#antacommand-class"><code>AntaCommand</code></a> or <a href="../as-python-lib/#antatemplate-class"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</p>
+</li>
+</ol>
+<h5 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h5>
+<p>Since caching is implemented at the <code>AntaDevice</code> abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of <code>AntaDevice</code> outside of the ANTA framework, you must initialize <code>AntaDevice</code> with <code>disable_cache</code> set to <code>True</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionBase</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">disable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 28, 2023</span>
       
     
   </small>
