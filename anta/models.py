@@ -393,26 +393,25 @@ class AntaTest(ABC):
         no AntaTemplate for this test."""
         raise NotImplementedError(f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}")
 
-    def is_blocked(self, commands: List[AntaCommand]) -> bool:
-        """Check if CLI commands contain a blocked keyword.
-        It is based on regex comparison.
-        """
-        for command in commands:
+    @property
+    def blocked(self) -> bool:
+        """Check if CLI commands contain a blocked keyword."""
+        state = False
+        for command in self.commands:
             for pattern in BLACKLIST_REGEX:
                 if re.match(pattern, command.command):
-                    self.logger.critical(f"Command {command.command} is blocked")
-                    return True
-        return False
+                    self.logger.error(f"Command <{command.command}> is blocked for security reason matching {BLACKLIST_REGEX}")
+                    self.result.is_error(f"<{command.command}> is blocked for security reason")
+                    state = True
+        return state
 
     async def collect(self) -> None:
         """
         Method used to collect outputs of all commands of this test class from the device of this test instance.
         """
         try:
-            if self.is_blocked(commands=self.instance_commands) is False:
+            if self.blocked is False:
                 await self.device.collect_commands(self.instance_commands)
-            else:
-                self.result.is_error(message="Test has blocked command")
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
             anta_log_exception(e, message, self.logger)

@@ -24,6 +24,10 @@
 !!! warning
     CLI commands are protected to avoid execution of critical commands such as `reload` or `write erase`.
 
+      - Reload command: `^reload\s*\w*`
+      - Configure mode: `^conf\w*\s*(terminal|session)*`
+      - Write: `^wr\w*\s*\w+`
+
 # Template definition
 
 ## UML Diagram
