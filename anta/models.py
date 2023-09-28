@@ -358,8 +358,11 @@ class AntaTest(ABC):
 
     def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Populate output of all AntaCommand instances in `instance_commands`"""
-        if len(eos_data) != len(self.instance_commands):
+        if len(eos_data) > len(self.instance_commands):
             self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
+            return
+        if len(eos_data) < len(self.instance_commands):
+            self.result.is_error(message="Test initialization error: Trying to save less data than there are commands for the test")
             return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data
