@@ -21,6 +21,9 @@
 ![](../imgs/uml/anta.models.AntaCommand.jpeg)
 ### ::: anta.models.AntaCommand
 
+!!! warning
+    CLI commands are protected to avoid execution of critical commands such as `reload` or `write erase`.
+
 # Template definition
 
 ## UML Diagram
