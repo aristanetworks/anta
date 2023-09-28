@@ -104,19 +104,24 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
-All tests can be configured with a list of user defined tags. These tags will be mapped with device tags when `nrfu` cli is called with the `--tags` option. If a test is configured in the catalog without a list of tags, the default one will be used: `['all']`
+All tests can be configured with a list of user defined tags. These tags will be mapped with device tags when `nrfu` cli is called with the `--tags` option. If a test is configured in the catalog without a list of tags, the test will be executed for all devices. When at least one tag is defined for a test, this test will be only executed on devices with the same tag.
 
 ```yaml
 anta.tests.system:
   - VerifyUptime:
       minimum: 10
-      tags: ['demo', 'leaf']
+      filters:
+        tags: ['demo', 'leaf']
   - VerifyReloadCause:
   - VerifyCoredump:
   - VerifyAgentLogs:
   - VerifyCPUUtilization:
-      tags: ['all', 'leaf']
+      filters:
+        tags: ['leaf']
 ```
+
+!!! info
+    The `tag` field must be equal to values configured for `tags` under your device inventory.
 
 ### Custom tests catalog
 

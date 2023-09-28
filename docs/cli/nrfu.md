@@ -41,8 +41,7 @@ The `--tags` option can be used to target specific devices in your inventory and
 
 | Command | Description |
 | ------- | ----------- |
-| `none` | Run all tests on all devices |
-| `--tags all` | Run all tests on all devices |
+| `none` | Run all tests on all devices according `tag` definition in your inventory and tests catalog|
 | `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
 | `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
 

@@ -9,20 +9,26 @@ from __future__ import annotations
 import asyncio
 import itertools
 import logging
+from typing import List, Union
 
 from anta.inventory import AntaInventory
-from anta.models import DEFAULT_TAG, AntaTest
+from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
 
+def filter_tags(tags_cli: Union[List[str], None], tags_device: List[str], tags_test: List[str]) -> bool:
+    """Implement filtering logic for tags"""
+    return (tags_cli is None or any(t for t in tags_cli if t in tags_device)) and any(t for t in tags_device if t in tags_test)
+
+
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     tests: list[tuple[AntaTest, AntaTest.Input]],
-    tags_cli: list[str],
+    tags: list[str],
     established_only: bool = True,
 ) -> None:
     """
@@ -46,20 +52,19 @@ async def main(
     # we get the cross product of the devices and tests to build that iterator.
 
     coros = []
-    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags_cli).values(), tests):
+    for device, test in itertools.product(inventory.get_inventory(established_only=established_only, tags=tags).values(), tests):
         test_class = test[0]
-        test_inputs = test[1] or {}
-        test_tags = test_inputs.get("tags", [DEFAULT_TAG])
-        # if any(t in test_tags for t in tags):
-        for t in tags_cli:
-            if t in test_tags and t in device.tags:
-                try:
-                    # Instantiate AntaTest object
-                    test_instance = test_class(device=device, inputs=test_inputs)
-                    coros.append(test_instance.test(eos_data=None))
-                except Exception as e:  # pylint: disable=broad-exception-caught
-                    message = "Error when creating ANTA tests"
-                    anta_log_exception(e, message, logger)
+        test_inputs = test[1]
+        test_filters = test[1].get("filters", None) if test[1] is not None else None
+        test_tags = test_filters.get("tags", []) if test_filters is not None else []
+        if len(test_tags) == 0 or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_tags):
+            try:
+                # Instantiate AntaTest object
+                test_instance = test_class(device=device, inputs=test_inputs)
+                coros.append(test_instance.test(eos_data=None))
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                message = "Error when creating ANTA tests"
+                anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))

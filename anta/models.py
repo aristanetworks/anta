@@ -16,7 +16,7 @@ from functools import wraps
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, ValidationError, conint, validator
+from pydantic import BaseModel, ConfigDict, ValidationError, conint
 from rich.progress import Progress, TaskID
 
 from anta.result_manager.models import TestResult
@@ -246,18 +246,8 @@ class AntaTest(ABC):
         """
 
         model_config = ConfigDict(extra="forbid")
-        tags: List[str] = ["all"]
         result_overwrite: Optional[ResultOverwrite] = None
-
-        @validator("tags")
-        def validate_tags(cls, v: List[str]) -> List[str]:
-            """
-            Custom validator for tags.
-            If provided tags do not contain default tag, then it is injected.
-            """
-            if DEFAULT_TAG not in v:
-                v.append(DEFAULT_TAG)
-            return v
+        filters: Optional[Filters] = None
 
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields
@@ -271,6 +261,17 @@ class AntaTest(ABC):
             description: Optional[str] = None
             categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
+
+        class Filters(BaseModel):
+            """Runtime filters to map tests with list of tags or devices
+
+            Attributes:
+                devices: List of devices for the test.
+                tags: List of device's tags for the test.
+            """
+
+            devices: Optional[List[str]] = None
+            tags: Optional[List[str]] = None
 
     def __init__(
         self,
@@ -429,7 +430,7 @@ class AntaTest(ABC):
             if self.result.result != "unset":
                 return self.result
             # tags
-            self.logger.debug(f"test {self.name} has tags: {self.inputs.tags}")
+            self.logger.debug(f"test {self.name} has tags: {self.inputs.filters}")
             self.logger.debug(f"device {self.device.name} has tags: {self.device.tags}")
 
             # Data
