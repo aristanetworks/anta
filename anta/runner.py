@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
-    tests: list[tuple[AntaTest, AntaTest.Input]],
+    tests: list[tuple[type[AntaTest], AntaTest.Input]],
     tags: Optional[list[str]] = None,
     established_only: bool = True,
 ) -> None:
@@ -42,7 +42,11 @@ async def main(
     """
 
     if not tests:
-        logger.info("The list of tests if empty, exiting")
+        logger.info("The list of tests is empty, exiting")
+        return
+
+    if len(inventory) == 0:
+        logger.info("The inventory is empty, exiting")
         return
 
     await inventory.connect_inventory()
