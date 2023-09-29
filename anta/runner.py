@@ -41,6 +41,10 @@ async def main(
         any: ResultManager object gets updated with the test results.
     """
 
+    if not tests:
+        logger.info("The list of tests if empty, exiting")
+        return
+
     await inventory.connect_inventory()
 
     # asyncio.gather takes an iterator of the function to run concurrently.
