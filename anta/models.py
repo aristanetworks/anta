@@ -397,7 +397,7 @@ class AntaTest(ABC):
     def blocked(self) -> bool:
         """Check if CLI commands contain a blocked keyword."""
         state = False
-        for command in self.commands:
+        for command in self.instance_commands:
             for pattern in BLACKLIST_REGEX:
                 if re.match(pattern, command.command):
                     self.logger.error(f"Command <{command.command}> is blocked for security reason matching {BLACKLIST_REGEX}")
