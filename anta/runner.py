@@ -54,6 +54,13 @@ async def main(
     # asyncio.gather takes an iterator of the function to run concurrently.
     # we get the cross product of the devices and tests to build that iterator.
     devices = inventory.get_inventory(established_only=established_only, tags=tags).values()
+
+    if len(devices) == 0:
+        logger.info(
+            f"No device n the established state '{established_only}' matching the tags '{tags}' swas found. There is no device to run tests against, exiting"
+        )
+        return
+
     coros = []
 
     for device, test in itertools.product(devices, tests):
