@@ -298,19 +298,19 @@ anta.tests.routing:
           - afi: "ipv6"
             safi: "unicast"
             vrf: "DEV"
-    # - VerifyBGPSpecificPeer:
-    #     address_families:
-    #       - afi: "evpn"
-    #         peers:
-    #           - 10.1.0.1
-    #           - 10.1.0.2
-    #       - afi: "ipv4"
-    #         safi: "unicast"
-    #         peers:
-    #           - 10.1.254.1
-    #           - 10.1.255.0
-    #           - 10.1.255.2
-    #           - 10.1.255.4
+    - VerifyBGPSpecificPeers:
+        address_families:
+          - afi: "evpn"
+            peers:
+              - 10.1.0.1
+              - 10.1.0.2
+          - afi: "ipv4"
+            safi: "unicast"
+            peers:
+              - 10.1.254.1
+              - 10.1.255.0
+              - 10.1.255.2
+              - 10.1.255.4
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
