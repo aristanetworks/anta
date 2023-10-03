@@ -66,7 +66,12 @@ async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_invento
 
     await main(manager, test_inventory, tests)
 
-    # Checking the last log before exiting
-    assert "No device n the established state 'True' matching the tags 'None' swas found. There is no device to run tests against, exiting" in [
+    assert "No device in the established state 'True' was found. There is no device to run tests against, exiting" in [record.message for record in caplog.records]
+
+    #  Reset logs and run with tags
+    caplog.clear()
+    await main(manager, test_inventory, tests, tags=["toto"])
+
+    assert "No device in the established state 'True' matching the tags ['toto'] was found. There is no device to run tests against, exiting" in [
         record.message for record in caplog.records
     ]
