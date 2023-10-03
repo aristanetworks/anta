@@ -57,7 +57,7 @@ async def main(
 
     if len(devices) == 0:
         logger.info(
-            f"No device n the established state '{established_only}' matching the tags '{tags}' swas found. There is no device to run tests against, exiting"
+            f"No device in the established state '{established_only}' matching the tags '{tags}' was found. There is no device to run tests against, exiting"
         )
         return
 
