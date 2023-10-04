@@ -266,3 +266,29 @@ class Test_AntaTest:
         # Test that the test() code works as expected
         if "message" in data["expected"]["test"]:
             assert data["expected"]["test"]["message"] in test.result.messages
+
+
+ANTATEST_BLACKLIST_DATA = ["reload", "reload --force", "write", "wr mem"]
+
+
+@pytest.mark.parametrize("data", ANTATEST_BLACKLIST_DATA)
+def test_blacklist(mocked_device: MagicMock, data: str) -> None:
+    """Test for blacklisting function."""
+
+    class FakeTestWithBlacklist(AntaTest):
+        """Fake Test for blacklist"""
+
+        name = "FakeTestWithBlacklist"
+        description = "ANTA test that has blacklisted command"
+        categories = []
+        commands = [AntaCommand(command=data)]
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+            self.result.is_success()
+
+    test_instance = FakeTestWithBlacklist(mocked_device, inputs=None)
+
+    # Run the test() method
+    asyncio.run(test_instance.test())
+    assert test_instance.result.result == "error"
