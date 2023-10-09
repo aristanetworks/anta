@@ -12,10 +12,9 @@ import logging
 
 import click
 
-from anta.catalog import is_catalog_valid
+from anta.catalog import AntaCatalog
 from anta.cli.console import console
 from anta.cli.utils import parse_catalog
-from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +30,12 @@ logger = logging.getLogger(__name__)
     required=True,
     callback=parse_catalog,
 )
-def catalog(ctx: click.Context, catalog: list[tuple[AntaTest, AntaTest.Input]]) -> None:
+def catalog(ctx: click.Context, catalog: AntaCatalog) -> None:
     """
     Check that the catalog is valid
     """
     logger.info(f"Checking syntax of catalog {ctx.obj['catalog_path']}")
-    manager = is_catalog_valid(catalog)
+    manager = catalog.check()
     if manager.error_status:
         console.print(f"[bold][red]Catalog {ctx.obj['catalog_path']} is invalid")
         # TODO print nice report

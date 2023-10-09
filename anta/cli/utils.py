@@ -14,9 +14,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import click
-from yaml import safe_load
 
-import anta.loader
+from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.tools.misc import anta_log_exception
 
@@ -24,8 +23,6 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from click import Option
-
-    from anta.models import AntaTest
 
 
 class ExitCode(enum.IntEnum):
@@ -82,7 +79,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | Non
     return None
 
 
-def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[AntaTest, dict[str, Any] | None]]:
+def parse_catalog(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file
@@ -91,11 +88,12 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[A
     """
     if ctx.obj.get("_anta_help"):
         # Currently looking for help for a subcommand so no
-        # need to parse the Catalog - return an empty list
-        return []
+        # need to parse the Catalog - return an empty catalog
+        return AntaCatalog("dummy")
+    # Storing catalog path
+    ctx.obj["catalog_path"] = value
     try:
-        with open(value, "r", encoding="UTF-8") as file:
-            data = safe_load(file)
+        catalog = AntaCatalog("cli", value)
     # TODO catch proper exception
     # pylint: disable-next=broad-exception-caught
     except Exception as e:
@@ -103,9 +101,7 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> list[tuple[A
         anta_log_exception(e, message, logger)
         ctx.fail(message)
 
-    # Storing catalog path
-    ctx.obj["catalog_path"] = value
-    return anta.loader.parse_catalog(data)
+    return catalog
 
 
 def exit_with_code(ctx: click.Context) -> None:

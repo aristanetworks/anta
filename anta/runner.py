@@ -12,6 +12,7 @@ import itertools
 import logging
 from typing import Union
 
+from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -28,8 +29,8 @@ def filter_tags(tags_cli: Union[list[str], None], tags_device: list[str], tags_t
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
-    tests: list[tuple[type[AntaTest], AntaTest.Input]],
-    tags: list[str],
+    catalog: AntaCatalog,
+    tags: list[str] | None = None,
     established_only: bool = True,
 ) -> None:
     """
@@ -39,7 +40,7 @@ async def main(
     Args:
         manager: ResultManager object to populate with the test results.
         inventory: AntaInventory object that includes the device(s).
-        tests: ANTA test catalog. Output of anta.loader.parse_catalog().
+        catalog: AntaCatalog object that includes the list of tests.
         tags: List of tags to filter devices from the inventory. Defaults to None.
         established_only: Include only established device(s). Defaults to True.
 
@@ -47,7 +48,7 @@ async def main(
         any: ResultManager object gets updated with the test results.
     """
 
-    if not tests:
+    if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
 
@@ -70,7 +71,7 @@ async def main(
 
     coros = []
 
-    for device, test in itertools.product(devices, tests):
+    for device, test in itertools.product(devices, catalog.tests):
         test_class = test[0]
         test_inputs = test[1]
         test_filters = test[1].get("filters", None) if test[1] is not None else None

@@ -10,11 +10,12 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 import click
 
 from anta import __version__
+from anta.catalog import AntaCatalog
 from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
@@ -23,7 +24,6 @@ from anta.cli.nrfu import commands as nrfu_commands
 from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
 from anta.loader import setup_logging
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
 
 
 @click.group(cls=IgnoreRequiredWithHelp)
@@ -148,7 +148,7 @@ def anta(
     required=True,
     callback=parse_catalog,
 )
-def _nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
+def _nrfu(ctx: click.Context, catalog: AntaCatalog) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()
