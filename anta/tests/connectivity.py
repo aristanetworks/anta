@@ -23,7 +23,7 @@ class VerifyReachability(AntaTest):
     """
     Test network reachability to one or many destination IP(s).
 
-    Expected Results:
+    Expected failures:
         * success: The test will pass if all destination IP(s) are reachable.
         * failure: The test will fail if one or many destination IP(s) are unreachable.
     """
@@ -76,7 +76,7 @@ class VerifyLLDPNeighbors(AntaTest):
     """
     This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
-    Expected Results:
+    Expected failures:
         * success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
         * failure: The test will fail if any of the following conditions are met:
             - The provided LLDP neighbor is not found.
@@ -106,23 +106,20 @@ class VerifyLLDPNeighbors(AntaTest):
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
 
-        self.result.is_success()
-
-        no_lldp_neighbor = []
-        wrong_lldp_neighbor = []
+        failures: dict[str, list[str]] = {}
 
         for neighbor in self.inputs.neighbors:
-            if len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
-                no_lldp_neighbor.append(neighbor.port)
-
+            if neighbor.port not in command_output["lldpNeighbors"]:
+                failures.setdefault("port_not_configured", []).append(neighbor.port)
+            elif len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
+                failures.setdefault("no_lldp_neighbor", []).append(neighbor.port)
             elif (
                 lldp_neighbor_info[0]["systemName"] != neighbor.neighbor_device
                 or lldp_neighbor_info[0]["neighborInterfaceInfo"]["interfaceId_v2"] != neighbor.neighbor_port
             ):
-                wrong_lldp_neighbor.append(neighbor.port)
+                failures.setdefault("wrong_lldp_neighbor", []).append(neighbor.port)
 
-        if no_lldp_neighbor:
-            self.result.is_failure(f"The following port(s) have no LLDP neighbor: {no_lldp_neighbor}")
-
-        if wrong_lldp_neighbor:
-            self.result.is_failure(f"The following port(s) have the wrong LLDP neighbor: {wrong_lldp_neighbor}")
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following port(s) have issues: {failures}")
