@@ -4,8 +4,12 @@
 """
 Test functions related to VXLAN
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
+from typing import Dict
 
-from anta.models import AntaCommand, AntaTest
+from anta.custom_types import Vlan, Vni
+from anta.models import AntaCommand, AntaMissingParamException, AntaTemplate, AntaTest
 
 
 class VerifyVxlan1Interface(AntaTest):
@@ -73,3 +77,58 @@ class VerifyVxlanConfigSanity(AntaTest):
             self.result.is_failure(f"VXLAN config sanity check is not passing: {failed_categories}")
         else:
             self.result.is_success()
+
+
+class VerifyVxlanVniBinding(AntaTest):
+    """
+    This test verifies the VNI-VLAN bindings of the Vxlan1 interface.
+
+    Expected Results:
+      * success: The test will pass if the VNI-VLAN bindings provided are properly configured.
+      * failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
+    """
+
+    name = "VerifyVxlanVniBinding"
+    description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface"
+    categories = ["vxlan"]
+    commands = [AntaTemplate(template="show vxlan vni {vni}", ofmt="json")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        bindings: Dict[Vni, Vlan]
+        """VNI to VLAN bindings to verify"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(vni=vni, vlan=vlan) for vni, vlan in self.inputs.bindings.items()]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+        no_bindings = []
+        wrong_bindings = []
+
+        for command in self.instance_commands:
+            vni, vlan = command.params.get("vni"), command.params.get("vlan")
+
+            if vni is None or vlan is None:
+                raise AntaMissingParamException(f"A parameter is missing to execute the test for command {command}")
+
+            vni_bindings = command.json_output["vxlanIntfs"]["Vxlan1"]["vniBindings"]
+            vni_bindings_to_vrf = command.json_output["vxlanIntfs"]["Vxlan1"]["vniBindingsToVrf"]
+
+            if (vni := str(vni)) in vni_bindings:
+                vlan_ = vni_bindings[vni]["vlan"]
+            elif vni in vni_bindings_to_vrf:
+                vlan_ = vni_bindings_to_vrf[vni]["vlan"]
+            else:
+                no_bindings.append(vni)
+                vlan_ = None
+
+            if vlan_ and vlan != vlan_:
+                wrong_bindings.append({vni: vlan_})
+
+        if no_bindings:
+            self.result.is_failure(f"The following VNI(s) have no bindings: {no_bindings}")
+
+        if wrong_bindings:
+            self.result.is_failure(f"The following VNI(s) have the wrong VLAN binding: {wrong_bindings}")
