@@ -6,10 +6,15 @@ Test functions related to VXLAN
 """
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from typing import Dict
+
+from ipaddress import IPv4Address
+
+# Need to keep List and Dict for pydantic in python 3.8
+from typing import Dict, List
 
 from anta.custom_types import Vlan, Vni
-from anta.models import AntaCommand, AntaMissingParamException, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaTest
+from anta.tools.get_value import get_value
 
 
 class VerifyVxlan1Interface(AntaTest):
@@ -86,49 +91,89 @@ class VerifyVxlanVniBinding(AntaTest):
     Expected Results:
       * success: The test will pass if the VNI-VLAN bindings provided are properly configured.
       * failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
+      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlanVniBinding"
     description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface"
     categories = ["vxlan"]
-    commands = [AntaTemplate(template="show vxlan vni {vni}", ofmt="json")]
+    commands = [AntaCommand(command="show vxlan vni", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         bindings: Dict[Vni, Vlan]
         """VNI to VLAN bindings to verify"""
 
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        return [template.render(vni=vni, vlan=vlan) for vni, vlan in self.inputs.bindings.items()]
-
     @AntaTest.anta_test
     def test(self) -> None:
         self.result.is_success()
 
-        no_bindings = []
-        wrong_bindings = []
+        no_binding = []
+        wrong_binding = []
 
-        for command in self.instance_commands:
-            vni, vlan = command.params.get("vni"), command.params.get("vlan")
+        if (vxlan1 := get_value(self.instance_commands[0].json_output, "vxlanIntfs.Vxlan1")) is None:
+            self.result.is_skipped("Vxlan1 interface is not configured")
+            return
 
-            if vni is None or vlan is None:
-                raise AntaMissingParamException(f"A parameter is missing to execute the test for command {command}")
+        vni_bindings = vxlan1["vniBindings"]
+        vni_bindings_to_vrf = vxlan1["vniBindingsToVrf"]
 
-            vni_bindings = command.json_output["vxlanIntfs"]["Vxlan1"]["vniBindings"]
-            vni_bindings_to_vrf = command.json_output["vxlanIntfs"]["Vxlan1"]["vniBindingsToVrf"]
-
-            if (vni := str(vni)) in vni_bindings:
+        for vni, vlan in self.inputs.bindings.items():
+            vni = str(vni)
+            if vni in vni_bindings:
                 vlan_ = vni_bindings[vni]["vlan"]
             elif vni in vni_bindings_to_vrf:
                 vlan_ = vni_bindings_to_vrf[vni]["vlan"]
             else:
-                no_bindings.append(vni)
+                no_binding.append(vni)
                 vlan_ = None
 
             if vlan_ and vlan != vlan_:
-                wrong_bindings.append({vni: vlan_})
+                wrong_binding.append({vni: vlan_})
 
-        if no_bindings:
-            self.result.is_failure(f"The following VNI(s) have no bindings: {no_bindings}")
+        if no_binding:
+            self.result.is_failure(f"The following VNI(s) have no binding: {no_binding}")
 
-        if wrong_bindings:
-            self.result.is_failure(f"The following VNI(s) have the wrong VLAN binding: {wrong_bindings}")
+        if wrong_binding:
+            self.result.is_failure(f"The following VNI(s) have the wrong VLAN binding: {wrong_binding}")
+
+
+class VerifyVxlanVtep(AntaTest):
+    """
+    This test verifies the VTEP peers of the Vxlan1 interface.
+
+    Expected Results:
+      * success: The test will pass if all provided VTEP peers are identified.
+      * failure: The test will fail if any VTEP peer is missing.
+      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
+    """
+
+    name = "VerifyVxlanVtep"
+    description = "Verifies the VTEP peers of the Vxlan1 interface"
+    categories = ["vxlan"]
+    commands = [AntaCommand(command="show vxlan vtep", ofmt="json")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        vteps: List[IPv4Address]
+        """List of VTEP peers to verify"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        missing_vteps = []
+
+        if (vxlan1 := get_value(self.instance_commands[0].json_output, "interfaces.Vxlan1")) is None:
+            self.result.is_skipped("Vxlan1 interface is not configured")
+            return
+
+        if len(vteps := vxlan1["vteps"]) == 0:
+            self.result.is_failure("Vxlan1 interface has no VTEP")
+            return
+
+        for vtep in self.inputs.vteps:
+            vtep = str(vtep)
+            if vtep not in vteps:
+                missing_vteps.append(vtep)
+
+        if not missing_vteps:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {missing_vteps}")
