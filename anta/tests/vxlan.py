@@ -114,15 +114,12 @@ class VerifyVxlanVniBinding(AntaTest):
             self.result.is_skipped("Vxlan1 interface is not configured")
             return
 
-        vni_bindings = vxlan1["vniBindings"]
-        vni_bindings_to_vrf = vxlan1["vniBindingsToVrf"]
-
         for vni, vlan in self.inputs.bindings.items():
             vni = str(vni)
-            if vni in vni_bindings:
-                vlan_ = vni_bindings[vni]["vlan"]
-            elif vni in vni_bindings_to_vrf:
-                vlan_ = vni_bindings_to_vrf[vni]["vlan"]
+            if vni in vxlan1["vniBindings"]:
+                vlan_ = vxlan1["vniBindings"][vni]["vlan"]
+            elif vni in vxlan1["vniBindingsToVrf"]:
+                vlan_ = vxlan1["vniBindingsToVrf"][vni]["vlan"]
             else:
                 no_binding.append(vni)
                 vlan_ = None
