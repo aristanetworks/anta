@@ -16,8 +16,7 @@ The next table provides a short summary of the scope of tags using CLI
 
 | Command | Description |
 | ------- | ----------- |
-| `none` | Run all tests on all devices |
-| `--tags all` | Run all tests on all devices |
+| `none` | Run all tests on all devices according `tag` definition in your inventory and tests catalog. And tests with no tag are executed on all devices|
 | `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
 | `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
 
@@ -57,13 +56,15 @@ All commands in this page are based on the following inventory and tests catalog
     anta.tests.system:
       - VerifyUptime:
           minimum: 10
-          tags: ['fabric']
+          filters:
+            tags: ['fabric']
       - VerifyReloadCause:
           tags: ['leaf', spine']
       - VerifyCoredump:
       - VerifyAgentLogs:
       - VerifyCPUUtilization:
-          tags: ['all', 'leaf']
+          filters:
+            tags: ['spine', 'leaf']
       - VerifyMemoryUtilization:
       - VerifyFileSystemUtilization:
       - VerifyNTP:
@@ -75,19 +76,19 @@ All commands in this page are based on the following inventory and tests catalog
     anta.tests.interfaces:
       - VerifyL3MTU:
           mtu: 1500
-          tags: ['demo']
+          filters:
+            tags: ['demo']
     ```
 
 ## Default tags
 
 By default, ANTA uses a default tag for both devices and tests. This default tag is `all` and it can be explicit if you want to make it visible in your inventory and also implicit since the framework injects this tag if it is not defined.
 
-So both commands are similar and will run all tests from your catalog on all devices
+So this command will run all tests from your catalog on all devices. With a mapping for `tags` defined in your inventory and catalog. If no `tags` configured, then tests are executed against all devices.
 
 ```bash
 $ anta nrfu -c .personal/catalog-class.yml table --group-by device
 
-$ anta nrfu -c .personal/catalog-class.yml table --group-by device --tags all
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │
 │ - ANTA Inventory contains 6 devices (AsyncEOSDevice) │
