@@ -29,7 +29,7 @@ async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: Ant
     test_inventory is a fixture that gives a default inventory for tests
     """
     manager = ResultManager()
-    await main(manager, test_inventory, [])
+    await main(manager, test_inventory, [], tags=[])
 
     assert len(caplog.record_tuples) == 1
     assert "The list of tests is empty, exiting" in caplog.records[0].message
@@ -46,7 +46,7 @@ async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
     inventory = AntaInventory()
     # This is not vaidated in this test
     tests: list[tuple[type[AntaTest], AntaTest.Input]] = [(AntaTest, {})]  # type: ignore[type-abstract]
-    await main(manager, inventory, tests)
+    await main(manager, inventory, tests, tags=[])
 
     assert len(caplog.record_tuples) == 1
     assert "The inventory is empty, exiting" in caplog.records[0].message
@@ -64,7 +64,7 @@ async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_invento
     # This is not vaidated in this test
     tests: list[tuple[type[AntaTest], AntaTest.Input]] = [(AntaTest, {})]  # type: ignore[type-abstract]
 
-    await main(manager, test_inventory, tests)
+    await main(manager, test_inventory, tests, tags=[])
 
     assert "No device in the established state 'True' was found. There is no device to run tests against, exiting" in [record.message for record in caplog.records]
 

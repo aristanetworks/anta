@@ -28,7 +28,7 @@ def filter_tags(tags_cli: Union[List[str], None], tags_device: List[str], tags_t
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
-    tests: list[tuple[AntaTest, AntaTest.Input]],
+    tests: list[tuple[type[AntaTest], AntaTest.Input]],
     tags: list[str],
     established_only: bool = True,
 ) -> None:
