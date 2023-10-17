@@ -46,11 +46,27 @@ async def main(
         any: ResultManager object gets updated with the test results.
     """
 
+    if not tests:
+        logger.info("The list of tests is empty, exiting")
+        return
+
+    if len(inventory) == 0:
+        logger.info("The inventory is empty, exiting")
+        return
+
     await inventory.connect_inventory()
 
     # asyncio.gather takes an iterator of the function to run concurrently.
     # we get the cross product of the devices and tests to build that iterator.
     devices = inventory.get_inventory(established_only=established_only, tags=tags).values()
+
+    if len(devices) == 0:
+        logger.info(
+            f"No device in the established state '{established_only}' "
+            f"{f'matching the tags {tags} ' if tags else ''}was found. There is no device to run tests against, exiting"
+        )
+        return
+
     coros = []
 
     for device, test in itertools.product(devices, tests):

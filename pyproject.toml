@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v0.9.0"
+version = "v0.10.0"
 readme = "docs/README.md"
 authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
 maintainers = [
@@ -52,7 +52,7 @@ requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = [
-  "bumpver==2023.1126",
+  "bumpver==2023.1129",
   "black==23.9.1",
   "flake8==6.1.0",
   "isort==5.12.0",
@@ -108,7 +108,7 @@ namespaces = false
 # Version
 ################################
 [tool.bumpver]
-current_version = "0.9.0"
+current_version = "0.10.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true

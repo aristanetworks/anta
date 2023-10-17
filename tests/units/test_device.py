@@ -186,6 +186,8 @@ class TestAntaDevice:
     to be able to instantiate the Abstract Class
     """
 
+    # pylint: disable=abstract-class-instantiated
+
     @patch("anta.device.AntaDevice.__abstractmethods__", set())
     @pytest.mark.asyncio
     @pytest.mark.parametrize("device_data", COLLECT_ANTADEVICE_DATA, ids=generate_test_ids_list(COLLECT_ANTADEVICE_DATA))
@@ -193,7 +195,6 @@ class TestAntaDevice:
         """
         Test AntaDevice.collect behavior
         """
-        # pylint: disable=abstract-class-instantiated
         command = AntaCommand(command=device_data["command"]["command"], use_cache=device_data["command"]["use_cache"])
         device = AntaDevice(name=device_data["device"]["name"], disable_cache=device_data["device"].get("disable_cache"))  # type: ignore[abstract]
 
@@ -231,3 +232,16 @@ class TestAntaDevice:
         else:  # device is disabled
             assert device.cache is None
             patched__collect.assert_called_once_with(command=command)
+
+    @patch("anta.device.AntaDevice.__abstractmethods__", set())
+    @pytest.mark.asyncio
+    async def test_cache_statistics(self) -> None:
+        """
+        Verify that when cache statistics attribute does not exist
+        TODO add a test where cache has some value
+        """
+        device = AntaDevice(name="with_cache", disable_cache=False)  # type: ignore[abstract]
+        assert device.cache_statistics == {"total_commands_sent": 0, "cache_hits": 0, "cache_hit_ratio": "0.00%"}
+
+        device = AntaDevice(name="without_cache", disable_cache=True)  # type: ignore[abstract]
+        assert device.cache_statistics is None

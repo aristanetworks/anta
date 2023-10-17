@@ -60,7 +60,6 @@ def test_anta_log_exception(
         caplog.set_level(logging.ERROR, logger=calling_logger.name)
     else:
         caplog.set_level(logging.ERROR)
-    print(caplog.__dict__)
     # Need to raise to trigger nice stacktrace for __DEBUG__ == True
     try:
         my_raising_function(exception)

@@ -80,7 +80,7 @@ class AntaDevice(ABC):
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None:
-            stats = self.cache.hit_miss_ratio  # pylint: disable=no-member
+            stats = getattr(self.cache, "hit_miss_ratio", {"total": 0, "hits": 0, "hit_ratio": 0})
             return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
         return None
 
