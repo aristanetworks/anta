@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.vxlan import VerifyVxlan1Interface, VerifyVxlanConfigSanity
+from anta.tests.vxlan import VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -194,5 +194,135 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"categories": {}}],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["VXLAN is not configured"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [
+            {
+                "vxlanIntfs": {
+                    "Vxlan1": {
+                        "vniBindings": {
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                        },
+                        "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
+                    }
+                }
+            }
+        ],
+        "inputs": {"bindings": {10020: 20, 500: 1199}},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-binding",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [
+            {
+                "vxlanIntfs": {
+                    "Vxlan1": {
+                        "vniBindings": {
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                        },
+                        "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
+                    }
+                }
+            }
+        ],
+        "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
+        "expected": {"result": "failure", "messages": ["The following VNI(s) have no binding: ['10010']"]},
+    },
+    {
+        "name": "failure-wrong-binding",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [
+            {
+                "vxlanIntfs": {
+                    "Vxlan1": {
+                        "vniBindings": {
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                        },
+                        "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
+                    }
+                }
+            }
+        ],
+        "inputs": {"bindings": {10020: 20, 500: 1199}},
+        "expected": {"result": "failure", "messages": ["The following VNI(s) have the wrong VLAN binding: [{'10020': 30}]"]},
+    },
+    {
+        "name": "failure-no-and-wrong-binding",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [
+            {
+                "vxlanIntfs": {
+                    "Vxlan1": {
+                        "vniBindings": {
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                        },
+                        "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
+                    }
+                }
+            }
+        ],
+        "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following VNI(s) have no binding: ['10010']", "The following VNI(s) have the wrong VLAN binding: [{'10020': 30}]"],
+        },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [{"vxlanIntfs": {}}],
+        "inputs": {"bindings": {10020: 20, 500: 1199}},
+        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
+        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-missing-vtep",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
+        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.7'}"]},
+    },
+    {
+        "name": "failure-no-vtep",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": []}}}],
+        "inputs": {"vteps": ["10.1.1.5"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.5'}"]},
+    },
+    {
+        "name": "failure-no-input-vtep",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5"]}}}],
+        "inputs": {"vteps": []},
+        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.5'}"]},
+    },
+    {
+        "name": "failure-missmatch",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.6", "10.1.1.7"]}}}],
+        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.5'}",
+                "Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.7'}",
+            ],
+        },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {}}],
+        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
+        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
     },
 ]
