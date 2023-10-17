@@ -289,14 +289,34 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: ['10.1.1.7']"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.7'}"]},
     },
     {
         "name": "failure-no-vtep",
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": []}}}],
-        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "failure", "messages": ["Vxlan1 interface has no VTEP"]},
+        "inputs": {"vteps": ["10.1.1.5"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.5'}"]},
+    },
+    {
+        "name": "failure-no-input-vtep",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
+        "inputs": {"vteps": []},
+        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.5', '10.1.1.6'}"]},
+    },
+    {
+        "name": "failure-missmatch",
+        "test": VerifyVxlanVtep,
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.6", "10.1.1.7"]}}}],
+        "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following VTEP peer(s) are missing from the Vxlan1 interface: {'10.1.1.5'}",
+                "Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.7'}",
+            ],
+        },
     },
     {
         "name": "skipped",

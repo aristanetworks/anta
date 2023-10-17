@@ -117,15 +117,15 @@ class VerifyVxlanVniBinding(AntaTest):
         for vni, vlan in self.inputs.bindings.items():
             vni = str(vni)
             if vni in vxlan1["vniBindings"]:
-                vlan_ = vxlan1["vniBindings"][vni]["vlan"]
+                retrieved_vlan = vxlan1["vniBindings"][vni]["vlan"]
             elif vni in vxlan1["vniBindingsToVrf"]:
-                vlan_ = vxlan1["vniBindingsToVrf"][vni]["vlan"]
+                retrieved_vlan = vxlan1["vniBindingsToVrf"][vni]["vlan"]
             else:
                 no_binding.append(vni)
-                vlan_ = None
+                retrieved_vlan = None
 
-            if vlan_ and vlan != vlan_:
-                wrong_binding.append({vni: vlan_})
+            if retrieved_vlan and vlan != retrieved_vlan:
+                wrong_binding.append({vni: retrieved_vlan})
 
         if no_binding:
             self.result.is_failure(f"The following VNI(s) have no binding: {no_binding}")
@@ -139,8 +139,8 @@ class VerifyVxlanVtep(AntaTest):
     This test verifies the VTEP peers of the Vxlan1 interface.
 
     Expected Results:
-      * success: The test will pass if all provided VTEP peers are identified.
-      * failure: The test will fail if any VTEP peer is missing.
+      * success: The test will pass if all provided VTEP peers are identified and matching.
+      * failure: The test will fail if any VTEP peer is missing or there are unexpected VTEP peers.
       * skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
@@ -155,22 +155,19 @@ class VerifyVxlanVtep(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        missing_vteps = []
+        self.result.is_success()
+
+        inputs_vteps = [str(input_vtep) for input_vtep in self.inputs.vteps]
 
         if (vxlan1 := get_value(self.instance_commands[0].json_output, "interfaces.Vxlan1")) is None:
             self.result.is_skipped("Vxlan1 interface is not configured")
             return
 
-        if len(vteps := vxlan1["vteps"]) == 0:
-            self.result.is_failure("Vxlan1 interface has no VTEP")
-            return
+        difference1 = set(inputs_vteps).difference(set(vxlan1["vteps"]))
+        difference2 = set(vxlan1["vteps"]).difference(set(inputs_vteps))
 
-        for vtep in self.inputs.vteps:
-            vtep = str(vtep)
-            if vtep not in vteps:
-                missing_vteps.append(vtep)
+        if difference1:
+            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {difference1}")
 
-        if not missing_vteps:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {missing_vteps}")
+        if difference2:
+            self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {difference2}")
