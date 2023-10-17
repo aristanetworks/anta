@@ -301,9 +301,9 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-no-input-vtep",
         "test": VerifyVxlanVtep,
-        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
+        "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5"]}}}],
         "inputs": {"vteps": []},
-        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.6', '10.1.1.5'}"]},
+        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: {'10.1.1.5'}"]},
     },
     {
         "name": "failure-missmatch",
