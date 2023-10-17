@@ -167,7 +167,7 @@ class VerifyVxlanVtep(AntaTest):
         difference2 = set(vxlan1["vteps"]).difference(set(inputs_vteps))
 
         if difference1:
-            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {difference1}")
+            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {sorted(difference1)}")
 
         if difference2:
-            self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {difference2}")
+            self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {sorted(difference2)}")
