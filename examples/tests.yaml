@@ -245,8 +245,8 @@ anta.tests.system:
   - VerifyNTP:
 
 anta.tests.vxlan:
- - VerifyVxlan1Interface:
- - VerifyVxlanConfigSanity:
+  - VerifyVxlan1Interface:
+  - VerifyVxlanConfigSanity:
   - VerifyVxlanVniBinding:
       bindings:
         10010: 10
