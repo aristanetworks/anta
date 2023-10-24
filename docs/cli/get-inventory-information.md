@@ -93,8 +93,7 @@ Tags found:
   "DC1",
   "DC2",
   "LEAF",
-  "SPINE",
-  "all"
+  "SPINE"
 ]
 
 * note that tag all has been added by anta
@@ -137,7 +136,7 @@ Current inventory content is:
 {
     'DC1-SPINE1': AsyncEOSDevice(
         name='DC1-SPINE1',
-        tags=['SPINE', 'DC1', 'all'],
+        tags=['SPINE', 'DC1'],
         hw_model=None,
         is_online=False,
         established=False,
@@ -145,14 +144,13 @@ Current inventory content is:
         host='172.20.20.101',
         eapi_port=443,
         username='arista',
-        password='arista',
         enable=True,
         enable_password='arista',
         insecure=False
     ),
     'DC1-SPINE2': AsyncEOSDevice(
         name='DC1-SPINE2',
-        tags=['SPINE', 'DC1', 'all'],
+        tags=['SPINE', 'DC1'],
         hw_model=None,
         is_online=False,
         established=False,
@@ -160,14 +158,12 @@ Current inventory content is:
         host='172.20.20.102',
         eapi_port=443,
         username='arista',
-        password='arista',
         enable=True,
-        enable_password='arista',
         insecure=False
     ),
     'DC2-SPINE1': AsyncEOSDevice(
         name='DC2-SPINE1',
-        tags=['SPINE', 'DC2', 'all'],
+        tags=['SPINE', 'DC2'],
         hw_model=None,
         is_online=False,
         established=False,
@@ -175,14 +171,12 @@ Current inventory content is:
         host='172.20.20.201',
         eapi_port=443,
         username='arista',
-        password='arista',
         enable=True,
-        enable_password='arista',
         insecure=False
     ),
     'DC2-SPINE2': AsyncEOSDevice(
         name='DC2-SPINE2',
-        tags=['SPINE', 'DC2', 'all'],
+        tags=['SPINE', 'DC2'],
         hw_model=None,
         is_online=False,
         established=False,
@@ -190,9 +184,7 @@ Current inventory content is:
         host='172.20.20.202',
         eapi_port=443,
         username='arista',
-        password='arista',
         enable=True,
-        enable_password='arista',
         insecure=False
     )
 }

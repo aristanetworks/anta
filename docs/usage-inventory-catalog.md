@@ -18,16 +18,16 @@ anta_inventory:
     - host: < ip address value >
       port: < TCP port for eAPI. Default is 443 (Optional)>
       name: < name to display in report. Default is host:port (Optional) >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per hosts. Default is False. >
   networks:
     - network: < network using CIDR notation >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per network. Default is False. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per range. Default is False. >
 ```
 
