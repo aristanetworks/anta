@@ -33,6 +33,19 @@ class FakeTest(AntaTest):
         self.result.is_success()
 
 
+class FakeTestWithFailedCommand(AntaTest):
+    """ANTA test that always succeed"""
+
+    name = "FakeTestWithFailedCommand"
+    description = "ANTA test that always succeed"
+    categories = []
+    commands = [AntaCommand(command="show version", failed=Exception())]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
 class FakeTestWithInput(AntaTest):
     """ANTA test with inputs that always succeed"""
 
@@ -277,6 +290,10 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {"result": "unset"},
             "test": {"result": "success"},
         },
+        "name": "failed command",
+        "test": FakeTestWithFailedCommand,
+        "inputs": None,
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "message": "show version has failed: Exception"}},
     },
 ]
 
