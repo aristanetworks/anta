@@ -488,7 +488,12 @@ class AntaTest(ABC):
                     return self.result
 
             try:
-                if self.failed_commands:
+                if cmds := self.failed_commands:
+                    for c in cmds:
+                        if not self.device.is_supported(c):
+                            self.logger.warning(f'Test {self.name} has been skipped because it is not supported on {self.device.hw_model}, please open a GitHub issue.')
+                            self.result.is_skipped(f'Skipped because {c.command} is not supported on {self.device.hw_model}')
+                            return self.result
                     self.result.is_error(
                         message="\n".join(
                             [f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in self.failed_commands]

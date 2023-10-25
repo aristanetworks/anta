@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
+from aioeapi import EapiCommandError
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from tests.lib.utils import generate_test_ids_list
@@ -101,6 +102,33 @@ class Test_AsyncEOSDevice:
         else:  # False or None
             assert device.cache is not None
             assert device.cache_locks is not None
+
+    def test_is_supported(self) -> None:
+        DATA: dict[str, Any] = {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+            "name": "test.anta.ninja",
+            "enable": False,
+            "enable_password": None,
+            "disable_cache": True,
+            "port": None,
+            "ssh_port": None,
+            "tags": None,
+            "timeout": None,
+            "insecure": False,
+            "proto": None,
+        }
+        kwargs = {k: v for k, v in DATA.items() if v is not None and k not in ["host", "username", "password"]}
+
+        device = AsyncEOSDevice(DATA['host'], DATA['username'], DATA['password'], **kwargs)
+        command = AntaCommand(command="show hardware counter drop", failed=EapiCommandError(
+            passed=[],
+            failed={'cmd': 'show hardware counter drop'},
+            errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
+            errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
+            not_exec=[]))
+        assert device.is_supported(command) is False
 
 
 COLLECT_ANTADEVICE_DATA: list[dict[str, Any]] = [
