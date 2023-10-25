@@ -60,59 +60,57 @@ aioeapi.EapiCommandError = EapiCommandError
 
 # patching aioeapi.Device.jsonrpc_exec to test some aio-eapi enhancement
 async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:
-        """
-        Execute the JSON-RPC dictionary object.
+    """
+    Execute the JSON-RPC dictionary object.
 
-        Parameters
-        ----------
-        jsonrpc: dict
-            The JSON-RPC as created by the `meth`:jsonrpc_command().
+    Parameters
+    ----------
+    jsonrpc: dict
+        The JSON-RPC as created by the `meth`:jsonrpc_command().
 
-        Raises
-        ------
-        EapiCommandError
-            In the event that a command resulted in an error response.
+    Raises
+    ------
+    EapiCommandError
+        In the event that a command resulted in an error response.
 
-        Returns
-        -------
-        The list of command results; either dict or text depending on the
-        JSON-RPC format pameter.
-        """
-        res = await self.post("/command-api", json=jsonrpc)
-        res.raise_for_status()
-        body = res.json()
+    Returns
+    -------
+    The list of command results; either dict or text depending on the
+    JSON-RPC format pameter.
+    """
+    res = await self.post("/command-api", json=jsonrpc)
+    res.raise_for_status()
+    body = res.json()
 
-        commands = jsonrpc["params"]["cmds"]
-        ofmt = jsonrpc["params"]["format"]
+    commands = jsonrpc["params"]["cmds"]
+    ofmt = jsonrpc["params"]["format"]
 
-        get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
+    get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
 
-        # if there are no errors then return the list of command results.
+    # if there are no errors then return the list of command results.
 
-        if (err_data := body.get("error")) is None:
-            return [get_output(cmd_res) for cmd_res in body["result"]]
+    if (err_data := body.get("error")) is None:
+        return [get_output(cmd_res) for cmd_res in body["result"]]
 
-        # ---------------------------------------------------------------------
-        # if we are here, then there were some command errors.  Raise a
-        # EapiCommandError exception with args (commands that failed, passed,
-        # not-executed).
-        # ---------------------------------------------------------------------
+    # ---------------------------------------------------------------------
+    # if we are here, then there were some command errors.  Raise a
+    # EapiCommandError exception with args (commands that failed, passed,
+    # not-executed).
+    # ---------------------------------------------------------------------
 
-        cmd_data = err_data["data"]
-        len_data = len(cmd_data)
-        err_at = len_data - 1
-        err_msg = err_data["message"]
+    cmd_data = err_data["data"]
+    len_data = len(cmd_data)
+    err_at = len_data - 1
+    err_msg = err_data["message"]
 
-        raise EapiCommandError(
-            passed=[
-                get_output(cmd_data[cmd_i])
-                for cmd_i, cmd in enumerate(commands[:err_at])
-            ],
-            failed=commands[err_at],
-            errors=cmd_data[err_at]['errors'],
-            errmsg=err_msg,
-            not_exec=commands[err_at + 1 :],
-        )
+    raise EapiCommandError(
+        passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
+        failed=commands[err_at],
+        errors=cmd_data[err_at]["errors"],
+        errmsg=err_msg,
+        not_exec=commands[err_at + 1 :],
+    )
+
 
 Device.jsonrpc_exec = jsonrpc_exec
 
@@ -267,7 +265,7 @@ class AntaDevice(ABC):
     @abstractmethod
     def is_supported(command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise.
-           Can only be called if the command has failed."""
+        Can only be called if the command has failed."""
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -380,9 +378,12 @@ class AsyncEOSDevice(AntaDevice):
     @staticmethod
     def is_supported(command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise.
-           Can only be called if the command has failed."""
-        return not isinstance(command.failed, EapiCommandError) and command.failed.errors \
-            and any('not supported on this hardware platform' in e for e in command.failed.errors)
+        Can only be called if the command has failed."""
+        return (
+            not isinstance(command.failed, EapiCommandError)
+            and command.failed.errors
+            and any("not supported on this hardware platform" in e for e in command.failed.errors)
+        )
 
     async def _collect(self, command: AntaCommand) -> None:
         """

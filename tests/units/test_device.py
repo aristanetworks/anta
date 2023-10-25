@@ -11,8 +11,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-
 from aioeapi import EapiCommandError
+
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from tests.lib.utils import generate_test_ids_list
@@ -121,13 +121,17 @@ class Test_AsyncEOSDevice:
         }
         kwargs = {k: v for k, v in DATA.items() if v is not None and k not in ["host", "username", "password"]}
 
-        device = AsyncEOSDevice(DATA['host'], DATA['username'], DATA['password'], **kwargs)
-        command = AntaCommand(command="show hardware counter drop", failed=EapiCommandError(
-            passed=[],
-            failed={'cmd': 'show hardware counter drop'},
-            errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
-            errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
-            not_exec=[]))
+        device = AsyncEOSDevice(DATA["host"], DATA["username"], DATA["password"], **kwargs)
+        command = AntaCommand(
+            command="show hardware counter drop",
+            failed=EapiCommandError(
+                passed=[],
+                failed={"cmd": "show hardware counter drop"},
+                errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
+                errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
+                not_exec=[],
+            ),
+        )
         assert device.is_supported(command) is False
 
 
