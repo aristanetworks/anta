@@ -10,7 +10,6 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, AnyStr, Dict, Iterator, List, Literal, Optional, Union
 
@@ -18,7 +17,7 @@ import aioeapi
 import asyncssh
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
-from aioeapi import Device, EapiCommandError
+from aioeapi import Device
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
@@ -41,16 +40,17 @@ class EapiCommandError(RuntimeError):
     not_exec: List[str] - a list of commands that were not executed
     """
 
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed, not_exec):
+    # pylint: disable=too-many-arguments
+    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[Union[str, dict[str, Any]]], not_exec: list[dict[str, Any]]):
         """Initializer for the EapiCommandError exception"""
         self.failed = failed
         self.errors = errors
         self.errmsg = errmsg
         self.passed = passed
         self.not_exec = not_exec
-        super(EapiCommandError, self).__init__()
+        super().__init__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """returns the error message associated with the exception"""
         return self.errmsg
 
@@ -59,7 +59,7 @@ aioeapi.EapiCommandError = EapiCommandError
 
 
 # patching aioeapi.Device.jsonrpc_exec to test some aio-eapi enhancement
-async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:
+async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:  # type: ignore
     """
     Execute the JSON-RPC dictionary object.
 
@@ -105,10 +105,10 @@ async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:
 
     raise EapiCommandError(
         passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
-        failed=commands[err_at],
+        failed=commands[err_at]["cmd"],
         errors=cmd_data[err_at]["errors"],
         errmsg=err_msg,
-        not_exec=commands[err_at + 1 :],
+        not_exec=commands[err_at + 1 :],  # noqa: E203
     )
 
 
@@ -379,8 +379,8 @@ class AsyncEOSDevice(AntaDevice):
     def is_supported(command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise.
         Can only be called if the command has failed."""
-        return (
-            not isinstance(command.failed, EapiCommandError)
+        return not (
+            isinstance(command.failed, EapiCommandError)
             and command.failed.errors
             and any("not supported on this hardware platform" in e for e in command.failed.errors)
         )

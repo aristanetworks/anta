@@ -11,9 +11,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-from aioeapi import EapiCommandError
 
-from anta.device import AntaDevice, AsyncEOSDevice
+from anta.device import AntaDevice, AsyncEOSDevice, EapiCommandError
 from anta.models import AntaCommand
 from tests.lib.utils import generate_test_ids_list
 
@@ -104,6 +103,9 @@ class Test_AsyncEOSDevice:
             assert device.cache_locks is not None
 
     def test_is_supported(self) -> None:
+        """
+        Test if the is_supported() static method parses correctly the aioeapi.EapiCommandError exception
+        """
         DATA: dict[str, Any] = {
             "host": "42.42.42.42",
             "username": "anta",
@@ -126,7 +128,7 @@ class Test_AsyncEOSDevice:
             command="show hardware counter drop",
             failed=EapiCommandError(
                 passed=[],
-                failed={"cmd": "show hardware counter drop"},
+                failed="show hardware counter drop",
                 errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
                 errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
                 not_exec=[],
