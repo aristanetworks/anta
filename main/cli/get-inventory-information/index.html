@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.3">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.79e020e9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a5377069.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -377,6 +377,8 @@
       
         
       
+        
+      
     
     
     
@@ -648,6 +650,26 @@
   
   <span class="md-ellipsis">
     Helpers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tag-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tag Management
   </span>
   
 
@@ -2028,8 +2050,7 @@ Tags<span class="w"> </span>found:
 <span class="w">  </span><span class="s2">&quot;DC1&quot;</span>,
 <span class="w">  </span><span class="s2">&quot;DC2&quot;</span>,
 <span class="w">  </span><span class="s2">&quot;LEAF&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;SPINE&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;all&quot;</span>
+<span class="w">  </span><span class="s2">&quot;SPINE&quot;</span>
 <span class="o">]</span>
 
 *<span class="w"> </span>note<span class="w"> </span>that<span class="w"> </span>tag<span class="w"> </span>all<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>added<span class="w"> </span>by<span class="w"> </span>anta
@@ -2064,7 +2085,7 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <span class="o">{</span>
 <span class="w">    </span><span class="s1">&#39;DC1-SPINE1&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
 <span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;DC1-SPINE1&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="o">]</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC1&#39;</span><span class="o">]</span>,
 <span class="w">        </span><span class="nv">hw_model</span><span class="o">=</span>None,
 <span class="w">        </span><span class="nv">is_online</span><span class="o">=</span>False,
 <span class="w">        </span><span class="nv">established</span><span class="o">=</span>False,
@@ -2072,14 +2093,13 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;172.20.20.101&#39;</span>,
 <span class="w">        </span><span class="nv">eapi_port</span><span class="o">=</span><span class="m">443</span>,
 <span class="w">        </span><span class="nv">username</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
-<span class="w">        </span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">enable</span><span class="o">=</span>True,
 <span class="w">        </span><span class="nv">enable_password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">insecure</span><span class="o">=</span>False
 <span class="w">    </span><span class="o">)</span>,
 <span class="w">    </span><span class="s1">&#39;DC1-SPINE2&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
 <span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;DC1-SPINE2&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="o">]</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC1&#39;</span><span class="o">]</span>,
 <span class="w">        </span><span class="nv">hw_model</span><span class="o">=</span>None,
 <span class="w">        </span><span class="nv">is_online</span><span class="o">=</span>False,
 <span class="w">        </span><span class="nv">established</span><span class="o">=</span>False,
@@ -2087,14 +2107,12 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;172.20.20.102&#39;</span>,
 <span class="w">        </span><span class="nv">eapi_port</span><span class="o">=</span><span class="m">443</span>,
 <span class="w">        </span><span class="nv">username</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
-<span class="w">        </span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">enable</span><span class="o">=</span>True,
-<span class="w">        </span><span class="nv">enable_password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">insecure</span><span class="o">=</span>False
 <span class="w">    </span><span class="o">)</span>,
 <span class="w">    </span><span class="s1">&#39;DC2-SPINE1&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
 <span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;DC2-SPINE1&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="o">]</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC2&#39;</span><span class="o">]</span>,
 <span class="w">        </span><span class="nv">hw_model</span><span class="o">=</span>None,
 <span class="w">        </span><span class="nv">is_online</span><span class="o">=</span>False,
 <span class="w">        </span><span class="nv">established</span><span class="o">=</span>False,
@@ -2102,14 +2120,12 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;172.20.20.201&#39;</span>,
 <span class="w">        </span><span class="nv">eapi_port</span><span class="o">=</span><span class="m">443</span>,
 <span class="w">        </span><span class="nv">username</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
-<span class="w">        </span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">enable</span><span class="o">=</span>True,
-<span class="w">        </span><span class="nv">enable_password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">insecure</span><span class="o">=</span>False
 <span class="w">    </span><span class="o">)</span>,
 <span class="w">    </span><span class="s1">&#39;DC2-SPINE2&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
 <span class="w">        </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;DC2-SPINE2&#39;</span>,
-<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="o">]</span>,
+<span class="w">        </span><span class="nv">tags</span><span class="o">=[</span><span class="s1">&#39;SPINE&#39;</span>,<span class="w"> </span><span class="s1">&#39;DC2&#39;</span><span class="o">]</span>,
 <span class="w">        </span><span class="nv">hw_model</span><span class="o">=</span>None,
 <span class="w">        </span><span class="nv">is_online</span><span class="o">=</span>False,
 <span class="w">        </span><span class="nv">established</span><span class="o">=</span>False,
@@ -2117,9 +2133,7 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 <span class="w">        </span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;172.20.20.202&#39;</span>,
 <span class="w">        </span><span class="nv">eapi_port</span><span class="o">=</span><span class="m">443</span>,
 <span class="w">        </span><span class="nv">username</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
-<span class="w">        </span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">enable</span><span class="o">=</span>True,
-<span class="w">        </span><span class="nv">enable_password</span><span class="o">=</span><span class="s1">&#39;arista&#39;</span>,
 <span class="w">        </span><span class="nv">insecure</span><span class="o">=</span>False
 <span class="w">    </span><span class="o">)</span>
 <span class="o">}</span>
@@ -2130,7 +2144,7 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 28, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 26, 2023</span>
       
     
   </small>
@@ -2222,10 +2236,10 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.6eac0284.min.js"></script>
+      <script src="../../assets/javascripts/bundle.aecac24b.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

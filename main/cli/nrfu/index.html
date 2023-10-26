@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.3">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.79e020e9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a5377069.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -377,6 +377,8 @@
       
         
       
+        
+      
     
     
     
@@ -485,6 +487,13 @@
           <li class="md-nav__item">
   <a href="#nrfu-command-overview" class="md-nav__link">
     NRFU Command overview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tag-management" class="md-nav__link">
+    Tag management
   </a>
   
 </li>
@@ -702,6 +711,26 @@
   
   <span class="md-ellipsis">
     Helpers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tag-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tag Management
   </span>
   
 
@@ -1923,6 +1952,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tag-management" class="md-nav__link">
+    Tag management
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#performing-nrfu-with-text-rendering" class="md-nav__link">
     Performing NRFU with text rendering
   </a>
@@ -2087,6 +2123,34 @@ Commands:
 <span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report
 </code></pre></div>
 <p>All commands under the <code>anta nrfu</code> namespace require a catalog yaml file specified with the <code>--catalog</code> option.</p>
+<h4 id="tag-management">Tag management<a class="headerlink" href="#tag-management" title="Permanent link">&para;</a></h4>
+<p>The <code>--tags</code> option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to <code>all</code> and is implicit. Expected behaviour is provided below:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>none</code></td>
+<td>Run all tests on all devices according <code>tag</code> definition in your inventory and tests catalog. And tests with no tag are executed on all devices</td>
+</tr>
+<tr>
+<td><code>--tags leaf</code></td>
+<td>Run all tests marked with <code>leaf</code> tag on all devices configured with <code>leaf</code> tag.<br/> All other tags are ignored</td>
+</tr>
+<tr>
+<td><code>--tags leaf,spine</code></td>
+<td>Run all tests marked with <code>leaf</code> tag on all devices configured with <code>leaf</code> tag.<br/>Run all tests marked with <code>spine</code> tag on all devices configured with <code>spine</code> tag.<br/> All other tags are ignored</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p><a href="../tag-management/">More examples</a> available on this dedicated page.</p>
+</div>
 <h4 id="performing-nrfu-with-text-rendering">Performing NRFU with text rendering<a class="headerlink" href="#performing-nrfu-with-text-rendering" title="Permanent link">&para;</a></h4>
 <p>The <code>text</code> subcommand provides a straightforward text report for each test executed on all devices in your inventory.</p>
 <h5 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h5>
@@ -2101,7 +2165,7 @@ Options:
 <span class="w">  </span>--skip-error<span class="w">       </span>Hide<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>errors<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>connectivity<span class="w"> </span>issue
 <span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>The <code>--tags</code> option allows to target specific devices in your inventory, while the <code>--search</code> option permits filtering based on a regular expression pattern in both the hostname and the test name.</p>
+<p>The <a href="#tag-management"><code>--tags</code> option allows</a> to target specific devices in your inventory and run tests with the exact same tags from your catalog, while the <code>--search</code> option permits filtering based on a regular expression pattern in both the hostname and the test name.</p>
 <p>The <code>--skip-error</code> option can be used to exclude tests that failed due to connectivity issues or unsupported commands.</p>
 <h5 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>--search<span class="w"> </span>DC1-LEAF1A
@@ -2123,7 +2187,6 @@ Options:
 <span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>host.<span class="w"> </span>default<span class="w"> </span>none
 <span class="w">  </span>--help<span class="w">                    </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
 <p>The <code>--device</code> and <code>--test</code> options show a summarized view of the test results for a specific host or test case, respectively.</p>
 <p>The <code>--group-by</code> option show a summarized view of the test results per host or per test.</p>
 <h5 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h5>
@@ -2158,7 +2221,6 @@ Options:
 <span class="w">                     </span>ANTA_NRFU_JSON_OUTPUT<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
 <p>The <code>--output</code> option allows you to save the JSON report as a file.</p>
 <h5 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span>--tags<span class="w"> </span>LEAF
@@ -2182,7 +2244,6 @@ Options:
 </code></pre></div>
 The <code>--template</code> option is used to specify the Jinja2 template file for generating the custom report.</p>
 <p>The <code>--output</code> option allows you to choose the path where the final report will be saved.</p>
-<p>The <code>--tags</code> option can be used to target specific devices in your inventory.</p>
 <h5 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>--template<span class="w"> </span>./custom_template.j2
 </code></pre></div>
@@ -2209,7 +2270,7 @@ The <code>--template</code> option is used to specify the Jinja2 template file f
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 26, 2023</span>
       
     
   </small>
@@ -2301,10 +2362,10 @@ The <code>--template</code> option is used to specify the Jinja2 template file f
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.6eac0284.min.js"></script>
+      <script src="../../assets/javascripts/bundle.aecac24b.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
