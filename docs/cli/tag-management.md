@@ -8,7 +8,7 @@
 
 ## Overview
 
-ANTA comes with tag option. This approach helps user to run a set of tests on devices marked with same tag. So you can run tests dedicated to leaf devices on your leaf device only and not on other devices.
+ANTA nrfu command comes with a `--tags` option. This allows users to specify a set of tests, marked with a given tag, to be run on devices marked with the same tag. For instance, you can run tests dedicated to leaf devices on your leaf devices only and not on other devices.
 
 Tags are string defined by the user and can be anything considered as a string by Python. A [default one](#default-tags) is present for all tests and devices.
 
