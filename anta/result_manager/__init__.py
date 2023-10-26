@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
 
 from pydantic import TypeAdapter
 
@@ -140,27 +139,23 @@ class ResultManager:
         """
         return "error" if self.error_status and not ignore_error else self.status
 
-    def get_results(self, output_format: str = "str") -> Any:
+    def get_results(self) -> list[TestResult]:
         """
         Expose list of all test results in different format
-
-        Support multiple format:
-          - list: a list of TestResult
-          - json: a native JSON format
-
-        Args:
-            output_format (str, optional): format selector. Can be either native/list/json. Defaults to 'native'.
 
         Returns:
             any: List of results.
         """
-        if output_format == "json":
-            return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
+        return self._result_entries
 
-        if output_format == "list":
-            return self._result_entries
+    def get_json_results(self) -> str:
+        """
+        Expose list of all test results in JSON
 
-        raise ValueError(f"{output_format} is not a valid value ['list', 'json', 'native']")
+        Returns:
+            str: JSON dumps of the list of results
+        """
+        return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
 
     def get_result_by_test(self, test_name: str) -> list[TestResult]:
         """

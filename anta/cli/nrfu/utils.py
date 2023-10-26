@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-
 """
 Utils functions to use with anta.cli.check.commands module.
 """
@@ -56,27 +55,27 @@ def print_json(results: ResultManager, output: pathlib.Path | None = None) -> No
     """Print result in a json format"""
     console.print()
     console.print(Panel("JSON results of all tests", style="cyan"))
-    rich.print_json(results.get_results(output_format="json"))
+    rich.print_json(results.get_json_results())
     if output is not None:
         with open(output, "w", encoding="utf-8") as fout:
-            fout.write(results.get_results(output_format="json"))
+            fout.write(results.get_json_results())
 
 
 def print_list(results: ResultManager, output: pathlib.Path | None = None) -> None:
     """Print result in a list"""
     console.print()
     console.print(Panel.fit("List results of all tests", style="cyan"))
-    pprint(results.get_results(output_format="list"))
+    pprint(results.get_results())
     if output is not None:
         with open(output, "w", encoding="utf-8") as fout:
-            fout.write(str(results.get_results(output_format="list")))
+            fout.write(str(results.get_results()))
 
 
 def print_text(results: ResultManager, search: str | None = None, skip_error: bool = False) -> None:
     """Print results as simple text"""
     console.print()
     regexp = re.compile(search or ".*")
-    for line in results.get_results(output_format="list"):
+    for line in results.get_results():
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
@@ -86,7 +85,7 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     """Print result based on template."""
     console.print()
     reporter = ReportJinja(template_path=template)
-    json_data = json.loads(results.get_results(output_format="json"))
+    json_data = json.loads(results.get_json_results())
     report = reporter.render(json_data)
     console.print(report)
     if output is not None:

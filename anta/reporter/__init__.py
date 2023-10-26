@@ -105,7 +105,7 @@ class ReportTable:
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
-        for result in result_manager.get_results(output_format="list"):
+        for result in result_manager.get_results():
             # pylint: disable=R0916
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
                 state = self._color_result(result.result)
@@ -228,7 +228,7 @@ class ReportJinja:
         Report is built based on a J2 template provided by user.
         Data structure sent to template is:
 
-        >>> data = ResultManager.get_results(output_format="json")
+        >>> data = ResultManager.get_json_results()
         >>> print(data)
         [
             {

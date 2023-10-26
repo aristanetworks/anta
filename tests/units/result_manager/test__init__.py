@@ -157,14 +157,7 @@ class Test_ResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    @pytest.mark.parametrize(
-        "_format, expected_raise",
-        [
-            ("json", nullcontext()),
-            ("dummy", pytest.raises(ValueError)),
-        ],
-    )
-    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]], _format: str, expected_raise: Any) -> None:
+    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """
         test ResultManager.get_results
         """
@@ -175,14 +168,24 @@ class Test_ResultManager:
             test.result = "success"
         result_manager.add_test_results(success_list)
 
-        with expected_raise:
-            res = result_manager.get_results(output_format=_format)
-            if _format == "json":
-                assert isinstance(res, str)
-                # verifies it can be loaded as json
-                json.loads(res)
-            elif _format == "list":
-                assert isinstance(res, list)
+        res = result_manager.get_results()
+        assert isinstance(res, list)
+
+    def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """
+        test ResultManager.get_json_results
+        """
+        result_manager = ResultManager()
+
+        success_list = list_result_factory(3)
+        for test in success_list:
+            test.result = "success"
+        result_manager.add_test_results(success_list)
+
+        res = result_manager.get_json_results()
+        assert isinstance(res, str)
+        # verifies it can be loaded as json
+        json.loads(res)
 
     # TODO
     # get_result_by_test
