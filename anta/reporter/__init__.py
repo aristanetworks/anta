@@ -14,11 +14,11 @@ from typing import Any, Optional
 
 from jinja2 import Template
 from rich.table import Table
+from rich.text import Text
 
-from anta import RICH_COLOR_PALETTE
+from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
+from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
-
-from .models import ColorManager
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +30,7 @@ class ReportTable:
         """
         __init__ Class constructor
         """
-        self.colors = []
-        self.colors.append(ColorManager(level="success", color=RICH_COLOR_PALETTE.SUCCESS))
-        self.colors.append(ColorManager(level="failure", color=RICH_COLOR_PALETTE.FAILURE))
-        self.colors.append(ColorManager(level="error", color=RICH_COLOR_PALETTE.ERROR))
-        self.colors.append(ColorManager(level="skipped", color=RICH_COLOR_PALETTE.SKIPPED))
+        self.color_manager = ColorManager()
 
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: Optional[str] = None) -> str:
         """
@@ -71,24 +67,18 @@ class ReportTable:
                 table.add_column(header, justify="left")
         return table
 
-    def _color_result(self, status: str, output_type: str = "Text") -> Any:
+    def _color_result(self, status: TestStatus) -> str:
         """
-        Helper to implement color based on test status.
-
-        It gives output for either standard str or Text() colorized with Style()
+        Return a colored string based on the status value.
 
         Args:
-            status (str): status value to colorized
-            output_type (str, optional): Which format to output code. Defaults to 'Text'.
+            status (TestStatus): status value to color
 
         Returns:
-            Any: Can be either str or Text with Style
+        str: the colored string
         """
-        # TODO refactor this code as it looks quite surprising
-        if len([result for result in self.colors if str(result.level).upper() == status.upper()]) == 1:
-            code: ColorManager = [result for result in self.colors if str(result.level).upper() == status.upper()][0]
-            return code.style_rich() if output_type == "Text" else code.string()
-        return None
+        color = RICH_COLOR_THEME.get(status, "")
+        return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(
         self,
@@ -118,7 +108,7 @@ class ReportTable:
         for result in result_manager.get_results(output_format="list"):
             # pylint: disable=R0916
             if (host is None and testcase is None) or (host is not None and str(result.name) == host) or (testcase is not None and testcase == str(result.test)):
-                state = self._color_result(status=str(result.result), output_type="str")
+                state = self._color_result(result.result)
                 message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
                 categories = ", ".join(result.categories)
                 table.add_row(str(result.name), result.test, state, message, result.description, categories)
@@ -263,3 +253,44 @@ class ReportJinja:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
 
         return template.render({"data": data})
+
+
+class ColorManager:
+    """Color management for status report."""
+
+    def get_color(self, level: TestStatus) -> str:
+        """Return the color attributed to the status in RICH_COLOR_THEME.
+
+        Args:
+            level (TestStatus): The status to colorized
+
+        Returns:
+            str: the colors attributed to this or empty string
+
+        """
+        return RICH_COLOR_THEME.get(level, "")
+
+    def style_rich(self, level: TestStatus) -> Text:
+        """
+        Build a rich Text syntax with color
+
+        Args:
+            level (TestStatus): The status to colorized
+
+        Returns:
+            Text: object with level string and its associated color.
+        """
+        return Text(level, style=self.get_color(level))
+
+    def string(self, level: TestStatus) -> str:
+        """
+        Build an str with color code
+
+        Args:
+            level (TestStatus): The status to colorized
+
+        Returns:
+            str: String with level and its associated color
+        """
+        color = self.get_color(level)
+        return f"[{color}]{level}" if color != "" else str(level)

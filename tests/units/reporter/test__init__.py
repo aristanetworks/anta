@@ -4,14 +4,13 @@
 """
 Test anta.report.__init__.py
 """
-
 from __future__ import annotations
 
 import pytest
 from rich.table import Table
-from rich.text import Text
 
 from anta import RICH_COLOR_PALETTE
+from anta.custom_types import TestStatus
 from anta.reporter import ReportTable
 
 
@@ -63,24 +62,20 @@ class Test_ReportTable:
             assert table.columns[table_column_before].style == RICH_COLOR_PALETTE.HEADER
 
     @pytest.mark.parametrize(
-        "status, output_type, expected_status",
+        "status, expected_status",
         [
-            pytest.param("unknown", None, None, id="unknown status"),
-            pytest.param("unset", None, None, id="unset status"),
-            pytest.param("skipped", None, "[bold orange4]skipped", id="skipped status"),
-            pytest.param("failure", None, "[bold red]failure", id="failure status"),
-            pytest.param("error", None, "[indian_red]error", id="error status"),
-            pytest.param("success", None, "[green4]success", id="success status"),
-            pytest.param("success", "Text", "to_be_replaced", id="Text"),
-            pytest.param("success", "DUMMY", "[green4]success", id="DUMMY"),
+            pytest.param("unknown", "unknown", id="unknown status"),
+            pytest.param("unset", "[grey74]unset", id="unset status"),
+            pytest.param("skipped", "[bold orange4]skipped", id="skipped status"),
+            pytest.param("failure", "[bold red]failure", id="failure status"),
+            pytest.param("error", "[indian_red]error", id="error status"),
+            pytest.param("success", "[green4]success", id="success status"),
         ],
     )
-    def test__color_result(self, status: str, output_type: str, expected_status: str | Text) -> None:
+    def test__color_result(self, status: TestStatus, expected_status: str) -> None:
         """
         test _build_headers
         """
         # pylint: disable=protected-access
         report = ReportTable()
-        if output_type == "Text":
-            expected_status = report.colors[0].style_rich()
-        assert report._color_result(status, output_type) == expected_status
+        assert report._color_result(status) == expected_status
