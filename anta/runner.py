@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import itertools
 import logging
-from typing import List, Union
+from typing import Union
 
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
@@ -20,7 +20,7 @@ from anta.tools.misc import anta_log_exception
 logger = logging.getLogger(__name__)
 
 
-def filter_tags(tags_cli: Union[List[str], None], tags_device: List[str], tags_test: List[str]) -> bool:
+def filter_tags(tags_cli: Union[list[str], None], tags_device: list[str], tags_test: list[str]) -> bool:
     """Implement filtering logic for tags"""
     return (tags_cli is None or any(t for t in tags_cli if t in tags_device)) and any(t for t in tags_device if t in tags_test)
 
