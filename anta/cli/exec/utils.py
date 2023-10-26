@@ -12,7 +12,7 @@ import itertools
 import json
 import logging
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 from aioeapi import EapiCommandError
 
@@ -26,7 +26,7 @@ EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: Optional[list[str]] = None) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | None = None) -> None:
     """
     Clear counters
     """
@@ -52,7 +52,7 @@ async def collect_commands(
     inv: AntaInventory,
     commands: dict[str, str],
     root_dir: Path,
-    tags: Optional[list[str]] = None,
+    tags: list[str] | None = None,
 ) -> None:
     """
     Collect EOS commands
@@ -92,7 +92,7 @@ async def collect_commands(
             anta_log_exception(r, message, logger)
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: Optional[list[str]] = None, latest: Optional[int] = None) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
     """
     Collect scheduled show-tech on devices
     """

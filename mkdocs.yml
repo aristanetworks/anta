@@ -20,6 +20,7 @@ theme:
     # - toc.integrate
     - toc.follow
     - navigation.indexes
+    - content.tabs.link
   highlightjs: true
   hljs_languages:
     - yaml
@@ -164,6 +165,7 @@ nav:
     - Inventory from Ansible: cli/inv-from-ansible.md
     - Get Inventory Information: cli/get-inventory-information.md
     - Helpers: cli/debug.md
+    - Tag Management: cli/tag-management.md
   - Advanced Usages:
     - Caching in ANTA: advanced_usages/caching.md
     - Developing ANTA tests: advanced_usages/custom-tests.md

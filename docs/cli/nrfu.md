@@ -35,6 +35,19 @@ Commands:
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option.
 
+## Tag management
+
+The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to `all` and is implicit. Expected behaviour is provided below:
+
+| Command | Description |
+| ------- | ----------- |
+| `none` | Run all tests on all devices according `tag` definition in your inventory and tests catalog. And tests with no tag are executed on all devices|
+| `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
+| `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
+
+!!! info
+    [More examples](tag-management.md) available on this dedicated page.
+
 ## Performing NRFU with text rendering
 
 The `text` subcommand provides a straightforward text report for each test executed on all devices in your inventory.
@@ -54,7 +67,7 @@ Options:
   --help             Show this message and exit.
 ```
 
-The `--tags` option allows to target specific devices in your inventory, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
+The [`--tags` option allows](#tag-management) to target specific devices in your inventory and run tests with the exact same tags from your catalog, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
 
 The `--skip-error` option can be used to exclude tests that failed due to connectivity issues or unsupported commands.
 
@@ -85,8 +98,6 @@ Options:
   --group-by [device|test]  Group result by test or host. default none
   --help                    Show this message and exit.
 ```
-
-The `--tags` option can be used to target specific devices in your inventory.
 
 The `--device` and `--test` options show a summarized view of the test results for a specific host or test case, respectively.
 
@@ -142,8 +153,6 @@ Options:
   --help             Show this message and exit.
 ```
 
-The `--tags` option can be used to target specific devices in your inventory.
-
 The `--output` option allows you to save the JSON report as a file.
 
 ### Example
@@ -176,8 +185,6 @@ Options:
 The `--template` option is used to specify the Jinja2 template file for generating the custom report.
 
 The `--output` option allows you to choose the path where the final report will be saved.
-
-The `--tags` option can be used to target specific devices in your inventory.
 
 ### Example
 

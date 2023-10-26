@@ -1,18 +1,16 @@
-#!/usr/bin/env python
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 
 """
 Utils functions to use with anta.cli.check.commands module.
 """
+from __future__ import annotations
 
 import json
 import logging
 import pathlib
 import re
-from typing import Optional
 
 import click
 import rich
@@ -27,7 +25,7 @@ from anta.result_manager import ResultManager
 logger = logging.getLogger(__name__)
 
 
-def print_settings(context: click.Context, report_template: Optional[pathlib.Path] = None, report_output: Optional[pathlib.Path] = None) -> None:
+def print_settings(context: click.Context, report_template: pathlib.Path | None = None, report_output: pathlib.Path | None = None) -> None:
     """Print ANTA settings before running tests"""
     message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'])} tests"
     if report_template:
@@ -38,7 +36,7 @@ def print_settings(context: click.Context, report_template: Optional[pathlib.Pat
     console.print()
 
 
-def print_table(results: ResultManager, device: Optional[str] = None, test: Optional[str] = None, group_by: Optional[str] = None) -> None:
+def print_table(results: ResultManager, device: str | None = None, test: str | None = None, group_by: str | None = None) -> None:
     """Print result in a table"""
     reporter = ReportTable()
     console.print()
@@ -54,7 +52,7 @@ def print_table(results: ResultManager, device: Optional[str] = None, test: Opti
         console.print(reporter.report_all(result_manager=results))
 
 
-def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+def print_json(results: ResultManager, output: pathlib.Path | None = None) -> None:
     """Print result in a json format"""
     console.print()
     console.print(Panel("JSON results of all tests", style="cyan"))
@@ -64,7 +62,7 @@ def print_json(results: ResultManager, output: Optional[pathlib.Path] = None) ->
             fout.write(results.get_results(output_format="json"))
 
 
-def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) -> None:
+def print_list(results: ResultManager, output: pathlib.Path | None = None) -> None:
     """Print result in a list"""
     console.print()
     console.print(Panel.fit("List results of all tests", style="cyan"))
@@ -74,17 +72,17 @@ def print_list(results: ResultManager, output: Optional[pathlib.Path] = None) ->
             fout.write(str(results.get_results(output_format="list")))
 
 
-def print_text(results: ResultManager, search: Optional[str] = None, skip_error: bool = False) -> None:
+def print_text(results: ResultManager, search: str | None = None, skip_error: bool = False) -> None:
     """Print results as simple text"""
     console.print()
-    regexp = re.compile(search if search else ".*")
+    regexp = re.compile(search or ".*")
     for line in results.get_results(output_format="list"):
         if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
             message = f" ({str(line.messages[0])})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
 
 
-def print_jinja(results: ResultManager, template: pathlib.Path, output: Optional[pathlib.Path] = None) -> None:
+def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:
     """Print result based on template."""
     console.print()
     reporter = ReportJinja(template_path=template)

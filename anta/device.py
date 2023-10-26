@@ -22,7 +22,7 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__
-from anta.models import DEFAULT_TAG, AntaCommand
+from anta.models import AntaCommand
 from anta.tools.misc import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
@@ -64,10 +64,6 @@ class AntaDevice(ABC):
         # Initialize cache if not disabled
         if not disable_cache:
             self._init_cache()
-
-        # Ensure tag 'all' is always set
-        if DEFAULT_TAG not in self.tags:
-            self.tags.append(DEFAULT_TAG)
 
     def _init_cache(self) -> None:
         """

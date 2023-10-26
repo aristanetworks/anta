@@ -18,16 +18,16 @@ anta_inventory:
     - host: < ip address value >
       port: < TCP port for eAPI. Default is 443 (Optional)>
       name: < name to display in report. Default is host:port (Optional) >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per hosts. Default is False. >
   networks:
     - network: < network using CIDR notation >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per network. Default is False. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
-      tags: < list of tags to use to filter inventory during tests. Default is ['all']. (Optional) >
+      tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per range. Default is False. >
 ```
 
@@ -109,6 +109,25 @@ anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
 ```
+
+All tests can be configured with a list of user defined tags. These tags will be mapped with device tags when `nrfu` cli is called with the `--tags` option. If a test is configured in the catalog without a list of tags, the test will be executed for all devices. When at least one tag is defined for a test, this test will be only executed on devices with the same tag.
+
+```yaml
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 10
+      filters:
+        tags: ['demo', 'leaf']
+  - VerifyReloadCause:
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+  - VerifyCPUUtilization:
+      filters:
+        tags: ['leaf']
+```
+
+!!! info
+    The `tag` field must be equal to values configured for `tags` under your device inventory.
 
 ### Custom tests catalog
 

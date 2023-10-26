@@ -33,7 +33,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
 # N = TypeVar("N", bound="AntaTest.Input")
 
-DEFAULT_TAG = "all"
 
 # TODO - make this configurable - with an env var maybe?
 BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
@@ -289,6 +288,7 @@ class AntaTest(ABC):
 
         model_config = ConfigDict(extra="forbid")
         result_overwrite: Optional[ResultOverwrite] = None
+        filters: Optional[Filters] = None
 
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields
@@ -302,6 +302,17 @@ class AntaTest(ABC):
             description: Optional[str] = None
             categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
+
+        class Filters(BaseModel):
+            """Runtime filters to map tests with list of tags or devices
+
+            Attributes:
+                devices: List of devices for the test.
+                tags: List of device's tags for the test.
+            """
+
+            devices: Optional[List[str]] = None
+            tags: Optional[List[str]] = None
 
     def __init__(
         self,
@@ -475,8 +486,6 @@ class AntaTest(ABC):
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
-
-            # TODO maybe_skip decorators
 
             # Data
             if eos_data is not None:

@@ -1,6 +1,7 @@
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
+# pylint: disable=too-many-branches
 """
 ANTA runner function
 """
@@ -9,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import itertools
 import logging
-from typing import Optional
+from typing import Union
 
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
@@ -19,11 +20,16 @@ from anta.tools.misc import anta_log_exception
 logger = logging.getLogger(__name__)
 
 
+def filter_tags(tags_cli: Union[list[str], None], tags_device: list[str], tags_test: list[str]) -> bool:
+    """Implement filtering logic for tags"""
+    return (tags_cli is None or any(t for t in tags_cli if t in tags_device)) and any(t for t in tags_device if t in tags_test)
+
+
 async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     tests: list[tuple[type[AntaTest], AntaTest.Input]],
-    tags: Optional[list[str]] = None,
+    tags: list[str],
     established_only: bool = True,
 ) -> None:
     """
@@ -67,13 +73,16 @@ async def main(
     for device, test in itertools.product(devices, tests):
         test_class = test[0]
         test_inputs = test[1]
-        try:
-            # Instantiate AntaTest object
-            test_instance = test_class(device=device, inputs=test_inputs)
-            coros.append(test_instance.test(eos_data=None))
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            message = "Error when creating ANTA tests"
-            anta_log_exception(e, message, logger)
+        test_filters = test[1].get("filters", None) if test[1] is not None else None
+        test_tags = test_filters.get("tags", []) if test_filters is not None else []
+        if len(test_tags) == 0 or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_tags):
+            try:
+                # Instantiate AntaTest object
+                test_instance = test_class(device=device, inputs=test_inputs)
+                coros.append(test_instance.test(eos_data=None))
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                message = "Error when creating ANTA tests"
+                anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
