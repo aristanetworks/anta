@@ -43,6 +43,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
@@ -231,7 +233,7 @@ envlist =
   clean,
   lint,
   type,
-  py{38,39,310,311},
+  py{38,39,310,311,312},
   report
 
 [gh-actions]
@@ -240,6 +242,7 @@ python =
   3.9: py39
   3.10: py310
   3.11: erase, py311, report
+  3.12: py312
 
 [testenv]
 description = Run pytest with {basepython}
