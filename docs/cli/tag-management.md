@@ -10,7 +10,7 @@
 
 ANTA comes with tag option. This approach helps user to run a set of tests on devices marked with same tag. So you can run tests dedicated to leaf devices on your leaf device only and not on other devices.
 
-Tags are string defined by the user and can be anything consider as a string by Python. A [default one](#default-tags) is present for all tests and devices.
+Tags are string defined by the user and can be anything considered as a string by Python. A [default one](#default-tags) is present for all tests and devices.
 
 The next table provides a short summary of the scope of tags using CLI
 
