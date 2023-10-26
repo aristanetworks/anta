@@ -13,7 +13,7 @@ from typing import Any
 from pydantic import TypeAdapter
 
 from anta.custom_types import TestStatus
-from anta.result_manager.models import ListResult, TestResult
+from anta.result_manager.models import TestResult
 from anta.tools.pydantic import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class ResultManager:
         If the status of the added test is error, the status is untouched and the
         error_status is set to True.
         """
-        self._result_entries = ListResult()
+        self._result_entries: list[TestResult] = []
         # Initialize status
         self.status: TestStatus = "unset"
         self.error_status = False
@@ -140,12 +140,11 @@ class ResultManager:
         """
         return "error" if self.error_status and not ignore_error else self.status
 
-    def get_results(self, output_format: str = "native") -> Any:
+    def get_results(self, output_format: str = "str") -> Any:
         """
         Expose list of all test results in different format
 
         Support multiple format:
-          - native: ListResults format
           - list: a list of TestResult
           - json: a native JSON format
 
@@ -155,18 +154,15 @@ class ResultManager:
         Returns:
             any: List of results.
         """
-        if output_format == "list":
-            return list(self._result_entries)
-
         if output_format == "json":
             return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
 
-        if output_format == "native":
-            # Default return for native format.
+        if output_format == "list":
             return self._result_entries
+
         raise ValueError(f"{output_format} is not a valid value ['list', 'json', 'native']")
 
-    def get_result_by_test(self, test_name: str, output_format: str = "native") -> Any:
+    def get_result_by_test(self, test_name: str) -> list[TestResult]:
         """
         Get list of test result for a given test.
 
@@ -177,16 +173,9 @@ class ResultManager:
         Returns:
             list[TestResult]: List of results related to the test.
         """
-        if output_format == "list":
-            return [result for result in self._result_entries if str(result.test) == test_name]
+        return [result for result in self._result_entries if str(result.test) == test_name]
 
-        result_manager_filtered = ListResult()
-        for result in self._result_entries:
-            if result.test == test_name:
-                result_manager_filtered.append(result)
-        return result_manager_filtered
-
-    def get_result_by_host(self, host_ip: str, output_format: str = "native") -> Any:
+    def get_result_by_host(self, host_ip: str) -> list[TestResult]:
         """
         Get list of test result for a given host.
 
@@ -195,16 +184,9 @@ class ResultManager:
             output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
 
         Returns:
-            Any: List of results related to the host.
+            list[TestResult]: List of results related to the host.
         """
-        if output_format == "list":
-            return [result for result in self._result_entries if str(result.name) == host_ip]
-
-        result_manager_filtered = ListResult()
-        for result in self._result_entries:
-            if str(result.name) == host_ip:
-                result_manager_filtered.append(result)
-        return result_manager_filtered
+        return [result for result in self._result_entries if str(result.name) == host_ip]
 
     def get_testcases(self) -> list[str]:
         """

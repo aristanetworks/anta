@@ -4,19 +4,18 @@
 """
 Toolkit for ANTA to play with Pydantic.
 """
-
 from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:
-    from anta.result_manager.models import ListResult
+    from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
-def pydantic_to_dict(pydantic_list: ListResult) -> list[dict[str, Sequence[Any]]]:
+def pydantic_to_dict(pydantic_list: list[TestResult]) -> list[dict[str, Sequence[Any]]]:
     """
     Convert Pydantic object into a list of dict
 

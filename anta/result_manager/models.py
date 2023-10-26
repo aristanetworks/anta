@@ -4,12 +4,10 @@
 """Models related to anta.result_manager module."""
 from __future__ import annotations
 
-from collections.abc import Iterator
-
 # Need to keep List for pydantic in 3.8
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, RootModel
+from pydantic import BaseModel, ConfigDict
 
 from anta.custom_types import TestStatus
 
@@ -95,36 +93,3 @@ class TestResult(BaseModel):
         Returns a human readable string of this TestResult
         """
         return f"Test {self.test} on device {self.name} has result {self.result}"
-
-
-class ListResult(RootModel[List[TestResult]]):
-    """
-    list result for all tests on all devices.
-
-    Attributes:
-        __root__ (list[TestResult]): A list of TestResult objects.
-    """
-
-    root: List[TestResult] = []
-
-    def extend(self, values: list[TestResult]) -> None:
-        """Add support for extend method."""
-        self.root.extend(values)
-
-    def append(self, value: TestResult) -> None:
-        """Add support for append method."""
-        self.root.append(value)
-
-    def __iter__(self) -> Iterator[TestResult]:  # type: ignore
-        """Use custom iter method."""
-        # TODO - mypy is not happy because we overwrite BaseModel.__iter__
-        # return type and are breaking Liskov Substitution Principle.
-        return iter(self.root)
-
-    def __getitem__(self, item: int) -> TestResult:
-        """Use custom getitem method."""
-        return self.root[item]
-
-    def __len__(self) -> int:
-        """Support for length of __root__"""
-        return len(self.root)
