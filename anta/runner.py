@@ -8,11 +8,11 @@ ANTA runner function
 from __future__ import annotations
 
 import asyncio
-import itertools
 import logging
-from typing import Union
+from typing import Tuple
 
-from anta.catalog import AntaCatalog
+from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
@@ -20,10 +20,7 @@ from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
-
-def filter_tags(tags_cli: Union[list[str], None], tags_device: list[str], tags_test: list[str]) -> bool:
-    """Implement filtering logic for tags"""
-    return (tags_cli is None or any(t for t in tags_cli if t in tags_device)) and any(t for t in tags_device if t in tags_test)
+AntaTestRunner = Tuple[AntaTestDefinition, AntaDevice]
 
 
 async def main(
@@ -59,9 +56,7 @@ async def main(
 
     await inventory.connect_inventory()
 
-    # asyncio.gather takes an iterator of the function to run concurrently.
-    # we get the cross product of the devices and tests to build that iterator.
-    devices = inventory.get_inventory(established_only=established_only, tags=tags).values()
+    devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags).values())
 
     if len(devices) == 0:
         logger.info(
@@ -72,16 +67,30 @@ async def main(
 
     coros = []
 
-    for device, test_definition in itertools.product(devices, catalog.tests):
-        test_tags: list[str] = test_definition.inputs.filters.tags if test_definition.inputs.filters is not None else None
-        if not test_tags or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_tags):
-            try:
-                # Instantiate AntaTest object
-                test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
-                coros.append(test_instance.test(eos_data=None))
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                message = "Error when creating ANTA tests"
-                anta_log_exception(e, message, logger)
+    tests: list[AntaTestRunner] = []
+    if tags:
+        for device in devices:
+            for test in catalog.get_tests_by_tags(tags):
+                tests.append((test, device))
+    else:
+        # If there is no CLI tags, execute all tests without filters on all devices
+        for device in devices:
+            tests.extend([(t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None])
+            # Also execute tests with filters conditionally
+            if device.tags:
+                # Execute tests on devices with matching tags
+                tests.extend(list(map(lambda t: (t, device), catalog.get_tests_by_tags(device.tags))))
+            # Also execute tests with filters on devices with matching name
+            tests.extend(list(map(lambda t: (t, device), catalog.get_tests_by_device(device))))
+
+    for test_definition, device in tests:
+        try:
+            # Instantiate AntaTest object
+            test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
+            coros.append(test_instance.test(eos_data=None))
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            message = "Error when creating ANTA tests"
+            anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))

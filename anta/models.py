@@ -317,8 +317,8 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
-        inputs: dict[str, Any] | AntaTest.Input | None,
-        eos_data: Optional[list[dict[Any, Any] | str]] = None,
+        inputs: dict[str, Any] | AntaTest.Input | None = None,
+        eos_data: list[dict[Any, Any] | str] | None = None,
     ):
         """AntaTest Constructor
 
@@ -472,7 +472,7 @@ class AntaTest(ABC):
         @wraps(function)
         async def wrapper(
             self: AntaTest,
-            eos_data: Optional[list[dict[Any, Any] | str]] = None,
+            eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: Any,
         ) -> TestResult:
             """

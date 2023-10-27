@@ -207,12 +207,20 @@ class AntaCatalog:
         If strict=True, returns only tests that match all the tags provided as input.
         If strict=False, return all the tests that match at least one tag provided as input.
         """
-        raise NotImplementedError()
+        result: list[AntaTestDefinition] = []
+        for test in self.tests:
+            if test.inputs.filters and (filter := test.inputs.filters.tags):
+                if (strict and all(t in tags for t in filter)) or (not strict and any(t in tags for t in filter)):
+                    result.append(test)
+        return result
 
-    def get_tests_by_device(self, devices: list[AntaDevice], strict: bool = False) -> list[AntaTestDefinition]:
+    def get_tests_by_device(self, device: AntaDevice) -> list[AntaTestDefinition]:
         """
-        Return all the tests that have matching devices in their input filters.
-        If strict=True, returns only tests that match all the devices provided as input.
-        If strict=False, return all the tests that match at least one device provided as input.
+        Return all the tests that have the provided device in their input filters.
         """
-        raise NotImplementedError()
+        result: list[AntaTestDefinition] = []
+        for test in self.tests:
+            if test.inputs.filters and (filter := test.inputs.filters.devices):
+                if device.name in filter:
+                    result.append(test)
+        return result
