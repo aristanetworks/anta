@@ -343,18 +343,18 @@ class AntaTest(ABC):
         Overwrite result fields based on `ResultOverwrite` input definition.
 
         Any input validation error will set this test result status as 'error'."""
-        if inputs is None:
-            self.inputs = self.Input()
-        elif isinstance(inputs, AntaTest.Input):
-            self.inputs = inputs
-        elif isinstance(inputs, dict):
-            try:
+        try:
+            if inputs is None:
+                self.inputs = self.Input()
+            elif isinstance(inputs, AntaTest.Input):
+                self.inputs = inputs
+            elif isinstance(inputs, dict):
                 self.inputs = self.Input(**inputs)
-            except ValidationError as e:
-                message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
-                self.logger.error(message)
-                self.result.is_error(message=message, exception=e)
-                return
+        except ValidationError as e:
+            message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
+            self.logger.error(message)
+            self.result.is_error(message=message, exception=e)
+            return
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
                 self.result.categories = res_ow.categories
