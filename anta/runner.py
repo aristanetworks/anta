@@ -73,7 +73,8 @@ async def main(
     coros = []
 
     for device, test_definition in itertools.product(devices, catalog.tests):
-        if len(test_definition.inputs.filters.tags) == 0 or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_definition.inputs.filters.tags):
+        test_tags: list[str] = test_definition.inputs.filters.tags if test_definition.inputs.filters is not None else None
+        if not test_tags or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_tags):
             try:
                 # Instantiate AntaTest object
                 test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
