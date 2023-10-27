@@ -14,6 +14,7 @@ from typing import Any
 from pydantic import BaseModel, RootModel, model_serializer, model_validator
 from pydantic.types import ImportString
 from yaml import safe_load
+from anta.device import AntaDevice
 
 from anta.models import AntaTest
 
@@ -35,6 +36,48 @@ class AntaTestDefinition(BaseModel):
 
 
 class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
+    """
+    This model represents an ANTA Test Catalog File.
+
+     A valid test catalog file must follow the following structure:
+        <Python module>:
+            - <AntaTest subclass>:
+                <AntaTest.Input compliant dictionary>
+
+        Example:
+            ```
+            anta.tests.connectivity:
+                - VerifyReachability:
+                    hosts:
+                        - dst: 8.8.8.8
+                          src: 172.16.0.1
+                        - dst: 1.1.1.1
+                          src: 172.16.0.1
+                    result_overwrite:
+                        categories:
+                            - "Overwritten category 1"
+                        description: "Test with overwritten description"
+                        custom_field: "Test run by John Doe"
+            ```
+
+        Also supports nesting for Python module definition:
+            ```
+            anta.tests:
+                connectivity:
+                    - VerifyReachability:
+                        hosts:
+                            - dst: 8.8.8.8
+                              src: 172.16.0.1
+                            - dst: 1.1.1.1
+                              src: 172.16.0.1
+                        result_overwrite:
+                            categories:
+                                - "Overwritten category 1"
+                            description: "Test with overwritten description"
+                            custom_field: "Test run by John Doe"
+            ```
+    """
+
     root: dict[ImportString, list[AntaTestDefinition]]
 
     @model_validator(mode="before")
@@ -46,7 +89,6 @@ class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
         are actually defined in their respective Python module and instantiate Input instances
         with provided value to validate test inputs.
         """
-
         def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
             """
             Allow the user to provide a data structure with nested Python modules.
@@ -97,44 +139,6 @@ class AntaCatalog:
 
     It can be defined programmatically by providing the `tests` argument to the constructor
     or it can be loaded from a file using the `filename` argument.
-
-    A valid test catalog file must follow the following structure:
-        <Python module>:
-            - <AntaTest subclass>:
-                <AntaTest.Input compliant dictionary>
-
-        Example:
-            ```
-            anta.tests.connectivity:
-                - VerifyReachability:
-                    hosts:
-                        - dst: 8.8.8.8
-                          src: 172.16.0.1
-                        - dst: 1.1.1.1
-                          src: 172.16.0.1
-                    result_overwrite:
-                        categories:
-                            - "Overwritten category 1"
-                        description: "Test with overwritten description"
-                        custom_field: "Test run by John Doe"
-            ```
-
-        Also supports nesting for Python module definition:
-            ```
-            anta.tests:
-                connectivity:
-                    - VerifyReachability:
-                        hosts:
-                            - dst: 8.8.8.8
-                              src: 172.16.0.1
-                            - dst: 1.1.1.1
-                              src: 172.16.0.1
-                        result_overwrite:
-                            categories:
-                                - "Overwritten category 1"
-                            description: "Test with overwritten description"
-                            custom_field: "Test run by John Doe"
-            ```
 
     Attributes:
         filename: The path from which the catalog is loaded.
@@ -199,3 +203,19 @@ class AntaCatalog:
             self._tests = []
         for tests in self.file.root.values():
             self._tests.extend(tests)
+
+    def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
+        """
+        Return all the tests that have matching tags in their input filters.
+        If strict=True, returns only tests that match all the tags provided as input.
+        If strict=False, return all the tests that match at least one tag provided as input.
+        """
+        raise NotImplementedError()
+
+    def get_tests_by_device(self, devices: list[AntaDevice], strict: bool = False) -> list[AntaTestDefinition]:
+        """
+        Return all the tests that have matching devices in their input filters.
+        If strict=True, returns only tests that match all the devices provided as input.
+        If strict=False, return all the tests that match at least one device provided as input.
+        """
+        raise NotImplementedError()
