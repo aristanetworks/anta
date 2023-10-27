@@ -16,7 +16,4 @@
   ],
   "isort.importStrategy": "fromEnvironment",
   "isort.check": true,
-  "files.associations": {
-    "*.yaml": "home-assistant"
-  },
 }
