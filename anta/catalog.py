@@ -22,20 +22,33 @@ logger = logging.getLogger(__name__)
 
 
 class AntaTestDefinition(BaseModel):
+    """
+    Define a test with its associated inputs.
+
+    test: An AntaTest concrete subclass
+    inputs: The associated AntaTest.Input subclass instance
+    """
+
     test: type[AntaTest]
     inputs: AntaTest.Input
 
     @model_serializer
     def ser_model(self) -> dict[str, AntaTest.Input]:
+        """
+        Serialize an AntaTestDefinition as it is defined in a test catalog YAML file.
+        """
         return {self.test.__name__: self.inputs}
 
     @model_validator(mode="after")
     def check_inputs(self) -> "AntaTestDefinition":
+        """
+        The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.
+        """
         assert isinstance(self.inputs, self.test.Input), f"{self.inputs} object must be a instance of {self.test.Input}"
         return self
 
 
-class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
+class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
     """
     This model represents an ANTA Test Catalog File.
 
@@ -78,7 +91,7 @@ class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
             ```
     """
 
-    root: dict[ImportString, list[AntaTestDefinition]]
+    root: dict[ImportString[Any], list[AntaTestDefinition]]
 
     @model_validator(mode="before")
     @classmethod
@@ -143,11 +156,11 @@ class AntaCatalog:
 
     Attributes:
         filename: The path from which the catalog is loaded.
-        file: The AntaCatalogFile model representinf the catalog file.
         tests: A list of tuple containing an AntaTest class and the associated input.
+        file: The AntaCatalogFile model representinf the catalog file.
     """
 
-    def __init__(self, filename: str | None = None, tests: list[AntaTestDefinition] = []) -> None:
+    def __init__(self, filename: str | None = None, tests: list[AntaTestDefinition] | None = None) -> None:
         """
         Constructor of AntaCatalog
 
@@ -158,14 +171,17 @@ class AntaCatalog:
         if filename is not None and tests:
             raise RuntimeError("'filename' and 'tests' arguments cannot be provided at the same time")
         self.filename: str | None = filename
+        self.tests: list[AntaTestDefinition] = []
+        if tests is not None:
+            self.tests = tests
         self.file: AntaCatalogFile | None = None
         self._data = None
         if self.filename:
             self._parse_file()
-        self.tests: list[AntaTestDefinition] = tests
 
     @property
     def tests(self) -> list[AntaTestDefinition]:
+        """List of AntaTestDefinition in this catalog"""
         return self._tests
 
     @tests.setter
@@ -209,8 +225,8 @@ class AntaCatalog:
         """
         result: list[AntaTestDefinition] = []
         for test in self.tests:
-            if test.inputs.filters and (filter := test.inputs.filters.tags):
-                if (strict and all(t in tags for t in filter)) or (not strict and any(t in tags for t in filter)):
+            if test.inputs.filters and (f := test.inputs.filters.tags):
+                if (strict and all(t in tags for t in f)) or (not strict and any(t in tags for t in f)):
                     result.append(test)
         return result
 
@@ -220,7 +236,7 @@ class AntaCatalog:
         """
         result: list[AntaTestDefinition] = []
         for test in self.tests:
-            if test.inputs.filters and (filter := test.inputs.filters.devices):
-                if device.name in filter:
+            if test.inputs.filters and (f := test.inputs.filters.devices):
+                if device.name in f:
                     result.append(test)
         return result

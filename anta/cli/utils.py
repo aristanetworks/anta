@@ -46,6 +46,10 @@ class ExitCode(enum.IntEnum):
 
 
 def check_catalog(ctx: click.Context, catalog: AntaCatalog) -> None:
+    """
+    Helper function to check test catalog file and print
+    output using console.
+    """
     try:
         catalog.check()
         console.print(f"[bold][green]Catalog {catalog.filename} is valid")

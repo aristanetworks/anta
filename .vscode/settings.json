@@ -2,7 +2,6 @@
   "black-formatter.importStrategy": "fromEnvironment",
   "pylint.importStrategy": "fromEnvironment",
   "pylint.args": [
-    "--load-plugins pylint_pydantic",
     "--rcfile=pylintrc"
   ],
   "flake8.importStrategy": "fromEnvironment",
