@@ -68,19 +68,19 @@ async def main(
     coros = []
 
     tests: list[AntaTestRunner] = []
-    if tags:
-        for device in devices:
-            for test in catalog.get_tests_by_tags(tags):
-                tests.append((test, device))
-    else:
-        # If there is no CLI tags, execute all tests without filters on all devices
-        for device in devices:
+    for device in devices:
+        if tags:
+            # If there are CLI tags, only execute tests with matching tags
+                for test in catalog.get_tests_by_tags(tags):
+                    tests.append((test, device))
+        else:
+            # If there is no CLI tags, execute all tests without filters
             tests.extend([(t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None])
             # Also execute tests with filters conditionally
             if device.tags:
-                # Execute tests on devices with matching tags
+                # If the device has tags, execute tests with matching tags
                 tests.extend(list(map(lambda t: (t, device), catalog.get_tests_by_tags(device.tags))))
-            # Also execute tests with filters on devices with matching name
+            # Also execute tests with filters on this device name
             tests.extend(list(map(lambda t: (t, device), catalog.get_tests_by_device(device))))
 
     for test_definition, device in tests:
