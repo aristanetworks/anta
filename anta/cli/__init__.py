@@ -22,7 +22,7 @@ from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
 from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
-from anta.loader import setup_logging
+from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
 
