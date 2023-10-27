@@ -11,7 +11,7 @@ import logging
 from types import ModuleType
 from typing import Any
 
-from pydantic import RootModel, model_validator
+from pydantic import BaseModel, RootModel, model_validator, model_serializer
 from pydantic.types import ImportString
 from yaml import safe_load
 
@@ -20,18 +20,17 @@ from anta.models import AntaTest
 logger = logging.getLogger(__name__)
 
 
-class AntaTestDefinition(RootModel[dict[type[AntaTest], AntaTest.Input]]):
-    root: dict[type[AntaTest], AntaTest.Input]
+class AntaTestDefinition(BaseModel):
+    test: type[AntaTest]
+    inputs: AntaTest.Input
+
+    @model_serializer
+    def ser_model(self) -> dict[str, AntaTest.Input]:
+        return {self.test.__name__: self.inputs}
 
     @model_validator(mode="after")
-    def check_single_entry(self) -> AntaTestDefinition:
-        assert len(self.root) == 1, "AntaTestDefinition is a dictionary with a single entry"
-        return self
-
-    @model_validator(mode="after")
-    def check_inputs(self) -> AntaTestDefinition:
-        definition: tuple[type[AntaTest], AntaTest.Input] = list(self.root.items())[0]
-        assert isinstance(definition[1], definition[0].Input), f"{definition[1]} object must be a instance of {definition[0].Input}"
+    def check_inputs(self) -> 'AntaTestDefinition':
+        assert isinstance(self.inputs, self.test.Input), f"{self.inputs} object must be a instance of {self.test.Input}"
         return self
 
 
@@ -79,16 +78,16 @@ class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
         if isinstance(data, dict):
             typed_data: dict[ModuleType, list[Any]] = flatten_modules(data)
             for module, tests in typed_data.items():
+                test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
                     assert isinstance(test_definition, dict), "AntaTestDefinition must be a dictionary"
+                    assert len(test_definition) == 1, "AntaTestDefinition must be a dictionary with a single entry"
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         assert test, f"{test_name} is not defined in Python module {module}"
-                        del test_definition[test_name]
-                        if test_inputs:
-                            test_definition[test] = test.Input(**test_inputs)
-                        else:
-                            test_definition[test] = test.Input()
+                        inputs: AntaTest.Input = test.Input(**test_inputs) if test_inputs else test.Input()
+                        test_definitions.append(AntaTestDefinition(test=test, inputs=inputs))
+                typed_data[module] = test_definitions
         return typed_data
 
 
