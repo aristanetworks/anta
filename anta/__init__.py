@@ -32,6 +32,7 @@ class RICH_COLOR_PALETTE:
     SUCCESS = "green4"
     SKIPPED = "bold orange4"
     HEADER = "cyan"
+    UNSET = "grey74"
 
 
 # Dictionary to use in a Rich.Theme: custom_theme = Theme(RICH_COLOR_THEME)
@@ -40,4 +41,5 @@ RICH_COLOR_THEME = {
     "skipped": RICH_COLOR_PALETTE.SKIPPED,
     "failure": RICH_COLOR_PALETTE.FAILURE,
     "error": RICH_COLOR_PALETTE.ERROR,
+    "unset": RICH_COLOR_PALETTE.UNSET,
 }

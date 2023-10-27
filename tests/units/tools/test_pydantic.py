@@ -4,7 +4,6 @@
 """
 Tests for anta.tools.pydantic
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
@@ -14,7 +13,7 @@ import pytest
 from anta.tools.pydantic import pydantic_to_dict
 
 if TYPE_CHECKING:
-    from anta.result_manager.models import ListResult
+    from anta.result_manager.models import TestResult
 
 EXPECTED_ONE_ENTRY = [
     {
@@ -71,7 +70,7 @@ EXPECTED_THREE_ENTRIES = [
     ],
 )
 def test_pydantic_to_dict(
-    list_result_factory: Callable[[int], ListResult],
+    list_result_factory: Callable[[int], list[TestResult]],
     number_of_entries: int,
     expected: dict[str, Any],
 ) -> None:

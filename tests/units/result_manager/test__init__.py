@@ -4,21 +4,17 @@
 """
 Test anta.result_manager.__init__.py
 """
-
 from __future__ import annotations
 
 import json
 from contextlib import nullcontext
-from typing import TYPE_CHECKING, Any, Callable
+from typing import Any, Callable
 
 import pytest
 
 from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
-from anta.result_manager.models import ListResult
-
-if TYPE_CHECKING:
-    from anta.result_manager.models import TestResult
+from anta.result_manager.models import TestResult
 
 
 class Test_ResultManager:
@@ -28,7 +24,7 @@ class Test_ResultManager:
 
     # not testing __init__ as nothing is going on there
 
-    def test__len__(self, list_result_factory: Callable[[int], ListResult]) -> None:
+    def test__len__(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """
         test __len__
         """
@@ -116,7 +112,7 @@ class Test_ResultManager:
         assert result_manager.error_status is True
         assert len(result_manager) == 4
 
-    def test_add_test_results(self, list_result_factory: Callable[[int], ListResult]) -> None:
+    def test_add_test_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """
         Test ResultManager.add_test_results
         """
@@ -129,7 +125,7 @@ class Test_ResultManager:
         success_list = list_result_factory(3)
         for test in success_list:
             test.result = "success"
-        result_manager.add_test_results(success_list.root)
+        result_manager.add_test_results(success_list)
         assert result_manager.status == "success"
         assert result_manager.error_status is False
         assert len(result_manager) == 3
@@ -138,7 +134,7 @@ class Test_ResultManager:
         error_failure_list = list_result_factory(2)
         error_failure_list[0].result = "error"
         error_failure_list[1].result = "failure"
-        result_manager.add_test_results(error_failure_list.root)
+        result_manager.add_test_results(error_failure_list)
         assert result_manager.status == "failure"
         assert result_manager.error_status is True
         assert len(result_manager) == 5
@@ -161,16 +157,7 @@ class Test_ResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    @pytest.mark.parametrize(
-        "_format, expected_raise",
-        [
-            ("native", nullcontext()),
-            ("json", nullcontext()),
-            ("native", nullcontext()),
-            ("dummy", pytest.raises(ValueError)),
-        ],
-    )
-    def test_get_results(self, list_result_factory: Callable[[int], ListResult], _format: str, expected_raise: Any) -> None:
+    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """
         test ResultManager.get_results
         """
@@ -179,18 +166,26 @@ class Test_ResultManager:
         success_list = list_result_factory(3)
         for test in success_list:
             test.result = "success"
-        result_manager.add_test_results(success_list.root)
+        result_manager.add_test_results(success_list)
 
-        with expected_raise:
-            res = result_manager.get_results(output_format=_format)
-            if _format == "json":
-                assert isinstance(res, str)
-                # verifies it can be loaded as json
-                json.loads(res)
-            elif _format == "list":
-                assert isinstance(res, list)
-            elif _format == "native":
-                assert isinstance(res, ListResult)
+        res = result_manager.get_results()
+        assert isinstance(res, list)
+
+    def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """
+        test ResultManager.get_json_results
+        """
+        result_manager = ResultManager()
+
+        success_list = list_result_factory(3)
+        for test in success_list:
+            test.result = "success"
+        result_manager.add_test_results(success_list)
+
+        res = result_manager.get_json_results()
+        assert isinstance(res, str)
+        # verifies it can be loaded as json
+        json.loads(res)
 
     # TODO
     # get_result_by_test
