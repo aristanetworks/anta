@@ -11,7 +11,7 @@ import logging
 from types import ModuleType
 from typing import Any
 
-from pydantic import BaseModel, RootModel, model_validator, model_serializer
+from pydantic import BaseModel, RootModel, model_serializer, model_validator
 from pydantic.types import ImportString
 from yaml import safe_load
 
@@ -29,7 +29,7 @@ class AntaTestDefinition(BaseModel):
         return {self.test.__name__: self.inputs}
 
     @model_validator(mode="after")
-    def check_inputs(self) -> 'AntaTestDefinition':
+    def check_inputs(self) -> "AntaTestDefinition":
         assert isinstance(self.inputs, self.test.Input), f"{self.inputs} object must be a instance of {self.test.Input}"
         return self
 
