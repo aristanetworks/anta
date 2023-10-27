@@ -142,7 +142,7 @@ class AntaCatalog:
         tests: A list of tuple containing an AntaTest class and the associated input.
     """
 
-    def __init__(self, filename: str | None = None, tests: list[tuple[type[AntaTest], AntaTest.Input]] = []) -> None:
+    def __init__(self, filename: str | None = None, tests: list[AntaTestDefinition] = []) -> None:
         """
         Constructor of AntaCatalog
 
@@ -157,7 +157,18 @@ class AntaCatalog:
         self._data = None
         if self.filename:
             self._parse_file()
-        self.tests: list[tuple[type[AntaTest], AntaTest.Input]] = tests
+        self.tests: list[AntaTestDefinition] = tests
+
+    @property
+    def tests(self) -> list[AntaTestDefinition]:
+        return self._tests
+
+    @tests.setter
+    def tests(self, value: list[AntaTestDefinition]) -> None:
+        assert isinstance(value, list), "The catalog must contain a list of tests"
+        for t in value:
+            assert isinstance(t, AntaTestDefinition), "A test in the catalog must be an AntaTestDefinition instance"
+        self._tests = value
 
     def _parse_file(self) -> None:
         """
@@ -175,6 +186,16 @@ class AntaCatalog:
     def check(self: AntaCatalog) -> None:
         """
         Check if the data in the catalog file is valid
+        and populate `tests` instance attribute.
         """
         if self._data is not None:
-            self.file = AntaCatalogFile(self._data)
+            self.file = AntaCatalogFile(**self._data)
+        else:
+            logger.critical("Catalog file has not been parsed thus cannot be checked")
+            # TODO: custom exception
+            raise Exception()
+        if self._tests:
+            logger.warning(f'Overriding AntaCatalog data from file {self.filename}')
+            self._tests = []
+        for tests in self.file.root.values():
+            self._tests.extend(tests)
