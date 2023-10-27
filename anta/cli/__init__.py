@@ -21,7 +21,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
+from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, check_catalog, parse_catalog, parse_inventory
 from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
@@ -150,6 +150,7 @@ def anta(
 )
 def _nrfu(ctx: click.Context, catalog: AntaCatalog) -> None:
     """Run NRFU against inventory devices"""
+    check_catalog(ctx, catalog)
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()
 

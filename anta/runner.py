@@ -48,6 +48,7 @@ async def main(
         any: ResultManager object gets updated with the test results.
     """
 
+    catalog.check()
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
@@ -71,15 +72,11 @@ async def main(
 
     coros = []
 
-    for device, test in itertools.product(devices, catalog.tests):
-        test_class = test[0]
-        test_inputs = test[1]
-        test_filters = test[1].get("filters", None) if test[1] is not None else None
-        test_tags = test_filters.get("tags", []) if test_filters is not None else []
-        if len(test_tags) == 0 or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_tags):
+    for device, test_definition in itertools.product(devices, catalog.tests):
+        if len(test_definition.inputs.filters.tags) == 0 or filter_tags(tags_cli=tags, tags_device=device.tags, tags_test=test_definition.inputs.filters.tags):
             try:
                 # Instantiate AntaTest object
-                test_instance = test_class(device=device, inputs=test_inputs)
+                test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
                 coros.append(test_instance.test(eos_data=None))
             except Exception as e:  # pylint: disable=broad-exception-caught
                 message = "Error when creating ANTA tests"

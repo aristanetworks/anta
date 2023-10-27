@@ -317,7 +317,7 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
-        inputs: Optional[dict[str, Any]],
+        inputs: dict[str, Any] | AntaTest.Input | None,
         eos_data: Optional[list[dict[Any, Any] | str]] = None,
     ):
         """AntaTest Constructor
@@ -337,19 +337,24 @@ class AntaTest(ABC):
         if self.result.result == "unset":
             self._init_commands(eos_data)
 
-    def _init_inputs(self, inputs: Optional[dict[str, Any]]) -> None:
+    def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance
         to validate test inputs from defined model.
         Overwrite result fields based on `ResultOverwrite` input definition.
 
         Any input validation error will set this test result status as 'error'."""
-        try:
-            self.inputs = self.Input(**inputs) if inputs is not None else self.Input()
-        except ValidationError as e:
-            message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
-            self.logger.error(message)
-            self.result.is_error(message=message, exception=e)
-            return
+        if inputs is None:
+            self.inputs = self.Input()
+        elif isinstance(inputs, AntaTest.Input):
+            self.inputs = inputs
+        elif isinstance(inputs, dict):
+            try:
+                self.inputs = self.Input(**inputs)
+            except ValidationError as e:
+                message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
+                self.logger.error(message)
+                self.result.is_error(message=message, exception=e)
+                return
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
                 self.result.categories = res_ow.categories

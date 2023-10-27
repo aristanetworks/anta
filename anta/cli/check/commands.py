@@ -11,13 +11,11 @@ from __future__ import annotations
 import logging
 
 import click
-from pydantic import ValidationError
 from rich.pretty import pretty_repr
 
 from anta.catalog import AntaCatalog
 from anta.cli.console import console
-from anta.cli.utils import parse_catalog
-from anta.tools.misc import anta_log_exception
+from anta.cli.utils import check_catalog, parse_catalog
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +36,5 @@ def catalog(ctx: click.Context, catalog: AntaCatalog) -> None:
     Check that the catalog is valid
     """
     logger.info(f"Checking syntax of catalog {ctx.obj['catalog_path']}")
-    try:
-        catalog.check()
-        console.print(f"[bold][green]Catalog {ctx.obj['catalog_path']} is valid")
-        console.print(pretty_repr(catalog.file))
-    except ValidationError as e:
-        console.print(f"[bold][red]Catalog {ctx.obj['catalog_path']} is invalid")
-        anta_log_exception(e)
-        ctx.exit(1)
+    check_catalog(ctx, catalog)
+    console.print(pretty_repr(catalog.file))

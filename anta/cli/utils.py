@@ -14,8 +14,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import click
+from pydantic import ValidationError
 
 from anta.catalog import AntaCatalog
+from anta.cli.console import console
 from anta.inventory import AntaInventory
 from anta.tools.misc import anta_log_exception
 
@@ -41,6 +43,16 @@ class ExitCode(enum.IntEnum):
     INTERNAL_ERROR = 3
     #  pytest was misused.
     USAGE_ERROR = 4
+
+
+def check_catalog(ctx: click.Context, catalog: AntaCatalog) -> None:
+    try:
+        catalog.check()
+        console.print(f"[bold][green]Catalog {catalog.filename} is valid")
+    except ValidationError as e:
+        console.print(f"[bold][red]Catalog {catalog.filename} is invalid")
+        anta_log_exception(e)
+        ctx.exit(1)
 
 
 def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:

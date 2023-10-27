@@ -14,8 +14,8 @@ from typing import Any
 from pydantic import BaseModel, RootModel, model_serializer, model_validator
 from pydantic.types import ImportString
 from yaml import safe_load
-from anta.device import AntaDevice
 
+from anta.device import AntaDevice
 from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
@@ -89,6 +89,7 @@ class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
         are actually defined in their respective Python module and instantiate Input instances
         with provided value to validate test inputs.
         """
+
         def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
             """
             Allow the user to provide a data structure with nested Python modules.
@@ -194,15 +195,11 @@ class AntaCatalog:
         """
         if self._data is not None:
             self.file = AntaCatalogFile(**self._data)
-        else:
-            logger.critical("Catalog file has not been parsed thus cannot be checked")
-            # TODO: custom exception
-            raise Exception()
-        if self._tests:
-            logger.warning(f'Overriding AntaCatalog data from file {self.filename}')
+            if self._tests:
+                logger.warning(f"Overriding AntaCatalog data from file {self.filename}")
             self._tests = []
-        for tests in self.file.root.values():
-            self._tests.extend(tests)
+            for tests in self.file.root.values():
+                self._tests.extend(tests)
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
         """
