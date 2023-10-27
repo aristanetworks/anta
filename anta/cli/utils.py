@@ -89,11 +89,11 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
     if ctx.obj.get("_anta_help"):
         # Currently looking for help for a subcommand so no
         # need to parse the Catalog - return an empty catalog
-        return AntaCatalog("dummy")
+        return AntaCatalog()
     # Storing catalog path
     ctx.obj["catalog_path"] = value
     try:
-        catalog = AntaCatalog("cli", value)
+        catalog = AntaCatalog(filename=value)
     # TODO catch proper exception
     # pylint: disable-next=broad-exception-caught
     except Exception as e:

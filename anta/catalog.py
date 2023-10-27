@@ -8,64 +8,104 @@ from __future__ import annotations
 
 import importlib
 import logging
-from typing import Any, Optional, cast
+from types import ModuleType
+from typing import Any
 
+from pydantic import RootModel, model_validator
+from pydantic.types import ImportString
 from yaml import safe_load
 
-from anta.device import AsyncEOSDevice
 from anta.models import AntaTest
-from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
 
 
+class AntaTestDefinition(RootModel[dict[type[AntaTest], AntaTest.Input]]):
+    root: dict[type[AntaTest], AntaTest.Input]
+
+    @model_validator(mode="after")
+    def check_single_entry(self) -> AntaTestDefinition:
+        assert len(self.root) == 1, "AntaTestDefinition is a dictionary with a single entry"
+        return self
+
+    @model_validator(mode="after")
+    def check_inputs(self) -> AntaTestDefinition:
+        definition: tuple[type[AntaTest], AntaTest.Input] = list(self.root.items())[0]
+        assert isinstance(definition[1], definition[0].Input), f"{definition[1]} object must be a instance of {definition[0].Input}"
+        return self
+
+
+class AntaCatalogFile(RootModel[dict[ImportString, list[AntaTestDefinition]]]):
+    root: dict[ImportString, list[AntaTestDefinition]]
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_tests(cls, data: Any) -> Any:
+        """
+        Allow the user to provide a Python data structure that only has string values.
+        This validator will try to flatten and import Python modules, check if the tests classes
+        are actually defined in their respective Python module and instantiate Input instances
+        with provided value to validate test inputs.
+        """
+
+        def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
+            """
+            Allow the user to provide a data structure with nested Python modules.
+
+                Example:
+                ```
+                anta.tests.routing:
+                  generic:
+                    - <AntaTestDefinition>
+                  bgp:
+                    - <AntaTestDefinition>
+                ```
+                `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
+            """
+            modules: dict[ModuleType, list[Any]] = {}
+            for module_name, tests in data.items():
+                if package and not module_name.startswith("."):
+                    module_name = f".{module_name}"
+                module: ModuleType = importlib.import_module(name=module_name, package=package)
+                if isinstance(tests, dict):
+                    # This is an inner Python module
+                    modules.update(flatten_modules(data=tests, package=module.__name__))
+                else:
+                    assert isinstance(tests, list), f"{tests} must be a list of AntaTestDefinition"
+                    # This is a list of AntaTestDefinition
+                    modules[module] = tests
+            return modules
+
+        if isinstance(data, dict):
+            typed_data: dict[ModuleType, list[Any]] = flatten_modules(data)
+            for module, tests in typed_data.items():
+                for test_definition in tests:
+                    assert isinstance(test_definition, dict), "AntaTestDefinition must be a dictionary"
+                    for test_name, test_inputs in test_definition.copy().items():
+                        test: type[AntaTest] | None = getattr(module, test_name, None)
+                        assert test, f"{test_name} is not defined in Python module {module}"
+                        del test_definition[test_name]
+                        if test_inputs:
+                            test_definition[test] = test.Input(**test_inputs)
+                        else:
+                            test_definition[test] = test.Input()
+        return typed_data
+
+
 class AntaCatalog:
     """
-    Class representing an ANTA Catalog
+    Class representing an ANTA Catalog.
 
-    Attributes:
-        name: Catalog name
-        filename Optional[str]: The path from which the catalog was loaded
-        tests: list[tuple[AntaTest, AntaTest.Input]]: A list of Tuple containing an AntaTest and the associated input
-    """
+    It can be defined programmatically by providing the `tests` argument to the constructor
+    or it can be loaded from a file using the `filename` argument.
 
-    def __init__(self, name: str, filename: Optional[str] = None) -> None:
-        """
-        Constructor of AntaCatalog
-
-        Args:
-            name: Device name
-            filname: Optional name - if provided tests are loaded
-        """
-        self.name: str = name
-        self.filename: Optional[str] = filename
-        self.tests: list[tuple[AntaTest, AntaTest.Input]] = []
-
-    def parse_catalog_file(self: AntaCatalog) -> None:
-        """
-        Parse a file
-        """
-        if self.filename is None:
-            return
-        try:
-            with open(self.filename, "r", encoding="UTF-8") as file:
-                data = safe_load(file)
-                self.parse_catalog(data)
-        # pylint: disable-next=broad-exception-caught
-        except Exception:
-            logger.critical(f"Something went wrong while parsing {self.filename}")
-            raise
-
-    def parse_catalog(self: AntaCatalog, test_catalog: dict[str, Any], package: str | None = None) -> None:
-        """
-        Function to parse the catalog and return a list of tests with their inputs
-
-        A valid test catalog must follow the following structure:
-            <Python module>:
-                - <AntaTest subclass>:
-                    <AntaTest.Input compliant dictionary>
+    A valid test catalog file must follow the following structure:
+        <Python module>:
+            - <AntaTest subclass>:
+                <AntaTest.Input compliant dictionary>
 
         Example:
+            ```
             anta.tests.connectivity:
                 - VerifyReachability:
                     hosts:
@@ -78,8 +118,10 @@ class AntaCatalog:
                             - "Overwritten category 1"
                         description: "Test with overwritten description"
                         custom_field: "Test run by John Doe"
+            ```
 
         Also supports nesting for Python module definition:
+            ```
             anta.tests:
                 connectivity:
                     - VerifyReachability:
@@ -93,60 +135,47 @@ class AntaCatalog:
                                 - "Overwritten category 1"
                             description: "Test with overwritten description"
                             custom_field: "Test run by John Doe"
+            ```
+
+    Attributes:
+        filename: The path from which the catalog is loaded.
+        file: The AntaCatalogFile model representinf the catalog file.
+        tests: A list of tuple containing an AntaTest class and the associated input.
+    """
+
+    def __init__(self, filename: str | None = None, tests: list[tuple[type[AntaTest], AntaTest.Input]] = []) -> None:
+        """
+        Constructor of AntaCatalog
 
         Args:
-            test_catalog: Python dictionary representing the test catalog YAML file
-
+            filename: The path from which the catalog is loaded. Use this argument if you want to load the catalog from a file.
+            tests: A list of tuple containing an AntaTest class and the associated input. Use this argument if you want to define the catalog programmatically.
         """
-        # pylint: disable=broad-exception-raised
-        if not test_catalog:
-            return
+        if filename is not None and tests:
+            raise RuntimeError("'filename' and 'tests' arguments cannot be provided at the same time")
+        self.filename: str | None = filename
+        self.file: AntaCatalogFile | None = None
+        self._data = None
+        if self.filename:
+            self._parse_file()
+        self.tests: list[tuple[type[AntaTest], AntaTest.Input]] = tests
 
-        for key, value in test_catalog.items():
-            # Required to manage iteration within a tests module
-            if package is not None:
-                key = ".".join([package, key])
+    def _parse_file(self) -> None:
+        """
+        Parse the catalog YAML file
+        """
+        if self.filename:
             try:
-                module = importlib.import_module(f"{key}")
-            except ModuleNotFoundError:
-                logger.critical(f"No test module named '{key}'")
+                with open(file=self.filename, mode="r", encoding="UTF-8") as file:
+                    self._data = safe_load(file)
+            # pylint: disable-next=broad-exception-caught
+            except Exception:
+                logger.critical(f"Something went wrong while parsing {self.filename}")
                 raise
 
-            if isinstance(value, list):
-                # This is a list of tests
-                for test in value:
-                    for test_name, inputs in test.items():
-                        # A test must be a subclass of AntaTest as defined in the Python module
-                        try:
-                            test = getattr(module, test_name)
-                        except AttributeError:
-                            logger.critical(f"Wrong test name '{test_name}' in '{module.__name__}'")
-                            raise
-                        if not issubclass(test, AntaTest):
-                            logger.critical(f"'{test.__module__}.{test.__name__}' is not an AntaTest subclass")
-                            raise Exception()
-                        # Test inputs can be either None or a dictionary
-                        if inputs is None or isinstance(inputs, dict):
-                            self.tests.append((cast(AntaTest, test), cast(AntaTest.Input, inputs)))
-                        else:
-                            logger.critical(f"'{test.__module__}.{test.__name__}' inputs must be a dictionary")
-                            raise Exception()
-            if isinstance(value, dict):
-                # This is an inner Python module
-                self.parse_catalog(value, package=module.__name__)
-
-    def check(self: AntaCatalog) -> ResultManager:
+    def check(self: AntaCatalog) -> None:
         """
-        TODO - for now a test requires a device but this may be revisited in the future
+        Check if the data in the catalog file is valid
         """
-        # Mock device
-        mock_device = AsyncEOSDevice(name="mock", host="127.0.0.1", username="mock", password="mock")
-
-        manager = ResultManager()
-        # Instantiate each test to verify the Inputs are correct
-        for test_class, test_inputs in self.tests:
-            # TODO - this is the same code with typing as in runner.py but somehow mypy complains that test_class
-            # ot type AntaTest is not callable
-            test_instance = test_class(device=mock_device, inputs=test_inputs)  # type: ignore[operator]
-            manager.add_test_result(test_instance.result)
-        return manager
+        if self._data is not None:
+            self.file = AntaCatalogFile(self._data)
