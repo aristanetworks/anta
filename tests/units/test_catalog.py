@@ -123,7 +123,7 @@ class Test_AntaCatalog:
         """
         Instantiate AntaCatalog from a file
         """
-        catalog = AntaCatalog(filename=DATA_DIR / catalog_data["filename"])
+        catalog = AntaCatalog(filename=str(DATA_DIR / catalog_data["filename"]))
         catalog.check()
 
         assert len(catalog.tests) == len(catalog_data["tests"])
@@ -139,7 +139,7 @@ class Test_AntaCatalog:
         """
         Errors when instantiating AntaCatalog from a file
         """
-        catalog = AntaCatalog(filename=DATA_DIR / catalog_data["filename"])
+        catalog = AntaCatalog(filename=str(DATA_DIR / catalog_data["filename"]))
         with pytest.raises(ValidationError) as exec_info:
             catalog.check()
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
@@ -169,13 +169,19 @@ class Test_AntaCatalog:
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
 
     def test_get_tests_by_tags(self) -> None:
-        catalog = AntaCatalog(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        """
+        Test AntaCatalog.test_get_tests_by_tags()
+        """
+        catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
         catalog.check()
         tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
         assert len(tests) == 2
 
     def test_get_tests_by_device(self, mocked_device: AntaDevice) -> None:
-        catalog = AntaCatalog(filename=DATA_DIR / "test_catalog_with_tags.yml")
+        """
+        Test AntaCatalog.test_get_tests_by_device()
+        """
+        catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
         catalog.check()
         tests: list[AntaTestDefinition] = catalog.get_tests_by_device(device=mocked_device)
         assert len(tests) == 1
