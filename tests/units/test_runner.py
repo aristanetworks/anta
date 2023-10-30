@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.runner import main
@@ -21,7 +21,7 @@ from .test_models import FakeTest
 if TYPE_CHECKING:
     from pytest import LogCaptureFixture
 
-FAKE_CATALOG = AntaCatalog(tests=[AntaTestDefinition(test=FakeTest, inputs=FakeTest.Input())])
+FAKE_CATALOG = AntaCatalog(tests=[(FakeTest, None)])
 
 
 @pytest.mark.asyncio

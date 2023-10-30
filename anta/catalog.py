@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import importlib
 import logging
+from inspect import isclass
 from types import ModuleType
-from typing import Any, Type, Dict, List
+from typing import Any, Dict, List, Type
 
 from pydantic import BaseModel, RootModel, model_serializer, model_validator
 from pydantic.types import ImportString
@@ -39,12 +40,32 @@ class AntaTestDefinition(BaseModel):
         """
         return {self.test.__name__: self.inputs}
 
+    @model_validator(mode="before")
+    @classmethod
+    def instantiate_inputs(cls, data: Any) -> Any:
+        """
+        If the test has no inputs, allow the user to omit providing the `inputs` field.
+        If the test has inputs, allow the user to provide a valid dictionary of the input fields.
+        This model validator will instantiate an Input class from the `test` class field.
+
+        TODO: AntaTestDefinition typing suggest the user that `inputs` MUST be an AntaTest.Input instance
+        but this validator allow other types. Is there any way to change mypy behaviour without changing the
+        `inputs` typing that will change the pydantic validation logic ?
+        """
+        if isinstance(data, dict) and isclass(data["test"]) and issubclass(data["test"], AntaTest):
+            if data["inputs"] is None:
+                data["inputs"] = data["test"].Input()
+            if isinstance(data["inputs"], dict):
+                data["inputs"] = data["test"].Input(**data["inputs"])
+        return data
+
     @model_validator(mode="after")
     def check_inputs(self) -> "AntaTestDefinition":
         """
         The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.
         """
-        assert isinstance(self.inputs, self.test.Input), f"{self.inputs} object must be a instance of {self.test.Input}"
+        if not isinstance(self.inputs, self.test.Input):
+            raise ValueError(f"Test input has type {self.inputs.__class__.__qualname__} but expected type {self.test.Input.__qualname__}")
         return self
 
 
@@ -121,12 +142,19 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
             for module_name, tests in data.items():
                 if package and not module_name.startswith("."):
                     module_name = f".{module_name}"
-                module: ModuleType = importlib.import_module(name=module_name, package=package)
+                try:
+                    module: ModuleType = importlib.import_module(name=module_name, package=package)
+                except ModuleNotFoundError as e:
+                    module_str = module_name if not module_name.startswith(".") else module_name[1:]
+                    if package:
+                        module_str += f" from package {package}"
+                    raise ValueError(f"Module named {module_str} cannot be imported") from e
                 if isinstance(tests, dict):
                     # This is an inner Python module
                     modules.update(flatten_modules(data=tests, package=module.__name__))
                 else:
-                    assert isinstance(tests, list), f"{tests} must be a list of AntaTestDefinition"
+                    if not isinstance(tests, list):
+                        raise ValueError(f"{tests} must be a list of AntaTestDefinition")
                     # This is a list of AntaTestDefinition
                     modules[module] = tests
             return modules
@@ -136,13 +164,15 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
             for module, tests in typed_data.items():
                 test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
-                    assert isinstance(test_definition, dict), "AntaTestDefinition must be a dictionary"
-                    assert len(test_definition) == 1, "AntaTestDefinition must be a dictionary with a single entry"
+                    if not isinstance(test_definition, dict):
+                        raise ValueError("AntaTestDefinition must be a dictionary")
+                    if not len(test_definition) == 1:
+                        raise ValueError("AntaTestDefinition must be a dictionary with a single entry")
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
-                        assert test, f"{test_name} is not defined in Python module {module}"
-                        inputs: AntaTest.Input = test.Input(**test_inputs) if test_inputs else test.Input()
-                        test_definitions.append(AntaTestDefinition(test=test, inputs=inputs))
+                        if test is None:
+                            raise ValueError(f"{test_name} is not defined in Python module {module}")
+                        test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
         return typed_data
 
@@ -157,10 +187,10 @@ class AntaCatalog:
     Attributes:
         filename: The path from which the catalog is loaded.
         tests: A list of tuple containing an AntaTest class and the associated input.
-        file: The AntaCatalogFile model representinf the catalog file.
+        file: The AntaCatalogFile model representing the catalog file.
     """
 
-    def __init__(self, filename: str | None = None, tests: list[AntaTestDefinition] | None = None) -> None:
+    def __init__(self, filename: str | None = None, tests: list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]] | None = None) -> None:
         """
         Constructor of AntaCatalog
 
@@ -173,7 +203,8 @@ class AntaCatalog:
         self.filename: str | None = filename
         self.tests: list[AntaTestDefinition] = []
         if tests is not None:
-            self.tests = tests
+            for test, inputs in tests:
+                self.tests.append(AntaTestDefinition(test=test, inputs=inputs))  # type: ignore
         self.file: AntaCatalogFile | None = None
         self._data = None
         if self.filename:
@@ -186,9 +217,11 @@ class AntaCatalog:
 
     @tests.setter
     def tests(self, value: list[AntaTestDefinition]) -> None:
-        assert isinstance(value, list), "The catalog must contain a list of tests"
+        if not isinstance(value, list):
+            raise ValueError("The catalog must contain a list of tests")
         for t in value:
-            assert isinstance(t, AntaTestDefinition), "A test in the catalog must be an AntaTestDefinition instance"
+            if not isinstance(t, AntaTestDefinition):
+                raise ValueError("A test in the catalog must be an AntaTestDefinition instance")
         self._tests = value
 
     def _parse_file(self) -> None:

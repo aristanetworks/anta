@@ -1,0 +1,28 @@
+---
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 10
+      filters:
+        tags: ['fabric']
+  - VerifyReloadCause:
+      filters:
+        tags: ['leaf', 'spine']
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+  - VerifyCPUUtilization:
+      filters:
+        tags: ['leaf']
+  - VerifyMemoryUtilization:
+      filters:
+        devices: ['testdevice']
+  - VerifyFileSystemUtilization:
+  - VerifyNTP:
+
+anta.tests.mlag:
+  - VerifyMlagStatus:
+
+anta.tests.interfaces:
+  - VerifyL3MTU:
+      mtu: 1500
+      filters:
+        tags: ['demo']
