@@ -9,7 +9,7 @@ from __future__ import annotations
 import importlib
 import logging
 from types import ModuleType
-from typing import Any
+from typing import Any, Type, Dict, List
 
 from pydantic import BaseModel, RootModel, model_serializer, model_validator
 from pydantic.types import ImportString
@@ -29,11 +29,11 @@ class AntaTestDefinition(BaseModel):
     inputs: The associated AntaTest.Input subclass instance
     """
 
-    test: type[AntaTest]
+    test: Type[AntaTest]
     inputs: AntaTest.Input
 
     @model_serializer
-    def ser_model(self) -> dict[str, AntaTest.Input]:
+    def ser_model(self) -> Dict[str, AntaTest.Input]:
         """
         Serialize an AntaTestDefinition as it is defined in a test catalog YAML file.
         """
@@ -48,7 +48,7 @@ class AntaTestDefinition(BaseModel):
         return self
 
 
-class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
+class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
     """
     This model represents an ANTA Test Catalog File.
 
@@ -91,7 +91,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             ```
     """
 
-    root: dict[ImportString[Any], list[AntaTestDefinition]]
+    root: Dict[ImportString[Any], List[AntaTestDefinition]]
 
     @model_validator(mode="before")
     @classmethod
