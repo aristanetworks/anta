@@ -10,9 +10,10 @@ import importlib
 import logging
 from inspect import isclass
 from types import ModuleType
-from typing import Any, Dict, List, Type
+from typing import Annotated, Any, Dict, List, Type
 
-from pydantic import BaseModel, RootModel, model_serializer, model_validator
+from pydantic import BaseModel, FieldValidationInfo, RootModel, field_validator, model_serializer, model_validator
+from pydantic.functional_validators import BeforeValidator
 from pydantic.types import ImportString
 from yaml import safe_load
 
@@ -31,7 +32,18 @@ class AntaTestDefinition(BaseModel):
     """
 
     test: Type[AntaTest]
-    inputs: AntaTest.Input
+    inputs: Annotated[AntaTest.Input, BeforeValidator(AntaTestDefinition.instantiate_inputs)]
+
+    def __init__(self, **data: Any) -> None:
+        """
+        Inject test in the context to allow to instantiate Input in the BeforeValidator
+        https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization
+        """
+        self.__pydantic_validator__.validate_python(
+            data,
+            self_instance=self,
+            context={"test": data["test"]},
+        )
 
     @model_serializer
     def ser_model(self) -> Dict[str, AntaTest.Input]:
@@ -40,24 +52,24 @@ class AntaTestDefinition(BaseModel):
         """
         return {self.test.__name__: self.inputs}
 
-    @model_validator(mode="before")
     @classmethod
-    def instantiate_inputs(cls, data: Any) -> Any:
+    def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: FieldValidationInfo) -> AntaTest.Input:
         """
         If the test has no inputs, allow the user to omit providing the `inputs` field.
         If the test has inputs, allow the user to provide a valid dictionary of the input fields.
         This model validator will instantiate an Input class from the `test` class field.
-
-        TODO: AntaTestDefinition typing suggest the user that `inputs` MUST be an AntaTest.Input instance
-        but this validator allow other types. Is there any way to change mypy behaviour without changing the
-        `inputs` typing that will change the pydantic validation logic ?
         """
-        if isinstance(data, dict) and isclass(data["test"]) and issubclass(data["test"], AntaTest):
-            if data["inputs"] is None:
-                data["inputs"] = data["test"].Input()
-            if isinstance(data["inputs"], dict):
-                data["inputs"] = data["test"].Input(**data["inputs"])
-        return data
+        if data is None:
+            return AntaTest.Input()
+        if isinstance(data, AntaTest.Input):
+            return data
+        if isinstance(data, dict):
+            if info.context is not None:
+                test_class = info.context["test"]
+                return test_class.Input(**data)
+            else:
+                raise ValueError("Coud not instantiate dict inputs as no test class could be identified")
+        raise ValueError("Coud not instantiate inputs")
 
     @model_validator(mode="after")
     def check_inputs(self) -> "AntaTestDefinition":
@@ -203,8 +215,7 @@ class AntaCatalog:
         self.filename: str | None = filename
         self.tests: list[AntaTestDefinition] = []
         if tests is not None:
-            for test, inputs in tests:
-                self.tests.append(AntaTestDefinition(test=test, inputs=inputs))  # type: ignore
+            self.tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in tests)
         self.file: AntaCatalogFile | None = None
         self._data = None
         if self.filename:
