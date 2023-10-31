@@ -10,10 +10,9 @@ import importlib
 import logging
 from inspect import isclass
 from types import ModuleType
-from typing import Annotated, Any, Dict, List, Type
+from typing import Any, Dict, List, Type
 
-from pydantic import BaseModel, RootModel, ValidationInfo, model_serializer, model_validator
-from pydantic.functional_validators import BeforeValidator
+from pydantic import BaseModel, RootModel, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from yaml import safe_load
 
@@ -32,7 +31,7 @@ class AntaTestDefinition(BaseModel):
     """
 
     test: Type[AntaTest]
-    inputs: Annotated[AntaTest.Input, BeforeValidator(AntaTestDefinition.instantiate_inputs)]
+    inputs: AntaTest.Input
 
     def __init__(self, **data: Any) -> None:
         """
@@ -53,6 +52,7 @@ class AntaTestDefinition(BaseModel):
         """
         return {self.test.__name__: self.inputs}
 
+    @field_validator("inputs", mode="before")
     @classmethod
     def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) -> AntaTest.Input:
         """
