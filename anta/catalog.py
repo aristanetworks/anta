@@ -12,7 +12,7 @@ from inspect import isclass
 from types import ModuleType
 from typing import Annotated, Any, Dict, List, Type
 
-from pydantic import BaseModel, FieldValidationInfo, RootModel, field_validator, model_serializer, model_validator
+from pydantic import BaseModel, RootModel, ValidationInfo, model_serializer, model_validator
 from pydantic.functional_validators import BeforeValidator
 from pydantic.types import ImportString
 from yaml import safe_load
@@ -44,6 +44,7 @@ class AntaTestDefinition(BaseModel):
             self_instance=self,
             context={"test": data["test"]},
         )
+        super(BaseModel, self).__init__()
 
     @model_serializer
     def ser_model(self) -> Dict[str, AntaTest.Input]:
@@ -53,23 +54,27 @@ class AntaTestDefinition(BaseModel):
         return {self.test.__name__: self.inputs}
 
     @classmethod
-    def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: FieldValidationInfo) -> AntaTest.Input:
+    def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) -> AntaTest.Input:
         """
         If the test has no inputs, allow the user to omit providing the `inputs` field.
         If the test has inputs, allow the user to provide a valid dictionary of the input fields.
         This model validator will instantiate an Input class from the `test` class field.
         """
+        if info.context is None:
+            raise ValueError("Could not validate inputs as no test class could be identified")
+        # Pydantic guarantees at this stage that test_class is a subclass of AntaTest because of the ordering
+        # of fields in the class definition - so no need to check for this
+        test_class = info.context["test"]
+        if not (isclass(test_class) and issubclass(test_class, AntaTest)):
+            raise ValueError(f"Could not validate inputs as no test class {test_class} is not a subclass of AntaTest")
+
         if data is None:
-            return AntaTest.Input()
+            return test_class.Input()
         if isinstance(data, AntaTest.Input):
             return data
         if isinstance(data, dict):
-            if info.context is not None:
-                test_class = info.context["test"]
-                return test_class.Input(**data)
-            else:
-                raise ValueError("Coud not instantiate dict inputs as no test class could be identified")
-        raise ValueError("Coud not instantiate inputs")
+            return test_class.Input(**data)
+        raise ValueError(f"Coud not instantiate inputs as type {type(data)} is not valid")
 
     @model_validator(mode="after")
     def check_inputs(self) -> "AntaTestDefinition":

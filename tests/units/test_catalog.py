@@ -4,7 +4,6 @@
 """
 test anta.device.py
 """
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,8 +15,6 @@ from pydantic import ValidationError
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.device import AntaDevice
 from anta.models import AntaTest
-
-# Test classes used as expected values
 from anta.tests.configuration import VerifyZeroTouch
 from anta.tests.hardware import VerifyTemperature
 from anta.tests.interfaces import VerifyL3MTU
@@ -35,6 +32,8 @@ from anta.tests.system import (
 )
 from tests.lib.utils import generate_test_ids_list
 from tests.units.test_models import FakeTestWithInput
+
+# Test classes used as expected values
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
@@ -76,7 +75,7 @@ INIT_CATALOG_FILENAME_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
-        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from '/mnt/lab/projects/anta/anta/tests/software.py'>",
+        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
     },
     {
         "name": "undefined_module",
@@ -87,6 +86,11 @@ INIT_CATALOG_FILENAME_FAIL_DATA: list[dict[str, Any]] = [
         "name": "undefined_module_nested",
         "filename": "test_catalog_with_undefined_module_nested.yml",
         "error": "Module named undefined from package anta.tests cannot be imported",
+    },
+    {
+        "name": "not_a_list",
+        "filename": "test_catalog_not_a_list.yml",
+        "error": "Value error, True must be a list of AntaTestDefinition",
     },
 ]
 INIT_CATALOG_TESTS_FAIL_DATA: list[dict[str, Any]] = [
@@ -106,9 +110,14 @@ INIT_CATALOG_TESTS_FAIL_DATA: list[dict[str, Any]] = [
         "error": "Input should be a subclass of AntaTest",
     },
     {
-        "name": "no_test",
+        "name": "no_input_when_required",
         "tests": [(FakeTestWithInput, None)],
         "error": "Field required",
+    },
+    {
+        "name": "wrong_input_type",
+        "tests": [(FakeTestWithInput, True)],
+        "error": "Value error, Coud not instantiate inputs as type <class 'bool'> is not valid",
     },
 ]
 
