@@ -162,7 +162,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                 try:
                     module: ModuleType = importlib.import_module(name=module_name, package=package)
                 except ModuleNotFoundError as e:
-                    module_str = module_name if not module_name.startswith(".") else module_name[1:]
+                    module_str = module_name[1:] if module_name.startswith(".") else module_name
                     if package:
                         module_str += f" from package {package}"
                     raise ValueError(f"Module named {module_str} cannot be imported") from e
@@ -183,7 +183,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                 for test_definition in tests:
                     if not isinstance(test_definition, dict):
                         raise ValueError("AntaTestDefinition must be a dictionary")
-                    if not len(test_definition) == 1:
+                    if len(test_definition) != 1:
                         raise ValueError("AntaTestDefinition must be a dictionary with a single entry")
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)

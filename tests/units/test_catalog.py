@@ -92,6 +92,16 @@ INIT_CATALOG_FILENAME_FAIL_DATA: list[dict[str, Any]] = [
         "filename": "test_catalog_not_a_list.yml",
         "error": "Value error, True must be a list of AntaTestDefinition",
     },
+    {
+        "name": "test_definition_not_a_dict",
+        "filename": "test_catalog_test_definition_not_a_dict.yml",
+        "error": "Value error, AntaTestDefinition must be a dictionary",
+    },
+    {
+        "name": "test_definition_multiple_dicts",
+        "filename": "test_catalog_test_definition_multiple_dicts.yml",
+        "error": "Value error, AntaTestDefinition must be a dictionary with a single entry",
+    },
 ]
 INIT_CATALOG_TESTS_FAIL_DATA: list[dict[str, Any]] = [
     {
@@ -121,11 +131,31 @@ INIT_CATALOG_TESTS_FAIL_DATA: list[dict[str, Any]] = [
     },
 ]
 
+TESTS_SETTER_FAIL_DATA: list[dict[str, Any]] = [
+    {
+        "name": "not_a_list",
+        "tests": "not_a_list",
+        "error": "The catalog must contain a list of tests",
+    },
+    {
+        "name": "not_a_list_of_test_definitions",
+        "tests": [42, 43],
+        "error": "A test in the catalog must be an AntaTestDefinition instance",
+    },
+]
+
 
 class Test_AntaCatalog:
     """
     Test for anta.catalog.AntaCatalog
     """
+
+    def test__init__filename_and_tests(self) -> None:
+        """
+        Instantiate AntaCatalog from a file and give tests at the same time
+        """
+        with pytest.raises(RuntimeError, match="'filename' and 'tests' arguments cannot be provided at the same time"):
+            AntaCatalog(filename=str(DATA_DIR / "test_catalog.yml"), tests=INIT_CATALOG_DATA[0]["tests"])
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test__init__filename(self, catalog_data: dict[str, Any]) -> None:
@@ -153,6 +183,17 @@ class Test_AntaCatalog:
             catalog.check()
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
 
+    def test__init__filename_fail_parsing(self, caplog: pytest.LogCaptureFixture) -> None:
+        """
+        Errors when instantiating AntaCatalog from a file
+        """
+        with pytest.raises(Exception) as exec_info:
+            AntaCatalog(filename=str(DATA_DIR / "catalog_does_not_exist.yml"))
+        assert "No such file or directory" in str(exec_info)
+        assert len(caplog.record_tuples) == 1
+        _, _, message = caplog.record_tuples[0]
+        assert "Something went wrong while parsing" in message
+
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test__init__tests(self, catalog_data: dict[str, Any]) -> None:
         """
@@ -176,6 +217,16 @@ class Test_AntaCatalog:
         with pytest.raises(ValidationError) as exec_info:
             AntaCatalog(tests=catalog_data["tests"])
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+
+    @pytest.mark.parametrize("catalog_data", TESTS_SETTER_FAIL_DATA, ids=generate_test_ids_list(TESTS_SETTER_FAIL_DATA))
+    def test__tests_setter_fail(self, catalog_data: dict[str, Any]) -> None:
+        """
+        Errors when setting AntaCatalog.tests from a list of tuples
+        """
+        catalog = AntaCatalog()
+        with pytest.raises(ValueError) as exec_info:
+            catalog.tests = catalog_data["tests"]
+        assert catalog_data["error"] in str(exec_info)
 
     def test_get_tests_by_tags(self) -> None:
         """
