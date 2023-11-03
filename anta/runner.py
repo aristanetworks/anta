@@ -75,7 +75,7 @@ async def main(
                 tests.append((test, device))
         else:
             # If there is no CLI tags, execute all tests without filters
-            tests.extend([(t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None])
+            tests.extend([(t, device) for t in catalog.tests if t.inputs.filters is None])
             # Also execute tests with filters conditionally
             if device.tags:
                 # If the device has tags, execute tests with matching tags
@@ -83,7 +83,9 @@ async def main(
                     tests.append((t, device))
             # Also execute tests with filters on this device name
             for t in catalog.get_tests_by_device(device):
-                tests.append((t, device))
+                # Only add the test if it's not in the tests list already
+                if (t, device) not in tests:
+                    tests.append((t, device))
 
     for test_definition, device in tests:
         try:
