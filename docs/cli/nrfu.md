@@ -23,7 +23,7 @@ Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -c, --catalog FILE  Path to the tests catalog YAML file  [env var:
-                      ANTA_NRFU_CATALOG; required]
+                      ANTA_CATALOG; required]
   --help              Show this message and exit.
 
 Commands:

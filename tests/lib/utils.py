@@ -45,5 +45,5 @@ def default_anta_env() -> dict[str, str]:
         "ANTA_USERNAME": "anta",
         "ANTA_PASSWORD": "formica",
         "ANTA_INVENTORY": str(Path(__file__).parent.parent / "data" / "test_inventory.yml"),
-        "ANTA_NRFU_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
+        "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
     }
