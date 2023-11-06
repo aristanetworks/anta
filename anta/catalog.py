@@ -10,16 +10,22 @@ import importlib
 import logging
 from inspect import isclass
 from types import ModuleType
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Optional, Type, Union
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_validator, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
-from anta.custom_types import ListAntaTestTuples, RawCatalogInput
 from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
+
+
+# { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
+RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+
+# [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
+ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
 
 
 class AntaTestDefinition(BaseModel):
@@ -46,13 +52,6 @@ class AntaTestDefinition(BaseModel):
             context={"test": data["test"]},
         )
         super(BaseModel, self).__init__()
-
-    @model_serializer
-    def ser_model(self) -> Dict[str, AntaTest.Input]:
-        """
-        Serialize an AntaTestDefinition as it is defined in a test catalog YAML file.
-        """
-        return {self.test.__name__: self.inputs}
 
     @field_validator("inputs", mode="before")
     @classmethod

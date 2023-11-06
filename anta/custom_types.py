@@ -4,13 +4,11 @@
 """
 Module that provides predefined types for AntaTest.Input instances
 """
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import Field
 from pydantic.functional_validators import AfterValidator
 from typing_extensions import Annotated
-
-from anta.models import AntaTest
 
 
 def aaa_group_prefix(v: str) -> str:
@@ -21,10 +19,6 @@ def aaa_group_prefix(v: str) -> str:
 
 # ANTA framework
 TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
-# { <module_name> : { <test_class_name>: <input_as_dict_or_None> } }
-RawCatalogInput = dict[str, list[dict[str, dict[str, Any] | None]]]
-# [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
 
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]

@@ -36,4 +36,4 @@ def catalog(catalog: Path) -> None:
     """
     logger.info(f"Checking syntax of catalog {catalog}")
     catalog_obj: AntaCatalog = parse_catalog(str(catalog))
-    console.print(pretty_repr(catalog_obj.file))
+    console.print(pretty_repr(catalog_obj.tests))
