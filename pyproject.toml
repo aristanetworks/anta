@@ -87,7 +87,7 @@ doc = [
   "mkdocs-material-extensions>=1.0.3",
   "mkdocstrings[python]>=0.20.0",
   "fontawesome_markdown",
-  "mike==1.1.2",
+  "mike==2.0.0",
 ]
 
 [project.urls]
