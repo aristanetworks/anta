@@ -218,8 +218,8 @@ class AntaCatalog:
             raw_catalog_input: The structure of a safe_loaded YAML file representing the catalog.
             tests: A list of tuple containing an AntaTest class and the associated input. Use this argument if you want to define the catalog programmatically.
         """
-        if len([var for var in [filename, raw_catalog_input, tests] if var is not None]) != 1:
-            raise RuntimeError("Exactly one of ['filename', 'raw_catalog_input','tests'] MUST be set at the same time.")
+        if len([var for var in [filename, raw_catalog_input, tests] if var is not None]) > 1:
+            raise RuntimeError("Exactly one of filename, raw_catalog_input or tests MUST be set at the same time.")
         self._tests: list[AntaTestDefinition] = []
 
         if tests is not None:

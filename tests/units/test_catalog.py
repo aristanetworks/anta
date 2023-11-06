@@ -153,7 +153,7 @@ class Test_AntaCatalog:
         """
         Instantiate AntaCatalog from a file and give tests at the same time
         """
-        with pytest.raises(RuntimeError, match="'filename' and 'tests' arguments cannot be provided at the same time"):
+        with pytest.raises(RuntimeError, match="Exactly one of filename, raw_catalog_input or tests MUST be set at the same time."):
             AntaCatalog(filename=str(DATA_DIR / "test_catalog.yml"), tests=INIT_CATALOG_DATA[0]["tests"])
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
