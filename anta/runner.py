@@ -23,13 +23,7 @@ logger = logging.getLogger(__name__)
 AntaTestRunner = Tuple[AntaTestDefinition, AntaDevice]
 
 
-async def main(
-    manager: ResultManager,
-    inventory: AntaInventory,
-    catalog: AntaCatalog,
-    tags: list[str] | None = None,
-    established_only: bool = True,
-) -> None:
+async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, established_only: bool = True) -> None:
     """
     Main coroutine to run ANTA.
     Use this as an entrypoint to the test framwork in your script.
@@ -44,58 +38,50 @@ async def main(
     Returns:
         any: ResultManager object gets updated with the test results.
     """
-
-    catalog.check()
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
-
     if len(inventory) == 0:
         logger.info("The inventory is empty, exiting")
         return
-
     await inventory.connect_inventory()
-
     devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags).values())
 
-    if len(devices) == 0:
+    if not devices:
         logger.info(
             f"No device in the established state '{established_only}' "
             f"{f'matching the tags {tags} ' if tags else ''}was found. There is no device to run tests against, exiting"
         )
+
         return
-
     coros = []
-
-    tests: list[AntaTestRunner] = []
+    # Using a set to avoid inserting duplicate tests
+    tests_set: set[AntaTestRunner] = set()
     for device in devices:
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            for test in catalog.get_tests_by_tags(tags):
-                tests.append((test, device))
+            tests_set.update((test, device) for test in catalog.get_tests_by_tags(tags))
         else:
             # If there is no CLI tags, execute all tests without filters
-            tests.extend([(t, device) for t in catalog.tests if t.inputs.filters is None])
-            # Also execute tests with filters conditionally
+            tests_set.update((t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None)
+
             if device.tags:
-                # If the device has tags, execute tests with matching tags
-                for t in catalog.get_tests_by_tags(device.tags):
-                    tests.append((t, device))
+                # If the device has tags, add the tests with matching tags
+                tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
+
             # Also execute tests with filters on this device name
-            for t in catalog.get_tests_by_device(device):
-                # Only add the test if it's not in the tests list already
-                if (t, device) not in tests:
-                    tests.append((t, device))
+            tests_set.update((t, device) for t in catalog.get_tests_by_device(device))
+
+    tests: list[AntaTestRunner] = list(tests_set)
 
     for test_definition, device in tests:
         try:
-            # Instantiate AntaTest object
             test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
+
             coros.append(test_instance.test())
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = "Error when creating ANTA tests"
             anta_log_exception(e, message, logger)
-
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
@@ -108,8 +94,6 @@ async def main(
             anta_log_exception(r, message, logger)
         else:
             manager.add_test_result(r)
-
-    # Get each device statistics
     for device in devices:
         if device.cache_statistics is not None:
             logger.info(f"Cache statistics for {device.name}: {device.cache_statistics}")

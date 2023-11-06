@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Utils functions to use with anta.cli.check.commands module.
+Utils functions to use with anta.cli.nrfu.commands module.
 """
 from __future__ import annotations
 

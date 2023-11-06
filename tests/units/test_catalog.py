@@ -163,7 +163,6 @@ class Test_AntaCatalog:
         Instantiate AntaCatalog from a file
         """
         catalog = AntaCatalog(filename=str(DATA_DIR / catalog_data["filename"]))
-        catalog.check()
 
         assert len(catalog.tests) == len(catalog_data["tests"])
         for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
@@ -178,9 +177,8 @@ class Test_AntaCatalog:
         """
         Errors when instantiating AntaCatalog from a file
         """
-        catalog = AntaCatalog(filename=str(DATA_DIR / catalog_data["filename"]))
         with pytest.raises(ValidationError) as exec_info:
-            catalog.check()
+            AntaCatalog(filename=str(DATA_DIR / catalog_data["filename"]))
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
 
     def test__init__filename_fail_parsing(self, caplog: pytest.LogCaptureFixture) -> None:
@@ -233,7 +231,6 @@ class Test_AntaCatalog:
         Test AntaCatalog.test_get_tests_by_tags()
         """
         catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
-        catalog.check()
         tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
         assert len(tests) == 2
 
@@ -242,6 +239,5 @@ class Test_AntaCatalog:
         Test AntaCatalog.test_get_tests_by_device()
         """
         catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
-        catalog.check()
         tests: list[AntaTestDefinition] = catalog.get_tests_by_device(device=mocked_device)
         assert len(tests) == 1

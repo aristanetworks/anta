@@ -45,20 +45,6 @@ class ExitCode(enum.IntEnum):
     USAGE_ERROR = 4
 
 
-def check_catalog(ctx: click.Context, catalog: AntaCatalog) -> None:
-    """
-    Helper function to check test catalog file and print
-    output using console.
-    """
-    try:
-        catalog.check()
-        console.print(f"[bold][green]Catalog {catalog.filename} is valid")
-    except ValidationError as e:
-        console.print(f"[bold][red]Catalog {catalog.filename} is invalid")
-        anta_log_exception(e)
-        ctx.exit(1)
-
-
 def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     """
     Helper function parse an ANTA inventory YAML file
@@ -95,7 +81,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | Non
     return None
 
 
-def parse_catalog(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
+def parse_catalog_cb(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file
@@ -109,13 +95,42 @@ def parse_catalog(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
     # Storing catalog path
     ctx.obj["catalog_path"] = value
     try:
-        catalog = AntaCatalog(filename=value)
-    # TODO catch proper exception
+        catalog = parse_catalog(value)
+    except ValidationError as e:
+        message = "Catalog {value} is invalid!"
+        anta_log_exception(e, message, logger)
+        ctx.fail(message)
     # pylint: disable-next=broad-exception-caught
     except Exception as e:
         message = f"Unable to parse ANTA Tests Catalog file '{value}'"
         anta_log_exception(e, message, logger)
         ctx.fail(message)
+
+    return catalog
+
+
+def parse_catalog(catalog_path: str) -> AntaCatalog:
+    # pylint: disable=unused-argument
+    """
+    Args:
+    ----
+        catalog_path (str): Path to the catalog YAML file.
+
+    Returns:
+    -------
+        the AntaCatalog parsed file
+
+    Raises:
+    -----
+        ValidationError: If the catalog file is invalid
+        Exception: If anything happens with opening the catalog file
+    """
+    try:
+        catalog = AntaCatalog(filename=catalog_path)
+        console.print(f"[bold][green]Catalog {catalog_path} is valid")
+    except ValidationError:
+        console.print(f"[bold][red]Catalog {catalog_path} is invalid!")
+        raise
 
     return catalog
 

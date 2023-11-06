@@ -218,11 +218,10 @@ class AntaCatalog:
         if filename is not None and tests:
             raise RuntimeError("'filename' and 'tests' arguments cannot be provided at the same time")
         self.filename: str | None = filename
-        self.tests: list[AntaTestDefinition] = []
+        self._tests: list[AntaTestDefinition] = []
         if tests is not None:
-            self.tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in tests)
+            self._tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in tests)
         self.file: AntaCatalogFile | None = None
-        self._data = None
         if self.filename:
             self._parse_file()
 
@@ -243,28 +242,23 @@ class AntaCatalog:
     def _parse_file(self) -> None:
         """
         Parse the catalog YAML file
+
+        TODO add a flag to prevent override ?
         """
         if self.filename:
             try:
                 with open(file=self.filename, mode="r", encoding="UTF-8") as file:
-                    self._data = safe_load(file)
+                    data = safe_load(file)
             # pylint: disable-next=broad-exception-caught
             except Exception:
                 logger.critical(f"Something went wrong while parsing {self.filename}")
                 raise
-
-    def check(self: AntaCatalog) -> None:
-        """
-        Check if the data in the catalog file is valid
-        and populate `tests` instance attribute.
-        """
-        if self._data is not None:
-            self.file = AntaCatalogFile(**self._data)
-            if self._tests:
-                logger.warning(f"Overriding AntaCatalog data from file {self.filename}")
-            self._tests = []
-            for tests in self.file.root.values():
-                self._tests.extend(tests)
+        self.file = AntaCatalogFile(**data)
+        if self._tests:
+            logger.warning(f"Overriding AntaCatalog data from file {self.filename}")
+        self._tests = []
+        for tests in self.file.root.values():
+            self._tests.extend(tests)
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
         """
