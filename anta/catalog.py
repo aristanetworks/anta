@@ -273,14 +273,3 @@ class AntaCatalog:
                 if (strict and all(t in tags for t in f)) or (not strict and any(t in tags for t in f)):
                     result.append(test)
         return result
-
-    def get_tests_by_device(self, device: AntaDevice) -> list[AntaTestDefinition]:
-        """
-        Return all the tests that have the provided device in their input filters.
-        """
-        result: list[AntaTestDefinition] = []
-        for test in self.tests:
-            if test.inputs.filters and (f := test.inputs.filters.devices):
-                if device.name in f:
-                    result.append(test)
-        return result
