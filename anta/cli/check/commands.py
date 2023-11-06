@@ -20,7 +20,7 @@ from anta.cli.utils import parse_catalog
 logger = logging.getLogger(__name__)
 
 
-@click.command(no_args_is_help=True)
+@click.command()
 @click.option(
     "--catalog",
     "-c",
