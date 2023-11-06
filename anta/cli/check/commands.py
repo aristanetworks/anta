@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 
 @click.command(no_args_is_help=True)
-@click.pass_context
 @click.option(
     "--catalog",
     "-c",
@@ -31,10 +30,10 @@ logger = logging.getLogger(__name__)
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, resolve_path=True),
     required=True,
 )
-def catalog(ctx: click.Context, catalog: Path) -> None:
+def catalog(catalog: Path) -> None:
     """
     Check that the catalog is valid
     """
-    logger.info(f"Checking syntax of catalog {ctx.obj['catalog_path']}")
-    catalog: AntaCatalog = parse_catalog(str(catalog))
-    console.print(pretty_repr(catalog.file))
+    logger.info(f"Checking syntax of catalog {catalog}")
+    catalog_obj: AntaCatalog = parse_catalog(str(catalog))
+    console.print(pretty_repr(catalog_obj.file))
