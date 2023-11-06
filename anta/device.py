@@ -67,7 +67,7 @@ class AntaDevice(ABC):
 
     @property
     @abstractmethod
-    def _keys(self) -> tuple[Any]:
+    def _keys(self) -> tuple[Any, ...]:
         """
         Read-only property to implement hashing and equality for AntaDevice classes.
         """
@@ -276,7 +276,8 @@ class AsyncEOSDevice(AntaDevice):
             yield "_session", vars(self._session)
             yield "_ssh_opts", _ssh_opts
 
-    def _keys(self) -> tuple[Any]:
+    @property
+    def _keys(self) -> tuple[Any, ...]:
         """
         Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
