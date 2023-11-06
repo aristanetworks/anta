@@ -251,7 +251,7 @@ class AntaCatalog:
             try:
                 with open(file=self.filename, mode="r", encoding="UTF-8") as file:
                     data = safe_load(file)
-            except YAMLError:
+            except (YAMLError, OSError):
                 logger.critical(f"Something went wrong while parsing {self.filename}")
                 raise
         self.file = AntaCatalogFile(**data)
