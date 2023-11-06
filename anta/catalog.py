@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_val
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
+from anta.custom_types import ListAntaTestTuples, RawCatalogInput
 from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
@@ -208,22 +209,29 @@ class AntaCatalog:
         file: The AntaCatalogFile model representing the catalog file.
     """
 
-    def __init__(self, filename: str | None = None, tests: list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]] | None = None) -> None:
+    def __init__(self, filename: str | None = None, raw_catalog_input: RawCatalogInput | None = None, tests: ListAntaTestTuples | None = None) -> None:
         """
-        Constructor of AntaCatalog
+        Constructor of AntaCatalog.
 
         Args:
+        ----
             filename: The path from which the catalog is loaded. Use this argument if you want to load the catalog from a file.
+            raw_catalog_input: The structure of a safe_loaded YAML file representing the catalog.
             tests: A list of tuple containing an AntaTest class and the associated input. Use this argument if you want to define the catalog programmatically.
         """
-        if filename is not None and tests:
-            raise RuntimeError("'filename' and 'tests' arguments cannot be provided at the same time")
-        self.filename: str | None = filename
+        if len([var for var in [filename, raw_catalog_input, tests] if var is not None]) != 1:
+            raise RuntimeError("Exactly one of ['filename', 'raw_catalog_input','tests'] MUST be set at the same time.")
         self._tests: list[AntaTestDefinition] = []
+
         if tests is not None:
             self._tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in tests)
-        self.file: AntaCatalogFile | None = None
-        if self.filename:
+
+        elif raw_catalog_input is not None:
+            # TODO fix type ignore
+            self._parse_anta_catalog_file(AntaCatalogFile(**raw_catalog_input))  # type: ignore[arg-type]
+
+        elif filename is not None:
+            self.filename: str | None = filename
             self._parse_file()
 
     @property
@@ -253,11 +261,18 @@ class AntaCatalog:
             except (YAMLError, OSError):
                 logger.critical(f"Something went wrong while parsing {self.filename}")
                 raise
-        self.file = AntaCatalogFile(**data)
+
+        self._parse_anta_catalog_file(AntaCatalogFile(**data))
+
+    def _parse_anta_catalog_file(self, raw_catalog_input: AntaCatalogFile) -> None:
+        """
+        Parse the catalog YAML file
+
+        """
         if self._tests:
             logger.warning(f"Overriding AntaCatalog data from file {self.filename}")
         self._tests = []
-        for tests in self.file.root.values():
+        for tests in raw_catalog_input.root.values():
             self._tests.extend(tests)
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
