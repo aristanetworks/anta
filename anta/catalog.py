@@ -12,9 +12,9 @@ from inspect import isclass
 from types import ModuleType
 from typing import Any, Dict, List, Type
 
-from pydantic import BaseModel, RootModel, ValidationInfo, field_validator, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
-from yaml import safe_load, YAMLError
+from yaml import YAMLError, safe_load
 
 from anta.device import AntaDevice
 from anta.models import AntaTest
@@ -29,6 +29,8 @@ class AntaTestDefinition(BaseModel):
     test: An AntaTest concrete subclass
     inputs: The associated AntaTest.Input subclass instance
     """
+
+    model_config = ConfigDict(frozen=True)
 
     test: Type[AntaTest]
     inputs: AntaTest.Input

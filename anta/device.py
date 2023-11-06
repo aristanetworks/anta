@@ -65,6 +65,27 @@ class AntaDevice(ABC):
         if not disable_cache:
             self._init_cache()
 
+    @property
+    @abstractmethod
+    def _keys(self) -> tuple[Any]:
+        """
+        Read-only property to implement hashing and equality for AntaDevice classes.
+        """
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Implement equality for AntaDevice objects.
+        """
+        if not isinstance(other, AsyncEOSDevice):
+            return False
+        return self._keys == other._keys
+
+    def __hash__(self) -> int:
+        """
+        Implement hashing for AntaDevice objects.
+        """
+        return hash(self._keys)
+
     def _init_cache(self) -> None:
         """
         Initialize cache for the device, can be overriden by subclasses to manipulate how it works
@@ -95,12 +116,6 @@ class AntaDevice(ABC):
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
-
-    @abstractmethod
-    def __eq__(self, other: object) -> bool:
-        """
-        AntaDevice equality depends on the class implementation.
-        """
 
     @abstractmethod
     async def _collect(self, command: AntaCommand) -> None:
@@ -261,14 +276,12 @@ class AsyncEOSDevice(AntaDevice):
             yield "_session", vars(self._session)
             yield "_ssh_opts", _ssh_opts
 
-    def __eq__(self, other: object) -> bool:
+    def _keys(self) -> tuple[Any]:
         """
         Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        if not isinstance(other, AsyncEOSDevice):
-            return False
-        return self._session.host == other._session.host and self._session.port == other._session.port
+        return (self._session.host, self._session.port)
 
     async def _collect(self, command: AntaCommand) -> None:
         """
