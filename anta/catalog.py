@@ -10,7 +10,7 @@ import importlib
 import logging
 from inspect import isclass
 from types import ModuleType
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
@@ -20,12 +20,11 @@ from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
-
 # { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+RawCatalogInput = Dict[str, List[Dict[str, Optional[Dict[str, Any]]]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
+ListAntaTestTuples = List[Tuple[Type[AntaTest], Optional[Union[AntaTest.Input, Dict[str, Any]]]]]
 
 
 class AntaTestDefinition(BaseModel):
