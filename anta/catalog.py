@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Type
 
 from pydantic import BaseModel, RootModel, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
-from yaml import safe_load
+from yaml import safe_load, YAMLError
 
 from anta.device import AntaDevice
 from anta.models import AntaTest
@@ -249,8 +249,7 @@ class AntaCatalog:
             try:
                 with open(file=self.filename, mode="r", encoding="UTF-8") as file:
                     data = safe_load(file)
-            # pylint: disable-next=broad-exception-caught
-            except Exception:
+            except YAMLError:
                 logger.critical(f"Something went wrong while parsing {self.filename}")
                 raise
         self.file = AntaCatalogFile(**data)
