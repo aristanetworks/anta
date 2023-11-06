@@ -14,7 +14,7 @@ anta.tests.system:
         tags: ['leaf']
   - VerifyMemoryUtilization:
       filters:
-        devices: ['testdevice']
+        tags: ['testdevice']
   - VerifyFileSystemUtilization:
   - VerifyNTP:
 

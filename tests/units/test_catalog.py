@@ -13,7 +13,6 @@ import pytest
 from pydantic import ValidationError
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
-from anta.device import AntaDevice
 from anta.models import AntaTest
 from anta.tests.configuration import VerifyZeroTouch
 from anta.tests.hardware import VerifyTemperature
@@ -63,7 +62,7 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
             (VerifyCoredump, VerifyCoredump.Input()),
             (VerifyAgentLogs, AntaTest.Input()),
             (VerifyCPUUtilization, VerifyCPUUtilization.Input(filters=VerifyCPUUtilization.Input.Filters(tags=["leaf"]))),
-            (VerifyMemoryUtilization, VerifyMemoryUtilization.Input(filters=VerifyMemoryUtilization.Input.Filters(devices=["testdevice"]))),
+            (VerifyMemoryUtilization, VerifyMemoryUtilization.Input(filters=VerifyMemoryUtilization.Input.Filters(tags=["testdevice"]))),
             (VerifyFileSystemUtilization, None),
             (VerifyNTP, {}),
             (VerifyMlagStatus, None),
@@ -233,11 +232,3 @@ class Test_AntaCatalog:
         catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
         tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
         assert len(tests) == 2
-
-    def test_get_tests_by_device(self, mocked_device: AntaDevice) -> None:
-        """
-        Test AntaCatalog.test_get_tests_by_device()
-        """
-        catalog = AntaCatalog(filename=str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_device(device=mocked_device)
-        assert len(tests) == 1

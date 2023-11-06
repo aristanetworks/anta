@@ -56,6 +56,8 @@ class AntaDevice(ABC):
         self.name: str = name
         self.hw_model: Optional[str] = None
         self.tags: list[str] = tags if tags is not None else []
+        # A device always has its own name as tag
+        self.tags.append(self.name)
         self.is_online: bool = False
         self.established: bool = False
         self.cache: Optional[Cache] = None

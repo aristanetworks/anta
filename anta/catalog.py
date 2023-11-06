@@ -16,7 +16,6 @@ from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_val
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
-from anta.device import AntaDevice
 from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)

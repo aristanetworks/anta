@@ -65,12 +65,8 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
             # If there is no CLI tags, execute all tests without filters
             tests_set.update((t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None)
 
-            if device.tags:
-                # If the device has tags, add the tests with matching tags
-                tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
-
-            # Also execute tests with filters on this device name
-            tests_set.update((t, device) for t in catalog.get_tests_by_device(device))
+            # Then add the tests with matching tags from device tags
+            tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
 
     tests: list[AntaTestRunner] = list(tests_set)
 

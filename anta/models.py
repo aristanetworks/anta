@@ -306,6 +306,7 @@ class AntaTest(ABC):
                 custom_field: a free string that will be included in the TestResult object
             """
 
+            model_config = ConfigDict(extra="forbid")
             description: Optional[str] = None
             categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
@@ -314,11 +315,10 @@ class AntaTest(ABC):
             """Runtime filters to map tests with list of tags or devices
 
             Attributes:
-                devices: List of devices for the test.
                 tags: List of device's tags for the test.
             """
 
-            devices: Optional[List[str]] = None
+            model_config = ConfigDict(extra="forbid")
             tags: Optional[List[str]] = None
 
     def __init__(
