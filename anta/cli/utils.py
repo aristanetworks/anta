@@ -97,7 +97,7 @@ def parse_catalog_cb(ctx: click.Context, param: Option, value: str) -> AntaCatal
     try:
         catalog = parse_catalog(value)
     except ValidationError as e:
-        message = "Catalog {value} is invalid!"
+        message = f"Catalog {value} is invalid!"
         anta_log_exception(e, message, logger)
         ctx.fail(message)
     # pylint: disable-next=broad-exception-caught
