@@ -70,6 +70,13 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
 
     tests: list[AntaTestRunner] = list(tests_set)
 
+    if not tests:
+        logger.info(
+            f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run on current inventory. "
+            "Exiting..."
+        )
+        return
+
     for test_definition, device in tests:
         try:
             test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
