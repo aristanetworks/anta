@@ -1,6 +1,9 @@
-ARG PYTHON_VER=3.9
+ARG PYTHON_VER=3.9.18
+ARG IMG_OPTION=alpine3.18
 
-FROM python:${PYTHON_VER}-slim
+### BUILDER
+
+FROM python:${PYTHON_VER}-${IMG_OPTION} as BUILDER
 
 RUN pip install --upgrade pip
 
@@ -8,7 +11,15 @@ WORKDIR /local
 COPY . /local
 
 ENV PYTHONPATH=/local
-RUN pip --no-cache-dir install .
+ENV PATH=$PATH:/root/.local/bin
+
+RUN pip --no-cache-dir install --user .
+
+# ----------------------------------- #
+
+### BASE
+
+FROM python:${PYTHON_VER}-${IMG_OPTION} as BASE
 
 # Opencontainer labels
 # Labels version and revision will be updating
@@ -28,4 +39,7 @@ LABEL   "org.opencontainers.image.title"="anta" \
         "org.opencontainers.image.revision"="dev" \
         "org.opencontainers.image.version"="dev"
 
-ENTRYPOINT [ "/usr/local/bin/anta" ]
+COPY --from=BUILDER /root/.local/ /root/.local
+ENV PATH=$PATH:/root/.local/bin
+
+ENTRYPOINT [ "/root/.local/bin/anta" ]
