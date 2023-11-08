@@ -21,7 +21,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog_cb, parse_inventory
+from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
 from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
@@ -147,7 +147,7 @@ def anta(
     help="Path to the tests catalog YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
     required=True,
-    callback=parse_catalog_cb,
+    callback=parse_catalog,
 )
 def _nrfu(ctx: click.Context, catalog: AntaCatalog) -> None:
     """Run NRFU against inventory devices"""

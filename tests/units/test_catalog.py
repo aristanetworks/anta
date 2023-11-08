@@ -215,7 +215,12 @@ class Test_AntaCatalog:
         assert "No such file or directory" in str(exec_info)
         assert len(caplog.record_tuples) == 1
         _, _, message = caplog.record_tuples[0]
-        assert "Something went wrong while parsing" in message
+        assert (
+            "Unable to parse ANTA Tests Catalog file "
+            "'/mnt/lab/projects/anta/tests/data/catalog_does_not_exist.yml': "
+            "FileNotFoundError ([Errno 2] No such file or directory: "
+            "'/mnt/lab/projects/anta/tests/data/catalog_does_not_exist.yml')"
+        ) in message
 
     @pytest.mark.parametrize("catalog_data", CATALOG_FROM_LIST_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_LIST_FAIL_DATA))
     def test_from_list_fail(self, catalog_data: dict[str, Any]) -> None:

@@ -8,7 +8,6 @@ Commands for Anta CLI to run check commands.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 import click
 from rich.pretty import pretty_repr
@@ -29,11 +28,11 @@ logger = logging.getLogger(__name__)
     help="Path to the tests catalog YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, resolve_path=True),
     required=True,
+    callback=parse_catalog,
 )
-def catalog(catalog: Path) -> None:
+def catalog(catalog: AntaCatalog) -> None:
     """
     Check that the catalog is valid
     """
-    logger.info(f"Checking syntax of catalog {catalog}")
-    catalog_obj: AntaCatalog = parse_catalog(str(catalog))
-    console.print(pretty_repr(catalog_obj.tests))
+    console.print(f"[bold][green]Catalog {catalog} is valid")
+    console.print(pretty_repr(catalog.tests))

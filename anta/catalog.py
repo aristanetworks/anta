@@ -8,16 +8,17 @@ from __future__ import annotations
 
 import importlib
 import logging
-from pathlib import Path
 from inspect import isclass
+from pathlib import Path
 from types import ModuleType
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationInfo, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
 from anta.models import AntaTest
+from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -246,9 +247,7 @@ class AntaCatalog:
         self._tests = value
 
     @staticmethod
-    def parse(
-        filename: str
-    ) -> AntaCatalog:
+    def parse(filename: str | Path) -> AntaCatalog:
         """
         Create an AntaCatalog instance from a test catalog file.
 
@@ -258,18 +257,22 @@ class AntaCatalog:
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
-        except (YAMLError, OSError):
-            logger.critical(f"Something went wrong while parsing {filename}")
+        except (YAMLError, OSError) as e:
+            message = f"Unable to parse ANTA Tests Catalog file '{filename}'"
+            anta_log_exception(e, message, logger)
+            raise
+        try:
+            catalog_data = AntaCatalogFile(**data)
+        except ValidationError as e:
+            anta_log_exception(e, f"Test catalog '{filename}' is invalid!", logger)
             raise
         tests: list[AntaTestDefinition] = []
-        for t in AntaCatalogFile(**data).root.values():
+        for t in catalog_data.root.values():
             tests.extend(t)
         return AntaCatalog(tests, filename=filename)
 
     @staticmethod
-    def from_dict(
-        data: RawCatalogInput
-    ) -> AntaCatalog:
+    def from_dict(data: RawCatalogInput) -> AntaCatalog:
         """
         Create an AntaCatalog instance from a dictionary data structure.
         See RawCatalogInput type alias for details.
@@ -280,14 +283,17 @@ class AntaCatalog:
             data: Python dictionary used to instantiate the AntaCatalog instance
         """
         tests: list[AntaTestDefinition] = []
-        for t in AntaCatalogFile(**data).root.values():  # type: ignore[arg-type]
+        try:
+            catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
+        except ValidationError as e:
+            anta_log_exception(e, "Test catalog is invalid!", logger)
+            raise
+        for t in catalog_data.root.values():
             tests.extend(t)
         return AntaCatalog(tests)
 
     @staticmethod
-    def from_list(
-        data: ListAntaTestTuples
-    ) -> AntaCatalog:
+    def from_list(data: ListAntaTestTuples) -> AntaCatalog:
         """
         Create an AntaCatalog instance from a list data structure.
         See ListAntaTestTuples type alias for details.
@@ -296,7 +302,11 @@ class AntaCatalog:
             data: Python list used to instantiate the AntaCatalog instance
         """
         tests: list[AntaTestDefinition] = []
-        tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in data)
+        try:
+            tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in data)
+        except ValidationError as e:
+            anta_log_exception(e, "Test catalog is invalid!", logger)
+            raise
         return AntaCatalog(tests)
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:

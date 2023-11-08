@@ -15,9 +15,9 @@ from typing import TYPE_CHECKING, Any
 
 import click
 from pydantic import ValidationError
+from yaml import YAMLError
 
 from anta.catalog import AntaCatalog
-from anta.cli.console import console
 from anta.inventory import AntaInventory
 from anta.tools.misc import anta_log_exception
 
@@ -81,7 +81,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | Non
     return None
 
 
-def parse_catalog_cb(ctx: click.Context, param: Option, value: str) -> AntaCatalog:
+def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA tests catalog YAML file
@@ -92,46 +92,10 @@ def parse_catalog_cb(ctx: click.Context, param: Option, value: str) -> AntaCatal
         # Currently looking for help for a subcommand so no
         # need to parse the Catalog - return an empty catalog
         return AntaCatalog()
-    # Storing catalog path
-    ctx.obj["catalog_path"] = value
     try:
-        catalog = parse_catalog(value)
-    except ValidationError as e:
-        message = f"Catalog {value} is invalid!"
-        anta_log_exception(e, message, logger)
-        ctx.fail(message)
-    # pylint: disable-next=broad-exception-caught
-    except Exception as e:
-        message = f"Unable to parse ANTA Tests Catalog file '{value}'"
-        anta_log_exception(e, message, logger)
-        ctx.fail(message)
-
-    return catalog
-
-
-def parse_catalog(catalog_path: str) -> AntaCatalog:
-    # pylint: disable=unused-argument
-    """
-    Args:
-    ----
-        catalog_path (str): Path to the catalog YAML file.
-
-    Returns:
-    -------
-        the AntaCatalog parsed file
-
-    Raises:
-    -----
-        ValidationError: If the catalog file is invalid
-        Exception: If anything happens with opening the catalog file
-    """
-    try:
-        catalog = AntaCatalog(filename=catalog_path)
-        console.print(f"[bold][green]Catalog {catalog_path} is valid")
-    except ValidationError:
-        console.print(f"[bold][red]Catalog {catalog_path} is invalid!")
-        raise
-
+        catalog: AntaCatalog = AntaCatalog.parse(value)
+    except (ValidationError, YAMLError, OSError):
+        ctx.fail("Unable to load ANTA Tests Catalog")
     return catalog
 
 
