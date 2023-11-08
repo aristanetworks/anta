@@ -103,6 +103,13 @@ CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
         "error": "Value error, AntaTestDefinition must be a dictionary with a single entry",
     },
 ]
+CATALOG_FROM_DICT_FAIL_DATA: list[dict[str, Any]] = [
+    {
+        "name": "undefined_tests",
+        "filename": "test_catalog_with_undefined_tests.yml",
+        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
+    },
+]
 CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "wrong_inputs",
@@ -226,6 +233,41 @@ class Test_AntaCatalog:
         with pytest.raises(ValidationError) as exec_info:
             AntaCatalog.from_list(catalog_data["tests"])
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+
+    @pytest.mark.parametrize("catalog_data", CATALOG_FROM_DICT_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_DICT_FAIL_DATA))
+    def test_from_dict_fail(self, catalog_data: dict[str, Any]) -> None:
+        """
+        Errors when instantiating AntaCatalog from a list of tuples
+        """
+        with open(file=str(DATA_DIR / catalog_data["filename"]), mode="r", encoding="UTF-8") as file:
+            data = safe_load(file)
+        with pytest.raises(ValidationError) as exec_info:
+            AntaCatalog.from_dict(data)
+        assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+
+    def test_filename(self) -> None:
+        """
+        Test filename
+        """
+        catalog = AntaCatalog(filename="test")
+        assert catalog.filename == Path("test")
+        catalog = AntaCatalog(filename=Path("test"))
+        assert catalog.filename == Path("test")
+
+    @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
+    def test__tests_setter_success(self, catalog_data: dict[str, Any]) -> None:
+        """
+        Success when setting AntaCatalog.tests from a list of tuples
+        """
+        catalog = AntaCatalog()
+        catalog.tests = [AntaTestDefinition(test=test, inputs=inputs) for test, inputs in catalog_data["tests"]]
+        assert len(catalog.tests) == len(catalog_data["tests"])
+        for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
+            assert catalog.tests[test_id].test == test
+            if inputs is not None:
+                if isinstance(inputs, dict):
+                    inputs = test.Input(**inputs)
+                assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize("catalog_data", TESTS_SETTER_FAIL_DATA, ids=generate_test_ids_list(TESTS_SETTER_FAIL_DATA))
     def test__tests_setter_fail(self, catalog_data: dict[str, Any]) -> None:
