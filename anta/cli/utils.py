@@ -97,6 +97,12 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
     return catalog
 
 
+def maybe_required_cb(ctx: click.Context, param: Option, value: str) -> Any:
+    """
+    Repace the "required" true
+    """
+
+
 def exit_with_code(ctx: click.Context) -> None:
     """
     Exit the Click application with an exit code.
@@ -130,7 +136,34 @@ def exit_with_code(ctx: click.Context) -> None:
     raise ValueError(f"Unknown status returned by the ResultManager: {status}. Please gather logs and open an issue on Github.")
 
 
-class IgnoreRequiredWithHelp(click.Group):
+class AliasedGroup(click.Group):
+    """
+    Implements a subclass of Group that accepts a prefix for a command.
+    If there were a command called push, it would accept pus as an alias (so long as it was unique)
+    From Click documentation
+    """
+
+    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
+        """Todo: document code"""
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        if len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
+        return None
+
+    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
+        """Todo: document code"""
+        # always return the full command name
+        _, cmd, args = super().resolve_command(ctx, args)
+        return cmd.name, cmd, args  # type: ignore
+
+
+class IgnoreRequiredWithHelp(AliasedGroup):
     """
     https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
     Solution to allow help without required options on subcommand
@@ -160,48 +193,36 @@ class IgnoreRequiredWithHelp(click.Group):
 
             return super().parse_args(ctx, args)
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
-        """Todo: document code"""
-        rv = click.Group.get_command(self, ctx, cmd_name)
-        if rv is not None:
-            return rv
-        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
-        if not matches:
-            return None
-        if len(matches) == 1:
-            return click.Group.get_command(self, ctx, matches[0])
-        ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
-        return None
 
-    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
-        """Todo: document code"""
-        # always return the full command name
-        _, cmd, args = super().resolve_command(ctx, args)
-        return cmd.name, cmd, args  # type: ignore
-
-
-class AliasedGroup(click.Group):
+class IgnoreRequiredForMainCommand(IgnoreRequiredWithHelp):
     """
-    Implements a subclass of Group that accepts a prefix for a command.
-    If there were a command called push, it would accept pus as an alias (so long as it was unique)
-    From Click documentation
+    Custom ANTA ignore knob for required arguments:
+    * Allow --help without required options on subcommand
+    * Allow relaxing required arguments for `anta get from-cvp` and `anta get from-ansible`
+
+    This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
     """
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
-        """Todo: document code"""
-        rv = click.Group.get_command(self, ctx, cmd_name)
-        if rv is not None:
-            return rv
-        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
-        if not matches:
-            return None
-        if len(matches) == 1:
-            return click.Group.get_command(self, ctx, matches[0])
-        ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
-        return None
+    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
+        """
+        Ignore MissingParameter exception when parsing arguments if `--help`
+        is present for a subcommand
+        """
+        # Adding a flag for potential callbacks
+        ctx.ensure_object(dict)
+        if "--help" in args:
+            ctx.obj["_anta_help"] = True
 
-    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
-        """Todo: document code"""
-        # always return the full command name
-        _, cmd, args = super().resolve_command(ctx, args)
-        return cmd.name, cmd, args  # type: ignore
+        raise Exception(ctx.__dict__)
+
+        try:
+            return super().parse_args(ctx, args)
+        except click.MissingParameter:
+            if "--help" not in args:
+                raise
+
+            # remove the required params so that help can display
+            for param in self.params:
+                param.required = False
+
+            return super().parse_args(ctx, args)
