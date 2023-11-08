@@ -129,6 +129,17 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "skipped",
+        "test": VerifyOSPFNeighborState,
+        "eos_data": [
+            {
+                "vrfs": {},
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
+    },
+    {
         "name": "success",
         "test": VerifyOSPFNeighborCount,
         "eos_data": [
@@ -272,5 +283,16 @@ DATA: list[dict[str, Any]] = [
                 " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
             ],
         },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyOSPFNeighborCount,
+        "eos_data": [
+            {
+                "vrfs": {},
+            }
+        ],
+        "inputs": {"number": 3},
+        "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
     },
 ]
