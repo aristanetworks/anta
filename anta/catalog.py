@@ -92,43 +92,10 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
     """
     This model represents an ANTA Test Catalog File.
 
-     A valid test catalog file must follow the following structure:
+     A valid test catalog file must have the following structure:
         <Python module>:
             - <AntaTest subclass>:
                 <AntaTest.Input compliant dictionary>
-
-        Example:
-            ```
-            anta.tests.connectivity:
-                - VerifyReachability:
-                    hosts:
-                        - dst: 8.8.8.8
-                          src: 172.16.0.1
-                        - dst: 1.1.1.1
-                          src: 172.16.0.1
-                    result_overwrite:
-                        categories:
-                            - "Overwritten category 1"
-                        description: "Test with overwritten description"
-                        custom_field: "Test run by John Doe"
-            ```
-
-        Also supports nesting for Python module definition:
-            ```
-            anta.tests:
-                connectivity:
-                    - VerifyReachability:
-                        hosts:
-                            - dst: 8.8.8.8
-                              src: 172.16.0.1
-                            - dst: 1.1.1.1
-                              src: 172.16.0.1
-                        result_overwrite:
-                            categories:
-                                - "Overwritten category 1"
-                            description: "Test with overwritten description"
-                            custom_field: "Test run by John Doe"
-            ```
     """
 
     root: Dict[ImportString[Any], List[AntaTestDefinition]]
@@ -200,12 +167,7 @@ class AntaCatalog:
     """
     Class representing an ANTA Catalog.
 
-    It can be defined programmatically by providing the `tests` argument to the constructor
-    or it can be loaded from a file using the `filename` argument.
-
-    Attributes:
-        filename: The path from which the catalog is loaded.
-        tests: A list of tuple containing an AntaTest class and the associated input.
+    It can be instantiated using its contructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
     """
 
     def __init__(self, tests: list[AntaTestDefinition] | None = None, filename: str | Path | None = None) -> None:
@@ -213,9 +175,8 @@ class AntaCatalog:
         Constructor of AntaCatalog.
 
         Args:
-        ----
-            tests: A list of tuple containing an AntaTest class and the associated input. Use this argument if you want to define the catalog programmatically.
-            filename: The path from which the catalog is loaded. This will be set as instance attribute.
+            tests: A list of AntaTestDefinition instances.
+            filename: The path from which the catalog is loaded.
         """
         self._tests: list[AntaTestDefinition] = []
         if tests is not None:
@@ -258,7 +219,7 @@ class AntaCatalog:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
         except (YAMLError, OSError) as e:
-            message = f"Unable to parse ANTA Tests Catalog file '{filename}'"
+            message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise
         try:

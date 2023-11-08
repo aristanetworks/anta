@@ -216,7 +216,7 @@ class Test_AntaCatalog:
         assert len(caplog.record_tuples) == 1
         _, _, message = caplog.record_tuples[0]
         assert (
-            "Unable to parse ANTA Tests Catalog file "
+            "Unable to parse ANTA Test Catalog file "
             "'/mnt/lab/projects/anta/tests/data/catalog_does_not_exist.yml': "
             "FileNotFoundError ([Errno 2] No such file or directory: "
             "'/mnt/lab/projects/anta/tests/data/catalog_does_not_exist.yml')"

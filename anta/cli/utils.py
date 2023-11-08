@@ -84,7 +84,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | Non
 def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog:
     # pylint: disable=unused-argument
     """
-    Click option callback to parse an ANTA tests catalog YAML file
+    Click option callback to parse an ANTA test catalog YAML file
 
     Store the orignal value (catalog path) in the ctx.obj
     """
@@ -95,7 +95,7 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
     try:
         catalog: AntaCatalog = AntaCatalog.parse(value)
     except (ValidationError, YAMLError, OSError):
-        ctx.fail("Unable to load ANTA Tests Catalog")
+        ctx.fail("Unable to load ANTA Test Catalog")
     return catalog
 
 

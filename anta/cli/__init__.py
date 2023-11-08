@@ -144,7 +144,7 @@ def anta(
     "-c",
     envvar="ANTA_CATALOG",
     show_envvar=True,
-    help="Path to the tests catalog YAML file",
+    help="Path to the test catalog YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
     required=True,
     callback=parse_catalog,

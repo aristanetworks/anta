@@ -170,7 +170,7 @@ nav:
     - Caching in ANTA: advanced_usages/caching.md
     - Developing ANTA tests: advanced_usages/custom-tests.md
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
-  - Tests Catalog Documentation:
+  - Test Catalog Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
     - Configuration: api/tests.configuration.md
@@ -196,8 +196,8 @@ nav:
     - Inventory:
       - Inventory module: api/inventory.md
       - Inventory models: api/inventory.models.input.md
-    - Device:
-      - Device models: api/device.md
+    - Test Catalog: api/catalog.md
+    - Device: api/device.md
     - Test:
       - Test models: api/models.md
       - Input Types:  api/types.md

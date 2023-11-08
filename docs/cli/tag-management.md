@@ -8,7 +8,7 @@
 
 ## Overview
 
-ANTA nrfu command comes with a `--tags` option. This allows users to specify a set of tests, marked with a given tag, to be run on devices marked with the same tag. For instance, you can run tests dedicated to leaf devices on your leaf devices only and not on other devices.
+The `anta nrfu` command comes with a `--tags` option. This allows users to specify a set of tests, marked with a given tag, to be run on devices marked with the same tag. For instance, you can run tests dedicated to leaf devices on your leaf devices only and not on other devices.
 
 Tags are string defined by the user and can be anything considered as a string by Python. A [default one](#default-tags) is present for all tests and devices.
 
@@ -16,13 +16,13 @@ The next table provides a short summary of the scope of tags using CLI
 
 | Command | Description |
 | ------- | ----------- |
-| `none` | Run all tests on all devices according `tag` definition in your inventory and tests catalog. And tests with no tag are executed on all devices|
+| `none` | Run all tests on all devices according `tag` definition in your inventory and test catalog. And tests with no tag are executed on all devices|
 | `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
 | `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
 
 ## Inventory and Catalog for tests
 
-All commands in this page are based on the following inventory and tests catalog.
+All commands in this page are based on the following inventory and test catalog.
 
 === "Inventory"
 
@@ -50,7 +50,7 @@ All commands in this page are based on the following inventory and tests catalog
         tags: ['fabric', 'leaf'
     ```
 
-=== "Tests Catalog"
+=== "Test Catalog"
 
     ```yaml
     anta.tests.system:
@@ -135,7 +135,7 @@ leaf04 :: VerifyReloadCause :: SUCCESS
 leaf04 :: VerifyCPUUtilization :: SUCCESS
 ```
 
-In this case, only `leaf` devices defined in your [inventory](#inventory-and-catalog-for-tests) are used to run tests marked with `leaf` in your [tests catalog](#inventory-and-catalog-for-tests)
+In this case, only `leaf` devices defined in your [inventory](#inventory-and-catalog-for-tests) are used to run tests marked with `leaf` in your [test catalog](#inventory-and-catalog-for-tests)
 
 ## Use multiple tags in CLI
 
