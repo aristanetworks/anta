@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib
 import logging
+from pathlib import Path
 from inspect import isclass
 from types import ModuleType
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
@@ -204,33 +205,31 @@ class AntaCatalog:
     Attributes:
         filename: The path from which the catalog is loaded.
         tests: A list of tuple containing an AntaTest class and the associated input.
-        file: The AntaCatalogFile model representing the catalog file.
     """
 
-    def __init__(self, filename: str | None = None, raw_catalog_input: RawCatalogInput | None = None, tests: ListAntaTestTuples | None = None) -> None:
+    def __init__(self, tests: list[AntaTestDefinition] | None = None, filename: str | Path | None = None) -> None:
         """
         Constructor of AntaCatalog.
 
         Args:
         ----
-            filename: The path from which the catalog is loaded. Use this argument if you want to load the catalog from a file.
-            raw_catalog_input: The structure of a safe_loaded YAML file representing the catalog.
             tests: A list of tuple containing an AntaTest class and the associated input. Use this argument if you want to define the catalog programmatically.
+            filename: The path from which the catalog is loaded. This will be set as instance attribute.
         """
-        if len([var for var in [filename, raw_catalog_input, tests] if var is not None]) > 1:
-            raise RuntimeError("Maximum one of filename, raw_catalog_input or tests MUST be set at the same time.")
         self._tests: list[AntaTestDefinition] = []
-
         if tests is not None:
-            self._tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in tests)
+            self._tests = tests
+        self._filename: Path | None = None
+        if filename is not None:
+            if isinstance(filename, Path):
+                self._filename = filename
+            else:
+                self._filename = Path(filename)
 
-        elif raw_catalog_input is not None:
-            # TODO fix type ignore
-            self._parse_anta_catalog_file(AntaCatalogFile(**raw_catalog_input))  # type: ignore[arg-type]
-
-        elif filename is not None:
-            self.filename: str | None = filename
-            self._parse_file()
+    @property
+    def filename(self) -> Path | None:
+        """Path of the file used to create this AntaCatalog instance"""
+        return self._filename
 
     @property
     def tests(self) -> list[AntaTestDefinition]:
@@ -246,32 +245,59 @@ class AntaCatalog:
                 raise ValueError("A test in the catalog must be an AntaTestDefinition instance")
         self._tests = value
 
-    def _parse_file(self) -> None:
+    @staticmethod
+    def parse(
+        filename: str
+    ) -> AntaCatalog:
         """
-        Parse the catalog YAML file
+        Create an AntaCatalog instance from a test catalog file.
 
-        TODO add a flag to prevent override ?
+        Args:
+            filename: Path to test catalog YAML file
         """
-        if self.filename:
-            try:
-                with open(file=self.filename, mode="r", encoding="UTF-8") as file:
-                    data = safe_load(file)
-            except (YAMLError, OSError):
-                logger.critical(f"Something went wrong while parsing {self.filename}")
-                raise
+        try:
+            with open(file=filename, mode="r", encoding="UTF-8") as file:
+                data = safe_load(file)
+        except (YAMLError, OSError):
+            logger.critical(f"Something went wrong while parsing {filename}")
+            raise
+        tests: list[AntaTestDefinition] = []
+        for t in AntaCatalogFile(**data).root.values():
+            tests.extend(t)
+        return AntaCatalog(tests, filename=filename)
 
-        self._parse_anta_catalog_file(AntaCatalogFile(**data))
-
-    def _parse_anta_catalog_file(self, raw_catalog_input: AntaCatalogFile) -> None:
+    @staticmethod
+    def from_dict(
+        data: RawCatalogInput
+    ) -> AntaCatalog:
         """
-        Parse the catalog YAML file
+        Create an AntaCatalog instance from a dictionary data structure.
+        See RawCatalogInput type alias for details.
+        It is the data structure returned by `yaml.load()` function of a valid
+        YAML Test Catalog file.
 
+        Args:
+            data: Python dictionary used to instantiate the AntaCatalog instance
         """
-        if self._tests:
-            logger.warning(f"Overriding AntaCatalog data from file {self.filename}")
-        self._tests = []
-        for tests in raw_catalog_input.root.values():
-            self._tests.extend(tests)
+        tests: list[AntaTestDefinition] = []
+        for t in AntaCatalogFile(**data).root.values():  # type: ignore[arg-type]
+            tests.extend(t)
+        return AntaCatalog(tests)
+
+    @staticmethod
+    def from_list(
+        data: ListAntaTestTuples
+    ) -> AntaCatalog:
+        """
+        Create an AntaCatalog instance from a list data structure.
+        See ListAntaTestTuples type alias for details.
+
+        Args:
+            data: Python list used to instantiate the AntaCatalog instance
+        """
+        tests: list[AntaTestDefinition] = []
+        tests.extend(AntaTestDefinition(test=test, inputs=inputs) for test, inputs in data)
+        return AntaCatalog(tests)
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
         """
