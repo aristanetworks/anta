@@ -21,7 +21,7 @@ from .test_models import FakeTest
 if TYPE_CHECKING:
     from pytest import LogCaptureFixture
 
-FAKE_CATALOG = AntaCatalog(tests=[(FakeTest, None)])
+FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
 @pytest.mark.asyncio
