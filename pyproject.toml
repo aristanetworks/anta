@@ -182,6 +182,7 @@ render_collapsed = true
 filterwarnings = [
   "ignore::urllib3.exceptions.InsecureRequestWarning"
 ]
+testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true

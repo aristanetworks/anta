@@ -14,7 +14,6 @@ from typing import Any, Optional
 
 from jinja2 import Template
 from rich.table import Table
-from rich.text import Text
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 from anta.custom_types import TestStatus
@@ -25,12 +24,6 @@ logger = logging.getLogger(__name__)
 
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
-
-    def __init__(self) -> None:
-        """
-        __init__ Class constructor
-        """
-        self.color_manager = ColorManager()
 
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: Optional[str] = None) -> str:
         """
@@ -253,44 +246,3 @@ class ReportJinja:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
 
         return template.render({"data": data})
-
-
-class ColorManager:
-    """Color management for status report."""
-
-    def get_color(self, level: TestStatus) -> str:
-        """Return the color attributed to the status in RICH_COLOR_THEME.
-
-        Args:
-            level (TestStatus): The status to colorized
-
-        Returns:
-            str: the colors attributed to this or empty string
-
-        """
-        return RICH_COLOR_THEME.get(level, "")
-
-    def style_rich(self, level: TestStatus) -> Text:
-        """
-        Build a rich Text syntax with color
-
-        Args:
-            level (TestStatus): The status to colorized
-
-        Returns:
-            Text: object with level string and its associated color.
-        """
-        return Text(level, style=self.get_color(level))
-
-    def string(self, level: TestStatus) -> str:
-        """
-        Build an str with color code
-
-        Args:
-            level (TestStatus): The status to colorized
-
-        Returns:
-            str: String with level and its associated color
-        """
-        color = self.get_color(level)
-        return f"[{color}]{level}" if color != "" else str(level)

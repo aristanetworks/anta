@@ -4,7 +4,6 @@
 """
 Tests for anta.cli.debug.commands
 """
-
 from __future__ import annotations
 
 from contextlib import nullcontext
@@ -18,7 +17,7 @@ from anta.cli import anta
 from anta.cli.debug.commands import get_device
 from anta.device import AntaDevice
 from anta.models import AntaCommand
-from tests.lib.utils import default_anta_env
+from tests.lib.utils import FakeEAPIException, default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -47,12 +46,6 @@ def test_get_device(test_inventory: AntaInventory, device_name: str, expected_ra
     with expected_raise:
         result = get_device(ctx, MagicMock(auto_spec=click.Option), device_name)
         assert isinstance(result, AntaDevice)
-
-
-class TestEAPIException(Exception):
-    """
-    Dummy exception for the tests
-    """
 
 
 # TODO complete test cases
@@ -99,7 +92,7 @@ def test_run_cmd(
     # failed
     expected_failed = None
     if failed:
-        expected_failed = TestEAPIException("Command failed to run")
+        expected_failed = FakeEAPIException("Command failed to run")
 
     # exit code
     expected_exit_code = 1 if failed else 0

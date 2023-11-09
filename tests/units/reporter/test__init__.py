@@ -6,12 +6,15 @@ Test anta.report.__init__.py
 """
 from __future__ import annotations
 
+from typing import Callable
+
 import pytest
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
 from anta.custom_types import TestStatus
 from anta.reporter import ReportTable
+from anta.result_manager import ResultManager
 
 
 class Test_ReportTable:
@@ -79,3 +82,112 @@ class Test_ReportTable:
         # pylint: disable=protected-access
         report = ReportTable()
         assert report._color_result(status) == expected_status
+
+    @pytest.mark.parametrize(
+        "host, testcase, title, number_of_tests, expected_length",
+        [
+            pytest.param(None, None, None, 5, 5, id="all results"),
+            pytest.param("host1", None, None, 5, 0, id="result for host1 when no host1 test"),
+            pytest.param(None, "VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
+            pytest.param(None, None, "Custom title", 5, 5, id="Change table title"),
+        ],
+    )
+    def test_report_all(
+        self,
+        result_manager_factory: Callable[[int], ResultManager],
+        host: str | None,
+        testcase: str | None,
+        title: str | None,
+        number_of_tests: int,
+        expected_length: int,
+    ) -> None:
+        """
+        test report_all
+        """
+        # pylint: disable=too-many-arguments
+        rm = result_manager_factory(number_of_tests)
+
+        report = ReportTable()
+        kwargs = {"host": host, "testcase": testcase, "title": title}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        res = report.report_all(rm, **kwargs)  # type: ignore[arg-type]
+
+        assert isinstance(res, Table)
+        assert res.title == (title or "All tests results")
+        assert res.row_count == expected_length
+
+    @pytest.mark.parametrize(
+        "testcase, title, number_of_tests, expected_length",
+        [
+            pytest.param(None, None, 5, 5, id="all results"),
+            pytest.param("VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
+            pytest.param(None, "Custom title", 5, 5, id="Change table title"),
+        ],
+    )
+    def test_report_summary_tests(
+        self,
+        result_manager_factory: Callable[[int], ResultManager],
+        testcase: str | None,
+        title: str | None,
+        number_of_tests: int,
+        expected_length: int,
+    ) -> None:
+        """
+        test report_summary_tests
+        """
+        # pylint: disable=too-many-arguments
+        # TODO refactor this later... this is injecting double test results by modyfing the device name
+        # should be a fixture
+        rm = result_manager_factory(number_of_tests)
+        new_results = [result.model_copy() for result in rm.get_results()]
+        for result in new_results:
+            result.name = "test_device"
+            result.result = "failure"
+        rm.add_test_results(new_results)
+
+        report = ReportTable()
+        kwargs = {"testcase": testcase, "title": title}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        res = report.report_summary_tests(rm, **kwargs)  # type: ignore[arg-type]
+
+        assert isinstance(res, Table)
+        assert res.title == (title or "Summary per test case")
+        assert res.row_count == expected_length
+
+    @pytest.mark.parametrize(
+        "host, title, number_of_tests, expected_length",
+        [
+            pytest.param(None, None, 5, 2, id="all results"),
+            pytest.param("host1", None, 5, 1, id="result for host host1"),
+            pytest.param(None, "Custom title", 5, 2, id="Change table title"),
+        ],
+    )
+    def test_report_summary_hosts(
+        self,
+        result_manager_factory: Callable[[int], ResultManager],
+        host: str | None,
+        title: str | None,
+        number_of_tests: int,
+        expected_length: int,
+    ) -> None:
+        """
+        test report_summary_hosts
+        """
+        # pylint: disable=too-many-arguments
+        # TODO refactor this later... this is injecting double test results by modyfing the device name
+        # should be a fixture
+        rm = result_manager_factory(number_of_tests)
+        new_results = [result.model_copy() for result in rm.get_results()]
+        for result in new_results:
+            result.name = host or "test_device"
+            result.result = "failure"
+        rm.add_test_results(new_results)
+
+        report = ReportTable()
+        kwargs = {"host": host, "title": title}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        res = report.report_summary_hosts(rm, **kwargs)  # type: ignore[arg-type]
+
+        assert isinstance(res, Table)
+        assert res.title == (title or "Summary per host")
+        assert res.row_count == expected_length
