@@ -99,8 +99,24 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
 
 def maybe_required_cb(ctx: click.Context, param: Option, value: str) -> Any:
     """
-    Repace the "required" true
+    Replace the "required" true with a callback to handle our specificies
+
+    TODO: evaluate if moving the options to the groups is not better than this ..
     """
+    if ctx.obj.get("_anta_help"):
+        # If help then don't do anything
+        return
+    if "get" in ctx.obj["args"]:
+        # the group has put the args from cli in the ctx.obj
+        # This is a bit convoluted
+        ctx.obj["skip_password"] = True
+        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
+            ctx.obj["skip_inventory"] = True
+        elif param.name == "inventory" and param.value_is_missing(value):
+            raise click.exceptions.MissingParameter(ctx=ctx, param=param)
+        return
+    if param.value_is_missing(value):
+        raise click.exceptions.MissingParameter(ctx=ctx, param=param)
 
 
 def exit_with_code(ctx: click.Context) -> None:
@@ -213,7 +229,8 @@ class IgnoreRequiredForMainCommand(IgnoreRequiredWithHelp):
         if "--help" in args:
             ctx.obj["_anta_help"] = True
 
-        raise Exception(ctx.__dict__)
+        # Storing full CLI call in ctx to get it in callbacks
+        ctx.obj["args"] = args
 
         try:
             return super().parse_args(ctx, args)

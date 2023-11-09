@@ -21,7 +21,7 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredForMainCommand, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
+from anta.cli.utils import AliasedGroup, IgnoreRequiredForMainCommand, IgnoreRequiredWithHelp, maybe_required_cb, parse_catalog, parse_inventory
 from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
@@ -33,7 +33,8 @@ from anta.result_manager import ResultManager
     "--username",
     help="Username to connect to EOS",
     show_envvar=True,
-    required=True,
+    callback=maybe_required_cb,
+    # required=True,
 )
 @click.option("--password", help="Password to connect to EOS that must be provided. It can be prompted using '--prompt' option.", show_envvar=True)
 @click.option(
@@ -77,7 +78,8 @@ from anta.result_manager import ResultManager
     "-i",
     help="Path to the inventory YAML file",
     show_envvar=True,
-    required=True,
+    callback=maybe_required_cb,
+    # required=True,
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
 )
 @click.option(
@@ -125,7 +127,7 @@ def anta(
                         ctx.params["enable_password"] = click.prompt(
                             "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
                         )
-        if ctx.params.get("password") is None:
+        if ctx.params.get("password") is None and not ctx.obj.get("skip_password"):
             raise click.BadParameter(
                 f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
             )
@@ -133,8 +135,9 @@ def anta(
             raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
 
     ctx.ensure_object(dict)
-    ctx.obj["inventory"] = parse_inventory(ctx, inventory)
-    ctx.obj["inventory_path"] = ctx.params["inventory"]
+    if not ctx.obj.get("skip_inventory"):
+        ctx.obj["inventory"] = parse_inventory(ctx, inventory)
+        ctx.obj["inventory_path"] = ctx.params["inventory"]
 
 
 @anta.group("nrfu", cls=IgnoreRequiredWithHelp)
