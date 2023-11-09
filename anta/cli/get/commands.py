@@ -22,7 +22,7 @@ from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
 
 from anta.cli.console import console
-from anta.cli.utils import parse_tags
+from anta.cli.utils import ExitCode, parse_tags
 
 from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
 
@@ -74,7 +74,8 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 
 
 @click.command(no_args_is_help=True)
-@click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, required=False)
+@click.pass_context
+@click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, required=False, default="all")
 @click.option(
     "--ansible-inventory",
     "-i",
@@ -89,17 +90,21 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
     help="Path to save inventory file",
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
 )
-def from_ansible(output: Path, ansible_inventory: Path, ansible_group: str) -> None:
+def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str) -> None:
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
     # Create output directory
     output.parent.mkdir(parents=True, exist_ok=True)
-    create_inventory_from_ansible(
-        inventory=ansible_inventory,
-        output_file=output,
-        ansible_root=ansible_group,
-    )
+    try:
+        create_inventory_from_ansible(
+            inventory=ansible_inventory,
+            output_file=output,
+            ansible_group=ansible_group,
+        )
+    except ValueError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)
 
 
 @click.command()
