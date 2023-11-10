@@ -1,0 +1,47 @@
+---
+all:
+  children:
+    cv_servers:
+      hosts:
+        cv_atd1:
+          ansible_host: 10.73.1.238
+          ansible_user: tom
+          ansible_password: arista123
+          cv_collection: v3
+    ATD_LAB:
+      vars:
+        ansible_user: arista
+        ansible_ssh_pass: arista
+      children:
+        ATD_FABRIC:
+          children:
+            ATD_SPINES:
+              vars:
+                type: spine
+              hosts:
+                spine1:
+                  ansible_host: 192.168.0.10
+                spine2:
+                  ansible_host: 192.168.0.11
+            ATD_LEAFS:
+              vars:
+                type: l3leaf
+              children:
+                pod1:
+                  hosts:
+                    leaf1:
+                      ansible_host: 192.168.0.12
+                    leaf2:
+                      ansible_host: 192.168.0.13
+                pod2:
+                  hosts:
+                    leaf3:
+                      ansible_host: 192.168.0.14
+                    leaf4:
+                      ansible_host: 192.168.0.15
+            ATD_TENANTS_NETWORKS:
+              children:
+                ATD_LEAFS:
+            ATD_SERVERS:
+              children:
+                ATD_LEAFS:

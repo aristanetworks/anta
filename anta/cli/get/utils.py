@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-
 """
 Utils functions to use with anta.cli.get.commands module.
 """
@@ -23,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     """Generate AUTH token from CVP using password"""
+    # TODO, need to handle requests eror
 
     # use CVP REST API to generate a token
     URL = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
@@ -33,7 +33,7 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     return response.json()["sessionId"]
 
 
-def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, container: str) -> None:
+def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, container: str | None = None) -> None:
     """
     create an inventory file from Arista CloudVision
     """
@@ -84,13 +84,22 @@ def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_gr
                 return hosts
         return hosts
 
-    with open(inventory, encoding="utf-8") as inv:
-        ansible_inventory = yaml.safe_load(inv)
+    try:
+        with open(inventory, encoding="utf-8") as inv:
+            ansible_inventory = yaml.safe_load(inv)
+    except OSError as exc:
+        raise ValueError(f"Could not parse {inventory}.") from exc
+
+    if not ansible_inventory:
+        raise ValueError(f"Ansible inventory {inventory} is empty")
+
     ansible_inventory = find_ansible_group(ansible_inventory, ansible_group)
+
     if ansible_inventory is None:
         raise ValueError(f"Group {ansible_group} not found in Ansible inventory")
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
     i = AntaInventoryInput(hosts=ansible_hosts)
+    # TODO, catch issue
     with open(output_file, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
     logger.info(f"ANTA device inventory file has been created in {output_file}")
