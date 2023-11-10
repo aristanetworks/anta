@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Loader that parses a YAML test catalog and imports corresponding Python functions
+Configure logging for ANTA
 """
 from __future__ import annotations
 
