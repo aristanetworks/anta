@@ -12,10 +12,13 @@ from pathlib import Path
 from typing import Any
 
 import requests
+import urllib3
 import yaml
 
 from anta.inventory import AntaInventory
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
