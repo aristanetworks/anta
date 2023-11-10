@@ -4,9 +4,9 @@
 """
 Tests for anta.cli.get.commands
 """
-
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import ANY, patch
@@ -16,12 +16,14 @@ from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
-from anta.cli.get.commands import from_cvp
+from anta.cli.get.commands import from_ansible, from_cvp
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
     from pytest import CaptureFixture, LogCaptureFixture
+
+DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 # Not testing for required parameter, click does this well.
@@ -95,3 +97,59 @@ def test_from_cvp(
     else:
         assert "Error connecting to cvp" in caplog.text
         assert result.exit_code == 1
+
+
+@pytest.mark.parametrize(
+    "ansible_inventory, ansible_group, output, expected_exit",
+    [
+        pytest.param("ansible_inventory.yml", None, None, 0, id="no group"),
+        pytest.param("ansible_inventory.yml", "ATD_LEAFS", None, 0, id="group found"),
+        pytest.param("ansible_inventory.yml", "DUMMY", None, 4, id="group not found"),
+        pytest.param("empty_ansible_inventory.yml", None, None, 4, id="empty inventory"),
+    ],
+)
+# pylint: disable-next=too-many-arguments
+def test_from_ansible(
+    tmp_path: Path,
+    caplog: LogCaptureFixture,
+    capsys: CaptureFixture[str],
+    click_runner: CliRunner,
+    ansible_inventory: Path,
+    ansible_group: str | None,
+    output: Path | None,
+    expected_exit: int,
+) -> None:
+    """
+    Test `anta get from-ansible`
+    """
+    env = default_anta_env()
+    cli_args = ["get", "from-ansible"]
+
+    os.chdir(tmp_path)
+    if output is not None:
+        cli_args.extend(["--output", str(output)])
+        out_dir = Path() / output
+    else:
+        # Get inventory-directory default
+        default_dir: Path = cast(Path, from_ansible.params[2].default)
+        out_dir = Path() / default_dir
+
+    if ansible_inventory is not None:
+        ansible_inventory_path = DATA_DIR / ansible_inventory
+        cli_args.extend(["--ansible-inventory", str(ansible_inventory_path)])
+
+    if ansible_group is not None:
+        cli_args.extend(["--ansible-group", ansible_group])
+
+    with capsys.disabled():
+        print(cli_args)
+        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+
+        print(result)
+
+    assert result.exit_code == expected_exit
+    print(caplog.records)
+    if expected_exit != 0:
+        assert len(caplog.records) == 2
+    else:
+        assert out_dir.exists()
