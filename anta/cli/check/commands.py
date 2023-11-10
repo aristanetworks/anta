@@ -34,5 +34,5 @@ def catalog(catalog: AntaCatalog) -> None:
     """
     Check that the catalog is valid
     """
-    console.print(f"[bold][green]Catalog {catalog} is valid")
+    console.print(f"[bold][green]Catalog {catalog.filename} is valid")
     console.print(pretty_repr(catalog.tests))
