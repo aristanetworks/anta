@@ -19,5 +19,10 @@
   "pylint.args": [
     "--load-plugins pylint_pydantic",
     "--rcfile=pylintrc"
-  ]
+  ],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

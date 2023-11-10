@@ -106,5 +106,8 @@ tech-support/*
 **/report.html
 .*report.html
 
+# direnv file
+.envrc
+
 clab-atd-anta/*
 clab-atd-anta/
