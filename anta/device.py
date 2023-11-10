@@ -56,6 +56,8 @@ class AntaDevice(ABC):
         self.name: str = name
         self.hw_model: Optional[str] = None
         self.tags: list[str] = tags if tags is not None else []
+        # A device always has its own name as tag
+        self.tags.append(self.name)
         self.is_online: bool = False
         self.established: bool = False
         self.cache: Optional[Cache] = None
@@ -64,6 +66,25 @@ class AntaDevice(ABC):
         # Initialize cache if not disabled
         if not disable_cache:
             self._init_cache()
+
+    @property
+    @abstractmethod
+    def _keys(self) -> tuple[Any, ...]:
+        """
+        Read-only property to implement hashing and equality for AntaDevice classes.
+        """
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Implement equality for AntaDevice objects.
+        """
+        return self._keys == other._keys if isinstance(other, self.__class__) else False
+
+    def __hash__(self) -> int:
+        """
+        Implement hashing for AntaDevice objects.
+        """
+        return hash(self._keys)
 
     def _init_cache(self) -> None:
         """
@@ -95,12 +116,6 @@ class AntaDevice(ABC):
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
-
-    @abstractmethod
-    def __eq__(self, other: object) -> bool:
-        """
-        AntaDevice equality depends on the class implementation.
-        """
 
     @abstractmethod
     async def _collect(self, command: AntaCommand) -> None:
@@ -237,7 +252,7 @@ class AsyncEOSDevice(AntaDevice):
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
-            ssh_params.update({"known_hosts": None})
+            ssh_params["known_hosts"] = None
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
@@ -245,30 +260,27 @@ class AsyncEOSDevice(AntaDevice):
         Implements Rich Repr Protocol
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol
         """
-
-        PASSWORD_VALUE = "<removed>"
-
         yield from super().__rich_repr__()
-        yield "host", self._session.host
-        yield "eapi_port", self._session.port
-        yield "username", self._ssh_opts.username
-        yield "enable", self.enable
-        yield "insecure", self._ssh_opts.known_hosts is None
+        yield ("host", self._session.host)
+        yield ("eapi_port", self._session.port)
+        yield ("username", self._ssh_opts.username)
+        yield ("enable", self.enable)
+        yield ("insecure", self._ssh_opts.known_hosts is None)
         if __DEBUG__:
             _ssh_opts = vars(self._ssh_opts).copy()
+            PASSWORD_VALUE = "<removed>"
             _ssh_opts["password"] = PASSWORD_VALUE
             _ssh_opts["kwargs"]["password"] = PASSWORD_VALUE
-            yield "_session", vars(self._session)
-            yield "_ssh_opts", _ssh_opts
+            yield ("_session", vars(self._session))
+            yield ("_ssh_opts", _ssh_opts)
 
-    def __eq__(self, other: object) -> bool:
+    @property
+    def _keys(self) -> tuple[Any, ...]:
         """
         Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        if not isinstance(other, AsyncEOSDevice):
-            return False
-        return self._session.host == other._session.host and self._session.port == other._session.port
+        return (self._session.host, self._session.port)
 
     async def _collect(self, command: AntaCommand) -> None:
         """
@@ -333,26 +345,28 @@ class AsyncEOSDevice(AntaDevice):
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
-        # Refresh command
-        COMMAND: str = "show version"
-        # Hardware model definition in show version
-        HW_MODEL_KEY: str = "modelName"
         logger.debug(f"Refreshing device {self.name}")
         self.is_online = await self._session.check_connection()
         if self.is_online:
+            COMMAND: str = "show version"
+            HW_MODEL_KEY: str = "modelName"
             try:
                 response = await self._session.cli(command=COMMAND)
             except EapiCommandError as e:
                 logger.warning(f"Cannot get hardware information from device {self.name}: {e.errmsg}")
+
             except (HTTPError, ConnectError) as e:
                 logger.warning(f"Cannot get hardware information from device {self.name}: {exc_to_str(e)}")
+
             else:
                 if HW_MODEL_KEY in response:
                     self.hw_model = response[HW_MODEL_KEY]
                 else:
                     logger.warning(f"Cannot get hardware information from device {self.name}: cannot parse '{COMMAND}'")
+
         else:
             logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
+
         self.established = bool(self.is_online and self.hw_model)
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
@@ -379,12 +393,15 @@ class AsyncEOSDevice(AntaDevice):
                 dst = destination
                 for file in sources:
                     logger.info(f"Copying '{file}' from device {self.name} to '{destination}' locally")
+
             elif direction == "to":
                 src = sources
-                dst = (conn, destination)
-                for file in sources:
+                dst = conn, destination
+                for file in src:
                     logger.info(f"Copying '{file}' to device {self.name} to '{destination}' remotely")
+
             else:
                 logger.critical(f"'direction' argument to copy() fonction is invalid: {direction}")
+
                 return
             await asyncssh.scp(src, dst)

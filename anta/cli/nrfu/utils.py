@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Utils functions to use with anta.cli.check.commands module.
+Utils functions to use with anta.cli.nrfu.commands module.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def print_settings(context: click.Context, report_template: pathlib.Path | None = None, report_output: pathlib.Path | None = None) -> None:
     """Print ANTA settings before running tests"""
-    message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'])} tests"
+    message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'].tests)} tests"
     if report_template:
         message += f"\n- Report template: {report_template}"
     if report_output:

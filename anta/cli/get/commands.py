@@ -4,7 +4,7 @@
 # pylint: disable = redefined-outer-name
 
 """
-Commands for Anta CLI to run check commands.
+Commands for Anta CLI to get information / build inventories..
 """
 from __future__ import annotations
 

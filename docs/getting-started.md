@@ -139,8 +139,8 @@ Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
   Run NRFU against inventory devices
 
 Options:
-  -c, --catalog FILE  Path to the tests catalog YAML file  [env var:
-                      ANTA_NRFU_CATALOG; required]
+  -c, --catalog FILE  Path to the test catalog YAML file  [env var:
+                      ANTA_CATALOG; required]
   --help              Show this message and exit.
 
 Commands:

@@ -161,7 +161,7 @@ Usage: anta exec collect-tech-support [OPTIONS]
   Collect scheduled tech-support from EOS devices
 
 Options:
-  -o, --output PATH              Path for tests catalog  [default: ./tech-
+  -o, --output PATH              Path for test catalog  [default: ./tech-
                                  support]
   --latest INTEGER               Number of scheduled show-tech to retrieve
   --configure        Ensure devices have 'aaa authorization exec default

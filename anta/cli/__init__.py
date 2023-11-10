@@ -10,19 +10,20 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 import click
 
 from anta import __version__
+from anta.catalog import AntaCatalog
+from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
-from anta.cli.nrfu import commands as check_commands
+from anta.cli.nrfu import commands as nrfu_commands
 from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, parse_catalog, parse_inventory
-from anta.loader import setup_logging
+from anta.logger import setup_logging
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
 
 
 @click.group(cls=IgnoreRequiredWithHelp)
@@ -133,6 +134,7 @@ def anta(
 
     ctx.ensure_object(dict)
     ctx.obj["inventory"] = parse_inventory(ctx, inventory)
+    ctx.obj["inventory_path"] = ctx.params["inventory"]
 
 
 @anta.group("nrfu", cls=IgnoreRequiredWithHelp)
@@ -140,16 +142,22 @@ def anta(
 @click.option(
     "--catalog",
     "-c",
+    envvar="ANTA_CATALOG",
     show_envvar=True,
-    help="Path to the tests catalog YAML file",
+    help="Path to the test catalog YAML file",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
     required=True,
     callback=parse_catalog,
 )
-def _nrfu(ctx: click.Context, catalog: list[tuple[Callable[..., TestResult], dict[Any, Any]]]) -> None:
+def _nrfu(ctx: click.Context, catalog: AntaCatalog) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()
+
+
+@anta.group("check", cls=AliasedGroup)
+def _check() -> None:
+    """Check commands for building ANTA"""
 
 
 @anta.group("exec", cls=AliasedGroup)
@@ -170,10 +178,13 @@ def _debug() -> None:
 # Load group commands
 # Prefixing with `_` for avoiding the confusion when importing anta.cli.debug.commands as otherwise the debug group has
 # a commands attribute.
+_check.add_command(check_commands.catalog)
+# Inventory cannot be implemented for now as main 'anta' CLI is already parsing it
+# _check.add_command(check_commands.inventory)
+
 _exec.add_command(exec_commands.clear_counters)
 _exec.add_command(exec_commands.snapshot)
 _exec.add_command(exec_commands.collect_tech_support)
-
 
 _get.add_command(get_commands.from_cvp)
 _get.add_command(get_commands.from_ansible)
@@ -183,10 +194,10 @@ _get.add_command(get_commands.tags)
 _debug.add_command(debug_commands.run_cmd)
 _debug.add_command(debug_commands.run_template)
 
-_nrfu.add_command(check_commands.table)
-_nrfu.add_command(check_commands.json)
-_nrfu.add_command(check_commands.text)
-_nrfu.add_command(check_commands.tpl_report)
+_nrfu.add_command(nrfu_commands.table)
+_nrfu.add_command(nrfu_commands.json)
+_nrfu.add_command(nrfu_commands.text)
+_nrfu.add_command(nrfu_commands.tpl_report)
 
 
 # ANTA CLI Execution

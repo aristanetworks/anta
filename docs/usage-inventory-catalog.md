@@ -4,13 +4,20 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Inventory and Catalog definition
+# Inventory and Catalog
 
-This page describes how to create an inventory and a tests catalog.
+The ANTA framework needs 2 important inputs from the user to run: a **device inventory** and a **test catalog**.
 
-## Create an inventory file
+Both inputs can be defined in a file or programmatically.
 
-`anta` cli needs an inventory file to list all devices to tests. This inventory is a YAML file with the folowing keys:
+## Device Inventory
+
+A device inventory is an instance of the [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class.
+
+### Device Inventory File
+
+The ANTA device inventory can easily be defined as a YAML file.
+The file must comply with the following structure:
 
 ```yaml
 anta_inventory:
@@ -31,12 +38,18 @@ anta_inventory:
       disable_cache: < Disable cache per range. Default is False. >
 ```
 
-Your inventory file can be based on any of these 3 keys and MUST start with `anta_inventory` key. A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
+The inventory file must start with the `anta_inventory` key then define one or multiple methods:
+
+- `hosts`: define each device individually
+- `networks`: scan a network for devices accesible via eAPI
+- `ranges`: scan a range for devices accesible via eAPI
+
+A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
 
 !!! info
     Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
 
-An inventory example:
+### Example
 
 ```yaml
 ---
@@ -59,19 +72,100 @@ anta_inventory:
 
 ## Test Catalog
 
-In addition to your inventory file, you also have to define a catalog of tests to execute against all your devices. This catalog list all your tests and their parameters.
-Its format is a YAML file and keys are tests functions inherited from the python path.
+A test catalog is an instance of the [AntaCatalog](../api/catalog.md#anta.catalog.AntaCatalog) class.
 
-### Default tests catalog
+### Test Catalog File
 
-All tests are located under `anta.tests` module and are categorised per family (one submodule). So to run test for software version, you can do:
+In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.
+
+A valid test catalog file must have the following structure:
+```yaml
+---
+<Python module>:
+    - <AntaTest subclass>:
+        <AntaTest.Input compliant dictionary>
+```
+
+### Example
+
+```yaml
+---
+anta.tests.connectivity:
+  - VerifyReachability:
+      hosts:
+        - source: Management0
+          destination: 1.1.1.1
+          vrf: MGMT
+        - source: Management0
+          destination: 8.8.8.8
+          vrf: MGMT
+      filters:
+        tags: ['leaf']
+      result_overwrite:
+        categories:
+          - "Overwritten category 1"
+        description: "Test with overwritten description"
+        custom_field: "Test run by John Doe"
+```
+
+It is also possible to nest Python module definition:
+```yaml
+anta.tests:
+  connectivity:
+    - VerifyReachability:
+        hosts:
+          - source: Management0
+            destination: 1.1.1.1
+            vrf: MGMT
+          - source: Management0
+            destination: 8.8.8.8
+            vrf: MGMT
+        filters:
+          tags: ['leaf']
+        result_overwrite:
+          categories:
+            - "Overwritten category 1"
+          description: "Test with overwritten description"
+          custom_field: "Test run by John Doe"
+```
+
+[This test catalog example](https://github.com/arista-netdevops-community/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
+
+### Test tags
+
+All tests can be defined with a list of user defined tags. These tags will be mapped with device tags: when at least one tag is defined for a test, this test will only be executed on devices with the same tag. If a test is defined in the catalog without any tags, the test will be executed on all devices.
+
+```yaml
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 10
+      filters:
+        tags: ['demo', 'leaf']
+  - VerifyReloadCause:
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+  - VerifyCPUUtilization:
+      filters:
+        tags: ['leaf']
+```
+
+!!! info
+    When using the CLI, you can filter the NRFU execution using tags. Refer to [this section](cli/tag-management.md) of the CLI documentation.
+
+### Tests available in ANTA
+
+All tests available as part of the ANTA framework are defined under the `anta.tests` Python module and are categorised per family (Python submodule).
+The complete list of the tests and their respective inputs is available at the [tests section](api/tests.md) of this website.
+
+
+To run test to verify the EOS software version, you can do:
 
 ```yaml
 anta.tests.software:
   - VerifyEosVersion:
 ```
 
-It will load the test `VerifyEosVersion` located in `anta.tests.software`. But since this function has parameters, we will create a catalog with the following structure:
+It will load the test `VerifyEosVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:
 
 ```yaml
 anta.tests.software:
@@ -82,9 +176,7 @@ anta.tests.software:
         - 4.26.1F
 ```
 
-To get a list of all available tests and their respective parameters, you can read the [tests section](./api/tests.md) of this website.
-
-The following example gives a very minimal tests catalog you can use in almost any situation
+The following example is a very minimal test catalog:
 
 ```yaml
 ---
@@ -110,35 +202,10 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
 ```
 
-All tests can be configured with a list of user defined tags. These tags will be mapped with device tags when `nrfu` cli is called with the `--tags` option. If a test is configured in the catalog without a list of tags, the test will be executed for all devices. When at least one tag is defined for a test, this test will be only executed on devices with the same tag.
+### Catalog with custom tests
 
-```yaml
-anta.tests.system:
-  - VerifyUptime:
-      minimum: 10
-      filters:
-        tags: ['demo', 'leaf']
-  - VerifyReloadCause:
-  - VerifyCoredump:
-  - VerifyAgentLogs:
-  - VerifyCPUUtilization:
-      filters:
-        tags: ['leaf']
-```
-
-!!! info
-    The `tag` field must be equal to values configured for `tags` under your device inventory.
-
-### Custom tests catalog
-
-In case you want to leverage your own tests collection, you can use the following syntax:
-
-```yaml
-<your package name>:
-  - <your test in your package name>:
-```
-
-So for instance, it could be:
+In case you want to leverage your own tests collection, use your own Python package in the test catalog.
+So for instance, if my custom tests are defined in the `titom73.tests.system` Python module, the test catalog will be:
 
 ```yaml
 titom73.tests.system:
@@ -147,7 +214,7 @@ titom73.tests.system:
 ```
 
 !!! tip "How to create custom tests"
-    To create your custom tests, you should refer to this [following documentation](advanced_usages/custom-tests.md)
+    To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
 
 ### Customize test description and categories
 

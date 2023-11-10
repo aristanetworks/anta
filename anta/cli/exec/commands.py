@@ -66,7 +66,7 @@ def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, ou
 
 @click.command()
 @click.pass_context
-@click.option("--output", "-o", default="./tech-support", show_default=True, help="Path for tests catalog", type=click.Path(path_type=Path), required=False)
+@click.option("--output", "-o", default="./tech-support", show_default=True, help="Path for test catalog", type=click.Path(path_type=Path), required=False)
 @click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
     "--configure",
