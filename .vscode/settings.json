@@ -13,6 +13,18 @@
   "mypy-type-checker.args": [
     "--config-file=pyproject.toml"
   ],
+  "pylint.severity": {
+    "refactor": "Warning"
+  },
+  "pylint.args": [
+    "--load-plugins pylint_pydantic",
+    "--rcfile=pylintrc"
+  ],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
   "isort.importStrategy": "fromEnvironment",
   "isort.check": true,
 }
