@@ -290,6 +290,13 @@ class AntaTest(ABC):
         result_overwrite: Optional[ResultOverwrite] = None
         filters: Optional[Filters] = None
 
+        def __hash__(self) -> int:
+            """
+            Implement generic hashing for AntaTest.Input.
+            This will work in most cases but this does not consider 2 lists with different ordering as equal.
+            """
+            return hash(self.model_dump_json())
+
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields
 
@@ -299,6 +306,7 @@ class AntaTest(ABC):
                 custom_field: a free string that will be included in the TestResult object
             """
 
+            model_config = ConfigDict(extra="forbid")
             description: Optional[str] = None
             categories: Optional[List[str]] = None
             custom_field: Optional[str] = None
@@ -307,18 +315,17 @@ class AntaTest(ABC):
             """Runtime filters to map tests with list of tags or devices
 
             Attributes:
-                devices: List of devices for the test.
                 tags: List of device's tags for the test.
             """
 
-            devices: Optional[List[str]] = None
+            model_config = ConfigDict(extra="forbid")
             tags: Optional[List[str]] = None
 
     def __init__(
         self,
         device: AntaDevice,
-        inputs: Optional[dict[str, Any]],
-        eos_data: Optional[list[dict[Any, Any] | str]] = None,
+        inputs: dict[str, Any] | AntaTest.Input | None = None,
+        eos_data: list[dict[Any, Any] | str] | None = None,
     ):
         """AntaTest Constructor
 
@@ -337,14 +344,19 @@ class AntaTest(ABC):
         if self.result.result == "unset":
             self._init_commands(eos_data)
 
-    def _init_inputs(self, inputs: Optional[dict[str, Any]]) -> None:
+    def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance
         to validate test inputs from defined model.
         Overwrite result fields based on `ResultOverwrite` input definition.
 
         Any input validation error will set this test result status as 'error'."""
         try:
-            self.inputs = self.Input(**inputs) if inputs is not None else self.Input()
+            if inputs is None:
+                self.inputs = self.Input()
+            elif isinstance(inputs, AntaTest.Input):
+                self.inputs = inputs
+            elif isinstance(inputs, dict):
+                self.inputs = self.Input(**inputs)
         except ValidationError as e:
             message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
             self.logger.error(message)
@@ -467,7 +479,7 @@ class AntaTest(ABC):
         @wraps(function)
         async def wrapper(
             self: AntaTest,
-            eos_data: Optional[list[dict[Any, Any] | str]] = None,
+            eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: Any,
         ) -> TestResult:
             """

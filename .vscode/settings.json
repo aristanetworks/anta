@@ -1,23 +1,18 @@
 {
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
-  "python.linting.mypyEnabled": true,
-  "python.formatting.provider": "black",
-  "pylint.importStrategy": "fromEnvironment",
-  "flake8.importStrategy": "fromEnvironment",
   "black-formatter.importStrategy": "fromEnvironment",
-  "python.linting.flake8Args": [
+  "pylint.importStrategy": "fromEnvironment",
+  "pylint.args": [
+    "--rcfile=pylintrc"
+  ],
+  "flake8.importStrategy": "fromEnvironment",
+  "flake8.args": [
     "--config=/dev/null",
     "--max-line-length=165"
   ],
-  "python.linting.mypyArgs": [
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "mypy-type-checker.args": [
     "--config-file=pyproject.toml"
   ],
-  "pylint.severity": {
-    "refactor": "Warning"
-  },
-  "pylint.args": [
-    "--load-plugins pylint_pydantic",
-    "--rcfile=pylintrc"
-  ]
+  "isort.importStrategy": "fromEnvironment",
+  "isort.check": true,
 }

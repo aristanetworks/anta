@@ -8,7 +8,6 @@ INVENTORY_MODEL_HOST_VALID = [
     {
         "name": "validIPv6",
         "input": "fe80::cc62:a9ff:feef:932a",
-        "expected_result": "valid",
     },
 ]
 
@@ -16,18 +15,15 @@ INVENTORY_MODEL_HOST_INVALID = [
     {
         "name": "invalidIPv4_with_netmask",
         "input": "1.1.1.1/32",
-        "expected_result": "invalid",
     },
     {
         "name": "invalidIPv6_with_netmask",
         "input": "fe80::cc62:a9ff:feef:932a/128",
-        "expected_result": "invalid",
     },
     {"name": "invalidHost_format", "input": "@", "expected_result": "invalid"},
     {
         "name": "invalidIPv6_format",
         "input": "fe80::cc62:a9ff:feef:",
-        "expected_result": "invalid",
     },
 ]
 
@@ -253,55 +249,10 @@ ANTA_INVENTORY_TESTS_INVALID = [
     },
 ]
 
-TEST_RESULT_UNIT = [
-    {
-        "name": "valid_with_host_ip_only",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test"},
-        "expected_result": "valid",
-    },
-    {
-        "name": "valid_with_host_ip_and_success_result",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test", "result": "success"},
-        "expected_result": "valid",
-    },
-    {
-        "name": "valid_with_host_ip_and_skipped_result",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test", "result": "success"},
-        "expected_result": "valid",
-    },
-    {
-        "name": "valid_with_host_ip_and_failure_result",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test", "result": "failure"},
-        "expected_result": "valid",
-    },
-    {
-        "name": "valid_with_host_ip_and_error_result",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test", "result": "error"},
-        "expected_result": "valid",
-    },
-    {
-        "name": "valid_full",
-        "input": {
-            "host": "1.1.1.1",
-            "test": "pytest_unit_test",
-            "result": "success",
-            "messages": ["test"],
-        },
-        "expected_result": "valid",
-    },
-    {
-        "name": "invalid_by_host",
-        "input": {"host": "demo.arista.com", "test": "pytest_unit_test"},
-        "expected_result": "invalid",
-    },
-    {
-        "name": "invalid_by_test",
-        "input": {"host": "1.1.1.1"},
-        "expected_result": "invalid",
-    },
-    {
-        "name": "invelid_by_result",
-        "input": {"host": "1.1.1.1", "test": "pytest_unit_test", "result": "ok"},
-        "expected_result": "invalid",
-    },
+TEST_RESULT_SET_STATUS = [
+    {"name": "set_success", "target": "success", "message": "success"},
+    {"name": "set_error", "target": "error", "message": "error"},
+    {"name": "set_failure", "target": "failure", "message": "failure"},
+    {"name": "set_skipped", "target": "skipped", "message": "skipped"},
+    {"name": "set_unset", "target": "unset", "message": "unset"},
 ]

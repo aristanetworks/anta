@@ -4,6 +4,7 @@
 """Fixture for Anta Testing"""
 from __future__ import annotations
 
+from os import environ
 from typing import Callable
 from unittest.mock import MagicMock, create_autospec
 
@@ -117,3 +118,14 @@ def click_runner() -> CliRunner:
     Convenience fixture to return a click.CliRunner for cli testing
     """
     return CliRunner()
+
+
+@pytest.fixture(autouse=True)
+def clean_anta_env_variables() -> None:
+    """
+    Autouse fixture that cleans the various ANTA_FOO env variables
+    that could come from the user environment and make some tests fail.
+    """
+    for envvar in environ:
+        if envvar.startswith("ANTA_"):
+            environ.pop(envvar)
