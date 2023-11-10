@@ -8,13 +8,15 @@ from __future__ import annotations
 
 import json
 from contextlib import nullcontext
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
 from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import TestResult
 
 
 class Test_ResultManager:
