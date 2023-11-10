@@ -89,7 +89,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     res = await asyncio.gather(*coros, return_exceptions=True)
     logger.debug(res)
     for r in res:
-        if isinstance(r, Exception):
+        if isinstance(r, BaseException):
             message = "Error in main ANTA Runner"
             anta_log_exception(r, message, logger)
         else:
