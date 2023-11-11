@@ -94,7 +94,7 @@ class ReportTable:
         Returns:
             Table: A fully populated rich Table
         """
-        table = Table(title=title)
+        table = Table(title=title, show_lines=True)
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
@@ -127,7 +127,7 @@ class ReportTable:
             Table: A fully populated rich Table
         """
         # sourcery skip: class-extract-method
-        table = Table(title=title)
+        table = Table(title=title, show_lines=True)
         headers = [
             "Test Case",
             "# of success",
@@ -174,7 +174,7 @@ class ReportTable:
         Returns:
             Table: A fully populated rich Table
         """
-        table = Table(title=title)
+        table = Table(title=title, show_lines=True)
         headers = [
             "Device",
             "# of success",
