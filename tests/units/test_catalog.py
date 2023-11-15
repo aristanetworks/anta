@@ -222,7 +222,7 @@ class Test_AntaCatalog:
         """
         with pytest.raises((ValidationError, ValueError)) as exec_info:
             AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
-        if exec_info.type == ValidationError:
+        if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
         else:
             assert catalog_data["error"] in str(exec_info)
@@ -257,7 +257,7 @@ class Test_AntaCatalog:
             data = safe_load(file)
         with pytest.raises((ValidationError, ValueError)) as exec_info:
             AntaCatalog.from_dict(data)
-        if exec_info.type == ValidationError:
+        if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
         else:
             assert catalog_data["error"] in str(exec_info)
