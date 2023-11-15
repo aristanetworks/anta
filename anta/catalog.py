@@ -222,11 +222,20 @@ class AntaCatalog:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise
+
+        if data is None:
+            logger.warning("Catalog file at %s is empty", filename)
+            return AntaCatalog([], filename=filename)
+
+        if not isinstance(data, dict):
+            raise ValueError(f"Parsed data in {filename} does not have the correct format, Aborting...")
+
         try:
             catalog_data = AntaCatalogFile(**data)
         except ValidationError as e:
             anta_log_exception(e, f"Test catalog '{filename}' is invalid!", logger)
             raise
+
         tests: list[AntaTestDefinition] = []
         for t in catalog_data.root.values():
             tests.extend(t)
@@ -244,6 +253,14 @@ class AntaCatalog:
             data: Python dictionary used to instantiate the AntaCatalog instance
         """
         tests: list[AntaTestDefinition] = []
+
+        if data is None:
+            logger.warning("Catalog input data is empty")
+            return AntaCatalog([])
+
+        if not isinstance(data, dict):
+            raise ValueError(f"Wrong input type for catalog data, must be a dict, got {type(data)}")
+
         try:
             catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
         except ValidationError as e:
