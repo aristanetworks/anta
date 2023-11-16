@@ -162,14 +162,14 @@ To run test to verify the EOS software version, you can do:
 
 ```yaml
 anta.tests.software:
-  - VerifyEosVersion:
+  - VerifyEOSVersion:
 ```
 
-It will load the test `VerifyEosVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:
+It will load the test `VerifyEOSVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:
 
 ```yaml
 anta.tests.software:
-  - VerifyEosVersion:
+  - VerifyEOSVersion:
       # List of allowed EOS versions.
       versions:
         - 4.25.4M
@@ -183,7 +183,7 @@ The following example is a very minimal test catalog:
 # Load anta.tests.software
 anta.tests.software:
   # Verifies the device is running one of the allowed EOS version.
-  - VerifyEosVersion:
+  - VerifyEOSVersion:
       # List of allowed EOS versions.
       versions:
         - 4.25.4M
