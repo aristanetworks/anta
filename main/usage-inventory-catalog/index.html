@@ -2115,11 +2115,11 @@ The file must comply with the following structure:</p>
 The complete list of the tests and their respective inputs is available at the <a href="../api/tests/">tests section</a> of this website.</p>
 <p>To run test to verify the EOS software version, you can do:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 </code></pre></div>
-<p>It will load the test <code>VerifyEosVersion</code> located in <code>anta.tests.software</code>. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:</p>
+<p>It will load the test <code>VerifyEOSVersion</code> located in <code>anta.tests.software</code>. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
@@ -2130,7 +2130,7 @@ The complete list of the tests and their respective inputs is available at the <
 <span class="c1"># Load anta.tests.software</span>
 <span class="nt">anta.tests.software</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Verifies the device is running one of the allowed EOS version.</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEosVersion</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
@@ -2186,7 +2186,7 @@ So for instance, if my custom tests are defined in the <code>titom73.tests.syste
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 10, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 16, 2023</span>
       
     
   </small>
