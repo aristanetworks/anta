@@ -17,15 +17,14 @@ Usage: anta get from-ansible [OPTIONS]
   Build ANTA inventory from an ansible inventory YAML file
 
 Options:
-  -g, --ansible-group TEXT        Ansible group to filter
-  -i, --ansible-inventory FILENAME
-                                  Path to your ansible inventory file to read
-  -o, --output FILENAME           Path to save inventory file
-  -d, --inventory-directory PATH  Directory to save inventory file
-  --help                          Show this message and exit.
+  -g, --ansible-group TEXT       Ansible group to filter
+  -ai, --ansible-inventory FILE  Path to your ansible inventory file to read
+  -o, --output FILE              Path to save inventory file. If not
+                                 configured, use anta inventory file
+  --help                         Show this message and exit.
 ```
 
-The output is an inventory where the name of the container is added as a tag for each host:
+The output is an inventory where the name of the container is added as a tag for each host. By default, anta cli saves output in anta inventory configured under `anta --inventory` and can be overwritten with `--output` option:
 
 ```yaml
 anta_inventory:
