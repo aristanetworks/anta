@@ -86,8 +86,8 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 @click.option(
     "--output",
     "-o",
-    default="inventory-ansible.yml",
-    help="Path to save inventory file",
+    required=False,
+    help="Path to save inventory file. If not configured, use anta inventory file",
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str) -> None:
@@ -95,7 +95,9 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
     # Create output directory
+    output = output if output is not None else ctx.obj["inventory_path"]
     output.parent.mkdir(parents=True, exist_ok=True)
+    logger.info(f"output anta inventory is: {output}")
     try:
         create_inventory_from_ansible(
             inventory=ansible_inventory,
