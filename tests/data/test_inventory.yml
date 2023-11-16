@@ -1,12 +1,10 @@
----
 anta_inventory:
   hosts:
-    - name: dummy
-      host: dummy.anta.ninja
-      tags: ["leaf"]
-    - name: dummy2
-      host: dummy2.anta.ninja
-      tags: ["leaf"]
-    - name: dummy3
-      host: dummy3.anta.ninja
-      tags: ["spine"]
+  - host: 192.168.0.12
+    name: leaf1
+  - host: 192.168.0.13
+    name: leaf2
+  - host: 192.168.0.14
+    name: leaf3
+  - host: 192.168.0.15
+    name: leaf4

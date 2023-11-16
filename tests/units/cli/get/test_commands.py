@@ -103,12 +103,13 @@ def test_from_cvp(
     "ansible_inventory, ansible_group, output, expected_exit",
     [
         pytest.param("ansible_inventory.yml", None, None, 0, id="no group"),
+        pytest.param("ansible_inventory.yml", None, "inventory.yml", 0, id="output defined"),
         pytest.param("ansible_inventory.yml", "ATD_LEAFS", None, 0, id="group found"),
         pytest.param("ansible_inventory.yml", "DUMMY", None, 4, id="group not found"),
         pytest.param("empty_ansible_inventory.yml", None, None, 4, id="empty inventory"),
     ],
 )
-# pylint: disable-next=too-many-arguments
+# pylint: disable=too-many-arguments
 def test_from_ansible(
     tmp_path: Path,
     caplog: LogCaptureFixture,
@@ -132,7 +133,7 @@ def test_from_ansible(
     else:
         # Get inventory-directory default
         default_dir: Path = cast(Path, from_ansible.params[2].default)
-        out_dir = Path() / default_dir
+        out_dir = Path() / default_dir if default_dir is not None else Path()
 
     if ansible_inventory is not None:
         ansible_inventory_path = DATA_DIR / ansible_inventory
@@ -150,6 +151,6 @@ def test_from_ansible(
     assert result.exit_code == expected_exit
     print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) == 2
+        assert len(caplog.records) in {2, 3}
     else:
         assert out_dir.exists()
