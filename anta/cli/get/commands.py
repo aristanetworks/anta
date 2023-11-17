@@ -20,6 +20,7 @@ import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
+from rich.prompt import Confirm
 
 from anta.cli.console import console
 from anta.cli.utils import ExitCode, parse_tags
@@ -90,12 +91,32 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
     help="Path to save inventory file. If not configured, use anta inventory file",
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
 )
-def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str) -> None:
+@click.option(
+    "--confirm-overwrite",
+    help="Confirm script can overwrite existing inventory file",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+    show_envvar=True,
+)
+def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, confirm_overwrite: bool) -> None:
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
     # Create output directory
     output = output if output is not None else ctx.obj["inventory_path"]
+    with open(output, "rbU") as f:
+        anta_inventory_number_lines = sum(1 for _ in f)
+
+    if anta_inventory_number_lines > 0 and not confirm_overwrite:
+        confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
+        try:
+            assert confirm_overwrite is True
+        except AssertionError:
+            logger.critical("conversion aborted since destination file is not empty")
+            sys.exit(ExitCode.USAGE_ERROR)
+
     output.parent.mkdir(parents=True, exist_ok=True)
     logger.info(f"output anta inventory is: {output}")
     try:
