@@ -100,21 +100,37 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
     required=False,
     show_envvar=True,
 )
-def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, confirm_overwrite: bool) -> None:
+@click.option(
+    "--no-overwrite",
+    help="do not overwrite existing inventory file",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+    show_envvar=True,
+)
+def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, confirm_overwrite: bool, no_overwrite: bool) -> None:
+    # pylint: disable=too-many-arguments
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
     # Create output directory
     output = output if output is not None else ctx.obj["inventory_path"]
-    with open(output, "rbU") as f:
-        anta_inventory_number_lines = sum(1 for _ in f)
+    anta_inventory_number_lines = 0
+    if output.exists():
+        with open(output, "rbU") as f:
+            anta_inventory_number_lines = sum(1 for _ in f)
+
+    if anta_inventory_number_lines > 0 and no_overwrite:
+        logger.critical("conversion aborted since destination file is not empty and --no-overwrite is set")
+        sys.exit(ExitCode.INTERNAL_ERROR)
 
     if anta_inventory_number_lines > 0 and not confirm_overwrite:
         confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
         try:
             assert confirm_overwrite is True
         except AssertionError:
-            logger.critical("conversion aborted since destination file is not empty")
+            logger.critical("conversion aborted by user because destination file is not empty")
             sys.exit(ExitCode.USAGE_ERROR)
 
     output.parent.mkdir(parents=True, exist_ok=True)
