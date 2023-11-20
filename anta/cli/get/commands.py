@@ -102,7 +102,7 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 )
 @click.option(
     "--no-overwrite",
-    help="do not overwrite existing inventory file",
+    help="Do not overwrite existing inventory file",
     default=False,
     is_flag=True,
     show_default=True,
