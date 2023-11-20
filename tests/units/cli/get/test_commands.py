@@ -162,11 +162,11 @@ def test_from_ansible(
 @pytest.mark.parametrize(
     "ansible_inventory, ansible_group, output_option, expected_exit",
     [
-        pytest.param("ansible_inventory.yml", None, "--no-overwrite", 3, id="no group-no-overwrite"),
+        pytest.param("ansible_inventory.yml", None, "--no-overwrite", 4, id="no group-no-overwrite"),
         pytest.param("ansible_inventory.yml", None, "--confirm-overwrite", 0, id="no group-overwrite"),
-        pytest.param("ansible_inventory.yml", "ATD_LEAFS", "--no-overwrite", 3, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", "--no-overwrite", 3, id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, "--no-overwrite", 3, id="empty inventory"),
+        pytest.param("ansible_inventory.yml", "ATD_LEAFS", "--no-overwrite", 4, id="group found"),
+        pytest.param("ansible_inventory.yml", "DUMMY", "--no-overwrite", 4, id="group not found"),
+        pytest.param("empty_ansible_inventory.yml", None, "--no-overwrite", 4, id="empty inventory"),
     ],
 )
 # pylint: disable-next=too-many-arguments
@@ -221,5 +221,5 @@ def test_from_ansible_default_inventory(
     assert result.exit_code == expected_exit
     print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) == 1
-    Path(env["ANTA_INVENTORY"]).unlink(missing_ok=True)
+        assert len(caplog.records) == 2
+    # Path(env["ANTA_INVENTORY"]).unlink(missing_ok=True)

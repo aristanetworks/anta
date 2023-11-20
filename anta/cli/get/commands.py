@@ -118,12 +118,12 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
     output = output if output is not None else ctx.obj["inventory_path"]
     anta_inventory_number_lines = 0
     if output.exists():
-        with open(output, "rbU") as f:
+        with open(output, "r", encoding="utf-8") as f:
             anta_inventory_number_lines = sum(1 for _ in f)
 
     if anta_inventory_number_lines > 0 and no_overwrite:
         logger.critical("conversion aborted since destination file is not empty and --no-overwrite is set")
-        sys.exit(ExitCode.INTERNAL_ERROR)
+        sys.exit(ExitCode.USAGE_ERROR)
 
     if anta_inventory_number_lines > 0 and not confirm_overwrite:
         confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
