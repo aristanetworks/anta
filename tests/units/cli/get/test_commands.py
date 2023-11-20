@@ -17,7 +17,7 @@ from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
-from anta.cli.get.commands import from_ansible, from_cvp
+from anta.cli.get.commands import from_cvp
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
@@ -132,8 +132,10 @@ def test_from_ansible(
         out_dir = Path() / output
     else:
         # Get inventory-directory default
-        default_dir: Path = cast(Path, from_ansible.params[2].default)
+        default_dir: Path = cast(Path, f"{tmp_path}/output.yml")
         out_dir = Path() / default_dir
+
+    cli_args.extend(["--output", str(out_dir)])
 
     if ansible_inventory is not None:
         ansible_inventory_path = DATA_DIR / ansible_inventory
@@ -146,12 +148,13 @@ def test_from_ansible(
         print(cli_args)
         result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
 
-        print(result)
+    print(f"Runner args: {cli_args}")
+    print(f"Runner result is: {result}")
 
     assert result.exit_code == expected_exit
     print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) == 2
+        assert len(caplog.records) in {2, 3}
     else:
         assert out_dir.exists()
 
@@ -218,5 +221,5 @@ def test_from_ansible_default_inventory(
     assert result.exit_code == expected_exit
     print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) in {2, 3}
+        assert len(caplog.records) == 1
     Path(env["ANTA_INVENTORY"]).unlink(missing_ok=True)

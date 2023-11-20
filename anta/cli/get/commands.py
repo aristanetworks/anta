@@ -144,6 +144,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
     except ValueError as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)
+    ctx.exit(ExitCode.OK)
 
 
 @click.command()
