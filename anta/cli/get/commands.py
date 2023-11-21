@@ -78,7 +78,6 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 @click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, required=False, default="all")
 @click.option(
     "--ansible-inventory",
-    "-i",
     default=None,
     help="Path to your ansible inventory file to read",
     type=click.Path(file_okay=True, dir_okay=False, exists=True, path_type=Path),

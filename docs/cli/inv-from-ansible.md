@@ -18,7 +18,7 @@ Usage: anta get from-ansible [OPTIONS]
 
 Options:
   -g, --ansible-group TEXT        Ansible group to filter
-  -i, --ansible-inventory FILENAME
+  --ansible-inventory FILENAME
                                   Path to your ansible inventory file to read
   -o, --output FILENAME           Path to save inventory file
   -d, --inventory-directory PATH  Directory to save inventory file
