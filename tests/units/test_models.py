@@ -13,13 +13,10 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from anta.decorators import deprecated_test
-from anta.decorators import skip_on_platforms
-from anta.models import AntaCommand
-from anta.models import AntaTemplate
-from anta.models import AntaTemplateRenderError
-from anta.models import AntaTest
 from pydantic import ValidationError
+
+from anta.decorators import deprecated_test, skip_on_platforms
+from anta.models import AntaCommand, AntaTemplate, AntaTemplateRenderError, AntaTest
 from tests.lib.utils import generate_test_ids
 
 
