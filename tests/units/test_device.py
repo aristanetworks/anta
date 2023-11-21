@@ -106,23 +106,13 @@ class Test_AsyncEOSDevice:
         """
         Test if the supports() static method parses correctly the aioeapi.EapiCommandError exception
         """
-        DATA: dict[str, Any] = {
-            "host": "42.42.42.42",
-            "username": "anta",
-            "password": "anta",
+        DATA: dict[str, Any] = {"host": "42.42.42.42", "username": "anta", "password": "anta"}
+        kwargs: dict[str, Any] = {
             "name": "test.anta.ninja",
             "enable": False,
-            "enable_password": None,
             "disable_cache": True,
-            "port": None,
-            "ssh_port": None,
-            "tags": None,
-            "timeout": None,
             "insecure": False,
-            "proto": None,
         }
-        kwargs = {k: v for k, v in DATA.items() if v is not None and k not in ["host", "username", "password"]}
-
         device = AsyncEOSDevice(DATA["host"], DATA["username"], DATA["password"], **kwargs)
         command = AntaCommand(
             command="show hardware counter drop",
