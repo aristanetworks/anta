@@ -80,7 +80,7 @@ CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
-        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
+        "error": "FakeTest is not defined in Python module anta.tests.software",
     },
     {
         "name": "undefined_module",
@@ -107,18 +107,18 @@ CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
         "filename": "test_catalog_test_definition_multiple_dicts.yml",
         "error": "Value error, AntaTestDefinition must be a dictionary with a single entry",
     },
-    {"name": "wrong_type_after_parsing", "filename": "test_catalog_wrong_type.yml", "error": " does not have the correct format, Aborting..."},
+    {"name": "wrong_type_after_parsing", "filename": "test_catalog_wrong_type.yml", "error": "must be a dict, got str"},
 ]
 CATALOG_FROM_DICT_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
-        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
+        "error": "FakeTest is not defined in Python module anta.tests.software",
     },
     {
         "name": "wrong_type",
         "filename": "test_catalog_wrong_type.yml",
-        "error": "Wrong input type for catalog data, must be a dict, got <class 'str'>",
+        "error": "Wrong input type for catalog data, must be a dict, got str",
     },
 ]
 CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
@@ -145,7 +145,7 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "wrong_input_type",
         "tests": [(FakeTestWithInput, True)],
-        "error": "Value error, Coud not instantiate inputs as type <class 'bool'> is not valid",
+        "error": "Value error, Coud not instantiate inputs as type bool is not valid",
     },
 ]
 

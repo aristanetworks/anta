@@ -76,7 +76,7 @@ class AntaTestDefinition(BaseModel):
             return data
         if isinstance(data, dict):
             return test_class.Input(**data)
-        raise ValueError(f"Coud not instantiate inputs as type {type(data)} is not valid")
+        raise ValueError(f"Coud not instantiate inputs as type {type(data).__name__} is not valid")
 
     @model_validator(mode="after")
     def check_inputs(self) -> "AntaTestDefinition":
@@ -157,7 +157,9 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         if test is None:
-                            raise ValueError(f"{test_name} is not defined in Python module {module}")
+                            raise ValueError(
+                                f"{test_name} is not defined in Python module {module.__name__}{f' (from {module.__file__})' if module.__file__ is not None else ''}"
+                            )
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
         return typed_data
@@ -223,26 +225,10 @@ class AntaCatalog:
             anta_log_exception(e, message, logger)
             raise
 
-        if data is None:
-            logger.warning("Catalog file at %s is empty", filename)
-            return AntaCatalog([], filename=filename)
-
-        if not isinstance(data, dict):
-            raise ValueError(f"Parsed data in {filename} does not have the correct format, Aborting...")
-
-        try:
-            catalog_data = AntaCatalogFile(**data)
-        except ValidationError as e:
-            anta_log_exception(e, f"Test catalog '{filename}' is invalid!", logger)
-            raise
-
-        tests: list[AntaTestDefinition] = []
-        for t in catalog_data.root.values():
-            tests.extend(t)
-        return AntaCatalog(tests, filename=filename)
+        return AntaCatalog.from_dict(data, filename=filename)
 
     @staticmethod
-    def from_dict(data: RawCatalogInput) -> AntaCatalog:
+    def from_dict(data: RawCatalogInput, filename: str | Path | None = None) -> AntaCatalog:
         """
         Create an AntaCatalog instance from a dictionary data structure.
         See RawCatalogInput type alias for details.
@@ -251,24 +237,24 @@ class AntaCatalog:
 
         Args:
             data: Python dictionary used to instantiate the AntaCatalog instance
+            filename: value to be set as AntaCatalog instance attribute
         """
         tests: list[AntaTestDefinition] = []
-
         if data is None:
             logger.warning("Catalog input data is empty")
-            return AntaCatalog([])
+            return AntaCatalog(filename=filename)
 
         if not isinstance(data, dict):
-            raise ValueError(f"Wrong input type for catalog data, must be a dict, got {type(data)}")
+            raise ValueError(f"Wrong input type for catalog data{f' (from {filename})' if filename is not None else ''}, must be a dict, got {type(data).__name__}")
 
         try:
             catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
         except ValidationError as e:
-            anta_log_exception(e, "Test catalog is invalid!", logger)
+            anta_log_exception(e, f"Test catalog{f' (from {filename})' if filename is not None else ''} is invalid!", logger)
             raise
         for t in catalog_data.root.values():
             tests.extend(t)
-        return AntaCatalog(tests)
+        return AntaCatalog(tests, filename=filename)
 
     @staticmethod
     def from_list(data: ListAntaTestTuples) -> AntaCatalog:
