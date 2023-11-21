@@ -7,8 +7,7 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, cast
 
-from anta.models import AntaCommand, AntaTest, logger
-from anta.tools.misc import exc_to_str
+from anta.models import AntaTest, logger
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
@@ -95,83 +94,6 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
             if anta_test.device.hw_model in platforms:
                 anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
-                AntaTest.update_progress()
-                return anta_test.result
-
-            return await function(*args, **kwargs)
-
-        return cast(F, wrapper)
-
-    return decorator
-
-
-def check_bgp_family_enable(family: str) -> Callable[[F], F]:
-    """
-    Return a decorator to conditionally skip a test based on BGP address family availability.
-
-    This is a decorator factory that generates a decorator that will skip the test
-    if there's no BGP configuration or peer for the given address family.
-
-    !!! warning
-        This decorator is deprecated and will eventually be removed in a future major release of ANTA.
-        New BGP tests have been created to address this. For more details, please refer to the BGP tests documentation.
-
-    Args:
-        family (str): BGP address family to check. Accepted values are 'ipv4', 'ipv6', 'evpn', 'rtc'.
-
-    Returns:
-        Callable[[F], F]: A decorator that can be used to wrap test functions.
-    """
-
-    def decorator(function: F) -> F:
-        """
-        Actual decorator that either runs the test or skips it based on BGP address family state.
-
-        Args:
-            function (F): The test function to be decorated.
-
-        Returns:
-            F: The decorated function.
-        """
-
-        @wraps(function)
-        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:  # pylint: disable=too-many-branches
-            """
-            Check BGP address family and conditionally run or skip the test.
-
-            This wrapper checks the BGP address family state on the device.
-            If the required BGP configuration or peer is not found, the test is either skipped.
-            """
-            anta_test = args[0]
-
-            if anta_test.result.result != "unset":
-                AntaTest.update_progress()
-                return anta_test.result
-
-            if family == "ipv4":
-                command = AntaCommand(command="show bgp ipv4 unicast summary vrf all")
-            elif family == "ipv6":
-                command = AntaCommand(command="show bgp ipv6 unicast summary vrf all")
-            elif family == "evpn":
-                command = AntaCommand(command="show bgp evpn summary")
-            elif family == "rtc":
-                command = AntaCommand(command="show bgp rt-membership summary")
-            else:
-                anta_test.result.is_error(message=f"Wrong address family for BGP decorator: {family}")
-                return anta_test.result
-
-            await anta_test.device.collect(command=command)
-
-            if not command.collected and command.failed is not None:
-                anta_test.result.is_error(message=f"{command.command}: {exc_to_str(command.failed)}")
-                return anta_test.result
-            if "vrfs" not in command.json_output:
-                anta_test.result.is_skipped(f"No BGP configuration for address family {family} on this device")
-                AntaTest.update_progress()
-                return anta_test.result
-            if len(bgp_vrfs := command.json_output["vrfs"]) == 0 or len(bgp_vrfs["default"]["peers"]) == 0:
-                # No VRF
-                anta_test.result.is_skipped(f"No BGP peer for address family {family} on this device")
                 AntaTest.update_progress()
                 return anta_test.result
 
