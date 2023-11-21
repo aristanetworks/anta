@@ -241,8 +241,6 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
-    # Optional class attributes
-    test_filters: ClassVar[list[AntaTestFilter]]
     # Class attributes to handle the progress bar of ANTA CLI
     progress: Optional[Progress] = None
     nrfu_task: Optional[TaskID] = None
