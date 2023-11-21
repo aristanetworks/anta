@@ -17,8 +17,6 @@ from anta.models import AntaCommand, AntaTest
 class VerifyEOSVersion(AntaTest):
     """
     Verifies the device is running one of the allowed EOS version.
-
-    List of EOS versions MUST be configured with quotes for correct YAML interpretation
     """
 
     name = "VerifyEOSVersion"
