@@ -11,108 +11,19 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, AnyStr, Dict, Iterator, List, Literal, Optional, Union
+from typing import Any, Iterator, Literal, Optional, Union
 
-import aioeapi
 import asyncssh
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
-from aioeapi import Device
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
-from anta import __DEBUG__
+from anta import __DEBUG__, aioeapi
 from anta.models import AntaCommand
 from anta.tools.misc import anta_log_exception, exc_to_str
 
 logger = logging.getLogger(__name__)
-
-
-class EapiCommandError(RuntimeError):
-    """
-    Exception class for EAPI command errors
-
-    Attributes
-    ----------
-    failed: str - the failed command
-    errmsg: str - a description of the failure reason
-    passed: List[dict] - a list of command results of the commands that passed
-    not_exec: List[str] - a list of commands that were not executed
-    """
-
-    # pylint: disable=too-many-arguments
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[Union[str, dict[str, Any]]], not_exec: list[dict[str, Any]]):
-        """Initializer for the EapiCommandError exception"""
-        self.failed = failed
-        self.errors = errors
-        self.errmsg = errmsg
-        self.passed = passed
-        self.not_exec = not_exec
-        super().__init__()
-
-    def __str__(self) -> str:
-        """returns the error message associated with the exception"""
-        return self.errmsg
-
-
-aioeapi.EapiCommandError = EapiCommandError
-
-
-# patching aioeapi.Device.jsonrpc_exec to test some aio-eapi enhancement
-async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:  # type: ignore
-    """
-    Execute the JSON-RPC dictionary object.
-
-    Parameters
-    ----------
-    jsonrpc: dict
-        The JSON-RPC as created by the `meth`:jsonrpc_command().
-
-    Raises
-    ------
-    EapiCommandError
-        In the event that a command resulted in an error response.
-
-    Returns
-    -------
-    The list of command results; either dict or text depending on the
-    JSON-RPC format pameter.
-    """
-    res = await self.post("/command-api", json=jsonrpc)
-    res.raise_for_status()
-    body = res.json()
-
-    commands = jsonrpc["params"]["cmds"]
-    ofmt = jsonrpc["params"]["format"]
-
-    get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
-
-    # if there are no errors then return the list of command results.
-
-    if (err_data := body.get("error")) is None:
-        return [get_output(cmd_res) for cmd_res in body["result"]]
-
-    # ---------------------------------------------------------------------
-    # if we are here, then there were some command errors.  Raise a
-    # EapiCommandError exception with args (commands that failed, passed,
-    # not-executed).
-    # ---------------------------------------------------------------------
-
-    cmd_data = err_data["data"]
-    len_data = len(cmd_data)
-    err_at = len_data - 1
-    err_msg = err_data["message"]
-
-    raise EapiCommandError(
-        passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
-        failed=commands[err_at]["cmd"],
-        errors=cmd_data[err_at]["errors"],
-        errmsg=err_msg,
-        not_exec=commands[err_at + 1 :],  # noqa: E203
-    )
-
-
-Device.jsonrpc_exec = jsonrpc_exec
 
 
 class AntaDevice(ABC):
@@ -264,8 +175,7 @@ class AntaDevice(ABC):
     @staticmethod
     @abstractmethod
     def supports(command: AntaCommand) -> bool:
-        """Returns True if the command is supported on the device hardware platform, False otherwise.
-        Can only be called if the command has failed."""
+        """Returns True if the command is supported on the device hardware platform, False otherwise."""
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -342,7 +252,7 @@ class AsyncEOSDevice(AntaDevice):
         super().__init__(name, tags, disable_cache)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -377,10 +287,9 @@ class AsyncEOSDevice(AntaDevice):
 
     @staticmethod
     def supports(command: AntaCommand) -> bool:
-        """Returns True if the command is supported on the device hardware platform, False otherwise.
-        Can only be called if the command has failed."""
+        """Returns True if the command is supported on the device hardware platform, False otherwise."""
         return not (
-            isinstance(command.failed, EapiCommandError)
+            isinstance(command.failed, aioeapi.EapiCommandError)
             and command.failed.errors
             and any("not supported on this hardware platform" in e for e in command.failed.errors)
         )
@@ -425,7 +334,7 @@ class AsyncEOSDevice(AntaDevice):
             command.output = response
             logger.debug(f"{self.name}: {command}")
 
-        except EapiCommandError as e:
+        except aioeapi.EapiCommandError as e:
             command.failed = e
             if AsyncEOSDevice.supports(command):
                 message = f"Command '{command.command}' failed on {self.name}"
@@ -456,7 +365,7 @@ class AsyncEOSDevice(AntaDevice):
             HW_MODEL_KEY: str = "modelName"
             try:
                 response = await self._session.cli(command=COMMAND)
-            except EapiCommandError as e:
+            except aioeapi.EapiCommandError as e:
                 logger.warning(f"Cannot get hardware information from device {self.name}: {e.errmsg}")
 
             except (HTTPError, ConnectError) as e:
