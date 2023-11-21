@@ -11,7 +11,7 @@ import logging
 import re
 import time
 from abc import ABC, abstractmethod
-from copy import deepcopy
+from copy import copy
 from datetime import timedelta
 from functools import wraps
 
@@ -357,7 +357,7 @@ class AntaTest(ABC):
         if self.__class__.commands:
             for cmd in self.__class__.commands:
                 if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(deepcopy(cmd))
+                    self.instance_commands.append(copy(cmd))
                 elif isinstance(cmd, AntaTemplate):
                     try:
                         self.instance_commands.extend(self.render(cmd))
