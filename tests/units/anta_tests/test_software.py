@@ -34,7 +34,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"versions": ["4.27.1F"]},
-        "expected": {"result": "failure", "messages": ["device is running version 4.27.0F not in expected versions: ['4.27.1F']"]},
+        "expected": {"result": "failure", "messages": ["device is running version \"4.27.0F\" not in expected versions: ['4.27.1F']"]},
     },
     {
         "name": "success",

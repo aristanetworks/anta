@@ -34,7 +34,7 @@ class VerifyEOSVersion(AntaTest):
         if command_output["version"] in self.inputs.versions:
             self.result.is_success()
         else:
-            self.result.is_failure(f'device is running version {command_output["version"]} not in expected versions: {self.inputs.versions}')
+            self.result.is_failure(f'device is running version "{command_output["version"]}" not in expected versions: {self.inputs.versions}')
 
 
 class VerifyTerminAttrVersion(AntaTest):
