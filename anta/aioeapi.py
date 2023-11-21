@@ -80,15 +80,16 @@ async def jsonrpc_exec(self, jsonrpc: dict) -> list[dict | AnyStr]:  # type: ign
     # not-executed).
     # ---------------------------------------------------------------------
 
-    # ---------------------------- eAPI specification ------------------------
-    # On an error, no result object is present, only an error object, which is
-    # guaranteed to have the following attributes: code, messages, and data.
-    # Similar to the result object in the successful response, the data object
-    # is a list of objects corresponding to the results of all commands up to,
-    # and including, the failed command. If there was a an error before any
-    # commands were executed (e.g. bad credentials), data will be empty.
-    # The last object in the data array will always correspond to the failed
-    # command. The command failure details are always stored in the errors array.
+    # -------------------------- eAPI specification ----------------------
+    # On an error, no result object is present, only an error object, which
+    # is guaranteed to have the following attributes: code, messages, and
+    # data. Similar to the result object in the successful response, the
+    # data object is a list of objects corresponding to the results of all
+    # commands up to, and including, the failed command. If there was a an
+    # error before any commands were executed (e.g. bad credentials), data
+    # will be empty. The last object in the data array will always
+    # correspond to the failed command. The command failure details are
+    # always stored in the errors array.
 
     cmd_data = err_data["data"]
     len_data = len(cmd_data)
