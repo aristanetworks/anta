@@ -102,9 +102,9 @@ class Test_AsyncEOSDevice:
             assert device.cache is not None
             assert device.cache_locks is not None
 
-    def test_is_supported(self) -> None:
+    def test_supports(self) -> None:
         """
-        Test if the is_supported() static method parses correctly the aioeapi.EapiCommandError exception
+        Test if the supports() static method parses correctly the aioeapi.EapiCommandError exception
         """
         DATA: dict[str, Any] = {
             "host": "42.42.42.42",
@@ -134,7 +134,7 @@ class Test_AsyncEOSDevice:
                 not_exec=[],
             ),
         )
-        assert device.is_supported(command) is False
+        assert device.supports(command) is False
 
 
 COLLECT_ANTADEVICE_DATA: list[dict[str, Any]] = [

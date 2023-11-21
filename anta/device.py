@@ -263,7 +263,7 @@ class AntaDevice(ABC):
 
     @staticmethod
     @abstractmethod
-    def is_supported(command: AntaCommand) -> bool:
+    def supports(command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise.
         Can only be called if the command has failed."""
 
@@ -376,7 +376,7 @@ class AsyncEOSDevice(AntaDevice):
         return (self._session.host, self._session.port)
 
     @staticmethod
-    def is_supported(command: AntaCommand) -> bool:
+    def supports(command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise.
         Can only be called if the command has failed."""
         return not (
@@ -427,7 +427,7 @@ class AsyncEOSDevice(AntaDevice):
 
         except EapiCommandError as e:
             command.failed = e
-            if AsyncEOSDevice.is_supported(command):
+            if AsyncEOSDevice.supports(command):
                 message = f"Command '{command.command}' failed on {self.name}"
                 anta_log_exception(e, message, logger)
         except (HTTPError, ConnectError) as e:
