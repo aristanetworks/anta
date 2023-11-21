@@ -12,7 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from anta.device import AntaDevice, AsyncEOSDevice, EapiCommandError
+from anta.aioeapi import EapiCommandError
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from tests.lib.utils import generate_test_ids_list
 
@@ -125,6 +126,8 @@ class Test_AsyncEOSDevice:
             ),
         )
         assert device.supports(command) is False
+        command = AntaCommand(command="show hardware counter drop")
+        assert device.supports(command) is True
 
 
 COLLECT_ANTADEVICE_DATA: list[dict[str, Any]] = [

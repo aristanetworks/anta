@@ -16,6 +16,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.decorators import deprecated_test, skip_on_platforms
+from anta.aioeapi import EapiCommandError
 from anta.models import AntaCommand, AntaTemplate, AntaTemplateRenderError, AntaTest
 from tests.lib.utils import generate_test_ids
 
@@ -34,12 +35,36 @@ class FakeTest(AntaTest):
 
 
 class FakeTestWithFailedCommand(AntaTest):
-    """ANTA test that always succeed"""
+    """ANTA test with a command that failed"""
 
     name = "FakeTestWithFailedCommand"
-    description = "ANTA test that always succeed"
+    description = "ANTA test with a command that failed"
     categories = []
     commands = [AntaCommand(command="show version", failed=Exception())]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
+class FakeTestWithUnsupportedCommand(AntaTest):
+    """ANTA test with an unsupported command"""
+
+    name = "FakeTestWithUnsupportedCommand"
+    description = "ANTA test with an unsupported command"
+    categories = []
+    commands = [
+        AntaCommand(
+            command="show hardware counter drop",
+            failed=EapiCommandError(
+                passed=[],
+                failed="show hardware counter drop",
+                errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
+                errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
+                not_exec=[],
+            ),
+        )
+    ]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -50,7 +75,7 @@ class FakeTestWithInput(AntaTest):
     """ANTA test with inputs that always succeed"""
 
     name = "FakeTestWithInput"
-    description = "ANTA test that always succeed"
+    description = "ANTA test with inputs that always succeed"
     categories = []
     commands = []
 
@@ -66,7 +91,7 @@ class FakeTestWithTemplate(AntaTest):
     """ANTA test with template that always succeed"""
 
     name = "FakeTestWithTemplate"
-    description = "ANTA test that always succeed"
+    description = "ANTA test with template that always succeed"
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
@@ -82,10 +107,10 @@ class FakeTestWithTemplate(AntaTest):
 
 
 class FakeTestWithTemplateNoRender(AntaTest):
-    """ANTA test with template that always succeed"""
+    """ANTA test with template that miss the render() method"""
 
-    name = "FakeTestWithTemplate"
-    description = "ANTA test that always succeed"
+    name = "FakeTestWithTemplateNoRender"
+    description = "ANTA test with template that miss the render() method"
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
@@ -98,10 +123,10 @@ class FakeTestWithTemplateNoRender(AntaTest):
 
 
 class FakeTestWithTemplateWrongRender(AntaTest):
-    """ANTA test with template that always succeed"""
+    """ANTA test with template that raises a AntaTemplateRenderError exception"""
 
-    name = "FakeTestWithTemplate"
-    description = "ANTA test that always succeed"
+    name = "FakeTestWithTemplateWrongRender"
+    description = "ANTA test with template that raises a AntaTemplateRenderError exception"
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
@@ -235,7 +260,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {
                 "result": "error",
                 "error": NotImplementedError,
-                "message": "AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplate",
+                "message": "AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender",
             },
             "test": {"result": "error"},
         },
@@ -294,6 +319,15 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "test": FakeTestWithFailedCommand,
         "inputs": None,
         "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "message": "show version has failed: Exception"}},
+    },
+    {
+        "name": "unsupported command",
+        "test": FakeTestWithUnsupportedCommand,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "skipped", "message": "Skipped because show hardware counter drop is not supported on mocked_AsyncEOSDevice"},
+        },
     },
 ]
 

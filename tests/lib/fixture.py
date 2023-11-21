@@ -9,10 +9,9 @@ from typing import Callable
 from unittest.mock import MagicMock, create_autospec
 
 import pytest
-from aioeapi import Device
 from click.testing import CliRunner
 
-from anta.device import AntaDevice
+from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
@@ -20,21 +19,21 @@ from tests.lib.utils import default_anta_env
 
 
 @pytest.fixture
-def mocked_device(hw_model: str = "unknown_hw") -> MagicMock:
+def mocked_device() -> MagicMock:
     """
     Returns a mocked device with initiazlied fields
     """
 
-    mock = create_autospec(AntaDevice, instance=True)
+    mock = create_autospec(AsyncEOSDevice, instance=True)
     mock.host = "42.42.42.42"
     mock.name = "testdevice"
     mock.username = "toto"
     mock.password = "mysuperdupersecret"
     mock.enable_password = "mysuperduperenablesecret"
-    mock.session = create_autospec(Device)
+    mock.supports = AsyncEOSDevice.supports
     mock.is_online = True
     mock.established = True
-    mock.hw_model = hw_model
+    mock.hw_model = "mocked_AsyncEOSDevice"
     return mock
 
 
