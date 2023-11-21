@@ -2,7 +2,9 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Patch for aioeapi waiting for https://github.com/jeremyschulman/aio-eapi/pull/13"""
-from typing import Any, AnyStr, Dict, List, Union
+from __future__ import annotations
+
+from typing import Any, AnyStr
 
 import aioeapi
 
@@ -22,7 +24,7 @@ class EapiCommandError(RuntimeError):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[Union[str, dict[str, Any]]], not_exec: list[dict[str, Any]]):
+    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]):
         """Initializer for the EapiCommandError exception"""
         self.failed = failed
         self.errors = errors
@@ -39,8 +41,7 @@ class EapiCommandError(RuntimeError):
 aioeapi.EapiCommandError = EapiCommandError
 
 
-# patching aioeapi.Device.jsonrpc_exec to test some aio-eapi enhancement
-async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:  # type: ignore
+async def jsonrpc_exec(self, jsonrpc: dict) -> list[dict | AnyStr]:  # type: ignore
     """
     Execute the JSON-RPC dictionary object.
 
@@ -69,7 +70,6 @@ async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:  # typ
     get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
 
     # if there are no errors then return the list of command results.
-
     if (err_data := body.get("error")) is None:
         return [get_output(cmd_res) for cmd_res in body["result"]]
 
@@ -78,6 +78,16 @@ async def jsonrpc_exec(self, jsonrpc: dict) -> List[Union[Dict, AnyStr]]:  # typ
     # EapiCommandError exception with args (commands that failed, passed,
     # not-executed).
     # ---------------------------------------------------------------------
+
+    # ---------------------------- eAPI specification ------------------------
+    # On an error, no result object is present, only an error object, which is
+    # guaranteed to have the following attributes: code, messages, and data.
+    # Similar to the result object in the successful response, the data object
+    # is a list of objects corresponding to the results of all commands up to,
+    # and including, the failed command. If there was a an error before any
+    # commands were executed (e.g. bad credentials), data will be empty.
+    # The last object in the data array will always correspond to the failed
+    # command. The command failure details are always stored in the errors array.
 
     cmd_data = err_data["data"]
     len_data = len(cmd_data)
