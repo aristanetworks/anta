@@ -9,6 +9,7 @@ Commands for Anta CLI to get information / build inventories..
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import logging
 import os
@@ -92,7 +93,7 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
 )
 @click.option(
-    "--confirm-overwrite",
+    "--overwrite",
     help="Confirm script can overwrite existing inventory file",
     default=False,
     is_flag=True,
@@ -100,32 +101,39 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
     required=False,
     show_envvar=True,
 )
-@click.option(
-    "--no-overwrite",
-    help="Do not overwrite existing inventory file",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-    show_envvar=True,
-)
-def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, confirm_overwrite: bool, no_overwrite: bool) -> None:
+def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, overwrite: bool) -> None:
     # pylint: disable=too-many-arguments
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
+    try:
+        is_tty = os.isatty(sys.stdout.fileno())
+    except io.UnsupportedOperation:
+        is_tty = False
+
     # Create output directory
-    output = output if output is not None else ctx.obj["inventory_path"]
+    if output is None:
+        if ctx.obj.get("inventory_path") is not None:
+            output = ctx.obj.get("inventory_path")
+        else:
+            logger.error("Inventory output is not set. You should use either anta --inventory or anta get from-ansible --output")
+            sys.exit(ExitCode.USAGE_ERROR)
+
+    logger.debug(f"output: {output}\noverwrite: {overwrite}\nis tty: {is_tty}")
+
+    # Count number of lines in a file
     anta_inventory_number_lines = 0
     if output.exists():
         with open(output, "r", encoding="utf-8") as f:
             anta_inventory_number_lines = sum(1 for _ in f)
 
-    if anta_inventory_number_lines > 0 and no_overwrite:
-        logger.critical("conversion aborted since destination file is not empty and --no-overwrite is set")
+    # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
+    if anta_inventory_number_lines > 0 and not is_tty and not overwrite:
+        logger.critical("conversion aborted since destination file is not empty (not running in interactive TTY)")
         sys.exit(ExitCode.USAGE_ERROR)
 
-    if anta_inventory_number_lines > 0 and not confirm_overwrite:
+    # File has content and it is in an interactive TTY --> Prompt user
+    if anta_inventory_number_lines > 0 and is_tty and not overwrite:
         confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
         try:
             assert confirm_overwrite is True
