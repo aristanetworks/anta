@@ -4,9 +4,11 @@
 """
 Test functions related to the EOS various security settings
 """
+from __future__ import annotations
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from __future__ import annotations
+import datetime
 
 from pydantic import conint
 
@@ -268,3 +270,68 @@ class VerifyAPIIPv6Acl(AntaTest):
             self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
+
+
+class VerifyCertificateStatus(AntaTest):
+    """
+    Verifies if SSL certificate details.
+    1. Verify if certificate is expired or about to expired
+    2. Certificate has correct name.
+    3. Certificate encryptions type and size.
+
+    Expected Results:
+        * success: The test will pass if expiry limit of certificate is grater then the threshold, has correct name, encryption and size.
+        * failure: The test will fail if certificate is expired or going to expired, has incorrect name, encryption and size.
+    """
+
+    name = "VerifyCertificateStatus"
+    description = "Verifies SSL certificate status."
+    categories = ["security"]
+    commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        certificate: str
+        expiry_limit: int
+        subject_name: str
+        encryption: str
+        size: int
+        """Certificate, expiry limit, certificate subject name, encryption type and size"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failure_msg = ""
+        certificate_output = self.instance_commands[0].json_output
+        clock_output = self.instance_commands[1].json_output
+
+        try:
+            # Collecting expiry time and current time.
+            certificate_output = certificate_output["certificates"][self.inputs.certificate]
+            expiry_time = certificate_output["notAfter"]
+            current_timestamp = clock_output["utcTime"]
+            day_difference = (datetime.datetime.utcfromtimestamp(expiry_time) - datetime.datetime.utcfromtimestamp(current_timestamp)).days
+
+            # Verify certificate expiry
+            if self.inputs.expiry_limit > day_difference > 0:
+                failure_msg += f"SSL certificate `{self.inputs.certificate}` is about to expire in {day_difference} days.\n"
+            if day_difference < 0:
+                failure_msg += f"SSL certificate `{self.inputs.certificate}` is expired.\n"
+
+            # Verify certificate name
+            subject_name = certificate_output["subject"]["commonName"]
+            if subject_name != self.inputs.subject_name:
+                failure_msg += f"Subject name `{self.inputs.subject_name}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
+
+            # Verify certificate encryption
+            algorithm = certificate_output["publicKey"]["encryptionAlgorithm"]
+            if algorithm != self.inputs.encryption:
+                failure_msg += f"Encryption algorithm `{self.inputs.encryption}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
+
+            # Verify certificate encryption size
+            size = certificate_output["publicKey"]["size"]
+            if size != self.inputs.size:
+                failure_msg += f"Encryption algorithm size `{self.inputs.size}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
+
+            self.result.is_failure(failure_msg) if failure_msg else self.result.is_success()
+
+        except KeyError:
+            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}`, is not configured.")
