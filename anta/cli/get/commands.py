@@ -9,6 +9,7 @@ Commands for Anta CLI to get information / build inventories..
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import logging
 import os
@@ -20,6 +21,7 @@ import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
+from rich.prompt import Confirm
 
 from anta.cli.console import console
 from anta.cli.utils import ExitCode, parse_tags
@@ -85,16 +87,61 @@ def from_cvp(inventory_directory: str, cvp_ip: str, cvp_username: str, cvp_passw
 @click.option(
     "--output",
     "-o",
-    default="inventory-ansible.yml",
-    help="Path to save inventory file",
+    required=False,
+    help="Path to save inventory file. If not configured, use anta inventory file",
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
 )
-def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str) -> None:
+@click.option(
+    "--overwrite",
+    help="Confirm script can overwrite existing inventory file",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+    show_envvar=True,
+)
+def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansible_group: str, overwrite: bool) -> None:
+    # pylint: disable=too-many-arguments
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
+    try:
+        is_tty = os.isatty(sys.stdout.fileno())
+    except io.UnsupportedOperation:
+        is_tty = False
+
     # Create output directory
+    if output is None:
+        if ctx.obj.get("inventory_path") is not None:
+            output = ctx.obj.get("inventory_path")
+        else:
+            logger.error("Inventory output is not set. You should use either anta --inventory or anta get from-ansible --output")
+            sys.exit(ExitCode.USAGE_ERROR)
+
+    logger.debug(f"output: {output}\noverwrite: {overwrite}\nis tty: {is_tty}")
+
+    # Count number of lines in a file
+    anta_inventory_number_lines = 0
+    if output.exists():
+        with open(output, "r", encoding="utf-8") as f:
+            anta_inventory_number_lines = sum(1 for _ in f)
+
+    # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
+    if anta_inventory_number_lines > 0 and not is_tty and not overwrite:
+        logger.critical("conversion aborted since destination file is not empty (not running in interactive TTY)")
+        sys.exit(ExitCode.USAGE_ERROR)
+
+    # File has content and it is in an interactive TTY --> Prompt user
+    if anta_inventory_number_lines > 0 and is_tty and not overwrite:
+        confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
+        try:
+            assert confirm_overwrite is True
+        except AssertionError:
+            logger.critical("conversion aborted by user because destination file is not empty")
+            sys.exit(ExitCode.USAGE_ERROR)
+
     output.parent.mkdir(parents=True, exist_ok=True)
+    logger.info(f"output anta inventory is: {output}")
     try:
         create_inventory_from_ansible(
             inventory=ansible_inventory,
@@ -104,6 +151,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
     except ValueError as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)
+    ctx.exit(ExitCode.OK)
 
 
 @click.command()

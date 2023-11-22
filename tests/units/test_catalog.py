@@ -70,12 +70,17 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
             (VerifyL3MTU, {"mtu": 1500, "filters": {"tags": ["demo"]}}),
         ],
     },
+    {
+        "name": "test_empty_catalog",
+        "filename": "test_empty_catalog.yml",
+        "tests": [],
+    },
 ]
 CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
-        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
+        "error": "FakeTest is not defined in Python module anta.tests.software",
     },
     {
         "name": "undefined_module",
@@ -102,12 +107,18 @@ CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
         "filename": "test_catalog_test_definition_multiple_dicts.yml",
         "error": "Value error, AntaTestDefinition must be a dictionary with a single entry",
     },
+    {"name": "wrong_type_after_parsing", "filename": "test_catalog_wrong_type.yml", "error": "must be a dict, got str"},
 ]
 CATALOG_FROM_DICT_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
-        "error": "FakeTest is not defined in Python module <module 'anta.tests.software' from",
+        "error": "FakeTest is not defined in Python module anta.tests.software",
+    },
+    {
+        "name": "wrong_type",
+        "filename": "test_catalog_wrong_type.yml",
+        "error": "Wrong input type for catalog data, must be a dict, got str",
     },
 ]
 CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
@@ -134,7 +145,7 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "wrong_input_type",
         "tests": [(FakeTestWithInput, True)],
-        "error": "Value error, Coud not instantiate inputs as type <class 'bool'> is not valid",
+        "error": "Value error, Coud not instantiate inputs as type bool is not valid",
     },
 ]
 
@@ -209,9 +220,12 @@ class Test_AntaCatalog:
         """
         Errors when instantiating AntaCatalog from a file
         """
-        with pytest.raises(ValidationError) as exec_info:
+        with pytest.raises((ValidationError, ValueError)) as exec_info:
             AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
-        assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+        if isinstance(exec_info.value, ValidationError):
+            assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+        else:
+            assert catalog_data["error"] in str(exec_info)
 
     def test_parse_fail_parsing(self, caplog: pytest.LogCaptureFixture) -> None:
         """
@@ -241,9 +255,12 @@ class Test_AntaCatalog:
         """
         with open(file=str(DATA_DIR / catalog_data["filename"]), mode="r", encoding="UTF-8") as file:
             data = safe_load(file)
-        with pytest.raises(ValidationError) as exec_info:
+        with pytest.raises((ValidationError, ValueError)) as exec_info:
             AntaCatalog.from_dict(data)
-        assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+        if isinstance(exec_info.value, ValidationError):
+            assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
+        else:
+            assert catalog_data["error"] in str(exec_info)
 
     def test_filename(self) -> None:
         """
