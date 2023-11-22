@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.10">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fad675c6.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
@@ -1673,7 +1673,9 @@
       
         <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable" class="md-nav__link">
-    ReportTable
+    <span class="md-ellipsis">
+      ReportTable
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="ReportTable">
@@ -1681,21 +1683,27 @@
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_all" class="md-nav__link">
-    report_all()
+    <span class="md-ellipsis">
+      report_all()
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_summary_hosts" class="md-nav__link">
-    report_summary_hosts()
+    <span class="md-ellipsis">
+      report_summary_hosts()
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_summary_tests" class="md-nav__link">
-    report_summary_tests()
+    <span class="md-ellipsis">
+      report_summary_tests()
+    </span>
   </a>
   
 </li>
@@ -1813,7 +1821,9 @@
       
         <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable" class="md-nav__link">
-    ReportTable
+    <span class="md-ellipsis">
+      ReportTable
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="ReportTable">
@@ -1821,21 +1831,27 @@
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_all" class="md-nav__link">
-    report_all()
+    <span class="md-ellipsis">
+      report_all()
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_summary_hosts" class="md-nav__link">
-    report_summary_hosts()
+    <span class="md-ellipsis">
+      report_summary_hosts()
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#anta.reporter.ReportTable.report_summary_tests" class="md-nav__link">
-    report_summary_tests()
+    <span class="md-ellipsis">
+      report_summary_tests()
+    </span>
   </a>
   
 </li>
@@ -2073,7 +2089,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Table: A fully populated rich Table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Device&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Message(s)&quot;</span><span class="p">,</span> <span class="s2">&quot;Test description&quot;</span><span class="p">,</span> <span class="s2">&quot;Test category&quot;</span><span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
 
@@ -2260,7 +2276,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Table: A fully populated rich Table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;Device&quot;</span><span class="p">,</span>
         <span class="s2">&quot;# of success&quot;</span><span class="p">,</span>
@@ -2464,7 +2480,7 @@
 <span class="sd">        Table: A fully populated rich Table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># sourcery skip: class-extract-method</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;Test Case&quot;</span><span class="p">,</span>
         <span class="s2">&quot;# of success&quot;</span><span class="p">,</span>
@@ -2605,7 +2621,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable", "main"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.81fa17fe.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6c14ae12.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
