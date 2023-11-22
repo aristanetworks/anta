@@ -171,27 +171,6 @@ class AntaCommand(BaseModel):
         return self.output is not None and self.failed is None
 
 
-class AntaTestFilter(ABC):
-    """Class to define a test Filter"""
-
-    # pylint: disable=too-few-public-methods
-
-    @abstractmethod
-    def should_skip(
-        self,
-        device: AntaDevice,
-        result: TestResult,
-        *args: list[Any],
-        **kwagrs: dict[str, Any],
-    ) -> bool:
-        """
-        Sets the TestResult status to skip with the appropriate skip message
-
-        Returns:
-            bool: True if the test should be skipped, False otherwise
-        """
-
-
 class AntaTemplateRenderError(RuntimeError):
     """
     Raised when an AntaTemplate object could not be rendered
@@ -262,8 +241,6 @@ class AntaTest(ABC):
     description: ClassVar[str]
     categories: ClassVar[list[str]]
     commands: ClassVar[list[Union[AntaTemplate, AntaCommand]]]
-    # Optional class attributes
-    test_filters: ClassVar[list[AntaTestFilter]]
     # Class attributes to handle the progress bar of ANTA CLI
     progress: Optional[Progress] = None
     nrfu_task: Optional[TaskID] = None

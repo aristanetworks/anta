@@ -15,6 +15,7 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 
+from anta.decorators import deprecated_test, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTemplateRenderError, AntaTest
 from tests.lib.utils import generate_test_ids
 
@@ -102,6 +103,79 @@ class FakeTestWithTemplateWrongRender(AntaTest):
         self.result.is_success(self.instance_commands[0].command)
 
 
+class SkipOnPlatformTest(AntaTest):
+    """ANTA test that is skipped"""
+
+    name = "SkipOnPlatformTest"
+    description = "ANTA test that is skipped on a specific platform"
+    categories = []
+    commands = []
+
+    @skip_on_platforms(["unknown_hw"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
+class UnSkipOnPlatformTest(AntaTest):
+    """ANTA test that is skipped"""
+
+    name = "UnSkipOnPlatformTest"
+    description = "ANTA test that is skipped on a specific platform"
+    categories = []
+    commands = []
+
+    @skip_on_platforms(["dummy"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
+class SkipOnPlatformTestWithInput(AntaTest):
+    """ANTA test skipped on platforms but with Input."""
+
+    name = "SkipOnPlatformTestWithInput"
+    description = "ANTA test that always succeed"
+    categories = []
+    commands = []
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        string: str
+
+    @skip_on_platforms(["unknown_hw"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success(self.inputs.string)
+
+
+class DeprecatedTestWithoutNewTest(AntaTest):
+    """ANTA test that is deprecated without new test."""
+
+    name = "DeprecatedTestWitouthNewTest"
+    description = "ANTA deprecated test without New Test"
+    categories = []
+    commands = []
+
+    @deprecated_test()
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
+class DeprecatedTestWithNewTest(AntaTest):
+    """ANTA test that is deprecated with new test."""
+
+    name = "DeprecatedTestWithNewTest"
+    description = "ANTA deprecated test with New Test"
+    categories = []
+    commands = []
+
+    @deprecated_test(new_tests=["NewTest"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
 ANTATEST_DATA: list[dict[str, Any]] = [
     {"name": "no input", "test": FakeTest, "inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
     {
@@ -160,6 +234,48 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {"result": "error", "error": AntaTemplateRenderError, "template": FakeTestWithTemplateWrongRender.commands[0], "key": "interface"},
             "test": {"result": "error"},
+        },
+    },
+    {
+        "name": "unskip on platforms",
+        "test": UnSkipOnPlatformTest,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "success"},
+        },
+    },
+    {
+        "name": "skip on platforms, unset",
+        "test": SkipOnPlatformTest,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "skipped"},
+        },
+    },
+    {
+        "name": "skip on platforms, not unset",
+        "test": SkipOnPlatformTestWithInput,
+        "inputs": None,
+        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Field required"}, "test": {"result": "error"}},
+    },
+    {
+        "name": "deprecate test without new test",
+        "test": DeprecatedTestWithoutNewTest,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "success"},
+        },
+    },
+    {
+        "name": "deprecate test with new test",
+        "test": DeprecatedTestWithNewTest,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "success"},
         },
     },
 ]
