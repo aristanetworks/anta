@@ -17,7 +17,7 @@ from anta.cli import anta
 from anta.cli.debug.commands import get_device
 from anta.device import AntaDevice
 from anta.models import AntaCommand
-from tests.lib.utils import FakeEAPIException, default_anta_env
+from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -89,10 +89,10 @@ def test_run_cmd(
     if revision is not None:
         cli_args.extend(["--revision", str(revision)])
 
-    # failed
-    expected_failed = None
+    # errors
+    expected_errors = []
     if failed:
-        expected_failed = FakeEAPIException("Command failed to run")
+        expected_errors = ["Command failed to run"]
 
     # exit code
     expected_exit_code = 1 if failed else 0
@@ -115,7 +115,7 @@ def test_run_cmd(
         """
         c.output = expected_result()
         if c.output is None:
-            c.failed = expected_failed
+            c.errors = expected_errors
 
     with patch("anta.device.AsyncEOSDevice.collect") as mocked_collect:
         mocked_collect.side_effect = dummy_collect
@@ -128,9 +128,7 @@ def test_run_cmd(
             revision=revision,
             ofmt=expected_ofmt,
             output=expected_result(),
-            template=None,
-            failed=expected_failed,
-            params={},
+            errors=expected_errors,
         )
     )
     assert result.exit_code == expected_exit_code

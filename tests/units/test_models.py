@@ -13,11 +13,11 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import ValidationError
 
 from anta.decorators import deprecated_test, skip_on_platforms
-from anta.aioeapi import EapiCommandError
-from anta.models import AntaCommand, AntaTemplate, AntaTemplateRenderError, AntaTest
+from anta.device import AntaDevice
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from tests.lib.fixture import DEVICE_HW_MODEL
 from tests.lib.utils import generate_test_ids
 
 
@@ -40,7 +40,7 @@ class FakeTestWithFailedCommand(AntaTest):
     name = "FakeTestWithFailedCommand"
     description = "ANTA test with a command that failed"
     categories = []
-    commands = [AntaCommand(command="show version", failed=Exception())]
+    commands = [AntaCommand(command="show version", errors=["failed command"])]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -53,18 +53,7 @@ class FakeTestWithUnsupportedCommand(AntaTest):
     name = "FakeTestWithUnsupportedCommand"
     description = "ANTA test with an unsupported command"
     categories = []
-    commands = [
-        AntaCommand(
-            command="show hardware counter drop",
-            failed=EapiCommandError(
-                passed=[],
-                failed="show hardware counter drop",
-                errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
-                errmsg="CLI command 1 of 1 'show hardware counter drop' failed: invalid command",
-                not_exec=[],
-            ),
-        )
-    ]
+    commands = [AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -149,7 +138,7 @@ class SkipOnPlatformTest(AntaTest):
     categories = []
     commands = []
 
-    @skip_on_platforms(["unknown_hw"])
+    @skip_on_platforms([DEVICE_HW_MODEL])
     @AntaTest.anta_test
     def test(self) -> None:
         self.result.is_success()
@@ -170,27 +159,27 @@ class UnSkipOnPlatformTest(AntaTest):
 
 
 class SkipOnPlatformTestWithInput(AntaTest):
-    """ANTA test skipped on platforms but with Input."""
+    """ANTA test skipped on platforms but with Input"""
 
     name = "SkipOnPlatformTestWithInput"
-    description = "ANTA test that always succeed"
+    description = "ANTA test skipped on platforms but with Input"
     categories = []
     commands = []
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         string: str
 
-    @skip_on_platforms(["unknown_hw"])
+    @skip_on_platforms([DEVICE_HW_MODEL])
     @AntaTest.anta_test
     def test(self) -> None:
         self.result.is_success(self.inputs.string)
 
 
 class DeprecatedTestWithoutNewTest(AntaTest):
-    """ANTA test that is deprecated without new test."""
+    """ANTA test that is deprecated without new test"""
 
     name = "DeprecatedTestWitouthNewTest"
-    description = "ANTA deprecated test without New Test"
+    description = "ANTA test that is deprecated without new test"
     categories = []
     commands = []
 
@@ -217,40 +206,40 @@ class DeprecatedTestWithNewTest(AntaTest):
 ANTATEST_DATA: list[dict[str, Any]] = [
     {"name": "no input", "test": FakeTest, "inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
     {
-        "name": "good input",
+        "name": "extra input",
         "test": FakeTest,
         "inputs": {"string": "culpa! veniam quas quas veniam molestias, esse"},
-        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Extra inputs are not permitted"}, "test": {"result": "error"}},
+        "expected": {"__init__": {"result": "error", "messages": ["Extra inputs are not permitted"]}, "test": {"result": "error"}},
     },
     {
         "name": "no input",
         "test": FakeTestWithInput,
         "inputs": None,
-        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Field required"}, "test": {"result": "error"}},
+        "expected": {"__init__": {"result": "error", "messages": ["Field required"]}, "test": {"result": "error"}},
     },
     {
         "name": "wrong input type",
         "test": FakeTestWithInput,
         "inputs": {"string": 1},
-        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Input should be a valid string"}, "test": {"result": "error"}},
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a valid string"]}, "test": {"result": "error"}},
     },
     {
         "name": "good input",
         "test": FakeTestWithInput,
         "inputs": {"string": "culpa! veniam quas quas veniam molestias, esse"},
-        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "message": "culpa! veniam quas quas veniam molestias, esse"}},
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "messages": ["culpa! veniam quas quas veniam molestias, esse"]}},
     },
     {
         "name": "good input",
         "test": FakeTestWithTemplate,
         "inputs": {"interface": "Ethernet1"},
-        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "message": "show interface Ethernet1"}},
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "messages": ["show interface Ethernet1"]}},
     },
     {
         "name": "wrong input type",
         "test": FakeTestWithTemplate,
         "inputs": {"interface": 1},
-        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Input should be a valid string"}, "test": {"result": "error"}},
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a valid string"]}, "test": {"result": "error"}},
     },
     {
         "name": "wrong render definition",
@@ -259,8 +248,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "error": NotImplementedError,
-                "message": "AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender",
+                "messages": ["AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender"],
             },
             "test": {"result": "error"},
         },
@@ -270,7 +258,10 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "test": FakeTestWithTemplateWrongRender,
         "inputs": {"interface": "Ethernet1"},
         "expected": {
-            "__init__": {"result": "error", "error": AntaTemplateRenderError, "template": FakeTestWithTemplateWrongRender.commands[0], "key": "interface"},
+            "__init__": {
+                "result": "error",
+                "messages": ["Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"],
+            },
             "test": {"result": "error"},
         },
     },
@@ -296,7 +287,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "name": "skip on platforms, not unset",
         "test": SkipOnPlatformTestWithInput,
         "inputs": None,
-        "expected": {"__init__": {"result": "error", "error": ValidationError, "message": "Field required"}, "test": {"result": "error"}},
+        "expected": {"__init__": {"result": "error", "messages": ["Field required"]}, "test": {"result": "error"}},
     },
     {
         "name": "deprecate test without new test",
@@ -315,10 +306,12 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {"result": "unset"},
             "test": {"result": "success"},
         },
+    },
+    {
         "name": "failed command",
         "test": FakeTestWithFailedCommand,
         "inputs": None,
-        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "message": "show version has failed: Exception"}},
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "messages": ["show version has failed: failed command"]}},
     },
     {
         "name": "unsupported command",
@@ -326,7 +319,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "__init__": {"result": "unset"},
-            "test": {"result": "skipped", "message": "Skipped because show hardware counter drop is not supported on mocked_AsyncEOSDevice"},
+            "test": {"result": "skipped", "messages": ["Skipped because show hardware counter drop is not supported on pytest"]},
         },
     },
 ]
@@ -401,38 +394,26 @@ class Test_AntaTest:
 
         assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
-    def test__init__(self, mocked_device: MagicMock, data: dict[str, Any]) -> None:
-        """Test __init__"""
-        test = data["test"](mocked_device, inputs=data["inputs"])
-        assert test.result.result == data["expected"]["__init__"]["result"]
-        # If provided, test that the Exception message matches what is expected
-        if "error" in data["expected"]["__init__"]:
-            if hasattr(test.result, "error") and isinstance(test.result.error, data["expected"]["__init__"]["error"]):
-                if isinstance(test.result.error, ValidationError):
-                    for err in test.result.error.errors():
-                        if err["type"] == "missing" or any(err["input"] == input for input in data["inputs"].values()):
-                            assert err["msg"] == data["expected"]["__init__"]["message"]
-                            return
-                    pytest.fail("Did not find expected ValidationError when instantiating AntaTest")
-                if isinstance(test.result.error, AntaTemplateRenderError):
-                    assert test.result.error.template == data["expected"]["__init__"]["template"]
-                    assert test.result.error.key == data["expected"]["__init__"]["key"]
-                    return
-                if isinstance(test.result.error, Exception):
-                    assert test.result.error.args[0] == data["expected"]["__init__"]["message"]
-                    return
-            pytest.fail("Did not find expected Exception when instantiating AntaTest")
+    def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
+        assert test.result.result == expected["result"]
+        if "messages" in expected:
+            for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+                assert expected_msg in result_msg
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
-    def test_test(self, mocked_device: MagicMock, data: dict[str, Any]) -> None:
+    def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
+        """Test the AntaTest constructor"""
+        expected = data["expected"]["__init__"]
+        test = data["test"](device, inputs=data["inputs"])
+        self._assert_test(test, expected)
+
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
+    def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest.test method"""
-        test = data["test"](mocked_device, inputs=data["inputs"])
+        expected = data["expected"]["test"]
+        test = data["test"](device, inputs=data["inputs"])
         asyncio.run(test.test())
-        assert test.result.result == data["expected"]["test"]["result"]
-        # Test that the test() code works as expected
-        if "message" in data["expected"]["test"]:
-            assert data["expected"]["test"]["message"] in test.result.messages
+        self._assert_test(test, expected)
 
 
 ANTATEST_BLACKLIST_DATA = ["reload", "reload --force", "write", "wr mem"]

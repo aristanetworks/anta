@@ -6,16 +6,30 @@ from __future__ import annotations
 
 from os import environ
 from typing import Callable
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
 from click.testing import CliRunner
 
-from anta.device import AsyncEOSDevice
+from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
+
+DEVICE_HW_MODEL = "pytest"
+DEVICE_NAME = "pytest"
+
+
+@pytest.fixture
+def device() -> AntaDevice:
+    """
+    Returns an AntaDevice instance with mocked abstract method
+    """
+    with patch.object(AntaDevice, "__abstractmethods__", set()):
+        dev = AntaDevice(DEVICE_NAME)  # type: ignore[abstract]  # pylint: disable=abstract-class-instantiated
+    dev.hw_model = DEVICE_HW_MODEL
+    return dev
 
 
 @pytest.fixture
@@ -24,16 +38,15 @@ def mocked_device() -> MagicMock:
     Returns a mocked device with initiazlied fields
     """
 
-    mock = create_autospec(AsyncEOSDevice, instance=True)
+    mock = create_autospec(AntaDevice, instance=True)
     mock.host = "42.42.42.42"
     mock.name = "testdevice"
     mock.username = "toto"
     mock.password = "mysuperdupersecret"
     mock.enable_password = "mysuperduperenablesecret"
-    mock.supports = AsyncEOSDevice.supports
     mock.is_online = True
     mock.established = True
-    mock.hw_model = "mocked_AsyncEOSDevice"
+    mock.hw_model = "mocked_AntaDevice"
     return mock
 
 

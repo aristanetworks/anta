@@ -80,7 +80,6 @@ async def test_clear_counters_utils(
 
     # Need to patch the child device class
     with patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect, patch(
-        # with patch.object(AsyncEOSDevice, "collect", autospec=True) as mocked_collect, patch(
         "anta.inventory.AntaInventory.connect_inventory",
         side_effect=mock_connect_inventory,
     ) as mocked_connect_inventory:
@@ -104,9 +103,7 @@ async def test_clear_counters_utils(
                             revision=None,
                             ofmt="json",
                             output=per_device_command_output.get(device.name, ""),
-                            template=None,
-                            failed=None,
-                            params={},
+                            errors=[],
                         )
                     },
                 )
@@ -122,9 +119,6 @@ async def test_clear_counters_utils(
                                 revision=None,
                                 ofmt="json",
                                 output=per_device_command_output.get(device.name, ""),
-                                template=None,
-                                failed=None,
-                                params={},
                             )
                         },
                     )
@@ -135,6 +129,6 @@ async def test_clear_counters_utils(
             if value is None:
                 # means some command failed to collect
                 assert "ERROR" in caplog.text
-                assert f"Could not clear counters on device {key}: None" in caplog.text
+                assert f"Could not clear counters on device {key}: []" in caplog.text
     else:
         mocked_collect.assert_not_awaited()

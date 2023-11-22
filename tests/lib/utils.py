@@ -47,9 +47,3 @@ def default_anta_env() -> dict[str, str]:
         "ANTA_INVENTORY": str(Path(__file__).parent.parent / "data" / "test_inventory.yml"),
         "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
     }
-
-
-class FakeEAPIException(Exception):
-    """
-    Dummy exception for the tests
-    """
