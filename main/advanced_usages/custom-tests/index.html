@@ -2469,12 +2469,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 <ul>
 <li><code>anta.decorators.deprecated_test</code>: Use this to log a message of WARNING severity when a test is deprecated.</li>
 <li><code>anta.decorators.skip_on_platforms</code>: Use this to skip tests for functionalities that are not supported on specific platforms.</li>
-<li><code>anta.decorators.check_bgp_family_enable</code>: Use this to skip tests when a particular BGP address family is not configured on the device.</li>
 </ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The <code>check_bgp_family_enable</code> decorator is deprecated and will eventually be removed in a future major release of ANTA. For more details, please refer to the <a href="../../api/tests.routing.bgp/">BGP tests section</a>.</p>
-</div>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.decorators</span> <span class="kn">import</span> <span class="n">skip_on_platforms</span>
 
 <span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
@@ -2510,7 +2505,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 28, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 22, 2023</span>
       
     
   </small>
