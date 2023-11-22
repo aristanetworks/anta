@@ -172,10 +172,13 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
-    @staticmethod
-    @abstractmethod
-    def supports(command: AntaCommand) -> bool:
+    def supports(self, command: AntaCommand) -> bool:
         """Returns True if the command is supported on the device hardware platform, False otherwise."""
+        unsupported = any("not supported on this hardware platform" in e for e in command.errors)
+        logger.debug(command)
+        if unsupported:
+            logger.debug(f"{command.command} is not supported on {self.hw_model}")
+        return not unsupported
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -285,15 +288,6 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    @staticmethod
-    def supports(command: AntaCommand) -> bool:
-        """Returns True if the command is supported on the device hardware platform, False otherwise."""
-        return not (
-            isinstance(command.failed, aioeapi.EapiCommandError)
-            and command.failed.errors
-            and any("not supported on this hardware platform" in e for e in command.failed.errors)
-        )
-
     async def _collect(self, command: AntaCommand) -> None:
         """
         Collect device command output from EOS using aio-eapi.
@@ -335,19 +329,18 @@ class AsyncEOSDevice(AntaDevice):
             logger.debug(f"{self.name}: {command}")
 
         except aioeapi.EapiCommandError as e:
-            command.failed = e
-            if AsyncEOSDevice.supports(command):
+            command.errors = e.errors
+            if self.supports(command):
                 message = f"Command '{command.command}' failed on {self.name}"
                 anta_log_exception(e, message, logger)
         except (HTTPError, ConnectError) as e:
             message = f"Cannot connect to device {self.name}"
             anta_log_exception(e, message, logger)
-            command.failed = e
+            command.errors = [str(e)]
         except Exception as e:  # pylint: disable=broad-exception-caught
             message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
             anta_log_exception(e, message, logger)
-            command.failed = e
-            logger.debug(command)
+            command.errors = [str(e)]
 
     async def refresh(self) -> None:
         """

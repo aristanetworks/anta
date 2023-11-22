@@ -19,7 +19,7 @@ from aioeapi import EapiCommandError
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
-from anta.tools.misc import anta_log_exception, exc_to_str
+from anta.tools.misc import anta_log_exception
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
@@ -38,7 +38,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
         await dev.collect_commands(commands=commands)
         for command in commands:
             if not command.collected:
-                logger.error(f"Could not clear counters on device {dev.name}: {command.failed}")
+                logger.error(f"Could not clear counters on device {dev.name}: {command.errors}")
         logger.info(f"Cleared counters on {dev.name} ({dev.hw_model})")
 
     logger.info("Connecting to devices...")
@@ -63,8 +63,8 @@ async def collect_commands(
         outdir.mkdir(parents=True, exist_ok=True)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
-        if not c.collected and c.failed is not None:
-            logger.error(f"Could not collect commands on device {dev.name}: {exc_to_str(c.failed)}")
+        if not c.collected:
+            logger.error(f"Could not collect commands on device {dev.name}: {c.errors}")
             return
         if c.ofmt == "json":
             outfile = outdir / f"{command}.json"

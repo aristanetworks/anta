@@ -7,7 +7,7 @@ from __future__ import annotations
 # Need to keep List for pydantic in 3.8
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from anta.custom_types import TestStatus
 
@@ -23,12 +23,8 @@ class TestResult(BaseModel):
         description: TestResult description, by default the AntaTest description.
         results: Result of the test. Can be one of ["unset", "success", "failure", "error", "skipped"].
         message: Message to report after the test if any.
-        error: Exception object if the test result is "error" and an Exception occured
         custom_field: Custom field to store a string for flexibility in integrating with ANTA
     """
-
-    # This is required if we want to keep an Exception object in the error field
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
     test: str
@@ -36,7 +32,6 @@ class TestResult(BaseModel):
     description: str
     result: TestStatus = "unset"
     messages: List[str] = []
-    error: Optional[Exception] = None
     custom_field: Optional[str] = None
 
     def is_success(self, message: str | None = None) -> None:
@@ -66,15 +61,11 @@ class TestResult(BaseModel):
         """
         self._set_status("skipped", message)
 
-    def is_error(self, message: str | None = None, exception: Exception | None = None) -> None:
+    def is_error(self, message: str | None = None) -> None:
         """
         Helper to set status to error
-
-        Args:
-            exception: Optional Exception objet related to the error
         """
         self._set_status("error", message)
-        self.error = exception
 
     def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """

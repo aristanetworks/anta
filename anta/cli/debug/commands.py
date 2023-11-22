@@ -50,7 +50,7 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
     v: Literal[1, "latest"] = version if version == "latest" else 1
     c = AntaCommand(command=command, ofmt=ofmt, version=v, revision=revision)
     asyncio.run(device.collect(c))
-    if c.failed:
+    if not c.collected:
         console.print(f"[bold red] Command '{c.command}' failed to execute!")
         sys.exit(1)
     elif ofmt == "json":
@@ -83,7 +83,7 @@ def run_template(template: str, params: list[str], ofmt: Literal["json", "text"]
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
     c = t.render(**template_params)  # type: ignore
     asyncio.run(device.collect(c))
-    if c.failed:
+    if not c.collected:
         console.print(f"[bold red] Command '{c.command}' failed to execute!")
         sys.exit(1)
     elif ofmt == "json":

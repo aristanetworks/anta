@@ -11,7 +11,7 @@ import logging
 import re
 import time
 from abc import ABC, abstractmethod
-from copy import copy
+from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
 
@@ -124,12 +124,9 @@ class AntaCommand(BaseModel):
         output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
         params: Dictionary of variables with string values to render the template
-        failed: If the command execution fails, the Exception object is stored in this field
+        errors: If the command execution fails, eAPI returns a list of strings detailing the error
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
     """
-
-    # This is required if we want to keep an Exception object in the failed field
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     command: str
     version: Literal[1, "latest"] = "latest"
@@ -137,7 +134,7 @@ class AntaCommand(BaseModel):
     ofmt: Literal["json", "text"] = "json"
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None
-    failed: Optional[Exception] = None
+    errors: List[str] = []
     params: Dict[str, Any] = {}
     use_cache: bool = True
 
@@ -168,7 +165,7 @@ class AntaCommand(BaseModel):
     @property
     def collected(self) -> bool:
         """Return True if the command has been collected"""
-        return self.output is not None and self.failed is None
+        return self.output is not None and not self.errors
 
 
 class AntaTemplateRenderError(RuntimeError):
@@ -337,7 +334,7 @@ class AntaTest(ABC):
         except ValidationError as e:
             message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
             self.logger.error(message)
-            self.result.is_error(message=message, exception=e)
+            self.result.is_error(message=message)
             return
         if res_ow := self.inputs.result_overwrite:
             if res_ow.categories:
@@ -357,15 +354,15 @@ class AntaTest(ABC):
         if self.__class__.commands:
             for cmd in self.__class__.commands:
                 if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(copy(cmd))
+                    self.instance_commands.append(deepcopy(cmd))
                 elif isinstance(cmd, AntaTemplate):
                     try:
                         self.instance_commands.extend(self.render(cmd))
                     except AntaTemplateRenderError as e:
-                        self.result.is_error(message=f"Cannot render template {{{e.template}}}", exception=e)
+                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
                         return
                     except NotImplementedError as e:
-                        self.result.is_error(message=e.args[0], exception=e)
+                        self.result.is_error(message=e.args[0])
                         return
                     except Exception as e:  # pylint: disable=broad-exception-caught
                         # render() is user-defined code.
@@ -373,7 +370,7 @@ class AntaTest(ABC):
                         # to live until the reporting
                         message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
                         anta_log_exception(e, message, self.logger)
-                        self.result.is_error(message=f"{message}: {exc_to_str(e)}", exception=e)
+                        self.result.is_error(message=f"{message}: {exc_to_str(e)}")
                         return
 
         if eos_data is not None:
@@ -406,7 +403,7 @@ class AntaTest(ABC):
     @property
     def failed_commands(self) -> list[AntaCommand]:
         """Returns a list of all the commands that have failed."""
-        return [command for command in self.instance_commands if command.failed is not None]
+        return [command for command in self.instance_commands if command.errors]
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render an AntaTemplate instance of this AntaTest using the provided
@@ -487,21 +484,18 @@ class AntaTest(ABC):
                 if self.result.result != "unset":
                     return self.result
 
-            try:
                 if cmds := self.failed_commands:
-                    for c in cmds:
-                        if not self.device.supports(c):
-                            self.logger.warning(
-                                f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}, please open a GitHub issue."
-                            )
-                            self.result.is_skipped(f"Skipped because {c.command} is not supported on {self.device.hw_model}")
-                            return self.result
-                    self.result.is_error(
-                        message="\n".join(
-                            [f"{cmd.command} has failed: {exc_to_str(cmd.failed)}" if cmd.failed else f"{cmd.command} has failed" for cmd in self.failed_commands]
-                        )
-                    )
+                    self.logger.debug(self.device.supports)
+                    unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
+                    self.logger.debug(unsupported_commands)
+                    if unsupported_commands:
+                        self.logger.warning(f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}, please open a GitHub issue.")
+                        self.result.is_skipped("\n".join(unsupported_commands))
+                        return self.result
+                    self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
                     return self.result
+
+            try:
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
