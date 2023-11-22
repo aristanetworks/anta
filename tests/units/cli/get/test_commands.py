@@ -7,6 +7,7 @@ Tests for anta.cli.get.commands
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import ANY, patch
@@ -16,7 +17,7 @@ from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
-from anta.cli.get.commands import from_ansible, from_cvp
+from anta.cli.get.commands import from_cvp
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
@@ -131,8 +132,10 @@ def test_from_ansible(
         out_dir = Path() / output
     else:
         # Get inventory-directory default
-        default_dir: Path = cast(Path, from_ansible.params[2].default)
+        default_dir: Path = cast(Path, f"{tmp_path}/output.yml")
         out_dir = Path() / default_dir
+
+    cli_args.extend(["--output", str(out_dir)])
 
     if ansible_inventory is not None:
         ansible_inventory_path = DATA_DIR / ansible_inventory
@@ -145,11 +148,78 @@ def test_from_ansible(
         print(cli_args)
         result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
 
-        print(result)
+    print(f"Runner args: {cli_args}")
+    print(f"Runner result is: {result}")
+    print(caplog.records)
+
+    assert result.exit_code == expected_exit
+    if expected_exit != 0:
+        assert len(caplog.records) in {2, 3}
+    else:
+        assert out_dir.exists()
+
+
+@pytest.mark.parametrize(
+    "ansible_inventory, ansible_group, output_option, expected_exit",
+    [
+        pytest.param("ansible_inventory.yml", None, None, 4, id="no group-no-overwrite"),
+        pytest.param("ansible_inventory.yml", None, "--overwrite", 0, id="no group-overwrite"),
+        pytest.param("ansible_inventory.yml", "ATD_LEAFS", "--overwrite", 0, id="group found"),
+        pytest.param("ansible_inventory.yml", "DUMMY", "--overwrite", 4, id="group not found"),
+        pytest.param("empty_ansible_inventory.yml", None, None, 4, id="empty inventory"),
+    ],
+)
+# pylint: disable-next=too-many-arguments
+def test_from_ansible_default_inventory(
+    tmp_path: Path,
+    caplog: LogCaptureFixture,
+    capsys: CaptureFixture[str],
+    click_runner: CliRunner,
+    ansible_inventory: Path,
+    ansible_group: str | None,
+    output_option: str | None,
+    expected_exit: int,
+) -> None:
+    """
+    Test `anta get from-ansible`
+    """
+
+    def custom_anta_env(tmp_path: Path) -> dict[str, str]:
+        """
+        Return a default_anta_environement which can be passed to a cliRunner.invoke method
+        """
+        return {
+            "ANTA_USERNAME": "anta",
+            "ANTA_PASSWORD": "formica",
+            "ANTA_INVENTORY": str(tmp_path / "test_inventory02.yml"),
+            "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
+        }
+
+    env = custom_anta_env(tmp_path)
+    shutil.copyfile(str(Path(__file__).parent.parent.parent.parent / "data" / "test_inventory.yml"), env["ANTA_INVENTORY"])
+
+    cli_args = ["get", "from-ansible"]
+
+    os.chdir(tmp_path)
+    if output_option is not None:
+        cli_args.extend([str(output_option)])
+
+    if ansible_inventory is not None:
+        ansible_inventory_path = DATA_DIR / ansible_inventory
+        cli_args.extend(["--ansible-inventory", str(ansible_inventory_path)])
+
+    if ansible_group is not None:
+        cli_args.extend(["--ansible-group", ansible_group])
+
+    with capsys.disabled():
+        print(cli_args)
+        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+
+    print(f"Runner args: {cli_args}")
+    print(f"Runner result is: {result}")
 
     assert result.exit_code == expected_exit
     print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) == 2
-    else:
-        assert out_dir.exists()
+        assert len(caplog.records) in {1, 2, 3}
+    # Path(env["ANTA_INVENTORY"]).unlink(missing_ok=True)

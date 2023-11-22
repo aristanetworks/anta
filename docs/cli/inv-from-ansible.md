@@ -11,18 +11,20 @@ In large setups, it might be beneficial to construct your inventory based on you
 ### Command overview
 
 ```bash
-anta get from-ansible --help
+$ anta get from-ansible --help
 Usage: anta get from-ansible [OPTIONS]
 
   Build ANTA inventory from an ansible inventory YAML file
 
 Options:
-  -g, --ansible-group TEXT        Ansible group to filter
-  -i, --ansible-inventory FILENAME
-                                  Path to your ansible inventory file to read
-  -o, --output FILENAME           Path to save inventory file
-  -d, --inventory-directory PATH  Directory to save inventory file
-  --help                          Show this message and exit.
+  -g, --ansible-group TEXT      Ansible group to filter
+  -i, --ansible-inventory FILE  Path to your ansible inventory file to read
+  -o, --output FILE             Path to save inventory file. If not
+                                configured, use anta inventory file
+  --overwrite                   Confirm script can overwrite existing
+                                inventory file  [env var:
+                                ANTA_GET_FROM_ANSIBLE_OVERWRITE]
+  --help                        Show this message and exit.
 ```
 
 The output is an inventory where the name of the container is added as a tag for each host:
@@ -40,6 +42,11 @@ anta_inventory:
 
 !!! warning
     The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritence when using the `--ansible-group` option.
+
+By default, if user does not provide `--output` file, anta will save output to configured anta inventory (`anta --inventory`). If the output file has content, anta will ask user to overwrite when running in interactive console. This mechanism can be controlled by triggers in case of CI usage: `--overwrite` to force anta to overwrite file. If not set, anta will exit
+
+
+### Command output
 
 `host` value is coming from the `ansible_host` key in your inventory while `name` is the name you defined for your host. Below is an ansible inventory example used to generate previous inventory:
 
