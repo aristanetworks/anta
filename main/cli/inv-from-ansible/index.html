@@ -1876,14 +1876,12 @@ Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </
 <span class="w">  </span>Build<span class="w"> </span>ANTA<span class="w"> </span>inventory<span class="w"> </span>from<span class="w"> </span>an<span class="w"> </span>ansible<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file
 
 Options:
-<span class="w">  </span>-g,<span class="w"> </span>--ansible-group<span class="w"> </span>TEXT<span class="w">      </span>Ansible<span class="w"> </span>group<span class="w"> </span>to<span class="w"> </span>filter
-<span class="w">  </span>-i,<span class="w"> </span>--ansible-inventory<span class="w"> </span>FILE<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>ansible<span class="w"> </span>inventory<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span><span class="nb">read</span>
-<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>FILE<span class="w">             </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file.<span class="w"> </span>If<span class="w"> </span>not
-<span class="w">                                </span>configured,<span class="w"> </span>use<span class="w"> </span>anta<span class="w"> </span>inventory<span class="w"> </span>file
-<span class="w">  </span>--overwrite<span class="w">                   </span>Confirm<span class="w"> </span>script<span class="w"> </span>can<span class="w"> </span>overwrite<span class="w"> </span>existing
-<span class="w">                                </span>inventory<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                                </span>ANTA_GET_FROM_ANSIBLE_OVERWRITE<span class="o">]</span>
-<span class="w">  </span>--help<span class="w">                        </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>-g,<span class="w"> </span>--ansible-group<span class="w"> </span>TEXT<span class="w">        </span>Ansible<span class="w"> </span>group<span class="w"> </span>to<span class="w"> </span>filter
+<span class="w">  </span>--ansible-inventory<span class="w"> </span>FILENAME
+<span class="w">                                  </span>Path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>ansible<span class="w"> </span>inventory<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span><span class="nb">read</span>
+<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>FILENAME<span class="w">           </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file
+<span class="w">  </span>-d,<span class="w"> </span>--inventory-directory<span class="w"> </span>PATH<span class="w">  </span>Directory<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>inventory<span class="w"> </span>file
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <p>The output is an inventory where the name of the container is added as a tag for each host:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
