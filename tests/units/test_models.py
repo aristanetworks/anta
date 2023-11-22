@@ -117,8 +117,22 @@ class SkipOnPlatformTest(AntaTest):
         self.result.is_success()
 
 
+class UnSkipOnPlatformTest(AntaTest):
+    """ANTA test that is skipped"""
+
+    name = "UnSkipOnPlatformTest"
+    description = "ANTA test that is skipped on a specific platform"
+    categories = []
+    commands = []
+
+    @skip_on_platforms(["dummy"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+
+
 class SkipOnPlatformTestWithInput(AntaTest):
-    """ANTA test skipped on platforms but with Input"""
+    """ANTA test skipped on platforms but with Input."""
 
     name = "SkipOnPlatformTestWithInput"
     description = "ANTA test that always succeed"
@@ -220,6 +234,15 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {"result": "error", "error": AntaTemplateRenderError, "template": FakeTestWithTemplateWrongRender.commands[0], "key": "interface"},
             "test": {"result": "error"},
+        },
+    },
+    {
+        "name": "unskip on platforms",
+        "test": UnSkipOnPlatformTest,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "success"},
         },
     },
     {
