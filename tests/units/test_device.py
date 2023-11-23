@@ -11,27 +11,20 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+from rich import print as rprint
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
+from tests.lib.fixture import COMMAND_OUTPUT
 from tests.lib.utils import generate_test_ids_list
 
-INIT_DEVICE_DATA: list[dict[str, Any]] = [
+DEVICE_DATA: list[dict[str, Any]] = [
     {
         "name": "no name, no port",
         "device": {
             "host": "42.42.42.42",
             "username": "anta",
             "password": "anta",
-            "name": None,
-            "enable": False,
-            "enable_password": None,
-            "port": None,
-            "ssh_port": None,
-            "tags": None,
-            "timeout": None,
-            "insecure": False,
-            "proto": None,
         },
         "expected": {"name": "42.42.42.42"},
     },
@@ -41,15 +34,7 @@ INIT_DEVICE_DATA: list[dict[str, Any]] = [
             "host": "42.42.42.42",
             "username": "anta",
             "password": "anta",
-            "name": None,
-            "enable": False,
-            "enable_password": None,
             "port": 666,
-            "ssh_port": None,
-            "tags": None,
-            "timeout": None,
-            "insecure": False,
-            "proto": None,
         },
         "expected": {"name": "42.42.42.42:666"},
     },
@@ -60,205 +45,470 @@ INIT_DEVICE_DATA: list[dict[str, Any]] = [
             "username": "anta",
             "password": "anta",
             "name": "test.anta.ninja",
-            "enable": False,
-            "enable_password": None,
             "disable_cache": True,
-            "port": None,
-            "ssh_port": None,
-            "tags": None,
-            "timeout": None,
-            "insecure": False,
-            "proto": None,
+        },
+        "expected": {"name": "test.anta.ninja"},
+    },
+    {
+        "name": "insecure",
+        "device": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+            "name": "test.anta.ninja",
+            "insecure": True,
         },
         "expected": {"name": "test.anta.ninja"},
     },
 ]
 
+DEVICE_EQ_DATA = [
+    {
+        "name": "equal",
+        "device1": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+        },
+        "device2": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "blah",
+        },
+        "expected": True,
+    },
+    {
+        "name": "equals-name",
+        "device1": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+            "name": "device1",
+        },
+        "device2": {
+            "host": "42.42.42.42",
+            "username": "plop",
+            "password": "anta",
+            "name": "device2",
+        },
+        "expected": True,
+    },
+    {
+        "name": "not-equal-port",
+        "device1": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+        },
+        "device2": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+            "port": 666,
+        },
+        "expected": False,
+    },
+    {
+        "name": "not-equal-host",
+        "device1": {
+            "host": "42.42.42.41",
+            "username": "anta",
+            "password": "anta",
+        },
+        "device2": {
+            "host": "42.42.42.42",
+            "username": "anta",
+            "password": "anta",
+        },
+        "expected": False,
+    },
+]
+COLLECT_ASYNCEOSDEVICE_DATA: list[dict[str, Any]] = [
+    {
+        "name": "command",
+        "device": {},
+        "command": {
+            "command": "show version",
+            "return_value": [
+                {
+                    "mfgName": "Arista",
+                    "modelName": "DCS-7280CR3-32P4-F",
+                    "hardwareRevision": "11.00",
+                    "serialNumber": "JPE19500066",
+                    "systemMacAddress": "fc:bd:67:3d:13:c5",
+                    "hwMacAddress": "fc:bd:67:3d:13:c5",
+                    "configMacAddress": "00:00:00:00:00:00",
+                    "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                    "architecture": "x86_64",
+                    "internalVersion": "4.31.1F-34361447.fraserrel",
+                    "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                    "imageFormatVersion": "3.0",
+                    "imageOptimization": "Default",
+                    "bootupTimestamp": 1700729434.5892005,
+                    "uptime": 20666.78,
+                    "memTotal": 8099732,
+                    "memFree": 4989568,
+                    "isIntlVersion": False,
+                }
+            ],
+        },
+        "expected": {
+            "mfgName": "Arista",
+            "modelName": "DCS-7280CR3-32P4-F",
+            "hardwareRevision": "11.00",
+            "serialNumber": "JPE19500066",
+            "systemMacAddress": "fc:bd:67:3d:13:c5",
+            "hwMacAddress": "fc:bd:67:3d:13:c5",
+            "configMacAddress": "00:00:00:00:00:00",
+            "version": "4.31.1F-34361447.fraserrel (engineering build)",
+            "architecture": "x86_64",
+            "internalVersion": "4.31.1F-34361447.fraserrel",
+            "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+            "imageFormatVersion": "3.0",
+            "imageOptimization": "Default",
+            "bootupTimestamp": 1700729434.5892005,
+            "uptime": 20666.78,
+            "memTotal": 8099732,
+            "memFree": 4989568,
+            "isIntlVersion": False,
+        },
+    },
+    {
+        "name": "enable",
+        "device": {"enable": True},
+        "command": {
+            "command": "show version",
+            "return_value": [
+                {},
+                {
+                    "mfgName": "Arista",
+                    "modelName": "DCS-7280CR3-32P4-F",
+                    "hardwareRevision": "11.00",
+                    "serialNumber": "JPE19500066",
+                    "systemMacAddress": "fc:bd:67:3d:13:c5",
+                    "hwMacAddress": "fc:bd:67:3d:13:c5",
+                    "configMacAddress": "00:00:00:00:00:00",
+                    "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                    "architecture": "x86_64",
+                    "internalVersion": "4.31.1F-34361447.fraserrel",
+                    "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                    "imageFormatVersion": "3.0",
+                    "imageOptimization": "Default",
+                    "bootupTimestamp": 1700729434.5892005,
+                    "uptime": 20666.78,
+                    "memTotal": 8099732,
+                    "memFree": 4989568,
+                    "isIntlVersion": False,
+                },
+            ],
+        },
+        "expected": {
+            "mfgName": "Arista",
+            "modelName": "DCS-7280CR3-32P4-F",
+            "hardwareRevision": "11.00",
+            "serialNumber": "JPE19500066",
+            "systemMacAddress": "fc:bd:67:3d:13:c5",
+            "hwMacAddress": "fc:bd:67:3d:13:c5",
+            "configMacAddress": "00:00:00:00:00:00",
+            "version": "4.31.1F-34361447.fraserrel (engineering build)",
+            "architecture": "x86_64",
+            "internalVersion": "4.31.1F-34361447.fraserrel",
+            "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+            "imageFormatVersion": "3.0",
+            "imageOptimization": "Default",
+            "bootupTimestamp": 1700729434.5892005,
+            "uptime": 20666.78,
+            "memTotal": 8099732,
+            "memFree": 4989568,
+            "isIntlVersion": False,
+        },
+    },
+]
 
-# TODO remove this pylint later
-# pylint: disable=too-few-public-methods
+REFRESH_DATA: list[dict[str, Any]] = [
+    {
+        "name": "established",
+        "device": {},
+        "return_value": (
+            True,
+            {
+                "mfgName": "Arista",
+                "modelName": "DCS-7280CR3-32P4-F",
+                "hardwareRevision": "11.00",
+                "serialNumber": "JPE19500066",
+                "systemMacAddress": "fc:bd:67:3d:13:c5",
+                "hwMacAddress": "fc:bd:67:3d:13:c5",
+                "configMacAddress": "00:00:00:00:00:00",
+                "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                "architecture": "x86_64",
+                "internalVersion": "4.31.1F-34361447.fraserrel",
+                "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                "imageFormatVersion": "3.0",
+                "imageOptimization": "Default",
+                "bootupTimestamp": 1700729434.5892005,
+                "uptime": 20666.78,
+                "memTotal": 8099732,
+                "memFree": 4989568,
+                "isIntlVersion": False,
+            },
+        ),
+        "expected": {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
+    },
+    {
+        "name": "is not online",
+        "device": {},
+        "return_value": (
+            False,
+            {
+                "mfgName": "Arista",
+                "modelName": "DCS-7280CR3-32P4-F",
+                "hardwareRevision": "11.00",
+                "serialNumber": "JPE19500066",
+                "systemMacAddress": "fc:bd:67:3d:13:c5",
+                "hwMacAddress": "fc:bd:67:3d:13:c5",
+                "configMacAddress": "00:00:00:00:00:00",
+                "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                "architecture": "x86_64",
+                "internalVersion": "4.31.1F-34361447.fraserrel",
+                "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                "imageFormatVersion": "3.0",
+                "imageOptimization": "Default",
+                "bootupTimestamp": 1700729434.5892005,
+                "uptime": 20666.78,
+                "memTotal": 8099732,
+                "memFree": 4989568,
+                "isIntlVersion": False,
+            },
+        ),
+        "expected": {"is_online": False, "established": False, "hw_model": None},
+    },
+    {
+        "name": "cannot parse command",
+        "device": {},
+        "return_value": (
+            True,
+            {
+                "mfgName": "Arista",
+                "hardwareRevision": "11.00",
+                "serialNumber": "JPE19500066",
+                "systemMacAddress": "fc:bd:67:3d:13:c5",
+                "hwMacAddress": "fc:bd:67:3d:13:c5",
+                "configMacAddress": "00:00:00:00:00:00",
+                "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                "architecture": "x86_64",
+                "internalVersion": "4.31.1F-34361447.fraserrel",
+                "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                "imageFormatVersion": "3.0",
+                "imageOptimization": "Default",
+                "bootupTimestamp": 1700729434.5892005,
+                "uptime": 20666.78,
+                "memTotal": 8099732,
+                "memFree": 4989568,
+                "isIntlVersion": False,
+            },
+        ),
+        "expected": {"is_online": True, "established": False, "hw_model": None},
+    },
+]
+
+
 class Test_AsyncEOSDevice:
     """
     Test for anta.device.AsyncEOSDevice
     """
 
-    @pytest.mark.parametrize("device_data", INIT_DEVICE_DATA, ids=generate_test_ids_list(INIT_DEVICE_DATA))
-    def test__init__(self, device_data: dict[str, Any]) -> None:
-        """
-        Checking name only for now
-        """
-        host = device_data["device"]["host"]
-        username = device_data["device"]["username"]
-        password = device_data["device"]["password"]
-        kwargs = {k: v for k, v in device_data["device"].items() if v is not None and k not in ["host", "username", "password"]}
+    @pytest.mark.parametrize("data", DEVICE_DATA, ids=generate_test_ids_list(DEVICE_DATA))
+    def test__init__(self, data: dict[str, Any]) -> None:
+        """Test the AsyncEOSDevice constructor"""
+        device = AsyncEOSDevice(**data["device"])
 
-        device = AsyncEOSDevice(host, username, password, **kwargs)
-
-        assert device.name == device_data["expected"]["name"]
-        if device_data["device"].get("disable_cache") is True:
+        assert device.name == data["expected"]["name"]
+        if data["device"].get("disable_cache") is True:
             assert device.cache is None
             assert device.cache_locks is None
         else:  # False or None
             assert device.cache is not None
             assert device.cache_locks is not None
+        hash(device)
 
-    def test_supports(self) -> None:
-        """
-        Test if the supports() static method parses correctly the aioeapi.EapiCommandError exception
-        """
-        DATA: dict[str, Any] = {"host": "42.42.42.42", "username": "anta", "password": "anta"}
-        kwargs: dict[str, Any] = {
-            "name": "test.anta.ninja",
-            "enable": False,
-            "disable_cache": True,
-            "insecure": False,
-        }
-        device = AsyncEOSDevice(DATA["host"], DATA["username"], DATA["password"], **kwargs)
-        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
-        assert device.supports(command) is False
-        command = AntaCommand(command="show hardware counter drop")
-        assert device.supports(command) is True
+        with patch("anta.__DEBUG__", new=True):  # TODO does not work
+            rprint(device)
+
+    @pytest.mark.parametrize("data", DEVICE_EQ_DATA, ids=generate_test_ids_list(DEVICE_EQ_DATA))
+    def test__eq(self, data: dict[str, Any]) -> None:
+        """Test the AsyncEOSDevice equality"""
+        device1 = AsyncEOSDevice(**data["device1"])
+        device2 = AsyncEOSDevice(**data["device2"])
+        if data["expected"]:
+            assert device1 == device2
+        else:
+            assert device1 != device2
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "async_device, return_value, expected",
+        map(lambda d: (d["device"], d["return_value"], d["expected"]), REFRESH_DATA),
+        ids=generate_test_ids_list(REFRESH_DATA),
+        indirect=["async_device"],
+    )
+    async def test_refresh(self, async_device: AsyncEOSDevice, return_value: list[dict[str, Any]], expected: dict[str, Any]) -> None:
+        # pylint: disable=protected-access
+        """Test AsyncEOSDevice.refresh()"""
+        with patch.object(async_device._session, "check_connection", return_value=return_value[0]):
+            with patch.object(async_device._session, "cli", return_value=return_value[1]):
+                await async_device.refresh()
+                async_device._session.check_connection.assert_called_once()
+                if expected["is_online"]:
+                    async_device._session.cli.assert_called_once()
+                assert async_device.is_online == expected["is_online"]
+                assert async_device.established == expected["established"]
+                assert async_device.hw_model == expected["hw_model"]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "async_device, command, expected",
+        map(lambda d: (d["device"], d["command"], d["expected"]), COLLECT_ASYNCEOSDEVICE_DATA),
+        ids=generate_test_ids_list(COLLECT_ASYNCEOSDEVICE_DATA),
+        indirect=["async_device"],
+    )
+    async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
+        # pylint: disable=protected-access
+        """Test AsyncEOSDevice._collect()"""
+        cmd = AntaCommand(command=command["command"])
+        with patch.object(async_device._session, "cli", return_value=command["return_value"]):
+            await async_device.collect(cmd)
+            async_device._session.cli.assert_called_once()
+            assert cmd.output == expected
 
 
 COLLECT_ANTADEVICE_DATA: list[dict[str, Any]] = [
     {
         "name": "device cache enabled, command cache enabled, no cache hit",
-        "device": {
-            "name": "42.42.42.42",
-        },
+        "device": {"disable_cache": False},
         "command": {
             "command": "show version",
             "use_cache": True,
         },
-        "cache_hit": False,
+        "expected": {"cache_hit": False},
     },
     {
         "name": "device cache enabled, command cache enabled, cache hit",
-        "device": {
-            "name": "42.42.42.42",
-        },
+        "device": {"disable_cache": False},
         "command": {
             "command": "show version",
             "use_cache": True,
         },
-        "cache_hit": True,
+        "expected": {"cache_hit": True},
     },
     {
         "name": "device cache disabled, command cache enabled",
-        "device": {
-            "name": "42.42.42.42",
-            "disable_cache": True,
-        },
+        "device": {"disable_cache": True},
         "command": {
             "command": "show version",
             "use_cache": True,
         },
-        "cache_hit": "unused",
+        "expected": {},
     },
     {
         "name": "device cache enabled, command cache disabled, cache has command",
-        "device": {
-            "name": "42.42.42.42",
-            "disable_cache": False,
-        },
+        "device": {"disable_cache": False},
         "command": {
             "command": "show version",
             "use_cache": False,
         },
-        "cache_hit": True,
+        "expected": {"cache_hit": True},
     },
     {
         "name": "device cache enabled, command cache disabled, cache does not have data",
         "device": {
-            "name": "42.42.42.42",
             "disable_cache": False,
         },
         "command": {
             "command": "show version",
             "use_cache": False,
         },
-        "cache_hit": False,
+        "expected": {"cache_hit": False},
     },
     {
         "name": "device cache disabled, command cache disabled",
         "device": {
-            "name": "42.42.42.42",
             "disable_cache": True,
         },
         "command": {
             "command": "show version",
             "use_cache": False,
         },
-        "cache_hit": "unused",
+        "expected": {},
     },
+]
+
+CACHE_STATS_DATA = [
+    pytest.param({"disable_cache": False}, {"total_commands_sent": 0, "cache_hits": 0, "cache_hit_ratio": "0.00%"}, id="with_cache"),
+    pytest.param({"disable_cache": True}, None, id="without_cache"),
 ]
 
 
 class TestAntaDevice:
     """
     Test for anta.device.AntaDevice Abstract class
-
-    Leveraging:
-        @patch("anta.device.AntaDevice.__abstractmethods__", set())
-    to be able to instantiate the Abstract Class
     """
 
-    # pylint: disable=abstract-class-instantiated
-
-    @patch("anta.device.AntaDevice.__abstractmethods__", set())
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("device_data", COLLECT_ANTADEVICE_DATA, ids=generate_test_ids_list(COLLECT_ANTADEVICE_DATA))
-    async def test_collect(self, device_data: dict[str, Any]) -> None:
+    @pytest.mark.parametrize(
+        "device, command_data, expected_data",
+        map(lambda d: (d["device"], d["command"], d["expected"]), COLLECT_ANTADEVICE_DATA),
+        indirect=["device"],
+        ids=generate_test_ids_list(COLLECT_ANTADEVICE_DATA),
+    )
+    async def test_collect(self, device: AntaDevice, command_data: dict[str, Any], expected_data: dict[str, Any]) -> None:
         """
         Test AntaDevice.collect behavior
         """
-        command = AntaCommand(command=device_data["command"]["command"], use_cache=device_data["command"]["use_cache"])
-        device = AntaDevice(name=device_data["device"]["name"], disable_cache=device_data["device"].get("disable_cache"))  # type: ignore[abstract]
+        command = AntaCommand(command=command_data["command"], use_cache=command_data["use_cache"])
 
         # Dummy output for cache hit
         cached_output = "cached_value"
-        retrieved_output = "retrieved"
 
-        if device.cache is not None and device_data["cache_hit"] is True:
-            await device.cache.set(command.uid, cached_output)  # pylint: disable=no-member
+        if device.cache is not None and expected_data["cache_hit"] is True:
+            await device.cache.set(command.uid, cached_output)
 
-        def _patched__collect(command: AntaCommand) -> None:
-            command.output = "retrieved"
-
-        with patch("anta.device.AntaDevice._collect", side_effect=_patched__collect) as patched__collect:
-            await device.collect(command)
+        await device.collect(command)
 
         if device.cache is not None:  # device_cache is enabled
-            current_cached_data = await device.cache.get(command.uid)  # pylint: disable=no-member
+            current_cached_data = await device.cache.get(command.uid)
             if command.use_cache is True:  # command is allowed to use cache
-                if device_data["cache_hit"] is True:
+                if expected_data["cache_hit"] is True:
                     assert command.output == cached_output
                     assert current_cached_data == cached_output
-                    assert device.cache.hit_miss_ratio["hits"] == 2  # pylint: disable=no-member
+                    assert device.cache.hit_miss_ratio["hits"] == 2
                 else:
-                    assert command.output == retrieved_output
-                    assert current_cached_data == retrieved_output
-                    assert device.cache.hit_miss_ratio["hits"] == 1  # pylint: disable=no-member
+                    assert command.output == COMMAND_OUTPUT
+                    assert current_cached_data == COMMAND_OUTPUT
+                    assert device.cache.hit_miss_ratio["hits"] == 1
             else:  # command is not allowed to use cache
-                patched__collect.assert_called_once_with(command=command)
-                assert command.output == retrieved_output
-                if device_data["cache_hit"] is True:
+                device._collect.assert_called_once_with(command=command)  # type: ignore[attr-defined]  # pylint: disable=protected-access
+                assert command.output == COMMAND_OUTPUT
+                if expected_data["cache_hit"] is True:
                     assert current_cached_data == cached_output
                 else:
                     assert current_cached_data is None
         else:  # device is disabled
             assert device.cache is None
-            patched__collect.assert_called_once_with(command=command)
+            device._collect.assert_called_once_with(command=command)  # type: ignore[attr-defined]  # pylint: disable=protected-access
 
-    @patch("anta.device.AntaDevice.__abstractmethods__", set())
-    @pytest.mark.asyncio
-    async def test_cache_statistics(self) -> None:
+    @pytest.mark.parametrize("device, expected", CACHE_STATS_DATA, indirect=["device"])
+    def test_cache_statistics(self, device: AntaDevice, expected: dict[str, Any] | None) -> None:
         """
         Verify that when cache statistics attribute does not exist
         TODO add a test where cache has some value
         """
-        device = AntaDevice(name="with_cache", disable_cache=False)  # type: ignore[abstract]
-        assert device.cache_statistics == {"total_commands_sent": 0, "cache_hits": 0, "cache_hit_ratio": "0.00%"}
+        assert device.cache_statistics == expected
 
-        device = AntaDevice(name="without_cache", disable_cache=True)  # type: ignore[abstract]
-        assert device.cache_statistics is None
+    def test_supports(self, device: AntaDevice) -> None:
+        """
+        Test if the supports() method
+        """
+        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
+        assert device.supports(command) is False
+        command = AntaCommand(command="show hardware counter drop")
+        assert device.supports(command) is True

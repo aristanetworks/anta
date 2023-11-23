@@ -315,17 +315,13 @@ class AsyncEOSDevice(AntaDevice):
                 commands.append({"cmd": command.command, "revision": command.revision})
             else:
                 commands.append({"cmd": command.command})
-            response = await self._session.cli(
+            response: list[dict[str, Any]] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
-            # remove first dict related to enable command
-            # only applicable to json output
-            if command.ofmt in ["json", "text"]:
-                # selecting only our command output
-                response = response[-1]
-            command.output = response
+            # selecting only our command output
+            command.output = response[-1]
             logger.debug(f"{self.name}: {command}")
 
         except aioeapi.EapiCommandError as e:
