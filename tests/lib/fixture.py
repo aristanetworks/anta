@@ -5,53 +5,63 @@
 from __future__ import annotations
 
 from os import environ
-from typing import Callable
-from unittest.mock import MagicMock, create_autospec, patch
+from typing import Callable, Iterator
+from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
 
-from anta.device import AntaDevice
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
+from anta.models import AntaCommand
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
 
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
+COMMAND_OUTPUT = "retrieved"
 
 
 @pytest.fixture
-def device() -> AntaDevice:
+def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     """
     Returns an AntaDevice instance with mocked abstract method
     """
+
+    def _collect(command: AntaCommand) -> None:
+        command.output = COMMAND_OUTPUT
+
+    kwargs = {"name": DEVICE_NAME, "hw_model": DEVICE_HW_MODEL}
+
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly
+        kwargs.update(request.param)
     with patch.object(AntaDevice, "__abstractmethods__", set()):
-        dev = AntaDevice(DEVICE_NAME)  # type: ignore[abstract]  # pylint: disable=abstract-class-instantiated
-    dev.hw_model = DEVICE_HW_MODEL
+        with patch("anta.device.AntaDevice._collect", side_effect=_collect):
+            hw_model = kwargs.pop("hw_model")
+            dev = AntaDevice(**kwargs)  # type: ignore[abstract, arg-type]  # pylint: disable=abstract-class-instantiated, unexpected-keyword-arg
+            dev.hw_model = hw_model
+            yield dev
+
+
+@pytest.fixture
+def async_device(request: pytest.FixtureRequest) -> AntaDevice:
+    """
+    Returns an AsyncEOSDevice instance
+    """
+
+    kwargs = {"name": DEVICE_NAME, "host": "42.42.42.42", "username": "anta", "password": "anta"}
+
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly
+        kwargs.update(request.param)
+    dev = AsyncEOSDevice(**kwargs)  # type: ignore[arg-type]
     return dev
 
 
 @pytest.fixture
-def mocked_device() -> MagicMock:
-    """
-    Returns a mocked device with initiazlied fields
-    """
-
-    mock = create_autospec(AntaDevice, instance=True)
-    mock.host = "42.42.42.42"
-    mock.name = "testdevice"
-    mock.username = "toto"
-    mock.password = "mysuperdupersecret"
-    mock.enable_password = "mysuperduperenablesecret"
-    mock.is_online = True
-    mock.established = True
-    mock.hw_model = "mocked_AntaDevice"
-    return mock
-
-
-@pytest.fixture
-def test_result_factory(mocked_device: MagicMock) -> Callable[[int], TestResult]:
+def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
     """
     Return a anta.result_manager.models.TestResult object
     """
@@ -63,7 +73,7 @@ def test_result_factory(mocked_device: MagicMock) -> Callable[[int], TestResult]
         Actual Factory
         """
         return TestResult(
-            name=mocked_device.name,
+            name=device.name,
             test=f"VerifyTest{index}",
             categories=["test"],
             description=f"Verifies Test {index}",

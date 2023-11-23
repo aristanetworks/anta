@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     "device_name, expected_raise",
     [
         pytest.param("dummy", nullcontext(), id="existing device"),
-        pytest.param("mocked_device", pytest.raises(click.exceptions.UsageError), id="non existing device"),
+        pytest.param("other", pytest.raises(click.exceptions.UsageError), id="non existing device"),
     ],
 )
 def test_get_device(test_inventory: AntaInventory, device_name: str, expected_raise: Any) -> None:

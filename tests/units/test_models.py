@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -420,7 +419,7 @@ ANTATEST_BLACKLIST_DATA = ["reload", "reload --force", "write", "wr mem"]
 
 
 @pytest.mark.parametrize("data", ANTATEST_BLACKLIST_DATA)
-def test_blacklist(mocked_device: MagicMock, data: str) -> None:
+def test_blacklist(device: AntaDevice, data: str) -> None:
     """Test for blacklisting function."""
 
     class FakeTestWithBlacklist(AntaTest):
@@ -435,7 +434,7 @@ def test_blacklist(mocked_device: MagicMock, data: str) -> None:
         def test(self) -> None:
             self.result.is_success()
 
-    test_instance = FakeTestWithBlacklist(mocked_device, inputs=None)
+    test_instance = FakeTestWithBlacklist(device)
 
     # Run the test() method
     asyncio.run(test_instance.test())

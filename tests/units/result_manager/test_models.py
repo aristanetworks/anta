@@ -11,6 +11,7 @@ import pytest
 # Import as Result to avoid pytest collection
 from anta.result_manager.models import TestResult as Result
 from tests.data.json_data import TEST_RESULT_SET_STATUS
+from tests.lib.fixture import DEVICE_NAME
 from tests.lib.utils import generate_test_ids_dict
 
 
@@ -53,4 +54,4 @@ class TestTestResultModels:
         assert len(testresult.messages) == 0
         testresult._set_status(data["target"], data["message"])  # pylint: disable=W0212
         assert testresult.result == data["target"]
-        assert str(testresult) == f"Test VerifyTest1 on device testdevice has result {data['target']}"
+        assert str(testresult) == f"Test VerifyTest1 on device {DEVICE_NAME} has result {data['target']}"

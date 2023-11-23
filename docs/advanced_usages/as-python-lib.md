@@ -206,7 +206,7 @@ When you run the test, object will automatically call its `anta.models.AntaTest.
     You can also pass eos data directly to your test if you want to validate data collected in a different workflow. An example is provided below just for information:
 
     ```python
-    test = VerifyTemperature(mocked_device, eos_data=test_data["eos_data"])
+    test = VerifyTemperature(device, eos_data=test_data["eos_data"])
     asyncio.run(test.test())
     ```
 
@@ -242,7 +242,7 @@ The test itself does not return any value, but the result is directly availble f
 ```python
 from anta.tests.hardware import VerifyTemperature
 
-test = VerifyTemperature(mocked_device, eos_data=test_data["eos_data"])
+test = VerifyTemperature(device, eos_data=test_data["eos_data"])
 asyncio.run(test.test())
 assert test.result.result == "success"
 ```
