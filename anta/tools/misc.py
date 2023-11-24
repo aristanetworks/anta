@@ -30,9 +30,9 @@ def anta_log_exception(exception: BaseException, message: Optional[str] = None, 
     """
     if calling_logger is None:
         calling_logger = logger
-    calling_logger.critical(f"{message}\n{exc_to_str(exception)}")
+    calling_logger.critical(f"{message}\n{exc_to_str(exception)}" if message else exc_to_str(exception))
     if __DEBUG__:
-        calling_logger.exception(f"[ANTA Debug Mode] {message}", exc_info=exception)
+        calling_logger.exception(f"[ANTA Debug Mode]{f' {message}' if message else ''}", exc_info=exception)
 
 
 def exc_to_str(exception: BaseException) -> str:
