@@ -113,9 +113,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
         sys.exit(ExitCode.USAGE_ERROR)
 
     # Boolean to check if the file is empty
-    # Mypy complains about st_size because typing is bad in standard library -
-    # https://github.com/python/mypy/issues/5485
-    output_is_not_empty = output.exists() and output.stat().st_size != 0  # type: ignore[misc]
+    output_is_not_empty = output.exists() and output.stat().st_size != 0
     logger.debug(f"output: {output} - overwrite: {overwrite}")
 
     # Check overwrite when file is not empty
