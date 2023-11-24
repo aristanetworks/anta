@@ -86,7 +86,7 @@ def test_anta_password_required(click_runner: CliRunner) -> None:
     """
     env = default_anta_env()
     env.pop("ANTA_PASSWORD")
-    result = click_runner.invoke(anta, ["get", "inventory"], env=env, auto_envvar_prefix="ANTA")
+    result = click_runner.invoke(anta, ["nrfu", "table"], env=env, auto_envvar_prefix="ANTA")
     assert result.exit_code == 2
     assert "EOS password needs to be provided by using either the '--password' option or the '--prompt' option." in result.output
 
