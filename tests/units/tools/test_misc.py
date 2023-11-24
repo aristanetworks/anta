@@ -30,13 +30,13 @@ def my_raising_function(exception: Exception) -> None:
     "exception, message, calling_logger, __DEBUG__value, expected_message",
     [
         pytest.param(ValueError("exception message"), None, None, False, "ValueError (exception message)", id="exception only"),
-        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message: ValueError (exception message)", id="custom message"),
+        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message\nValueError (exception message)", id="custom message"),
         pytest.param(
             ValueError("exception message"),
             "custom logger",
             logging.getLogger("custom"),
             False,
-            "custom logger: ValueError (exception message)",
+            "custom logger\nValueError (exception message)",
             id="custom logger",
         ),
         pytest.param(ValueError("exception message"), "Use with custom message", None, True, "Use with custom message", id="__DEBUG__ on"),

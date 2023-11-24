@@ -35,7 +35,7 @@ def anta_log_exception(exception: BaseException, message: Optional[str] = None, 
     else:
         log_message = exc_to_str(exception)
         if message is not None:
-            log_message = f"{message}: {log_message}"
+            log_message = f"{message}\n{log_message}"
         calling_logger.critical(log_message)
 
 
