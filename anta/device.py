@@ -21,7 +21,7 @@ from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__, aioeapi
 from anta.models import AntaCommand
-from anta.tools.misc import anta_log_exception, exc_to_str
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -299,44 +299,40 @@ class AsyncEOSDevice(AntaDevice):
         Args:
             command: the command to collect
         """
+        commands = []
+        if self.enable and self._enable_password is not None:
+            commands.append(
+                {
+                    "cmd": "enable",
+                    "input": str(self._enable_password),
+                }
+            )
+        elif self.enable:
+            # No password
+            commands.append({"cmd": "enable"})
+        if command.revision:
+            commands.append({"cmd": command.command, "revision": command.revision})
+        else:
+            commands.append({"cmd": command.command})
         try:
-            commands = []
-            if self.enable and self._enable_password is not None:
-                commands.append(
-                    {
-                        "cmd": "enable",
-                        "input": str(self._enable_password),
-                    }
-                )
-            elif self.enable:
-                # No password
-                commands.append({"cmd": "enable"})
-            if command.revision:
-                commands.append({"cmd": command.command, "revision": command.revision})
-            else:
-                commands.append({"cmd": command.command})
             response: list[dict[str, Any]] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
-            # selecting only our command output
-            command.output = response[-1]
-            logger.debug(f"{self.name}: {command}")
-
         except aioeapi.EapiCommandError as e:
             command.errors = e.errors
             if self.supports(command):
                 message = f"Command '{command.command}' failed on {self.name}"
-                anta_log_exception(e, message, logger)
+                logger.error(message)
         except (HTTPError, ConnectError) as e:
+            command.errors = [str(e)]
             message = f"Cannot connect to device {self.name}"
-            anta_log_exception(e, message, logger)
-            command.errors = [str(e)]
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
-            anta_log_exception(e, message, logger)
-            command.errors = [str(e)]
+            logger.error(message)
+        else:
+            # selecting only our command output
+            command.output = response[-1]
+            logger.debug(f"{self.name}: {command}")
 
     async def refresh(self) -> None:
         """
