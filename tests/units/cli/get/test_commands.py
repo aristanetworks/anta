@@ -148,7 +148,7 @@ def test_from_ansible(
     assert result.exit_code == expected_exit
 
     if expected_exit != 0:
-        print(caplog.records)
+        assert expected_log
         assert expected_log in [rec.message for rec in caplog.records][-1]
         assert len(caplog.records) in {2, 3}
     else:
