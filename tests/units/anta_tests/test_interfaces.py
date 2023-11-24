@@ -215,6 +215,38 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {"result": "success"},
     },
     {
+        "name": "success-lower",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [{"interface": "ethernet2", "state": "adminDown"}, {"interface": "ethernet8", "state": "up"}, {"interface": "ethernet3", "state": "up"}]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-eth-name",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "eth2", "state": "adminDown"}, {"interface": "et8", "state": "up"}, {"interface": "et3", "state": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-sub-interfaces",
         "test": VerifyInterfacesStatus,
         "eos_data": [
