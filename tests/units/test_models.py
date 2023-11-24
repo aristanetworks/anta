@@ -110,10 +110,10 @@ class FakeTestWithTemplateNoRender(AntaTest):
         self.result.is_success(self.instance_commands[0].command)
 
 
-class FakeTestWithTemplateWrongRender(AntaTest):
+class FakeTestWithTemplateBadRender1(AntaTest):
     """ANTA test with template that raises a AntaTemplateRenderError exception"""
 
-    name = "FakeTestWithTemplateWrongRender"
+    name = "FakeTestWithTemplateBadRender"
     description = "ANTA test with template that raises a AntaTemplateRenderError exception"
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
@@ -123,6 +123,25 @@ class FakeTestWithTemplateWrongRender(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         return [template.render(wrong_template_param=self.inputs.interface)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success(self.instance_commands[0].command)
+
+
+class FakeTestWithTemplateBadRender2(AntaTest):
+    """ANTA test with template that raises an arbitrary exception"""
+
+    name = "FakeTestWithTemplateBadRender2"
+    description = "ANTA test with template that raises an arbitrary exception"
+    categories = []
+    commands = [AntaTemplate(template="show interface {interface}")]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        interface: str
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        raise Exception()  # pylint: disable=broad-exception-raised
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -253,13 +272,25 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "wrong render logic",
-        "test": FakeTestWithTemplateWrongRender,
+        "name": "AntaTemplateRenderError",
+        "test": FakeTestWithTemplateBadRender1,
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {
                 "result": "error",
                 "messages": ["Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"],
+            },
+            "test": {"result": "error"},
+        },
+    },
+    {
+        "name": "Exception in render()",
+        "test": FakeTestWithTemplateBadRender2,
+        "inputs": {"interface": "Ethernet1"},
+        "expected": {
+            "__init__": {
+                "result": "error",
+                "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): Exception"],
             },
             "test": {"result": "error"},
         },

@@ -433,6 +433,9 @@ class AntaTest(ABC):
             if self.blocked is False:
                 await self.device.collect_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
+            # device._collect() is user-defined code.
+            # We need to catch everything if we want the AntaTest object
+            # to live until the reporting
             message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
             anta_log_exception(e, message, self.logger)
             self.result.is_error(message=exc_to_str(e))
@@ -498,6 +501,9 @@ class AntaTest(ABC):
             try:
                 function(self, **kwargs)
             except Exception as e:  # pylint: disable=broad-exception-caught
+                # test() is user-defined code.
+                # We need to catch everything if we want the AntaTest object
+                # to live until the reporting
                 message = f"Exception raised for test {self.name} (on device {self.device.name})"
                 anta_log_exception(e, message, self.logger)
                 self.result.is_error(message=exc_to_str(e))
