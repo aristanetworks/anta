@@ -39,6 +39,7 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
         kwargs.update(request.param)
     with patch.object(AntaDevice, "__abstractmethods__", set()):
         with patch("anta.device.AntaDevice._collect", side_effect=_collect):
+            # AntaDevice constructor does not have hw_model argument
             hw_model = kwargs.pop("hw_model")
             dev = AntaDevice(**kwargs)  # type: ignore[abstract, arg-type]  # pylint: disable=abstract-class-instantiated, unexpected-keyword-arg
             dev.hw_model = hw_model

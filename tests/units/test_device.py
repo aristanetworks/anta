@@ -67,7 +67,7 @@ INIT_DATA: list[dict[str, Any]] = [
         "expected": {"name": "test.anta.ninja"},
     },
 ]
-EQUQLITY_DATA: list[dict[str, Any]] = [
+EQUALITY_DATA: list[dict[str, Any]] = [
     {
         "name": "equal",
         "device1": {
@@ -686,7 +686,7 @@ class TestAsyncEOSDevice:
         with patch("anta.__DEBUG__", new=True):  # TODO does not work
             rprint(device)
 
-    @pytest.mark.parametrize("data", EQUQLITY_DATA, ids=generate_test_ids_list(EQUQLITY_DATA))
+    @pytest.mark.parametrize("data", EQUALITY_DATA, ids=generate_test_ids_list(EQUALITY_DATA))
     def test__eq(self, data: dict[str, Any]) -> None:
         """Test the AsyncEOSDevice equality"""
         device1 = AsyncEOSDevice(**data["device1"])
