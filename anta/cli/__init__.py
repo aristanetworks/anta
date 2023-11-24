@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import Any, Literal
+from typing import Any
+from typing import Literal
 
 import click
-
 from anta import __version__
 from anta.catalog import AntaCatalog
 from anta.cli.check import commands as check_commands
@@ -21,7 +21,10 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, maybe_required_inventory_cb, maybe_required_username_cb, parse_catalog, parse_inventory
+from anta.cli.utils import AliasedGroup
+from anta.cli.utils import catalog_options
+from anta.cli.utils import IgnoreRequiredWithHelp
+from anta.cli.utils import inventory_options
 from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
@@ -29,59 +32,6 @@ from anta.result_manager import ResultManager
 @click.group(cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.version_option(__version__)
-@click.option(
-    "--username",
-    help="Username to connect to EOS",
-    show_envvar=True,
-    callback=maybe_required_username_cb,
-    # required=True,
-)
-@click.option("--password", help="Password to connect to EOS that must be provided. It can be prompted using '--prompt' option.", show_envvar=True)
-@click.option(
-    "--enable-password",
-    help="Password to access EOS Privileged EXEC mode. It can be prompted using '--prompt' option. Requires '--enable' option.",
-    show_envvar=True,
-)
-@click.option(
-    "--enable",
-    help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
-    default=False,
-    show_envvar=True,
-    is_flag=True,
-    show_default=True,
-)
-@click.option(
-    "--prompt",
-    "-P",
-    help="Prompt for passwords if they are not provided.",
-    default=False,
-    is_flag=True,
-    show_default=True,
-)
-@click.option(
-    "--timeout",
-    help="Global connection timeout",
-    default=30,
-    show_envvar=True,
-    show_default=True,
-)
-@click.option(
-    "--insecure",
-    help="Disable SSH Host Key validation",
-    default=False,
-    show_envvar=True,
-    is_flag=True,
-    show_default=True,
-)
-@click.option(
-    "--inventory",
-    "-i",
-    help="Path to the inventory YAML file",
-    show_envvar=True,
-    callback=maybe_required_inventory_cb,
-    # required=True,
-    type=click.Path(file_okay=True, dir_okay=False, readable=True, path_type=pathlib.Path),
-)
 @click.option(
     "--log-file",
     help="Send the logs to a file. If logging level is DEBUG, only INFO or higher will be sent to stdout.",
@@ -106,53 +56,21 @@ from anta.result_manager import ResultManager
         case_sensitive=False,
     ),
 )
-@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
-@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-@click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
-def anta(
-    ctx: click.Context, inventory: pathlib.Path, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any
-) -> None:
+# TODO add custom_type for log level
+def anta(ctx: click.Context, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any) -> None:
     # pylint: disable=unused-argument
     """Arista Network Test Automation (ANTA) CLI"""
     setup_logging(log_level, log_file)
 
-    if not ctx.obj.get("_anta_help"):
-        if ctx.params.get("prompt"):
-            # User asked for a password prompt
-            if ctx.params.get("password") is None:
-                ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-            if ctx.params.get("enable"):
-                if ctx.params.get("enable_password") is None:
-                    if click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
-                        ctx.params["enable_password"] = click.prompt(
-                            "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
-                        )
-        if ctx.params.get("password") is None and not ctx.obj.get("skip_password"):
-            raise click.BadParameter(
-                f"EOS password needs to be provided by using either the '{anta.params[2].opts[0]}' option or the '{anta.params[5].opts[0]}' option."
-            )
-        if not ctx.params.get("enable") and ctx.params.get("enable_password"):
-            raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
-
-    ctx.ensure_object(dict)
-    ctx.obj["inventory_path"] = ctx.params.get("inventory")
-    if not ctx.obj.get("skip_inventory"):
-        ctx.obj["inventory"] = parse_inventory(ctx, inventory)
-
 
 @anta.group("nrfu", cls=IgnoreRequiredWithHelp)
 @click.pass_context
-@click.option(
-    "--catalog",
-    "-c",
-    envvar="ANTA_CATALOG",
-    show_envvar=True,
-    help="Path to the test catalog YAML file",
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
-    required=True,
-    callback=parse_catalog,
-)
-def _nrfu(ctx: click.Context, catalog: AntaCatalog) -> None:
+@inventory_options
+@catalog_options
+@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
+@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
+@click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
+def _nrfu(ctx: click.Context, catalog: AntaCatalog, **kwargs) -> None:
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
     ctx.obj["result_manager"] = ResultManager()

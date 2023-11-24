@@ -16,6 +16,7 @@ import click
 from click import Option
 
 from anta.cli.console import console
+from anta.cli.utils import inventory_options
 from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate
 from anta.tools.misc import anta_log_exception
@@ -37,7 +38,8 @@ def get_device(ctx: click.Context, param: Option, value: str) -> list[str]:
         ctx.fail(message)
 
 
-@click.command()
+@click.command(no_args_is_help=True)
+@inventory_options
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
 @click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")
 @click.option("--version", "-v", type=click.Choice(["1", "latest"]), default="latest", help="EOS eAPI version")
@@ -59,7 +61,8 @@ def run_cmd(command: str, ofmt: Literal["json", "text"], version: Literal["1", "
         console.print(c.text_output)
 
 
-@click.command()
+@click.command(no_args_is_help=True)
+@inventory_options
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
 @click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")
 @click.option("--version", "-v", type=click.Choice(["1", "latest"]), default="latest", help="EOS eAPI version")

@@ -14,22 +14,13 @@ from rich.pretty import pretty_repr
 
 from anta.catalog import AntaCatalog
 from anta.cli.console import console
-from anta.cli.utils import parse_catalog
+from anta.cli.utils import catalog_options
 
 logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option(
-    "--catalog",
-    "-c",
-    envvar="ANTA_CATALOG",
-    show_envvar=True,
-    help="Path to the test catalog YAML file",
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, resolve_path=True),
-    required=True,
-    callback=parse_catalog,
-)
+@catalog_options
 def catalog(catalog: AntaCatalog) -> None:
     """
     Check that the catalog is valid

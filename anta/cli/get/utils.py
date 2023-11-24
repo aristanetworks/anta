@@ -36,7 +36,7 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     return response.json()["sessionId"]
 
 
-def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, container: str | None = None) -> None:
+def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path, container: str | None = None) -> None:
     """
     create an inventory file from Arista CloudVision
     """
@@ -46,8 +46,9 @@ def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, contain
         logger.info(f'   * adding entry for {dev["hostname"]}')
         i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append({"host": dev["ipAddress"], "name": dev["hostname"], "tags": [dev["containerName"].lower()]})
     # write the devices IP address in a file
+    # TODO fixme
     inv_file = "inventory" if container is None else f"inventory-{container}"
-    out_file = f"{directory}/{inv_file}.yml"
+    out_file = f"{output}/{inv_file}.yml"
     with open(out_file, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump(i))
     logger.info(f"Inventory file has been created in {out_file}")

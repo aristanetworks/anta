@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-
 """
 Commands for Anta CLI to execute EOS commands.
 """
@@ -17,14 +16,14 @@ import click
 from yaml import safe_load
 
 from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
-from anta.cli.utils import parse_tags
+from anta.cli.utils import inventory_options
 
 logger = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command(no_args_is_help=True)
 @click.pass_context
-@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@inventory_options
 def clear_counters(ctx: click.Context, tags: list[str] | None) -> None:
     """Clear counter statistics on EOS devices"""
     asyncio.run(clear_counters_utils(ctx.obj["inventory"], tags=tags))
@@ -32,7 +31,7 @@ def clear_counters(ctx: click.Context, tags: list[str] | None) -> None:
 
 @click.command()
 @click.pass_context
-@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+@inventory_options
 @click.option(
     "--commands-list",
     "-c",
@@ -66,6 +65,7 @@ def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, ou
 
 @click.command()
 @click.pass_context
+@inventory_options
 @click.option("--output", "-o", default="./tech-support", show_default=True, help="Path for test catalog", type=click.Path(path_type=Path), required=False)
 @click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
 @click.option(
@@ -75,7 +75,6 @@ def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, ou
     is_flag=True,
     show_default=True,
 )
-@click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
 def collect_tech_support(ctx: click.Context, tags: list[str] | None, output: Path, latest: int | None, configure: bool) -> None:
     """Collect scheduled tech-support from EOS devices"""
     asyncio.run(collect_scheduled_show_tech(ctx.obj["inventory"], output, configure, tags=tags, latest=latest))

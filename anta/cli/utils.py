@@ -9,18 +9,20 @@ Utils functions to use with anta.cli module.
 from __future__ import annotations
 
 import enum
+import functools
 import logging
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
+from typing import TYPE_CHECKING
 
 import click
-from pydantic import ValidationError
-from yaml import YAMLError
-
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
-from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
+from anta.inventory.exceptions import InventoryIncorrectSchema
+from anta.inventory.exceptions import InventoryRootKeyError
+from pydantic import ValidationError
+from yaml import YAMLError
 
 logger = logging.getLogger(__name__)
 
@@ -108,10 +110,9 @@ def maybe_required_username_cb(ctx: click.Context, param: Option, value: str) ->
         # If help then don't do anything
         return value
     if "get" in ctx.obj["args"]:
-        # the group has put the args from cli in the ctx.obj
-        # This is a bit convoluted
-        ctx.obj["skip_password"] = True
-        return value
+        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
+            ctx.obj["skip_password"] = True
+            return value
     if param.value_is_missing(value):
         raise click.exceptions.MissingParameter(ctx=ctx, param=param)
     return value
@@ -131,7 +132,7 @@ def maybe_required_inventory_cb(ctx: click.Context, param: Option, value: str) -
         # This is a bit convoluted
         if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
             ctx.obj["skip_inventory"] = True
-        return value
+            return value
     if param.value_is_missing(value):
         raise click.exceptions.MissingParameter(ctx=ctx, param=param)
     # Need to check that the inventory file exist
@@ -240,3 +241,114 @@ class IgnoreRequiredWithHelp(AliasedGroup):
                 param.required = False
 
             return super().parse_args(ctx, args)
+
+
+def inventory_options(f):
+    """
+    Click common options when manipulating devices
+    """
+
+    @click.option(
+        "--username",
+        "-u",
+        help="Username to connect to EOS",
+        envvar="ANTA_USERNAME",
+        show_envvar=True,
+        required=True,
+    )
+    @click.option(
+        "--password",
+        "-p",
+        help="Password to connect to EOS that must be provided. It can be prompted using '--prompt' option.",
+        show_envvar=True,
+        envvar="ANTA_PASSWORD",
+    )
+    @click.option(
+        "--enable-password",
+        help="Password to access EOS Privileged EXEC mode. It can be prompted using '--prompt' option. Requires '--enable' option.",
+        show_envvar=True,
+    )
+    @click.option(
+        "--enable",
+        help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
+        default=False,
+        show_envvar=True,
+        is_flag=True,
+        show_default=True,
+    )
+    @click.option(
+        "--prompt",
+        "-P",
+        help="Prompt for passwords if they are not provided.",
+        default=False,
+        is_flag=True,
+        show_default=True,
+    )
+    @click.option(
+        "--timeout",
+        help="Global connection timeout",
+        default=30,
+        show_envvar=True,
+        show_default=True,
+    )
+    @click.option(
+        "--insecure",
+        help="Disable SSH Host Key validation",
+        default=False,
+        show_envvar=True,
+        is_flag=True,
+        show_default=True,
+    )
+    @click.option(
+        "--inventory",
+        "-i",
+        help="Path to the inventory YAML file",
+        envvar="ANTA_INVENTORY",
+        show_envvar=True,
+        required=True,
+        type=click.Path(file_okay=True, dir_okay=False, readable=True, path_type=Path),
+    )
+    @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+    @functools.wraps(f)
+    def wrapper_common_options(ctx: click.Context, *args, **kwargs):
+        if not ctx.obj.get("_anta_help"):
+            if ctx.params.get("prompt"):
+                # User asked for a password prompt
+                if ctx.params.get("password") is None:
+                    ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+                if ctx.params.get("enable"):
+                    if ctx.params.get("enable_password") is None:
+                        if click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
+                            ctx.params["enable_password"] = click.prompt(
+                                "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
+                            )
+            if ctx.params.get("password") is None:
+                raise click.BadParameter("EOS password needs to be provided by using either the '--password' option or the '--prompt' option.")
+            if not ctx.params.get("enable") and ctx.params.get("enable_password"):
+                raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
+
+        ctx.ensure_object(dict)
+        inventory = ctx.params.get("inventory")
+        ctx.obj["inventory_path"] = inventory
+        ctx.obj["inventory"] = parse_inventory(ctx, inventory)
+        return f(ctx, *args, **kwargs)
+
+    return wrapper_common_options
+
+
+def catalog_options(f):
+    @click.option(
+        "--catalog",
+        "-c",
+        envvar="ANTA_CATALOG",
+        show_envvar=True,
+        help="Path to the test catalog YAML file",
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
+        required=True,
+        callback=parse_catalog,
+    )
+    @functools.wraps(f)
+    def wrapper_common_options(ctx: click.Context, *args, **kwargs):
+        return f(ctx, *args, **kwargs)
+
+    return wrapper_common_options
