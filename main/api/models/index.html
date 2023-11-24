@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.10">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.12">
     
     
       
@@ -2485,7 +2485,10 @@ Attributes:
 
                 <details class="quote">
                   <summary>Source code in <code>anta/models.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
@@ -2503,10 +2506,7 @@ Attributes:
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2837,12 +2837,12 @@ This will work in most cases but this does not consider 2 lists with different o
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implement generic hashing for AntaTest.Input.</span>
 <span class="sd">    This will work in most cases but this does not consider 2 lists with different ordering as equal.</span>
@@ -2961,7 +2961,14 @@ This will work in most cases but this does not consider 2 lists with different o
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
-<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for the `test()` method.</span>
@@ -3008,16 +3015,23 @@ This will work in most cases but this does not consider 2 lists with different o
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">!=</span> <span class="s2">&quot;unset&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_commands</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span>
-                    <span class="n">message</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmd</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> has failed: </span><span class="si">{</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">failed</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmd</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> has failed&quot;</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_commands</span><span class="p">]</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cmds</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_commands</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">supports</span><span class="p">)</span>
+                <span class="n">unsupported_commands</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Skipped because </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> is not supported on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">hw_model</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmds</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">supports</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">unsupported_commands</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">unsupported_commands</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has been skipped because it is not supported on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">hw_model</span><span class="si">}</span><span class="s2">, please open a GitHub issue.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unsupported_commands</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> has failed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">]))</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
+
+        <span class="k">try</span><span class="p">:</span>
             <span class="n">function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+            <span class="c1"># test() is user-defined code.</span>
+            <span class="c1"># We need to catch everything if we want the AntaTest object</span>
+            <span class="c1"># to live until the reporting</span>
             <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Exception raised for test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -3059,7 +3073,10 @@ This will work in most cases but this does not consider 2 lists with different o
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">431</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
@@ -3077,6 +3094,9 @@ This will work in most cases but this does not consider 2 lists with different o
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+        <span class="c1"># device._collect() is user-defined code.</span>
+        <span class="c1"># We need to catch everything if we want the AntaTest object</span>
+        <span class="c1"># to live until the reporting</span>
         <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Exception raised while collecting commands for test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (on device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -3109,13 +3129,13 @@ no AntaTemplate for this test.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="normal">414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaTemplate instance of this AntaTest using the provided</span>
 <span class="sd">       AntaTest.Input instance at self.inputs.</span>
 
@@ -3148,16 +3168,16 @@ no AntaTemplate for this test.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">383</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate output of all AntaCommand instances in `instance_commands`&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Test initialization error: Trying to save more data than there are commands for the test&quot;</span><span class="p">)</span>
@@ -3212,14 +3232,7 @@ with the appropriate outcome of the test.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
@@ -3229,7 +3242,14 @@ with the appropriate outcome of the test.</p>
 <span class="normal">534</span>
 <span class="normal">535</span>
 <span class="normal">536</span>
-<span class="normal">537</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This abstract method is the core of the test logic.</span>
@@ -3384,13 +3404,13 @@ translated to a specific <strong>revision</strong> for each CLI command in the R
           </td>
         </tr>
         <tr>
-          <td><code>failed</code></td>
+          <td><code>errors</code></td>
           <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#Exception">Exception</a>]</code>
+                <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>If the command execution fails, the Exception object is stored in this field</p>
+              <p>If the command execution fails, eAPI returns a list of strings detailing the error</p>
             </div>
           </td>
         </tr>

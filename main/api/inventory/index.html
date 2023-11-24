@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.10">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.12">
     
     
       
@@ -2055,13 +2055,13 @@
 
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a device to final inventory.</span>
 
 <span class="sd">    Args:</span>
@@ -2098,17 +2098,17 @@
 
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
-<span class="normal">269</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run `refresh()` coroutines for all AntaDevice objects in this inventory.&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Refreshing devices...&quot;</span><span class="p">)</span>
     <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -2213,12 +2213,7 @@
 
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
@@ -2238,7 +2233,12 @@
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a filtered inventory.</span>
 
@@ -2285,7 +2285,7 @@
   </span>
 
 <a href="#anta.inventory.AntaInventory.parse" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">parse</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -2307,13 +2307,13 @@ The inventory devices are AsyncEOSDevice instances.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>inventory_file</code></td>
+          <td><code>filename</code></td>
           <td>
                 <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Path to inventory YAML file where user has described his inputs</p>
+              <p>Path to device inventory YAML file</p>
             </div>
           </td>
           <td>
@@ -2452,16 +2452,6 @@ The inventory devices are AsyncEOSDevice instances.</p>
             </div>
           </td>
         </tr>
-        <tr>
-          <td>
-                <code>InventoryUnknownFormat</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Output format is not supported.</p>
-            </div>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2529,9 +2519,14 @@ The inventory devices are AsyncEOSDevice instances.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
-    <span class="n">inventory_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2546,7 +2541,7 @@ The inventory devices are AsyncEOSDevice instances.</p>
 <span class="sd">    The inventory devices are AsyncEOSDevice instances.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        inventory_file (str): Path to inventory YAML file where user has described his inputs</span>
+<span class="sd">        filename (str): Path to device inventory YAML file</span>
 <span class="sd">        username (str): Username to use to connect to devices</span>
 <span class="sd">        password (str): Password to use to connect to devices</span>
 <span class="sd">        enable (bool): Whether or not the commands need to be run in enable mode towards the devices</span>
@@ -2558,7 +2553,6 @@ The inventory devices are AsyncEOSDevice instances.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        InventoryRootKeyError: Root key of inventory is missing.</span>
 <span class="sd">        InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.</span>
-<span class="sd">        InventoryUnknownFormat: Output format is not supported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="p">()</span>
@@ -2573,18 +2567,24 @@ The inventory devices are AsyncEOSDevice instances.</p>
     <span class="p">}</span>
     <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inventory_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">YAMLError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unable to parse ANTA Device Inventory file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="k">raise</span>
 
-    <span class="c1"># Load data using Pydantic</span>
+    <span class="k">if</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">INVENTORY_ROOT_KEY</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">exc</span> <span class="o">=</span> <span class="n">InventoryRootKeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inventory root key (</span><span class="si">{</span><span class="n">AntaInventory</span><span class="o">.</span><span class="n">INVENTORY_ROOT_KEY</span><span class="si">}</span><span class="s2">) is not defined in your inventory&quot;</span><span class="p">)</span>
+        <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Device inventory is invalid! (from </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">exc</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">inventory_input</span> <span class="o">=</span> <span class="n">AntaInventoryInput</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">[</span><span class="n">AntaInventory</span><span class="o">.</span><span class="n">INVENTORY_ROOT_KEY</span><span class="p">])</span>
-    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inventory root key is missing: </span><span class="si">{</span><span class="n">AntaInventory</span><span class="o">.</span><span class="n">INVENTORY_ROOT_KEY</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="n">InventoryRootKeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inventory root key (</span><span class="si">{</span><span class="n">AntaInventory</span><span class="o">.</span><span class="n">INVENTORY_ROOT_KEY</span><span class="si">}</span><span class="s2">) is not defined in your inventory&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
-    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Inventory data are not compliant with inventory models&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="n">InventoryIncorrectSchema</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inventory is not following the schema: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Device inventory is invalid! (from </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="k">raise</span>
 
     <span class="c1"># Read data from input</span>
     <span class="n">AntaInventory</span><span class="o">.</span><span class="n">_parse_hosts</span><span class="p">(</span><span class="n">inventory_input</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
