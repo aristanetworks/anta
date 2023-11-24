@@ -19,8 +19,11 @@ def aaa_group_prefix(v: str) -> str:
 
 
 def interface_autocomplete(v: str) -> str:
-    """Allow the user to only provide the beginning of an interface name
-    E.g. et, eth will be changed to Ethernet"""
+    """Allow the user to only provide the beginning of an interface name.
+
+    Supported alias:
+         - `et`, `eth` will be changed to `Ethernet`
+         - `po` will be changed to `Port-Channel`"""
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
@@ -28,13 +31,18 @@ def interface_autocomplete(v: str) -> str:
     intf_id = m[0]
     if any(v.lower().startswith(p) for p in ["et", "eth"]):
         return f"Ethernet{intf_id}"
+    if v.lower().startswith("po"):
+        return f"Port-Channel{intf_id}"
     return v
 
 
 def interface_case_sensitivity(v: str) -> str:
     """Reformat interface name to match expected case sensitivity.
-    E.g. ethernet -> Ethernet
-         vlan -> Vlan"""
+
+    Examples:
+         - ethernet -> Ethernet
+         - vlan -> Vlan
+    """
     if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
     return v
