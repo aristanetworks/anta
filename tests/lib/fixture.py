@@ -128,7 +128,7 @@ def test_inventory() -> AntaInventory:
     """
     env = default_anta_env()
     return AntaInventory.parse(
-        inventory_file=env["ANTA_INVENTORY"],
+        filename=env["ANTA_INVENTORY"],
         username=env["ANTA_USERNAME"],
         password=env["ANTA_PASSWORD"],
     )

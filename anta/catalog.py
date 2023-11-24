@@ -250,7 +250,7 @@ class AntaCatalog:
         try:
             catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
         except ValidationError as e:
-            anta_log_exception(e, f"Test catalog{f' (from {filename})' if filename is not None else ''} is invalid!", logger)
+            anta_log_exception(e, f"Test catalog is invalid!{f' (from {filename})' if filename is not None else ''}", logger)
             raise
         for t in catalog_data.root.values():
             tests.extend(t)

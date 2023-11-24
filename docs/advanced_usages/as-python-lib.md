@@ -69,7 +69,7 @@ async def main(inv: AntaInventory) -> None:
 if __name__ == "__main__":
     # Create the AntaInventory instance
     inventory = AntaInventory.parse(
-        inventory_file="inv.yml",
+        filename="inv.yml",
         username="arista",
         password="@rista123",
         timeout=15,
@@ -126,7 +126,7 @@ async def main(inv: AntaInventory, commands: list[str]) -> dict[str, list[AntaCo
 if __name__ == "__main__":
     # Create the AntaInventory instance
     inventory = AntaInventory.parse(
-        inventory_file="inv.yml",
+        filename="inv.yml",
         username="arista",
         password="@rista123",
         timeout=15,

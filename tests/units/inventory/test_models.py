@@ -293,7 +293,6 @@ class Test_AntaInventoryInputModel:
         }
 
         """
-        # inventory_file = self.create_inventory(content=inventory_def['input'], tmp_path=tmp_path)
         try:
             if "hosts" in inventory_def["input"].keys():
                 logging.info(

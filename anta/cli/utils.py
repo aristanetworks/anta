@@ -19,7 +19,7 @@ from yaml import YAMLError
 
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
-from anta.tools.misc import anta_log_exception
+from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
         return AntaInventory()
     try:
         inventory = AntaInventory.parse(
-            inventory_file=str(path),
+            filename=str(path),
             username=ctx.params["username"],
             password=ctx.params["password"],
             enable=ctx.params["enable"],
@@ -64,10 +64,8 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
             insecure=ctx.params["insecure"],
             disable_cache=ctx.params["disable_cache"],
         )
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        message = f"Unable to parse ANTA Inventory file '{path}'"
-        anta_log_exception(e, message, logger)
-        ctx.fail(message)
+    except (ValidationError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
+        ctx.exit(ExitCode.USAGE_ERROR)
     return inventory
 
 
@@ -95,7 +93,7 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
     try:
         catalog: AntaCatalog = AntaCatalog.parse(value)
     except (ValidationError, YAMLError, OSError):
-        ctx.fail("Unable to load ANTA Test Catalog")
+        ctx.exit(ExitCode.USAGE_ERROR)
     return catalog
 
 
