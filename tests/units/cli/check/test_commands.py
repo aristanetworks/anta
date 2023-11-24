@@ -25,7 +25,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
     "catalog_path, expected_exit, expected_output",
     [
         pytest.param("ghost_catalog.yml", 2, "Error: Invalid value for '--catalog'", id="catalog does not exist"),
-        pytest.param("test_catalog_with_undefined_module.yml", 2, "Unable to load ANTA Test Catalog", id="catalog is not valid"),
+        pytest.param("test_catalog_with_undefined_module.yml", 4, "Test catalog is invalid!", id="catalog is not valid"),
         pytest.param("test_catalog.yml", 0, f"Catalog {DATA_DIR}/test_catalog.yml is valid", id="catalog valid"),
     ],
 )

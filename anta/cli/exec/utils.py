@@ -15,11 +15,11 @@ from pathlib import Path
 from typing import Literal
 
 from aioeapi import EapiCommandError
+from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
-from anta.tools.misc import anta_log_exception, exc_to_str
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 
@@ -38,7 +38,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
         await dev.collect_commands(commands=commands)
         for command in commands:
             if not command.collected:
-                logger.error(f"Could not clear counters on device {dev.name}: {command.failed}")
+                logger.error(f"Could not clear counters on device {dev.name}: {command.errors}")
         logger.info(f"Cleared counters on {dev.name} ({dev.hw_model})")
 
     logger.info("Connecting to devices...")
@@ -63,8 +63,8 @@ async def collect_commands(
         outdir.mkdir(parents=True, exist_ok=True)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
-        if not c.collected and c.failed is not None:
-            logger.error(f"Could not collect commands on device {dev.name}: {exc_to_str(c.failed)}")
+        if not c.collected:
+            logger.error(f"Could not collect commands on device {dev.name}: {c.errors}")
             return
         if c.ofmt == "json":
             outfile = outdir / f"{command}.json"
@@ -88,8 +88,7 @@ async def collect_commands(
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            message = "Error when collecting commands"
-            anta_log_exception(r, message, logger)
+            logger.error(f"Error when collecting commands: {str(r)}")
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
@@ -141,7 +140,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                     )
                     logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
                     command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                    await device.session.cli(commands=commands)  # type: ignore[attr-defined]
+                    await device._session.cli(commands=commands)  # pylint: disable=protected-access
                     logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
                 else:
                     logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")
@@ -151,12 +150,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             await device.copy(sources=filenames, destination=outdir, direction="from")
             logger.info(f"Collected {len(filenames)} scheduled tech-support from {device.name}")
 
-        except EapiCommandError as e:
-            logger.error(f"Unable to collect tech-support on {device.name}: {e.errmsg}")
-        # In this case we want to catch all exceptions
-        except Exception as e:  # pylint: disable=broad-except
-            message = f"Unable to collect tech-support on device {device.name}"
-            anta_log_exception(e, message, logger)
+        except (EapiCommandError, HTTPError, ConnectError) as e:
+            logger.error(f"Unable to collect tech-support on {device.name}: {str(e)}")
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

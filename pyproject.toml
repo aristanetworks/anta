@@ -161,8 +161,6 @@ strict_optional = true
 # for strict mypy: (this is the tricky one :-))
 disallow_untyped_defs = true
 
-mypy_path = "anta"
-
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
@@ -188,7 +186,10 @@ testpaths = ["tests"]
 branch = true
 source = ["anta"]
 parallel = true
-# omit=anta/tests/*
+omit = [
+  # omit aioeapi patch
+    "anta/aioeapi.py",
+  ]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration

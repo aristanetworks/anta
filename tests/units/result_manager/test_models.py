@@ -8,18 +8,18 @@ from typing import Any, Callable
 
 import pytest
 
-from anta.result_manager.models import TestResult
+# Import as Result to avoid pytest collection
+from anta.result_manager.models import TestResult as Result
 from tests.data.json_data import TEST_RESULT_SET_STATUS
+from tests.lib.fixture import DEVICE_NAME
 from tests.lib.utils import generate_test_ids_dict
-
-# pytest.skip(reason="Not yet ready for CI", allow_module_level=True)
 
 
 class TestTestResultModels:
     """Test components of anta.result_manager.models."""
 
     @pytest.mark.parametrize("data", TEST_RESULT_SET_STATUS, ids=generate_test_ids_dict)
-    def test__is_status_foo(self, test_result_factory: Callable[[int], TestResult], data: dict[str, Any]) -> None:
+    def test__is_status_foo(self, test_result_factory: Callable[[int], Result], data: dict[str, Any]) -> None:
         """Test TestResult.is_foo methods."""
         testresult = test_result_factory(1)
         assert testresult.result == "unset"
@@ -47,11 +47,11 @@ class TestTestResultModels:
             assert data["message"] in testresult.messages
 
     @pytest.mark.parametrize("data", TEST_RESULT_SET_STATUS, ids=generate_test_ids_dict)
-    def test____str__(self, test_result_factory: Callable[[int], TestResult], data: dict[str, Any]) -> None:
+    def test____str__(self, test_result_factory: Callable[[int], Result], data: dict[str, Any]) -> None:
         """Test TestResult.__str__."""
         testresult = test_result_factory(1)
         assert testresult.result == "unset"
         assert len(testresult.messages) == 0
         testresult._set_status(data["target"], data["message"])  # pylint: disable=W0212
         assert testresult.result == data["target"]
-        assert str(testresult) == f"Test VerifyTest1 on device testdevice has result {data['target']}"
+        assert str(testresult) == f"Test VerifyTest1 on device {DEVICE_NAME} has result {data['target']}"

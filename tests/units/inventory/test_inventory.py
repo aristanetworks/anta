@@ -53,7 +53,7 @@ class Test_AntaInventory:
         """
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
+            AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
             assert False
@@ -77,11 +77,5 @@ class Test_AntaInventory:
 
         """
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
-        try:
-            AntaInventory.parse(inventory_file=inventory_file, username="arista", password="arista123")
-        except InventoryIncorrectSchema as exc:
-            logging.warning("Exception is: %s", exc)
-        except InventoryRootKeyError as exc:
-            logging.warning("Exception is: %s", exc)
-        else:
-            assert False
+        with pytest.raises((InventoryIncorrectSchema, InventoryRootKeyError, ValidationError)):
+            AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")

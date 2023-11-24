@@ -270,17 +270,6 @@ anta.tests.routing:
           - 10.1.0.1
           - 10.1.0.2
   bgp:
-    - VerifyBGPIPv4UnicastState:
-    - VerifyBGPIPv4UnicastCount:
-        vrfs:
-          default: 2
-    - VerifyBGPIPv6UnicastState:
-    - VerifyBGPEVPNState:
-    - VerifyBGPEVPNCount:
-        number: 2
-    - VerifyBGPRTCState:
-    - VerifyBGPRTCCount:
-        number: 2
     - VerifyBGPPeerCount:
         address_families:
           - afi: "evpn"

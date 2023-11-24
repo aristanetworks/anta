@@ -13,7 +13,6 @@ from pydantic import TypeAdapter
 
 from anta.custom_types import TestStatus
 from anta.result_manager.models import TestResult
-from anta.tools.pydantic import pydantic_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class ResultManager:
         Create Inventory:
 
             inventory_anta = AntaInventory.parse(
-                inventory_file='examples/inventory.yml',
+                filename='examples/inventory.yml',
                 username='ansible',
                 password='ansible',
                 timeout=0.5
@@ -155,7 +154,10 @@ class ResultManager:
         Returns:
             str: JSON dumps of the list of results
         """
-        return json.dumps(pydantic_to_dict(self._result_entries), indent=4)
+        res = []
+        for device in self._result_entries:
+            res.append({k: v if isinstance(v, list) else str(v) for k, v in device})
+        return json.dumps(res, indent=4)
 
     def get_result_by_test(self, test_name: str) -> list[TestResult]:
         """

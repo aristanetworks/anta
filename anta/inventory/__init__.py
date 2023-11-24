@@ -13,7 +13,7 @@ from ipaddress import ip_address, ip_network
 from typing import Any, Optional
 
 from pydantic import ValidationError
-from yaml import safe_load
+from yaml import YAMLError, safe_load
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
@@ -138,7 +138,7 @@ class AntaInventory(dict):  # type: ignore
 
     @staticmethod
     def parse(
-        inventory_file: str,
+        filename: str,
         username: str,
         password: str,
         enable: bool = False,
@@ -153,7 +153,7 @@ class AntaInventory(dict):  # type: ignore
         The inventory devices are AsyncEOSDevice instances.
 
         Args:
-            inventory_file (str): Path to inventory YAML file where user has described his inputs
+            filename (str): Path to device inventory YAML file
             username (str): Username to use to connect to devices
             password (str): Password to use to connect to devices
             enable (bool): Whether or not the commands need to be run in enable mode towards the devices
@@ -165,7 +165,6 @@ class AntaInventory(dict):  # type: ignore
         Raises:
             InventoryRootKeyError: Root key of inventory is missing.
             InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
-            InventoryUnknownFormat: Output format is not supported.
         """
 
         inventory = AntaInventory()
@@ -180,18 +179,24 @@ class AntaInventory(dict):  # type: ignore
         }
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-        with open(inventory_file, "r", encoding="UTF-8") as file:
-            data = safe_load(file)
+        try:
+            with open(file=filename, mode="r", encoding="UTF-8") as file:
+                data = safe_load(file)
+        except (YAMLError, OSError) as e:
+            message = f"Unable to parse ANTA Device Inventory file '{filename}'"
+            anta_log_exception(e, message, logger)
+            raise
 
-        # Load data using Pydantic
+        if AntaInventory.INVENTORY_ROOT_KEY not in data:
+            exc = InventoryRootKeyError(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory")
+            anta_log_exception(exc, f"Device inventory is invalid! (from {filename})", logger)
+            raise exc
+
         try:
             inventory_input = AntaInventoryInput(**data[AntaInventory.INVENTORY_ROOT_KEY])
-        except KeyError as exc:
-            logger.error(f"Inventory root key is missing: {AntaInventory.INVENTORY_ROOT_KEY}")
-            raise InventoryRootKeyError(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory") from exc
-        except ValidationError as exc:
-            logger.error("Inventory data are not compliant with inventory models")
-            raise InventoryIncorrectSchema(f"Inventory is not following the schema: {str(exc)}") from exc
+        except ValidationError as e:
+            anta_log_exception(e, f"Device inventory is invalid! (from {filename})", logger)
+            raise
 
         # Read data from input
         AntaInventory._parse_hosts(inventory_input, inventory, **kwargs)

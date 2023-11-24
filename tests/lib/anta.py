@@ -8,16 +8,17 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any
-from unittest.mock import MagicMock
+
+from anta.device import AntaDevice
 
 
-def test(mocked_device: MagicMock, data: dict[str, Any]) -> None:
+def test(device: AntaDevice, data: dict[str, Any]) -> None:
     """
     Generic test function for AntaTest subclass.
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
     # Instantiate the AntaTest subclass
-    test_instance = data["test"](mocked_device, inputs=data["inputs"], eos_data=data["eos_data"])
+    test_instance = data["test"](device, inputs=data["inputs"], eos_data=data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
     # Assert expected result

@@ -10,20 +10,18 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Iterator, Literal, Optional, Union
 
 import asyncssh
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
-from aioeapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
-from anta import __DEBUG__
+from anta import __DEBUG__, aioeapi
 from anta.models import AntaCommand
-from anta.tools.misc import anta_log_exception, exc_to_str
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -174,6 +172,14 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
+    def supports(self, command: AntaCommand) -> bool:
+        """Returns True if the command is supported on the device hardware platform, False otherwise."""
+        unsupported = any("not supported on this hardware platform" in e for e in command.errors)
+        logger.debug(command)
+        if unsupported:
+            logger.debug(f"{command.command} is not supported on {self.hw_model}")
+        return not unsupported
+
     @abstractmethod
     async def refresh(self) -> None:
         """
@@ -249,7 +255,7 @@ class AsyncEOSDevice(AntaDevice):
         super().__init__(name, tags, disable_cache)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -293,48 +299,40 @@ class AsyncEOSDevice(AntaDevice):
         Args:
             command: the command to collect
         """
+        commands = []
+        if self.enable and self._enable_password is not None:
+            commands.append(
+                {
+                    "cmd": "enable",
+                    "input": str(self._enable_password),
+                }
+            )
+        elif self.enable:
+            # No password
+            commands.append({"cmd": "enable"})
+        if command.revision:
+            commands.append({"cmd": command.command, "revision": command.revision})
+        else:
+            commands.append({"cmd": command.command})
         try:
-            commands = []
-            if self.enable and self._enable_password is not None:
-                commands.append(
-                    {
-                        "cmd": "enable",
-                        "input": str(self._enable_password),
-                    }
-                )
-            elif self.enable:
-                # No password
-                commands.append({"cmd": "enable"})
-            if command.revision:
-                commands.append({"cmd": command.command, "revision": command.revision})
-            else:
-                commands.append({"cmd": command.command})
-            response = await self._session.cli(
+            response: list[dict[str, Any]] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
-            # remove first dict related to enable command
-            # only applicable to json output
-            if command.ofmt in ["json", "text"]:
-                # selecting only our command output
-                response = response[-1]
-            command.output = response
-            logger.debug(f"{self.name}: {command}")
-
-        except EapiCommandError as e:
-            message = f"Command '{command.command}' failed on {self.name}"
-            anta_log_exception(e, message, logger)
-            command.failed = e
+        except aioeapi.EapiCommandError as e:
+            command.errors = e.errors
+            if self.supports(command):
+                message = f"Command '{command.command}' failed on {self.name}"
+                logger.error(message)
         except (HTTPError, ConnectError) as e:
+            command.errors = [str(e)]
             message = f"Cannot connect to device {self.name}"
-            anta_log_exception(e, message, logger)
-            command.failed = e
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            message = f"Exception raised while collecting command '{command.command}' on device {self.name}"
-            anta_log_exception(e, message, logger)
-            command.failed = e
-            logger.debug(command)
+            logger.error(message)
+        else:
+            # selecting only our command output
+            command.output = response[-1]
+            logger.debug(f"{self.name}: {command}")
 
     async def refresh(self) -> None:
         """
@@ -352,7 +350,7 @@ class AsyncEOSDevice(AntaDevice):
             HW_MODEL_KEY: str = "modelName"
             try:
                 response = await self._session.cli(command=COMMAND)
-            except EapiCommandError as e:
+            except aioeapi.EapiCommandError as e:
                 logger.warning(f"Cannot get hardware information from device {self.name}: {e.errmsg}")
 
             except (HTTPError, ConnectError) as e:
