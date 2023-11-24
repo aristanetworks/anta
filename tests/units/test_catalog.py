@@ -105,18 +105,18 @@ CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "not_a_list",
         "filename": "test_catalog_not_a_list.yml",
-        "error": "Value error, Syntax error when parsing: True\nIt must be a list of ANTA tests. Verify the test catalog.",
+        "error": "Value error, Syntax error when parsing: True\nIt must be a list of ANTA tests. Check the test catalog.",
     },
     {
         "name": "test_definition_not_a_dict",
         "filename": "test_catalog_test_definition_not_a_dict.yml",
-        "error": "Value error, Syntax error when parsing: VerifyEOSVersion\nIt must be a dictionary. Verify the test catalog.",
+        "error": "Value error, Syntax error when parsing: VerifyEOSVersion\nIt must be a dictionary. Check the test catalog.",
     },
     {
         "name": "test_definition_multiple_dicts",
         "filename": "test_catalog_test_definition_multiple_dicts.yml",
         "error": "Value error, Syntax error when parsing: {'VerifyEOSVersion': {'versions': ['4.25.4M', '4.26.1F']}, "
-        "'VerifyTerminAttrVersion': {'versions': ['4.25.4M']}}\nIt must be a dictionary with a single entry. Verify indentation in the test catalog.",
+        "'VerifyTerminAttrVersion': {'versions': ['4.25.4M']}}\nIt must be a dictionary with a single entry. Check the indentation in the test catalog.",
     },
     {"name": "wrong_type_after_parsing", "filename": "test_catalog_wrong_type.yml", "error": "must be a dict, got str"},
 ]
@@ -246,7 +246,6 @@ class Test_AntaCatalog:
             AntaCatalog.parse(str(DATA_DIR / "catalog_does_not_exist.yml"))
         assert "No such file or directory" in str(exec_info)
         assert len(caplog.record_tuples) >= 1
-        print(caplog.record_tuples[0])
         _, _, message = caplog.record_tuples[0]
         assert "Unable to parse ANTA Test Catalog file" in message
         assert "FileNotFoundError ([Errno 2] No such file or directory" in message

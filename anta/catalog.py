@@ -142,7 +142,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                     modules.update(flatten_modules(data=tests, package=module.__name__))
                 else:
                     if not isinstance(tests, list):
-                        raise ValueError(f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Verify the test catalog.")
+                        raise ValueError(f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog.")
                     # This is a list of AntaTestDefinition
                     modules[module] = tests
             return modules
@@ -153,10 +153,10 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                 test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
                     if not isinstance(test_definition, dict):
-                        raise ValueError(f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Verify the test catalog.")
+                        raise ValueError(f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog.")
                     if len(test_definition) != 1:
                         raise ValueError(
-                            f"Syntax error when parsing: {test_definition}\nIt must be a dictionary with a single entry. Verify indentation in the test catalog."
+                            f"Syntax error when parsing: {test_definition}\nIt must be a dictionary with a single entry. Check the indentation in the test catalog."
                         )
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
