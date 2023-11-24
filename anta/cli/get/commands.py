@@ -2,26 +2,24 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
-
 """
 Commands for Anta CLI to get information / build inventories..
 """
 from __future__ import annotations
 
 import asyncio
-import io
 import json
 import logging
 import os
 import sys
 from pathlib import Path
+from sys import stdin
 from typing import Optional
 
 import click
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
-from rich.prompt import Confirm
 
 from anta.cli.console import console
 from anta.cli.utils import ExitCode, parse_tags
@@ -105,39 +103,31 @@ def from_ansible(ctx: click.Context, output: Path, ansible_inventory: Path, ansi
     """Build ANTA inventory from an ansible inventory YAML file"""
     logger.info(f"Building inventory from ansible file {ansible_inventory}")
 
-    try:
-        is_tty = os.isatty(sys.stdout.fileno())
-    except io.UnsupportedOperation:
-        is_tty = False
-
-    # Create output directory
+    # Verify output directory
+    # 1. Either ouptut is set and it is used
+    # 2. Else the inventory_path is retrieved from the context (ANTA_INVENTORY or anta --inventoyr value)
+    # 3. If None is set, error out.
+    output = output or ctx.obj.get("inventory_path")
     if output is None:
-        if ctx.obj.get("inventory_path") is not None:
-            output = ctx.obj.get("inventory_path")
-        else:
-            logger.error("Inventory output is not set. You should use either anta --inventory or anta get from-ansible --output")
-            sys.exit(ExitCode.USAGE_ERROR)
-
-    logger.debug(f"output: {output}\noverwrite: {overwrite}\nis tty: {is_tty}")
-
-    # Count number of lines in a file
-    anta_inventory_number_lines = 0
-    if output.exists():
-        with open(output, "r", encoding="utf-8") as f:
-            anta_inventory_number_lines = sum(1 for _ in f)
-
-    # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
-    if anta_inventory_number_lines > 0 and not is_tty and not overwrite:
-        logger.critical("conversion aborted since destination file is not empty (not running in interactive TTY)")
+        logger.error("Inventory output is not set. Either `anta --inventory` or `anta get from-ansible --output` MUST be set.")
         sys.exit(ExitCode.USAGE_ERROR)
 
-    # File has content and it is in an interactive TTY --> Prompt user
-    if anta_inventory_number_lines > 0 and is_tty and not overwrite:
-        confirm_overwrite = Confirm.ask(f"Your destination file ({output}) is not empty, continue?")
-        try:
-            assert confirm_overwrite is True
-        except AssertionError:
-            logger.critical("conversion aborted by user because destination file is not empty")
+    # Boolean to check if the file is empty
+    # Mypy complains about st_size because typing is bad in standard library -
+    # https://github.com/python/mypy/issues/5485
+    output_is_not_empty = output.exists() and output.stat().st_size != 0  # type: ignore[misc]
+    logger.debug(f"output: {output} - overwrite: {overwrite}")
+
+    # Check overwrite when file is not empty
+    if not overwrite and output_is_not_empty:
+        is_tty = stdin.isatty()
+        logger.debug(f"Overwrite is not set and is a tty {is_tty}")
+        if is_tty:
+            # File has content and it is in an interactive TTY --> Prompt user
+            click.confirm(f"Your destination file '{output}' is not empty, continue?", abort=True)
+        else:
+            # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
+            logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
             sys.exit(ExitCode.USAGE_ERROR)
 
     output.parent.mkdir(parents=True, exist_ok=True)

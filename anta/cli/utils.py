@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import enum
 import logging
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -97,7 +98,7 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
     return catalog
 
 
-def maybe_required_cb(ctx: click.Context, param: Option, value: str) -> Any:
+def maybe_required_username_cb(ctx: click.Context, param: Option, value: str) -> Any:
     """
     Replace the "required" true with a callback to handle our specificies
 
@@ -105,18 +106,46 @@ def maybe_required_cb(ctx: click.Context, param: Option, value: str) -> Any:
     """
     if ctx.obj.get("_anta_help"):
         # If help then don't do anything
-        return
+        return value
     if "get" in ctx.obj["args"]:
         # the group has put the args from cli in the ctx.obj
         # This is a bit convoluted
         ctx.obj["skip_password"] = True
-        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
-            ctx.obj["skip_inventory"] = True
-        elif param.name == "inventory" and param.value_is_missing(value):
-            raise click.exceptions.MissingParameter(ctx=ctx, param=param)
-        return
+        return value
     if param.value_is_missing(value):
         raise click.exceptions.MissingParameter(ctx=ctx, param=param)
+    return value
+
+
+def maybe_required_inventory_cb(ctx: click.Context, param: Option, value: str) -> Any:
+    """
+    Replace the "required" true with a callback to handle our specificies
+
+    TODO: evaluate if moving the options to the groups is not better than this ..
+    """
+    if ctx.obj.get("_anta_help"):
+        # If help then don't do anything
+        return value
+    if "get" in ctx.obj["args"]:
+        # the group has put the args from cli in the ctx.obj
+        # This is a bit convoluted
+        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
+            ctx.obj["skip_inventory"] = True
+        return value
+    if param.value_is_missing(value):
+        raise click.exceptions.MissingParameter(ctx=ctx, param=param)
+    # Need to check that the inventory file exist
+    # TODO, makes this better
+    try:
+        os.stat(value)
+        return value
+    except OSError as exc:
+        # We want the file to exist
+        raise click.exceptions.BadParameter(
+            f"{param.name} {click.utils.format_filename(value)!r} does not exist.",
+            ctx,
+            param,
+        ) from exc
 
 
 def exit_with_code(ctx: click.Context) -> None:
@@ -183,38 +212,6 @@ class IgnoreRequiredWithHelp(AliasedGroup):
     """
     https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
     Solution to allow help without required options on subcommand
-
-    This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
-    """
-
-    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
-        """
-        Ignore MissingParameter exception when parsing arguments if `--help`
-        is present for a subcommand
-        """
-        # Adding a flag for potential callbacks
-        ctx.ensure_object(dict)
-        if "--help" in args:
-            ctx.obj["_anta_help"] = True
-
-        try:
-            return super().parse_args(ctx, args)
-        except click.MissingParameter:
-            if "--help" not in args:
-                raise
-
-            # remove the required params so that help can display
-            for param in self.params:
-                param.required = False
-
-            return super().parse_args(ctx, args)
-
-
-class IgnoreRequiredForMainCommand(IgnoreRequiredWithHelp):
-    """
-    Custom ANTA ignore knob for required arguments:
-    * Allow --help without required options on subcommand
-    * Allow relaxing required arguments for `anta get from-cvp` and `anta get from-ansible`
 
     This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
     """

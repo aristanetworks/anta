@@ -6,7 +6,7 @@ Tests for anta.cli.get.commands
 """
 from __future__ import annotations
 
-import os
+import filecmp
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
@@ -18,13 +18,13 @@ from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
 from anta.cli.get.commands import from_cvp
-from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
     from pytest import CaptureFixture, LogCaptureFixture
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
+INIT_ANTA_INVENTORY = DATA_DIR / "test_inventory.yml"
 
 
 # Not testing for required parameter, click does this well.
@@ -48,8 +48,9 @@ def test_from_cvp(
 ) -> None:
     """
     Test `anta get from-cvp`
+
+    This test verifies that username and password are NOT mandatory to run this command
     """
-    env = default_anta_env()
     cli_args = ["get", "from-cvp", "--cvp-ip", "42.42.42.42", "--cvp-username", "anta", "--cvp-password", "anta"]
 
     if inventory_directory is not None:
@@ -79,7 +80,7 @@ def test_from_cvp(
     ) as mocked_get_devices_in_container:
         # https://github.com/pallets/click/issues/824#issuecomment-1583293065
         with capsys.disabled():
-            result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+            result = click_runner.invoke(anta, cli_args, auto_envvar_prefix="ANTA")
 
     if not cvp_connect_failure:
         assert out_file.exists()
@@ -101,12 +102,12 @@ def test_from_cvp(
 
 
 @pytest.mark.parametrize(
-    "ansible_inventory, ansible_group, output, expected_exit",
+    "ansible_inventory, ansible_group, expected_exit, expected_log",
     [
-        pytest.param("ansible_inventory.yml", None, None, 0, id="no group"),
-        pytest.param("ansible_inventory.yml", "ATD_LEAFS", None, 0, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", None, 4, id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, None, 4, id="empty inventory"),
+        pytest.param("ansible_inventory.yml", None, 0, None, id="no group"),
+        pytest.param("ansible_inventory.yml", "ATD_LEAFS", 0, None, id="group found"),
+        pytest.param("ansible_inventory.yml", "DUMMY", 4, "Group DUMMY not found in Ansible inventory", id="group not found"),
+        pytest.param("empty_ansible_inventory.yml", None, 4, "is empty", id="empty inventory"),
     ],
 )
 # pylint: disable-next=too-many-arguments
@@ -117,109 +118,182 @@ def test_from_ansible(
     click_runner: CliRunner,
     ansible_inventory: Path,
     ansible_group: str | None,
-    output: Path | None,
     expected_exit: int,
+    expected_log: str | None,
 ) -> None:
     """
     Test `anta get from-ansible`
+
+    This test verifies:
+    * the parsing of an ansible-inventory
+    * the ansible_group functionaliy
+
+    The output path is ALWAYS set to a non existing file.
     """
-    env = default_anta_env()
-    cli_args = ["get", "from-ansible"]
+    # Create a default directory
+    out_inventory: Path = tmp_path / " output.yml"
+    # Set --ansible-inventory
+    ansible_inventory_path = DATA_DIR / ansible_inventory
 
-    os.chdir(tmp_path)
-    if output is not None:
-        cli_args.extend(["--output", str(output)])
-        out_dir = Path() / output
-    else:
-        # Get inventory-directory default
-        default_dir: Path = cast(Path, f"{tmp_path}/output.yml")
-        out_dir = Path() / default_dir
+    # Init cli_args
+    cli_args = ["get", "from-ansible", "--output", str(out_inventory), "--ansible-inventory", str(ansible_inventory_path)]
 
-    cli_args.extend(["--output", str(out_dir)])
-
-    if ansible_inventory is not None:
-        ansible_inventory_path = DATA_DIR / ansible_inventory
-        cli_args.extend(["--ansible-inventory", str(ansible_inventory_path)])
-
+    # Set --ansible-group
     if ansible_group is not None:
         cli_args.extend(["--ansible-group", ansible_group])
 
     with capsys.disabled():
-        print(cli_args)
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
-
-    print(f"Runner args: {cli_args}")
-    print(f"Runner result is: {result}")
-    print(caplog.records)
+        result = click_runner.invoke(anta, cli_args)
 
     assert result.exit_code == expected_exit
+
     if expected_exit != 0:
+        print(caplog.records)
+        assert expected_log in [rec.message for rec in caplog.records][-1]
         assert len(caplog.records) in {2, 3}
     else:
-        assert out_dir.exists()
+        assert out_inventory.exists()
+        # TODO check size of generated inventory to validate the group functionality!
 
 
 @pytest.mark.parametrize(
-    "ansible_inventory, ansible_group, output_option, expected_exit",
+    "set_output, set_anta_inventory, expected_target, expected_exit, expected_log",
     [
-        pytest.param("ansible_inventory.yml", None, None, 4, id="no group-no-overwrite"),
-        pytest.param("ansible_inventory.yml", None, "--overwrite", 0, id="no group-overwrite"),
-        pytest.param("ansible_inventory.yml", "ATD_LEAFS", "--overwrite", 0, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", "--overwrite", 4, id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, None, 4, id="empty inventory"),
+        pytest.param(True, False, "output.yml", 0, None, id="output-only"),
+        pytest.param(True, True, "output.yml", 0, None, id="output-and-inventory"),
+        pytest.param(False, True, "inventory.yml", 0, None, id="inventory-only"),
+        pytest.param(
+            False,
+            False,
+            None,
+            4,
+            "Inventory output is not set. Either `anta --inventory` or `anta get from-ansible --output` MUST be set.",
+            id="no-output-no-inventory",
+        ),
     ],
 )
 # pylint: disable-next=too-many-arguments
-def test_from_ansible_default_inventory(
+def test_from_ansible_output(
     tmp_path: Path,
     caplog: LogCaptureFixture,
     capsys: CaptureFixture[str],
     click_runner: CliRunner,
-    ansible_inventory: Path,
-    ansible_group: str | None,
-    output_option: str | None,
+    set_output: bool,
+    set_anta_inventory: bool,
+    expected_target: str,
     expected_exit: int,
+    expected_log: str | None,
 ) -> None:
     """
-    Test `anta get from-ansible`
+    This test verifies the precedence of target inventory file for `anta get from-ansible`:
+    1. output
+    2. ANTA_INVENTORY or `anta --inventory <TARGET>` if `output` is not set
+    3. Raise otherwise
+
+    This test DOES NOT handle overwriting behavior so assuming EMPTY target for now
     """
+    # The targeted ansible_inventory is static
+    ansible_inventory_path = DATA_DIR / "ansible_inventory.yml"
+    cli_args = ["get", "from-ansible", "--ansible-inventory", str(ansible_inventory_path)]
 
-    def custom_anta_env(tmp_path: Path) -> dict[str, str]:
-        """
-        Return a default_anta_environement which can be passed to a cliRunner.invoke method
-        """
-        return {
-            "ANTA_USERNAME": "anta",
-            "ANTA_PASSWORD": "formica",
-            "ANTA_INVENTORY": str(tmp_path / "test_inventory02.yml"),
-            "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
-        }
+    if set_anta_inventory:
+        tmp_inv = tmp_path / "inventory.yml"
+        # preprend
+        cli_args = ["-i", str(tmp_inv)] + cli_args
 
-    env = custom_anta_env(tmp_path)
-    shutil.copyfile(str(Path(__file__).parent.parent.parent.parent / "data" / "test_inventory.yml"), env["ANTA_INVENTORY"])
-
-    cli_args = ["get", "from-ansible"]
-
-    os.chdir(tmp_path)
-    if output_option is not None:
-        cli_args.extend([str(output_option)])
-
-    if ansible_inventory is not None:
-        ansible_inventory_path = DATA_DIR / ansible_inventory
-        cli_args.extend(["--ansible-inventory", str(ansible_inventory_path)])
-
-    if ansible_group is not None:
-        cli_args.extend(["--ansible-group", ansible_group])
+    if set_output:
+        tmp_inv = tmp_path / "output.yml"
+        cli_args.extend(["--output", str(tmp_inv)])
 
     with capsys.disabled():
-        print(cli_args)
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
-
-    print(f"Runner args: {cli_args}")
-    print(f"Runner result is: {result}")
+        result = click_runner.invoke(anta, cli_args, auto_envvar_prefix="ANTA")
 
     assert result.exit_code == expected_exit
-    print(caplog.records)
     if expected_exit != 0:
-        assert len(caplog.records) in {1, 2, 3}
-    # Path(env["ANTA_INVENTORY"]).unlink(missing_ok=True)
+        assert expected_log in [rec.message for rec in caplog.records]
+    else:
+        expected_inv = tmp_path / expected_target
+        assert expected_inv.exists()
+
+
+@pytest.mark.parametrize(
+    "overwrite, is_tty, init_anta_inventory, prompt, expected_exit, expected_log",
+    [
+        pytest.param(False, True, INIT_ANTA_INVENTORY, "y", 0, "", id="no-overwrite-tty-init-prompt-yes"),
+        pytest.param(False, True, INIT_ANTA_INVENTORY, "N", 1, "Aborted", id="no-overwrite-tty-init-prompt-no"),
+        pytest.param(
+            False,
+            False,
+            INIT_ANTA_INVENTORY,
+            None,
+            4,
+            "Conversion aborted since destination file is not empty (not running in interactive TTY)",
+            id="no-overwrite-no-tty-init",
+        ),
+        pytest.param(False, True, None, None, 0, "", id="no-overwrite-tty-no-init"),
+        pytest.param(False, False, None, None, 0, "", id="no-overwrite-no-tty-no-init"),
+        pytest.param(True, True, INIT_ANTA_INVENTORY, None, 0, "", id="overwrite-tty-init"),
+        pytest.param(True, False, INIT_ANTA_INVENTORY, None, 0, "", id="overwrite-no-tty-init"),
+        pytest.param(True, True, None, None, 0, "", id="overwrite-tty-no-init"),
+        pytest.param(True, False, None, None, 0, "", id="overwrite-no-tty-no-init"),
+    ],
+)
+# pylint: disable-next=too-many-arguments
+def test_from_ansible_overwrite(
+    tmp_path: Path,
+    caplog: LogCaptureFixture,
+    capsys: CaptureFixture[str],
+    click_runner: CliRunner,
+    overwrite: bool,
+    is_tty: bool,
+    prompt: str | None,
+    init_anta_inventory: Path,
+    expected_exit: int,
+    expected_log: str | None,
+) -> None:
+    """
+    Test `anta get from-ansible` overwrite mechanism
+
+    The test uses a static ansible-inventory and output as these are tested in other functions
+
+    This test verifies:
+    * that overwrite is working as expected with or without init data in the target file
+    * that when the target file is not empty and a tty is present, the user is prompt with confirmation
+    * Check the behavior when the prompt is filled
+
+    The initial content of the ANTA inventory is set using init_anta_inventory, if it is None, no inventory is set.
+
+    * With overwrite True, the expectation is that the from-ansible command succeeds
+    * With no init (init_anta_inventory == None), the expectation is also that command succeeds
+    """
+    # The targeted ansible_inventory is static
+    ansible_inventory_path = DATA_DIR / "ansible_inventory.yml"
+    expected_anta_inventory_path = DATA_DIR / "expected_anta_inventory.yml"
+    tmp_inv = tmp_path / "output.yml"
+    cli_args = ["get", "from-ansible", "--ansible-inventory", str(ansible_inventory_path), "--output", str(tmp_inv)]
+
+    if overwrite:
+        cli_args.append("--overwrite")
+
+    if init_anta_inventory:
+        shutil.copyfile(init_anta_inventory, tmp_inv)
+
+    print(cli_args)
+    # Verify initial content is different
+    if tmp_inv.exists():
+        assert not filecmp.cmp(tmp_inv, expected_anta_inventory_path)
+
+    with capsys.disabled():
+        # TODO, handle is_tty
+        with patch("anta.cli.get.commands.stdin") as patched_stdin:
+            patched_stdin.isatty.return_value = is_tty
+            result = click_runner.invoke(anta, cli_args, auto_envvar_prefix="ANTA", input=prompt)
+
+    assert result.exit_code == expected_exit
+    if expected_exit == 0:
+        assert filecmp.cmp(tmp_inv, expected_anta_inventory_path)
+    elif expected_exit == 1:
+        assert expected_log
+        assert expected_log in result.stdout
+    elif expected_exit == 4:
+        assert expected_log in [rec.message for rec in caplog.records]

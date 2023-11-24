@@ -21,19 +21,19 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredForMainCommand, IgnoreRequiredWithHelp, maybe_required_cb, parse_catalog, parse_inventory
+from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, maybe_required_inventory_cb, maybe_required_username_cb, parse_catalog, parse_inventory
 from anta.logger import setup_logging
 from anta.result_manager import ResultManager
 
 
-@click.group(cls=IgnoreRequiredForMainCommand)
+@click.group(cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @click.version_option(__version__)
 @click.option(
     "--username",
     help="Username to connect to EOS",
     show_envvar=True,
-    callback=maybe_required_cb,
+    callback=maybe_required_username_cb,
     # required=True,
 )
 @click.option("--password", help="Password to connect to EOS that must be provided. It can be prompted using '--prompt' option.", show_envvar=True)
@@ -78,9 +78,9 @@ from anta.result_manager import ResultManager
     "-i",
     help="Path to the inventory YAML file",
     show_envvar=True,
-    callback=maybe_required_cb,
+    callback=maybe_required_inventory_cb,
     # required=True,
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
+    type=click.Path(file_okay=True, dir_okay=False, readable=True, path_type=pathlib.Path),
 )
 @click.option(
     "--log-file",
@@ -135,9 +135,9 @@ def anta(
             raise click.BadParameter(f"Providing a password to access EOS Privileged EXEC mode requires '{anta.params[4].opts[0]}' option.")
 
     ctx.ensure_object(dict)
+    ctx.obj["inventory_path"] = ctx.params.get("inventory")
     if not ctx.obj.get("skip_inventory"):
         ctx.obj["inventory"] = parse_inventory(ctx, inventory)
-        ctx.obj["inventory_path"] = ctx.params["inventory"]
 
 
 @anta.group("nrfu", cls=IgnoreRequiredWithHelp)
