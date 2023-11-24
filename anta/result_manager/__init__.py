@@ -120,6 +120,7 @@ class ResultManager:
         Args:
             entry (TestResult): TestResult data to add to the report
         """
+        logger.debug(entry)
         self._result_entries.append(entry)
         self._update_status(entry.result)
 

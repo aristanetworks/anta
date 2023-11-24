@@ -30,16 +30,18 @@ def my_raising_function(exception: Exception) -> None:
     "exception, message, calling_logger, __DEBUG__value, expected_message",
     [
         pytest.param(ValueError("exception message"), None, None, False, "ValueError (exception message)", id="exception only"),
-        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message: ValueError (exception message)", id="custom message"),
+        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message\nValueError (exception message)", id="custom message"),
         pytest.param(
             ValueError("exception message"),
             "custom logger",
             logging.getLogger("custom"),
             False,
-            "custom logger: ValueError (exception message)",
+            "custom logger\nValueError (exception message)",
             id="custom logger",
         ),
-        pytest.param(ValueError("exception message"), "Use with custom message", None, True, "Use with custom message", id="__DEBUG__ on"),
+        pytest.param(
+            ValueError("exception message"), "Use with custom message", None, True, "Use with custom message\nValueError (exception message)", id="__DEBUG__ on"
+        ),
     ],
 )
 def test_anta_log_exception(
@@ -67,8 +69,11 @@ def test_anta_log_exception(
         with patch("anta.tools.misc.__DEBUG__", __DEBUG__value):
             anta_log_exception(e, message=message, calling_logger=calling_logger)
 
-    # One log captured
-    assert len(caplog.record_tuples) == 1
+    # Two log captured
+    if __DEBUG__value:
+        assert len(caplog.record_tuples) == 2
+    else:
+        assert len(caplog.record_tuples) == 1
     logger, level, message = caplog.record_tuples[0]
 
     if calling_logger is not None:
@@ -76,10 +81,7 @@ def test_anta_log_exception(
     else:
         assert logger == "anta.tools.misc"
 
-    if __DEBUG__value:
-        assert level == logging.ERROR
-    else:
-        assert level == logging.CRITICAL
+    assert level == logging.CRITICAL
     assert message == expected_message
     # the only place where we can see the stracktrace is in the capture.text
     if __DEBUG__value is True:

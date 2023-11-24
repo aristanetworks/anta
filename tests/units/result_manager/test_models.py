@@ -54,4 +54,4 @@ class TestTestResultModels:
         assert len(testresult.messages) == 0
         testresult._set_status(data["target"], data["message"])  # pylint: disable=W0212
         assert testresult.result == data["target"]
-        assert str(testresult) == f"Test VerifyTest1 on device {DEVICE_NAME} has result {data['target']}"
+        assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{data['target']}'\nMessages: {[data['message']]}"

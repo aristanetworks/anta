@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List
 from pydantic import BaseModel, ConfigDict, ValidationError, conint
 from rich.progress import Progress, TaskID
 
+from anta import GITHUB_SUGGESTION
 from anta.result_manager.models import TestResult
 from anta.tools.misc import anta_log_exception, exc_to_str
 
@@ -48,13 +49,8 @@ class AntaMissingParamException(Exception):
     This Exception should in general never be raised in normal usage of ANTA.
     """
 
-    GITHUB_SUGGESTION = [
-        "This Exception should not have been raised in a normal usage of ANTA.",
-        "Please reach out to the maintainer team on Github: https://github.com/arista-netdevops-community/anta.",
-    ]
-
     def __init__(self, message: str) -> None:
-        self.message = "\n".join([message] + AntaMissingParamException.GITHUB_SUGGESTION)
+        self.message = "\n".join([message, GITHUB_SUGGESTION])
         super().__init__(self.message)
 
 
@@ -492,7 +488,7 @@ class AntaTest(ABC):
                     unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
                     self.logger.debug(unsupported_commands)
                     if unsupported_commands:
-                        self.logger.warning(f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}, please open a GitHub issue.")
+                        self.logger.warning(f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}")
                         self.result.is_skipped("\n".join(unsupported_commands))
                         return self.result
                     self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))

@@ -11,6 +11,7 @@ import asyncio
 import logging
 from typing import Tuple
 
+from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
@@ -80,22 +81,29 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
 
             coros.append(test_instance.test())
         except Exception as e:  # pylint: disable=broad-exception-caught
-            message = "Error when creating ANTA tests"
+            # An AntaTest instance is potentially user-defined code.
+            # We need to catch everything and exit gracefully with an
+            # error message
+            message = "\n".join(
+                [
+                    f"There is an error when creating test {test_definition.test.__module__}.{test_definition.test.__name__}.",
+                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                ]
+            )
             anta_log_exception(e, message, logger)
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
     logger.info("Running ANTA tests...")
-    res = await asyncio.gather(*coros, return_exceptions=True)
-    logger.debug(res)
-    for r in res:
-        if isinstance(r, BaseException):
-            message = "Error in main ANTA Runner"
-            anta_log_exception(r, message, logger)
-        else:
-            manager.add_test_result(r)
+    test_results = await asyncio.gather(*coros)
+    for r in test_results:
+        manager.add_test_result(r)
     for device in devices:
         if device.cache_statistics is not None:
-            logger.info(f"Cache statistics for {device.name}: {device.cache_statistics}")
+            logger.info(
+                f"Cache statistics for '{device.name}': "
+                f"{device.cache_statistics['cache_hits']} hits / {device.cache_statistics['total_commands_sent']} "
+                f"command(s) ({device.cache_statistics['cache_hit_ratio']})"
+            )
         else:
             logger.info(f"Caching is not enabled on {device.name}")

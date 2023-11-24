@@ -683,7 +683,7 @@ class TestAsyncEOSDevice:
             assert device.cache_locks is not None
         hash(device)
 
-        with patch("anta.__DEBUG__", new=True):  # TODO does not work
+        with patch("anta.device.__DEBUG__", True):
             rprint(device)
 
     @pytest.mark.parametrize("data", EQUALITY_DATA, ids=generate_test_ids_list(EQUALITY_DATA))

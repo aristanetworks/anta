@@ -83,4 +83,4 @@ class TestResult(BaseModel):
         """
         Returns a human readable string of this TestResult
         """
-        return f"Test {self.test} on device {self.name} has result {self.result}"
+        return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
