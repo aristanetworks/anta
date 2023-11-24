@@ -9,7 +9,7 @@ import logging
 from typing import List, Optional, Union
 
 # Need to keep List for pydantic in python 3.8
-from pydantic import BaseModel, IPvAnyAddress, IPvAnyNetwork, conint, constr
+from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork, conint, constr
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,8 @@ class AntaInventoryHost(BaseModel):
         disable_cache (bool): Disable cache per host. Defaults to False.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     name: Optional[str] = None
     host: Union[constr(pattern=RFC_1123_REGEX), IPvAnyAddress]  # type: ignore
     port: Optional[conint(gt=1, lt=65535)] = None  # type: ignore
@@ -47,6 +49,8 @@ class AntaInventoryNetwork(BaseModel):
         disable_cache (bool): Disable cache per network. Defaults to False.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     network: IPvAnyNetwork
     tags: Optional[List[str]] = None
     disable_cache: bool = False
@@ -63,6 +67,8 @@ class AntaInventoryRange(BaseModel):
         disable_cache (bool): Disable cache per range of hosts. Defaults to False.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     start: IPvAnyAddress
     end: IPvAnyAddress
     tags: Optional[List[str]] = None
@@ -78,6 +84,8 @@ class AntaInventoryInput(BaseModel):
         hosts (list[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
         range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     networks: Optional[List[AntaInventoryNetwork]] = None
     hosts: Optional[List[AntaInventoryHost]] = None
