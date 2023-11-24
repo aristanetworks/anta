@@ -49,7 +49,7 @@ Vlan = Annotated[int, Field(ge=0, le=4094)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
 Interface = Annotated[
     str,
-    Field(pattern=r"^(Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"),
+    Field(pattern=r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
