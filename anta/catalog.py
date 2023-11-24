@@ -130,13 +130,13 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                     module_name = f".{module_name}"
                 try:
                     module: ModuleType = importlib.import_module(name=module_name, package=package)
-                except ModuleNotFoundError as e:
-                    module_str = module_name[1:] if module_name.startswith(".") else module_name
-                    if package:
-                        module_str += f" from package {package}"
-                    raise ValueError(f"Module named {module_str} cannot be imported. Verify that the module exists and there is no Python syntax issues.") from e
-                except NotImplementedError as e:
-                    raise ValueError(str(e)) from e
+                except Exception as e:  # pylint: disable=broad-exception-caught
+                    # A test module is potentially user-defined code.
+                    # We need to catch everything if we want to have meaningful logs
+                    module_str = f"{module_name[1:] if module_name.startswith('.') else module_name}{f' from package {package}' if package else ''}"
+                    message = f"Module named {module_str} cannot be imported. Verify that the module exists and there is no Python syntax issues."
+                    anta_log_exception(e, message, logger)
+                    raise ValueError(message) from e
                 if isinstance(tests, dict):
                     # This is an inner Python module
                     modules.update(flatten_modules(data=tests, package=module.__name__))
