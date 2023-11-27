@@ -177,12 +177,15 @@ class AntaInventory(dict):  # type: ignore
             "insecure": insecure,
             "disable_cache": disable_cache,
         }
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        if username is None:
+            raise ValueError("'username' is required to create an AntaInventory")
+        if password is None:
+            raise ValueError("'password' is required to create an AntaInventory")
 
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
-        except (YAMLError, OSError) as e:
+        except (TypeError, YAMLError, OSError) as e:
             message = f"Unable to parse ANTA Device Inventory file '{filename}'"
             anta_log_exception(e, message, logger)
             raise

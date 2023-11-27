@@ -224,7 +224,7 @@ class AntaCatalog:
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
-        except (YAMLError, OSError) as e:
+        except (TypeError, YAMLError, OSError) as e:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise

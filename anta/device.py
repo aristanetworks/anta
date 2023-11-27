@@ -250,9 +250,15 @@ class AsyncEOSDevice(AntaDevice):
             proto: eAPI protocol. Value can be 'http' or 'https'
             disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
+        if host is None:
+            raise ValueError("'host' is required to create an AsyncEOSDevice")
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
         super().__init__(name, tags, disable_cache)
+        if username is None:
+            raise ValueError(f"'username' is required to instantiate device '{self.name}'")
+        if password is None:
+            raise ValueError(f"'password' is required to instantiate device '{self.name}'")
         self.enable = enable
         self._enable_password = enable_password
         self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)

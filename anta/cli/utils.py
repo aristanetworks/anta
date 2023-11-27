@@ -44,6 +44,7 @@ class ExitCode(enum.IntEnum):
     INTERNAL_ERROR = 3
     #  pytest was misused.
     USAGE_ERROR = 4
+    # TODO: when click fails to parse the CLI options, it returns an error code value of 2 when a usage error message. Maybe we should align here ?
 
 
 def parse_inventory(ctx: click.Context, param: Option, value: Path) -> AntaInventory:
@@ -66,7 +67,7 @@ def parse_inventory(ctx: click.Context, param: Option, value: Path) -> AntaInven
             insecure=ctx.params["insecure"],
             disable_cache=ctx.params["disable_cache"],
         )
-    except (ValidationError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
+    except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
         ctx.exit(ExitCode.USAGE_ERROR)
     return inventory
 
@@ -82,7 +83,7 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
         return AntaCatalog()
     try:
         catalog: AntaCatalog = AntaCatalog.parse(value)
-    except (ValidationError, YAMLError, OSError):
+    except (ValidationError, TypeError, ValueError, YAMLError, OSError):
         ctx.exit(ExitCode.USAGE_ERROR)
     return catalog
 
