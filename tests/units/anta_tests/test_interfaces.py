@@ -247,6 +247,19 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {"result": "success"},
     },
     {
+        "name": "success-po-name",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "po100", "state": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-sub-interfaces",
         "test": VerifyInterfacesStatus,
         "eos_data": [
