@@ -11,18 +11,16 @@ from __future__ import annotations
 import enum
 import functools
 import logging
-import os
 from pathlib import Path
-from typing import Any
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import click
-from anta.catalog import AntaCatalog
-from anta.inventory import AntaInventory
-from anta.inventory.exceptions import InventoryIncorrectSchema
-from anta.inventory.exceptions import InventoryRootKeyError
 from pydantic import ValidationError
 from yaml import YAMLError
+
+from anta.catalog import AntaCatalog
+from anta.inventory import AntaInventory
+from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +46,10 @@ class ExitCode(enum.IntEnum):
     USAGE_ERROR = 4
 
 
-def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
+def parse_inventory(ctx: click.Context, param: Option, value: Path) -> AntaInventory:
+    # pylint: disable=unused-argument
     """
-    Helper function parse an ANTA inventory YAML file
+    Click option callback to parse an ANTA inventory YAML file
     """
     if ctx.obj.get("_anta_help"):
         # Currently looking for help for a subcommand so no
@@ -58,7 +57,7 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
         return AntaInventory()
     try:
         inventory = AntaInventory.parse(
-            filename=str(path),
+            filename=str(value),
             username=ctx.params["username"],
             password=ctx.params["password"],
             enable=ctx.params["enable"],
@@ -72,22 +71,10 @@ def parse_inventory(ctx: click.Context, path: Path) -> AntaInventory:
     return inventory
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
-    # pylint: disable=unused-argument
-    """
-    Click option callback to parse an ANTA inventory tags
-    """
-    if value is not None:
-        return value.split(",") if "," in value else [value]
-    return None
-
-
 def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog:
     # pylint: disable=unused-argument
     """
     Click option callback to parse an ANTA test catalog YAML file
-
-    Store the orignal value (catalog path) in the ctx.obj
     """
     if ctx.obj.get("_anta_help"):
         # Currently looking for help for a subcommand so no
@@ -100,53 +87,14 @@ def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog
     return catalog
 
 
-def maybe_required_username_cb(ctx: click.Context, param: Option, value: str) -> Any:
+def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
+    # pylint: disable=unused-argument
     """
-    Replace the "required" true with a callback to handle our specificies
-
-    TODO: evaluate if moving the options to the groups is not better than this ..
+    Click option callback to parse an ANTA inventory tags
     """
-    if ctx.obj.get("_anta_help"):
-        # If help then don't do anything
-        return value
-    if "get" in ctx.obj["args"]:
-        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
-            ctx.obj["skip_password"] = True
-            return value
-    if param.value_is_missing(value):
-        raise click.exceptions.MissingParameter(ctx=ctx, param=param)
-    return value
-
-
-def maybe_required_inventory_cb(ctx: click.Context, param: Option, value: str) -> Any:
-    """
-    Replace the "required" true with a callback to handle our specificies
-
-    TODO: evaluate if moving the options to the groups is not better than this ..
-    """
-    if ctx.obj.get("_anta_help"):
-        # If help then don't do anything
-        return value
-    if "get" in ctx.obj["args"]:
-        # the group has put the args from cli in the ctx.obj
-        # This is a bit convoluted
-        if "from-cvp" in ctx.obj["args"] or "from-ansible" in ctx.obj["args"]:
-            ctx.obj["skip_inventory"] = True
-            return value
-    if param.value_is_missing(value):
-        raise click.exceptions.MissingParameter(ctx=ctx, param=param)
-    # Need to check that the inventory file exist
-    # TODO, makes this better
-    try:
-        os.stat(value)
-        return value
-    except OSError as exc:
-        # We want the file to exist
-        raise click.exceptions.BadParameter(
-            f"{param.name} {click.utils.format_filename(value)!r} does not exist.",
-            ctx,
-            param,
-        ) from exc
+    if value is not None:
+        return value.split(",") if "," in value else [value]
+    return None
 
 
 def exit_with_code(ctx: click.Context) -> None:
@@ -243,10 +191,8 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             return super().parse_args(ctx, args)
 
 
-def inventory_options(f):
-    """
-    Click common options when manipulating devices
-    """
+def inventory_options(f: Any) -> Any:
+    """Click common options when requiring an inventory to interact with devices"""
 
     @click.option(
         "--username",
@@ -299,6 +245,7 @@ def inventory_options(f):
         is_flag=True,
         show_default=True,
     )
+    @click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
     @click.option(
         "--inventory",
         "-i",
@@ -306,11 +253,13 @@ def inventory_options(f):
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         required=True,
-        type=click.Path(file_okay=True, dir_okay=False, readable=True, path_type=Path),
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        callback=parse_inventory,
     )
     @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
     @functools.wraps(f)
-    def wrapper_common_options(ctx: click.Context, *args, **kwargs):
+    def wrapper_common_options(ctx: click.Context, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+        ctx.ensure_object(dict)
         if not ctx.obj.get("_anta_help"):
             if ctx.params.get("prompt"):
                 # User asked for a password prompt
@@ -327,28 +276,26 @@ def inventory_options(f):
             if not ctx.params.get("enable") and ctx.params.get("enable_password"):
                 raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
 
-        ctx.ensure_object(dict)
-        inventory = ctx.params.get("inventory")
-        ctx.obj["inventory_path"] = inventory
-        ctx.obj["inventory"] = parse_inventory(ctx, inventory)
         return f(ctx, *args, **kwargs)
 
     return wrapper_common_options
 
 
-def catalog_options(f):
+def catalog_options(f: Any) -> Any:
+    """Click common options when requiring a test catalog to execute ANTA tests"""
+
     @click.option(
         "--catalog",
         "-c",
         envvar="ANTA_CATALOG",
         show_envvar=True,
         help="Path to the test catalog YAML file",
-        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True),
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
         required=True,
         callback=parse_catalog,
     )
     @functools.wraps(f)
-    def wrapper_common_options(ctx: click.Context, *args, **kwargs):
+    def wrapper_common_options(ctx: click.Context, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
         return f(ctx, *args, **kwargs)
 
     return wrapper_common_options

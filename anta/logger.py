@@ -7,7 +7,9 @@ Configure logging for ANTA
 from __future__ import annotations
 
 import logging
+from enum import Enum
 from pathlib import Path
+from typing import Literal
 
 from rich.logging import RichHandler
 
@@ -16,7 +18,20 @@ from anta import __DEBUG__
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | None = None) -> None:
+class Log(str, Enum):
+    """Represent log levels from logging module as immutable strings"""
+
+    CRITICAL = logging.getLevelName(logging.CRITICAL)
+    ERROR = logging.getLevelName(logging.ERROR)
+    WARNING = logging.getLevelName(logging.WARNING)
+    INFO = logging.getLevelName(logging.INFO)
+    DEBUG = logging.getLevelName(logging.DEBUG)
+
+
+LogLevel = Literal[Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG]
+
+
+def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     """
     Configure logging for ANTA.
     By default, the logging level is INFO for all loggers except for httpx and asyncssh which are too verbose:

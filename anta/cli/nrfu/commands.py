@@ -32,7 +32,7 @@ def table(ctx: click.Context, device: str | None, test: str | None, group_by: st
     """ANTA command to check network states with table result"""
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=ctx.params.get("tags")))
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
     exit_with_code(ctx)
 
@@ -51,7 +51,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with JSON result"""
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=ctx.params.get("tags")))
     print_json(results=ctx.obj["result_manager"], output=output)
     exit_with_code(ctx)
 
@@ -64,7 +64,7 @@ def text(ctx: click.Context, search: str | None, skip_error: bool) -> None:
     """ANTA command to check network states with text result"""
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=ctx.params.get("tags")))
     print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
     exit_with_code(ctx)
 
@@ -91,6 +91,6 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     """ANTA command to check network state with templated report"""
     print_settings(ctx, template, output)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=ctx.params.get("tags")))
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
     exit_with_code(ctx)

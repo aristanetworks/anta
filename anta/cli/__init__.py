@@ -11,9 +11,9 @@ from __future__ import annotations
 import logging
 import pathlib
 from typing import Any
-from typing import Literal
 
 import click
+
 from anta import __version__
 from anta.catalog import AntaCatalog
 from anta.cli.check import commands as check_commands
@@ -21,11 +21,9 @@ from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup
-from anta.cli.utils import catalog_options
-from anta.cli.utils import IgnoreRequiredWithHelp
-from anta.cli.utils import inventory_options
-from anta.logger import setup_logging
+from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, catalog_options, inventory_options
+from anta.inventory import AntaInventory
+from anta.logger import Log, LogLevel, setup_logging
 from anta.result_manager import ResultManager
 
 
@@ -46,20 +44,13 @@ from anta.result_manager import ResultManager
     show_envvar=True,
     show_default=True,
     type=click.Choice(
-        [
-            logging.getLevelName(logging.CRITICAL),
-            logging.getLevelName(logging.ERROR),
-            logging.getLevelName(logging.WARNING),
-            logging.getLevelName(logging.INFO),
-            logging.getLevelName(logging.DEBUG),
-        ],
+        [Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG],
         case_sensitive=False,
     ),
 )
-# TODO add custom_type for log level
-def anta(ctx: click.Context, log_level: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], log_file: pathlib.Path, **kwargs: Any) -> None:
-    # pylint: disable=unused-argument
+def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> None:
     """Arista Network Test Automation (ANTA) CLI"""
+    ctx.ensure_object(dict)
     setup_logging(log_level, log_file)
 
 
@@ -69,10 +60,11 @@ def anta(ctx: click.Context, log_level: Literal["CRITICAL", "ERROR", "WARNING", 
 @catalog_options
 @click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
 @click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-@click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
-def _nrfu(ctx: click.Context, catalog: AntaCatalog, **kwargs) -> None:
+def _nrfu(ctx: click.Context, inventory: AntaInventory, catalog: AntaCatalog, **kwargs: dict[str, Any]) -> None:
+    # pylint: disable=unused-argument
     """Run NRFU against inventory devices"""
     ctx.obj["catalog"] = catalog
+    ctx.obj["inventory"] = inventory
     ctx.obj["result_manager"] = ResultManager()
 
 
