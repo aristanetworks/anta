@@ -5,11 +5,12 @@
 from __future__ import annotations
 
 from os import environ
-from typing import Callable, Iterator
+from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
+from pytest import CaptureFixture
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
@@ -21,6 +22,10 @@ from tests.lib.utils import default_anta_env
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
+SHOW_VERSION_OUTPUT = {
+    "modelName": "DCS-7280CR3-32P4-F",
+    "version": "4.31.1F",
+}
 
 
 @pytest.fixture
@@ -136,11 +141,28 @@ def test_inventory() -> AntaInventory:
 
 
 @pytest.fixture
-def click_runner() -> CliRunner:
+def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
     """
     Convenience fixture to return a click.CliRunner for cli testing
     """
-    return CliRunner()
+
+    def cli(
+        command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", **kwargs: dict[str, Any]
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        # pylint: disable=unused-argument
+        if ofmt != "json":
+            raise NotImplementedError()
+        if command == "show version":
+            return SHOW_VERSION_OUTPUT
+        if commands is not None and "show version" == commands[0]["cmd"]:
+            return [SHOW_VERSION_OUTPUT]
+        raise NotImplementedError()
+
+    # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
+    with patch("aioeapi.device.Device.check_connection", return_value=True):
+        with patch("aioeapi.device.Device.cli", side_effect=cli):
+            with capsys.disabled():
+                return CliRunner()
 
 
 @pytest.fixture(autouse=True)
