@@ -251,14 +251,20 @@ class AsyncEOSDevice(AntaDevice):
             disable_cache: Disable caching for all commands for this device. Defaults to False.
         """
         if host is None:
-            raise ValueError("'host' is required to create an AsyncEOSDevice")
+            message = "'host' is required to create an AsyncEOSDevice"
+            logger.error(message)
+            raise ValueError(message)
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
         super().__init__(name, tags, disable_cache)
         if username is None:
-            raise ValueError(f"'username' is required to instantiate device '{self.name}'")
+            message = f"'username' is required to instantiate device '{self.name}'"
+            logger.error(message)
+            raise ValueError(message)
         if password is None:
-            raise ValueError(f"'password' is required to instantiate device '{self.name}'")
+            message = f"'password' is required to instantiate device '{self.name}'"
+            logger.error(message)
+            raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
         self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
