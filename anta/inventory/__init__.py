@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
+from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import ValidationError
@@ -138,7 +139,7 @@ class AntaInventory(dict):  # type: ignore
 
     @staticmethod
     def parse(
-        filename: str,
+        filename: str | Path,
         username: str,
         password: str,
         enable: bool = False,
@@ -178,9 +179,13 @@ class AntaInventory(dict):  # type: ignore
             "disable_cache": disable_cache,
         }
         if username is None:
-            raise ValueError("'username' is required to create an AntaInventory")
+            message = "'username' is required to create an AntaInventory"
+            logger.error(message)
+            raise ValueError(message)
         if password is None:
-            raise ValueError("'password' is required to create an AntaInventory")
+            message = "'password' is required to create an AntaInventory"
+            logger.error(message)
+            raise ValueError(message)
 
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
