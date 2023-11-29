@@ -22,10 +22,10 @@ from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 
-logger = logging.getLogger(__name__)
-
 if TYPE_CHECKING:
     from click import Option
+
+logger = logging.getLogger(__name__)
 
 
 class ExitCode(enum.IntEnum):
@@ -38,54 +38,12 @@ class ExitCode(enum.IntEnum):
     OK = 0
     #: Tests failed.
     TESTS_FAILED = 1
+    # CLI was misused
+    USAGE_ERROR = 2
     # Test error
-    TESTS_ERROR = 2
+    TESTS_ERROR = 3
     # An internal error got in the way.
-    INTERNAL_ERROR = 3
-    #  pytest was misused.
-    USAGE_ERROR = 4
-    # TODO: when click fails to parse the CLI options, it returns an error code value of 2 when a usage error message. Maybe we should align here ?
-
-
-def parse_inventory(ctx: click.Context, param: Option, value: Path) -> AntaInventory:
-    # pylint: disable=unused-argument
-    """
-    Click option callback to parse an ANTA inventory YAML file
-    """
-    if ctx.obj.get("_anta_help"):
-        # Currently looking for help for a subcommand so no
-        # need to parse the Inventory, return an empty one
-        return AntaInventory()
-    try:
-        inventory = AntaInventory.parse(
-            filename=str(value),
-            username=ctx.params["username"],
-            password=ctx.params["password"],
-            enable=ctx.params["enable"],
-            enable_password=ctx.params["enable_password"],
-            timeout=ctx.params["timeout"],
-            insecure=ctx.params["insecure"],
-            disable_cache=ctx.params["disable_cache"],
-        )
-    except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
-        ctx.exit(ExitCode.USAGE_ERROR)
-    return inventory
-
-
-def parse_catalog(ctx: click.Context, param: Option, value: Path) -> AntaCatalog:
-    # pylint: disable=unused-argument
-    """
-    Click option callback to parse an ANTA test catalog YAML file
-    """
-    if ctx.obj.get("_anta_help"):
-        # Currently looking for help for a subcommand so no
-        # need to parse the Catalog - return an empty catalog
-        return AntaCatalog()
-    try:
-        catalog: AntaCatalog = AntaCatalog.parse(value)
-    except (ValidationError, TypeError, ValueError, YAMLError, OSError):
-        ctx.exit(ExitCode.USAGE_ERROR)
-    return catalog
+    INTERNAL_ERROR = 4
 
 
 def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
@@ -158,40 +116,6 @@ class AliasedGroup(click.Group):
         return cmd.name, cmd, args  # type: ignore
 
 
-class IgnoreRequiredWithHelp(AliasedGroup):
-    """
-    https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
-    Solution to allow help without required options on subcommand
-
-    This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734
-    """
-
-    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
-        """
-        Ignore MissingParameter exception when parsing arguments if `--help`
-        is present for a subcommand
-        """
-        # Adding a flag for potential callbacks
-        ctx.ensure_object(dict)
-        if "--help" in args:
-            ctx.obj["_anta_help"] = True
-
-        # Storing full CLI call in ctx to get it in callbacks
-        ctx.obj["args"] = args
-
-        try:
-            return super().parse_args(ctx, args)
-        except click.MissingParameter:
-            if "--help" not in args:
-                raise
-
-            # remove the required params so that help can display
-            for param in self.params:
-                param.required = False
-
-            return super().parse_args(ctx, args)
-
-
 def inventory_options(f: Any) -> Any:
     """Click common options when requiring an inventory to interact with devices"""
 
@@ -255,7 +179,6 @@ def inventory_options(f: Any) -> Any:
         show_envvar=True,
         required=True,
         type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
-        callback=parse_inventory,
     )
     @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
     @functools.wraps(f)
@@ -277,6 +200,21 @@ def inventory_options(f: Any) -> Any:
             if not ctx.params.get("enable") and ctx.params.get("enable_password"):
                 raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
 
+            try:
+                ctx.obj["inventory"] = AntaInventory.parse(
+                    filename=ctx.params["inventory"],
+                    username=ctx.params["username"],
+                    password=ctx.params["password"],
+                    enable=ctx.params["enable"],
+                    enable_password=ctx.params["enable_password"],
+                    timeout=ctx.params["timeout"],
+                    insecure=ctx.params["insecure"],
+                    disable_cache=ctx.params["disable_cache"],
+                )
+            except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
+                ctx.exit(ExitCode.USAGE_ERROR)
+        else:
+            ctx.obj["inventory"] = AntaInventory()
         return f(ctx, *args, **kwargs)
 
     return wrapper_common_options
@@ -293,10 +231,17 @@ def catalog_options(f: Any) -> Any:
         help="Path to the test catalog YAML file",
         type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
         required=True,
-        callback=parse_catalog,
     )
     @functools.wraps(f)
     def wrapper_common_options(ctx: click.Context, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+        ctx.ensure_object(dict)
+        if not ctx.obj.get("_anta_help"):
+            try:
+                ctx.obj["catalog"] = AntaCatalog.parse(ctx.params["catalog"])
+            except (ValidationError, TypeError, ValueError, YAMLError, OSError):
+                ctx.exit(ExitCode.USAGE_ERROR)
+        else:
+            ctx.obj["catalog"] = AntaCatalog()
         return f(ctx, *args, **kwargs)
 
     return wrapper_common_options

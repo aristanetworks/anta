@@ -2,7 +2,6 @@
 # Copyright (c) 2023 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# coding: utf-8 -*-
 """
 ANTA CLI
 """
@@ -15,19 +14,17 @@ from typing import Any
 import click
 
 from anta import __version__
-from anta.catalog import AntaCatalog
 from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
 from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, IgnoreRequiredWithHelp, catalog_options, inventory_options
-from anta.inventory import AntaInventory
+from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
 from anta.logger import Log, LogLevel, setup_logging
 from anta.result_manager import ResultManager
 
 
-@click.group(cls=IgnoreRequiredWithHelp)
+@click.group(cls=AliasedGroup)
 @click.pass_context
 @click.version_option(__version__)
 @click.option(
@@ -54,36 +51,37 @@ def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> Non
     setup_logging(log_level, log_file)
 
 
-@anta.group("nrfu", cls=IgnoreRequiredWithHelp)
+@anta.group("nrfu", invoke_without_command=True)
 @click.pass_context
 @inventory_options
 @catalog_options
 @click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
 @click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-def _nrfu(ctx: click.Context, inventory: AntaInventory, catalog: AntaCatalog, **kwargs: dict[str, Any]) -> None:
+def _nrfu(ctx: click.Context, **kwargs: dict[str, Any]) -> None:
     # pylint: disable=unused-argument
     """Run NRFU against inventory devices"""
-    ctx.obj["catalog"] = catalog
-    ctx.obj["inventory"] = inventory
     ctx.obj["result_manager"] = ResultManager()
+    # Invoke `anta nrfu table` if no command is passed
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(nrfu_commands.table)
 
 
-@anta.group("check", cls=AliasedGroup)
+@anta.group("check")
 def _check() -> None:
     """Check commands for building ANTA"""
 
 
-@anta.group("exec", cls=AliasedGroup)
+@anta.group("exec")
 def _exec() -> None:
     """Execute commands to inventory devices"""
 
 
-@anta.group("get", cls=AliasedGroup)
+@anta.group("get")
 def _get() -> None:
     """Get data from/to ANTA"""
 
 
-@anta.group("debug", cls=AliasedGroup)
+@anta.group("debug")
 def _debug() -> None:
     """Debug commands for building ANTA"""
 
