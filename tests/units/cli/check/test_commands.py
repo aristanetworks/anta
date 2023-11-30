@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from anta.cli.utils import ExitCode
 
 from anta.cli import anta
+from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -24,7 +24,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
     "catalog_path, expected_exit, expected_output",
     [
         pytest.param("ghost_catalog.yml", ExitCode.USAGE_ERROR, "Error: Invalid value for '--catalog'", id="catalog does not exist"),
-        pytest.param("test_catalog_with_undefined_module.yml",  ExitCode.USAGE_ERROR, "Test catalog is invalid!", id="catalog is not valid"),
+        pytest.param("test_catalog_with_undefined_module.yml", ExitCode.USAGE_ERROR, "Test catalog is invalid!", id="catalog is not valid"),
         pytest.param("test_catalog.yml", ExitCode.OK, f"Catalog {DATA_DIR}/test_catalog.yml is valid", id="catalog valid"),
     ],
 )

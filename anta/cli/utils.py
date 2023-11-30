@@ -211,7 +211,7 @@ def inventory_options(f: Any) -> Any:
             )
         except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        for arg in ['inventory', 'username', 'password', 'enable', 'prompt', 'timeout', 'insecure', 'enable_password', 'disable_cache', 'tags']:
+        for arg in ["inventory", "username", "password", "enable", "prompt", "timeout", "insecure", "enable_password", "disable_cache", "tags"]:
             kwargs.pop(arg)
         return f(*args, inventory, **kwargs)
 
@@ -237,7 +237,7 @@ def catalog_options(f: Any) -> Any:
             catalog = AntaCatalog.parse(ctx.params["catalog"])
         except (ValidationError, TypeError, ValueError, YAMLError, OSError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        kwargs.pop('catalog')
+        kwargs.pop("catalog")
         return f(*args, catalog, **kwargs)
 
     return wrapper

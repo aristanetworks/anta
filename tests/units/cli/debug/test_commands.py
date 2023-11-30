@@ -6,46 +6,17 @@ Tests for anta.cli.debug.commands
 """
 from __future__ import annotations
 
-from contextlib import nullcontext
 from typing import TYPE_CHECKING, Any, Literal
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import click
 import pytest
 
 from anta.cli import anta
-from anta.cli.debug.commands import get_device
-from anta.device import AntaDevice
 from anta.models import AntaCommand
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
-
-    from anta.inventory import AntaInventory
-
-
-@pytest.mark.parametrize(
-    "device_name, expected_raise",
-    [
-        pytest.param("dummy", nullcontext(), id="existing device"),
-        pytest.param("other", pytest.raises(click.exceptions.UsageError), id="non existing device"),
-    ],
-)
-def test_get_device(test_inventory: AntaInventory, device_name: str, expected_raise: Any) -> None:
-    """
-    Test get_device
-
-    test_inventory is a fixture that returns an AntaInventory using the content of tests/data/test_inventory.yml
-    """
-    # build click Context
-    ctx = click.Context(command=MagicMock())
-    ctx.ensure_object(dict)
-    ctx.obj["inventory"] = test_inventory
-
-    with expected_raise:
-        result = get_device(ctx, MagicMock(auto_spec=click.Option), device_name)
-        assert isinstance(result, AntaDevice)
 
 
 # TODO complete test cases

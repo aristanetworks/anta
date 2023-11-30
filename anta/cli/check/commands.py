@@ -11,8 +11,8 @@ import logging
 
 import click
 from rich.pretty import pretty_repr
-from anta.catalog import AntaCatalog
 
+from anta.catalog import AntaCatalog
 from anta.cli.console import console
 from anta.cli.utils import catalog_options
 

@@ -8,11 +8,11 @@ from typing import Any
 
 import click
 
+from anta.catalog import AntaCatalog
 from anta.cli.nrfu import commands
 from anta.cli.utils import catalog_options, inventory_options
-from anta.models import AntaTest
 from anta.inventory import AntaInventory
-from anta.catalog import AntaCatalog
+from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.runner import main
 
