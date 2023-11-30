@@ -24,13 +24,9 @@ from anta.result_manager import ResultManager
 logger = logging.getLogger(__name__)
 
 
-def print_settings(context: click.Context, report_template: pathlib.Path | None = None, report_output: pathlib.Path | None = None) -> None:
+def print_settings(context: click.Context) -> None:
     """Print ANTA settings before running tests"""
     message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'].tests)} tests"
-    if report_template:
-        message += f"\n- Report template: {report_template}"
-    if report_output:
-        message += f"\n- Report output: {report_output}"
     console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
     console.print()
 

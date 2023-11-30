@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import Any
 
 import click
 
@@ -18,10 +17,9 @@ from anta.cli.check import commands as check_commands
 from anta.cli.debug import commands as debug_commands
 from anta.cli.exec import commands as exec_commands
 from anta.cli.get import commands as get_commands
-from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
+from anta.cli.nrfu import nrfu
+from anta.cli.utils import AliasedGroup
 from anta.logger import Log, LogLevel, setup_logging
-from anta.result_manager import ResultManager
 
 
 @click.group(cls=AliasedGroup)
@@ -51,21 +49,6 @@ def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> Non
     setup_logging(log_level, log_file)
 
 
-@anta.group("nrfu", invoke_without_command=True)
-@click.pass_context
-@inventory_options
-@catalog_options
-@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
-@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-def _nrfu(ctx: click.Context, **kwargs: dict[str, Any]) -> None:
-    # pylint: disable=unused-argument
-    """Run NRFU against inventory devices"""
-    ctx.obj["result_manager"] = ResultManager()
-    # Invoke `anta nrfu table` if no command is passed
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(nrfu_commands.table)
-
-
 @anta.group("check")
 def _check() -> None:
     """Check commands for building ANTA"""
@@ -86,6 +69,8 @@ def _debug() -> None:
     """Debug commands for building ANTA"""
 
 
+anta.add_command(nrfu)
+
 # Load group commands
 # Prefixing with `_` for avoiding the confusion when importing anta.cli.debug.commands as otherwise the debug group has
 # a commands attribute.
@@ -104,11 +89,6 @@ _get.add_command(get_commands.tags)
 
 _debug.add_command(debug_commands.run_cmd)
 _debug.add_command(debug_commands.run_template)
-
-_nrfu.add_command(nrfu_commands.table)
-_nrfu.add_command(nrfu_commands.json)
-_nrfu.add_command(nrfu_commands.text)
-_nrfu.add_command(nrfu_commands.tpl_report)
 
 
 # ANTA CLI Execution

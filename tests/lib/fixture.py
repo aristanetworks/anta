@@ -159,7 +159,10 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
             kwargs["auto_envvar_prefix"] = "ANTA"
             # Way to fix https://github.com/pallets/click/issues/824
             with capsys.disabled():
-                return super().invoke(*args, **kwargs)  # type: ignore[arg-type]
+                result = super().invoke(*args, **kwargs)  # type: ignore[arg-type]
+            print("--- CLI Output ---")
+            print(result.output)
+            return result
 
     def cli(
         command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", **kwargs: dict[str, Any]

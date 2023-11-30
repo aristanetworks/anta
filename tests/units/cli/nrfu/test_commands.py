@@ -5,96 +5,57 @@
 Tests for anta.cli.nrfu.commands
 """
 from __future__ import annotations
+import json
+import re
+
+from pathlib import Path
 
 from click.testing import CliRunner
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
-from tests.lib.utils import default_anta_env
+
+DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
 
 
-def test_anta_nrfu(click_runner: CliRunner) -> None:
+def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     """
     Test anta nrfu, catalog is given via env
     """
-    result = click_runner.invoke(anta, ["nrfu"])
+    result = click_runner.invoke(anta, ["nrfu", "table"])
     assert result.exit_code == ExitCode.OK
-    assert "ANTA Inventory contains 3 devices" in result.output
-    # assert "Tests catalog contains 4 tests" in result.output
-    print(result.output)
+    assert "dummy  │ VerifyEOSVersion │ success" in result.output
 
 
-def test_anta_password_required(click_runner: CliRunner) -> None:
+def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     """
-    Test that password is provided
+    Test anta nrfu, catalog is given via env
     """
-    env = default_anta_env()
-    env.pop("ANTA_PASSWORD")
-    result = click_runner.invoke(anta, ["nrfu"], env=env)
-    assert result.exit_code == ExitCode.USAGE_ERROR
-    assert "EOS password needs to be provided by using either the '--password' option or the '--prompt' option." in result.output
-
-
-def test_anta_password(click_runner: CliRunner) -> None:
-    """
-    Test that password can be provided either via --password or --prompt
-    """
-    env = default_anta_env()
-    env.pop("ANTA_PASSWORD")
-    result = click_runner.invoke(anta, ["nrfu", "--password", "secret"], env=env)
+    result = click_runner.invoke(anta, ["nrfu", "text"])
     assert result.exit_code == ExitCode.OK
-    result = click_runner.invoke(anta, ["nrfu", "--prompt"], input="password\npassword\n", env=env)
-    assert result.exit_code == ExitCode.OK
+    assert "dummy :: VerifyEOSVersion :: SUCCESS" in result.output
 
 
-def test_anta_enable_password(click_runner: CliRunner) -> None:
+def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     """
-    Test that enable password can be provided either via --enable-password or --prompt
+    Test anta nrfu, catalog is given via env
     """
-    # Both enable and enable-password
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--enable-password", "secret"])
+    result = click_runner.invoke(anta, ["nrfu", "json"])
     assert result.exit_code == ExitCode.OK
-
-    # enable and prompt y
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--prompt"], input="y\npassword\npassword\n")
-    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" in result.output
-    assert "Please enter a password to enter EOS privileged EXEC mode" in result.output
-    assert result.exit_code == ExitCode.OK
-
-    # enable and prompt N
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--prompt"], input="N\n")
-    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" in result.output
-    assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
-    assert result.exit_code == ExitCode.OK
-
-    # enable and enable-password and prompt (redundant)
-    result = click_runner.invoke(anta, ["nrfu", "--enable", "--enable-password", "blah", "--prompt"], input="y\npassword\npassword\n")
-    assert "Is a password required to enter EOS privileged EXEC mode? [y/N]:" not in result.output
-    assert "Please enter a password to enter EOS privileged EXEC mode" not in result.output
-    assert result.exit_code == ExitCode.OK
-
-    # enabled-password without enable
-    result = click_runner.invoke(anta, ["nrfu", "--enable-password", "blah"])
-    assert result.exit_code == ExitCode.USAGE_ERROR
-    assert "Providing a password to access EOS Privileged EXEC mode requires '--enable' option." in result.output
+    assert "JSON results of all tests" in result.output
+    m = re.search(r'\[\n  {[\s\S]+  }\n\]', result.output)
+    assert m is not None
+    result_list = json.loads(m.group())
+    for r in result_list:
+        if r['name'] == 'dummy':
+            assert r['test'] == 'VerifyEOSVersion'
+            assert r['result'] == 'success'
 
 
-def test_anta_enable_alone(click_runner: CliRunner) -> None:
+def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     """
-    Test that enable can be provided either without enable-password
+    Test anta nrfu, catalog is given via env
     """
-    result = click_runner.invoke(anta, ["nrfu", "--enable"])
+    result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
-
-
-def test_disable_cache(click_runner: CliRunner) -> None:
-    """
-    Test that disable_cache is working on inventory
-    """
-    result = click_runner.invoke(anta, ["nrfu", "--disable-cache"])
-    stdout_lines = result.stdout.split("\n")
-    # All caches should be disabled from the inventory
-    for line in stdout_lines:
-        if "disable_cache" in line:
-            assert "True" in line
-    assert result.exit_code == ExitCode.OK
+    assert "* VerifyEOSVersion is SUCCESS for dummy" in result.output
