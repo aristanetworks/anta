@@ -13,10 +13,10 @@ import pathlib
 import click
 
 from anta import __version__
-from anta.cli.check import commands as check_commands
-from anta.cli.debug import commands as debug_commands
-from anta.cli.exec import commands as exec_commands
-from anta.cli.get import commands as get_commands
+from anta.cli.check import check
+from anta.cli.debug import debug
+from anta.cli.exec import exec
+from anta.cli.get import get
 from anta.cli.nrfu import nrfu
 from anta.cli.utils import AliasedGroup
 from anta.logger import Log, LogLevel, setup_logging
@@ -49,49 +49,13 @@ def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> Non
     setup_logging(log_level, log_file)
 
 
-@anta.group("check")
-def _check() -> None:
-    """Check commands for building ANTA"""
-
-
-@anta.group("exec")
-def _exec() -> None:
-    """Execute commands to inventory devices"""
-
-
-@anta.group("get")
-def _get() -> None:
-    """Get data from/to ANTA"""
-
-
-@anta.group("debug")
-def _debug() -> None:
-    """Debug commands for building ANTA"""
-
-
 anta.add_command(nrfu)
-
-# Load group commands
-# Prefixing with `_` for avoiding the confusion when importing anta.cli.debug.commands as otherwise the debug group has
-# a commands attribute.
-_check.add_command(check_commands.catalog)
-# Inventory cannot be implemented for now as main 'anta' CLI is already parsing it
-# _check.add_command(check_commands.inventory)
-
-_exec.add_command(exec_commands.clear_counters)
-_exec.add_command(exec_commands.snapshot)
-_exec.add_command(exec_commands.collect_tech_support)
-
-_get.add_command(get_commands.from_cvp)
-_get.add_command(get_commands.from_ansible)
-_get.add_command(get_commands.inventory)
-_get.add_command(get_commands.tags)
-
-_debug.add_command(debug_commands.run_cmd)
-_debug.add_command(debug_commands.run_template)
+anta.add_command(check)
+anta.add_command(exec)
+anta.add_command(get)
+anta.add_command(debug)
 
 
-# ANTA CLI Execution
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
     anta(obj={}, auto_envvar_prefix="ANTA")  # pragma: no cover

@@ -17,7 +17,7 @@ from anta.runner import main
 from .utils import anta_progress_bar, print_settings
 
 
-@click.group("nrfu", invoke_without_command=True)
+@click.group(invoke_without_command=True)
 @click.pass_context
 @inventory_options
 @catalog_options
