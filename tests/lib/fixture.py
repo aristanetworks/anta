@@ -4,7 +4,7 @@
 """Fixture for Anta Testing"""
 from __future__ import annotations
 
-from os import environ
+import logging
 from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
@@ -19,12 +19,18 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
 
+logger = logging.getLogger(__name__)
+
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
-SHOW_VERSION_OUTPUT = {
-    "modelName": "DCS-7280CR3-32P4-F",
-    "version": "4.31.1F",
+
+MOCK_CLI: dict[str, dict[str, Any]] = {
+    "show version": {
+        "modelName": "DCS-7280CR3-32P4-F",
+        "version": "4.31.1F",
+    },
+    "enable": {},
 }
 
 
@@ -145,37 +151,42 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
     """
     Convenience fixture to return a click.CliRunner for cli testing
     """
-    class MyCliRunner(CliRunner):
-        # NB: Please blame gmuloc for this
-        # Nice way to fix https://github.com/pallets/click/issues/824
-        def invoke(self, *args: list[Any], **kwargs: dict[str, Any]) -> Result:  # type: ignore[override]
+
+    class AntaCliRunner(CliRunner):
+        def invoke(self, *args, **kwargs) -> Result:  # type: ignore[override, no-untyped-def]
+            # Inject default env if not provided
+            kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
+            kwargs["auto_envvar_prefix"] = "ANTA"
+            # Way to fix https://github.com/pallets/click/issues/824
             with capsys.disabled():
                 return super().invoke(*args, **kwargs)  # type: ignore[arg-type]
 
     def cli(
         command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", **kwargs: dict[str, Any]
     ) -> dict[str, Any] | list[dict[str, Any]]:
+        def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
+            if isinstance(command, dict):
+                command = command["cmd"]
+            for mock_cmd, output in MOCK_CLI.items():
+                if command == mock_cmd:
+                    logger.info(f"Mocking command {mock_cmd}")
+                    return output
+            raise NotImplementedError(f"Command '{command}' is not mocked")
+
         # pylint: disable=unused-argument
         if ofmt != "json":
             raise NotImplementedError()
-        if command == "show version":
-            return SHOW_VERSION_OUTPUT
-        if commands is not None and "show version" == commands[0]["cmd"]:
-            return [SHOW_VERSION_OUTPUT]
-        raise NotImplementedError()
+        res: dict[str, Any] | list[dict[str, Any]]
+        if command is not None:
+            logger.debug(f"Mock input {command}")
+            res = get_output(command)
+        if commands is not None:
+            logger.debug(f"Mock input {commands}")
+            res = list(map(get_output, commands))
+        logger.debug(f"Mock output {res}")
+        return res
 
     # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
     with patch("aioeapi.device.Device.check_connection", return_value=True):
         with patch("aioeapi.device.Device.cli", side_effect=cli):
-            yield MyCliRunner()
-
-
-@pytest.fixture(autouse=True)
-def clean_anta_env_variables() -> None:
-    """
-    Autouse fixture that cleans the various ANTA_FOO env variables
-    that could come from the user environment and make some tests fail.
-    """
-    for envvar in environ:
-        if envvar.startswith("ANTA_"):
-            environ.pop(envvar)
+            yield AntaCliRunner()
