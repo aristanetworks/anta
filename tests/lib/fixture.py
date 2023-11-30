@@ -9,7 +9,7 @@ from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
 import pytest
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
 from pytest import CaptureFixture
 
 from anta.device import AntaDevice, AsyncEOSDevice
@@ -145,6 +145,12 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
     """
     Convenience fixture to return a click.CliRunner for cli testing
     """
+    class MyCliRunner(CliRunner):
+        # NB: Please blame gmuloc for this
+        # Nice way to fix https://github.com/pallets/click/issues/824
+        def invoke(self, *args: list[Any], **kwargs: dict[str, Any]) -> Result:  # type: ignore[override]
+            with capsys.disabled():
+                return super().invoke(*args, **kwargs)  # type: ignore[arg-type]
 
     def cli(
         command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", **kwargs: dict[str, Any]
@@ -161,8 +167,7 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
     # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
     with patch("aioeapi.device.Device.check_connection", return_value=True):
         with patch("aioeapi.device.Device.cli", side_effect=cli):
-            with capsys.disabled():
-                return CliRunner()
+            yield MyCliRunner()
 
 
 @pytest.fixture(autouse=True)
