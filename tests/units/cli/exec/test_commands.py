@@ -15,6 +15,7 @@ import pytest
 
 from anta.cli import anta
 from anta.cli.exec.commands import clear_counters, collect_tech_support, snapshot
+from anta.cli.utils import ExitCode
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
@@ -30,6 +31,24 @@ def test_clear_counters_help(click_runner: CliRunner) -> None:
     assert "Usage" in result.output
 
 
+def test_snapshot_help(click_runner: CliRunner) -> None:
+    """
+    Test `anta exec snapshot --help`
+    """
+    result = click_runner.invoke(snapshot, ["--help"])
+    assert result.exit_code == 0
+    assert "Usage" in result.output
+
+
+def test_collect_tech_support_help(click_runner: CliRunner) -> None:
+    """
+    Test `anta exec collect-tech-support --help`
+    """
+    result = click_runner.invoke(collect_tech_support, ["--help"])
+    assert result.exit_code == 0
+    assert "Usage" in result.output
+
+
 @pytest.mark.parametrize(
     "tags",
     [
@@ -41,26 +60,11 @@ def test_clear_counters(click_runner: CliRunner, tags: str | None) -> None:
     """
     Test `anta exec clear-counters`
     """
-    env = default_anta_env()
     cli_args = ["exec", "clear-counters"]
-    expected_tags = None
     if tags is not None:
         cli_args.extend(["--tags", tags])
-        expected_tags = tags.split(",")
-    with patch("anta.cli.exec.commands.clear_counters_utils") as mocked_subcommand:
-        mocked_subcommand.return_value = None
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
-    mocked_subcommand.assert_called_once_with(ANY, tags=expected_tags)
-    assert result.exit_code == 0
-
-
-def test_snapshot_help(click_runner: CliRunner) -> None:
-    """
-    Test `anta exec snapshot --help`
-    """
-    result = click_runner.invoke(snapshot, ["--help"])
-    assert result.exit_code == 0
-    assert "Usage" in result.output
+    result = click_runner.invoke(anta, cli_args)
+    assert result.exit_code == ExitCode.OK
 
 
 COMMAND_LIST_PATH_FILE = Path(__file__).parent.parent.parent.parent / "data" / "test_snapshot_commands.yml"
@@ -80,48 +84,24 @@ def test_snapshot(click_runner: CliRunner, output: str | None, commands_path: Pa
     """
     Test `anta exec snapshot`
     """
-    env = default_anta_env()
     cli_args = ["exec", "snapshot"]
 
     # Need to mock datetetime
-    expected_path = Path("")
     if output is not None:
         cli_args.extend(["--output", output])
-        expected_path = Path(f"{output}")
-    expected_commands = None
     if commands_path is not None:
         cli_args.extend(["--commands-list", str(commands_path)])
-        expected_commands = {"json_format": ["show version"], "text_format": ["show version"]}
-    expected_tags = None
     if tags is not None:
         cli_args.extend(["--tags", tags])
-        expected_tags = tags.split(",")
-    with patch("anta.cli.exec.commands.collect_commands") as mocked_subcommand:
-        mocked_subcommand.return_value = None
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+    result = click_runner.invoke(anta, cli_args)
     # Failure scenarios
     if commands_path is None:
-        assert result.exit_code == 2
+        assert result.exit_code == ExitCode.USAGE_ERROR
         return
     if not Path.exists(Path(commands_path)):
-        assert result.exit_code == 2
+        assert result.exit_code == ExitCode.USAGE_ERROR
         return
-    # Successful scenarios
-    if output is not None:
-        mocked_subcommand.assert_called_once_with(ANY, expected_commands, expected_path, tags=expected_tags)
-    else:
-        mocked_subcommand.assert_called_once_with(ANY, expected_commands, ANY, tags=expected_tags)
-        # TODO should add check that path starts with "anta_snapshot_"
-    assert result.exit_code == 0
-
-
-def test_collect_tech_support_help(click_runner: CliRunner) -> None:
-    """
-    Test `anta exec collect-tech-support --help`
-    """
-    result = click_runner.invoke(collect_tech_support, ["--help"])
-    assert result.exit_code == 0
-    assert "Usage" in result.output
+    assert result.exit_code == ExitCode.OK
 
 
 @pytest.mark.parametrize(
@@ -138,22 +118,14 @@ def test_collect_tech_support(click_runner: CliRunner, output: str | None, lates
     """
     Test `anta exec collect-tech-support`
     """
-    env = default_anta_env()
     cli_args = ["exec", "collect-tech-support"]
-    expected_path = Path("tech-support")
     if output is not None:
         cli_args.extend(["--output", output])
-        expected_path = Path(output)
     if latest is not None:
         cli_args.extend(["--latest", latest])
     if configure is True:
         cli_args.extend(["--configure"])
-    expected_tags = None
     if tags is not None:
         cli_args.extend(["--tags", tags])
-        expected_tags = tags.split(",")
-    with patch("anta.cli.exec.commands.collect_scheduled_show_tech") as mocked_subcommand:
-        mocked_subcommand.return_value = None
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
-    mocked_subcommand.assert_called_once_with(ANY, expected_path, configure, tags=expected_tags, latest=latest)
-    assert result.exit_code == 0
+    result = click_runner.invoke(anta, cli_args)
+    assert result.exit_code == ExitCode.OK

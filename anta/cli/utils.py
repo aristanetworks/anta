@@ -213,7 +213,7 @@ def inventory_options(f: Any) -> Any:
             ctx.exit(ExitCode.USAGE_ERROR)
         for arg in ["inventory", "username", "password", "enable", "prompt", "timeout", "insecure", "enable_password", "disable_cache", "tags"]:
             kwargs.pop(arg)
-        return f(*args, inventory, **kwargs)
+        return f(*args, inventory, ctx.params["tags"], **kwargs)
 
     return wrapper
 

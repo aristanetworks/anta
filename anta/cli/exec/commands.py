@@ -17,20 +17,19 @@ from yaml import safe_load
 
 from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
 from anta.cli.utils import inventory_options
+from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)
 
 
-@click.command(no_args_is_help=True)
-@click.pass_context
+@click.command
 @inventory_options
-def clear_counters(ctx: click.Context, tags: list[str] | None) -> None:
+def clear_counters(inventory: AntaInventory, tags: list[str] | None) -> None:
     """Clear counter statistics on EOS devices"""
-    asyncio.run(clear_counters_utils(ctx.obj["inventory"], tags=tags))
+    asyncio.run(clear_counters_utils(inventory, tags=tags))
 
 
 @click.command()
-@click.pass_context
 @inventory_options
 @click.option(
     "--commands-list",
@@ -49,7 +48,7 @@ def clear_counters(ctx: click.Context, tags: list[str] | None) -> None:
     default=f"anta_snapshot_{datetime.now().strftime('%Y-%m-%d_%H_%M_%S')}",
     show_default=True,
 )
-def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, output: Path) -> None:
+def snapshot(inventory: AntaInventory, tags: list[str] | None, commands_list: Path, output: Path) -> None:
     """Collect commands output from devices in inventory"""
     print(f"Collecting data for {commands_list}")
     print(f"Output directory is {output}")
@@ -60,11 +59,10 @@ def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, ou
     except FileNotFoundError:
         logger.error(f"Error reading {commands_list}")
         sys.exit(1)
-    asyncio.run(collect_commands(ctx.obj["inventory"], eos_commands, output, tags=tags))
+    asyncio.run(collect_commands(inventory, eos_commands, output, tags=tags))
 
 
 @click.command()
-@click.pass_context
 @inventory_options
 @click.option("--output", "-o", default="./tech-support", show_default=True, help="Path for test catalog", type=click.Path(path_type=Path), required=False)
 @click.option("--latest", help="Number of scheduled show-tech to retrieve", type=int, required=False)
@@ -75,6 +73,6 @@ def snapshot(ctx: click.Context, tags: list[str] | None, commands_list: Path, ou
     is_flag=True,
     show_default=True,
 )
-def collect_tech_support(ctx: click.Context, tags: list[str] | None, output: Path, latest: int | None, configure: bool) -> None:
+def collect_tech_support(inventory: AntaInventory, tags: list[str] | None, output: Path, latest: int | None, configure: bool) -> None:
     """Collect scheduled tech-support from EOS devices"""
-    asyncio.run(collect_scheduled_show_tech(ctx.obj["inventory"], output, configure, tags=tags, latest=latest))
+    asyncio.run(collect_scheduled_show_tech(inventory, output, configure, tags=tags, latest=latest))

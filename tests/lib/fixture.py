@@ -31,6 +31,8 @@ MOCK_CLI: dict[str, dict[str, Any]] = {
         "version": "4.31.1F",
     },
     "enable": {},
+    "clear counters": {},
+    "clear hardware counter drop": {},
 }
 
 
@@ -174,7 +176,9 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
                 if command == mock_cmd:
                     logger.info(f"Mocking command {mock_cmd}")
                     return output
-            raise NotImplementedError(f"Command '{command}' is not mocked")
+            message = f"Command '{command}' is not mocked"
+            logger.critical(message)
+            raise NotImplementedError(message)
 
         # pylint: disable=unused-argument
         if ofmt != "json":
