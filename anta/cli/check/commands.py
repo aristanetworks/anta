@@ -11,15 +11,15 @@ import logging
 
 import click
 from rich.pretty import pretty_repr
-
 from anta.catalog import AntaCatalog
+
 from anta.cli.console import console
 from anta.cli.utils import catalog_options
 
 logger = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command
 @catalog_options
 def catalog(catalog: AntaCatalog) -> None:
     """

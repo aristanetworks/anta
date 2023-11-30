@@ -58,7 +58,7 @@ anta.add_command(debug)
 
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
-    anta(obj={}, auto_envvar_prefix="ANTA")  # pragma: no cover
+    anta(obj={}, auto_envvar_prefix="ANTA")
 
 
 if __name__ == "__main__":

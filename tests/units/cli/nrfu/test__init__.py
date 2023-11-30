@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Tests for anta.cli.nrfu.commands
+Tests for anta.cli.nrfu
 """
 from __future__ import annotations
 
@@ -11,6 +11,15 @@ from click.testing import CliRunner
 from anta.cli import anta
 from anta.cli.utils import ExitCode
 from tests.lib.utils import default_anta_env
+
+
+def test_anta_nrfu_help(click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu --help
+    """
+    result = click_runner.invoke(anta, ["nrfu", "--help"])
+    assert result.exit_code == ExitCode.OK
+    assert "Usage: anta nrfu" in result.output
 
 
 def test_anta_nrfu(click_runner: CliRunner) -> None:

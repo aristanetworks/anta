@@ -31,15 +31,6 @@ def test_anta_help(click_runner: CliRunner) -> None:
     assert "Usage" in result.output
 
 
-def test_anta_nrfu_help(click_runner: CliRunner) -> None:
-    """
-    Test anta nrfu --help
-    """
-    result = click_runner.invoke(anta, ["nrfu", "--help"])
-    assert result.exit_code == ExitCode.OK
-    assert "Usage: anta nrfu" in result.output
-
-
 def test_anta_exec_help(click_runner: CliRunner) -> None:
     """
     Test anta exec --help
