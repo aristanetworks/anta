@@ -13,7 +13,7 @@ import click
 
 from anta.cli.utils import exit_with_code
 
-from .utils import anta_progress_bar, print_jinja, print_json, print_table, print_text
+from .utils import print_jinja, print_json, print_table, print_text
 
 logger = logging.getLogger(__name__)
 

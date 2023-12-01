@@ -9,14 +9,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import ANY, patch
 
 import pytest
 
 from anta.cli import anta
 from anta.cli.exec.commands import clear_counters, collect_tech_support, snapshot
 from anta.cli.utils import ExitCode
-from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
