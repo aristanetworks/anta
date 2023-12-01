@@ -13,6 +13,7 @@ from anta.tests.security import (
     VerifyAPIHttpStatus,
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
+    VerifyAPISSLCertificate,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -216,5 +217,46 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_API']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [{"capi.pem": {"subject": {"commonName": "self.signed"}, "publicKey": {"encryptionAlgorithm": "RSA", "size": 2048}}}],
+        "inputs": {"certificate": "capi.pem", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "DSA", "size": 2048},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-wrong-subject-name",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [{"capi.pem": {"subject": {"commonName": "NoName"}, "publicKey": {"encryptionAlgorithm": "RSA", "size": 2048}}}],
+        "inputs": {"certificate": "capi.pem", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "DSA", "size": 2048},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The SSL certificate `capi.pem` is not configured properly:" "Expected subject.commonName is self.signed however in actual found as NoName"
+            ],
+        },
+    },
+    {
+        "name": "failure-wrong-encryption-type",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [{"capi.pem": {"subject": {"commonName": "self.signed"}, "publicKey": {"encryptionAlgorithm": "sha", "size": 2048}}}],
+        "inputs": {"certificate": "capi.pem", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "DSA", "size": 2048},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The SSL certificate `capi.pem` is not configured properly:" "Expected publicKey.encryptionAlgorithm is DSA however in actual found as sha"
+            ],
+        },
+    },
+    {
+        "name": "failure-wrong-encryption-size",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [{"capi.pem": {"subject": {"commonName": "self.signed"}, "publicKey": {"encryptionAlgorithm": "sha", "size": 1048}}}],
+        "inputs": {"certificate": "capi.pem", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "DSA", "size": 2048},
+        "expected": {
+            "result": "failure",
+            "messages": ["The SSL certificate `capi.pem` is not configured properly:" "Expected publicKey.size is 2048 however in actual found as 1048"],
+        },
     },
 ]

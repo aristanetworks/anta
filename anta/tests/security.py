@@ -8,11 +8,14 @@ from __future__ import annotations
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-import datetime
+from datetime import datetime
 
 from pydantic import conint
 
+from anta.custom_types import EncryptionSize, EncryptionType
 from anta.models import AntaCommand, AntaTest
+from anta.tools.get_value import get_value
+from anta.tools.utils import get_failed_logs
 
 
 class VerifySSHStatus(AntaTest):
@@ -272,66 +275,63 @@ class VerifyAPIIPv6Acl(AntaTest):
             self.result.is_success()
 
 
-class VerifyCertificateStatus(AntaTest):
+class VerifyAPISSLCertificate(AntaTest):
     """
-    Verifies if SSL certificate details.
-    1. Verify if certificate is expired or about to expired
-    2. Certificate has correct name.
-    3. Certificate encryptions type and size.
+    Verifies SSL certificate expiry, common subject name, encryption type and size.
 
     Expected Results:
-        * success: The test will pass if expiry limit of certificate is grater then the threshold, has correct name, encryption and size.
-        * failure: The test will fail if certificate is expired or going to expired, has incorrect name, encryption and size.
+        * success: The test will pass if the expiry limit of the certificate is greater than the threshold, and has the correct name, encryption and size.
+        * failure: The test will fail if the certificate is expired or going to expire, and has incorrect name, encryption and size.
     """
 
-    name = "VerifyCertificateStatus"
-    description = "Verifies SSL certificate status."
+    name = "VerifyAPISSLCertificate"
+    description = "Verifies the eAPI SSL certificate status."
     categories = ["security"]
     commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         certificate: str
+        """Certificate name which going to be verified"""
         expiry_limit: int
+        """Certificate expiry limit in days"""
         subject_name: str
-        encryption: str
-        size: int
-        """Certificate, expiry limit, certificate subject name, encryption type and size"""
+        """Certificate common subject name"""
+        encryption: EncryptionType
+        """Certificate encryption type"""
+        size: EncryptionSize
+        """Certificate encryption size"""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        failure_msg = ""
         certificate_output = self.instance_commands[0].json_output
         clock_output = self.instance_commands[1].json_output
 
-        try:
-            # Collecting expiry time and current time.
-            certificate_output = certificate_output["certificates"][self.inputs.certificate]
-            expiry_time = certificate_output["notAfter"]
-            current_timestamp = clock_output["utcTime"]
-            day_difference = (datetime.datetime.utcfromtimestamp(expiry_time) - datetime.datetime.utcfromtimestamp(current_timestamp)).days
+        # Collecting expiry time and current time.
+        if (certificate_data := get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")) is None:
+            self.result.is_failure(f"SSL certificate '{self.inputs.certificate}', is not configured.")
+            return
+        expiry_time = certificate_data["notAfter"]
+        current_timestamp = clock_output["utcTime"]
+        day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
 
-            # Verify certificate expiry
-            if self.inputs.expiry_limit > day_difference > 0:
-                failure_msg += f"SSL certificate `{self.inputs.certificate}` is about to expire in {day_difference} days.\n"
-            if day_difference < 0:
-                failure_msg += f"SSL certificate `{self.inputs.certificate}` is expired.\n"
+        # Verify certificate expiry
+        if self.inputs.expiry_limit > day_difference > 0:
+            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}` is about to expire in {day_difference} days.")
+            return
+        if day_difference < 0:
+            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}` is expired.")
+            return
 
-            # Verify certificate name
-            subject_name = certificate_output["subject"]["commonName"]
-            if subject_name != self.inputs.subject_name:
-                failure_msg += f"Subject name `{self.inputs.subject_name}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
+        expected_data = {"subject": {"commonName": self.inputs.subject_name}, "publicKey": {"encryptionAlgorithm": self.inputs.encryption, "size": self.inputs.size}}
 
-            # Verify certificate encryption
-            algorithm = certificate_output["publicKey"]["encryptionAlgorithm"]
-            if algorithm != self.inputs.encryption:
-                failure_msg += f"Encryption algorithm `{self.inputs.encryption}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
+        # Verify certificate details
+        keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
+        verified_output = {key: get_value(certificate_data, key) for key in keys_to_verify}
+        expected_output = {key: get_value(expected_data, key) for key in keys_to_verify}
 
-            # Verify certificate encryption size
-            size = certificate_output["publicKey"]["size"]
-            if size != self.inputs.size:
-                failure_msg += f"Encryption algorithm size `{self.inputs.size}` is not found for SSL certificate `{self.inputs.certificate}`.\n"
-
-            self.result.is_failure(failure_msg) if failure_msg else self.result.is_success()
-
-        except KeyError:
-            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}`, is not configured.")
+        if verified_output == expected_output:
+            self.result.is_success()
+        else:
+            failed_log = f"The SSL certificate `{self.inputs.certificate}` is not configured properly:"
+            failed_log += get_failed_logs(expected_output, verified_output)
+            self.result.is_failure(f"{failed_log}")
