@@ -71,24 +71,20 @@ COMMAND_LIST_PATH_FILE = Path(__file__).parent.parent.parent.parent / "data" / "
 
 
 @pytest.mark.parametrize(
-    "output, commands_path, tags",
+    "commands_path, tags",
     [
-        pytest.param(None, None, None, id="missing command list"),
-        pytest.param(None, Path("/I/do/not/exist"), None, id="wrong path for command_list"),
-        pytest.param(None, COMMAND_LIST_PATH_FILE, None, id="command-list only"),
-        pytest.param("/tmp/dummy", COMMAND_LIST_PATH_FILE, None, id="with output"),
-        pytest.param(None, COMMAND_LIST_PATH_FILE, "leaf,spine", id="with tags"),
+        pytest.param(None, None, id="missing command list"),
+        pytest.param(Path("/I/do/not/exist"), None, id="wrong path for command_list"),
+        pytest.param(COMMAND_LIST_PATH_FILE, None, id="command-list only"),
+        pytest.param(COMMAND_LIST_PATH_FILE, "leaf,spine", id="with tags"),
     ],
 )
-def test_snapshot(click_runner: CliRunner, output: str | None, commands_path: Path | None, tags: str | None) -> None:
+def test_snapshot(tmp_path: Path, click_runner: CliRunner, commands_path: Path | None, tags: str | None) -> None:
     """
     Test `anta exec snapshot`
     """
-    cli_args = ["exec", "snapshot"]
-
+    cli_args = ["exec", "snapshot", "--output", str(tmp_path)]
     # Need to mock datetetime
-    if output is not None:
-        cli_args.extend(["--output", output])
     if commands_path is not None:
         cli_args.extend(["--commands-list", str(commands_path)])
     if tags is not None:

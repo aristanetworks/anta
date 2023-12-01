@@ -13,11 +13,11 @@ import pathlib
 import click
 
 from anta import __version__
-from anta.cli.check import check
-from anta.cli.debug import debug
-from anta.cli.exec import exec
-from anta.cli.get import get
-from anta.cli.nrfu import nrfu
+from anta.cli.check import check as check_command
+from anta.cli.debug import debug as debug_command
+from anta.cli.exec import exec as exec_command
+from anta.cli.get import get as get_command
+from anta.cli.nrfu import nrfu as nrfu_command
 from anta.cli.utils import AliasedGroup
 from anta.logger import Log, LogLevel, setup_logging
 
@@ -49,11 +49,11 @@ def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> Non
     setup_logging(log_level, log_file)
 
 
-anta.add_command(nrfu)
-anta.add_command(check)
-anta.add_command(exec)
-anta.add_command(get)
-anta.add_command(debug)
+anta.add_command(nrfu_command)
+anta.add_command(check_command)
+anta.add_command(exec_command)
+anta.add_command(get_command)
+anta.add_command(debug_command)
 
 
 def cli() -> None:

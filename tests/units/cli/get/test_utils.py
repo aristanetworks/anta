@@ -76,16 +76,13 @@ def test_create_inventory_from_cvp(tmp_path: Path, cvp_container: str | None, in
     """
     Test anta.get.utils.create_inventory_from_cvp
     """
-    target_dir = tmp_path / "inventory"
-    target_dir.mkdir()
+    output = tmp_path / "output.yml"
 
-    create_inventory_from_cvp(inventory, str(target_dir), cvp_container)
+    create_inventory_from_cvp(inventory, output, cvp_container)
 
-    expected_inventory_file_name = "inventory.yml" if cvp_container is None else f"inventory-{cvp_container}.yml"
-    expected_inventory_path = target_dir / expected_inventory_file_name
-    assert expected_inventory_path.exists()
+    assert output.exists()
     # This validate the file structure ;)
-    inv = AntaInventory().parse(str(expected_inventory_path), "user", "pass")
+    inv = AntaInventory.parse(str(output), "user", "pass")
     assert len(inv) == len(inventory)
 
 

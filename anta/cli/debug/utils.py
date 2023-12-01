@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def debug_options(f: Any) -> Any:
-    """Click common options when requiring a test catalog to execute ANTA tests"""
+    """Click common options required to execute a command on a specific device"""
 
     @inventory_options
     @click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")
@@ -30,7 +30,7 @@ def debug_options(f: Any) -> Any:
     @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, inventory: AntaInventory, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
         try:
             kwargs["device"] = inventory[ctx.params["device"]]
         except KeyError as e:

@@ -36,14 +36,14 @@ class ExitCode(enum.IntEnum):
 
     # Tests passed.
     OK = 0
-    #: Tests failed.
-    TESTS_FAILED = 1
+    # An internal error got in the way.
+    INTERNAL_ERROR = 1
     # CLI was misused
     USAGE_ERROR = 2
     # Test error
     TESTS_ERROR = 3
-    # An internal error got in the way.
-    INTERNAL_ERROR = 4
+    # Tests failed
+    TESTS_FAILED = 4
 
 
 def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
@@ -116,6 +116,7 @@ class AliasedGroup(click.Group):
         return cmd.name, cmd, args  # type: ignore
 
 
+# TODO: check code of click.pass_context that raise mypy errors for types and adapt this decorator
 def inventory_options(f: Any) -> Any:
     """Click common options when requiring an inventory to interact with devices"""
 

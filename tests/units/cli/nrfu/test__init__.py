@@ -12,6 +12,8 @@ from anta.cli import anta
 from anta.cli.utils import ExitCode
 from tests.lib.utils import default_anta_env
 
+# TODO: write unit tests for ignore-status and ignore-error
+
 
 def test_anta_nrfu_help(click_runner: CliRunner) -> None:
     """

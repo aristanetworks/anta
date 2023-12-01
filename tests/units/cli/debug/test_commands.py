@@ -6,14 +6,12 @@ Tests for anta.cli.debug.commands
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
-from unittest.mock import patch
+from typing import TYPE_CHECKING, Literal
 
 import pytest
 
 from anta.cli import anta
-from anta.models import AntaCommand
-from tests.lib.utils import default_anta_env
+from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -27,7 +25,7 @@ if TYPE_CHECKING:
         pytest.param("show version", "text", None, None, "dummy", False, id="text command"),
         pytest.param("show version", None, "1", None, "dummy", False, id="version"),
         pytest.param("show version", None, None, 3, "dummy", False, id="revision"),
-        pytest.param("show version", None, None, None, "dummy", True, id="command fails"),
+        pytest.param("undefined", None, None, None, "dummy", True, id="command fails"),
     ],
 )
 def test_run_cmd(
@@ -37,69 +35,23 @@ def test_run_cmd(
     Test `anta debug run-cmd`
     """
     # pylint: disable=too-many-arguments
-    env = default_anta_env()
     cli_args = ["debug", "run-cmd", "--command", command, "--device", device]
 
     # ofmt
-    expected_ofmt = ofmt
-    if ofmt is None:
-        expected_ofmt = "json"
-    else:
+    if ofmt is not None:
         cli_args.extend(["--ofmt", ofmt])
 
     # version
-    expected_version: Literal["latest", 1]
-    if version is None:
-        expected_version = "latest"
-    else:
+    if version is not None:
         # Need to copy ugly hack here..
-        expected_version = "latest" if version == "latest" else 1
         cli_args.extend(["--version", version])
 
     # revision
     if revision is not None:
         cli_args.extend(["--revision", str(revision)])
 
-    # errors
-    expected_errors = []
+    result = click_runner.invoke(anta, cli_args)
     if failed:
-        expected_errors = ["Command failed to run"]
-
-    # exit code
-    expected_exit_code = 1 if failed else 0
-
-    def expected_result() -> Any:
-        """
-        Helper to return some dummy payload for collect depending on outformat
-        """
-        if failed:
-            return None
-        if expected_ofmt == "json":
-            return {"dummy": 42}
-        if expected_ofmt == "text":
-            return "dummy"
-        raise ValueError("Unknown format")
-
-    async def dummy_collect(c: AntaCommand) -> None:
-        """
-        mocking collect coroutine
-        """
-        c.output = expected_result()
-        if c.output is None:
-            c.errors = expected_errors
-
-    with patch("anta.device.AsyncEOSDevice.collect") as mocked_collect:
-        mocked_collect.side_effect = dummy_collect
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
-
-    mocked_collect.assert_awaited_with(
-        AntaCommand(
-            command=command,
-            version=expected_version,
-            revision=revision,
-            ofmt=expected_ofmt,
-            output=expected_result(),
-            errors=expected_errors,
-        )
-    )
-    assert result.exit_code == expected_exit_code
+        assert result.exit_code == ExitCode.USAGE_ERROR
+    else:
+        assert result.exit_code == ExitCode.OK
