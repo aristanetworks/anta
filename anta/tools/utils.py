@@ -2,7 +2,9 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 from __future__ import annotations
+
 from typing import Any
+
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> Any:
     """

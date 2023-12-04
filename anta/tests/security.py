@@ -9,6 +9,7 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
+from typing import Literal
 
 from pydantic import conint
 
@@ -296,9 +297,9 @@ class VerifyAPISSLCertificate(AntaTest):
         """Certificate expiry limit in days"""
         subject_name: str
         """Certificate common subject name"""
-        encryption: EncryptionType
+        encryption: Literal[EncryptionType] = None  # type: ignore
         """Certificate encryption type"""
-        size: EncryptionSize
+        size: Literal[EncryptionSize] = None  # type: ignore
         """Certificate encryption size"""
 
     @AntaTest.anta_test
@@ -322,12 +323,37 @@ class VerifyAPISSLCertificate(AntaTest):
             self.result.is_failure(f"SSL certificate `{self.inputs.certificate}` is expired.")
             return
 
-        expected_data = {"subject": {"commonName": self.inputs.subject_name}, "publicKey": {"encryptionAlgorithm": self.inputs.encryption, "size": self.inputs.size}}
-
-        # Verify certificate details
+        # Verify certificate common name, encryption type and size
         keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
         verified_output = {key: get_value(certificate_data, key) for key in keys_to_verify}
-        expected_output = {key: get_value(expected_data, key) for key in keys_to_verify}
+        expected_output = {
+            "subject.commonName": self.inputs.subject_name,
+            "publicKey.encryptionAlgorithm": self.inputs.encryption,
+            "publicKey.size": self.inputs.size,
+        }
+
+        if self.inputs.encryption is None and self.inputs.size is not None:
+            actual_encryption = verified_output["publicKey.encryptionAlgorithm"]
+            expected_output = {
+                "subject.commonName": self.inputs.subject_name,
+                "publicKey.encryptionAlgorithm": actual_encryption if actual_encryption in EncryptionType else EncryptionType,
+                "publicKey.size": self.inputs.size,
+            }
+        elif self.inputs.encryption is not None and self.inputs.size is None:
+            actual_encryption_size = verified_output["publicKey.size"]
+            expected_output = {
+                "subject.commonName": self.inputs.subject_name,
+                "publicKey.encryptionAlgorithm": self.inputs.encryption,
+                "publicKey.size": actual_encryption_size if actual_encryption_size in EncryptionSize else EncryptionSize,
+            }
+        elif self.inputs.encryption is None and self.inputs.size is None:
+            actual_encryption = verified_output["publicKey.encryptionAlgorithm"]
+            actual_encryption_size = verified_output["publicKey.size"]
+            expected_output = {
+                "subject.commonName": self.inputs.subject_name,
+                "publicKey.encryptionAlgorithm": actual_encryption if actual_encryption in EncryptionType else EncryptionType,
+                "publicKey.size": actual_encryption_size if actual_encryption_size in EncryptionSize else EncryptionSize,
+            }
 
         if verified_output == expected_output:
             self.result.is_success()
