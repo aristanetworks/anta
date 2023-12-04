@@ -50,9 +50,7 @@ def inventory_output_options(f: Any) -> Any:
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], output: Path, overwrite: bool, **kwargs: dict[str, Any]) -> Any:
-        logger.info(args)
-        logger.info(kwargs)
+    def wrapper(ctx: click.Context, output: Path, overwrite: bool, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty
@@ -66,7 +64,7 @@ def inventory_output_options(f: Any) -> Any:
                 logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
                 ctx.exit(ExitCode.USAGE_ERROR)
         output.parent.mkdir(parents=True, exist_ok=True)
-        return f(*args, output, **kwargs)
+        return f(*args, output=output, **kwargs)
 
     return wrapper
 

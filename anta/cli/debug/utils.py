@@ -31,12 +31,13 @@ def debug_options(f: Any) -> Any:
     @click.pass_context
     @functools.wraps(f)
     def wrapper(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, device: str, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+        # pylint: disable=unused-argument
         try:
-            kwargs["device"] = inventory[device]
+            d = inventory[device]
         except KeyError as e:
-            message = f"Device {ctx.params['device']} does not exist in Inventory"
+            message = f"Device {device} does not exist in Inventory"
             logger.error(e, message)
             ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, **kwargs)
+        return f(*args, device=d, **kwargs)
 
     return wrapper

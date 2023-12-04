@@ -186,8 +186,8 @@ def inventory_options(f: Any) -> Any:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
-        inventory: str,
+        inventory: Path,
+        tags: list[str] | None,
         username: str,
         password: str | None,
         enable_password: str | None,
@@ -196,8 +196,10 @@ def inventory_options(f: Any) -> Any:
         timeout: int,
         insecure: bool,
         disable_cache: bool,
+        *args: tuple[Any],
         **kwargs: dict[str, Any],
     ) -> Any:
+        # pylint: disable=too-many-arguments
         if prompt:
             # User asked for a password prompt
             if password is None:
@@ -213,7 +215,7 @@ def inventory_options(f: Any) -> Any:
         if not enable and enable_password:
             raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
         try:
-            inv = AntaInventory.parse(
+            i = AntaInventory.parse(
                 filename=inventory,
                 username=username,
                 password=password,
@@ -225,7 +227,7 @@ def inventory_options(f: Any) -> Any:
             )
         except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, inv, **kwargs)
+        return f(*args, inventory=i, tags=tags, **kwargs)
 
     return wrapper
 
@@ -244,12 +246,11 @@ def catalog_options(f: Any) -> Any:
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, catalog: Path, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
         try:
-            catalog = AntaCatalog.parse(ctx.params["catalog"])
+            c = AntaCatalog.parse(catalog)
         except (ValidationError, TypeError, ValueError, YAMLError, OSError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        kwargs.pop("catalog")
-        return f(*args, catalog, **kwargs)
+        return f(*args, catalog=c, **kwargs)
 
     return wrapper

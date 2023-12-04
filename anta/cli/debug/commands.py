@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 @debug_options
 @click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
-def run_cmd(ctx: click.Context, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice) -> None:
+def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int) -> None:
     """Run arbitrary command to an ANTA device"""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it
@@ -48,7 +48,7 @@ def run_cmd(ctx: click.Context, command: str, ofmt: Literal["json", "text"], ver
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
 @click.argument("params", required=True, nargs=-1)
 def run_template(
-    ctx: click.Context, template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int, device: AntaDevice
+    ctx: click.Context, device: AntaDevice, template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int
 ) -> None:
     # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.

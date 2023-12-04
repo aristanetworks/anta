@@ -64,7 +64,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout
-    richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=True)
+    richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
     # In ANTA debug mode, show Python module in stdout
     if __DEBUG__:
         fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
