@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """
-Commands for Anta CLI to run check commands.
+Click commands to validate configuration files
 """
 from __future__ import annotations
 

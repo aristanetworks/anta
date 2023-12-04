@@ -19,7 +19,7 @@ from yaml import YAMLError, safe_load
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
-from anta.tools.misc import anta_log_exception
+from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
 

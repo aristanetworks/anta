@@ -7,7 +7,6 @@ Tests for anta.cli.get.commands
 from __future__ import annotations
 
 import filecmp
-import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import ANY, patch
@@ -17,26 +16,12 @@ from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
-from anta.cli.get.utils import stdin
 from anta.cli.utils import ExitCode
-from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
-
-
-@pytest.fixture
-def temp_env(tmp_path: Path) -> dict[str, str | None]:
-    """Fixture that create a temporary ANTA inventory that can be overriden
-    and returns the corresponding environment variables"""
-    env = default_anta_env()
-    anta_inventory = str(env["ANTA_INVENTORY"])
-    temp_inventory = tmp_path / "test_inventory.yml"
-    shutil.copy(anta_inventory, temp_inventory)
-    env["ANTA_INVENTORY"] = str(temp_inventory)
-    return env
 
 
 @pytest.mark.parametrize(
@@ -173,6 +158,7 @@ def test_from_ansible_overwrite(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """
     Test `anta get from-ansible` overwrite mechanism
 
@@ -207,8 +193,7 @@ def test_from_ansible_overwrite(
     if tmp_inv.exists():
         assert not filecmp.cmp(tmp_inv, expected_anta_inventory_path)
 
-    with patch.object(stdin, "isatty") as patched_isatty:
-        patched_isatty.return_value = is_tty
+    with patch("sys.stdin.isatty", return_value=is_tty):
         result = click_runner.invoke(anta, cli_args, env=temp_env, input=prompt)
 
     assert result.exit_code == expected_exit

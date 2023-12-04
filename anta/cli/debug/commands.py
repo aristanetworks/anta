@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """
-Commands for Anta CLI to run debug commands.
+Click commands to execute EOS commands on remote devices
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from anta.models import AntaCommand, AntaTemplate
 logger = logging.getLogger(__name__)
 
 
-@click.command(no_args_is_help=True)
+@click.command
 @debug_options
 @click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
@@ -42,7 +42,7 @@ def run_cmd(ctx: click.Context, command: str, ofmt: Literal["json", "text"], ver
         console.print(c.text_output)
 
 
-@click.command(no_args_is_help=True)
+@click.command
 @debug_options
 @click.pass_context
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")

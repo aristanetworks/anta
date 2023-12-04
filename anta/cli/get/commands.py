@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """
-Commands for Anta CLI to get information / build inventories..
+Click commands to get informations from inventories or generate them
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get
 logger = logging.getLogger(__name__)
 
 
-@click.command(no_args_is_help=True)
+@click.command
 @click.pass_context
 @inventory_output_options
 @click.option("--host", "-host", help="CloudVision instance FQDN or IP", type=str, required=True)
@@ -60,10 +60,10 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
         # Get devices under a container
         logger.info(f"Getting inventory for container {container} from CloudVision instance '{host}'")
         cvp_inventory = clnt.api.get_devices_in_container(container)
-    create_inventory_from_cvp(cvp_inventory, output, container)
+    create_inventory_from_cvp(cvp_inventory, output)
 
 
-@click.command(no_args_is_help=True)
+@click.command
 @click.pass_context
 @inventory_output_options
 @click.option("--ansible-group", "-g", help="Ansible group to filter", type=str, default="all")
@@ -104,7 +104,7 @@ def inventory(inventory: AntaInventory, tags: list[str] | None, connected: bool)
 
 @click.command
 @inventory_options
-def tags(inventory: AntaInventory, tags: list[str] | None) -> None:
+def tags(inventory: AntaInventory, tags: list[str] | None) -> None:  # pylint: disable=unused-argument
     """Get list of configured tags in user inventory."""
     tags_found = []
     for device in inventory.values():

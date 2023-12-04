@@ -30,9 +30,9 @@ def debug_options(f: Any) -> Any:
     @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, device: str, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
         try:
-            kwargs["device"] = inventory[ctx.params["device"]]
+            kwargs["device"] = inventory[device]
         except KeyError as e:
             message = f"Device {ctx.params['device']} does not exist in Inventory"
             logger.error(e, message)

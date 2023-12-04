@@ -65,20 +65,19 @@ CVP_INVENTORY = [
 
 
 @pytest.mark.parametrize(
-    "cvp_container, inventory",
+    "inventory",
     [
-        pytest.param(None, CVP_INVENTORY, id="no container"),
-        pytest.param("DC1", CVP_INVENTORY, id="some container"),
-        pytest.param(None, [], id="empty_inventory"),
+        pytest.param(CVP_INVENTORY, id="some container"),
+        pytest.param([], id="empty_inventory"),
     ],
 )
-def test_create_inventory_from_cvp(tmp_path: Path, cvp_container: str | None, inventory: list[dict[str, Any]]) -> None:
+def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any]]) -> None:
     """
     Test anta.get.utils.create_inventory_from_cvp
     """
     output = tmp_path / "output.yml"
 
-    create_inventory_from_cvp(inventory, output, cvp_container)
+    create_inventory_from_cvp(inventory, output)
 
     assert output.exists()
     # This validate the file structure ;)

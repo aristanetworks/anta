@@ -17,8 +17,8 @@ from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, Validati
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
+from anta.logger import anta_log_exception
 from anta.models import AntaTest
-from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 

@@ -9,11 +9,12 @@ from __future__ import annotations
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -84,3 +85,23 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
     if __DEBUG__:
         logger.debug("ANTA Debug Mode enabled")
+
+
+def anta_log_exception(exception: BaseException, message: Optional[str] = None, calling_logger: Optional[logging.Logger] = None) -> None:
+    """
+    Helper function to help log exceptions:
+    * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback
+    * otherwise logger.error is called
+
+    Args:
+        exception (BAseException): The Exception being logged
+        message (str): An optional message
+        calling_logger (logging.Logger): A logger to which the exception should be logged
+                                         if not present, the logger in this file is used.
+
+    """
+    if calling_logger is None:
+        calling_logger = logger
+    calling_logger.critical(f"{message}\n{exc_to_str(exception)}" if message else exc_to_str(exception))
+    if __DEBUG__:
+        calling_logger.exception(f"[ANTA Debug Mode]{f' {message}' if message else ''}", exc_info=exception)

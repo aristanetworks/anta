@@ -5,14 +5,16 @@
 from __future__ import annotations
 
 import logging
+import shutil
+from pathlib import Path
 from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
-import aioeapi
 import pytest
 from click.testing import CliRunner, Result
 from pytest import CaptureFixture
 
+from anta import aioeapi
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
@@ -26,7 +28,7 @@ DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
 
-MOCK_CLI_JSON: dict[str, dict[str, Any]] = {
+MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
     "show version": {
         "modelName": "DCS-7280CR3-32P4-F",
         "version": "4.31.1F",
@@ -39,7 +41,7 @@ MOCK_CLI_JSON: dict[str, dict[str, Any]] = {
     ),
 }
 
-MOCK_CLI_TEXT: dict[str, str] = {
+MOCK_CLI_TEXT: dict[str, aioeapi.EapiCommandError | str] = {
     "show version": "Arista cEOSLab",
     "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support": "dummy_tech-support_2023-12-01.1115.log.gz\ndummy_tech-support_2023-12-01.1015.log.gz",
     "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support | head -1": "dummy_tech-support_2023-12-01.1115.log.gz",
@@ -71,7 +73,24 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
 
 
 @pytest.fixture
-def async_device(request: pytest.FixtureRequest) -> AntaDevice:
+def test_inventory() -> AntaInventory:
+    """
+    Return the test_inventory
+    """
+    env = default_anta_env()
+    assert env["ANTA_INVENTORY"] and env["ANTA_USERNAME"] and env["ANTA_PASSWORD"] is not None
+    return AntaInventory.parse(
+        filename=env["ANTA_INVENTORY"],
+        username=env["ANTA_USERNAME"],
+        password=env["ANTA_PASSWORD"],
+    )
+
+
+# tests.unit.test_device.py fixture
+
+
+@pytest.fixture
+def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
     """
     Returns an AsyncEOSDevice instance
     """
@@ -83,6 +102,9 @@ def async_device(request: pytest.FixtureRequest) -> AntaDevice:
         kwargs.update(request.param)
     dev = AsyncEOSDevice(**kwargs)  # type: ignore[arg-type]
     return dev
+
+
+# tests.units.result_manager fixtures
 
 
 @pytest.fixture
@@ -146,33 +168,37 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     return _factory
 
 
+# tests.units.cli fixtures
+
+
 @pytest.fixture
-def test_inventory() -> AntaInventory:
-    """
-    Return the test_inventory
-    """
+def temp_env(tmp_path: Path) -> dict[str, str | None]:
+    """Fixture that create a temporary ANTA inventory that can be overriden
+    and returns the corresponding environment variables"""
     env = default_anta_env()
-    return AntaInventory.parse(
-        filename=env["ANTA_INVENTORY"],
-        username=env["ANTA_USERNAME"],
-        password=env["ANTA_PASSWORD"],
-    )
+    anta_inventory = str(env["ANTA_INVENTORY"])
+    temp_inventory = tmp_path / "test_inventory.yml"
+    shutil.copy(anta_inventory, temp_inventory)
+    env["ANTA_INVENTORY"] = str(temp_inventory)
+    return env
 
 
 @pytest.fixture
-def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
+def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
     """
     Convenience fixture to return a click.CliRunner for cli testing
     """
 
     class AntaCliRunner(CliRunner):
-        def invoke(self, *args, **kwargs) -> Result:  # type: ignore[override, no-untyped-def]
+        """Override CliRunner to inject specific variables for ANTA"""
+
+        def invoke(self, *args, **kwargs) -> Result:  # type: ignore[no-untyped-def]
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
             kwargs["auto_envvar_prefix"] = "ANTA"
             # Way to fix https://github.com/pallets/click/issues/824
             with capsys.disabled():
-                result = super().invoke(*args, **kwargs)  # type: ignore[arg-type]
+                result = super().invoke(*args, **kwargs)
             print("--- CLI Output ---")
             print(result.output)
             return result
@@ -184,6 +210,7 @@ def click_runner(capsys: CaptureFixture[str]) -> CliRunner:
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
             if isinstance(command, dict):
                 command = command["cmd"]
+            mock_cli: dict[str, Any]
             if ofmt == "json":
                 mock_cli = MOCK_CLI_JSON
             elif ofmt == "text":

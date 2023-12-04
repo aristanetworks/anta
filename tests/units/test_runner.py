@@ -33,7 +33,7 @@ async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: Ant
     caplog is the pytest fixture to capture logs
     test_inventory is a fixture that gives a default inventory for tests
     """
-    logger.setup_logging("INFO")
+    logger.setup_logging(logger.Log.INFO)
     manager = ResultManager()
     await main(manager, test_inventory, AntaCatalog())
 
@@ -48,7 +48,7 @@ async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
 
     caplog is the pytest fixture to capture logs
     """
-    logger.setup_logging("INFO")
+    logger.setup_logging(logger.Log.INFO)
     manager = ResultManager()
     inventory = AntaInventory()
     await main(manager, inventory, FAKE_CATALOG)
@@ -64,7 +64,7 @@ async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_invento
     caplog is the pytest fixture to capture logs
     test_inventory is a fixture that gives a default inventory for tests
     """
-    logger.setup_logging("INFO")
+    logger.setup_logging(logger.Log.INFO)
     manager = ResultManager()
     await main(manager, test_inventory, FAKE_CATALOG)
 

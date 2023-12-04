@@ -82,19 +82,24 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     return response.json()["sessionId"]
 
 
-def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path, container: str | None = None) -> None:
-    """
-    create an inventory file from Arista CloudVision
-    """
-    i: dict[str, dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
-    logger.debug(f"Received {len(inv)} device(s) from CVP")
-    for dev in inv:
-        logger.info(f'   * adding entry for {dev["hostname"]}')
-        i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append({"host": dev["ipAddress"], "name": dev["hostname"], "tags": [dev["containerName"].lower()]})
-    # write the devices IP address in a file
+def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
+    """Write a file inventory from pydantic models"""
+    i = AntaInventoryInput(hosts=hosts)
     with open(output, "w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump(i))
+        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
     logger.info(f"ANTA inventory file has been created: '{output}'")
+
+
+def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
+    """
+    Create an inventory file from Arista CloudVision inventory
+    """
+    logger.debug(f"Received {len(inv)} device(s) from CloudVision")
+    hosts = []
+    for dev in inv:
+        logger.info(f"   * adding entry for {dev['hostname']}")
+        hosts.append(AntaInventoryHost(name=dev["hostname"], host=dev["ipAddress"], tags=[dev["containerName"].lower()]))
+    write_inventory_to_file(hosts, output)
 
 
 def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
@@ -145,8 +150,4 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     if ansible_inventory is None:
         raise ValueError(f"Group {ansible_group} not found in Ansible inventory")
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
-    i = AntaInventoryInput(hosts=ansible_hosts)
-    # TODO, catch issue
-    with open(output, "w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
-    logger.info(f"ANTA inventory file has been created: '{output}'")
+    write_inventory_to_file(ansible_hosts, output)

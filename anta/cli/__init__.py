@@ -9,17 +9,20 @@ from __future__ import annotations
 
 import logging
 import pathlib
+import sys
 
 import click
 
-from anta import __version__
+from anta import GITHUB_SUGGESTION, __version__
 from anta.cli.check import check as check_command
 from anta.cli.debug import debug as debug_command
 from anta.cli.exec import exec as exec_command
 from anta.cli.get import get as get_command
 from anta.cli.nrfu import nrfu as nrfu_command
-from anta.cli.utils import AliasedGroup
-from anta.logger import Log, LogLevel, setup_logging
+from anta.cli.utils import AliasedGroup, ExitCode
+from anta.logger import Log, LogLevel, anta_log_exception, setup_logging
+
+logger = logging.getLogger(__name__)
 
 
 @click.group(cls=AliasedGroup)
@@ -58,7 +61,11 @@ anta.add_command(debug_command)
 
 def cli() -> None:
     """Entrypoint for pyproject.toml"""
-    anta(obj={}, auto_envvar_prefix="ANTA")
+    try:
+        anta(obj={}, auto_envvar_prefix="ANTA")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        anta_log_exception(e, f"Uncaught Exception when running ANTA CLI\n{GITHUB_SUGGESTION}", logger)
+        sys.exit(ExitCode.INTERNAL_ERROR)
 
 
 if __name__ == "__main__":
