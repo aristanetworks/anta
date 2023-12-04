@@ -213,7 +213,7 @@ def inventory_options(f: Any) -> Any:
     ) -> Any:
         # pylint: disable=too-many-arguments
         # If help is invoke somewhere, do not parse inventory
-        if ctx.obj["_anta_help"]:
+        if ctx.obj.get("_anta_help"):
             return f(*args, inventory=None, tags=tags, **kwargs)
         if prompt:
             # User asked for a password prompt
@@ -263,7 +263,7 @@ def catalog_options(f: Any) -> Any:
     @functools.wraps(f)
     def wrapper(ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]) -> Any:
         # If help is invoke somewhere, do not parse catalog
-        if ctx.obj["_anta_help"]:
+        if ctx.obj.get("_anta_help"):
             return f(*args, catalog=None, **kwargs)
         try:
             c = AntaCatalog.parse(catalog)

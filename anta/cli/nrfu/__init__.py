@@ -60,7 +60,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, ignore_status: bool, ignore_error: bool) -> None:
     """Run NRFU against inventory devices"""
     # If help is invoke somewhere, skip the command
-    if ctx.obj["_anta_help"]:
+    if ctx.obj.get("_anta_help"):
         return
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
