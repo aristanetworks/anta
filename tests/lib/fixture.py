@@ -169,8 +169,6 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 
 
 # tests.units.cli fixtures
-
-
 @pytest.fixture
 def temp_env(tmp_path: Path) -> dict[str, str | None]:
     """Fixture that create a temporary ANTA inventory that can be overriden
