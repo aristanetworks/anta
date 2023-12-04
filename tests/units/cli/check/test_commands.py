@@ -25,7 +25,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
     [
         pytest.param("ghost_catalog.yml", ExitCode.USAGE_ERROR, "Error: Invalid value for '--catalog'", id="catalog does not exist"),
         pytest.param("test_catalog_with_undefined_module.yml", ExitCode.USAGE_ERROR, "Test catalog is invalid!", id="catalog is not valid"),
-        pytest.param("test_catalog.yml", ExitCode.OK, f"Catalog {DATA_DIR}/test_catalog.yml is valid", id="catalog valid"),
+        pytest.param("test_catalog.yml", ExitCode.OK, "Catalog is valid", id="catalog valid"),
     ],
 )
 def test_catalog(click_runner: CliRunner, catalog_path: Path, expected_exit: int, expected_output: str) -> None:
