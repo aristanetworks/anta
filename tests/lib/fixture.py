@@ -105,8 +105,6 @@ def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
 
 
 # tests.units.result_manager fixtures
-
-
 @pytest.fixture
 def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
     """
