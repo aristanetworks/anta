@@ -136,12 +136,14 @@ def inventory_options(f: Any) -> Any:
         "--enable-password",
         help="Password to access EOS Privileged EXEC mode. It can be prompted using '--prompt' option. Requires '--enable' option.",
         show_envvar=True,
+        envvar="ANTA_ENABLE_PASSWORD",
     )
     @click.option(
         "--enable",
         help="Some commands may require EOS Privileged EXEC mode. This option tries to access this mode before sending a command to the device.",
         default=False,
         show_envvar=True,
+        envvar="ANTA_ENABLE",
         is_flag=True,
         show_default=True,
     )
@@ -150,6 +152,8 @@ def inventory_options(f: Any) -> Any:
         "-P",
         help="Prompt for passwords if they are not provided.",
         default=False,
+        show_envvar=True,
+        envvar="ANTA_PROMPT",
         is_flag=True,
         show_default=True,
     )
@@ -158,6 +162,7 @@ def inventory_options(f: Any) -> Any:
         help="Global connection timeout",
         default=30,
         show_envvar=True,
+        envvar="ANTA_TIMEOUT",
         show_default=True,
     )
     @click.option(
@@ -165,10 +170,11 @@ def inventory_options(f: Any) -> Any:
         help="Disable SSH Host Key validation",
         default=False,
         show_envvar=True,
+        envvar="ANTA_INSECURE",
         is_flag=True,
         show_default=True,
     )
-    @click.option("--disable-cache", help="Disable cache globally", show_envvar=True, show_default=True, is_flag=True, default=False)
+    @click.option("--disable-cache", help="Disable cache globally", show_envvar=True, envvar="ANTA_DISABLE_CACHE", show_default=True, is_flag=True, default=False)
     @click.option(
         "--inventory",
         "-i",
@@ -178,7 +184,16 @@ def inventory_options(f: Any) -> Any:
         required=True,
         type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
     )
-    @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
+    @click.option(
+        "--tags",
+        "-t",
+        help="List of tags using comma as separator: tag1,tag2,tag3",
+        show_envvar=True,
+        envvar="ANTA_TAGS",
+        type=str,
+        required=False,
+        callback=parse_tags,
+    )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
@@ -197,6 +212,9 @@ def inventory_options(f: Any) -> Any:
         **kwargs: dict[str, Any],
     ) -> Any:
         # pylint: disable=too-many-arguments
+        # If help is invoke somewhere, do not parse inventory
+        if ctx.obj["_anta_help"]:
+            return f(*args, inventory=None, tags=tags, **kwargs)
         if prompt:
             # User asked for a password prompt
             if password is None:
@@ -244,6 +262,9 @@ def catalog_options(f: Any) -> Any:
     @click.pass_context
     @functools.wraps(f)
     def wrapper(ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]) -> Any:
+        # If help is invoke somewhere, do not parse catalog
+        if ctx.obj["_anta_help"]:
+            return f(*args, catalog=None, **kwargs)
         try:
             c = AntaCatalog.parse(catalog)
         except (ValidationError, TypeError, ValueError, YAMLError, OSError):

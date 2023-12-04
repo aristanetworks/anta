@@ -18,6 +18,42 @@ from anta.cli.utils import ExitCode
 DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
 
 
+def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu table --help
+    """
+    result = click_runner.invoke(anta, ["nrfu", "table", "--help"])
+    assert result.exit_code == ExitCode.OK
+    assert "Usage: anta nrfu table" in result.output
+
+
+def test_anta_nrfu_text_help(click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu text --help
+    """
+    result = click_runner.invoke(anta, ["nrfu", "text", "--help"])
+    assert result.exit_code == ExitCode.OK
+    assert "Usage: anta nrfu text" in result.output
+
+
+def test_anta_nrfu_json_help(click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu json --help
+    """
+    result = click_runner.invoke(anta, ["nrfu", "json", "--help"])
+    assert result.exit_code == ExitCode.OK
+    assert "Usage: anta nrfu json" in result.output
+
+
+def test_anta_nrfu_template_help(click_runner: CliRunner) -> None:
+    """
+    Test anta nrfu tpl-report --help
+    """
+    result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--help"])
+    assert result.exit_code == ExitCode.OK
+    assert "Usage: anta nrfu tpl-report" in result.output
+
+
 def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     """
     Test anta nrfu, catalog is given via env
