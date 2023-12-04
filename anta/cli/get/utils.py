@@ -50,7 +50,7 @@ def inventory_output_options(f: Any) -> Any:
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, output: Path, overwrite: bool, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, *args: tuple[Any], output: Path, overwrite: bool, **kwargs: dict[str, Any]) -> Any:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty

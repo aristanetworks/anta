@@ -30,7 +30,7 @@ def debug_options(f: Any) -> Any:
     @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, device: str, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, *args: tuple[Any], inventory: AntaInventory, tags: list[str] | None, device: str, **kwargs: dict[str, Any]) -> Any:
         # pylint: disable=unused-argument
         try:
             d = inventory[device]

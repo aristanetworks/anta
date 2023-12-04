@@ -186,6 +186,7 @@ def inventory_options(f: Any) -> Any:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
+        *args: tuple[Any],
         inventory: Path,
         tags: list[str] | None,
         username: str,
@@ -196,7 +197,6 @@ def inventory_options(f: Any) -> Any:
         timeout: int,
         insecure: bool,
         disable_cache: bool,
-        *args: tuple[Any],
         **kwargs: dict[str, Any],
     ) -> Any:
         # pylint: disable=too-many-arguments
@@ -246,7 +246,7 @@ def catalog_options(f: Any) -> Any:
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, catalog: Path, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]) -> Any:
         try:
             c = AntaCatalog.parse(catalog)
         except (ValidationError, TypeError, ValueError, YAMLError, OSError):
