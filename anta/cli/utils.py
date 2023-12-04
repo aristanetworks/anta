@@ -184,37 +184,48 @@ def inventory_options(f: Any) -> Any:
     @click.option("--tags", "-t", help="List of tags using comma as separator: tag1,tag2,tag3", type=str, required=False, callback=parse_tags)
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
-        if ctx.params.get("prompt"):
+    def wrapper(
+        ctx: click.Context,
+        *args: tuple[Any],
+        inventory: str,
+        username: str,
+        password: str | None,
+        enable_password: str | None,
+        enable: bool,
+        prompt: bool,
+        timeout: int,
+        insecure: bool,
+        disable_cache: bool,
+        **kwargs: dict[str, Any],
+    ) -> Any:
+        if prompt:
             # User asked for a password prompt
-            if ctx.params.get("password") is None:
-                ctx.params["password"] = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-            if ctx.params.get("enable"):
-                if ctx.params.get("enable_password") is None:
+            if password is None:
+                password = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
+            if enable:
+                if enable_password is None:
                     if click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
-                        ctx.params["enable_password"] = click.prompt(
+                        enable_password = click.prompt(
                             "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
                         )
-        if ctx.params.get("password") is None:
+        if password is None:
             raise click.BadParameter("EOS password needs to be provided by using either the '--password' option or the '--prompt' option.")
-        if not ctx.params.get("enable") and ctx.params.get("enable_password"):
+        if not enable and enable_password:
             raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
         try:
-            inventory = AntaInventory.parse(
-                filename=ctx.params["inventory"],
-                username=ctx.params["username"],
-                password=ctx.params["password"],
-                enable=ctx.params["enable"],
-                enable_password=ctx.params["enable_password"],
-                timeout=ctx.params["timeout"],
-                insecure=ctx.params["insecure"],
-                disable_cache=ctx.params["disable_cache"],
+            inv = AntaInventory.parse(
+                filename=inventory,
+                username=username,
+                password=password,
+                enable=enable,
+                enable_password=enable_password,
+                timeout=timeout,
+                insecure=insecure,
+                disable_cache=disable_cache,
             )
         except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        for arg in ["inventory", "username", "password", "enable", "prompt", "timeout", "insecure", "enable_password", "disable_cache", "tags"]:
-            kwargs.pop(arg)
-        return f(*args, inventory, ctx.params["tags"], **kwargs)
+        return f(*args, inv, **kwargs)
 
     return wrapper
 

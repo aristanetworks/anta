@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 @click.option("--username", "-u", help="CloudVision username", type=str, required=True)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
-def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str) -> None:
+def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
     """
     Build ANTA inventory from Cloudvision
 
