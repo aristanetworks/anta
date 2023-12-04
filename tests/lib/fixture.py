@@ -198,7 +198,7 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
             return result
 
     def cli(
-        command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", **kwargs: dict[str, Any]
+        command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", version: int | str | None = "latest", **kwargs: Any
     ) -> dict[str, Any] | list[dict[str, Any]]:
         # pylint: disable=unused-argument
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:

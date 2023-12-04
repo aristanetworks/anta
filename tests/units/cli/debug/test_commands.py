@@ -17,12 +17,12 @@ if TYPE_CHECKING:
     from click.testing import CliRunner
 
 
-# TODO complete test cases
 @pytest.mark.parametrize(
     "command, ofmt, version, revision, device, failed",
     [
         pytest.param("show version", "json", None, None, "dummy", False, id="json command"),
         pytest.param("show version", "text", None, None, "dummy", False, id="text command"),
+        pytest.param("show version", None, "latest", None, "dummy", False, id="version-latest"),
         pytest.param("show version", None, "1", None, "dummy", False, id="version"),
         pytest.param("show version", None, None, 3, "dummy", False, id="revision"),
         pytest.param("undefined", None, None, None, "dummy", True, id="command fails"),
@@ -35,7 +35,7 @@ def test_run_cmd(
     Test `anta debug run-cmd`
     """
     # pylint: disable=too-many-arguments
-    cli_args = ["debug", "run-cmd", "--command", command, "--device", device]
+    cli_args = ["-log", "debug", "debug", "run-cmd", "--command", command, "--device", device]
 
     # ofmt
     if ofmt is not None:
@@ -43,7 +43,6 @@ def test_run_cmd(
 
     # version
     if version is not None:
-        # Need to copy ugly hack here..
         cli_args.extend(["--version", version])
 
     # revision
@@ -55,3 +54,7 @@ def test_run_cmd(
         assert result.exit_code == ExitCode.USAGE_ERROR
     else:
         assert result.exit_code == ExitCode.OK
+        if revision is not None:
+            assert f"revision={revision}" in result.output
+        if version is not None:
+            assert (f"version='{version}'" if version == "latest" else f"version={version}") in result.output
