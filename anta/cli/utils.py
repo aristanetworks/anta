@@ -71,12 +71,11 @@ def exit_with_code(ctx: click.Context) -> None:
     Args:
         ctx: Click Context
     """
-
-    if ctx.params.get("ignore_status"):
-        ctx.exit(0)
+    if ctx.obj.get("ignore_status"):
+        ctx.exit(ExitCode.OK)
 
     # If ignore_error is True then status can never be "error"
-    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.params.get("ignore_error")))
+    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.obj.get("ignore_error")))
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)
