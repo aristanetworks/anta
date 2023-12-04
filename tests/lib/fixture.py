@@ -87,8 +87,6 @@ def test_inventory() -> AntaInventory:
 
 
 # tests.unit.test_device.py fixture
-
-
 @pytest.fixture
 def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
     """
