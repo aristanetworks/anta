@@ -70,7 +70,8 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
 @click.option(
     "--ansible-inventory",
     help="Path to your ansible inventory file to read",
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, path_type=Path),
+    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+    required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
     """Build ANTA inventory from an ansible inventory YAML file"""
