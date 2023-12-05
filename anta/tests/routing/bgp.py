@@ -447,3 +447,80 @@ class VerifyBGPSpecificPeers(AntaTest):
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
+
+
+class VerifyBGPExchangedRoutes(AntaTest):
+    """
+    Verifies if BGP routes are advertised and recivied for a specified VRF.
+
+    Expected results:
+        * success: The test will pass if BGP routes are advertised in the specified VRF.
+        * failure: The test will fail if BGP routes are not advertised in the specified VRF.
+    """
+
+    name = "VerifyBGPExchangedRoutes"
+    description = "Verifies if BGP routes are advertised and recivied for a specified VRF."
+    categories = ["routing", "bgp"]
+    commands = [
+        AntaTemplate(template="show bgp neighbors {neighbor} advertised-routes vrf {vrf}"),
+        AntaTemplate(template="show bgp neighbors {neighbor} routes vrf {vrf}"),
+    ]
+
+    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        bgp_neighbors: List[BgpNeighbors]
+        """List of BGP neighbors"""
+
+        class BgpNeighbors(BaseModel):
+            neighbor: IPv4Address
+            """IPv4 BGP neighbor"""
+            vrf: str = "default"
+            """VRF context"""
+            advertised_routes: list  # type: ignore
+            """Advertised routes"""
+            received_routes: list  # type: ignore
+            """Recivied routes"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [
+            template.render(
+                neighbor=bgp_neighbor.neighbor, vrf=bgp_neighbor.vrf, advertised_routes=bgp_neighbor.advertised_routes, received_routes=bgp_neighbor.received_routes
+            )
+            for bgp_neighbor in self.inputs.bgp_neighbors
+        ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures = {"advertised_routes": {}, "received_routes": {}}  # type: ignore
+
+        for command in self.instance_commands:
+            neighbor = command.params.get("neighbor")
+            vrf = command.params.get("vrf")
+            advertised_routes = command.params.get("advertised_routes")
+            received_routes = command.params.get("received_routes")
+
+            if (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}", separator="..")) is None:
+                self.result.is_failure(f"BGP neighbors are not configured for `{vrf}` VRF.")
+                return
+            if (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}..bgpRouteEntries", separator="..")) is None:
+                self.result.is_failure(f"BGP routes are not found for `{neighbor}` neighbor.")
+                return
+
+            if "advertised-routes" in command.command:
+                routes = []
+                for route in advertised_routes:
+                    if route not in bgp_routes:
+                        routes.append(route)
+                if routes:
+                    failures["advertised_routes"].update({str(neighbor): routes})
+            else:
+                routes = []
+                for route in received_routes:
+                    if route not in bgp_routes:
+                        routes.append(route)
+                if routes:
+                    failures["received_routes"].update({str(neighbor): routes})
+
+        if not failures.get("advertised_routes") or failures.get("received_routes"):
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP routes are not redistributed: {failures}")
