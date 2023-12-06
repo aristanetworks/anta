@@ -7,25 +7,21 @@ from __future__ import annotations
 import logging
 import shutil
 from pathlib import Path
-from typing import Any
-from typing import Callable
-from typing import Iterator
+from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
 import pytest
-from click.testing import CliRunner
-from click.testing import Result
+from click.testing import CliRunner, Result
 from pytest import CaptureFixture
-from tests.lib.utils import default_anta_env
 
 from anta import aioeapi
 from anta.cli.console import console
-from anta.device import AntaDevice
-from anta.device import AsyncEOSDevice
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
+from tests.lib.utils import default_anta_env
 
 logger = logging.getLogger(__name__)
 
