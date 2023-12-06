@@ -11,7 +11,7 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
-from pydantic import BaseModel, PositiveInt, model_validator
+from pydantic import BaseModel, PositiveInt, model_valid
 
 from anta.custom_types import Afi, Safi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -505,22 +505,21 @@ class VerifyBGPExchangedRoutes(AntaTest):
                 self.result.is_failure(f"BGP routes are not found for `{neighbor}` neighbor.")
                 return
 
+            routes = []
             if "advertised-routes" in command.command:
-                routes = []
                 for route in advertised_routes:
                     if route not in bgp_routes:
                         routes.append(route)
                 if routes:
                     failures["advertised_routes"].update({str(neighbor): routes})
             else:
-                routes = []
                 for route in received_routes:
                     if route not in bgp_routes:
                         routes.append(route)
                 if routes:
                     failures["received_routes"].update({str(neighbor): routes})
 
-        if not failures.get("advertised_routes") or failures.get("received_routes"):
+        if not failures.get("advertised_routes") and failures.get("received_routes"):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP routes are not redistributed: {failures}")
