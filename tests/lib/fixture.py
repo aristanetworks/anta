@@ -7,20 +7,25 @@ from __future__ import annotations
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, Callable, Iterator
+from typing import Any
+from typing import Callable
+from typing import Iterator
 from unittest.mock import patch
 
 import pytest
-from click.testing import CliRunner, Result
+from click.testing import CliRunner
+from click.testing import Result
 from pytest import CaptureFixture
+from tests.lib.utils import default_anta_env
 
 from anta import aioeapi
-from anta.device import AntaDevice, AsyncEOSDevice
+from anta.cli.console import console
+from anta.device import AntaDevice
+from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
-from tests.lib.utils import default_anta_env
 
 logger = logging.getLogger(__name__)
 
@@ -233,4 +238,5 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
     with patch("aioeapi.device.Device.check_connection", return_value=True), patch("aioeapi.device.Device.cli", side_effect=cli), patch("asyncssh.connect"), patch(
         "asyncssh.scp"
     ):
+        console._color_system = None
         yield AntaCliRunner()

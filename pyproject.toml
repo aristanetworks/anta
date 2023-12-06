@@ -249,8 +249,10 @@ python =
 [testenv]
 description = Run pytest with {basepython}
 extras = dev
+# posargs allows to run only a specific test using
+# tox -e <env> -- path/to/my/test::test
 commands =
-   pytest
+   pytest {posargs}
 
 [testenv:lint]
 description = Check the code style
