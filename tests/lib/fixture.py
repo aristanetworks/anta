@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 from pathlib import Path
 from typing import Any, Callable, Iterator
@@ -190,6 +191,10 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
         def invoke(self, *args, **kwargs) -> Result:  # type: ignore[no-untyped-def]
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
+            # Deterministic terminal width
+            os.environ.pop("COLUMNS", None)
+            kwargs["env"]["COLUMNS"] = "165"
+
             kwargs["auto_envvar_prefix"] = "ANTA"
             # Way to fix https://github.com/pallets/click/issues/824
             with capsys.disabled():
