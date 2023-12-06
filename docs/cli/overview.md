@@ -19,14 +19,14 @@ $ anta --help
 --8<-- "anta_help.txt"
 ```
 
-## ANTA Global Parameters
+## ANTA Parameters as environement variables
 
-Certain parameters are globally required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
+Certain parameters are required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
 
 To pass the parameters via the CLI:
 
 ```bash
-anta --username tom --password arista123 --inventory inventory.yml <anta cli>
+anta nrfu --username tom --password arista123 --inventory inventory.yml <anta cli>
 ```
 
 To set them as ENV VAR:
@@ -40,27 +40,41 @@ export ANTA_INVENTORY=inventory.yml
 Then, run the CLI:
 
 ```bash
-anta <anta cli>
+anta nrfu <anta cli>
 ```
 !!! info
     Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
+### List of available environment variables
+
+!!! note
+    All environement variables may not be needed for every commands.
+
+| Variable Name | Purpose |
+| ------------- | ------- |
+| ANTA_USERNAME | The username to use in the inventory to connect to devices. |
+| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |
+| ANTA_INVENTORY | The path to the inventory file. |
+| ANTA_CATALOG | The path to the catalog file. |
+| ANTA_PROMPT | The value to pass to the prompt for password is password is not provided |
+| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |
+| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |
+| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |
+| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |
+
 ## ANTA Exit Codes
 
-ANTA utilizes different exit codes to indicate the status of the test runs.
-
-For all subcommands, ANTA will return the exit code 0, indicating a successful operation, except for the nrfu command.
-
-For the nrfu command, ANTA uses the following exit codes:
+ANTA CLI utilizes the following exit codes:
 
 - `Exit code 0` - All tests passed successfully.
-- `Exit code 1` - Tests were run, but at least one test returned a failure.
-- `Exit code 2` - Tests were run, but at least one test returned an error.
-- `Exit code 3` - An internal error occurred while executing tests.
+- `Exit code 1` - An internal error occurred while executing ANTA.
+- `Exit code 2` - A usage error was raised.
+- `Exit code 3` - Tests were run, but at least one test returned an error.
+- `Exit code 4` - Tests were run, but at least one test returned a failure.
 
-To ignore the test status, use `anta --ignore-status nrfu`, and the exit code will always be 0.
+To ignore the test status, use `anta nrfu --ignore-status`, and the exit code will always be 0.
 
-To ignore errors, use `anta --ignore-error nrfu`, and the exit code will be 0 if all tests succeeded or 1 if any test failed.
+To ignore errors, use `anta nrfu --ignore-error`, and the exit code will be 0 if all tests succeeded or 1 if any test failed.
 
 ## Shell Completion
 

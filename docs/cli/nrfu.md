@@ -22,9 +22,36 @@ Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
   Run NRFU against inventory devices
 
 Options:
-  -c, --catalog FILE  Path to the test catalog YAML file  [env var:
-                      ANTA_CATALOG; required]
-  --help              Show this message and exit.
+  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
+                          required]
+  -p, --password TEXT     Password to connect to EOS that must be provided. It
+                          can be prompted using '--prompt' option.  [env var:
+                          ANTA_PASSWORD]
+  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
+                          be prompted using '--prompt' option. Requires '--
+                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
+  --enable                Some commands may require EOS Privileged EXEC mode.
+                          This option tries to access this mode before sending
+                          a command to the device.  [env var: ANTA_ENABLE]
+  -P, --prompt            Prompt for passwords if they are not provided.  [env
+                          var: ANTA_PROMPT]
+  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
+                          default: 30]
+  --insecure              Disable SSH Host Key validation  [env var:
+                          ANTA_INSECURE]
+  --disable-cache         Disable cache globally  [env var:
+                          ANTA_DISABLE_CACHE]
+  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+                          ANTA_INVENTORY; required]
+  -t, --tags TEXT         List of tags using comma as separator:
+                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  -c, --catalog FILE      Path to the test catalog YAML file  [env var:
+                          ANTA_CATALOG; required]
+  --ignore-status         Always exit with success  [env var:
+                          ANTA_NRFU_IGNORE_STATUS]
+  --ignore-error          Only report failures and not errors  [env var:
+                          ANTA_NRFU_IGNORE_ERROR]
+  --help                  Show this message and exit.
 
 Commands:
   json        ANTA command to check network state with JSON result
@@ -32,6 +59,8 @@ Commands:
   text        ANTA command to check network states with text result
   tpl-report  ANTA command to check network state with templated report
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option.
 
@@ -61,13 +90,12 @@ Usage: anta nrfu text [OPTIONS]
   ANTA command to check network states with text result
 
 Options:
-  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
   -s, --search TEXT  Regular expression to search in both name and test
   --skip-error       Hide tests in errors due to connectivity issue
   --help             Show this message and exit.
 ```
 
-The [`--tags` option allows](#tag-management) to target specific devices in your inventory and run tests with the exact same tags from your catalog, while the `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
+The `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
 
 The `--skip-error` option can be used to exclude tests that failed due to connectivity issues or unsupported commands.
 
@@ -91,8 +119,6 @@ Usage: anta nrfu table [OPTIONS]
   ANTA command to check network states with table result
 
 Options:
-  --tags TEXT               List of tags using comma as separator:
-                            tag1,tag2,tag3
   -d, --device TEXT         Show a summary for this device
   -t, --test TEXT           Show a summary for this test
   --group-by [device|test]  Group result by test or host. default none
@@ -106,7 +132,7 @@ The `--group-by` option show a summarized view of the test results per host or p
 ### Examples
 
 ```bash
-anta nrfu table --tags LEAF
+anta nrfu --tags LEAF table
 ```
 [![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-output.png)
 
@@ -147,7 +173,6 @@ Usage: anta nrfu json [OPTIONS]
   ANTA command to check network state with JSON result
 
 Options:
-  -t, --tags TEXT    List of tags using comma as separator: tag1,tag2,tag3
   -o, --output FILE  Path to save report as a file  [env var:
                      ANTA_NRFU_JSON_OUTPUT]
   --help             Show this message and exit.
@@ -158,7 +183,7 @@ The `--output` option allows you to save the JSON report as a file.
 ### Example
 
 ```bash
-anta nrfu json --tags LEAF
+anta nrfu --tags LEAF json
 ```
 [![anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-json-output.png)
 
@@ -179,7 +204,6 @@ Options:
                          ANTA_NRFU_TPL_REPORT_TEMPLATE; required]
   -o, --output FILE      Path to save report as a file  [env var:
                          ANTA_NRFU_TPL_REPORT_OUTPUT]
-  -t, --tags TEXT        List of tags using comma as separator: tag1,tag2,tag3
   --help                 Show this message and exit.
 ```
 The `--template` option is used to specify the Jinja2 template file for generating the custom report.
@@ -189,7 +213,7 @@ The `--output` option allows you to choose the path where the final report will 
 ### Example
 
 ```bash
-anta nrfu tpl-report --tags LEAF --template ./custom_template.j2
+anta nrfu --tags LEAF tpl-report --template ./custom_template.j2
 ```
 [![anta nrfu json results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
 
@@ -206,7 +230,7 @@ The Jinja2 template has access to all `TestResult` elements and their values, as
 You can also save the report result to a file using the `--output` option:
 
 ```bash
-anta nrfu tpl-report --tags LEAF --template ./custom_template.j2 --output nrfu-tpl-report.txt
+anta nrfu --tags LEAF tpl-report --template ./custom_template.j2 --output nrfu-tpl-report.txt
 ```
 
 The resulting output might look like this:

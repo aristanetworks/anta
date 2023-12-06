@@ -29,13 +29,40 @@ Usage: anta debug run-cmd [OPTIONS]
   Run arbitrary command to an ANTA device
 
 Options:
-  -c, --command TEXT        Command to run  [required]
+  -u, --username TEXT       Username to connect to EOS  [env var:
+                            ANTA_USERNAME; required]
+  -p, --password TEXT       Password to connect to EOS that must be provided.
+                            It can be prompted using '--prompt' option.  [env
+                            var: ANTA_PASSWORD]
+  --enable-password TEXT    Password to access EOS Privileged EXEC mode. It
+                            can be prompted using '--prompt' option. Requires
+                            '--enable' option.  [env var:
+                            ANTA_ENABLE_PASSWORD]
+  --enable                  Some commands may require EOS Privileged EXEC
+                            mode. This option tries to access this mode before
+                            sending a command to the device.  [env var:
+                            ANTA_ENABLE]
+  -P, --prompt              Prompt for passwords if they are not provided.
+                            [env var: ANTA_PROMPT]
+  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
+                            default: 30]
+  --insecure                Disable SSH Host Key validation  [env var:
+                            ANTA_INSECURE]
+  --disable-cache           Disable cache globally  [env var:
+                            ANTA_DISABLE_CACHE]
+  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+                            ANTA_INVENTORY; required]
+  -t, --tags TEXT           List of tags using comma as separator:
+                            tag1,tag2,tag3  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision
   -d, --device TEXT         Device from inventory to use  [required]
+  -c, --command TEXT        Command to run  [required]
   --help                    Show this message and exit.
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
@@ -74,14 +101,41 @@ Usage: anta debug run-template [OPTIONS] PARAMS...
   anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
 Options:
-  -t, --template TEXT       Command template to run. E.g. 'show vlan
-                            {vlan_id}'  [required]
+  -u, --username TEXT       Username to connect to EOS  [env var:
+                            ANTA_USERNAME; required]
+  -p, --password TEXT       Password to connect to EOS that must be provided.
+                            It can be prompted using '--prompt' option.  [env
+                            var: ANTA_PASSWORD]
+  --enable-password TEXT    Password to access EOS Privileged EXEC mode. It
+                            can be prompted using '--prompt' option. Requires
+                            '--enable' option.  [env var:
+                            ANTA_ENABLE_PASSWORD]
+  --enable                  Some commands may require EOS Privileged EXEC
+                            mode. This option tries to access this mode before
+                            sending a command to the device.  [env var:
+                            ANTA_ENABLE]
+  -P, --prompt              Prompt for passwords if they are not provided.
+                            [env var: ANTA_PROMPT]
+  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
+                            default: 30]
+  --insecure                Disable SSH Host Key validation  [env var:
+                            ANTA_INSECURE]
+  --disable-cache           Disable cache globally  [env var:
+                            ANTA_DISABLE_CACHE]
+  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+                            ANTA_INVENTORY; required]
+  -t, --tags TEXT           List of tags using comma as separator:
+                            tag1,tag2,tag3  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision
   -d, --device TEXT         Device from inventory to use  [required]
+  -t, --template TEXT       Command template to run. E.g. 'show vlan
+                            {vlan_id}'  [required]
   --help                    Show this message and exit.
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
