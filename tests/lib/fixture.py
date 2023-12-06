@@ -234,5 +234,5 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
     with patch("aioeapi.device.Device.check_connection", return_value=True), patch("aioeapi.device.Device.cli", side_effect=cli), patch("asyncssh.connect"), patch(
         "asyncssh.scp"
     ):
-        console._color_system = None
+        console._color_system = None  # pylint: disable=protected-access
         yield AntaCliRunner()
