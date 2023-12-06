@@ -12,8 +12,10 @@ import pathlib
 
 import click
 
+from anta.cli.console import console
 from anta.cli.utils import exit_with_code, parse_tags
 from anta.models import AntaTest
+from anta.reporter.word import ReportWordDocx
 from anta.runner import main
 
 from .utils import anta_progress_bar, print_jinja, print_json, print_settings, print_table, print_text
@@ -27,14 +29,26 @@ logger = logging.getLogger(__name__)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
+    "--output",
+    "-o",
+    help="Save report in word format",
+    required=False,
+    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
+)
+@click.option(
     "--group-by", default=None, type=click.Choice(["device", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
 )
-def table(ctx: click.Context, tags: list[str], device: str | None, test: str | None, group_by: str) -> None:
+def table(ctx: click.Context, tags: list[str], device: str | None, test: str | None, group_by: str, output: pathlib.Path) -> None:
+    # pylint: disable=too-many-arguments
     """ANTA command to check network states with table result"""
     print_settings(ctx)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
+    if output is not None:
+        console.print(f"saving word report under {output}")
+        ReportWordDocx(title="Anta Custom report", filename=str(output), anta_result_manager=ctx.obj["result_manager"])
+
     exit_with_code(ctx)
 
 

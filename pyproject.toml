@@ -29,6 +29,7 @@ dependencies = [
   "rich>=13.5.2,<13.8.0",
   "asyncssh>=2.13.2,<2.15.0",
   "Jinja2~=3.1.2",
+  "python-docx~=1.1.0"
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
