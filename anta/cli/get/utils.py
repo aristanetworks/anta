@@ -6,21 +6,67 @@ Utils functions to use with anta.cli.get.commands module.
 """
 from __future__ import annotations
 
+import functools
 import json
 import logging
 from pathlib import Path
+from sys import stdin
 from typing import Any
 
+import click
 import requests
 import urllib3
 import yaml
 
+from anta.cli.utils import ExitCode
 from anta.inventory import AntaInventory
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
+
+
+def inventory_output_options(f: Any) -> Any:
+    """Click common options required when an inventory is being generated"""
+
+    @click.option(
+        "--output",
+        "-o",
+        required=True,
+        envvar="ANTA_INVENTORY",
+        show_envvar=True,
+        help="Path to save inventory file",
+        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+    )
+    @click.option(
+        "--overwrite",
+        help="Do not prompt when overriding current inventory",
+        default=False,
+        is_flag=True,
+        show_default=True,
+        required=False,
+        show_envvar=True,
+    )
+    @click.pass_context
+    @functools.wraps(f)
+    def wrapper(ctx: click.Context, *args: tuple[Any], output: Path, overwrite: bool, **kwargs: dict[str, Any]) -> Any:
+        # Boolean to check if the file is empty
+        output_is_not_empty = output.exists() and output.stat().st_size != 0
+        # Check overwrite when file is not empty
+        if not overwrite and output_is_not_empty:
+            is_tty = stdin.isatty()
+            if is_tty:
+                # File has content and it is in an interactive TTY --> Prompt user
+                click.confirm(f"Your destination file '{output}' is not empty, continue?", abort=True)
+            else:
+                # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
+                logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
+                ctx.exit(ExitCode.USAGE_ERROR)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        return f(*args, output=output, **kwargs)
+
+    return wrapper
 
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
@@ -36,31 +82,34 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     return response.json()["sessionId"]
 
 
-def create_inventory_from_cvp(inv: list[dict[str, Any]], directory: str, container: str | None = None) -> None:
+def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
+    """Write a file inventory from pydantic models"""
+    i = AntaInventoryInput(hosts=hosts)
+    with open(output, "w", encoding="UTF-8") as out_fd:
+        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
+    logger.info(f"ANTA inventory file has been created: '{output}'")
+
+
+def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
     """
-    create an inventory file from Arista CloudVision
+    Create an inventory file from Arista CloudVision inventory
     """
-    i: dict[str, dict[str, Any]] = {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": []}}
-    logger.debug(f"Received {len(inv)} device(s) from CVP")
+    logger.debug(f"Received {len(inv)} device(s) from CloudVision")
+    hosts = []
     for dev in inv:
-        logger.info(f'   * adding entry for {dev["hostname"]}')
-        i[AntaInventory.INVENTORY_ROOT_KEY]["hosts"].append({"host": dev["ipAddress"], "name": dev["hostname"], "tags": [dev["containerName"].lower()]})
-    # write the devices IP address in a file
-    inv_file = "inventory" if container is None else f"inventory-{container}"
-    out_file = f"{directory}/{inv_file}.yml"
-    with open(out_file, "w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump(i))
-    logger.info(f"Inventory file has been created in {out_file}")
+        logger.info(f"   * adding entry for {dev['hostname']}")
+        hosts.append(AntaInventoryHost(name=dev["hostname"], host=dev["ipAddress"], tags=[dev["containerName"].lower()]))
+    write_inventory_to_file(hosts, output)
 
 
-def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_group: str = "all") -> None:
+def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
     """
     Create an ANTA inventory from an Ansible inventory YAML file
 
     Args:
         inventory: Ansible Inventory file to read
-        output_file: ANTA inventory file to generate.
-        ansible_root: Ansible group from where to extract data.
+        output: ANTA inventory file to generate.
+        ansible_group: Ansible group from where to extract data.
     """
 
     def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | None:
@@ -101,8 +150,4 @@ def create_inventory_from_ansible(inventory: Path, output_file: Path, ansible_gr
     if ansible_inventory is None:
         raise ValueError(f"Group {ansible_group} not found in Ansible inventory")
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
-    i = AntaInventoryInput(hosts=ansible_hosts)
-    # TODO, catch issue
-    with open(output_file, "w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
-    logger.info(f"ANTA device inventory file has been created in {output_file}")
+    write_inventory_to_file(ansible_hosts, output)

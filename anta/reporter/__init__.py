@@ -56,6 +56,9 @@ class ReportTable:
         for idx, header in enumerate(headers):
             if idx == 0:
                 table.add_column(header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
+            elif header == "Test Name":
+                # We always want the full test name
+                table.add_column(header, justify="left", no_wrap=True)
             else:
                 table.add_column(header, justify="left")
         return table

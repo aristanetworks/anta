@@ -174,7 +174,7 @@ warn_untyped_fields = true
 # TODO - may need cov-append for Tox
 # When run from anta directory this will read cov-config from pyproject.toml
 addopts = "-ra -q -s -vv --capture=tee-sys --cov --cov-report term:skip-covered --color yes"
-log_level = "DEBUG"
+log_level = "WARNING"
 log_cli = true
 render_collapsed = true
 filterwarnings = [
@@ -249,8 +249,10 @@ python =
 [testenv]
 description = Run pytest with {basepython}
 extras = dev
+# posargs allows to run only a specific test using
+# tox -e <env> -- path/to/my/test::test
 commands =
-   pytest
+   pytest {posargs}
 
 [testenv:lint]
 description = Check the code style

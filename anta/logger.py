@@ -7,16 +7,32 @@ Configure logging for ANTA
 from __future__ import annotations
 
 import logging
+from enum import Enum
 from pathlib import Path
+from typing import Literal, Optional
 
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
+from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | None = None) -> None:
+class Log(str, Enum):
+    """Represent log levels from logging module as immutable strings"""
+
+    CRITICAL = logging.getLevelName(logging.CRITICAL)
+    ERROR = logging.getLevelName(logging.ERROR)
+    WARNING = logging.getLevelName(logging.WARNING)
+    INFO = logging.getLevelName(logging.INFO)
+    DEBUG = logging.getLevelName(logging.DEBUG)
+
+
+LogLevel = Literal[Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG]
+
+
+def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     """
     Configure logging for ANTA.
     By default, the logging level is INFO for all loggers except for httpx and asyncssh which are too verbose:
@@ -48,7 +64,7 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout
-    richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=True)
+    richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
     # In ANTA debug mode, show Python module in stdout
     if __DEBUG__:
         fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
@@ -69,3 +85,23 @@ def setup_logging(level: str = logging.getLevelName(logging.INFO), file: Path | 
 
     if __DEBUG__:
         logger.debug("ANTA Debug Mode enabled")
+
+
+def anta_log_exception(exception: BaseException, message: Optional[str] = None, calling_logger: Optional[logging.Logger] = None) -> None:
+    """
+    Helper function to help log exceptions:
+    * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback
+    * otherwise logger.error is called
+
+    Args:
+        exception (BAseException): The Exception being logged
+        message (str): An optional message
+        calling_logger (logging.Logger): A logger to which the exception should be logged
+                                         if not present, the logger in this file is used.
+
+    """
+    if calling_logger is None:
+        calling_logger = logger
+    calling_logger.critical(f"{message}\n{exc_to_str(exception)}" if message else exc_to_str(exception))
+    if __DEBUG__:
+        calling_logger.exception(f"[ANTA Debug Mode]{f' {message}' if message else ''}", exc_info=exception)

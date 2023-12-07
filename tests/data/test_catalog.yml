@@ -1,16 +1,5 @@
 ---
-anta.tests.configuration:
-  - VerifyZeroTouch:
-
-anta.tests.hardware:
-  - VerifyTemperature:
-
 anta.tests.software:
   - VerifyEOSVersion:
       versions:
-        - 4.25.4M
-        - 4.26.1F
-
-anta.tests.system:
-  - VerifyUptime:
-      minimum: 86400
+        - 4.31.1F

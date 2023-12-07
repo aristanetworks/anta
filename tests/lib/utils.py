@@ -37,7 +37,7 @@ def generate_test_ids(data: list[dict[str, Any]]) -> list[str]:
     return [f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}" for val in data]
 
 
-def default_anta_env() -> dict[str, str]:
+def default_anta_env() -> dict[str, str | None]:
     """
     Return a default_anta_environement which can be passed to a cliRunner.invoke method
     """
