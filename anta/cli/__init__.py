@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option(
     "--log-level",
-    "-log",
+    "-l",
     help="ANTA logging level",
     default=logging.getLevelName(logging.INFO),
     show_envvar=True,

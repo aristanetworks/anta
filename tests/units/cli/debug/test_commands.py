@@ -35,7 +35,7 @@ def test_run_cmd(
     Test `anta debug run-cmd`
     """
     # pylint: disable=too-many-arguments
-    cli_args = ["-log", "debug", "debug", "run-cmd", "--command", command, "--device", device]
+    cli_args = ["-l", "debug", "debug", "run-cmd", "--command", command, "--device", device]
 
     # ofmt
     if ofmt is not None:

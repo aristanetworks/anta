@@ -166,10 +166,10 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 ### Example of multiple arguments
 
 ```bash
-anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
+anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
 > {'dst': '8.8.8.8', 'src': 'Loopback0'}
 
-anta --log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1          
+anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1          
 > {'dst': '1.1.1.1', 'src': 'Loopback1'}
 # Notice how `src` and `dst` keep only the latest value
 ```
