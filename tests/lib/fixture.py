@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import shutil
 from pathlib import Path
 from typing import Any, Callable, Iterator
@@ -192,7 +191,6 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
             # Deterministic terminal width
-            os.environ.pop("COLUMNS", None)
             kwargs["env"]["COLUMNS"] = "165"
 
             kwargs["auto_envvar_prefix"] = "ANTA"
