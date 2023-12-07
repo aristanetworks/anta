@@ -54,6 +54,9 @@ Commands:
   nrfu   Run ANTA tests on devices
 ```
 
+!!! warning
+    The ANTA CLI options have changed after version 0.11 and have moved away from the top level `anta` and are now required at their respective commands (e.g. `anta nrfu`). This breaking change occurs after users feedback on making the CLI more intuitive. This change should not affect user experience when using environment variables.
+
 ## Documentation
 
 The documentation is published on [ANTA package website](https://www.anta.ninja). Also, a [demo repository](https://github.com/titom73/atd-anta-demo) is available to facilitate your journey with ANTA.
