@@ -11,7 +11,7 @@ from anta.cli.check import commands
 
 @click.group
 def check() -> None:
-    """Check commands for building ANTA"""
+    """Commands to validate configuration files"""
 
 
 check.add_command(commands.catalog)

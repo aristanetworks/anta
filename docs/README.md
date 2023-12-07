@@ -47,11 +47,11 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
-  check  Check commands for building ANTA
-  debug  Debug commands for building ANTA
-  exec   Execute commands to inventory devices
-  get    Get data from/to ANTA
-  nrfu   Run NRFU against inventory devices
+  check  Commands to validate configuration files
+  debug  Commands to execute EOS commands on remote devices
+  exec   Commands to execute various scripts on EOS devices
+  get    Commands to get information from or generate inventories
+  nrfu   Run ANTA tests on devices
 ```
 
 ## Documentation

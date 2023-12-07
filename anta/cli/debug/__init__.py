@@ -11,7 +11,7 @@ from anta.cli.debug import commands
 
 @click.group
 def debug() -> None:
-    """Debug commands for building ANTA"""
+    """Commands to execute EOS commands on remote devices"""
 
 
 debug.add_command(commands.run_cmd)

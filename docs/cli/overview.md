@@ -19,48 +19,51 @@ $ anta --help
 --8<-- "anta_help.txt"
 ```
 
-## ANTA Parameters as environement variables
+## ANTA environement variables
 
 Certain parameters are required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
 
 To pass the parameters via the CLI:
 
 ```bash
-anta nrfu --username tom --password arista123 --inventory inventory.yml <anta cli>
+anta nrfu -u admin -p arista123 -i inventory.yaml -c tests.yaml
 ```
 
-To set them as ENV VAR:
+To set them as environment variables:
 
 ```bash
-export ANTA_USERNAME=tom
+export ANTA_USERNAME=admin
 export ANTA_PASSWORD=arista123
 export ANTA_INVENTORY=inventory.yml
+export ANTA_INVENTORY=tests.yml
 ```
 
-Then, run the CLI:
+Then, run the CLI without options:
 
 ```bash
-anta nrfu <anta cli>
+anta nrfu
 ```
-!!! info
-    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
-
-### List of available environment variables
 
 !!! note
     All environement variables may not be needed for every commands.
+    Refer to `<command> --help` for the comprehensive environment varibles names.
 
-| Variable Name | Purpose |
-| ------------- | ------- |
-| ANTA_USERNAME | The username to use in the inventory to connect to devices. |
-| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |
-| ANTA_INVENTORY | The path to the inventory file. |
-| ANTA_CATALOG | The path to the catalog file. |
-| ANTA_PROMPT | The value to pass to the prompt for password is password is not provided |
-| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |
-| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |
-| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |
-| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |
+Below are the environement variables usable with the `anta nrfu` command:
+
+| Variable Name | Purpose | Required |
+| ------------- | ------- |----------|
+| ANTA_USERNAME | The username to use in the inventory to connect to devices. |  Yes  |
+| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |  Yes  |
+| ANTA_INVENTORY | The path to the inventory file. |  Yes  |
+| ANTA_CATALOG | The path to the catalog file. |  Yes  |
+| ANTA_PROMPT | The value to pass to the prompt for password is password is not provided |  No  |
+| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |  No  |
+| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |  No  |
+| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |  No  |
+| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |  No  |
+
+!!! info
+    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 

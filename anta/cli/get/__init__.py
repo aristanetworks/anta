@@ -11,7 +11,7 @@ from anta.cli.get import commands
 
 @click.group
 def get() -> None:
-    """Get data from/to ANTA"""
+    """Commands to get information from or generate inventories"""
 
 
 get.add_command(commands.from_cvp)

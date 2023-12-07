@@ -58,7 +58,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
 @click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
 def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, ignore_status: bool, ignore_error: bool) -> None:
-    """Run NRFU against inventory devices"""
+    """Run ANTA tests on devices"""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
         return

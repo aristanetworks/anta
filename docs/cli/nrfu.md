@@ -62,7 +62,10 @@ Commands:
 
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
-All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option.
+All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
+
+!!! info
+    Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ## Tag management
 

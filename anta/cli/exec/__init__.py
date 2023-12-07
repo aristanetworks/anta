@@ -11,7 +11,7 @@ from anta.cli.exec import commands
 
 @click.group
 def exec() -> None:  # pylint: disable=redefined-builtin
-    """Execute commands to inventory devices"""
+    """Commands to execute various scripts on EOS devices"""
 
 
 exec.add_command(commands.clear_counters)
