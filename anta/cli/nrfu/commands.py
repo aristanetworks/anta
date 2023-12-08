@@ -12,8 +12,9 @@ import pathlib
 import click
 
 from anta.cli.utils import exit_with_code
+from anta.reporter.word import ReportWordDocx
 
-from .utils import print_jinja, print_json, print_table, print_text
+from .utils import print_jinja, print_json, print_table, print_text, print_list
 
 logger = logging.getLogger(__name__)
 
@@ -23,23 +24,11 @@ logger = logging.getLogger(__name__)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
-    "--output",
-    "-o",
-    help="Save report in word format",
-    required=False,
-    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
-)
-@click.option(
     "--group-by", default=None, type=click.Choice(["device", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
 )
-
 def table(ctx: click.Context, device: str | None, test: str | None, group_by: str) -> None:
     """ANTA command to check network states with table result"""
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
-    if output is not None:
-        logger.info(f"creating word report under {output}")
-        ReportWordDocx(filename=output, anta_result_manager=ctx.obj["result_manager"])
-
     exit_with_code(ctx)
 
 
@@ -90,4 +79,26 @@ def text(ctx: click.Context, search: str | None, skip_error: bool) -> None:
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report"""
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    exit_with_code(ctx)
+
+
+@click.command()
+@click.pass_context
+@click.option(
+    "--output",
+    "-o",
+    help="Save report in word format",
+    required=True,
+    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
+)
+@click.option("--title", help="Report title", type=str, required=False)
+def report(ctx: click.Context, output: pathlib.Path, title: str) -> None:
+    """ANTA command to check network states with table result"""
+    print_text(results=ctx.obj["result_manager"])
+    if output is not None:
+        logger.info(f"creating word report under {output}")
+        docx = ReportWordDocx(filename=output, anta_result_manager=ctx.obj["result_manager"])
+        docx.report_template()
+    else:
+        logger.critical(f'Cannot save report for {title} becasue output variable is not set')
     exit_with_code(ctx)
