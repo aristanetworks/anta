@@ -6,23 +6,21 @@ Word report management
 """
 from __future__ import annotations
 
-import datetime
 import json
 import logging
 from pathlib import Path
-from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
 from docx import Document
-from docx.shared import RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls
 from docx.shared import Inches, Pt
 from docx.table import Table
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-from anta.result_manager import ResultManager, TestResult
-from anta.reporter.word_models import TextInputs, DocxStyle, TextCover, TextItems, TextSection, Colors, Color
+from anta.reporter.word_models import Color, Colors, DocxStyle, TextCover, TextInputs, TextSection
+from anta.result_manager import ResultManager
+from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -75,16 +73,6 @@ DEFAULT_REPORT_STYLE = DocxStyle(
 )
 
 
-# class DocxStyle(BaseModel):
-#     """DOCX style defnition."""
-
-#     colors: Colors = Colors()
-#     font_size_default: int = 9
-#     font_name: str = "Arial"
-#     table_style: str = "Table Grid"
-#     font_colors: Colors = Colors(headers_table=Color(hex="#FFFFFF"))
-
-
 class ReportWordDocx:
     """Class to manage docx reporting."""
 
@@ -92,7 +80,6 @@ class ReportWordDocx:
         """Class constructor."""
         # Baseline
         self.anta_results = anta_result_manager
-        self.texts = TextItems()
         self.docx_style = docx_style if docx_style is not None else DEFAULT_REPORT_STYLE
         self.filename = filename
         self.document = Document()
