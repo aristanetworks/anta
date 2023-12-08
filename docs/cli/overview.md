@@ -12,6 +12,9 @@ ANTA can also be used as a Python library, allowing you to build your own tools 
 
 To start using the ANTA CLI, open your terminal and type `anta`.
 
+!!! warning
+    The ANTA CLI options have changed after version 0.11 and have moved away from the top level `anta` and are now required at their respective commands (e.g. `anta nrfu`). This breaking change occurs after users feedback on making the CLI more intuitive. This change should not affect user experience when using environment variables.
+
 ## Invoking ANTA CLI
 
 ```bash
@@ -19,48 +22,65 @@ $ anta --help
 --8<-- "anta_help.txt"
 ```
 
-## ANTA Global Parameters
+## ANTA environement variables
 
-Certain parameters are globally required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
+Certain parameters are required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
 
 To pass the parameters via the CLI:
 
 ```bash
-anta --username tom --password arista123 --inventory inventory.yml <anta cli>
+anta nrfu -u admin -p arista123 -i inventory.yaml -c tests.yaml
 ```
 
-To set them as ENV VAR:
+To set them as environment variables:
 
 ```bash
-export ANTA_USERNAME=tom
+export ANTA_USERNAME=admin
 export ANTA_PASSWORD=arista123
 export ANTA_INVENTORY=inventory.yml
+export ANTA_INVENTORY=tests.yml
 ```
 
-Then, run the CLI:
+Then, run the CLI without options:
 
 ```bash
-anta <anta cli>
+anta nrfu
 ```
+
+!!! note
+    All environement variables may not be needed for every commands.
+    Refer to `<command> --help` for the comprehensive environment varibles names.
+
+Below are the environement variables usable with the `anta nrfu` command:
+
+| Variable Name | Purpose | Required |
+| ------------- | ------- |----------|
+| ANTA_USERNAME | The username to use in the inventory to connect to devices. |  Yes  |
+| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |  Yes  |
+| ANTA_INVENTORY | The path to the inventory file. |  Yes  |
+| ANTA_CATALOG | The path to the catalog file. |  Yes  |
+| ANTA_PROMPT | The value to pass to the prompt for password is password is not provided |  No  |
+| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |  No  |
+| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |  No  |
+| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |  No  |
+| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |  No  |
+
 !!! info
     Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 
-ANTA utilizes different exit codes to indicate the status of the test runs.
-
-For all subcommands, ANTA will return the exit code 0, indicating a successful operation, except for the nrfu command.
-
-For the nrfu command, ANTA uses the following exit codes:
+ANTA CLI utilizes the following exit codes:
 
 - `Exit code 0` - All tests passed successfully.
-- `Exit code 1` - Tests were run, but at least one test returned a failure.
-- `Exit code 2` - Tests were run, but at least one test returned an error.
-- `Exit code 3` - An internal error occurred while executing tests.
+- `Exit code 1` - An internal error occurred while executing ANTA.
+- `Exit code 2` - A usage error was raised.
+- `Exit code 3` - Tests were run, but at least one test returned an error.
+- `Exit code 4` - Tests were run, but at least one test returned a failure.
 
-To ignore the test status, use `anta --ignore-status nrfu`, and the exit code will always be 0.
+To ignore the test status, use `anta nrfu --ignore-status`, and the exit code will always be 0.
 
-To ignore errors, use `anta --ignore-error nrfu`, and the exit code will be 0 if all tests succeeded or 1 if any test failed.
+To ignore errors, use `anta nrfu --ignore-error`, and the exit code will be 0 if all tests succeeded or 1 if any test failed.
 
 ## Shell Completion
 

@@ -17,8 +17,8 @@ from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, Validati
 from pydantic.types import ImportString
 from yaml import YAMLError, safe_load
 
+from anta.logger import anta_log_exception
 from anta.models import AntaTest
-from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +224,7 @@ class AntaCatalog:
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
-        except (YAMLError, OSError) as e:
+        except (TypeError, YAMLError, OSError) as e:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise

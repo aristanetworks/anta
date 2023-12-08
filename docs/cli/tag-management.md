@@ -8,7 +8,9 @@
 
 ## Overview
 
-The `anta nrfu` command comes with a `--tags` option. This allows users to specify a set of tests, marked with a given tag, to be run on devices marked with the same tag. For instance, you can run tests dedicated to leaf devices on your leaf devices only and not on other devices.
+Some of the ANTA commands like `anta nrfu` command come with a `--tags` option.
+
+For `nrfu`, this allows users to specify a set of tests, marked with a given tag, to be run on devices marked with the same tag. For instance, you can run tests dedicated to leaf devices on your leaf devices only and not on other devices.
 
 Tags are string defined by the user and can be anything considered as a string by Python. A [default one](#default-tags) is present for all tests and devices.
 
@@ -114,7 +116,7 @@ The most used approach is to use a single tag in your CLI to filter tests & devi
 In such scenario, ANTA will run tests marked with `$tag` only on devices marked with `$tag`. All other tests and devices will be ignored
 
 ```bash
-$ anta nrfu -c .personal/catalog-class.yml text --tags leaf
+$ anta nrfu -c .personal/catalog-class.yml --tags leaf text
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │
 │ - ANTA Inventory contains 6 devices (AsyncEOSDevice) │
@@ -144,7 +146,7 @@ A more advanced usage of the tag feature is to list multiple tags in your CLI us
 In such scenario, all devices marked with `$tag1` will be selected and ANTA will run tests with `$tag1`, then devices with `$tag2` will be selected and will be tested with tests marked with `$tag2`
 
 ```bash
-anta nrfu -c .personal/catalog-class.yml text --tags leaf,fabric
+anta nrfu -c .personal/catalog-class.yml --tags leaf,fabric text
 
 spine01 :: VerifyUptime :: SUCCESS
 spine02 :: VerifyUptime :: SUCCESS

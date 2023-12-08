@@ -4,13 +4,18 @@
 """Fixture for Anta Testing"""
 from __future__ import annotations
 
-from os import environ
-from typing import Callable, Iterator
+import logging
+import shutil
+from pathlib import Path
+from typing import Any, Callable, Iterator
 from unittest.mock import patch
 
 import pytest
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
+from pytest import CaptureFixture
 
+from anta import aioeapi
+from anta.cli.console import console
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.models import AntaCommand
@@ -18,9 +23,31 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
 
+logger = logging.getLogger(__name__)
+
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
+
+MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
+    "show version": {
+        "modelName": "DCS-7280CR3-32P4-F",
+        "version": "4.31.1F",
+    },
+    "enable": {},
+    "clear counters": {},
+    "clear hardware counter drop": {},
+    "undefined": aioeapi.EapiCommandError(
+        passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[]
+    ),
+}
+
+MOCK_CLI_TEXT: dict[str, aioeapi.EapiCommandError | str] = {
+    "show version": "Arista cEOSLab",
+    "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support": "dummy_tech-support_2023-12-01.1115.log.gz\ndummy_tech-support_2023-12-01.1015.log.gz",
+    "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support | head -1": "dummy_tech-support_2023-12-01.1115.log.gz",
+    "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
+}
 
 
 @pytest.fixture
@@ -47,7 +74,22 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
 
 
 @pytest.fixture
-def async_device(request: pytest.FixtureRequest) -> AntaDevice:
+def test_inventory() -> AntaInventory:
+    """
+    Return the test_inventory
+    """
+    env = default_anta_env()
+    assert env["ANTA_INVENTORY"] and env["ANTA_USERNAME"] and env["ANTA_PASSWORD"] is not None
+    return AntaInventory.parse(
+        filename=env["ANTA_INVENTORY"],
+        username=env["ANTA_USERNAME"],
+        password=env["ANTA_PASSWORD"],
+    )
+
+
+# tests.unit.test_device.py fixture
+@pytest.fixture
+def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
     """
     Returns an AsyncEOSDevice instance
     """
@@ -61,6 +103,7 @@ def async_device(request: pytest.FixtureRequest) -> AntaDevice:
     return dev
 
 
+# tests.units.result_manager fixtures
 @pytest.fixture
 def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
     """
@@ -122,33 +165,77 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     return _factory
 
 
+# tests.units.cli fixtures
 @pytest.fixture
-def test_inventory() -> AntaInventory:
-    """
-    Return the test_inventory
-    """
+def temp_env(tmp_path: Path) -> dict[str, str | None]:
+    """Fixture that create a temporary ANTA inventory that can be overriden
+    and returns the corresponding environment variables"""
     env = default_anta_env()
-    return AntaInventory.parse(
-        filename=env["ANTA_INVENTORY"],
-        username=env["ANTA_USERNAME"],
-        password=env["ANTA_PASSWORD"],
-    )
+    anta_inventory = str(env["ANTA_INVENTORY"])
+    temp_inventory = tmp_path / "test_inventory.yml"
+    shutil.copy(anta_inventory, temp_inventory)
+    env["ANTA_INVENTORY"] = str(temp_inventory)
+    return env
 
 
 @pytest.fixture
-def click_runner() -> CliRunner:
+def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
     """
     Convenience fixture to return a click.CliRunner for cli testing
     """
-    return CliRunner()
 
+    class AntaCliRunner(CliRunner):
+        """Override CliRunner to inject specific variables for ANTA"""
 
-@pytest.fixture(autouse=True)
-def clean_anta_env_variables() -> None:
-    """
-    Autouse fixture that cleans the various ANTA_FOO env variables
-    that could come from the user environment and make some tests fail.
-    """
-    for envvar in environ:
-        if envvar.startswith("ANTA_"):
-            environ.pop(envvar)
+        def invoke(self, *args, **kwargs) -> Result:  # type: ignore[no-untyped-def]
+            # Inject default env if not provided
+            kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
+            # Deterministic terminal width
+            kwargs["env"]["COLUMNS"] = "165"
+
+            kwargs["auto_envvar_prefix"] = "ANTA"
+            # Way to fix https://github.com/pallets/click/issues/824
+            with capsys.disabled():
+                result = super().invoke(*args, **kwargs)
+            print("--- CLI Output ---")
+            print(result.output)
+            return result
+
+    def cli(
+        command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", version: int | str | None = "latest", **kwargs: Any
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        # pylint: disable=unused-argument
+        def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
+            if isinstance(command, dict):
+                command = command["cmd"]
+            mock_cli: dict[str, Any]
+            if ofmt == "json":
+                mock_cli = MOCK_CLI_JSON
+            elif ofmt == "text":
+                mock_cli = MOCK_CLI_TEXT
+            for mock_cmd, output in mock_cli.items():
+                if command == mock_cmd:
+                    logger.info(f"Mocking command {mock_cmd}")
+                    if isinstance(output, aioeapi.EapiCommandError):
+                        raise output
+                    return output
+            message = f"Command '{command}' is not mocked"
+            logger.critical(message)
+            raise NotImplementedError(message)
+
+        res: dict[str, Any] | list[dict[str, Any]]
+        if command is not None:
+            logger.debug(f"Mock input {command}")
+            res = get_output(command)
+        if commands is not None:
+            logger.debug(f"Mock input {commands}")
+            res = list(map(get_output, commands))
+        logger.debug(f"Mock output {res}")
+        return res
+
+    # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
+    with patch("aioeapi.device.Device.check_connection", return_value=True), patch("aioeapi.device.Device.cli", side_effect=cli), patch("asyncssh.connect"), patch(
+        "asyncssh.scp"
+    ):
+        console._color_system = None  # pylint: disable=protected-access
+        yield AntaCliRunner()

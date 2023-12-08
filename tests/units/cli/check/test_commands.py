@@ -12,11 +12,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta.cli import anta
-from tests.lib.utils import default_anta_env
+from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
-    from pytest import CaptureFixture
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
@@ -24,19 +23,15 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 @pytest.mark.parametrize(
     "catalog_path, expected_exit, expected_output",
     [
-        pytest.param("ghost_catalog.yml", 2, "Error: Invalid value for '--catalog'", id="catalog does not exist"),
-        pytest.param("test_catalog_with_undefined_module.yml", 4, "Test catalog is invalid!", id="catalog is not valid"),
-        pytest.param("test_catalog.yml", 0, f"Catalog {DATA_DIR}/test_catalog.yml is valid", id="catalog valid"),
+        pytest.param("ghost_catalog.yml", ExitCode.USAGE_ERROR, "Error: Invalid value for '--catalog'", id="catalog does not exist"),
+        pytest.param("test_catalog_with_undefined_module.yml", ExitCode.USAGE_ERROR, "Test catalog is invalid!", id="catalog is not valid"),
+        pytest.param("test_catalog.yml", ExitCode.OK, "Catalog is valid", id="catalog valid"),
     ],
 )
-def test_catalog(capsys: CaptureFixture[str], click_runner: CliRunner, catalog_path: Path, expected_exit: int, expected_output: str) -> None:
+def test_catalog(click_runner: CliRunner, catalog_path: Path, expected_exit: int, expected_output: str) -> None:
     """
     Test `anta check catalog -c catalog
     """
-    env = default_anta_env()
-    catalog_full_path = DATA_DIR / catalog_path
-    cli_args = ["check", "catalog", "-c", str(catalog_full_path)]
-    with capsys.disabled():
-        result = click_runner.invoke(anta, cli_args, env=env, auto_envvar_prefix="ANTA")
+    result = click_runner.invoke(anta, ["check", "catalog", "-c", str(DATA_DIR / catalog_path)])
     assert result.exit_code == expected_exit
     assert expected_output in result.output

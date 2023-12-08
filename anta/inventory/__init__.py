@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
+from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import ValidationError
@@ -18,7 +19,7 @@ from yaml import YAMLError, safe_load
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
-from anta.tools.misc import anta_log_exception
+from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +139,7 @@ class AntaInventory(dict):  # type: ignore
 
     @staticmethod
     def parse(
-        filename: str,
+        filename: str | Path,
         username: str,
         password: str,
         enable: bool = False,
@@ -177,12 +178,19 @@ class AntaInventory(dict):  # type: ignore
             "insecure": insecure,
             "disable_cache": disable_cache,
         }
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        if username is None:
+            message = "'username' is required to create an AntaInventory"
+            logger.error(message)
+            raise ValueError(message)
+        if password is None:
+            message = "'password' is required to create an AntaInventory"
+            logger.error(message)
+            raise ValueError(message)
 
         try:
             with open(file=filename, mode="r", encoding="UTF-8") as file:
                 data = safe_load(file)
-        except (YAMLError, OSError) as e:
+        except (TypeError, YAMLError, OSError) as e:
             message = f"Unable to parse ANTA Device Inventory file '{filename}'"
             anta_log_exception(e, message, logger)
             raise

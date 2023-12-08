@@ -15,9 +15,9 @@ from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.device import AntaDevice
 from anta.inventory import AntaInventory
+from anta.logger import anta_log_exception
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
-from anta.tools.misc import anta_log_exception
 
 logger = logging.getLogger(__name__)
 

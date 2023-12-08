@@ -15,8 +15,6 @@ from yaml import safe_load
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.models import AntaTest
-from anta.tests.configuration import VerifyZeroTouch
-from anta.tests.hardware import VerifyTemperature
 from anta.tests.interfaces import VerifyL3MTU
 from anta.tests.mlag import VerifyMlagStatus
 from anta.tests.software import VerifyEOSVersion
@@ -42,10 +40,7 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
         "name": "test_catalog",
         "filename": "test_catalog.yml",
         "tests": [
-            (VerifyZeroTouch, None),
-            (VerifyTemperature, None),
-            (VerifyEOSVersion, VerifyEOSVersion.Input(versions=["4.25.4M", "4.26.1F"])),
-            (VerifyUptime, {"minimum": 86400}),
+            (VerifyEOSVersion, VerifyEOSVersion.Input(versions=["4.31.1F"])),
         ],
     },
     {

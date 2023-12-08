@@ -11,26 +11,26 @@ import logging
 import pathlib
 import re
 
-import click
 import rich
 from rich.panel import Panel
 from rich.pretty import pprint
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
+from anta.catalog import AntaCatalog
 from anta.cli.console import console
+from anta.inventory import AntaInventory
 from anta.reporter import ReportJinja, ReportTable
 from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
 
 
-def print_settings(context: click.Context, report_template: pathlib.Path | None = None, report_output: pathlib.Path | None = None) -> None:
+def print_settings(
+    inventory: AntaInventory,
+    catalog: AntaCatalog,
+) -> None:
     """Print ANTA settings before running tests"""
-    message = f"Running ANTA tests:\n- {context.obj['inventory']}\n- Tests catalog contains {len(context.obj['catalog'].tests)} tests"
-    if report_template:
-        message += f"\n- Report template: {report_template}"
-    if report_output:
-        message += f"\n- Report output: {report_output}"
+    message = f"Running ANTA tests:\n- {inventory}\n- Tests catalog contains {len(catalog.tests)} tests"
     console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
     console.print()
 

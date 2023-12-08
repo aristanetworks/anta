@@ -37,9 +37,33 @@ Usage: anta exec clear-counters [OPTIONS]
   Clear counter statistics on EOS devices
 
 Options:
-  -t, --tags TEXT  List of tags using comma as separator: tag1,tag2,tag3
-  --help           Show this message and exit.
+  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
+                          required]
+  -p, --password TEXT     Password to connect to EOS that must be provided. It
+                          can be prompted using '--prompt' option.  [env var:
+                          ANTA_PASSWORD]
+  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
+                          be prompted using '--prompt' option. Requires '--
+                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
+  --enable                Some commands may require EOS Privileged EXEC mode.
+                          This option tries to access this mode before sending
+                          a command to the device.  [env var: ANTA_ENABLE]
+  -P, --prompt            Prompt for passwords if they are not provided.  [env
+                          var: ANTA_PROMPT]
+  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
+                          default: 30]
+  --insecure              Disable SSH Host Key validation  [env var:
+                          ANTA_INSECURE]
+  --disable-cache         Disable cache globally  [env var:
+                          ANTA_DISABLE_CACHE]
+  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+                          ANTA_INVENTORY; required]
+  -t, --tags TEXT         List of tags using comma as separator:
+                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --help                  Show this message and exit.
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
 
@@ -66,16 +90,40 @@ Usage: anta exec snapshot [OPTIONS]
   Collect commands output from devices in inventory
 
 Options:
+  -u, --username TEXT       Username to connect to EOS  [env var:
+                            ANTA_USERNAME; required]
+  -p, --password TEXT       Password to connect to EOS that must be provided.
+                            It can be prompted using '--prompt' option.  [env
+                            var: ANTA_PASSWORD]
+  --enable-password TEXT    Password to access EOS Privileged EXEC mode. It
+                            can be prompted using '--prompt' option. Requires
+                            '--enable' option.  [env var:
+                            ANTA_ENABLE_PASSWORD]
+  --enable                  Some commands may require EOS Privileged EXEC
+                            mode. This option tries to access this mode before
+                            sending a command to the device.  [env var:
+                            ANTA_ENABLE]
+  -P, --prompt              Prompt for passwords if they are not provided.
+                            [env var: ANTA_PROMPT]
+  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
+                            default: 30]
+  --insecure                Disable SSH Host Key validation  [env var:
+                            ANTA_INSECURE]
+  --disable-cache           Disable cache globally  [env var:
+                            ANTA_DISABLE_CACHE]
+  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+                            ANTA_INVENTORY; required]
   -t, --tags TEXT           List of tags using comma as separator:
-                            tag1,tag2,tag3
+                            tag1,tag2,tag3  [env var: ANTA_TAGS]
   -c, --commands-list FILE  File with list of commands to collect  [env var:
                             ANTA_EXEC_SNAPSHOT_COMMANDS_LIST; required]
-  -o, --output DIRECTORY    Directory to save commands output. Will have a
-                            suffix with the format _YEAR-MONTH-DAY_HOUR-
-                            MINUTES-SECONDS'  [env var:
-                            ANTA_EXEC_SNAPSHOT_OUTPUT; default: anta_snapshot]
+  -o, --output DIRECTORY    Directory to save commands output.  [env var:
+                            ANTA_EXEC_SNAPSHOT_OUTPUT; default:
+                            anta_snapshot_2023-12-06_09_22_11]
   --help                    Show this message and exit.
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 The commands-list file should follow this structure:
 
@@ -161,16 +209,38 @@ Usage: anta exec collect-tech-support [OPTIONS]
   Collect scheduled tech-support from EOS devices
 
 Options:
-  -o, --output PATH              Path for test catalog  [default: ./tech-
-                                 support]
-  --latest INTEGER               Number of scheduled show-tech to retrieve
-  --configure        Ensure devices have 'aaa authorization exec default
-                     local' configured (required for SCP on EOS). THIS WILL
-                     CHANGE THE CONFIGURATION OF YOUR NETWORK.
-  -t, --tags TEXT                List of tags using comma as separator:
-                                 tag1,tag2,tag3
-  --help                         Show this message and exit.
+  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
+                          required]
+  -p, --password TEXT     Password to connect to EOS that must be provided. It
+                          can be prompted using '--prompt' option.  [env var:
+                          ANTA_PASSWORD]
+  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
+                          be prompted using '--prompt' option. Requires '--
+                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
+  --enable                Some commands may require EOS Privileged EXEC mode.
+                          This option tries to access this mode before sending
+                          a command to the device.  [env var: ANTA_ENABLE]
+  -P, --prompt            Prompt for passwords if they are not provided.  [env
+                          var: ANTA_PROMPT]
+  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
+                          default: 30]
+  --insecure              Disable SSH Host Key validation  [env var:
+                          ANTA_INSECURE]
+  --disable-cache         Disable cache globally  [env var:
+                          ANTA_DISABLE_CACHE]
+  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+                          ANTA_INVENTORY; required]
+  -t, --tags TEXT         List of tags using comma as separator:
+                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  -o, --output PATH       Path for test catalog  [default: ./tech-support]
+  --latest INTEGER        Number of scheduled show-tech to retrieve
+  --configure             Ensure devices have 'aaa authorization exec default
+                          local' configured (required for SCP on EOS). THIS
+                          WILL CHANGE THE CONFIGURATION OF YOUR NETWORK.
+  --help                  Show this message and exit.
 ```
+
+> `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the `--output` option.
 
