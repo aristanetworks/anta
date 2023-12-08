@@ -112,3 +112,7 @@ tech-support/*
 
 clab-atd-anta/*
 clab-atd-anta/
+
+**.json
+**.docx
+.DS_Store

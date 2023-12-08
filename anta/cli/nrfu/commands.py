@@ -46,8 +46,8 @@ def table(ctx: click.Context, tags: list[str], device: str | None, test: str | N
         asyncio.run(main(ctx.obj["result_manager"], ctx.obj["inventory"], ctx.obj["catalog"], tags=tags))
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
     if output is not None:
-        console.print(f"saving word report under {output}")
-        ReportWordDocx(title="Anta Custom report", filename=str(output), anta_result_manager=ctx.obj["result_manager"])
+        logger.info(f"creating word report under {output}")
+        ReportWordDocx(filename=output, anta_result_manager=ctx.obj["result_manager"])
 
     exit_with_code(ctx)
 
