@@ -14,7 +14,7 @@ import click
 from anta.cli.utils import exit_with_code
 from anta.reporter.word import ReportWordDocx
 
-from .utils import print_jinja, print_json, print_table, print_text, print_list
+from .utils import print_jinja, print_json, print_table, print_text
 
 logger = logging.getLogger(__name__)
 
@@ -100,5 +100,5 @@ def report(ctx: click.Context, output: pathlib.Path, title: str) -> None:
         docx = ReportWordDocx(filename=output, anta_result_manager=ctx.obj["result_manager"])
         docx.report_template()
     else:
-        logger.critical(f'Cannot save report for {title} becasue output variable is not set')
+        logger.critical(f"Cannot save report for {title} becasue output variable is not set")
     exit_with_code(ctx)
