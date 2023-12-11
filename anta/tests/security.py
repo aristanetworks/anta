@@ -308,9 +308,6 @@ class VerifyAPISSLCertificate(AntaTest):
         clock_output = self.instance_commands[1].json_output
 
         # Collecting certificate expiry time and current EOS time.
-        import pdb
-
-        pdb.set_trace()
         if (certificate_data := get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")) is None:
             self.result.is_failure(f"SSL certificate '{self.inputs.certificate}', is not configured.")
             return
