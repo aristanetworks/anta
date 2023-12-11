@@ -381,7 +381,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:"
+                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
                 "Expected subject.commonName is `self.signed` however in actual found as `Arista Networks Internal IT Root Cert Authority`."
             ],
         },
@@ -471,7 +471,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:"
+                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
                 "Expected publicKey.encryptionAlgorithm is `ECDSA` however in actual found as `RSA`."
             ],
         },
@@ -561,7 +561,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:" "Expected publicKey.size is `2048` however in actual found as `4096`."
+                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected publicKey.size is `2048` however in actual found as `4096`."
             ],
         },
     },
