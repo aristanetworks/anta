@@ -561,8 +561,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
-                "Expected publicKey.size is `2048` however in actual found as `4096`."
+                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n" "Expected publicKey.size is `2048` however in actual found as `4096`."
             ],
         },
     },
