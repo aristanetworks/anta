@@ -9,7 +9,7 @@ BGP test functions
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
-from typing import Any, List, Optional, Union, cast
+from typing import Any, Iterable, List, Optional, Union, cast
 
 from pydantic import BaseModel, PositiveInt, model_validator, utils
 
@@ -498,6 +498,9 @@ class VerifyBGPExchangedRoutes(AntaTest):
             vrf = command.params.get("vrf")
             advertised_routes = command.params.get("advertised_routes")
             received_routes = command.params.get("received_routes")
+            if not isinstance(advertised_routes, Iterable) or not isinstance(received_routes, Iterable):
+                self.result.is_failure("BGP advertised or received routes are not iterable from the test catalog.")
+                return
 
             # Verify if BGP neighbor is configured with provided vrf
             if (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}", separator="..")) is None:
