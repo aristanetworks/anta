@@ -193,6 +193,13 @@ anta.tests.security:
   - VerifyAPIIPv6Acl:
       number: 3
       vrf: default
+      anta.tests.security:
+  - VerifyAPISSLCertificate:
+      certificate: ARISTA_ROOT_CA.crt
+      expiry_limit: 30
+      subject_name: Arista Networks Internal IT Root Cert Authority
+      encryption: RSA
+      size: 2048
 
 anta.tests.snmp:
   - VerifySnmpStatus:

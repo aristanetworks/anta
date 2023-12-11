@@ -281,8 +281,8 @@ class VerifyAPISSLCertificate(AntaTest):
     Verifies SSL certificate expiry, common subject name, encryption type and size.
 
     Expected Results:
-        * success: The test will pass if the expiry limit of the certificate is greater than the threshold, and has the correct name, encryption and size.
-        * failure: The test will fail if the certificate is expired or going to expire, and has incorrect name, encryption and size.
+        * success: The test will pass if the expiry limit of the certificate is greater than the threshold, and has the correct name, encryption type and size.
+        * failure: The test will fail if the certificate is expired or going to expire, and has an incorrect name, encryption type and size.
     """
 
     name = "VerifyAPISSLCertificate"
@@ -307,7 +307,10 @@ class VerifyAPISSLCertificate(AntaTest):
         certificate_output = self.instance_commands[0].json_output
         clock_output = self.instance_commands[1].json_output
 
-        # Collecting expiry time and current time.
+        # Collecting certificate expiry time and current EOS time.
+        import pdb
+
+        pdb.set_trace()
         if (certificate_data := get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")) is None:
             self.result.is_failure(f"SSL certificate '{self.inputs.certificate}', is not configured.")
             return

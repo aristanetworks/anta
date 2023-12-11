@@ -64,4 +64,4 @@ Interface = Annotated[
 Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership"]
 Safi = Literal["unicast", "multicast", "labeled-unicast"]
 EncryptionType = "RSA", "ECDSA"
-EncryptionSize = 1024, 2048
+EncryptionSize = 1024, 2048, 4096
