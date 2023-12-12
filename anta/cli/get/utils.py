@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Utils functions to use with anta.cli.get.commands module.
-"""
+"""Utils functions to use with anta.cli.get.commands module."""
 from __future__ import annotations
 
 import functools
@@ -28,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def inventory_output_options(f: Any) -> Any:
-    """Click common options required when an inventory is being generated"""
+    """Click common options required when an inventory is being generated."""
 
     @click.option(
         "--output",
@@ -70,7 +68,7 @@ def inventory_output_options(f: Any) -> Any:
 
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
-    """Generate AUTH token from CVP using password"""
+    """Generate AUTH token from CVP using password."""
     # TODO, need to handle requests eror
 
     # use CVP REST API to generate a token
@@ -83,7 +81,7 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
 
 
 def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
-    """Write a file inventory from pydantic models"""
+    """Write a file inventory from pydantic models."""
     i = AntaInventoryInput(hosts=hosts)
     with open(output, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
@@ -91,9 +89,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
 
 
 def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
-    """
-    Create an inventory file from Arista CloudVision inventory
-    """
+    """Create an inventory file from Arista CloudVision inventory."""
     logger.debug(f"Received {len(inv)} device(s) from CloudVision")
     hosts = []
     for dev in inv:
@@ -103,10 +99,10 @@ def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
 
 
 def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
-    """
-    Create an ANTA inventory from an Ansible inventory YAML file
+    """Create an ANTA inventory from an Ansible inventory YAML file.
 
     Args:
+    ----
         inventory: Ansible Inventory file to read
         output: ANTA inventory file to generate.
         ansible_group: Ansible group from where to extract data.
@@ -115,7 +111,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | None:
         for k, v in data.items():
             if isinstance(v, dict):
-                if k == group and ("children" in v.keys() or "hosts" in v.keys()):
+                if k == group and ("children" in v or "hosts" in v):
                     return v
                 d = find_ansible_group(v, group)
                 if d is not None:
@@ -123,11 +119,11 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         return None
 
     def deep_yaml_parsing(data: dict[str, Any], hosts: list[AntaInventoryHost] | None = None) -> list[AntaInventoryHost]:
-        """Deep parsing of YAML file to extract hosts and associated IPs"""
+        """Deep parsing of YAML file to extract hosts and associated IPs."""
         if hosts is None:
             hosts = []
         for key, value in data.items():
-            if isinstance(value, dict) and "ansible_host" in value.keys():
+            if isinstance(value, dict) and "ansible_host" in value:
                 logger.info(f"   * adding entry for {key}")
                 hosts.append(AntaInventoryHost(name=key, host=value["ansible_host"]))
             elif isinstance(value, dict):
@@ -140,14 +136,17 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         with open(inventory, encoding="utf-8") as inv:
             ansible_inventory = yaml.safe_load(inv)
     except OSError as exc:
-        raise ValueError(f"Could not parse {inventory}.") from exc
+        msg = f"Could not parse {inventory}."
+        raise ValueError(msg) from exc
 
     if not ansible_inventory:
-        raise ValueError(f"Ansible inventory {inventory} is empty")
+        msg = f"Ansible inventory {inventory} is empty"
+        raise ValueError(msg)
 
     ansible_inventory = find_ansible_group(ansible_inventory, ansible_group)
 
     if ansible_inventory is None:
-        raise ValueError(f"Group {ansible_group} not found in Ansible inventory")
+        msg = f"Group {ansible_group} not found in Ansible inventory"
+        raise ValueError(msg)
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
     write_inventory_to_file(ansible_hosts, output)

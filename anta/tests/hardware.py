@@ -1,23 +1,18 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the hardware or environment
-"""
+"""Test functions related to the hardware or environment."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 # Need to keep List for pydantic in python 3.8
-from typing import List
-
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
 
 class VerifyTransceiversManufacturers(AntaTest):
-    """
-    This test verifies if all the transceivers come from approved manufacturers.
+    """This test verifies if all the transceivers come from approved manufacturers.
 
     Expected Results:
       * success: The test will pass if all transceivers are from approved manufacturers.
@@ -30,7 +25,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        manufacturers: List[str]
+        manufacturers: list[str]
         """List of approved transceivers manufacturers"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -47,8 +42,7 @@ class VerifyTransceiversManufacturers(AntaTest):
 
 
 class VerifyTemperature(AntaTest):
-    """
-    This test verifies if the device temperature is within acceptable limits.
+    """This test verifies if the device temperature is within acceptable limits.
 
     Expected Results:
       * success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
@@ -64,7 +58,7 @@ class VerifyTemperature(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output else ""
         if temperature_status == "temperatureOk":
             self.result.is_success()
         else:
@@ -72,8 +66,7 @@ class VerifyTemperature(AntaTest):
 
 
 class VerifyTransceiversTemperature(AntaTest):
-    """
-    This test verifies if all the transceivers are operating at an acceptable temperature.
+    """This test verifies if all the transceivers are operating at an acceptable temperature.
 
     Expected Results:
           * success: The test will pass if all transceivers status are OK: 'ok'.
@@ -89,7 +82,7 @@ class VerifyTransceiversTemperature(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
+        sensors = command_output["tempSensors"] if "tempSensors" in command_output else ""
         wrong_sensors = {
             sensor["name"]: {
                 "hwStatus": sensor["hwStatus"],
@@ -105,8 +98,7 @@ class VerifyTransceiversTemperature(AntaTest):
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):
-    """
-    This test verifies the device's system cooling.
+    """This test verifies the device's system cooling.
 
     Expected Results:
       * success: The test will pass if the system cooling status is OK: 'coolingOk'.
@@ -122,15 +114,14 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        sys_status = command_output["systemStatus"] if "systemStatus" in command_output else ""
         self.result.is_success()
         if sys_status != "coolingOk":
             self.result.is_failure(f"Device system cooling is not OK: '{sys_status}'")
 
 
 class VerifyEnvironmentCooling(AntaTest):
-    """
-    This test verifies the fans status.
+    """This test verifies the fans status.
 
     Expected Results:
       * success: The test will pass if the fans status are within the accepted states list.
@@ -143,7 +134,7 @@ class VerifyEnvironmentCooling(AntaTest):
     commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: List[str]
+        states: list[str]
         """Accepted states list for fan status"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -164,8 +155,7 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """
-    This test verifies the power supplies status.
+    """This test verifies the power supplies status.
 
     Expected Results:
       * success: The test will pass if the power supplies status are within the accepted states list.
@@ -178,14 +168,14 @@ class VerifyEnvironmentPower(AntaTest):
     commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: List[str]
+        states: list[str]
         """Accepted states list for power supplies status"""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
+        power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output else "{}"
         wrong_power_supplies = {
             powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in self.inputs.states
         }
@@ -196,8 +186,7 @@ class VerifyEnvironmentPower(AntaTest):
 
 
 class VerifyAdverseDrops(AntaTest):
-    """
-    This test verifies if there are no adverse drops on DCS7280E and DCS7500E.
+    """This test verifies if there are no adverse drops on DCS7280E and DCS7500E.
 
     Expected Results:
       * success: The test will pass if there are no adverse drops.
@@ -213,7 +202,7 @@ class VerifyAdverseDrops(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
+        total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output else ""
         if total_adverse_drop == 0:
             self.result.is_success()
         else:

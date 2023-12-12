@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the device interfaces
-"""
+"""Test functions related to the device interfaces."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -12,7 +10,7 @@ import re
 from ipaddress import IPv4Network
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, conint
 from pydantic_extra_types.mac_address import MacAddress
@@ -22,6 +20,9 @@ from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
+
+if TYPE_CHECKING:
+    from anta.custom_types import Interface
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -83,8 +84,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
 
 class VerifyInterfaceErrors(AntaTest):
-    """
-    This test verifies that interfaces error counters are equal to zero.
+    """This test verifies that interfaces error counters are equal to zero.
 
     Expected Results:
         * success: The test will pass if all interfaces have error counters equal to zero.
@@ -160,8 +160,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """
-    This test verifies if the provided list of interfaces are all in the expected state.
+    """This test verifies if the provided list of interfaces are all in the expected state.
 
     - If line protocol status is provided, prioritize checking against both status and line protocol status
     - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
@@ -372,9 +371,8 @@ class VerifySVI(AntaTest):
         down_svis = []
         for interface in command_output["interfaces"]:
             interface_dict = command_output["interfaces"][interface]
-            if "Vlan" in interface:
-                if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                    down_svis.append(interface)
+            if "Vlan" in interface and not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
+                down_svis.append(interface)
         if len(down_svis) == 0:
             self.result.is_success()
         else:
@@ -382,8 +380,7 @@ class VerifySVI(AntaTest):
 
 
 class VerifyL3MTU(AntaTest):
-    """
-    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
+    """Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
     Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
@@ -401,9 +398,9 @@ class VerifyL3MTU(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 1500
         """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
         """A list of L3 interfaces to ignore"""
-        specific_mtu: List[Dict[str, int]] = []
+        specific_mtu: list[dict[str, int]] = []
         """A list of dictionary of L3 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
@@ -430,8 +427,7 @@ class VerifyL3MTU(AntaTest):
 
 
 class VerifyIPProxyARP(AntaTest):
-    """
-    Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+    """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
 
     Expected Results:
         * success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
@@ -444,7 +440,7 @@ class VerifyIPProxyARP(AntaTest):
     commands = [AntaTemplate(template="show ip interface {intf}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: List[str]
+        interfaces: list[str]
         """list of interfaces to be tested"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -465,8 +461,7 @@ class VerifyIPProxyARP(AntaTest):
 
 
 class VerifyL2MTU(AntaTest):
-    """
-    Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
+    """Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
 
     Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
@@ -484,9 +479,9 @@ class VerifyL2MTU(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mtu: int = 9214
         """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        ignored_interfaces: list[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
         """A list of L2 interfaces to ignore"""
-        specific_mtu: List[Dict[str, int]] = []
+        specific_mtu: list[dict[str, int]] = []
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test

@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.field_notices"""
+"""Test inputs for anta.tests.field_notices."""
 from __future__ import annotations
 
 from typing import Any
@@ -22,7 +22,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -39,7 +39,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-4.0.1-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (4.0.1)"]},
@@ -56,7 +56,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-4.1.0-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (4.1.0)"]},
@@ -73,7 +73,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-6.0.1-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (6.0.1)"]},
@@ -90,7 +90,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-6.1.1-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["device is running incorrect version of aboot (6.1.1)"]},
@@ -107,7 +107,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["device is not impacted by FN044"]},
@@ -123,7 +123,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "7"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
@@ -139,7 +139,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "7"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
@@ -155,7 +155,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "7"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
@@ -171,7 +171,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "7"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
@@ -187,7 +187,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "7"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
@@ -203,7 +203,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["Platform is not impacted by FN072"]},
@@ -219,7 +219,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
@@ -235,7 +235,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
@@ -251,7 +251,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
@@ -267,7 +267,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm1", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
@@ -283,7 +283,7 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "FixedSystemvrm2", "version": "5"}],
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "error", "messages": ["Error in running test - FixedSystemvrm1 not found"]},

@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Utils functions to use with anta.cli module.
-"""
+"""Utils functions to use with anta.cli module."""
 from __future__ import annotations
 
 import enum
@@ -27,9 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 class ExitCode(enum.IntEnum):
-    """
-    Encodes the valid exit codes by anta
-    inspired from pytest
+    """Encodes the valid exit codes by anta
+    inspired from pytest.
     """
 
     # Tests passed.
@@ -46,17 +43,14 @@ class ExitCode(enum.IntEnum):
 
 def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
     # pylint: disable=unused-argument
-    """
-    Click option callback to parse an ANTA inventory tags
-    """
+    """Click option callback to parse an ANTA inventory tags."""
     if value is not None:
         return value.split(",") if "," in value else [value]
     return None
 
 
 def exit_with_code(ctx: click.Context) -> None:
-    """
-    Exit the Click application with an exit code.
+    """Exit the Click application with an exit code.
     This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
     from the `ResultManger` instance.
     If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
@@ -64,9 +58,10 @@ def exit_with_code(ctx: click.Context) -> None:
     Exit the application with the following exit code:
         * 0 if `ignore_status` is `True` or global test status is `unset`, `skipped` or `success`
         * 1 if status is `failure`
-        * 2 if status is `error`
+        * 2 if status is `error`.
 
     Args:
+    ----
         ctx: Click Context
     """
     if ctx.obj.get("ignore_status"):
@@ -83,18 +78,18 @@ def exit_with_code(ctx: click.Context) -> None:
         ctx.exit(ExitCode.TESTS_ERROR)
 
     logger.error("Please gather logs and open an issue on Github.")
-    raise ValueError(f"Unknown status returned by the ResultManager: {status}. Please gather logs and open an issue on Github.")
+    msg = f"Unknown status returned by the ResultManager: {status}. Please gather logs and open an issue on Github."
+    raise ValueError(msg)
 
 
 class AliasedGroup(click.Group):
-    """
-    Implements a subclass of Group that accepts a prefix for a command.
+    """Implements a subclass of Group that accepts a prefix for a command.
     If there were a command called push, it would accept pus as an alias (so long as it was unique)
-    From Click documentation
+    From Click documentation.
     """
 
     def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
-        """Todo: document code"""
+        """Todo: document code."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
@@ -107,7 +102,7 @@ class AliasedGroup(click.Group):
         return None
 
     def resolve_command(self, ctx: click.Context, args: Any) -> Any:
-        """Todo: document code"""
+        """Todo: document code."""
         # always return the full command name
         _, cmd, args = super().resolve_command(ctx, args)
         return cmd.name, cmd, args  # type: ignore
@@ -115,7 +110,7 @@ class AliasedGroup(click.Group):
 
 # TODO: check code of click.pass_context that raise mypy errors for types and adapt this decorator
 def inventory_options(f: Any) -> Any:
-    """Click common options when requiring an inventory to interact with devices"""
+    """Click common options when requiring an inventory to interact with devices."""
 
     @click.option(
         "--username",
@@ -219,16 +214,16 @@ def inventory_options(f: Any) -> Any:
             # User asked for a password prompt
             if password is None:
                 password = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-            if enable:
-                if enable_password is None:
-                    if click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
-                        enable_password = click.prompt(
-                            "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True
-                        )
+            if enable and enable_password is None and click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
+                enable_password = click.prompt(
+                    "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True,
+                )
         if password is None:
-            raise click.BadParameter("EOS password needs to be provided by using either the '--password' option or the '--prompt' option.")
+            msg = "EOS password needs to be provided by using either the '--password' option or the '--prompt' option."
+            raise click.BadParameter(msg)
         if not enable and enable_password:
-            raise click.BadParameter("Providing a password to access EOS Privileged EXEC mode requires '--enable' option.")
+            msg = "Providing a password to access EOS Privileged EXEC mode requires '--enable' option."
+            raise click.BadParameter(msg)
         try:
             i = AntaInventory.parse(
                 filename=inventory,
@@ -248,7 +243,7 @@ def inventory_options(f: Any) -> Any:
 
 
 def catalog_options(f: Any) -> Any:
-    """Click common options when requiring a test catalog to execute ANTA tests"""
+    """Click common options when requiring a test catalog to execute ANTA tests."""
 
     @click.option(
         "--catalog",

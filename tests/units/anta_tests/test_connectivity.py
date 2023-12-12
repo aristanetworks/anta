@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.connectivity.py
-"""
+"""Tests for anta.tests.connectivity.py."""
 from __future__ import annotations
 
 from typing import Any
@@ -27,8 +25,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
             {
                 "messages": [
@@ -40,8 +38,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
         ],
         "expected": {"result": "success"},
@@ -61,8 +59,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
             {
                 "messages": [
@@ -74,8 +72,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
         ],
         "expected": {"result": "success"},
@@ -94,8 +92,8 @@ DATA: list[dict[str, Any]] = [
                 1 packets transmitted, 1 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
         ],
         "expected": {"result": "success"},
@@ -115,8 +113,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 0 received, 100% packet loss, time 10ms
 
 
-                """
-                ]
+                """,
+                ],
             },
             {
                 "messages": [
@@ -128,8 +126,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
         ],
         "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('10.0.0.5', '10.0.0.11')]"]},
@@ -149,8 +147,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 0 received, 100% packet loss, time 10ms
 
 
-                """
-                ]
+                """,
+                ],
             },
             {
                 "messages": [
@@ -162,8 +160,8 @@ DATA: list[dict[str, Any]] = [
                 2 packets transmitted, 2 received, 0% packet loss, time 0ms
                 rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
 
-                """
-                ]
+                """,
+                ],
             },
         ],
         "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.11')]"]},
@@ -175,7 +173,7 @@ DATA: list[dict[str, Any]] = [
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "eos_data": [
             {
@@ -192,8 +190,8 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
                     "Ethernet2": {
                         "lldpNeighborInfo": [
@@ -207,11 +205,11 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
-                }
-            }
+                },
+            },
         ],
         "expected": {"result": "success"},
     },
@@ -222,7 +220,7 @@ DATA: list[dict[str, Any]] = [
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "eos_data": [
             {
@@ -239,11 +237,11 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
-                }
-            }
+                },
+            },
         ],
         "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'port_not_configured': ['Ethernet2']}"]},
     },
@@ -254,7 +252,7 @@ DATA: list[dict[str, Any]] = [
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "eos_data": [
             {
@@ -271,12 +269,12 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
                     "Ethernet2": {"lldpNeighborInfo": []},
-                }
-            }
+                },
+            },
         ],
         "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'no_lldp_neighbor': ['Ethernet2']}"]},
     },
@@ -287,7 +285,7 @@ DATA: list[dict[str, Any]] = [
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "eos_data": [
             {
@@ -304,8 +302,8 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
                     "Ethernet2": {
                         "lldpNeighborInfo": [
@@ -319,11 +317,11 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet2",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
-                }
-            }
+                },
+            },
         ],
         "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'wrong_lldp_neighbor': ['Ethernet2']}"]},
     },
@@ -335,7 +333,7 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet3", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
-            ]
+            ],
         },
         "eos_data": [
             {
@@ -352,17 +350,17 @@ DATA: list[dict[str, Any]] = [
                                     "interfaceId_v2": "Ethernet2",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            }
-                        ]
+                            },
+                        ],
                     },
                     "Ethernet2": {"lldpNeighborInfo": []},
-                }
-            }
+                },
+            },
         ],
         "expected": {
             "result": "failure",
             "messages": [
-                "The following port(s) have issues: {'wrong_lldp_neighbor': ['Ethernet1'], 'no_lldp_neighbor': ['Ethernet2'], 'port_not_configured': ['Ethernet3']}"
+                "The following port(s) have issues: {'wrong_lldp_neighbor': ['Ethernet1'], 'no_lldp_neighbor': ['Ethernet2'], 'port_not_configured': ['Ethernet3']}",
             ],
         },
     },

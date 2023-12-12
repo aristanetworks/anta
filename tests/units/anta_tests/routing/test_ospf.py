@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.routing.ospf.py
-"""
+"""Tests for anta.tests.routing.ospf.py."""
 from __future__ import annotations
 
 from typing import Any
@@ -40,9 +38,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -56,13 +54,13 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -95,9 +93,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -111,20 +109,20 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
             ],
         },
     },
@@ -134,7 +132,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
@@ -167,9 +165,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -183,13 +181,13 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "success"},
@@ -213,12 +211,12 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "failure", "messages": ["device has 1 neighbors (expected 3)"]},
@@ -251,9 +249,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -267,20 +265,20 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {
             "result": "failure",
             "messages": [
                 "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
             ],
         },
     },
@@ -290,7 +288,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {},
-            }
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},

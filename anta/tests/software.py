@@ -1,23 +1,17 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS software
-"""
+"""Test functions related to the EOS software."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 # Need to keep List for pydantic in python 3.8
-from typing import List
-
 from anta.models import AntaCommand, AntaTest
 
 
 class VerifyEOSVersion(AntaTest):
-    """
-    Verifies the device is running one of the allowed EOS version.
-    """
+    """Verifies the device is running one of the allowed EOS version."""
 
     name = "VerifyEOSVersion"
     description = "Verifies the device is running one of the allowed EOS version."
@@ -25,7 +19,7 @@ class VerifyEOSVersion(AntaTest):
     commands = [AntaCommand(command="show version")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: List[str]
+        versions: list[str]
         """List of allowed EOS versions"""
 
     @AntaTest.anta_test
@@ -38,9 +32,7 @@ class VerifyEOSVersion(AntaTest):
 
 
 class VerifyTerminAttrVersion(AntaTest):
-    """
-    Verifies the device is running one of the allowed TerminAttr version.
-    """
+    """Verifies the device is running one of the allowed TerminAttr version."""
 
     name = "VerifyTerminAttrVersion"
     description = "Verifies the device is running one of the allowed TerminAttr version."
@@ -48,7 +40,7 @@ class VerifyTerminAttrVersion(AntaTest):
     commands = [AntaCommand(command="show version detail")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: List[str]
+        versions: list[str]
         """List of allowed TerminAttr versions"""
 
     @AntaTest.anta_test
@@ -62,9 +54,7 @@ class VerifyTerminAttrVersion(AntaTest):
 
 
 class VerifyEOSExtensions(AntaTest):
-    """
-    Verifies all EOS extensions installed on the device are enabled for boot persistence.
-    """
+    """Verifies all EOS extensions installed on the device are enabled for boot persistence."""
 
     name = "VerifyEOSExtensions"
     description = "Verifies all EOS extensions installed on the device are enabled for boot persistence."

@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Data for testing anta.tests.logging"""
+"""Data for testing anta.tests.logging."""
 from __future__ import annotations
 
 from typing import Any
@@ -77,7 +77,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.93' port 514 in VRF MGMT via tcp
                 Logging to '10.22.10.94' port 911 in VRF MGMT via udp
 
-                """
+                """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "success"},
@@ -92,7 +92,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.93' port 514 in VRF MGMT via tcp
                 Logging to '10.22.10.94' port 911 in VRF MGMT via udp
 
-                """
+                """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
@@ -107,7 +107,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.93' port 514 in VRF MGMT via tcp
                 Logging to '10.22.10.94' port 911 in VRF MGMT via udp
 
-                """
+                """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
@@ -122,7 +122,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.93' port 514 in VRF MGMT via tcp
                 Logging to '10.22.10.94' port 911 in VRF MGMT via udp
 
-                """
+                """,
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "success"},
@@ -137,7 +137,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.103' port 514 in VRF MGMT via tcp
                 Logging to '10.22.10.104' port 911 in VRF MGMT via udp
 
-                """
+                """,
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]},
@@ -152,7 +152,7 @@ DATA: list[dict[str, Any]] = [
                 Logging to '10.22.10.93' port 514 in VRF default via tcp
                 Logging to '10.22.10.94' port 911 in VRF default via udp
 
-                """
+                """,
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]},
@@ -246,7 +246,7 @@ DATA: list[dict[str, Any]] = [
         "name": "failure",
         "test": VerifyLoggingErrors,
         "eos_data": [
-            "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
+            "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)",
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported syslog messages with a severity of ERRORS or higher"]},

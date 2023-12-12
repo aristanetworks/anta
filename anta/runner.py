@@ -2,22 +2,22 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable=too-many-branches
-"""
-ANTA runner function
-"""
+"""ANTA runner function."""
 from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.device import AntaDevice
-from anta.inventory import AntaInventory
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
-from anta.result_manager import ResultManager
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
+    from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,11 @@ AntaTestRunner = Tuple[AntaTestDefinition, AntaDevice]
 
 
 async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, established_only: bool = True) -> None:
-    """
-    Main coroutine to run ANTA.
+    """Main coroutine to run ANTA.
     Use this as an entrypoint to the test framwork in your script.
 
     Args:
+    ----
         manager: ResultManager object to populate with the test results.
         inventory: AntaInventory object that includes the device(s).
         catalog: AntaCatalog object that includes the list of tests.
@@ -37,6 +37,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
         established_only: Include only established device(s). Defaults to True.
 
     Returns:
+    -------
         any: ResultManager object gets updated with the test results.
     """
     if not catalog.tests:
@@ -51,7 +52,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     if not devices:
         logger.info(
             f"No device in the established state '{established_only}' "
-            f"{f'matching the tags {tags} ' if tags else ''}was found. There is no device to run tests against, exiting"
+            f"{f'matching the tags {tags} ' if tags else ''}was found. There is no device to run tests against, exiting",
         )
 
         return
@@ -88,7 +89,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
                 [
                     f"There is an error when creating test {test_definition.test.__module__}.{test_definition.test.__name__}.",
                     f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                ]
+                ],
             )
             anta_log_exception(e, message, logger)
     if AntaTest.progress is not None:
@@ -103,7 +104,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
             logger.info(
                 f"Cache statistics for '{device.name}': "
                 f"{device.cache_statistics['cache_hits']} hits / {device.cache_statistics['total_commands_sent']} "
-                f"command(s) ({device.cache_statistics['cache_hit_ratio']})"
+                f"command(s) ({device.cache_statistics['cache_hit_ratio']})",
             )
         else:
             logger.info(f"Caching is not enabled on {device.name}")

@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Click commands to execute various scripts on EOS devices
-"""
+"""Click commands to execute various scripts on EOS devices."""
 from __future__ import annotations
 
 import asyncio
@@ -11,13 +9,16 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 from yaml import safe_load
 
 from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
 from anta.cli.utils import inventory_options
-from anta.inventory import AntaInventory
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 @click.command
 @inventory_options
 def clear_counters(inventory: AntaInventory, tags: list[str] | None) -> None:
-    """Clear counter statistics on EOS devices"""
+    """Clear counter statistics on EOS devices."""
     asyncio.run(clear_counters_utils(inventory, tags=tags))
 
 
@@ -49,11 +50,11 @@ def clear_counters(inventory: AntaInventory, tags: list[str] | None) -> None:
     show_default=True,
 )
 def snapshot(inventory: AntaInventory, tags: list[str] | None, commands_list: Path, output: Path) -> None:
-    """Collect commands output from devices in inventory"""
+    """Collect commands output from devices in inventory."""
     print(f"Collecting data for {commands_list}")
     print(f"Output directory is {output}")
     try:
-        with open(commands_list, "r", encoding="UTF-8") as file:
+        with open(commands_list, encoding="UTF-8") as file:
             file_content = file.read()
             eos_commands = safe_load(file_content)
     except FileNotFoundError:
@@ -74,5 +75,5 @@ def snapshot(inventory: AntaInventory, tags: list[str] | None, commands_list: Pa
     show_default=True,
 )
 def collect_tech_support(inventory: AntaInventory, tags: list[str] | None, output: Path, latest: int | None, configure: bool) -> None:
-    """Collect scheduled tech-support from EOS devices"""
+    """Collect scheduled tech-support from EOS devices."""
     asyncio.run(collect_scheduled_show_tech(inventory, output, configure, tags=tags, latest=latest))

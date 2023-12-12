@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.multicast"""
+"""Test inputs for anta.tests.multicast."""
 from __future__ import annotations
 
 from typing import Any
@@ -44,7 +44,7 @@ DATA: list[dict[str, Any]] = [
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            }
+            },
         ],
         "inputs": {"vlans": {1: True, 42: True}},
         "expected": {"result": "success"},
@@ -67,12 +67,12 @@ DATA: list[dict[str, Any]] = [
                         "maxGroups": 65534,
                         "immediateLeave": "default",
                         "floodingTraffic": True,
-                    }
+                    },
                 },
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            }
+            },
         ],
         "inputs": {"vlans": {42: False}},
         "expected": {"result": "success"},
@@ -100,7 +100,7 @@ DATA: list[dict[str, Any]] = [
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            }
+            },
         ],
         "inputs": {"vlans": {1: False, 42: False}},
         "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is enabled", "Supplied vlan 42 is not present on the device."]},
@@ -128,7 +128,7 @@ DATA: list[dict[str, Any]] = [
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            }
+            },
         ],
         "inputs": {"vlans": {1: True}},
         "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is disabled"]},
@@ -143,7 +143,7 @@ DATA: list[dict[str, Any]] = [
                 "robustness": 2,
                 "immediateLeave": "enabled",
                 "reportFloodingSwitchPorts": [],
-            }
+            },
         ],
         "inputs": {"enabled": True},
         "expected": {"result": "success"},
@@ -155,7 +155,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "reportFlooding": "disabled",
                 "igmpSnoopingState": "disabled",
-            }
+            },
         ],
         "inputs": {"enabled": False},
         "expected": {"result": "success"},
@@ -167,7 +167,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "reportFlooding": "disabled",
                 "igmpSnoopingState": "disabled",
-            }
+            },
         ],
         "inputs": {"enabled": True},
         "expected": {"result": "failure", "messages": ["IGMP state is not valid: disabled"]},

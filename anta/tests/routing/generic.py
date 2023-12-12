@@ -1,15 +1,13 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Generic routing test functions
-"""
+"""Generic routing test functions."""
 from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_interface
 
 # Need to keep List for pydantic in python 3.8
-from typing import List, Literal
+from typing import Literal
 
 from pydantic import model_validator
 
@@ -20,8 +18,7 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyRoutingProtocolModel(AntaTest):
-    """
-    Verifies the configured routing protocol model is the one we expect.
+    """Verifies the configured routing protocol model is the one we expect.
     And if there is no mismatch between the configured and operating routing protocol model.
     """
 
@@ -46,8 +43,7 @@ class VerifyRoutingProtocolModel(AntaTest):
 
 
 class VerifyRoutingTableSize(AntaTest):
-    """
-    Verifies the size of the IP routing table (default VRF).
+    """Verifies the size of the IP routing table (default VRF).
     Should be between the two provided thresholds.
     """
 
@@ -64,9 +60,10 @@ class VerifyRoutingTableSize(AntaTest):
 
         @model_validator(mode="after")  # type: ignore
         def check_min_max(self) -> AntaTest.Input:
-            """Validate that maximum is greater than minimum"""
+            """Validate that maximum is greater than minimum."""
             if self.minimum > self.maximum:
-                raise ValueError(f"Minimum {self.minimum} is greater than maximum {self.maximum}")
+                msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
+                raise ValueError(msg)
             return self
 
     @AntaTest.anta_test
@@ -80,8 +77,7 @@ class VerifyRoutingTableSize(AntaTest):
 
 
 class VerifyRoutingTableEntry(AntaTest):
-    """
-    This test verifies that the provided routes are present in the routing table of a specified VRF.
+    """This test verifies that the provided routes are present in the routing table of a specified VRF.
 
     Expected Results:
         * success: The test will pass if the provided routes are present in the routing table.
@@ -96,7 +92,7 @@ class VerifyRoutingTableEntry(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vrf: str = "default"
         """VRF context"""
-        routes: List[IPv4Address]
+        routes: list[IPv4Address]
         """Routes to verify"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -109,7 +105,7 @@ class VerifyRoutingTableEntry(AntaTest):
         for command in self.instance_commands:
             if "vrf" in command.params and "route" in command.params:
                 vrf, route = command.params["vrf"], command.params["route"]
-                if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(list(routes)[0]).ip:
+                if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(next(iter(routes))).ip:
                     missing_routes.append(str(route))
 
         if not missing_routes:

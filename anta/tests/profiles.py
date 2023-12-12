@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to ASIC profiles
-"""
+"""Test functions related to ASIC profiles."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -15,9 +13,7 @@ from anta.models import AntaCommand, AntaTest
 
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
-    """
-    Verifies the device is using the expected Unified Forwarding Table mode.
-    """
+    """Verifies the device is using the expected Unified Forwarding Table mode."""
 
     name = "VerifyUnifiedForwardingTableMode"
     description = ""
@@ -39,9 +35,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 
 
 class VerifyTcamProfile(AntaTest):
-    """
-    Verifies the device is using the configured TCAM profile.
-    """
+    """Verifies the device is using the configured TCAM profile."""
 
     name = "VerifyTcamProfile"
     description = "Verify that the assigned TCAM profile is actually running on the device"

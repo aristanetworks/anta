@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.hardware"""
+"""Test inputs for anta.tests.hardware."""
 from __future__ import annotations
 
 from typing import Any
@@ -321,8 +321,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -335,8 +335,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 666, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
@@ -344,7 +344,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
                 " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]",
             ],
         },
     },
@@ -356,8 +356,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 10, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 6, "symbolErrors": 10},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
@@ -365,7 +365,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
                 " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]",
             ],
         },
     },
@@ -376,15 +376,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
+                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]",
             ],
         },
     },
@@ -399,7 +399,7 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet1": {"outDiscards": 0, "inDiscards": 0},
                 },
                 "outDiscardsTotal": 0,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -415,14 +415,14 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
                 },
                 "outDiscardsTotal": 0,
-            }
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
+                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]",
             ],
         },
     },
@@ -438,8 +438,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {
                         "linkStatus": "connected",
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -456,8 +456,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {
                         "linkStatus": "errdisabled",
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
@@ -471,8 +471,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -520,8 +520,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -535,8 +535,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -548,8 +548,8 @@ DATA: list[dict[str, Any]] = [
             {
                 "interfaceDescriptions": {
                     "Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
         "expected": {"result": "success"},
@@ -561,8 +561,8 @@ DATA: list[dict[str, Any]] = [
             {
                 "interfaceDescriptions": {
                     "Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
         "expected": {"result": "success"},
@@ -614,8 +614,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaceDescriptions": {
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
@@ -632,8 +632,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
@@ -650,8 +650,8 @@ DATA: list[dict[str, Any]] = [
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {
             "interfaces": [
@@ -717,9 +717,9 @@ DATA: list[dict[str, Any]] = [
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -736,9 +736,9 @@ DATA: list[dict[str, Any]] = [
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
@@ -759,9 +759,9 @@ DATA: list[dict[str, Any]] = [
                         "inactivePorts": {},
                         "activePorts": {},
                         "inactiveLag": False,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -782,9 +782,9 @@ DATA: list[dict[str, Any]] = [
                         "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
                         "activePorts": {},
                         "inactiveLag": False,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
@@ -806,12 +806,12 @@ DATA: list[dict[str, Any]] = [
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 "orphanPorts": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -833,12 +833,12 @@ DATA: list[dict[str, Any]] = [
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 "orphanPorts": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -868,8 +868,8 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "success"},
@@ -896,8 +896,8 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "down",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
@@ -916,8 +916,8 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
@@ -935,9 +935,9 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "up",
                         "mtu": 1500,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -955,9 +955,9 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "lowerLayerDown",
                         "mtu": 1500,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
@@ -1029,7 +1029,7 @@ DATA: list[dict[str, Any]] = [
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "success"},
@@ -1101,7 +1101,7 @@ DATA: list[dict[str, Any]] = [
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "success"},
@@ -1173,7 +1173,7 @@ DATA: list[dict[str, Any]] = [
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
@@ -1245,7 +1245,7 @@ DATA: list[dict[str, Any]] = [
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 9214},
         "expected": {"result": "success"},
@@ -1317,7 +1317,7 @@ DATA: list[dict[str, Any]] = [
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
@@ -1347,8 +1347,8 @@ DATA: list[dict[str, Any]] = [
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
             {
                 "interfaces": {
@@ -1371,8 +1371,8 @@ DATA: list[dict[str, Any]] = [
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
@@ -1403,8 +1403,8 @@ DATA: list[dict[str, Any]] = [
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
             {
                 "interfaces": {
@@ -1427,8 +1427,8 @@ DATA: list[dict[str, Any]] = [
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},

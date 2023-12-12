@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-OSPF test functions
-"""
+"""OSPF test functions."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -14,9 +12,7 @@ from anta.models import AntaCommand, AntaTest
 
 
 def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
-    """
-    Count the number of OSPF neighbors
-    """
+    """Count the number of OSPF neighbors."""
     count = 0
     for _, vrf_data in ospf_neighbor_json["vrfs"].items():
         for _, instance_data in vrf_data["instList"].items():
@@ -25,9 +21,7 @@ def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
 
 
 def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Return the OSPF neighbors whose adjacency state is not "full"
-    """
+    """Return the OSPF neighbors whose adjacency state is not "full"."""
     not_full_neighbors = []
     for vrf, vrf_data in ospf_neighbor_json["vrfs"].items():
         for instance, instance_data in vrf_data["instList"].items():
@@ -39,15 +33,13 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
                             "instance": instance,
                             "neighbor": neighbor_data["routerId"],
                             "state": state,
-                        }
+                        },
                     )
     return not_full_neighbors
 
 
 class VerifyOSPFNeighborState(AntaTest):
-    """
-    Verifies all OSPF neighbors are in FULL state.
-    """
+    """Verifies all OSPF neighbors are in FULL state."""
 
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
@@ -67,9 +59,7 @@ class VerifyOSPFNeighborState(AntaTest):
 
 
 class VerifyOSPFNeighborCount(AntaTest):
-    """
-    Verifies the number of OSPF neighbors in FULL state is the one we expect.
-    """
+    """Verifies the number of OSPF neighbors in FULL state is the one we expect."""
 
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."

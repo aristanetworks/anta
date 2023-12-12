@@ -1,20 +1,17 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-test anta.device.py
-"""
+"""test anta.device.py."""
 
 from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import httpx
 import pytest
-from _pytest.mark.structures import ParameterSet
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from rich import print as rprint
 
@@ -23,6 +20,9 @@ from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from tests.lib.fixture import COMMAND_OUTPUT
 from tests.lib.utils import generate_test_ids_list
+
+if TYPE_CHECKING:
+    from _pytest.mark.structures import ParameterSet
 
 INIT_DATA: list[dict[str, Any]] = [
     {
@@ -155,8 +155,8 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
                         "memTotal": 8099732,
                         "memFree": 4989568,
                         "isIntlVersion": False,
-                    }
-                ]
+                    },
+                ],
             },
         },
         "expected": {
@@ -211,7 +211,7 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
                         "memFree": 4989568,
                         "isIntlVersion": False,
                     },
-                ]
+                ],
             },
         },
         "expected": {
@@ -266,7 +266,7 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
                         "memFree": 4989568,
                         "isIntlVersion": False,
                     },
-                ]
+                ],
             },
         },
         "expected": {
@@ -322,7 +322,7 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
                         "memFree": 4989568,
                         "isIntlVersion": False,
                     },
-                ]
+                ],
             },
         },
         "expected": {
@@ -356,8 +356,8 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
             "command": "show version",
             "patch_kwargs": {
                 "side_effect": aioeapi.EapiCommandError(
-                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[]
-                )
+                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[],
+                ),
             },
         },
         "expected": {"output": None, "errors": ["Authorization denied for command 'show version'"]},
@@ -387,7 +387,7 @@ AIOEAPI_COPY_DATA: list[dict[str, Any]] = [
         "device": {},
         "copy": {
             "sources": [Path("/mnt/flash"), Path("/var/log/agents")],
-            "destination": Path("."),
+            "destination": Path(),
             "direction": "from",
         },
     },
@@ -396,7 +396,7 @@ AIOEAPI_COPY_DATA: list[dict[str, Any]] = [
         "device": {},
         "copy": {
             "sources": [Path("/mnt/flash"), Path("/var/log/agents")],
-            "destination": Path("."),
+            "destination": Path(),
             "direction": "to",
         },
     },
@@ -405,7 +405,7 @@ AIOEAPI_COPY_DATA: list[dict[str, Any]] = [
         "device": {},
         "copy": {
             "sources": [Path("/mnt/flash"), Path("/var/log/agents")],
-            "destination": Path("."),
+            "destination": Path(),
             "direction": "wrong",
         },
     },
@@ -436,7 +436,7 @@ REFRESH_DATA: list[dict[str, Any]] = [
                     "memTotal": 8099732,
                     "memFree": 4989568,
                     "isIntlVersion": False,
-                }
+                },
             },
         ),
         "expected": {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
@@ -466,7 +466,7 @@ REFRESH_DATA: list[dict[str, Any]] = [
                     "memTotal": 8099732,
                     "memFree": 4989568,
                     "isIntlVersion": False,
-                }
+                },
             },
         ),
         "expected": {"is_online": False, "established": False, "hw_model": None},
@@ -495,7 +495,7 @@ REFRESH_DATA: list[dict[str, Any]] = [
                     "memTotal": 8099732,
                     "memFree": 4989568,
                     "isIntlVersion": False,
-                }
+                },
             },
         ),
         "expected": {"is_online": True, "established": False, "hw_model": None},
@@ -507,8 +507,8 @@ REFRESH_DATA: list[dict[str, Any]] = [
             {"return_value": True},
             {
                 "side_effect": aioeapi.EapiCommandError(
-                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[]
-                )
+                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[],
+                ),
             },
         ),
         "expected": {"is_online": True, "established": False, "hw_model": None},
@@ -599,21 +599,17 @@ CACHE_STATS_DATA: list[ParameterSet] = [
 
 
 class TestAntaDevice:
-    """
-    Test for anta.device.AntaDevice Abstract class
-    """
+    """Test for anta.device.AntaDevice Abstract class."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     @pytest.mark.parametrize(
-        "device, command_data, expected_data",
-        map(lambda d: (d["device"], d["command"], d["expected"]), COLLECT_DATA),
+        ("device", "command_data", "expected_data"),
+        ((d["device"], d["command"], d["expected"]) for d in COLLECT_DATA),
         indirect=["device"],
         ids=generate_test_ids_list(COLLECT_DATA),
     )
     async def test_collect(self, device: AntaDevice, command_data: dict[str, Any], expected_data: dict[str, Any]) -> None:
-        """
-        Test AntaDevice.collect behavior
-        """
+        """Test AntaDevice.collect behavior."""
         command = AntaCommand(command=command_data["command"], use_cache=command_data["use_cache"])
 
         # Dummy output for cache hit
@@ -646,18 +642,15 @@ class TestAntaDevice:
             assert device.cache is None
             device._collect.assert_called_once_with(command=command)  # type: ignore[attr-defined]  # pylint: disable=protected-access
 
-    @pytest.mark.parametrize("device, expected", CACHE_STATS_DATA, indirect=["device"])
+    @pytest.mark.parametrize(("device", "expected"), CACHE_STATS_DATA, indirect=["device"])
     def test_cache_statistics(self, device: AntaDevice, expected: dict[str, Any] | None) -> None:
-        """
-        Verify that when cache statistics attribute does not exist
-        TODO add a test where cache has some value
+        """Verify that when cache statistics attribute does not exist
+        TODO add a test where cache has some value.
         """
         assert device.cache_statistics == expected
 
     def test_supports(self, device: AntaDevice) -> None:
-        """
-        Test if the supports() method
-        """
+        """Test if the supports() method."""
         command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
         assert device.supports(command) is False
         command = AntaCommand(command="show hardware counter drop")
@@ -665,13 +658,11 @@ class TestAntaDevice:
 
 
 class TestAsyncEOSDevice:
-    """
-    Test for anta.device.AsyncEOSDevice
-    """
+    """Test for anta.device.AsyncEOSDevice."""
 
     @pytest.mark.parametrize("data", INIT_DATA, ids=generate_test_ids_list(INIT_DATA))
     def test__init__(self, data: dict[str, Any]) -> None:
-        """Test the AsyncEOSDevice constructor"""
+        """Test the AsyncEOSDevice constructor."""
         device = AsyncEOSDevice(**data["device"])
 
         assert device.name == data["expected"]["name"]
@@ -688,7 +679,7 @@ class TestAsyncEOSDevice:
 
     @pytest.mark.parametrize("data", EQUALITY_DATA, ids=generate_test_ids_list(EQUALITY_DATA))
     def test__eq(self, data: dict[str, Any]) -> None:
-        """Test the AsyncEOSDevice equality"""
+        """Test the AsyncEOSDevice equality."""
         device1 = AsyncEOSDevice(**data["device1"])
         device2 = AsyncEOSDevice(**data["device2"])
         if data["expected"]:
@@ -696,40 +687,36 @@ class TestAsyncEOSDevice:
         else:
             assert device1 != device2
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     @pytest.mark.parametrize(
-        "async_device, patch_kwargs, expected",
-        map(lambda d: (d["device"], d["patch_kwargs"], d["expected"]), REFRESH_DATA),
+        ("async_device", "patch_kwargs", "expected"),
+        ((d["device"], d["patch_kwargs"], d["expected"]) for d in REFRESH_DATA),
         ids=generate_test_ids_list(REFRESH_DATA),
         indirect=["async_device"],
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         # pylint: disable=protected-access
-        """Test AsyncEOSDevice.refresh()"""
-        with patch.object(async_device._session, "check_connection", **patch_kwargs[0]):
-            with patch.object(async_device._session, "cli", **patch_kwargs[1]):
-                await async_device.refresh()
-                async_device._session.check_connection.assert_called_once()
-                if expected["is_online"]:
-                    async_device._session.cli.assert_called_once()
-                assert async_device.is_online == expected["is_online"]
-                assert async_device.established == expected["established"]
-                assert async_device.hw_model == expected["hw_model"]
+        """Test AsyncEOSDevice.refresh()."""
+        with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
+            await async_device.refresh()
+            async_device._session.check_connection.assert_called_once()
+            if expected["is_online"]:
+                async_device._session.cli.assert_called_once()
+            assert async_device.is_online == expected["is_online"]
+            assert async_device.established == expected["established"]
+            assert async_device.hw_model == expected["hw_model"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     @pytest.mark.parametrize(
-        "async_device, command, expected",
-        map(lambda d: (d["device"], d["command"], d["expected"]), AIOEAPI_COLLECT_DATA),
+        ("async_device", "command", "expected"),
+        ((d["device"], d["command"], d["expected"]) for d in AIOEAPI_COLLECT_DATA),
         ids=generate_test_ids_list(AIOEAPI_COLLECT_DATA),
         indirect=["async_device"],
     )
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         # pylint: disable=protected-access
-        """Test AsyncEOSDevice._collect()"""
-        if "revision" in command:
-            cmd = AntaCommand(command=command["command"], revision=command["revision"])
-        else:
-            cmd = AntaCommand(command=command["command"])
+        """Test AsyncEOSDevice._collect()."""
+        cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
         with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
             await async_device.collect(cmd)
             commands = []
@@ -738,7 +725,7 @@ class TestAsyncEOSDevice:
                     {
                         "cmd": "enable",
                         "input": str(async_device._enable_password),
-                    }
+                    },
                 )
             elif async_device.enable:
                 # No password
@@ -751,15 +738,15 @@ class TestAsyncEOSDevice:
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     @pytest.mark.parametrize(
-        "async_device, copy",
-        map(lambda d: (d["device"], d["copy"]), AIOEAPI_COPY_DATA),
+        ("async_device", "copy"),
+        ((d["device"], d["copy"]) for d in AIOEAPI_COPY_DATA),
         ids=generate_test_ids_list(AIOEAPI_COPY_DATA),
         indirect=["async_device"],
     )
     async def test_copy(self, async_device: AsyncEOSDevice, copy: dict[str, Any]) -> None:
-        """Test AsyncEOSDevice.copy()"""
+        """Test AsyncEOSDevice.copy()."""
         conn = SSHClientConnection(asyncio.get_event_loop(), SSHClientConnectionOptions())
         with patch("asyncssh.connect") as connect_mock:
             connect_mock.return_value.__aenter__.return_value = conn

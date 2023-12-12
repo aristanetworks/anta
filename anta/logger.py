@@ -1,26 +1,26 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Configure logging for ANTA
-"""
+"""Configure logging for ANTA."""
 from __future__ import annotations
 
 import logging
 import traceback
 from enum import Enum
-from pathlib import Path
-from typing import Literal, Optional
+from typing import TYPE_CHECKING, Literal
 
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
 class Log(str, Enum):
-    """Represent log levels from logging module as immutable strings"""
+    """Represent log levels from logging module as immutable strings."""
 
     CRITICAL = logging.getLevelName(logging.CRITICAL)
     ERROR = logging.getLevelName(logging.ERROR)
@@ -33,8 +33,7 @@ LogLevel = Literal[Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG]
 
 
 def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
-    """
-    Configure logging for ANTA.
+    """Configure logging for ANTA.
     By default, the logging level is INFO for all loggers except for httpx and asyncssh which are too verbose:
     their logging level is WARNING.
 
@@ -48,6 +47,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     be logged to stdout while all levels will be logged in the file.
 
     Args:
+    ----
         level: ANTA logging level
         file: Send logs to a file
     """
@@ -66,10 +66,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     # Add RichHandler for stdout
     richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
     # In ANTA debug mode, show Python module in stdout
-    if __DEBUG__:
-        fmt_string = r"[grey58]\[%(name)s][/grey58] %(message)s"
-    else:
-        fmt_string = "%(message)s"
+    fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if __DEBUG__ else "%(message)s"
     formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
     richHandler.setFormatter(formatter)
     root.addHandler(richHandler)
@@ -98,7 +95,7 @@ def anta_log_exception(exception: BaseException, message: Optional[str] = None, 
     """
     Helper function to help log exceptions:
     * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback
-    * otherwise logger.error is called
+    * otherwise logger.error is called.
 
     Args:
         exception (BaseException): The Exception being logged

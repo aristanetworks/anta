@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tools.get_value
-"""
+"""Tests for anta.tools.get_value."""
 
 from __future__ import annotations
 
@@ -18,7 +16,7 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
 
 
 @pytest.mark.parametrize(
-    "input_dict, key, default, required, org_key, separator, expected_result, expected_raise",
+    ("input_dict", "key", "default", "required", "org_key", "separator", "expected_result", "expected_raise"),
     [
         pytest.param({}, "test", None, False, None, None, None, does_not_raise(), id="empty dict"),
         pytest.param(INPUT_DICT, "test_value", None, False, None, None, 42, does_not_raise(), id="simple key"),
@@ -40,9 +38,7 @@ def test_get_value(
     expected_result: str,
     expected_raise: Any,
 ) -> None:
-    """
-    Test get_value
-    """
+    """Test get_value."""
     # pylint: disable=too-many-arguments
     kwargs = {"default": default, "required": required, "org_key": org_key, "separator": separator}
     kwargs = {k: v for k, v in kwargs.items() if v is not None}

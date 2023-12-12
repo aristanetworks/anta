@@ -1,23 +1,23 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to Multi-chassis Link Aggregation (MLAG)
-"""
+"""Test functions related to Multi-chassis Link Aggregation (MLAG)."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from pydantic import conint
+from typing import TYPE_CHECKING
 
 from anta.custom_types import MlagPriority
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 
+if TYPE_CHECKING:
+    from pydantic import conint
+
 
 class VerifyMlagStatus(AntaTest):
-    """
-    This test verifies the health status of the MLAG configuration.
+    """This test verifies the health status of the MLAG configuration.
 
     Expected Results:
         * success: The test will pass if the MLAG state is 'active', negotiation status is 'connected',
@@ -52,8 +52,7 @@ class VerifyMlagStatus(AntaTest):
 
 
 class VerifyMlagInterfaces(AntaTest):
-    """
-    This test verifies there are no inactive or active-partial MLAG ports.
+    """This test verifies there are no inactive or active-partial MLAG ports.
 
     Expected Results:
         * success: The test will pass if there are NO inactive or active-partial MLAG ports.
@@ -79,8 +78,7 @@ class VerifyMlagInterfaces(AntaTest):
 
 
 class VerifyMlagConfigSanity(AntaTest):
-    """
-    This test verifies there are no MLAG config-sanity inconsistencies.
+    """This test verifies there are no MLAG config-sanity inconsistencies.
 
     Expected Results:
         * success: The test will pass if there are NO MLAG config-sanity inconsistencies.
@@ -112,8 +110,7 @@ class VerifyMlagConfigSanity(AntaTest):
 
 
 class VerifyMlagReloadDelay(AntaTest):
-    """
-    This test verifies the reload-delay parameters of the MLAG configuration.
+    """This test verifies the reload-delay parameters of the MLAG configuration.
 
     Expected Results:
         * success: The test will pass if the reload-delay parameters are configured properly.
@@ -148,8 +145,7 @@ class VerifyMlagReloadDelay(AntaTest):
 
 
 class VerifyMlagDualPrimary(AntaTest):
-    """
-    This test verifies the dual-primary detection and its parameters of the MLAG configuration.
+    """This test verifies the dual-primary detection and its parameters of the MLAG configuration.
 
     Expected Results:
         * success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.

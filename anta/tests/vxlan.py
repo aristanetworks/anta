@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to VXLAN
-"""
+"""Test functions related to VXLAN."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 
@@ -20,8 +18,7 @@ from anta.tools.get_value import get_value
 
 
 class VerifyVxlan1Interface(AntaTest):
-    """
-    This test verifies if the Vxlan1 interface is configured and 'up/up'.
+    """This test verifies if the Vxlan1 interface is configured and 'up/up'.
 
     !!! warning
         The name of this test has been updated from 'VerifyVxlan' for better representation.
@@ -50,13 +47,12 @@ class VerifyVxlan1Interface(AntaTest):
         else:
             self.result.is_failure(
                 f"Vxlan1 interface is {command_output['interfaceDescriptions']['Vxlan1']['lineProtocolStatus']}"
-                f"/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}"
+                f"/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}",
             )
 
 
 class VerifyVxlanConfigSanity(AntaTest):
-    """
-    This test verifies that no issues are detected with the VXLAN configuration.
+    """This test verifies that no issues are detected with the VXLAN configuration.
 
     Expected Results:
       * success: The test will pass if no issues are detected with the VXLAN configuration.
@@ -87,8 +83,7 @@ class VerifyVxlanConfigSanity(AntaTest):
 
 
 class VerifyVxlanVniBinding(AntaTest):
-    """
-    This test verifies the VNI-VLAN bindings of the Vxlan1 interface.
+    """This test verifies the VNI-VLAN bindings of the Vxlan1 interface.
 
     Expected Results:
       * success: The test will pass if the VNI-VLAN bindings provided are properly configured.
@@ -137,8 +132,7 @@ class VerifyVxlanVniBinding(AntaTest):
 
 
 class VerifyVxlanVtep(AntaTest):
-    """
-    This test verifies the VTEP peers of the Vxlan1 interface.
+    """This test verifies the VTEP peers of the Vxlan1 interface.
 
     Expected Results:
       * success: The test will pass if all provided VTEP peers are identified and matching.

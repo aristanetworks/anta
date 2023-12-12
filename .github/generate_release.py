@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-generate_release.py
+"""generate_release.py.
 
 This script is used to generate the release.yml file as per
 https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
@@ -20,18 +19,15 @@ CATEGORIES = {
     "fix": "Bug Fixes",
     "cut": "Cut",
     "doc": "Documentation",
-    # "CI": "CI",
     "bump": "Bump",
-    # "test": "Test",
     "revert": "Revert",
     "refactor": "Refactoring",
 }
 
 
 class SafeDumper(yaml.SafeDumper):
-    """
-    Make yamllint happy
-    https://github.com/yaml/pyyaml/issues/234#issuecomment-765894586
+    """Make yamllint happy
+    https://github.com/yaml/pyyaml/issues/234#issuecomment-765894586.
     """
 
     # pylint: disable=R0901,W0613,W1113
@@ -60,7 +56,7 @@ if __name__ == "__main__":
         {
             "title": "Breaking Changes",
             "labels": breaking_labels,
-        }
+        },
     )
 
     # Add new features
@@ -71,7 +67,7 @@ if __name__ == "__main__":
         {
             "title": "New features and enhancements",
             "labels": feat_labels,
-        }
+        },
     )
 
     # Add fixes
@@ -82,7 +78,7 @@ if __name__ == "__main__":
         {
             "title": "Fixed issues",
             "labels": fixes_labels,
-        }
+        },
     )
 
     # Add Documentation
@@ -93,7 +89,7 @@ if __name__ == "__main__":
         {
             "title": "Documentation",
             "labels": doc_labels,
-        }
+        },
     )
 
     # Add the catch all
@@ -101,7 +97,7 @@ if __name__ == "__main__":
         {
             "title": "Other Changes",
             "labels": ["*"],
-        }
+        },
     )
     with open(r"release.yml", "w", encoding="utf-8") as release_file:
         yaml.dump(
@@ -109,7 +105,7 @@ if __name__ == "__main__":
                 "changelog": {
                     "exclude": {"labels": exclude_list},
                     "categories": categories_list,
-                }
+                },
             },
             release_file,
             Dumper=SafeDumper,

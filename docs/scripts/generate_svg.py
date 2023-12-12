@@ -1,8 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-A script to generate svg files from anta command
+"""A script to generate svg files from anta command.
 
 usage:
 
@@ -27,8 +26,7 @@ OUTPUT_DIR = pathlib.Path(__file__).parent.parent / "imgs"
 
 
 def custom_progress_bar() -> None:
-    """
-    Set the console of progress_bar to main anta console
+    """Set the console of progress_bar to main anta console.
 
     Caveat: this capture all steps of the progress bar..
     Disabling refresh to only capture beginning and end
@@ -86,7 +84,7 @@ if __name__ == "__main__":
     # print the content of the stdout to our new_console
     new_console.print(f.getvalue())
 
-    filename = f"{'_'.join(map(lambda x: x.replace('/', '_').replace('-', '_').replace('.', '_'), args))}.svg"
+    filename = f"{'_'.join((x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args))}.svg"
     filename = f"{OUTPUT_DIR}/{filename}"
     print(f"File saved at {filename}")
     new_console.save_svg(filename, title=" ".join(args))

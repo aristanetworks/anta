@@ -1,24 +1,22 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to multicast
-"""
+"""Test functions related to multicast."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 # Need to keep Dict for pydantic in python 3.8
-from typing import Dict
+from typing import TYPE_CHECKING
 
-from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
+
+if TYPE_CHECKING:
+    from anta.custom_types import Vlan
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):
-    """
-    Verifies the IGMP snooping configuration for some VLANs.
-    """
+    """Verifies the IGMP snooping configuration for some VLANs."""
 
     name = "VerifyIGMPSnoopingVlans"
     description = "Verifies the IGMP snooping configuration for some VLANs."
@@ -26,7 +24,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     commands = [AntaCommand(command="show ip igmp snooping")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vlans: Dict[Vlan, bool]
+        vlans: dict[Vlan, bool]
         """Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)"""
 
     @AntaTest.anta_test
@@ -44,9 +42,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
 
 
 class VerifyIGMPSnoopingGlobal(AntaTest):
-    """
-    Verifies the IGMP snooping global configuration.
-    """
+    """Verifies the IGMP snooping global configuration."""
 
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."

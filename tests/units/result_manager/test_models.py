@@ -4,15 +4,17 @@
 """ANTA Result Manager models unit tests."""
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
 # Import as Result to avoid pytest collection
-from anta.result_manager.models import TestResult as Result
 from tests.data.json_data import TEST_RESULT_SET_STATUS
 from tests.lib.fixture import DEVICE_NAME
 from tests.lib.utils import generate_test_ids_dict
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import TestResult as Result
 
 
 class TestTestResultModels:

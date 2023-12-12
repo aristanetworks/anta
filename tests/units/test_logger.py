@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.logger
-"""
+"""Tests for anta.logger."""
 from __future__ import annotations
 
 import logging
@@ -19,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "exception, message, calling_logger, __DEBUG__value, expected_message",
+    ("exception", "message", "calling_logger", "__DEBUG__value", "expected_message"),
     [
         pytest.param(ValueError("exception message"), None, None, False, "ValueError: exception message", id="exception only"),
         pytest.param(ValueError("exception message"), "custom message", None, False, "custom message\nValueError: exception message", id="custom message"),
@@ -44,10 +42,7 @@ def test_anta_log_exception(
     __DEBUG__value: bool,
     expected_message: str,
 ) -> None:
-    """
-    Test anta_log_exception
-    """
-
+    """Test anta_log_exception."""
     if calling_logger is not None:
         # https://github.com/pytest-dev/pytest/issues/3697
         calling_logger.propagate = True

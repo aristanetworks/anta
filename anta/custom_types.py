@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Module that provides predefined types for AntaTest.Input instances
-"""
+"""Module that provides predefined types for AntaTest.Input instances."""
 import re
 from typing import Literal
 
@@ -13,7 +11,7 @@ from typing_extensions import Annotated
 
 
 def aaa_group_prefix(v: str) -> str:
-    """Prefix the AAA method with 'group' if it is known"""
+    """Prefix the AAA method with 'group' if it is known."""
     built_in_methods = ["local", "none", "logging"]
     return f"group {v}" if v not in built_in_methods and not v.startswith("group ") else v
 
@@ -28,7 +26,8 @@ def interface_autocomplete(v: str) -> str:
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
-        raise ValueError(f"Could not parse interface ID in interface '{v}'")
+        msg = f"Could not parse interface ID in interface '{v}'"
+        raise ValueError(msg)
     intf_id = m[0]
 
     alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
@@ -43,7 +42,8 @@ def interface_autocomplete(v: str) -> str:
 def interface_case_sensitivity(v: str) -> str:
     """Reformat interface name to match expected case sensitivity.
 
-    Examples:
+    Examples
+    --------
          - ethernet -> Ethernet
          - vlan -> Vlan
          - loopback -> Loopback

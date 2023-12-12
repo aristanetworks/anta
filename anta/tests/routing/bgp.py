@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-BGP test functions
-"""
+"""BGP test functions."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -29,7 +27,8 @@ def _add_bgp_failures(failures: dict[tuple[str, Union[str, None]], dict[str, Any
 
     Note: This function modifies `failures` in-place.
 
-    Parameters:
+    Parameters
+    ----------
         failures (dict): The dictionary to which the failure will be added.
         afi (Afi): The address family identifier.
         vrf (str): The VRF name.
@@ -56,22 +55,20 @@ def _add_bgp_failures(failures: dict[tuple[str, Union[str, None]], dict[str, Any
     """
     key = (afi, safi)
 
-    if safi:
-        failure_entry = failures.setdefault(key, {"afi": afi, "safi": safi, "vrfs": {}})
-    else:
-        failure_entry = failures.setdefault(key, {"afi": afi, "vrfs": {}})
+    failure_entry = failures.setdefault(key, {"afi": afi, "safi": safi, "vrfs": {}}) if safi else failures.setdefault(key, {"afi": afi, "vrfs": {}})
 
     failure_entry["vrfs"][vrf] = issue
 
 
-def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
-    """
-    Check for issues in BGP peer data.
+def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
+    """Check for issues in BGP peer data.
 
-    Parameters:
+    Parameters
+    ----------
         peer_data (dict, optional): The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
-    Returns:
+    Returns
+    -------
         dict: Dictionary with keys indicating issues or an empty dictionary if no issues.
 
     Example:
@@ -79,14 +76,16 @@ def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
         {"peerState": "Idle", "inMsgQueue": 2, "outMsgQueue": 0}
         {}
 
-    Raises:
+    Raises
+    ------
         ValueError: If any of the required keys ("peerState", "inMsgQueue", "outMsgQueue") are missing in `peer_data`, i.e. invalid BGP peer data.
     """
     if peer_data is None:
         return {"peerNotFound": True}
 
     if any(key not in peer_data for key in ["peerState", "inMsgQueue", "outMsgQueue"]):
-        raise ValueError("Provided BGP peer data is invalid.")
+        msg = "Provided BGP peer data is invalid."
+        raise ValueError(msg)
 
     if peer_data["peerState"] != "Established" or peer_data["inMsgQueue"] != 0 or peer_data["outMsgQueue"] != 0:
         return {"peerState": peer_data["peerState"], "inMsgQueue": peer_data["inMsgQueue"], "outMsgQueue": peer_data["outMsgQueue"]}
@@ -142,8 +141,7 @@ def _add_bgp_routes_failure(
 
 
 class VerifyBGPPeerCount(AntaTest):
-    """
-    This test verifies the count of BGP peers for a given address family.
+    """This test verifies the count of BGP peers for a given address family.
 
     It supports multiple types of address families (AFI) and subsequent service families (SAFI).
     Please refer to the Input class attributes below for details.
@@ -162,7 +160,7 @@ class VerifyBGPPeerCount(AntaTest):
     ]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        address_families: List[BgpAfi]
+        address_families: list[BgpAfi]
         """
         List of BGP address families (BgpAfi)
         """
@@ -170,7 +168,7 @@ class VerifyBGPPeerCount(AntaTest):
         class BgpAfi(BaseModel):  # pylint: disable=missing-class-docstring
             afi: Afi
             """BGP address family (AFI)"""
-            safi: Optional[Safi] = None
+            safi: Safi | None = None
             """Optional BGP subsequent service family (SAFI).
 
             If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
@@ -186,8 +184,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
 
@@ -195,11 +192,14 @@ class VerifyBGPPeerCount(AntaTest):
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
-                        raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
+                        msg = "'safi' must be provided when afi is ipv4 or ipv6"
+                        raise ValueError(msg)
                 elif self.safi is not None:
-                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                    msg = "'safi' must not be provided when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 elif self.vrf != "default":
-                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
+                    msg = "'vrf' must be default when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -244,8 +244,7 @@ class VerifyBGPPeerCount(AntaTest):
 
 
 class VerifyBGPPeersHealth(AntaTest):
-    """
-    This test verifies the health of BGP peers.
+    """This test verifies the health of BGP peers.
 
     It will validate that all BGP sessions are established and all message queues for these BGP sessions are empty for a given address family.
 
@@ -266,7 +265,7 @@ class VerifyBGPPeersHealth(AntaTest):
     ]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        address_families: List[BgpAfi]
+        address_families: list[BgpAfi]
         """
         List of BGP address families (BgpAfi)
         """
@@ -274,7 +273,7 @@ class VerifyBGPPeersHealth(AntaTest):
         class BgpAfi(BaseModel):  # pylint: disable=missing-class-docstring
             afi: Afi
             """BGP address family (AFI)"""
-            safi: Optional[Safi] = None
+            safi: Safi | None = None
             """Optional BGP subsequent service family (SAFI).
 
             If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
@@ -288,8 +287,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
 
@@ -297,11 +295,14 @@ class VerifyBGPPeersHealth(AntaTest):
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
-                        raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
+                        msg = "'safi' must be provided when afi is ipv4 or ipv6"
+                        raise ValueError(msg)
                 elif self.safi is not None:
-                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                    msg = "'safi' must not be provided when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 elif self.vrf != "default":
-                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
+                    msg = "'vrf' must be default when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -350,8 +351,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
 
 class VerifyBGPSpecificPeers(AntaTest):
-    """
-    This test verifies the health of specific BGP peer(s).
+    """This test verifies the health of specific BGP peer(s).
 
     It will validate that the BGP session is established and all message queues for this BGP session are empty for the given peer(s).
 
@@ -372,7 +372,7 @@ class VerifyBGPSpecificPeers(AntaTest):
     ]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        address_families: List[BgpAfi]
+        address_families: list[BgpAfi]
         """
         List of BGP address families (BgpAfi)
         """
@@ -380,7 +380,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         class BgpAfi(BaseModel):  # pylint: disable=missing-class-docstring
             afi: Afi
             """BGP address family (AFI)"""
-            safi: Optional[Safi] = None
+            safi: Safi | None = None
             """Optional BGP subsequent service family (SAFI).
 
             If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
@@ -393,13 +393,12 @@ class VerifyBGPSpecificPeers(AntaTest):
 
             If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
             """
-            peers: List[Union[IPv4Address, IPv6Address]]
+            peers: list[IPv4Address | IPv6Address]
             """List of BGP IPv4 or IPv6 peer"""
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
 
@@ -407,13 +406,17 @@ class VerifyBGPSpecificPeers(AntaTest):
                 """
                 if self.afi in ["ipv4", "ipv6"]:
                     if self.safi is None:
-                        raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
+                        msg = "'safi' must be provided when afi is ipv4 or ipv6"
+                        raise ValueError(msg)
                     if self.vrf == "all":
-                        raise ValueError("'all' is not supported in this test. Use VerifyBGPPeersHealth test instead.")
+                        msg = "'all' is not supported in this test. Use VerifyBGPPeersHealth test instead."
+                        raise ValueError(msg)
                 elif self.safi is not None:
-                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                    msg = "'safi' must not be provided when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 elif self.vrf != "default":
-                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
+                    msg = "'vrf' must be default when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:

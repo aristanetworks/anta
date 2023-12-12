@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.system"""
+"""Test inputs for anta.tests.system."""
 from __future__ import annotations
 
 from typing import Any
@@ -46,10 +46,10 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "resetCauses": [
-                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False},
                 ],
                 "full": False,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -61,10 +61,10 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "resetCauses": [
-                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
+                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False},
                 ],
                 "full": False,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Reload cause is: 'Reload after crash.'"]},
@@ -125,7 +125,7 @@ EntityManager::doBackoff waiting for remote sysdb version ....ok
 ===> /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023 <===
 ===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===
 EntityManager::doBackoff waiting for remote sysdb version ...................ok
-"""
+""",
         ],
         "inputs": None,
         "expected": {
@@ -158,9 +158,9 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                         "activeTime": 360,
                         "virtMem": "6644",
                         "sharedMem": "3996",
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -185,9 +185,9 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                         "activeTime": 360,
                         "virtMem": "6644",
                         "sharedMem": "3996",
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization: 75.2%"]},
@@ -203,7 +203,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 "memTotal": 2004568,
                 "memFree": 879004,
                 "version": "4.27.3F",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -219,7 +219,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 "memTotal": 2004568,
                 "memFree": 89004,
                 "version": "4.27.3F",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high memory usage: 95.56%"]},
@@ -233,7 +233,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
 none            294M   78M  217M  27% /
 none            294M   78M  217M  27% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
-"""
+""",
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -247,7 +247,7 @@ none            294M   78M  217M  27% /.overlay
 none            294M   78M  217M  27% /
 none            294M   78M  217M  84% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
-"""
+""",
         ],
         "inputs": None,
         "expected": {
@@ -264,7 +264,7 @@ none            294M   78M  217M  84% /.overlay
         "eos_data": [
             """synchronised
 poll interval unknown
-"""
+""",
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -275,7 +275,7 @@ poll interval unknown
         "eos_data": [
             """unsynchronised
 poll interval unknown
-"""
+""",
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},

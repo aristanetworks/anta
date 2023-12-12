@@ -1,25 +1,25 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Utils functions to use with anta.cli.debug module.
-"""
+"""Utils functions to use with anta.cli.debug module."""
 from __future__ import annotations
 
 import functools
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
 from anta.cli.utils import ExitCode, inventory_options
-from anta.inventory import AntaInventory
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)
 
 
 def debug_options(f: Any) -> Any:
-    """Click common options required to execute a command on a specific device"""
+    """Click common options required to execute a command on a specific device."""
 
     @inventory_options
     @click.option("--ofmt", type=click.Choice(["json", "text"]), default="json", help="EOS eAPI format to use. can be text or json")

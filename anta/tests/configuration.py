@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the device configuration
-"""
+"""Test functions related to the device configuration."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -12,9 +10,7 @@ from anta.models import AntaCommand, AntaTest
 
 
 class VerifyZeroTouch(AntaTest):
-    """
-    Verifies ZeroTouch is disabled
-    """
+    """Verifies ZeroTouch is disabled."""
 
     name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled"
@@ -32,9 +28,7 @@ class VerifyZeroTouch(AntaTest):
 
 
 class VerifyRunningConfigDiffs(AntaTest):
-    """
-    Verifies there is no difference between the running-config and the startup-config
-    """
+    """Verifies there is no difference between the running-config and the startup-config."""
 
     name = "VerifyRunningConfigDiffs"
     description = "Verifies there is no difference between the running-config and the startup-config"

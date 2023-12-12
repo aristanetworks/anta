@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.cli.get.commands
-"""
+"""Tests for anta.cli.get.commands."""
 from __future__ import annotations
 
 import filecmp
@@ -12,7 +10,6 @@ from typing import TYPE_CHECKING
 from unittest.mock import ANY, patch
 
 import pytest
-from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
@@ -20,12 +17,13 @@ from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
+    from cvprac.cvp_client import CvpClient
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 @pytest.mark.parametrize(
-    "cvp_container, cvp_connect_failure",
+    ("cvp_container", "cvp_connect_failure"),
     [
         pytest.param(None, False, id="all devices"),
         pytest.param("custom_container", False, id="custom container"),
@@ -38,8 +36,7 @@ def test_from_cvp(
     cvp_container: str | None,
     cvp_connect_failure: bool,
 ) -> None:
-    """
-    Test `anta get from-cvp`
+    """Test `anta get from-cvp`.
 
     This test verifies that username and password are NOT mandatory to run this command
     """
@@ -56,9 +53,9 @@ def test_from_cvp(
 
     # always get a token
     with patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"), patch(
-        "cvprac.cvp_client.CvpClient.connect", autospec=True, side_effect=mock_cvp_connect
+        "cvprac.cvp_client.CvpClient.connect", autospec=True, side_effect=mock_cvp_connect,
     ) as mocked_cvp_connect, patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory, patch(
-        "cvprac.cvp_client.CvpApi.get_devices_in_container", autospec=True, return_value=[]
+        "cvprac.cvp_client.CvpApi.get_devices_in_container", autospec=True, return_value=[],
     ) as mocked_get_devices_in_container:
         result = click_runner.invoke(anta, cli_args)
 
@@ -79,7 +76,7 @@ def test_from_cvp(
 
 
 @pytest.mark.parametrize(
-    "ansible_inventory, ansible_group, expected_exit, expected_log",
+    ("ansible_inventory", "ansible_group", "expected_exit", "expected_log"),
     [
         pytest.param("ansible_inventory.yml", None, ExitCode.OK, None, id="no group"),
         pytest.param("ansible_inventory.yml", "ATD_LEAFS", ExitCode.OK, None, id="group found"),
@@ -95,8 +92,7 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    """
-    Test `anta get from-ansible`
+    """Test `anta get from-ansible`.
 
     This test verifies:
     * the parsing of an ansible-inventory
@@ -126,7 +122,7 @@ def test_from_ansible(
 
 
 @pytest.mark.parametrize(
-    "env_set, overwrite, is_tty, prompt, expected_exit, expected_log",
+    ("env_set", "overwrite", "is_tty", "prompt", "expected_exit", "expected_log"),
     [
         pytest.param(True, False, True, "y", ExitCode.OK, "", id="no-overwrite-tty-init-prompt-yes"),
         pytest.param(True, False, True, "N", ExitCode.INTERNAL_ERROR, "Aborted", id="no-overwrite-tty-init-prompt-no"),
@@ -159,8 +155,7 @@ def test_from_ansible_overwrite(
     expected_log: str | None,
 ) -> None:
     # pylint: disable=too-many-arguments
-    """
-    Test `anta get from-ansible` overwrite mechanism
+    """Test `anta get from-ansible` overwrite mechanism.
 
     The test uses a static ansible-inventory and output as these are tested in other functions
 

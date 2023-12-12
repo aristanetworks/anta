@@ -1,17 +1,14 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions to flag field notices
-"""
+"""Test functions to flag field notices."""
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
 
 class VerifyFieldNotice44Resolution(AntaTest):
-    """
-    Verifies the device is using an Aboot version that fix the bug discussed
+    """Verifies the device is using an Aboot version that fix the bug discussed
     in the field notice 44 (Aboot manages system settings prior to EOS initialization).
 
     https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44
@@ -101,8 +98,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
 
 class VerifyFieldNotice72Resolution(AntaTest):
-    """
-    Checks if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
+    """Checks if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
 
     https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072
     """

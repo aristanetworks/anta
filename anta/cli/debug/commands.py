@@ -2,22 +2,22 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
-"""
-Click commands to execute EOS commands on remote devices
-"""
+"""Click commands to execute EOS commands on remote devices."""
 from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import click
 
 from anta.cli.console import console
 from anta.cli.debug.utils import debug_options
 from anta.cli.utils import ExitCode
-from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate
+
+if TYPE_CHECKING:
+    from anta.device import AntaDevice
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 @click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
 def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int) -> None:
-    """Run arbitrary command to an ANTA device"""
+    """Run arbitrary command to an ANTA device."""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it
     v: Literal[1, "latest"] = version if version == "latest" else 1
@@ -48,14 +48,15 @@ def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal[
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
 @click.argument("params", required=True, nargs=-1)
 def run_template(
-    ctx: click.Context, device: AntaDevice, template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int
+    ctx: click.Context, device: AntaDevice, template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int,
 ) -> None:
     # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.
 
     Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
-    Example:
 
+    Example:
+    -------
     anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
     """
     template_params = dict(zip(params[::2], params[1::2]))

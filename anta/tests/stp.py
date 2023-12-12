@@ -1,24 +1,23 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to various Spanning Tree Protocol (STP) settings
-"""
+"""Test functions related to various Spanning Tree Protocol (STP) settings."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 # Need to keep List for pydantic in python 3.8
-from typing import List, Literal
+from typing import TYPE_CHECKING, Literal
 
-from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
 
+if TYPE_CHECKING:
+    from anta.custom_types import Vlan
+
 
 class VerifySTPMode(AntaTest):
-    """
-    Verifies the configured STP mode for a provided list of VLAN(s).
+    """Verifies the configured STP mode for a provided list of VLAN(s).
 
     Expected Results:
         * success: The test will pass if the STP mode is configured properly in the specified VLAN(s).
@@ -33,7 +32,7 @@ class VerifySTPMode(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
         """STP mode to verify"""
-        vlans: List[Vlan]
+        vlans: list[Vlan]
         """List of VLAN on which to verify STP mode"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -59,8 +58,7 @@ class VerifySTPMode(AntaTest):
 
 
 class VerifySTPBlockedPorts(AntaTest):
-    """
-    Verifies there is no STP blocked ports.
+    """Verifies there is no STP blocked ports.
 
     Expected Results:
         * success: The test will pass if there are NO ports blocked by STP.
@@ -84,8 +82,7 @@ class VerifySTPBlockedPorts(AntaTest):
 
 
 class VerifySTPCounters(AntaTest):
-    """
-    Verifies there is no errors in STP BPDU packets.
+    """Verifies there is no errors in STP BPDU packets.
 
     Expected Results:
         * success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
@@ -110,8 +107,7 @@ class VerifySTPCounters(AntaTest):
 
 
 class VerifySTPForwardingPorts(AntaTest):
-    """
-    Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
+    """Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
 
     Expected Results:
         * success: The test will pass if all interfaces are in a forwarding state for the specified VLAN(s).
@@ -124,7 +120,7 @@ class VerifySTPForwardingPorts(AntaTest):
     commands = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vlans: List[Vlan]
+        vlans: list[Vlan]
         """List of VLAN on which to verify forwarding states"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -154,8 +150,7 @@ class VerifySTPForwardingPorts(AntaTest):
 
 
 class VerifySTPRootPriority(AntaTest):
-    """
-    Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
+    """Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
 
     Expected Results:
         * success: The test will pass if the STP root priority is configured properly for the specified VLAN or MST instance ID(s).
@@ -170,7 +165,7 @@ class VerifySTPRootPriority(AntaTest):
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         priority: int
         """STP root priority to verify"""
-        instances: List[Vlan] = []
+        instances: list[Vlan] = []
         """List of VLAN or MST instance ID(s). If empty, ALL VLAN or MST instance ID(s) will be verified."""
 
     @AntaTest.anta_test
@@ -180,7 +175,7 @@ class VerifySTPRootPriority(AntaTest):
             self.result.is_failure("No STP instances configured")
             return
         # Checking the type of instances based on first instance
-        first_name = list(stp_instances)[0]
+        first_name = next(iter(stp_instances))
         if first_name.startswith("MST"):
             prefix = "MST"
         elif first_name.startswith("VL"):

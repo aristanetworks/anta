@@ -1,8 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various logging settings
+"""Test functions related to the EOS various logging settings.
 
 NOTE: 'show logging' does not support json output yet
 """
@@ -10,22 +9,24 @@ NOTE: 'show logging' does not support json output yet
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-import logging
 import re
-from ipaddress import IPv4Address
 
 # Need to keep List for pydantic in python 3.8
-from typing import List
+from typing import TYPE_CHECKING
 
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    import logging
+    from ipaddress import IPv4Address
+
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
-    """
-    Parse "show logging" output and gets operational logging states used
+    """Parse "show logging" output and gets operational logging states used
     in the tests in this module.
 
     Args:
+    ----
         command_output: The 'show logging' output
     """
     log_states = command_output.partition("\n\nExternal configuration:")[0]
@@ -34,8 +35,7 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
 
 
 class VerifyLoggingPersistent(AntaTest):
-    """
-    Verifies if logging persistent is enabled and logs are saved in flash.
+    """Verifies if logging persistent is enabled and logs are saved in flash.
 
     Expected Results:
         * success: The test will pass if logging persistent is enabled and logs are in flash.
@@ -65,8 +65,7 @@ class VerifyLoggingPersistent(AntaTest):
 
 
 class VerifyLoggingSourceIntf(AntaTest):
-    """
-    Verifies logging source-interface for a specified VRF.
+    """Verifies logging source-interface for a specified VRF.
 
     Expected Results:
         * success: The test will pass if the provided logging source-interface is configured in the specified VRF.
@@ -95,8 +94,7 @@ class VerifyLoggingSourceIntf(AntaTest):
 
 
 class VerifyLoggingHosts(AntaTest):
-    """
-    Verifies logging hosts (syslog servers) for a specified VRF.
+    """Verifies logging hosts (syslog servers) for a specified VRF.
 
     Expected Results:
         * success: The test will pass if the provided syslog servers are configured in the specified VRF.
@@ -109,7 +107,7 @@ class VerifyLoggingHosts(AntaTest):
     commands = [AntaCommand(command="show logging", ofmt="text")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        hosts: List[IPv4Address]
+        hosts: list[IPv4Address]
         """List of hosts (syslog servers) IP addresses"""
         vrf: str = "default"
         """The name of the VRF to transport log messages"""
@@ -119,7 +117,7 @@ class VerifyLoggingHosts(AntaTest):
         output = self.instance_commands[0].text_output
         not_configured = []
         for host in self.inputs.hosts:
-            pattern = rf"Logging to '{str(host)}'.*VRF {self.inputs.vrf}"
+            pattern = rf"Logging to '{host!s}'.*VRF {self.inputs.vrf}"
             if not re.search(pattern, _get_logging_states(self.logger, output)):
                 not_configured.append(str(host))
 
@@ -130,8 +128,7 @@ class VerifyLoggingHosts(AntaTest):
 
 
 class VerifyLoggingLogsGeneration(AntaTest):
-    """
-    Verifies if logs are generated.
+    """Verifies if logs are generated.
 
     Expected Results:
         * success: The test will pass if logs are generated.
@@ -159,8 +156,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
 
 
 class VerifyLoggingHostname(AntaTest):
-    """
-    Verifies if logs are generated with the device FQDN.
+    """Verifies if logs are generated with the device FQDN.
 
     Expected Results:
         * success: The test will pass if logs are generated with the device FQDN.
@@ -195,8 +191,7 @@ class VerifyLoggingHostname(AntaTest):
 
 
 class VerifyLoggingTimestamp(AntaTest):
-    """
-    Verifies if logs are generated with the approprate timestamp.
+    """Verifies if logs are generated with the approprate timestamp.
 
     Expected Results:
         * success: The test will pass if logs are generated with the appropriated timestamp.
@@ -229,8 +224,7 @@ class VerifyLoggingTimestamp(AntaTest):
 
 
 class VerifyLoggingAccounting(AntaTest):
-    """
-    Verifies if AAA accounting logs are generated.
+    """Verifies if AAA accounting logs are generated.
 
     Expected Results:
         * success: The test will pass if AAA accounting logs are generated.
@@ -253,8 +247,7 @@ class VerifyLoggingAccounting(AntaTest):
 
 
 class VerifyLoggingErrors(AntaTest):
-    """
-    This test verifies there are no syslog messages with a severity of ERRORS or higher.
+    """This test verifies there are no syslog messages with a severity of ERRORS or higher.
 
     Expected Results:
       * success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
@@ -268,9 +261,7 @@ class VerifyLoggingErrors(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Run VerifyLoggingWarning validation
-        """
+        """Run VerifyLoggingWarning validation."""
         command_output = self.instance_commands[0].text_output
 
         if len(command_output) == 0:

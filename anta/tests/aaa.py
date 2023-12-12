@@ -1,25 +1,24 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various AAA settings
-"""
+"""Test functions related to the EOS various AAA settings."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
-
 # Need to keep List and Set for pydantic in python 3.8
-from typing import List, Literal, Set
+from typing import TYPE_CHECKING, Literal
 
-from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
+
+if TYPE_CHECKING:
+    from ipaddress import IPv4Address
+
+    from anta.custom_types import AAAAuthMethod
 
 
 class VerifyTacacsSourceIntf(AntaTest):
-    """
-    Verifies TACACS source-interface for a specified VRF.
+    """Verifies TACACS source-interface for a specified VRF.
 
     Expected Results:
         * success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
@@ -50,8 +49,7 @@ class VerifyTacacsSourceIntf(AntaTest):
 
 
 class VerifyTacacsServers(AntaTest):
-    """
-    Verifies TACACS servers are configured for a specified VRF.
+    """Verifies TACACS servers are configured for a specified VRF.
 
     Expected Results:
         * success: The test will pass if the provided TACACS servers are configured in the specified VRF.
@@ -64,7 +62,7 @@ class VerifyTacacsServers(AntaTest):
     commands = [AntaCommand(command="show tacacs")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        servers: List[IPv4Address]
+        servers: list[IPv4Address]
         """List of TACACS servers"""
         vrf: str = "default"
         """The name of the VRF to transport TACACS messages"""
@@ -90,8 +88,7 @@ class VerifyTacacsServers(AntaTest):
 
 
 class VerifyTacacsServerGroups(AntaTest):
-    """
-    Verifies if the provided TACACS server group(s) are configured.
+    """Verifies if the provided TACACS server group(s) are configured.
 
     Expected Results:
         * success: The test will pass if the provided TACACS server group(s) are configured.
@@ -104,7 +101,7 @@ class VerifyTacacsServerGroups(AntaTest):
     commands = [AntaCommand(command="show tacacs")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        groups: List[str]
+        groups: list[str]
         """List of TACACS server group"""
 
     @AntaTest.anta_test
@@ -122,8 +119,7 @@ class VerifyTacacsServerGroups(AntaTest):
 
 
 class VerifyAuthenMethods(AntaTest):
-    """
-    Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
+    """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
     Expected Results:
         * success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
@@ -136,9 +132,9 @@ class VerifyAuthenMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods authentication")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: List[AAAAuthMethod]
+        methods: list[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order"""
-        types: Set[Literal["login", "enable", "dot1x"]]
+        types: set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify"""
 
     @AntaTest.anta_test
@@ -167,8 +163,7 @@ class VerifyAuthenMethods(AntaTest):
 
 
 class VerifyAuthzMethods(AntaTest):
-    """
-    Verifies the AAA authorization method lists for different authorization types (commands, exec).
+    """Verifies the AAA authorization method lists for different authorization types (commands, exec).
 
     Expected Results:
         * success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
@@ -181,9 +176,9 @@ class VerifyAuthzMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods authorization")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: List[AAAAuthMethod]
+        methods: list[AAAAuthMethod]
         """List of AAA authorization methods. Methods should be in the right order"""
-        types: Set[Literal["commands", "exec"]]
+        types: set[Literal["commands", "exec"]]
         """List of authorization types to verify"""
 
     @AntaTest.anta_test
@@ -205,8 +200,7 @@ class VerifyAuthzMethods(AntaTest):
 
 
 class VerifyAcctDefaultMethods(AntaTest):
-    """
-    Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
+    """Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results:
         * success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
@@ -219,9 +213,9 @@ class VerifyAcctDefaultMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods accounting")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: List[AAAAuthMethod]
+        methods: list[AAAAuthMethod]
         """List of AAA accounting methods. Methods should be in the right order"""
-        types: Set[Literal["commands", "exec", "system", "dot1x"]]
+        types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting types to verify"""
 
     @AntaTest.anta_test
@@ -249,8 +243,7 @@ class VerifyAcctDefaultMethods(AntaTest):
 
 
 class VerifyAcctConsoleMethods(AntaTest):
-    """
-    Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
+    """Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results:
         * success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
@@ -263,9 +256,9 @@ class VerifyAcctConsoleMethods(AntaTest):
     commands = [AntaCommand(command="show aaa methods accounting")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        methods: List[AAAAuthMethod]
+        methods: list[AAAAuthMethod]
         """List of AAA accounting console methods. Methods should be in the right order"""
-        types: Set[Literal["commands", "exec", "system", "dot1x"]]
+        types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting console types to verify"""
 
     @AntaTest.anta_test

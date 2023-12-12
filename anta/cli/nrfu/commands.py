@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Click commands that render ANTA tests results
-"""
+"""Click commands that render ANTA tests results."""
 from __future__ import annotations
 
 import logging
@@ -23,10 +21,10 @@ logger = logging.getLogger(__name__)
 @click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
 @click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
-    "--group-by", default=None, type=click.Choice(["device", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False
+    "--group-by", default=None, type=click.Choice(["device", "test"], case_sensitive=False), help="Group result by test or host. default none", required=False,
 )
 def table(ctx: click.Context, device: str | None, test: str | None, group_by: str) -> None:
-    """ANTA command to check network states with table result"""
+    """ANTA command to check network states with table result."""
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
     exit_with_code(ctx)
 
@@ -42,7 +40,7 @@ def table(ctx: click.Context, device: str | None, test: str | None, group_by: st
     help="Path to save report as a file",
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
-    """ANTA command to check network state with JSON result"""
+    """ANTA command to check network state with JSON result."""
     print_json(results=ctx.obj["result_manager"], output=output)
     exit_with_code(ctx)
 
@@ -52,7 +50,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
 def text(ctx: click.Context, search: str | None, skip_error: bool) -> None:
-    """ANTA command to check network states with text result"""
+    """ANTA command to check network states with text result."""
     print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
     exit_with_code(ctx)
 
@@ -76,6 +74,6 @@ def text(ctx: click.Context, search: str | None, skip_error: bool) -> None:
     help="Path to save report as a file",
 )
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
-    """ANTA command to check network state with templated report"""
+    """ANTA command to check network state with templated report."""
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
     exit_with_code(ctx)

@@ -2,15 +2,14 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
-"""
-Click commands to get information from or generate inventories
-"""
+"""Click commands to get information from or generate inventories."""
 from __future__ import annotations
 
 import asyncio
 import json
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 from cvprac.cvp_client import CvpClient
@@ -20,9 +19,11 @@ from rich.pretty import pretty_repr
 from anta.cli.console import console
 from anta.cli.get.utils import inventory_output_options
 from anta.cli.utils import ExitCode, inventory_options
-from anta.inventory import AntaInventory
 
 from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,7 @@ logger = logging.getLogger(__name__)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
-    """
-    Build ANTA inventory from Cloudvision
+    """Build ANTA inventory from Cloudvision.
 
     TODO - handle get_inventory and get_devices_in_container failure
     """
@@ -74,7 +74,7 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
-    """Build ANTA inventory from an ansible inventory YAML file"""
+    """Build ANTA inventory from an ansible inventory YAML file."""
     logger.info(f"Building inventory from ansible file '{ansible_inventory}'")
     try:
         create_inventory_from_ansible(
@@ -92,7 +92,6 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
 def inventory(inventory: AntaInventory, tags: list[str] | None, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-
     logger.debug(f"Requesting devices for tags: {tags}")
     console.print("Current inventory content is:", style="white on blue")
 

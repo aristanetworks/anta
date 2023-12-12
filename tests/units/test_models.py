@@ -1,27 +1,27 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-test anta.models.py
-"""
+"""test anta.models.py."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from anta.decorators import deprecated_test, skip_on_platforms
-from anta.device import AntaDevice
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from tests.lib.fixture import DEVICE_HW_MODEL
 from tests.lib.utils import generate_test_ids
 
+if TYPE_CHECKING:
+    from anta.device import AntaDevice
+
 
 class FakeTest(AntaTest):
-    """ANTA test that always succeed"""
+    """ANTA test that always succeed."""
 
     name = "FakeTest"
     description = "ANTA test that always succeed"
@@ -34,7 +34,7 @@ class FakeTest(AntaTest):
 
 
 class FakeTestWithFailedCommand(AntaTest):
-    """ANTA test with a command that failed"""
+    """ANTA test with a command that failed."""
 
     name = "FakeTestWithFailedCommand"
     description = "ANTA test with a command that failed"
@@ -47,7 +47,7 @@ class FakeTestWithFailedCommand(AntaTest):
 
 
 class FakeTestWithUnsupportedCommand(AntaTest):
-    """ANTA test with an unsupported command"""
+    """ANTA test with an unsupported command."""
 
     name = "FakeTestWithUnsupportedCommand"
     description = "ANTA test with an unsupported command"
@@ -60,7 +60,7 @@ class FakeTestWithUnsupportedCommand(AntaTest):
 
 
 class FakeTestWithInput(AntaTest):
-    """ANTA test with inputs that always succeed"""
+    """ANTA test with inputs that always succeed."""
 
     name = "FakeTestWithInput"
     description = "ANTA test with inputs that always succeed"
@@ -76,7 +76,7 @@ class FakeTestWithInput(AntaTest):
 
 
 class FakeTestWithTemplate(AntaTest):
-    """ANTA test with template that always succeed"""
+    """ANTA test with template that always succeed."""
 
     name = "FakeTestWithTemplate"
     description = "ANTA test with template that always succeed"
@@ -95,7 +95,7 @@ class FakeTestWithTemplate(AntaTest):
 
 
 class FakeTestWithTemplateNoRender(AntaTest):
-    """ANTA test with template that miss the render() method"""
+    """ANTA test with template that miss the render() method."""
 
     name = "FakeTestWithTemplateNoRender"
     description = "ANTA test with template that miss the render() method"
@@ -111,7 +111,7 @@ class FakeTestWithTemplateNoRender(AntaTest):
 
 
 class FakeTestWithTemplateBadRender1(AntaTest):
-    """ANTA test with template that raises a AntaTemplateRenderError exception"""
+    """ANTA test with template that raises a AntaTemplateRenderError exception."""
 
     name = "FakeTestWithTemplateBadRender"
     description = "ANTA test with template that raises a AntaTemplateRenderError exception"
@@ -130,7 +130,7 @@ class FakeTestWithTemplateBadRender1(AntaTest):
 
 
 class FakeTestWithTemplateBadRender2(AntaTest):
-    """ANTA test with template that raises an arbitrary exception"""
+    """ANTA test with template that raises an arbitrary exception."""
 
     name = "FakeTestWithTemplateBadRender2"
     description = "ANTA test with template that raises an arbitrary exception"
@@ -141,7 +141,7 @@ class FakeTestWithTemplateBadRender2(AntaTest):
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        raise Exception()  # pylint: disable=broad-exception-raised
+        raise Exception  # pylint: disable=broad-exception-raised
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -149,7 +149,7 @@ class FakeTestWithTemplateBadRender2(AntaTest):
 
 
 class SkipOnPlatformTest(AntaTest):
-    """ANTA test that is skipped"""
+    """ANTA test that is skipped."""
 
     name = "SkipOnPlatformTest"
     description = "ANTA test that is skipped on a specific platform"
@@ -163,7 +163,7 @@ class SkipOnPlatformTest(AntaTest):
 
 
 class UnSkipOnPlatformTest(AntaTest):
-    """ANTA test that is skipped"""
+    """ANTA test that is skipped."""
 
     name = "UnSkipOnPlatformTest"
     description = "ANTA test that is skipped on a specific platform"
@@ -177,7 +177,7 @@ class UnSkipOnPlatformTest(AntaTest):
 
 
 class SkipOnPlatformTestWithInput(AntaTest):
-    """ANTA test skipped on platforms but with Input"""
+    """ANTA test skipped on platforms but with Input."""
 
     name = "SkipOnPlatformTestWithInput"
     description = "ANTA test skipped on platforms but with Input"
@@ -194,7 +194,7 @@ class SkipOnPlatformTestWithInput(AntaTest):
 
 
 class DeprecatedTestWithoutNewTest(AntaTest):
-    """ANTA test that is deprecated without new test"""
+    """ANTA test that is deprecated without new test."""
 
     name = "DeprecatedTestWitouthNewTest"
     description = "ANTA test that is deprecated without new test"
@@ -356,18 +356,16 @@ ANTATEST_DATA: list[dict[str, Any]] = [
 
 
 class Test_AntaTest:
-    """
-    Test for anta.models.AntaTest
-    """
+    """Test for anta.models.AntaTest."""
 
     def test__init_subclass__name(self) -> None:
-        """Test __init_subclass__"""
+        """Test __init_subclass__."""
         # Pylint detects all the classes in here as unused which is on purpose
         # pylint: disable=unused-variable
         with pytest.raises(NotImplementedError) as exec_info:
 
             class WrongTestNoName(AntaTest):
-                """ANTA test that is missing a name"""
+                """ANTA test that is missing a name."""
 
                 description = "ANTA test that is missing a name"
                 categories = []
@@ -382,7 +380,7 @@ class Test_AntaTest:
         with pytest.raises(NotImplementedError) as exec_info:
 
             class WrongTestNoDescription(AntaTest):
-                """ANTA test that is missing a description"""
+                """ANTA test that is missing a description."""
 
                 name = "WrongTestNoDescription"
                 categories = []
@@ -397,7 +395,7 @@ class Test_AntaTest:
         with pytest.raises(NotImplementedError) as exec_info:
 
             class WrongTestNoCategories(AntaTest):
-                """ANTA test that is missing categories"""
+                """ANTA test that is missing categories."""
 
                 name = "WrongTestNoCategories"
                 description = "ANTA test that is missing categories"
@@ -412,7 +410,7 @@ class Test_AntaTest:
         with pytest.raises(NotImplementedError) as exec_info:
 
             class WrongTestNoCommands(AntaTest):
-                """ANTA test that is missing commands"""
+                """ANTA test that is missing commands."""
 
                 name = "WrongTestNoCommands"
                 description = "ANTA test that is missing commands"
@@ -432,14 +430,14 @@ class Test_AntaTest:
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
-        """Test the AntaTest constructor"""
+        """Test the AntaTest constructor."""
         expected = data["expected"]["__init__"]
         test = data["test"](device, inputs=data["inputs"])
         self._assert_test(test, expected)
 
     @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
-        """Test the AntaTest.test method"""
+        """Test the AntaTest.test method."""
         expected = data["expected"]["test"]
         test = data["test"](device, inputs=data["inputs"])
         asyncio.run(test.test())
@@ -454,7 +452,7 @@ def test_blacklist(device: AntaDevice, data: str) -> None:
     """Test for blacklisting function."""
 
     class FakeTestWithBlacklist(AntaTest):
-        """Fake Test for blacklist"""
+        """Fake Test for blacklist."""
 
         name = "FakeTestWithBlacklist"
         description = "ANTA test that has blacklisted command"

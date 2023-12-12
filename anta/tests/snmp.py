@@ -1,21 +1,21 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various SNMP settings
-"""
+"""Test functions related to the EOS various SNMP settings."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from pydantic import conint
+from typing import TYPE_CHECKING
 
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from pydantic import conint
+
 
 class VerifySnmpStatus(AntaTest):
-    """
-    Verifies whether the SNMP agent is enabled in a specified VRF.
+    """Verifies whether the SNMP agent is enabled in a specified VRF.
 
     Expected Results:
         * success: The test will pass if the SNMP agent is enabled in the specified VRF.
@@ -41,8 +41,7 @@ class VerifySnmpStatus(AntaTest):
 
 
 class VerifySnmpIPv4Acl(AntaTest):
-    """
-    Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
         * success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
@@ -79,8 +78,7 @@ class VerifySnmpIPv4Acl(AntaTest):
 
 
 class VerifySnmpIPv6Acl(AntaTest):
-    """
-    Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
         * success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.

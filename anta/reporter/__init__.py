@@ -1,23 +1,24 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Report management for ANTA.
-"""
+"""Report management for ANTA."""
 # pylint: disable = too-few-public-methods
 from __future__ import annotations
 
 import logging
 import os.path
-import pathlib
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
-from anta.custom_types import TestStatus
-from anta.result_manager import ResultManager
+
+if TYPE_CHECKING:
+    import pathlib
+
+    from anta.custom_types import TestStatus
+    from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +26,16 @@ logger = logging.getLogger(__name__)
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
 
-    def _split_list_to_txt_list(self, usr_list: list[str], delimiter: Optional[str] = None) -> str:
-        """
-        Split list to multi-lines string
+    def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
+        """Split list to multi-lines string.
 
         Args:
+        ----
             usr_list (list[str]): List of string to concatenate
             delimiter (str, optional): A delimiter to use to start string. Defaults to None.
 
         Returns:
+        -------
             str: Multi-lines string
         """
         if delimiter is not None:
@@ -41,16 +43,17 @@ class ReportTable:
         return "\n".join(f"{line}" for line in usr_list)
 
     def _build_headers(self, headers: list[str], table: Table) -> Table:
-        """
-        Create headers for a table.
+        """Create headers for a table.
 
         First key is considered as header and is colored using RICH_COLOR_PALETTE.HEADER
 
         Args:
+        ----
             headers (list[str]): List of headers
             table (Table): A rich Table instance
 
         Returns:
+        -------
             Table: A rich Table instance with headers
         """
         for idx, header in enumerate(headers):
@@ -64,13 +67,14 @@ class ReportTable:
         return table
 
     def _color_result(self, status: TestStatus) -> str:
-        """
-        Return a colored string based on the status value.
+        """Return a colored string based on the status value.
 
         Args:
+        ----
             status (TestStatus): status value to color
 
         Returns:
+        -------
         str: the colored string
         """
         color = RICH_COLOR_THEME.get(status, "")
@@ -79,22 +83,23 @@ class ReportTable:
     def report_all(
         self,
         result_manager: ResultManager,
-        host: Optional[str] = None,
-        testcase: Optional[str] = None,
+        host: str | None = None,
+        testcase: str | None = None,
         title: str = "All tests results",
     ) -> Table:
-        """
-        Create a table report with all tests for one or all devices.
+        """Create a table report with all tests for one or all devices.
 
         Create table with full output: Host / Test / Status / Message
 
         Args:
+        ----
             result_manager (ResultManager): A manager with a list of tests.
             host (str, optional): IP Address of a host to search for. Defaults to None.
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
         Returns:
+        -------
             Table: A fully populated rich Table
         """
         table = Table(title=title, show_lines=True)
@@ -113,20 +118,21 @@ class ReportTable:
     def report_summary_tests(
         self,
         result_manager: ResultManager,
-        testcase: Optional[str] = None,
+        testcase: str | None = None,
         title: str = "Summary per test case",
     ) -> Table:
-        """
-        Create a table report with result agregated per test.
+        """Create a table report with result agregated per test.
 
         Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure
 
         Args:
+        ----
             result_manager (ResultManager): A manager with a list of tests.
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
         Returns:
+        -------
             Table: A fully populated rich Table
         """
         # sourcery skip: class-extract-method
@@ -161,20 +167,21 @@ class ReportTable:
     def report_summary_hosts(
         self,
         result_manager: ResultManager,
-        host: Optional[str] = None,
+        host: str | None = None,
         title: str = "Summary per host",
     ) -> Table:
-        """
-        Create a table report with result agregated per host.
+        """Create a table report with result agregated per host.
 
         Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure
 
         Args:
+        ----
             result_manager (ResultManager): A manager with a list of tests.
             host (str, optional): IP Address of a host to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
         Returns:
+        -------
             Table: A fully populated rich Table
         """
         table = Table(title=title, show_lines=True)
@@ -215,11 +222,11 @@ class ReportJinja:
         if os.path.isfile(template_path):
             self.tempalte_path = template_path
         else:
-            raise FileNotFoundError(f"template file is not found: {template_path}")
+            msg = f"template file is not found: {template_path}"
+            raise FileNotFoundError(msg)
 
     def render(self, data: list[dict[str, Any]], trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
-        """
-        Build a report based on a Jinja2 template
+        """Build a report based on a Jinja2 template.
 
         Report is built based on a J2 template provided by user.
         Data structure sent to template is:
@@ -238,11 +245,13 @@ class ReportJinja:
         ]
 
         Args:
+        ----
             data (list[dict[str, Any]]): List of results from ResultManager.get_results
             trim_blocks (bool, optional): enable trim_blocks for J2 rendering. Defaults to True.
             lstrip_blocks (bool, optional): enable lstrip_blocks for J2 rendering. Defaults to True.
 
         Returns:
+        -------
             str: rendered template
         """
         with open(self.tempalte_path, encoding="utf-8") as file_:

@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.security.py
-"""
+"""Tests for anta.tests.security.py."""
 from __future__ import annotations
 
 from typing import Any
@@ -107,7 +105,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -124,7 +122,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["eAPI HTTP server is enabled globally"]},
@@ -141,7 +139,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "success"},
@@ -157,7 +155,7 @@ DATA: list[dict[str, Any]] = [
                 "httpsServer": {"configured": True, "running": True, "port": 443},
                 "unixSocketServer": {"configured": False, "running": False},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is not configured"]},
@@ -174,7 +172,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "Wrong_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is misconfigured or invalid"]},

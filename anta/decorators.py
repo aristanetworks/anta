@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 from anta.models import AntaTest, logger
 
@@ -16,25 +16,27 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def deprecated_test(new_tests: Optional[list[str]] = None) -> Callable[[F], F]:
-    """
-    Return a decorator to log a message of WARNING severity when a test is deprecated.
+def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
+    """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Args:
+    ----
         new_tests (Optional[list[str]]): A list of new test classes that should replace the deprecated test.
 
     Returns:
+    -------
         Callable[[F], F]: A decorator that can be used to wrap test functions.
     """
 
     def decorator(function: F) -> F:
-        """
-        Actual decorator that logs the message.
+        """Actual decorator that logs the message.
 
         Args:
+        ----
             function (F): The test function to be decorated.
 
         Returns:
+        -------
             F: The decorated function.
         """
 
@@ -54,34 +56,35 @@ def deprecated_test(new_tests: Optional[list[str]] = None) -> Callable[[F], F]:
 
 
 def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
-    """
-    Return a decorator to skip a test based on the device's hardware model.
+    """Return a decorator to skip a test based on the device's hardware model.
 
     This decorator factory generates a decorator that will check the hardware model of the device
     the test is run on. If the model is in the list of platforms specified, the test will be skipped.
 
     Args:
+    ----
         platforms (list[str]): List of hardware models on which the test should be skipped.
 
     Returns:
+    -------
         Callable[[F], F]: A decorator that can be used to wrap test functions.
     """
 
     def decorator(function: F) -> F:
-        """
-        Actual decorator that either runs the test or skips it based on the device's hardware model.
+        """Actual decorator that either runs the test or skips it based on the device's hardware model.
 
         Args:
+        ----
             function (F): The test function to be decorated.
 
         Returns:
+        -------
             F: The decorated function.
         """
 
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """
-            Check the device's hardware model and conditionally run or skip the test.
+            """Check the device's hardware model and conditionally run or skip the test.
 
             This wrapper inspects the hardware model of the device the test is run on.
             If the model is in the list of specified platforms, the test is either skipped.

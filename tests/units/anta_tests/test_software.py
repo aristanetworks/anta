@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.hardware"""
+"""Test inputs for anta.tests.hardware."""
 from __future__ import annotations
 
 from typing import Any
@@ -18,7 +18,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "vEOS-lab",
                 "internalVersion": "4.27.0F-24305004.4270F",
                 "version": "4.27.0F",
-            }
+            },
         ],
         "inputs": {"versions": ["4.27.0F", "4.28.0F"]},
         "expected": {"result": "success"},
@@ -31,7 +31,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "vEOS-lab",
                 "internalVersion": "4.27.0F-24305004.4270F",
                 "version": "4.27.0F",
-            }
+            },
         ],
         "inputs": {"versions": ["4.27.1F"]},
         "expected": {"result": "failure", "messages": ["device is running version \"4.27.0F\" not in expected versions: ['4.27.1F']"]},
@@ -52,7 +52,7 @@ DATA: list[dict[str, Any]] = [
                         "TerminAttr-core": {"release": "1", "version": "v1.17.0"},
                     },
                 },
-            }
+            },
         ],
         "inputs": {"versions": ["v1.17.0", "v1.18.1"]},
         "expected": {"result": "success"},
@@ -73,7 +73,7 @@ DATA: list[dict[str, Any]] = [
                         "TerminAttr-core": {"release": "1", "version": "v1.17.0"},
                     },
                 },
-            }
+            },
         ],
         "inputs": {"versions": ["v1.17.1", "v1.18.1"]},
         "expected": {"result": "failure", "messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"]},

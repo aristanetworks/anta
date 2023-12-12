@@ -1,31 +1,29 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test anta.report.__init__.py
-"""
+"""Test anta.report.__init__.py."""
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
-from anta.custom_types import TestStatus
 from anta.reporter import ReportTable
-from anta.result_manager import ResultManager
+
+if TYPE_CHECKING:
+    from anta.custom_types import TestStatus
+    from anta.result_manager import ResultManager
 
 
 class Test_ReportTable:
-    """
-    Test ReportTable class
-    """
+    """Test ReportTable class."""
 
     # not testing __init__ as nothing is going on there
 
     @pytest.mark.parametrize(
-        "usr_list, delimiter, expected_output",
+        ("usr_list", "delimiter", "expected_output"),
         [
             pytest.param([], None, "", id="empty list no delimiter"),
             pytest.param([], "*", "", id="empty list with delimiter"),
@@ -36,9 +34,7 @@ class Test_ReportTable:
         ],
     )
     def test__split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None, expected_output: str) -> None:
-        """
-        test _split_list_to_txt_list
-        """
+        """Test _split_list_to_txt_list."""
         # pylint: disable=protected-access
         report = ReportTable()
         assert report._split_list_to_txt_list(usr_list, delimiter) == expected_output
@@ -52,9 +48,7 @@ class Test_ReportTable:
         ],
     )
     def test__build_headers(self, headers: list[str]) -> None:
-        """
-        test _build_headers
-        """
+        """Test _build_headers."""
         # pylint: disable=protected-access
         report = ReportTable()
         table = Table()
@@ -65,7 +59,7 @@ class Test_ReportTable:
             assert table.columns[table_column_before].style == RICH_COLOR_PALETTE.HEADER
 
     @pytest.mark.parametrize(
-        "status, expected_status",
+        ("status", "expected_status"),
         [
             pytest.param("unknown", "unknown", id="unknown status"),
             pytest.param("unset", "[grey74]unset", id="unset status"),
@@ -76,15 +70,13 @@ class Test_ReportTable:
         ],
     )
     def test__color_result(self, status: TestStatus, expected_status: str) -> None:
-        """
-        test _build_headers
-        """
+        """Test _build_headers."""
         # pylint: disable=protected-access
         report = ReportTable()
         assert report._color_result(status) == expected_status
 
     @pytest.mark.parametrize(
-        "host, testcase, title, number_of_tests, expected_length",
+        ("host", "testcase", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, None, 5, 5, id="all results"),
             pytest.param("host1", None, None, 5, 0, id="result for host1 when no host1 test"),
@@ -101,9 +93,7 @@ class Test_ReportTable:
         number_of_tests: int,
         expected_length: int,
     ) -> None:
-        """
-        test report_all
-        """
+        """Test report_all."""
         # pylint: disable=too-many-arguments
         rm = result_manager_factory(number_of_tests)
 
@@ -117,7 +107,7 @@ class Test_ReportTable:
         assert res.row_count == expected_length
 
     @pytest.mark.parametrize(
-        "testcase, title, number_of_tests, expected_length",
+        ("testcase", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, 5, 5, id="all results"),
             pytest.param("VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
@@ -132,9 +122,7 @@ class Test_ReportTable:
         number_of_tests: int,
         expected_length: int,
     ) -> None:
-        """
-        test report_summary_tests
-        """
+        """Test report_summary_tests."""
         # pylint: disable=too-many-arguments
         # TODO refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
@@ -155,7 +143,7 @@ class Test_ReportTable:
         assert res.row_count == expected_length
 
     @pytest.mark.parametrize(
-        "host, title, number_of_tests, expected_length",
+        ("host", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, 5, 2, id="all results"),
             pytest.param("host1", None, 5, 1, id="result for host host1"),
@@ -170,9 +158,7 @@ class Test_ReportTable:
         number_of_tests: int,
         expected_length: int,
     ) -> None:
-        """
-        test report_summary_hosts
-        """
+        """Test report_summary_hosts."""
         # pylint: disable=too-many-arguments
         # TODO refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
