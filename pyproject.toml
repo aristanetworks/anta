@@ -57,7 +57,7 @@ dev = [
   "bumpver==2023.1129",
   "black==23.11.0",
   "flake8==6.1.0",
-  "isort==5.12.0",
+  "isort==5.13.1",
   "mypy~=1.7",
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",
