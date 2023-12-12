@@ -97,6 +97,8 @@ Contributing = "https://www.anta.ninja/main/contribution/"
 [project.scripts]
 anta = "anta.cli:cli"
 
+[project.entry-points."mkdocstrings.python.templates"] 
+extension-name = "docs.extension_package:get_templates_path" 
 
 ################################
 # Tools
