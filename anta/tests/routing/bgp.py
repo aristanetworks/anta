@@ -132,44 +132,46 @@ def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
     return {}
 
 
-def _add_bgp_routes_failure(bgp_routes: List[str], bgp_output: dict[str, Any], neighbor: str, vrf: str, route_type: str = "advertised_routes") -> dict[str, Any]:
+def _add_bgp_routes_failure(
+    bgp_routes: List[str], bgp_output: dict[str, Any], neighbor: str, vrf: str, route_type: str = "advertised_routes"
+) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
     """
-        Add the missing BGP advertised/received routes and invalid or inactive route entries to the given `failures` dictionary.
+    Add the missing BGP advertised/received routes and invalid or inactive route entries to the given `failures` dictionary.
 
-        Parameters:
-            bgp_routes (list): The list of routes that need to be checked.
-            bgp_output (dict): BGP output from the device.
-            neighbor (str): BGP neighbor IP address.
-            vrf (str): VRF name for which need to verify the routes.
-            route_type (str): Type of BGP routes, default as advertised routes.
+    Parameters:
+        bgp_routes (list): The list of routes that need to be checked.
+        bgp_output (dict): BGP output from the device.
+        neighbor (str): BGP neighbor IP address.
+        vrf (str): VRF name for which need to verify the routes.
+        route_type (str): Type of BGP routes, default as advertised routes.
 
-        The `failures` dictionnary will have the following structure:
-           {
-       "advertised_routes":{
-          "default":{
-             "172.30.11.1":{
-                "missing_routes":[
-                   "192.0.254.31/32"
-                ],
-                "invalid_or_inactive_routes":[
-                   "192.0.255.4/32"
-                ]
-             }
-          }
-       },
-       "revevied_routes":{
-          "default":{
-             "172.30.11.1":{
-                "missing_routes":[
-                   "192.0.254.31/32"
-                ],
-                "invalid_or_inactive_routes":[
-                   "192.0.255.4/32"
-                ]
-             }
-          }
-       }
-    }
+    The `failures` dictionary will have the following structure:
+       {
+            "advertised_routes":{
+                <vrf>:{
+                    <neighbor>:{
+                        "missing_routes":[
+                        <route>
+                        ],
+                        "invalid_or_inactive_routes":[
+                        <route>
+                        ]
+                    }
+                }
+            },
+            "revevied_routes":{
+                <vrf>:{
+                    <neighbor>:{
+                        "missing_routes":[
+                        <route>"
+                        ],
+                        "invalid_or_inactive_routes":[
+                        <route>
+                        ]
+                    }
+                }
+            }
+        }
     """
     failure_routes = {}
     missing_routes = [route for route in bgp_routes if route not in bgp_output]
