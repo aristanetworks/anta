@@ -9,7 +9,7 @@ BGP test functions
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
-from typing import Any, Iterable, List, Optional, Union, cast
+from typing import Any, List, Optional, Union, cast
 
 from pydantic import BaseModel, PositiveInt, model_validator, utils
 
@@ -130,6 +130,61 @@ def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
         return {"peerState": peer_data["peerState"], "inMsgQueue": peer_data["inMsgQueue"], "outMsgQueue": peer_data["outMsgQueue"]}
 
     return {}
+
+
+def _add_bgp_routes_failure(bgp_routes: List[str], bgp_output: dict[str, Any], neighbor: str, vrf: str, route_type: str = "advertised_routes") -> dict[str, Any]:
+    """
+        Add the missing BGP advertised/received routes and invalid or inactive route entries to the given `failures` dictionary.
+
+        Parameters:
+            bgp_routes (list): The list of routes that need to be checked.
+            bgp_output (dict): BGP output from the device.
+            neighbor (str): BGP neighbor IP address.
+            vrf (str): VRF name for which need to verify the routes.
+            route_type (str): Type of BGP routes, default as advertised routes.
+
+        The `failures` dictionnary will have the following structure:
+           {
+       "advertised_routes":{
+          "default":{
+             "172.30.11.1":{
+                "missing_routes":[
+                   "192.0.254.31/32"
+                ],
+                "invalid_or_inactive_routes":[
+                   "192.0.255.4/32"
+                ]
+             }
+          }
+       },
+       "revevied_routes":{
+          "default":{
+             "172.30.11.1":{
+                "missing_routes":[
+                   "192.0.254.31/32"
+                ],
+                "invalid_or_inactive_routes":[
+                   "192.0.255.4/32"
+                ]
+             }
+          }
+       }
+    }
+    """
+    failure_routes = {}
+    missing_routes = [route for route in bgp_routes if route not in bgp_output]
+    invalid_or_inactive = [
+        route
+        for route in bgp_routes
+        if route in bgp_output
+        and (not bgp_output[route]["bgpRoutePaths"][0]["routeType"]["valid"] or not bgp_output[route]["bgpRoutePaths"][0]["routeType"]["active"])
+    ]
+    if missing_routes:
+        failure_routes = {route_type: {vrf: {str(neighbor): {"missing_routes": missing_routes}}}}
+    if invalid_or_inactive:
+        failure_routes = {route_type: {vrf: {str(neighbor): {"invalid_or_inactive_routes": invalid_or_inactive}}}}
+
+    return failure_routes
 
 
 class VerifyBGPPeerCount(AntaTest):
@@ -451,15 +506,15 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 class VerifyBGPExchangedRoutes(AntaTest):
     """
-    Verifies if BGP routes are exchanged for a specified VRF.
+    Verifies if BGP neighbors have correctly advertised/received routes with type as valid and active for a specified VRF.
 
     Expected results:
-        * success: The test will pass if BGP routes are exchanged in the specified VRF.
-        * failure: The test will fail if BGP routes are not exchanged in the specified VRF.
+        * success: The test will pass if BGP neighbors have correct advertised/received routes with the type as valid and active for a specified VRF.
+        * failure: The test will fail if a BGP neighbor is not found, expected advertised/received routes are not found and routes are not valid or active.
     """
 
     name = "VerifyBGPExchangedRoutes"
-    description = "Verifies if BGP routes are exchanged for a specified VRF."
+    description = "Verifies if BGP neighbors have correctly advertised/received routes with type as valid and active for a specified VRF."
     categories = ["routing", "bgp"]
     commands = [
         AntaTemplate(template="show bgp neighbors {neighbor} advertised-routes vrf {vrf}"),
@@ -472,13 +527,13 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
         class BgpNeighbors(BaseModel):  # pylint: disable=missing-class-docstring
             neighbor: Union[IPv4Address, IPv6Address]
-            """IPv4 BGP neighbor"""
+            """IPv4/IPv6 BGP neighbor"""
             vrf: str = "default"
             """VRF context"""
-            advertised_routes: list  # type: ignore
+            advertised_routes: List[str]
             """Advertised routes"""
-            received_routes: list  # type: ignore
-            """Recivied routes"""
+            received_routes: List[str]
+            """Received routes"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         return [
@@ -494,13 +549,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
         # Itreating over command output for different neighbors
         for command in self.instance_commands:
-            neighbor = command.params.get("neighbor")
-            vrf = command.params.get("vrf")
-            advertised_routes = command.params.get("advertised_routes")
-            received_routes = command.params.get("received_routes")
-            if not isinstance(advertised_routes, Iterable) or not isinstance(received_routes, Iterable):
-                self.result.is_failure("BGP advertised or received routes are not iterable from the test catalog.")
-                return
+            neighbor = cast(str, command.params.get("neighbor"))
+            vrf = cast(str, command.params.get("vrf"))
+            advertised_routes = cast(List[str], command.params.get("advertised_routes"))
+            received_routes = cast(List[str], command.params.get("received_routes"))
 
             # Verify if BGP neighbor is configured with provided vrf
             if (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}", separator="..")) is None:
@@ -514,31 +566,13 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
             # Validate advertised routes
             if "advertised-routes" in command.command:
-                missing_routes = [route for route in advertised_routes if route not in bgp_routes]
-                invalid_or_inactive = [
-                    route
-                    for route in advertised_routes
-                    if route in bgp_routes
-                    and (not bgp_routes[route]["bgpRoutePaths"][0]["routeType"]["valid"] or not bgp_routes[route]["bgpRoutePaths"][0]["routeType"]["active"])
-                ]
-                if missing_routes:
-                    failures = utils.deep_update(failures, {"advertised_routes": {vrf: {str(neighbor): {"missing_routes": missing_routes}}}})
-                if invalid_or_inactive:
-                    failures = utils.deep_update(failures, {"advertised_routes": {vrf: {str(neighbor): {"invalid_or_inactive_routes": invalid_or_inactive}}}})
+                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, neighbor, vrf)
 
             # Validate received routes
             else:
-                missing_routes = [route for route in received_routes if route not in bgp_routes]
-                invalid_or_inactive = [
-                    route
-                    for route in received_routes
-                    if route in bgp_routes
-                    and (not bgp_routes[route]["bgpRoutePaths"][0]["routeType"]["valid"] or not bgp_routes[route]["bgpRoutePaths"][0]["routeType"]["active"])
-                ]
-                if missing_routes:
-                    failures = utils.deep_update(failures, {"received_routes": {vrf: {str(neighbor): {"missing_routes": missing_routes}}}})
-                if invalid_or_inactive:
-                    failures = utils.deep_update(failures, {"received_routes": {vrf: {str(neighbor): {"invalid_or_inactive_routes": invalid_or_inactive}}}})
+                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, neighbor, vrf, route_type="revevied_routes")
+
+            failures = utils.deep_update(failures, failure_routes)
 
         if not failures:
             self.result.is_success()
