@@ -349,6 +349,12 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+    - VerifyBGPPeerMD5Auth:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+          - peer_address: 172.30.11.5
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

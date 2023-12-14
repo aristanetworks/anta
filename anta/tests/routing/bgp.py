@@ -789,3 +789,67 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peer route refresh capabilities are not found or not ok:\n{failures}")
+
+
+class VerifyBGPPeerMD5Auth(AntaTest):
+    """
+    Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+    Expected results:
+        * success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
+        * failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+    """
+
+    name = "VerifyBGPPeerMD5Auth"
+    description = "Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF"
+    categories = ["routing", "bgp"]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters of the test case.
+        """
+
+        bgp_peers: List[BgpPeers]
+        """List of IPv4 BGP peers"""
+
+        class BgpPeers(BaseModel):
+            """
+            This class defines the details of an IPv4 BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, Any] = {"bgp_peers": {}}
+
+        # Iterate over each command
+        for bgp_peer in self.inputs.bgp_peers:
+            peer = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+
+            # Check if BGP output exists
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
+            ):
+                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
+                failures = utils.deep_update(failures, failure)
+                continue
+
+            # Check if BGP peer state and authentication
+            state = bgp_output.get("state")
+            md5_auth_enabled = bgp_output.get("md5AuthEnabled")
+            if state != "Established" or not md5_auth_enabled:
+                failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
+                failures = utils.deep_update(failures, failure)
+
+        # Check if there are any failures
+        if not failures["bgp_peers"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n{failures}")
