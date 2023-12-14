@@ -225,72 +225,17 @@ DATA: list[dict[str, Any]] = [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 169201860180484611559425663013039682076,
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496268302,
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
                             "size": 4096,
-                            "modulus": 169201860180484611559425663013039682076,
-                            "publicExponent": 65537,
-                        },
-                        "extension": {
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "subjectKeyIdentifier": {"value": "2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                        },
-                    },
-                    "ARISTA_SIGNING_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 490616394385765815676041936146238775981244419,
-                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496271268,
-                        "notAfter": 1811804668,
-                        "publicKey": {"encryptionAlgorithm": "ECDSA", "size": 256, "modulus": 0, "ellipticCurve": "prime256v1"},
-                        "extension": {
-                            "subjectKeyIdentifier": {"value": "73:B5:D7:47:5B:24:B8:4D:18:96:A4:B4:51:DC:1A:97:65:3F:7D:4A", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "authorityKeyIdentifier": {"value": "keyid:2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "crlDistributionPoints": {
-                                "value": "Full Name:\n  URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOT.crl\n",
-                                "critical": False,
-                            },
-                            "authorityInfoAccess": {
-                                "value": "CA Issuers - URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOTArista%20Networks%20Internal%20IT%20Root%20Cert",
-                                "critical": False,
-                            },
                         },
                     },
                 }
             },
             {
                 "utcTime": 1702288467.6736515,
-                "timezone": "UTC",
-                "localTime": {
-                    "year": 2023,
-                    "month": 12,
-                    "dayOfMonth": 11,
-                    "hour": 9,
-                    "min": 54,
-                    "sec": 27,
-                    "dayOfWeek": 0,
-                    "dayOfYear": 345,
-                    "daylightSavingsAdjust": 0,
-                },
-                "clockSource": {"local": False, "ntpServer": "10.88.21.235"},
             },
         ],
         "inputs": {
@@ -309,72 +254,17 @@ DATA: list[dict[str, Any]] = [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 169201860180484611559425663013039682076,
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496268302,
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
                             "size": 4096,
-                            "modulus": 169201860180484611559425663013039682076,
-                            "publicExponent": 65537,
-                        },
-                        "extension": {
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "subjectKeyIdentifier": {"value": "2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                        },
-                    },
-                    "ARISTA_SIGNING_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 490616394385765815676041936146238775981244419,
-                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496271268,
-                        "notAfter": 1811804668,
-                        "publicKey": {"encryptionAlgorithm": "ECDSA", "size": 256, "modulus": 0, "ellipticCurve": "prime256v1"},
-                        "extension": {
-                            "subjectKeyIdentifier": {"value": "73:B5:D7:47:5B:24:B8:4D:18:96:A4:B4:51:DC:1A:97:65:3F:7D:4A", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "authorityKeyIdentifier": {"value": "keyid:2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "crlDistributionPoints": {
-                                "value": "Full Name:\n  URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOT.crl\n",
-                                "critical": False,
-                            },
-                            "authorityInfoAccess": {
-                                "value": "CA Issuers - URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOTArista%20Networks%20Internal%20IT%20Root%20Cert",
-                                "critical": False,
-                            },
                         },
                     },
                 }
             },
             {
                 "utcTime": 1702288467.6736515,
-                "timezone": "UTC",
-                "localTime": {
-                    "year": 2023,
-                    "month": 12,
-                    "dayOfMonth": 11,
-                    "hour": 9,
-                    "min": 54,
-                    "sec": 27,
-                    "dayOfWeek": 0,
-                    "dayOfYear": 345,
-                    "daylightSavingsAdjust": 0,
-                },
-                "clockSource": {"local": False, "ntpServer": "10.88.21.235"},
             },
         ],
         "inputs": {"certificate": "ARISTA_ROOT_CA.crt", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "RSA", "size": 4096},
@@ -393,72 +283,17 @@ DATA: list[dict[str, Any]] = [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 169201860180484611559425663013039682076,
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496268302,
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
                             "size": 4096,
-                            "modulus": 169201860180484611559425663013039682076,
-                            "publicExponent": 65537,
-                        },
-                        "extension": {
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "subjectKeyIdentifier": {"value": "2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                        },
-                    },
-                    "ARISTA_SIGNING_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 490616394385765815676041936146238775981244419,
-                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496271268,
-                        "notAfter": 1811804668,
-                        "publicKey": {"encryptionAlgorithm": "ECDSA", "size": 256, "modulus": 0, "ellipticCurve": "prime256v1"},
-                        "extension": {
-                            "subjectKeyIdentifier": {"value": "73:B5:D7:47:5B:24:B8:4D:18:96:A4:B4:51:DC:1A:97:65:3F:7D:4A", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "authorityKeyIdentifier": {"value": "keyid:2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "crlDistributionPoints": {
-                                "value": "Full Name:\n  URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOT.crl\n",
-                                "critical": False,
-                            },
-                            "authorityInfoAccess": {
-                                "value": "CA Issuers - URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOTArista%20Networks%20Internal%20IT%20Root%20Cert",
-                                "critical": False,
-                            },
                         },
                     },
                 }
             },
             {
                 "utcTime": 1702288467.6736515,
-                "timezone": "UTC",
-                "localTime": {
-                    "year": 2023,
-                    "month": 12,
-                    "dayOfMonth": 11,
-                    "hour": 9,
-                    "min": 54,
-                    "sec": 27,
-                    "dayOfWeek": 0,
-                    "dayOfYear": 345,
-                    "daylightSavingsAdjust": 0,
-                },
-                "clockSource": {"local": False, "ntpServer": "10.88.21.235"},
             },
         ],
         "inputs": {
@@ -483,72 +318,17 @@ DATA: list[dict[str, Any]] = [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 169201860180484611559425663013039682076,
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496268302,
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
                             "size": 4096,
-                            "modulus": 169201860180484611559425663013039682076,
-                            "publicExponent": 65537,
-                        },
-                        "extension": {
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "subjectKeyIdentifier": {"value": "2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                        },
-                    },
-                    "ARISTA_SIGNING_CA.crt": {
-                        "version": 3,
-                        "serialNumber": 490616394385765815676041936146238775981244419,
-                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
-                        "issuer": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
-                        "notBefore": 1496271268,
-                        "notAfter": 1811804668,
-                        "publicKey": {"encryptionAlgorithm": "ECDSA", "size": 256, "modulus": 0, "ellipticCurve": "prime256v1"},
-                        "extension": {
-                            "subjectKeyIdentifier": {"value": "73:B5:D7:47:5B:24:B8:4D:18:96:A4:B4:51:DC:1A:97:65:3F:7D:4A", "critical": False},
-                            "certificatePolicies": {
-                                "value": "Policy: 1.3.6.1.2.1.17.7.1.4.2.1.3\n  CPS: http://it-pki.aristanetworks.com/pki/cps.html",
-                                "critical": False,
-                            },
-                            "keyUsage": {"value": "Digital Signature, Certificate Sign, CRL Sign", "critical": False},
-                            "basicConstraints": {"value": "CA:TRUE", "critical": True},
-                            "authorityKeyIdentifier": {"value": "keyid:2D:EF:DA:E6:EF:CF:1C:77:51:BF:5A:02:A9:28:CD:94:00:AD:E1:CA", "critical": False},
-                            "crlDistributionPoints": {
-                                "value": "Full Name:\n  URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOT.crl\n",
-                                "critical": False,
-                            },
-                            "authorityInfoAccess": {
-                                "value": "CA Issuers - URI:http://it-pki.aristanetworks.com/pki/AristaIT-ROOTArista%20Networks%20Internal%20IT%20Root%20Cert",
-                                "critical": False,
-                            },
                         },
                     },
                 }
             },
             {
                 "utcTime": 1702288467.6736515,
-                "timezone": "UTC",
-                "localTime": {
-                    "year": 2023,
-                    "month": 12,
-                    "dayOfMonth": 11,
-                    "hour": 9,
-                    "min": 54,
-                    "sec": 27,
-                    "dayOfWeek": 0,
-                    "dayOfYear": 345,
-                    "daylightSavingsAdjust": 0,
-                },
-                "clockSource": {"local": False, "ntpServer": "10.88.21.235"},
             },
         ],
         "inputs": {

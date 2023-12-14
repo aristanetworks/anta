@@ -308,9 +308,11 @@ class VerifyAPISSLCertificate(AntaTest):
         clock_output = self.instance_commands[1].json_output
 
         # Collecting certificate expiry time and current EOS time.
-        if (certificate_data := get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")) is None:
+        certificate_data = get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")
+        if certificate_data is None:
             self.result.is_failure(f"SSL certificate '{self.inputs.certificate}', is not configured.")
             return
+
         expiry_time = certificate_data["notAfter"]
         current_timestamp = clock_output["utcTime"]
         day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
@@ -326,38 +328,16 @@ class VerifyAPISSLCertificate(AntaTest):
         # Verify certificate common name, encryption type and size
         keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
         verified_output = {key: get_value(certificate_data, key) for key in keys_to_verify}
+
         expected_output = {
             "subject.commonName": self.inputs.subject_name,
-            "publicKey.encryptionAlgorithm": self.inputs.encryption,
-            "publicKey.size": self.inputs.size,
+            "publicKey.encryptionAlgorithm": self.inputs.encryption if self.inputs.encryption else verified_output["publicKey.encryptionAlgorithm"],
+            "publicKey.size": self.inputs.size if self.inputs.size else verified_output["publicKey.size"],
         }
 
-        if self.inputs.encryption is None and self.inputs.size is not None:
-            actual_encryption = verified_output["publicKey.encryptionAlgorithm"]
-            expected_output = {
-                "subject.commonName": self.inputs.subject_name,
-                "publicKey.encryptionAlgorithm": actual_encryption if actual_encryption in EncryptionType else EncryptionType,
-                "publicKey.size": self.inputs.size,
-            }
-        elif self.inputs.encryption is not None and self.inputs.size is None:
-            actual_encryption_size = verified_output["publicKey.size"]
-            expected_output = {
-                "subject.commonName": self.inputs.subject_name,
-                "publicKey.encryptionAlgorithm": self.inputs.encryption,
-                "publicKey.size": actual_encryption_size if actual_encryption_size in EncryptionSize else EncryptionSize,
-            }
-        elif self.inputs.encryption is None and self.inputs.size is None:
-            actual_encryption = verified_output["publicKey.encryptionAlgorithm"]
-            actual_encryption_size = verified_output["publicKey.size"]
-            expected_output = {
-                "subject.commonName": self.inputs.subject_name,
-                "publicKey.encryptionAlgorithm": actual_encryption if actual_encryption in EncryptionType else EncryptionType,
-                "publicKey.size": actual_encryption_size if actual_encryption_size in EncryptionSize else EncryptionSize,
-            }
-
-        if verified_output == expected_output:
-            self.result.is_success()
-        else:
+        if verified_output != expected_output:
             failed_log = f"The SSL certificate `{self.inputs.certificate}` is not configured properly:"
             failed_log += get_failed_logs(expected_output, verified_output)
             self.result.is_failure(f"{failed_log}")
+        else:
+            self.result.is_success()
