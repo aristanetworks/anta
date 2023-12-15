@@ -1388,7 +1388,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP neighbors are not ok: {'advertised_routes': {'default': {'172.30.11.1': {'missing_routes': ['192.0.254.31/32']}}}, "
-                "'revevied_routes': {'default': {'172.30.11.1': {'missing_routes': ['192.0.255.31/32']}}}}"
+                "'received_routes': {'default': {'172.30.11.1': {'missing_routes': ['192.0.255.31/32']}}}}"
             ],
         },
     },
@@ -1447,7 +1447,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP neighbors are not ok: {'advertised_routes': {'default': {'172.30.11.1': {'invalid_or_inactive_routes': ['192.0.254.3/32']}}}, "
-                "'revevied_routes': {'default': {'172.30.11.1': {'missing_routes': ['192.0.255.3/32']}}}}"
+                "'received_routes': {'default': {'172.30.11.1': {'missing_routes': ['192.0.255.3/32']}}}}"
             ],
         },
     },
