@@ -248,6 +248,91 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "failure-certificate-not-configured",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {"certificates": {}},
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificate": "ARISTA_ROOT_CA.crt",
+            "expiry_limit": 30,
+            "subject_name": "Arista Networks Internal IT Root Cert Authority",
+            "encryption": "RSA",
+            "size": 4096,
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate 'ARISTA_ROOT_CA.crt', is not configured."],
+        },
+    },
+    {
+        "name": "failure-certificate-expired",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 1702533518,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702622372.2240553,
+            },
+        ],
+        "inputs": {
+            "certificate": "ARISTA_ROOT_CA.crt",
+            "expiry_limit": 30,
+            "subject_name": "Arista Networks Internal IT Root Cert Authority",
+            "encryption": "RSA",
+            "size": 4096,
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate `ARISTA_ROOT_CA.crt` is expired."],
+        },
+    },
+    {
+        "name": "failure-certificate-about-to-expire",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 1704782709,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702622372.2240553,
+            },
+        ],
+        "inputs": {
+            "certificate": "ARISTA_ROOT_CA.crt",
+            "expiry_limit": 30,
+            "subject_name": "Arista Networks Internal IT Root Cert Authority",
+            "encryption": "RSA",
+            "size": 4096,
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate `ARISTA_ROOT_CA.crt` is about to expire in 25 days."],
+        },
+    },
+    {
         "name": "failure-wrong-subject-name",
         "test": VerifyAPISSLCertificate,
         "eos_data": [

@@ -6,10 +6,10 @@ Toolkit for ANTA.
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict
 
 
-def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> Any:
+def get_failed_logs(expected_output: Dict[Any, Any], actual_output: Dict[Any, Any]) -> str:
     """
     Get the failed log for a test.
     Returns the failed log or empty string if no difference between the expected and actual output.
@@ -24,9 +24,12 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
     str
         Failed log of a test.
     """
-    failed_log = ""
-    for element, data in expected_output.items():
-        if actual_output[element] != data:
-            failed_log += f"\nExpected {element} is `{data}` however in actual found as `{actual_output[element]}`."
+    failed_logs = []
+    for element, expected_data in expected_output.items():
+        actual_data = actual_output.get(element)
+        if actual_data is None:
+            failed_logs.append(f"\nExpected {element} is `{expected_data}`, however, {element} is not found in actual output.")
+        elif actual_data != expected_data:
+            failed_logs.append(f"\nExpected {element} is `{expected_data}` however in actual found as `{actual_data}`.")
 
-    return failed_log
+    return "".join(failed_logs)
