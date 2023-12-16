@@ -3,6 +3,9 @@
 # echo "Configure direnv"
 # echo "eval \"$(direnv hook bash)\"" >> ~/.bashrc
 
+echo "Upgrading pip"
+pip install --upgrade pip
+
 echo "Installing ANTA package from git"
 pip install -e .
 
