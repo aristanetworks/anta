@@ -308,6 +308,12 @@ anta.tests.routing:
               - 10.1.255.0
               - 10.1.255.2
               - 10.1.255.4
+    - VerifyBGPAdvCommunities:
+        bgp_neighbors:
+          - neighbor: 172.30.11.17
+            vrf: default
+          - neighbor: 172.30.11.21
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

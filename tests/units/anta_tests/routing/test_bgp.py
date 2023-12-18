@@ -11,7 +11,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
+from anta.tests.routing.bgp import VerifyBGPAdvCommunities, VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -1236,6 +1236,102 @@ DATA: list[dict[str, Any]] = [
                 "{'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 10, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
                 "{'afi': 'evpn', 'vrfs': {'default': {'10.1.0.2': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_neighbors": [
+                {
+                    "neighbor": "172.30.11.17",
+                    "vrf": "default",
+                }
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "bgp_neighbors": [
+                {
+                    "neighbor": "172.30.11.17",
+                    "vrf": "MGMT",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "BGP advertised communities are not standard, extended, and large for the following neighbors:\n{'172.30.11.17': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-neighbor",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [{"vrfs": {"default": {"peerList": []}}}],
+        "inputs": {
+            "bgp_neighbors": [
+                {
+                    "neighbor": "172.30.11.10",
+                    "vrf": "default",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "BGP advertised communities are not standard, extended, and large for the following neighbors:\n{'172.30.11.10': {'default': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-correct-communities",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "advertisedCommunities": {"standard": False, "extended": False, "large": False},
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_neighbors": [
+                {
+                    "neighbor": "172.30.11.17",
+                    "vrf": "default",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "BGP advertised communities are not standard, extended, and large for the following neighbors:\n"
+                "{'172.30.11.17': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}}"
             ],
         },
     },
