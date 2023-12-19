@@ -1,0 +1,29 @@
+{% extends "_base/class.html" %}
+{% block bases scoped %}
+  {% set anta_test = True %}
+{% for base in class.bases %}
+{% set basestr = base | string %}
+{% if "AntaTest" == basestr %}
+ANTA TEST
+  {% set anta_test = True %}
+{% endif %}
+{% endfor %}
+{{ anta_test }}
+{% if anta_test %}
+  {% if config.show_bases and class.bases %}
+    <p class="doc doc-class-bases">
+      STUFF: {% for expression in class.bases -%}
+        <code>{% include "expression.html" with context %}</code>{% if not loop.last %}, {% endif %}
+      {% endfor -%}
+    </p>
+  {% endif %}
+{% else %}
+  {% if config.show_bases and class.bases %}
+    <p class="doc doc-class-bases">
+      OTHER: {% for expression in class.bases -%}
+        <code>{% include "expression.html" with context %}</code>{% if not loop.last %}, {% endif %}
+      {% endfor -%}
+    </p>
+  {% endif %}
+{% endif %}
+{% endblock bases %}
