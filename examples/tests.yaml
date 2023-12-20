@@ -50,6 +50,22 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.bfd:
+  - VerifyBFDPeers:
+      bfd_neighbors:
+        - neighbor: 192.0.255.8
+          vrf: default
+          loopback: 192.0.255.1
+          tx_interval: 1200000
+          rx_interval: 1200000
+          multiplier: 3
+        - neighbor: 192.0.255.7
+          vrf: default
+          loopback: 192.0.255.1
+          tx_interval: 1200000
+          rx_interval: 1200000
+          multiplier: 3
+
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
