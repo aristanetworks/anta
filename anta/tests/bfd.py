@@ -58,8 +58,6 @@ class VerifyBFDPeers(AntaTest):
             multiplier: int
             """Multiplier of BFD neighbor"""
 
-    Input.model_rebuild()
-
     def render(self, template: AntaTemplate) -> List[AntaCommand]:
         """
         This method renders the template with the BFD neighbor details.
