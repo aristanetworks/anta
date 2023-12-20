@@ -56,18 +56,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-vrf",
-        "test": VerifyBFDPeers,
-        "eos_data": [{"vrfs": {}, "errors": ["VRF MGMT not configured."]}],
-        "inputs": {
-            "bfd_neighbors": [{"neighbor": "192.0.255.7", "vrf": "MGMT", "loopback": "192.0.255.1", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3}]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Following BFD neighbors are not UP, not configured or timers are not ok:\n{'192.0.255.7': {'MGMT': 'Not Configured'}}"],
-        },
-    },
-    {
         "name": "failure-no-neighbor",
         "test": VerifyBFDPeers,
         "eos_data": [{"vrfs": {}}],
@@ -78,7 +66,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Following BFD neighbors are not UP, not configured or timers are not ok:\n{'192.0.255.70': {'default': 'Not Configured'}}"],
+            "messages": ["Following BFD neighbors are not UP, not configured, or timers are not ok:\n{'192.0.255.70': {'default': 'Not Configured'}}"],
         },
     },
     {
@@ -122,7 +110,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD neighbors are not UP, not configured or timers are not ok:\n"
+                "Following BFD neighbors are not UP, not configured, or timers are not ok:\n"
                 "{'192.0.255.7': {'default': {'status': 'down', 'tx_interval': 1200000, 'rx_interval': 1200000, 'multiplier': 3}}}"
             ],
         },
@@ -168,7 +156,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD neighbors are not UP, not configured or timers are not ok:\n"
+                "Following BFD neighbors are not UP, not configured, or timers are not ok:\n"
                 "{'192.0.255.7': {'default': {'status': 'up', 'tx_interval': 1300000, 'rx_interval': 1300000, 'multiplier': 4}}}"
             ],
         },

@@ -58,7 +58,7 @@ class VerifyBFDPeers(AntaTest):
             multiplier: int
             """Multiplier of BFD neighbor"""
 
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+    def render(self, template: AntaTemplate) -> List[AntaCommand]:
         """
         This method renders the template with the BFD neighbor details.
         """
@@ -74,11 +74,26 @@ class VerifyBFDPeers(AntaTest):
             for bfd_neighbor in self.inputs.bfd_neighbors
         ]
 
+    def create_bfd_neighbor_key(self, vrf: str, neighbor: str) -> str:
+        """
+        Create a key for retrieving BFD neighbor information based on the VRF and neighbor's IP type.
+
+        Parameters:
+        - vrf (str): Virtual Routing and Forwarding context.
+        - neighbor (str): IPv4 or IPv6 address of the BFD neighbor.
+
+        Returns:
+        str: Key used to retrieve BFD neighbor information from the command output.
+
+        Example:
+        >>> create_bfd_neighbor_key("default", "192.168.1.1")
+        'vrfs..default..ipv4Neighbors..192.168.1.1..peers....types..multihop..peerStats'
+        """
+        ip_type = "ipv4" if isinstance(ip_address(neighbor), IPv4Address) else "ipv6"
+        return f"vrfs..{vrf}..{ip_type}Neighbors..{neighbor}..peers....types..multihop..peerStats"
+
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        This method tests the BFD neighbors.
-        """
         failures: dict[str, Any] = {}
 
         # Iterating over command output for different neighbors
@@ -90,25 +105,19 @@ class VerifyBFDPeers(AntaTest):
             rx_interval = command.params.get("rx_interval")
             multiplier = command.params.get("multiplier")
 
+            bfd_key = self.create_bfd_neighbor_key(vrf, neighbor)
+            bfd_output = get_value(command.json_output, f"{bfd_key}..{loopback}", separator="..")
+
             # Verify BFD neighbor state and timers
-            if not (
-                bfd_output := get_value(
-                    command.json_output,
-                    f"vrfs..{vrf}..{'ipv4Neighbors' if isinstance(ip_address(neighbor), IPv4Address) else 'ipv6Neighbors'}..{neighbor}"
-                    f"..peers....types..multihop..peerStats..{loopback}",
-                    separator="..",
-                )
-            ):
+            if not bfd_output:
                 failures[str(neighbor)] = {vrf: "Not Configured"}
                 continue
 
             bfd_details = bfd_output["peerStatsDetail"]
-            if (
-                bfd_output["status"] != "up"
-                or bfd_details["operTxInterval"] != tx_interval
-                or bfd_details["operRxInterval"] != rx_interval
-                or bfd_details["detectMult"] != multiplier
-            ):
+            status_up = bfd_output["status"] == "up"
+            intervals_ok = bfd_details["operTxInterval"] == tx_interval and bfd_details["operRxInterval"] == rx_interval and bfd_details["detectMult"] == multiplier
+
+            if not (status_up and intervals_ok):
                 failures[str(neighbor)] = {
                     vrf: {
                         "status": bfd_output["status"],
@@ -121,4 +130,5 @@ class VerifyBFDPeers(AntaTest):
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Following BFD neighbors are not UP, not configured or timers are not ok:\n{failures}")
+            message = f"Following BFD neighbors are not UP, not configured, or timers are not ok:\n{failures}"
+            self.result.is_failure(message)
