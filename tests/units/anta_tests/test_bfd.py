@@ -24,20 +24,12 @@ DATA: list[dict[str, Any]] = [
                     "default": {
                         "ipv4Neighbors": {
                             "192.0.255.7": {
-                                "peers": {
+                                "peerStats": {
                                     "": {
-                                        "types": {
-                                            "multihop": {
-                                                "peerStats": {
-                                                    "192.0.255.1": {
-                                                        "peerStatsDetail": {
-                                                            "operTxInterval": 1200000,
-                                                            "operRxInterval": 1200000,
-                                                            "detectMult": 3,
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1200000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 3,
                                         }
                                     }
                                 }
@@ -77,20 +69,12 @@ DATA: list[dict[str, Any]] = [
                     "default": {
                         "ipv4Neighbors": {
                             "192.0.255.7": {
-                                "peers": {
+                                "peerStats": {
                                     "": {
-                                        "types": {
-                                            "multihop": {
-                                                "peerStats": {
-                                                    "192.0.255.1": {
-                                                        "peerStatsDetail": {
-                                                            "operTxInterval": 1300000,
-                                                            "operRxInterval": 1300000,
-                                                            "detectMult": 4,
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1300000,
+                                            "operRxInterval": 1300000,
+                                            "detectMult": 4,
                                         }
                                     }
                                 }
@@ -122,18 +106,10 @@ DATA: list[dict[str, Any]] = [
                     "default": {
                         "ipv4Neighbors": {
                             "192.0.255.7": {
-                                "peers": {
+                                "peerStats": {
                                     "": {
-                                        "types": {
-                                            "multihop": {
-                                                "peerStats": {
-                                                    "192.0.255.1": {
-                                                        "status": "up",
-                                                        "remoteDisc": 108328132,
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
                                     }
                                 }
                             }
@@ -164,56 +140,10 @@ DATA: list[dict[str, Any]] = [
                     "default": {
                         "ipv4Neighbors": {
                             "192.0.255.7": {
-                                "peers": {
+                                "peerStats": {
                                     "": {
-                                        "types": {
-                                            "multihop": {
-                                                "peerStats": {
-                                                    "192.0.255.1": {
-                                                        "status": "down",
-                                                        "remoteDisc": 108328132,
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "inputs": {"bfd_peers": [{"peer": "192.0.255.7", "vrf": "default", "source_address": "192.0.255.1"}]},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'default': {'status': 'down', 'remote_disc': 108328132}}}"
-            ],
-        },
-    },
-    {
-        "name": "failure-zero-remote-disk",
-        "test": VerifyBFDSpecificPeers,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peers": {
-                                    "": {
-                                        "types": {
-                                            "multihop": {
-                                                "peerStats": {
-                                                    "192.0.255.1": {
-                                                        "status": "down",
-                                                        "remoteDisc": 0,
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        "status": "down",
+                                        "remoteDisc": 0,
                                     }
                                 }
                             }
