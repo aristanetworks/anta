@@ -16,6 +16,7 @@ from pydantic import BaseModel, PositiveInt, model_validator
 from anta.custom_types import Afi, Safi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
+from anta.tools.utils import create_index
 
 # Need to keep List for pydantic in python 3.8
 
@@ -451,62 +452,62 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 class VerifyBGPAdvCommunities(AntaTest):
     """
-    Verifies if the advertised communities of BGP neighbors are standard, extended, and large in the specified VRF.
+    Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
 
     Expected results:
-        * success: The test will pass if the advertised communities of BGP neighbors are standard, extended, and large in the specified VRF.
-        * failure: The test will fail if the advertised communities of BGP neighbors are not standard, extended, and large in the specified VRF.
+        * success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+        * failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
     """
 
     name = "VerifyBGPAdvCommunities"
-    description = "Verifies if the advertised communities of BGP neighbors are standard, extended, and large in the specified VRF."
+    description = "Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF."
     categories = ["routing", "bgp"]
-    commands = [AntaTemplate(template="show bgp neighbors {neighbor} vrf {vrf}")]
+    commands = [AntaCommand(command="show bgp neighbors")]
 
     class Input(AntaTest.Input):
         """
         Input parameters for the test.
         """
 
-        bgp_neighbors: List[BgpNeighbors]
-        """List of BGP neighbors"""
+        bgp_peers: List[BgpPeers]
+        """List of BGP peers"""
 
-        class BgpNeighbors(BaseModel):
+        class BgpPeers(BaseModel):
             """
-            Model for BGP neighbors.
+            This class defines the details of a BGP peer.
             """
 
-            neighbor: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BGP neighbor"""
+            peer: Union[IPv4Address, IPv6Address]
+            """IPv4/IPv6 BGP peer"""
             vrf: str = "default"
             """VRF context"""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """
-        Render the template with the given BGP neighbors and their VRF context.
-        """
-        return [template.render(neighbor=bgp_neighbor.neighbor, vrf=bgp_neighbor.vrf) for bgp_neighbor in self.inputs.bgp_neighbors]
 
     @AntaTest.anta_test
     def test(self) -> None:
         failures: dict[str, Any] = {}
 
-        # Iterating over command output for different neighbors
-        for command in self.instance_commands:
-            neighbor = cast(str, command.params.get("neighbor"))
-            vrf = cast(str, command.params.get("vrf"))
+        # Iterate over each bgp peer
+        for bgp_peer in self.inputs.bgp_peers:
+            peer = str(bgp_peer.peer)
+            vrf = bgp_peer.vrf
 
-            # Verify BGP neighbor
-            if not (bgp_output := get_value(command.json_output, f"vrfs..{vrf}..peerList", separator="..")):
-                failures[str(neighbor)] = {vrf: "Not configured"}
+            # Verify BGP peer
+            if not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..peerList", separator="..")):
+                failures[str(peer)] = {vrf: "Not configured"}
                 continue
 
-            # Verify BGP neighbor advertised communities
+            bgp_index = create_index(bgp_output, "peerAddress")
+            bgp_output = bgp_index.get(peer)
+            if not bgp_output:
+                failures[str(peer)] = {vrf: "Not configured"}
+                continue
+
+            # Verify BGP peer's advertised communities
             bgp_output = bgp_output[0]["advertisedCommunities"]
             if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
-                failures[str(neighbor)] = {vrf: {"advertised_communities": bgp_output}}
+                failures[str(peer)] = {vrf: {"advertised_communities": bgp_output}}
 
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"BGP advertised communities are not standard, extended, and large for the following neighbors:\n{failures}")
+            self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")
