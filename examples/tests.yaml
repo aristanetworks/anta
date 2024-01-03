@@ -349,6 +349,16 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+    - VerifyBGPTimers:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            hold_time: 180
+            keep_alive_time: 60
+          - peer_address: 172.30.11.5
+            vrf: default
+            hold_time: 180
+            keep_alive_time: 60
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
