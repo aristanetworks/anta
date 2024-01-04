@@ -133,7 +133,7 @@ def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _add_bgp_routes_failure(
-    bgp_routes: List[str], bgp_output: dict[str, Any], neighbor: str, vrf: str, route_type: str = "advertised_routes"
+    bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
 ) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
     """
     Identifies missing BGP routes and invalid or inactive route entries.
@@ -142,47 +142,37 @@ def _add_bgp_routes_failure(
     It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.
 
     Parameters:
-        bgp_routes (List[str]): The list of expected routes.
+        bgp_routes (list[str]): The list of expected routes.
         bgp_output (dict[str, Any]): The BGP output from the device.
-        neighbor (str): The IP address of the BGP neighbor.
+        peer (str): The IP address of the BGP peer.
         vrf (str): The name of the VRF for which the routes need to be verified.
         route_type (str, optional): The type of BGP routes. Defaults to 'advertised_routes'.
 
     Returns:
-        dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes, structured as follows:
-            {
-                "advertised_routes": {
-                    <vrf>: {
-                        <neighbor>: {
-                            "missing_routes": [<route>],
-                            "invalid_or_inactive_routes": [<route>]
-                        }
-                    }
-                },
-                "received_routes": {
-                    <vrf>: {
-                        <neighbor>: {
-                            "missing_routes": [<route>],
-                            "invalid_or_inactive_routes": [<route>]
-                        }
-                    }
-                }
-            }
+        dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
     """
 
     # Prepare the failure routes dictionary
-    failure_routes = {}
-    missing_routes = [route for route in bgp_routes if route not in bgp_output]
-    invalid_or_inactive = [
-        route
-        for route in bgp_routes
-        if route in bgp_output
-        and (not bgp_output[route]["bgpRoutePaths"][0]["routeType"]["valid"] or not bgp_output[route]["bgpRoutePaths"][0]["routeType"]["active"])
-    ]
-    if missing_routes:
-        failure_routes.update({route_type: {vrf: {str(neighbor): {"missing_routes": missing_routes}}}})
-    if invalid_or_inactive:
-        failure_routes.update({route_type: {vrf: {str(neighbor): {"invalid_or_inactive_routes": invalid_or_inactive}}}})
+    failure_routes: dict[str, dict[str, Any]] = {}
+
+    # Iterate over the expected bgp routes
+    for route in bgp_routes:
+        # Check if the route is missing in the BGP output
+        if route not in bgp_output:
+            # If missing, add it to the failure routes dictionary
+            failure_routes.setdefault("bgp_peers", {}).setdefault(peer, {}).setdefault(vrf, {}).setdefault(route_type, {})[route] = "Not found"
+            continue
+
+        # Check if the route is active and valid
+        is_active = bgp_output[route]["bgpRoutePaths"][0]["routeType"]["valid"]
+        is_valid = bgp_output[route]["bgpRoutePaths"][0]["routeType"]["active"]
+
+        # If the route is either inactive or invalid, add it to the failure routes dictionary
+        if not is_active or not is_valid:
+            failure_routes.setdefault("bgp_peers", {}).setdefault(peer, {}).setdefault(vrf, {}).setdefault(route_type, {})[route] = {
+                "valid": is_valid,
+                "active": is_active,
+            }
 
     return failure_routes
 
@@ -506,33 +496,37 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 class VerifyBGPExchangedRoutes(AntaTest):
     """
-    Verifies if the BGP neighbors have correctly advertised and received routes.
+    Verifies if the BGP peers have correctly advertised and received routes.
     The route type should be 'valid' and 'active' for a specified VRF.
 
     Expected results:
-        * success: If the BGP neighbors have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
-        * failure: If a BGP neighbor is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+        * success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
+        * failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
     """
 
     name = "VerifyBGPExchangedRoutes"
-    description = "Verifies if BGP neighbors have correctly advertised/received routes with type as valid and active for a specified VRF."
+    description = "Verifies if BGP peers have correctly advertised/received routes with type as valid and active for a specified VRF."
     categories = ["routing", "bgp"]
     commands = [
-        AntaTemplate(template="show bgp neighbors {neighbor} advertised-routes vrf {vrf}"),
-        AntaTemplate(template="show bgp neighbors {neighbor} routes vrf {vrf}"),
+        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
+        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
     ]
 
     class Input(AntaTest.Input):
-        """Input class for VerifyBGPExchangedRoutes. Contains a list of BGP neighbors."""
+        """
+        Input parameters of the testcase.
+        """
 
-        bgp_neighbors: List[BgpNeighbors]
-        """List of BGP neighbors"""
+        bgp_peers: List[BgpNeighbors]
+        """List of BGP peers"""
 
         class BgpNeighbors(BaseModel):
-            """Nested class for BGP neighbors. Contains the neighbor's IP, VRF context, and advertised and received routes."""
+            """
+            This class defines the details of a BGP peer.
+            """
 
-            neighbor: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BGP neighbor"""
+            peer: Union[IPv4Address, IPv6Address]
+            """IPv4/IPv6 BGP peer"""
             vrf: str = "default"
             """VRF context"""
             advertised_routes: List[str]
@@ -544,45 +538,36 @@ class VerifyBGPExchangedRoutes(AntaTest):
         """Renders the template with the provided inputs. Returns a list of commands to be executed."""
 
         return [
-            template.render(
-                neighbor=bgp_neighbor.neighbor, vrf=bgp_neighbor.vrf, advertised_routes=bgp_neighbor.advertised_routes, received_routes=bgp_neighbor.received_routes
-            )
-            for bgp_neighbor in self.inputs.bgp_neighbors
+            template.render(peer=bgp_peer.peer, vrf=bgp_peer.vrf, advertised_routes=bgp_peer.advertised_routes, received_routes=bgp_peer.received_routes)
+            for bgp_peer in self.inputs.bgp_peers
         ]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Executes the test. Verifies if the BGP neighbors have correctly advertised and received routes."""
+        failures: dict[str, dict[str, Any]] = {}
 
-        failures: dict[dict[str, Any], dict[str, Any]] = {}
-
-        # Iterating over command output for different neighbors
+        # Iterating over command output for different peers
         for command in self.instance_commands:
-            neighbor = command.params.get("neighbor", "")
+            peer = command.params.get("peer", "")
             vrf = command.params.get("vrf", "")
             advertised_routes = command.params.get("advertised_routes", [])
             received_routes = command.params.get("received_routes", [])
 
-            # Verify if BGP neighbor is configured with provided vrf
-            if (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}", separator="..")) is None:
-                self.result.is_failure(f"BGP neighbor {str(neighbor)} is not configured for `{vrf}` VRF.")
-                return
-
-            # Verify if BGP routes are found for a provided neighbor
-            if not (bgp_routes := get_value(bgp_routes, "bgpRouteEntries")):
-                self.result.is_failure(f"BGP routes are not found for neighbor `{str(neighbor)}`.")
-                return
+            # Verify if BGP peer is configured with provided vrf
+            if (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")) is None:
+                failures.setdefault("bgp_peers", {}).setdefault(str(peer), {})[vrf] = "Not configured"
+                continue
 
             # Validate advertised routes
             if "advertised-routes" in command.command:
-                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, neighbor, vrf)
+                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, str(peer), vrf)
 
             # Validate received routes
             else:
-                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, neighbor, vrf, route_type="received_routes")
+                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, str(peer), vrf, route_type="received_routes")
             failures = utils.deep_update(failures, failure_routes)
 
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Following BGP neighbors are not ok: {failures}")
+            self.result.is_failure(f"Following BGP peers are not found or routes are not exchanged properly:\n{failures}")
