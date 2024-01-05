@@ -1,6 +1,5 @@
 {% extends "_base/class.html" %}
 {% block bases scoped %}
-  {% set anta_test = True %}
 {% for base in class.bases %}
 {% set basestr = base | string %}
 {% if "AntaTest" == basestr %}
