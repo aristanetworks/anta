@@ -232,6 +232,14 @@ DATA: list[dict[str, Any]] = [
                             "size": 4096,
                         },
                     },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
                 }
             },
             {
@@ -239,11 +247,22 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "RSA",
-            "size": 4096,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {"result": "success"},
     },
@@ -251,21 +270,43 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-certificate-not-configured",
         "test": VerifyAPISSLCertificate,
         "eos_data": [
-            {"certificates": {}},
+            {
+                "certificates": {
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                }
+            },
             {
                 "utcTime": 1702288467.6736515,
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "RSA",
-            "size": 4096,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["SSL certificate 'ARISTA_ROOT_CA.crt', is not configured."],
+            "messages": ["SSL certificate 'ARISTA_ROOT_CA.crt', is not configured.\n"],
         },
     },
     {
@@ -289,15 +330,26 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "RSA",
-            "size": 4096,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["SSL certificate `ARISTA_ROOT_CA.crt` is expired."],
+            "messages": ["SSL certificate 'ARISTA_SIGNING_CA.crt', is not configured.\n", "SSL certificate `ARISTA_ROOT_CA.crt` is expired.\n"],
         },
     },
     {
@@ -314,6 +366,14 @@ DATA: list[dict[str, Any]] = [
                             "size": 4096,
                         },
                     },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 1702533518,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
                 }
             },
             {
@@ -321,15 +381,26 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "RSA",
-            "size": 4096,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["SSL certificate `ARISTA_ROOT_CA.crt` is about to expire in 25 days."],
+            "messages": ["SSL certificate `ARISTA_SIGNING_CA.crt` is expired.\n", "SSL certificate `ARISTA_ROOT_CA.crt` is about to expire in 25 days."],
         },
     },
     {
@@ -339,11 +410,19 @@ DATA: list[dict[str, Any]] = [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
-                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "subject": {"commonName": "AristaIT-ICA Networks Internal IT Root Cert Authority"},
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
                             "size": 4096,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "Arista ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
                         },
                     },
                 }
@@ -352,23 +431,52 @@ DATA: list[dict[str, Any]] = [
                 "utcTime": 1702288467.6736515,
             },
         ],
-        "inputs": {"certificate": "ARISTA_ROOT_CA.crt", "expiry_limit": 30, "subject_name": "self.signed", "encryption": "RSA", "size": 4096},
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
-                "Expected subject.commonName is `self.signed` however in actual found as `Arista Networks Internal IT Root Cert Authority`."
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `AristaIT-ICA ECDSA Issuing Cert Authority` as the subject.commonName, but found "
+                "`Arista ECDSA Issuing Cert Authority` instead.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `Arista Networks Internal IT Root Cert Authority` as the subject.commonName, "
+                "but found `AristaIT-ICA Networks Internal IT Root Cert Authority` instead.\n",
             ],
         },
     },
     {
-        "name": "failure-wrong-encryption-type",
+        "name": "failure-wrong-encryption-type-and-size",
         "test": VerifyAPISSLCertificate,
         "eos_data": [
             {
                 "certificates": {
                     "ARISTA_ROOT_CA.crt": {
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
                         "notAfter": 2127420899,
                         "publicKey": {
                             "encryptionAlgorithm": "RSA",
@@ -382,22 +490,37 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "ECDSA",
-            "size": 4096,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
-                "Expected publicKey.encryptionAlgorithm is `ECDSA` however in actual found as `RSA`."
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `ECDSA` as the publicKey.encryptionAlgorithm, but found `RSA` instead.\n"
+                "Expected `256` as the publicKey.size, but found `4096` instead.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `RSA` as the publicKey.encryptionAlgorithm, but found `ECDSA` instead.\n"
+                "Expected `4096` as the publicKey.size, but found `256` instead.\n",
             ],
         },
     },
     {
-        "name": "failure-wrong-encryption-size",
+        "name": "failure-missing-actual-output",
         "test": VerifyAPISSLCertificate,
         "eos_data": [
             {
@@ -405,10 +528,10 @@ DATA: list[dict[str, Any]] = [
                     "ARISTA_ROOT_CA.crt": {
                         "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
                         "notAfter": 2127420899,
-                        "publicKey": {
-                            "encryptionAlgorithm": "RSA",
-                            "size": 4096,
-                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
                     },
                 }
             },
@@ -417,16 +540,32 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "certificate": "ARISTA_ROOT_CA.crt",
-            "expiry_limit": 30,
-            "subject_name": "Arista Networks Internal IT Root Cert Authority",
-            "encryption": "RSA",
-            "size": 2048,
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\nExpected publicKey.size is `2048` however in actual found as `4096`."
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `ECDSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
+                "Expected `256` as the publicKey.size, but it was not found in the actual output.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
+                "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
             ],
         },
     },

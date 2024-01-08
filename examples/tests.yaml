@@ -194,11 +194,17 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      certificate: ARISTA_ROOT_CA.crt
-      expiry_limit: 30
-      subject_name: Arista Networks Internal IT Root Cert Authority
-      encryption: RSA
-      size: 4096
+      certificates:
+        - certificate_name: ARISTA_SIGNING_CA.crt
+          expiry_threshold: 30
+          common_name: AristaIT-ICA ECDSA Issuing Cert Authority
+          encryption_algorithm: ECDSA
+          key_size: 256
+        - certificate_name: ARISTA_ROOT_CA.crt
+          expiry_threshold: 30
+          common_name: Arista Networks Internal IT Root Cert Authority
+          encryption_algorithm: RSA
+          key_size: 4096
 
 anta.tests.snmp:
   - VerifySnmpStatus:

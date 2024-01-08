@@ -9,11 +9,11 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-from pydantic import conint
+from pydantic import BaseModel, conint
 
-from anta.custom_types import EncryptionSize, EncryptionType
+from anta.custom_types import EncryptionAlgorithm, KeySize
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
@@ -278,79 +278,85 @@ class VerifyAPIIPv6Acl(AntaTest):
 
 class VerifyAPISSLCertificate(AntaTest):
     """
-    Verifies the eAPI SSL certificate expiry, common subject name, encryption type and size.
+    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     Expected Results:
         * success: The test will pass if the certificate's expiry date is greater than the threshold,
-                   and the certificate has the correct name, encryption type, and size.
-        * failure: The test will fail if the certificate is expired or is going to expire, or if the certificate has an incorrect name, encryption type, or size.
+                   and the certificate has the correct name, encryption algorithm, and key size.
+        * failure: The test will fail if the certificate is expired or is going to expire,
+                   or if the certificate has an incorrect name, encryption algorithm, or key size.
     """
 
     name = "VerifyAPISSLCertificate"
-    description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption type and size."
+    description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
     categories = ["security"]
     commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):
         """
         Input parameters for the VerifyAPISSLCertificate test.
-
-        Attributes:
-            certificate (str): The name of the certificate to be verified.
-            expiry_limit (int): The expiry limit of the certificate in days.
-            subject_name (str): The common subject name of the certificate.
-            encryption (Literal[EncryptionType]): The encryption type of the certificate. Defaults to None.
-            size (Literal[EncryptionSize]): The encryption size of the certificate. Defaults to None.
         """
 
-        certificate: str
-        """The name of the certificate to be verified."""
-        expiry_limit: int
-        """The expiry limit of the certificate in days."""
-        subject_name: str
-        """The common subject name of the certificate."""
-        encryption: Optional[EncryptionType] = None
-        """The encryption type of the certificate. If not provided, it will be inferred from the certificate."""
-        size: Optional[EncryptionSize] = None
-        """The encryption size of the certificate. If not provided, it will be inferred from the certificate."""
+        certificates: List[APISSLCertificates]
+        """List of API SSL certificates"""
+
+        class APISSLCertificates(BaseModel):
+            """
+            This class defines the details of an API SSL certificate.
+            """
+
+            certificate_name: str
+            """The name of the certificate to be verified."""
+            expiry_threshold: int
+            """The expiry threshold of the certificate in days."""
+            common_name: str
+            """The common subject name of the certificate."""
+            encryption_algorithm: Optional[EncryptionAlgorithm] = None
+            """The encryption algorithm of the certificate. If not provided, it will be inferred from the certificate."""
+            key_size: Optional[KeySize] = None
+            """The encryption algorithm key size of the certificate. If not provided, it will be inferred from the certificate."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        # Mark the result as success by default
+        self.result.is_success()
+
+        # Extract certificate and clock output
         certificate_output = self.instance_commands[0].json_output
         clock_output = self.instance_commands[1].json_output
-
-        # Collecting certificate expiry time and current EOS time.
-        # These times are used to calculate the number of days until the certificate expires.
-        certificate_data = get_value(certificate_output, f"certificates..{self.inputs.certificate}", separator="..")
-        if certificate_data is None:
-            self.result.is_failure(f"SSL certificate '{self.inputs.certificate}', is not configured.")
-            return
-
-        expiry_time = certificate_data["notAfter"]
         current_timestamp = clock_output["utcTime"]
-        day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
 
-        # Verify certificate expiry
-        if self.inputs.expiry_limit > day_difference > 0:
-            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}` is about to expire in {day_difference} days.")
-            return
-        if day_difference < 0:
-            self.result.is_failure(f"SSL certificate `{self.inputs.certificate}` is expired.")
-            return
+        # Iterate over each API SSL certificate
+        for certificate in self.inputs.certificates:
+            # Collecting certificate expiry time and current EOS time.
+            # These times are used to calculate the number of days until the certificate expires.
+            certificate_data = get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")
+            if certificate_data is None:
+                self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
+                continue
 
-        # Verify certificate common name, encryption type and size
-        keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
-        actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
+            expiry_time = certificate_data["notAfter"]
+            day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
 
-        expected_certificate_details = {
-            "subject.commonName": self.inputs.subject_name,
-            "publicKey.encryptionAlgorithm": self.inputs.encryption if self.inputs.encryption else actual_certificate_details["publicKey.encryptionAlgorithm"],
-            "publicKey.size": self.inputs.size if self.inputs.size else actual_certificate_details["publicKey.size"],
-        }
+            # Verify certificate expiry
+            if 0 < day_difference < certificate.expiry_threshold:
+                self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is about to expire in {day_difference} days.\n")
+            elif day_difference < 0:
+                self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is expired.\n")
 
-        if actual_certificate_details != expected_certificate_details:
-            failed_log = f"The SSL certificate `{self.inputs.certificate}` is not configured properly:"
-            failed_log += get_failed_logs(expected_certificate_details, actual_certificate_details)
-            self.result.is_failure(f"{failed_log}")
-        else:
-            self.result.is_success()
+            # Verify certificate common subject name, encryption algorithm and key size
+            keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
+            actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
+
+            expected_certificate_details = {
+                "subject.commonName": certificate.common_name,
+                "publicKey.encryptionAlgorithm": certificate.encryption_algorithm
+                if certificate.encryption_algorithm
+                else actual_certificate_details["publicKey.encryptionAlgorithm"],
+                "publicKey.size": certificate.key_size if certificate.key_size else actual_certificate_details["publicKey.size"],
+            }
+
+            if actual_certificate_details != expected_certificate_details:
+                failed_log = f"SSL certificate `{certificate.certificate_name}` is not configured properly:"
+                failed_log += get_failed_logs(expected_certificate_details, actual_certificate_details)
+                self.result.is_failure(f"{failed_log}\n")
