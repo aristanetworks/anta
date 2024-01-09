@@ -1252,16 +1252,27 @@ DATA: list[dict[str, Any]] = [
                                 "advertisedCommunities": {"standard": True, "extended": True, "large": True},
                             }
                         ]
-                    }
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.1",
-                    "vrf": "default",
-                }
+                    "peer_address": "172.30.11.1",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                },
             ]
         },
         "expected": {"result": "success"},
@@ -1269,11 +1280,24 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-no-vrf",
         "test": VerifyBGPAdvCommunities,
-        "eos_data": [{"vrfs": {}}],
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.17",
+                    "peer_address": "172.30.11.17",
                     "vrf": "MGMT",
                 }
             ]
@@ -1282,7 +1306,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'172.30.11.17': {'MGMT': 'Not configured'}}"
+                "{'bgp_peers': {'172.30.11.17': {'MGMT': 'Not configured'}}}"
             ],
         },
     },
@@ -1299,23 +1323,35 @@ DATA: list[dict[str, Any]] = [
                                 "advertisedCommunities": {"standard": True, "extended": True, "large": True},
                             }
                         ]
-                    }
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.10",
+                    "peer_address": "172.30.11.10",
                     "vrf": "default",
-                }
+                },
+                {
+                    "peer_address": "172.30.11.12",
+                    "vrf": "MGMT",
+                },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'172.30.11.10': {'default': 'Not configured'}}"
+                "{'bgp_peers': {'172.30.11.10': {'default': 'Not configured'}, '172.30.11.12': {'MGMT': 'Not configured'}}}"
             ],
         },
     },
@@ -1332,23 +1368,36 @@ DATA: list[dict[str, Any]] = [
                                 "advertisedCommunities": {"standard": False, "extended": False, "large": False},
                             }
                         ]
-                    }
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": False},
+                            }
+                        ]
+                    },
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.1",
+                    "peer_address": "172.30.11.1",
                     "vrf": "default",
-                }
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "CS",
+                },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'172.30.11.1': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}}"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}, "
+                "'172.30.11.10': {'CS': {'advertised_communities': {'standard': True, 'extended': True, 'large': False}}}}}"
             ],
         },
     },

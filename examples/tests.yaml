@@ -310,9 +310,9 @@ anta.tests.routing:
               - 10.1.255.4
     - VerifyBGPAdvCommunities:
         bgp_peers:
-          - peer: 172.30.11.17
+          - peer_address: 172.30.11.17
             vrf: default
-          - peer: 172.30.11.21
+          - peer_address: 172.30.11.21
             vrf: default
   ospf:
     - VerifyOSPFNeighborState:

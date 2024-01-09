@@ -15,8 +15,8 @@ from pydantic import BaseModel, PositiveInt, model_validator
 
 from anta.custom_types import Afi, Safi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
-from anta.tools.utils import create_index
 
 # Need to keep List for pydantic in python 3.8
 
@@ -462,7 +462,7 @@ class VerifyBGPAdvCommunities(AntaTest):
     name = "VerifyBGPAdvCommunities"
     description = "Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF."
     categories = ["routing", "bgp"]
-    commands = [AntaCommand(command="show bgp neighbors")]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """
@@ -477,10 +477,10 @@ class VerifyBGPAdvCommunities(AntaTest):
             This class defines the details of a BGP peer.
             """
 
-            peer: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BGP peer"""
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
             vrf: str = "default"
-            """VRF context"""
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -488,24 +488,21 @@ class VerifyBGPAdvCommunities(AntaTest):
 
         # Iterate over each bgp peer
         for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer)
+            peer = str(bgp_peer.peer_address)
             vrf = bgp_peer.vrf
 
             # Verify BGP peer
-            if not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..peerList", separator="..")):
-                failures[str(peer)] = {vrf: "Not configured"}
-                continue
-
-            bgp_index = create_index(bgp_output, "peerAddress")
-            bgp_output = bgp_index.get(peer)
-            if not bgp_output:
-                failures[str(peer)] = {vrf: "Not configured"}
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
+            ):
+                failures.setdefault("bgp_peers", {})[peer] = {vrf: "Not configured"}
                 continue
 
             # Verify BGP peer's advertised communities
-            bgp_output = bgp_output[0]["advertisedCommunities"]
+            bgp_output = bgp_output.get("advertisedCommunities")
             if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
-                failures[str(peer)] = {vrf: {"advertised_communities": bgp_output}}
+                failures.setdefault("bgp_peers", {})[peer] = {vrf: {"advertised_communities": bgp_output}}
 
         if not failures:
             self.result.is_success()
