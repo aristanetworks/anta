@@ -9,11 +9,10 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
-from typing import List, Optional
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, model_validator
 
-from anta.custom_types import EncryptionAlgorithm, KeySize
+from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
@@ -297,7 +296,7 @@ class VerifyAPISSLCertificate(AntaTest):
         Input parameters for the VerifyAPISSLCertificate test.
         """
 
-        certificates: List[APISSLCertificates]
+        certificates: list[APISSLCertificates]
         """List of API SSL certificates"""
 
         class APISSLCertificates(BaseModel):
@@ -311,10 +310,30 @@ class VerifyAPISSLCertificate(AntaTest):
             """The expiry threshold of the certificate in days."""
             common_name: str
             """The common subject name of the certificate."""
-            encryption_algorithm: Optional[EncryptionAlgorithm] = None
-            """The encryption algorithm of the certificate. If not provided, it will be inferred from the certificate."""
-            key_size: Optional[KeySize] = None
-            """The encryption algorithm key size of the certificate. If not provided, it will be inferred from the certificate."""
+            encryption_algorithm: EncryptionAlgorithm
+            """The encryption algorithm of the certificate."""
+            key_size: int
+            """The encryption algorithm key size of the certificate."""
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """
+                Validate the key size provided to the APISSLCertificates class.
+
+                If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
+
+                If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
+                """
+
+                if self.encryption_algorithm == "RSA" and self.key_size not in RsaKeySize.__args__:
+                    raise ValueError(f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}.")
+
+                if self.encryption_algorithm == "ECDSA" and self.key_size not in EcdsaKeySize.__args__:
+                    raise ValueError(
+                        f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {EcdsaKeySize.__args__}."
+                    )
+
+                return self
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -330,8 +349,7 @@ class VerifyAPISSLCertificate(AntaTest):
         for certificate in self.inputs.certificates:
             # Collecting certificate expiry time and current EOS time.
             # These times are used to calculate the number of days until the certificate expires.
-            certificate_data = get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")
-            if certificate_data is None:
+            if not (certificate_data := get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")):
                 self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
                 continue
 
@@ -350,10 +368,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
             expected_certificate_details = {
                 "subject.commonName": certificate.common_name,
-                "publicKey.encryptionAlgorithm": certificate.encryption_algorithm
-                if certificate.encryption_algorithm
-                else actual_certificate_details["publicKey.encryptionAlgorithm"],
-                "publicKey.size": certificate.key_size if certificate.key_size else actual_certificate_details["publicKey.size"],
+                "publicKey.encryptionAlgorithm": certificate.encryption_algorithm,
+                "publicKey.size": certificate.key_size,
             }
 
             if actual_certificate_details != expected_certificate_details:
