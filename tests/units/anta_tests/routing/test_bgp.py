@@ -1359,13 +1359,13 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.1",
+                    "peer_address": "172.30.11.1",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"],
                     "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
                 },
                 {
-                    "peer": "172.30.11.5",
+                    "peer_address": "172.30.11.5",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
                     "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
@@ -1386,13 +1386,13 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.11",
+                    "peer_address": "172.30.11.11",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.3/32"],
                     "received_routes": ["192.0.255.3/32"],
                 },
                 {
-                    "peer": "172.30.11.12",
+                    "peer_address": "172.30.11.12",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.31/32"],
                     "received_routes": ["192.0.255.31/32"],
@@ -1474,13 +1474,13 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.11",
+                    "peer_address": "172.30.11.11",
                     "vrf": "MGMT",
                     "advertised_routes": ["192.0.254.3/32"],
                     "received_routes": ["192.0.255.3/32"],
                 },
                 {
-                    "peer": "172.30.11.5",
+                    "peer_address": "172.30.11.5",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
                     "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
@@ -1612,13 +1612,13 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.1",
+                    "peer_address": "172.30.11.1",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
                     "received_routes": ["192.0.254.31/32", "192.0.255.4/32"],
                 },
                 {
-                    "peer": "172.30.11.5",
+                    "peer_address": "172.30.11.5",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.31/32", "192.0.254.5/32"],
                     "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],
@@ -1754,13 +1754,13 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bgp_peers": [
                 {
-                    "peer": "172.30.11.1",
+                    "peer_address": "172.30.11.1",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
                     "received_routes": ["192.0.254.31/32", "192.0.255.4/32"],
                 },
                 {
-                    "peer": "172.30.11.5",
+                    "peer_address": "172.30.11.5",
                     "vrf": "default",
                     "advertised_routes": ["192.0.254.31/32", "192.0.254.5/32"],
                     "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],

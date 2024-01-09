@@ -525,20 +525,20 @@ class VerifyBGPExchangedRoutes(AntaTest):
             This class defines the details of a BGP peer.
             """
 
-            peer: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BGP peer"""
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer"""
             vrf: str = "default"
-            """VRF context"""
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
             advertised_routes: List[str]
-            """Advertised routes"""
+            """List of advertised routes of a BGP peer."""
             received_routes: List[str]
-            """Received routes"""
+            """List of received routes of a BGP peer."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Renders the template with the provided inputs. Returns a list of commands to be executed."""
 
         return [
-            template.render(peer=bgp_peer.peer, vrf=bgp_peer.vrf, advertised_routes=bgp_peer.advertised_routes, received_routes=bgp_peer.received_routes)
+            template.render(peer=bgp_peer.peer_address, vrf=bgp_peer.vrf, advertised_routes=bgp_peer.advertised_routes, received_routes=bgp_peer.received_routes)
             for bgp_peer in self.inputs.bgp_peers
         ]
 
@@ -548,23 +548,23 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
         # Iterating over command output for different peers
         for command in self.instance_commands:
-            peer = command.params.get("peer", "")
+            peer = str(command.params.get("peer", ""))
             vrf = command.params.get("vrf", "")
             advertised_routes = command.params.get("advertised_routes", [])
             received_routes = command.params.get("received_routes", [])
 
             # Verify if BGP peer is configured with provided vrf
             if (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")) is None:
-                failures.setdefault("bgp_peers", {}).setdefault(str(peer), {})[vrf] = "Not configured"
+                failures.setdefault("bgp_peers", {}).setdefault(peer, {})[vrf] = "Not configured"
                 continue
 
             # Validate advertised routes
             if "advertised-routes" in command.command:
-                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, str(peer), vrf)
+                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, peer, vrf)
 
             # Validate received routes
             else:
-                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, str(peer), vrf, route_type="received_routes")
+                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, peer, vrf, route_type="received_routes")
             failures = utils.deep_update(failures, failure_routes)
 
         if not failures:
