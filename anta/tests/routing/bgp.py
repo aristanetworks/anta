@@ -8,7 +8,7 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address
+from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
 from pydantic import BaseModel, PositiveInt, model_validator, utils
@@ -157,6 +157,7 @@ def _add_bgp_routes_failure(
 
     # Iterate over the expected bgp routes
     for route in bgp_routes:
+        route = str(route)
         # Check if the route is missing in the BGP output
         if route not in bgp_output:
             # If missing, add it to the failure routes dictionary
@@ -529,9 +530,9 @@ class VerifyBGPExchangedRoutes(AntaTest):
             """IPv4 address of a BGP peer"""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            advertised_routes: List[str]
+            advertised_routes: List[IPv4Network]
             """List of advertised routes of a BGP peer."""
-            received_routes: List[str]
+            received_routes: List[IPv4Network]
             """List of received routes of a BGP peer."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
