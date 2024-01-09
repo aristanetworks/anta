@@ -13,6 +13,7 @@ import pytest
 from anta.tools.get_item import get_item
 
 DUMMY_DATA = [
+    ("id", 0),
     {
         "id": 1,
         "name": "Alice",
@@ -38,12 +39,13 @@ DUMMY_DATA = [
     "list_of_dicts, key, value, default, required, case_sensitive, var_name, custom_error_msg, expected_result, expected_raise",
     [
         pytest.param([], "name", "Bob", None, False, False, None, None, None, does_not_raise(), id="empty list"),
+        pytest.param([], "name", "Bob", None, True, False, None, None, None, pytest.raises(ValueError, match="name"), id="empty list and required"),
         pytest.param(DUMMY_DATA, "name", "Jack", None, False, False, None, None, None, does_not_raise(), id="missing item"),
-        pytest.param(DUMMY_DATA, "name", "Alice", None, False, False, None, None, DUMMY_DATA[0], does_not_raise(), id="found item"),
+        pytest.param(DUMMY_DATA, "name", "Alice", None, False, False, None, None, DUMMY_DATA[1], does_not_raise(), id="found item"),
         pytest.param(DUMMY_DATA, "name", "Jack", "default_value", False, False, None, None, "default_value", does_not_raise(), id="default value"),
         pytest.param(DUMMY_DATA, "name", "Jack", None, True, False, None, None, None, pytest.raises(ValueError, match="name"), id="required"),
-        pytest.param(DUMMY_DATA, "name", "bob", None, False, True, None, None, None, does_not_raise(), id="case sensitive"),
-        pytest.param(DUMMY_DATA, "name", "charlie", None, False, False, None, None, DUMMY_DATA[2], does_not_raise(), id="case insensitive"),
+        pytest.param(DUMMY_DATA, "name", "Bob", None, False, True, None, None, DUMMY_DATA[2], does_not_raise(), id="case sensitive"),
+        pytest.param(DUMMY_DATA, "name", "charlie", None, False, False, None, None, DUMMY_DATA[3], does_not_raise(), id="case insensitive"),
         pytest.param(
             DUMMY_DATA, "name", "Jack", None, True, False, "custom_var_name", None, None, pytest.raises(ValueError, match="custom_var_name"), id="custom var_name"
         ),
