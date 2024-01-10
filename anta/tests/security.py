@@ -9,6 +9,7 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
+from typing import List, Union
 
 from pydantic import BaseModel, conint, model_validator
 
@@ -296,7 +297,7 @@ class VerifyAPISSLCertificate(AntaTest):
         Input parameters for the VerifyAPISSLCertificate test.
         """
 
-        certificates: list[APISSLCertificates]
+        certificates: List[APISSLCertificates]
         """List of API SSL certificates"""
 
         class APISSLCertificates(BaseModel):
@@ -312,7 +313,7 @@ class VerifyAPISSLCertificate(AntaTest):
             """The common subject name of the certificate."""
             encryption_algorithm: EncryptionAlgorithm
             """The encryption algorithm of the certificate."""
-            key_size: int
+            key_size: Union[RsaKeySize, EcdsaKeySize]
             """The encryption algorithm key size of the certificate."""
 
             @model_validator(mode="after")
