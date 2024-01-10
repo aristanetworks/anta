@@ -79,6 +79,13 @@ watch:
   # Watch src/ directory to reload on changes to docstrings for mkdocstrings plugin.
   - anta
 
+# Sadly mkdocs hooks do not work to inject filters for mkdocstrings as it is recreating its own
+# environement for Jinja ...
+# This is sad.
+# https://www.mkdocs.org/user-guide/configuration/#hooks
+# hooks:
+#  - docs/scripts/hooks.py
+
 plugins:
   - mkdocstrings:
       default_handler: python
@@ -106,6 +113,9 @@ plugins:
             # show_symbol_type_toc: true
             # default filters here
             filters: ["!^_[^_]"]
+            extensions:
+              # Add inputs to AntaTest classes to render in doc
+              - docs/scripts/hooks.py:GenerateInput
   - search:
       lang: en
   - git-revision-date-localized:

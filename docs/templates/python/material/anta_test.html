@@ -1,5 +1,4 @@
 {% if obj.members %}
-{{ obj.members }}
   {{ log.debug("Rendering children of " + obj.path) }}
 
   <div class="doc doc-children">
@@ -55,7 +54,6 @@
 {% if class.name == "Input" %}
 {% filter heading(heading_level, id=html_id ~ "-attributes") %}Inputs{% endfilter %}
 
-{{ class.members }}
   <table>
     <thead>
       <tr>
@@ -66,29 +64,28 @@
       </tr>
     </thead>
     <tbody>
-      {% for member in class.members %}
+      {% for member, data in class.members.items() %}
         <tr>
           <td><code>{{ member }}</code></td>
           <td>
-            {% if member.annotation %}
-              {% with expression = member.annotation %}
+            {% if data.annotation %}
+              {% with expression = data.annotation %}
                 <code>{% include "expression.html" with context %}</code>
               {% endwith %}
             {% endif %}
-            {{ member.__dict__ }}
           </td>
           <td>
             <div class="doc-md-description">
-              {{ member }}
+              {{ data.docstring.value }}
             </div>
           </td>
           <td>
-            {% if member.default %}
-              {% with expression = member.default %}
+            {% if data.value %}
+              {% with expression = data.value %}
                 <code>{% include "expression.html" with context %}</code>
               {% endwith %}
             {% else %}
-              <em>"required"</em>
+              <em>required</em>
             {% endif %}
           </td>
         </tr>

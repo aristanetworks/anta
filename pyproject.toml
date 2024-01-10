@@ -83,6 +83,7 @@ doc = [
   "mkdocs-git-revision-date-plugin>=0.3.2",
   "mkdocs-material>=8.3.9",
   "mkdocs-material-extensions>=1.0.3",
+  "mkdocs-simple-hooks>=0.1.5",
   "mkdocstrings[python]>=0.20.0",
   "fontawesome_markdown",
   "mike==2.0.0",
@@ -96,9 +97,6 @@ Contributing = "https://www.anta.ninja/main/contribution/"
 
 [project.scripts]
 anta = "anta.cli:cli"
-
-[project.entry-points."mkdocstrings.python.templates"]
-extension-name = "anta.doc_extenstion:get_templates_path"
 
 ################################
 # Tools

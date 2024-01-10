@@ -8,10 +8,13 @@
 {% endfor %}
 {% block children %}
 {%   if anta_test.found %}
-      ANTA TEST TODO
       {% set root = False %}
       {% set heading_level = heading_level + 1 %}
-      {% include "anta_test.j2" with context %}
+      {% include "anta_test.html" with context %}
+
+      {% filter heading(heading_level, id=html_id ~ "-attributes") %}Input example{% endfilter %}
+      {{ obj.anta_input |  highlight(language="yaml", linestart=0, linenums=True) }}
+
 {%   else %}
 {{ super() }}
 {%   endif %}
