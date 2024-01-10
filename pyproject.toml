@@ -76,6 +76,7 @@ dev = [
   "yamllint>=1.32.0",
 ]
 doc = [
+  "fontawesome_markdown",
   "mkdocs>=1.3.1",
   "mkdocs-autorefs>=0.4.1",
   "mkdocs-bootswatch>=1.1",
@@ -85,9 +86,9 @@ doc = [
   "mkdocs-material-extensions>=1.0.3",
   "mkdocs-simple-hooks>=0.1.5",
   "mkdocstrings[python]>=0.20.0",
-  "fontawesome_markdown",
   "mike==2.0.0",
   "griffe"
+  "polyfactory>=2.13.0",
 ]
 
 [project.urls]
