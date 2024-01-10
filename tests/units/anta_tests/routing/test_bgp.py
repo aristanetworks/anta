@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -11,7 +11,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
+from anta.tests.routing.bgp import VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers, VerifyEVPNType2Route  # noqa: E402
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -1237,6 +1237,414 @@ DATA: list[dict[str, Any]] = [
                 "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
                 "{'afi': 'evpn', 'vrfs': {'default': {'10.1.0.2': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            }
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-endpoints",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}, {"endpoint": "aac1.ab5d.b41e", "vni": 10010}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-routes-ip",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-routes-mac",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-routes-multiple-paths-ip",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                    "ecmp": True,
+                                    "ecmpContributor": True,
+                                    "ecmpHead": True,
+                                },
+                            },
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                    "ecmp": True,
+                                    "ecmpContributor": True,
+                                    "ecmpHead": False,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-routes-multiple-paths-mac",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                    "ecmp": True,
+                                    "ecmpContributor": True,
+                                    "ecmpHead": True,
+                                },
+                            },
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                    "ecmp": True,
+                                    "ecmpContributor": True,
+                                    "ecmpHead": False,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-routes",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [{"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}}],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('192.168.20.102', 10020)]"],
+        },
+    },
+    {
+        "name": "failure-path-not-active",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following EVPN Type-2 routes do not have at least one valid and active path: ['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-routes-not-active",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following EVPN Type-2 routes do not have at least one valid and active path: "
+                "['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102', "
+                "'RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-endpoints",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}, {"endpoint": "aac1.ab5d.b41e", "vni": 10010}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following EVPN Type-2 routes do not have at least one valid and active path: "
+                "['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102', "
+                "'RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e']"
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-endpoints-one-no-routes",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e 192.168.10.101": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}, {"endpoint": "192.168.10.101", "vni": 10010}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020)]",
+                "The following EVPN Type-2 routes do not have at least one valid and active path: "
+                "['RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e 192.168.10.101']",
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-endpoints-no-routes",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
+            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
+        ],
+        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}, {"endpoint": "192.168.10.101", "vni": 10010}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020), ('192.168.10.101', 10010)]"],
         },
     },
 ]
