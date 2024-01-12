@@ -11,7 +11,7 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
-from pydantic import BaseModel, PositiveInt, model_validator
+from pydantic import BaseModel, PositiveInt, model_validator, utils
 
 from anta.custom_types import Afi, Safi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -484,27 +484,30 @@ class VerifyBGPAdvCommunities(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        failures: dict[str, Any] = {}
+        failures: dict[str, Any] = {"bgp_peers": {}}
 
         # Iterate over each bgp peer
         for bgp_peer in self.inputs.bgp_peers:
             peer = str(bgp_peer.peer_address)
             vrf = bgp_peer.vrf
+            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
 
             # Verify BGP peer
             if (
                 not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
-                failures.setdefault("bgp_peers", {})[peer] = {vrf: "Not configured"}
+                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
+                failures = utils.deep_update(failures, failure)
                 continue
 
             # Verify BGP peer's advertised communities
             bgp_output = bgp_output.get("advertisedCommunities")
             if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
-                failures.setdefault("bgp_peers", {})[peer] = {vrf: {"advertised_communities": bgp_output}}
+                failure["bgp_peers"][peer][vrf] = {"advertised_communities": bgp_output}
+                failures = utils.deep_update(failures, failure)
 
-        if not failures:
+        if not failures["bgp_peers"]:
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")

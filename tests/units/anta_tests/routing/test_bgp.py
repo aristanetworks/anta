@@ -1306,7 +1306,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'bgp_peers': {'172.30.11.17': {'MGMT': 'Not configured'}}}"
+                "{'bgp_peers': {'172.30.11.17': {'MGMT': {'status': 'Not configured'}}}}"
             ],
         },
     },
@@ -1351,7 +1351,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'bgp_peers': {'172.30.11.10': {'default': 'Not configured'}, '172.30.11.12': {'MGMT': 'Not configured'}}}"
+                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.12': {'MGMT': {'status': 'Not configured'}}}}"
             ],
         },
     },
