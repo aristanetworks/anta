@@ -51,14 +51,20 @@ anta.tests.aaa:
         - dot1x
 
 anta.tests.bfd:
-  - VerifyBFDPeers:
-      bfd_neighbors:
-        - neighbor: 192.0.255.8
+  - VerifyBFDSpecificPeers:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+        - peer_address: 192.0.255.7
+          vrf: default
+  - VerifyBFDPeersIntervals:
+      bfd_peers:
+        - peer_address: 192.0.255.8
           vrf: default
           tx_interval: 1200000
           rx_interval: 1200000
           multiplier: 3
-        - neighbor: 192.0.255.7
+        - peer_address: 192.0.255.7
           vrf: default
           tx_interval: 1200000
           rx_interval: 1200000

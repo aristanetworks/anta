@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -8,32 +8,13 @@ BFD test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address, ip_address
-from typing import Any, Dict, List, Union
+from ipaddress import IPv4Address
+from typing import Any, List
 
 from pydantic import BaseModel
 
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
-
-
-def create_bfd_peer_key(vrf: str, peer: str) -> str:
-    """
-    Create a key for retrieving BFD peer information based on the VRF and peer's IP type.
-
-    Parameters:
-    - vrf (str): Virtual Routing and Forwarding context.
-    - peer (str): IPv4 or IPv6 address of the BFD peer.
-
-    Returns:
-    str: Key used to retrieve BFD peer information from the command output.
-
-    Example:
-    >>> create_bfd_peer_key("default", "192.168.1.1")
-    'vrfs..default..ipv4Neighbors..192.168.1.1..peerStats..'
-    """
-    ip_type = "ipv4" if isinstance(ip_address(peer), IPv4Address) else "ipv6"
-    return f"vrfs..{vrf}..{ip_type}Neighbors..{peer}..peerStats.."
 
 
 class VerifyBFDSpecificPeers(AntaTest):
@@ -48,7 +29,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     name = "VerifyBFDSpecificPeers"
     description = "Verifies the BFD peer's sessions and remote disc in the specified VRF."
     categories = ["bfd"]
-    commands = [AntaCommand(command="show bfd peers", revision=1)]
+    commands = [AntaCommand(command="show bfd peers")]
 
     class Input(AntaTest.Input):
         """
@@ -63,21 +44,20 @@ class VerifyBFDSpecificPeers(AntaTest):
             This class defines the details of a BFD peer.
             """
 
-            peer: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BFD peer"""
+            peer_address: IPv4Address
+            """IPv4 address of a BFD peer"""
             vrf: str = "default"
-            """VRF context"""
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        failures: Dict[str, Dict[str, Union[str, Dict[str, Any]]]] = {}
+        failures: dict[Any, Any] = {}
 
         # Iterating over BFD peers
         for bfd_peer in self.inputs.bfd_peers:
-            peer = str(bfd_peer.peer)
+            peer = str(bfd_peer.peer_address)
             vrf = bfd_peer.vrf
-            bfd_key = create_bfd_peer_key(vrf, peer)
-            bfd_output = get_value(self.instance_commands[0].json_output, f"{bfd_key}", separator="..")
+            bfd_output = get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..", separator="..")
 
             # Check if BFD peer configured
             if not bfd_output:
@@ -106,7 +86,7 @@ class VerifyBFDPeersIntervals(AntaTest):
     name = "VerifyBFDPeersIntervals"
     description = "Verifies the timers of the BFD peers in the specified VRF."
     categories = ["bfd"]
-    commands = [AntaCommand(command="show bfd peers detail", revision=1)]
+    commands = [AntaCommand(command="show bfd peers detail")]
 
     class Input(AntaTest.Input):
         """
@@ -121,10 +101,10 @@ class VerifyBFDPeersIntervals(AntaTest):
             This class defines the details of a BFD peer.
             """
 
-            peer: Union[IPv4Address, IPv6Address]
-            """IPv4/IPv6 BFD peer"""
+            peer_address: IPv4Address
+            """IPv4 address of a BFD peer"""
             vrf: str = "default"
-            """VRF context"""
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
             tx_interval: int
             """Tx interval of BFD peer"""
             rx_interval: int
@@ -134,17 +114,16 @@ class VerifyBFDPeersIntervals(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        failures: Dict[str, Dict[str, Union[str, Dict[str, Any]]]] = {}
+        failures: dict[Any, Any] = {}
 
         # Iterating over BFD peers
         for bfd_peers in self.inputs.bfd_peers:
-            peer = str(bfd_peers.peer)
+            peer = str(bfd_peers.peer_address)
             vrf = bfd_peers.vrf
             tx_interval = bfd_peers.tx_interval
             rx_interval = bfd_peers.rx_interval
             multiplier = bfd_peers.multiplier
-            bfd_key = create_bfd_peer_key(vrf, peer)
-            bfd_output = get_value(self.instance_commands[0].json_output, f"{bfd_key}", separator="..")
+            bfd_output = get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..", separator="..")
 
             # Check if BFD peer configured
             if not bfd_output:
