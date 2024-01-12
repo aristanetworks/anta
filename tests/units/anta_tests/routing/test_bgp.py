@@ -1402,9 +1402,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': "
-                "{'172.30.11.11': {'default': {'advertised_routes': {'192.0.254.3/32': 'Not found'}, 'received_routes': {'192.0.255.3/32': 'Not found'}}}, "
-                "'172.30.11.12': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found'}, 'received_routes': {'192.0.255.31/32': 'Not found'}}}}}"
+                "Following BGP peers are not found or routes are not exchanged properly:\n"
+                "{'bgp_peers': {'172.30.11.11': {'default': 'Not configured'}, '172.30.11.12': {'default': 'Not configured'}}}"
             ],
         },
     },

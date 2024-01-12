@@ -155,13 +155,16 @@ def _add_bgp_routes_failure(
     # Prepare the failure routes dictionary
     failure_routes: dict[str, dict[str, Any]] = {}
 
-    # Iterate over the expected bgp routes
+    # Iterate over the expected BGP routes
     for route in bgp_routes:
         route = str(route)
+        failure = {"bgp_peers": {peer: {vrf: {route_type: {route: Any}}}}}
+
         # Check if the route is missing in the BGP output
         if route not in bgp_output:
             # If missing, add it to the failure routes dictionary
-            failure_routes.setdefault("bgp_peers", {}).setdefault(peer, {}).setdefault(vrf, {}).setdefault(route_type, {})[route] = "Not found"
+            failure["bgp_peers"][peer][vrf][route_type][route] = "Not found"
+            failure_routes = utils.deep_update(failure_routes, failure)
             continue
 
         # Check if the route is active and valid
@@ -170,10 +173,8 @@ def _add_bgp_routes_failure(
 
         # If the route is either inactive or invalid, add it to the failure routes dictionary
         if not is_active or not is_valid:
-            failure_routes.setdefault("bgp_peers", {}).setdefault(peer, {}).setdefault(vrf, {}).setdefault(route_type, {})[route] = {
-                "valid": is_valid,
-                "active": is_active,
-            }
+            failure["bgp_peers"][peer][vrf][route_type][route] = {"valid": is_valid, "active": is_active}
+            failure_routes = utils.deep_update(failure_routes, failure)
 
     return failure_routes
 
@@ -545,18 +546,20 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        failures: dict[str, dict[str, Any]] = {}
+        failures: dict[str, dict[str, Any]] = {"bgp_peers": {}}
 
         # Iterating over command output for different peers
         for command in self.instance_commands:
-            peer = str(command.params.get("peer", ""))
-            vrf = command.params.get("vrf", "")
-            advertised_routes = command.params.get("advertised_routes", [])
-            received_routes = command.params.get("received_routes", [])
+            peer = str(command.params["peer"])
+            vrf = command.params["vrf"]
+            advertised_routes = command.params["advertised_routes"]
+            received_routes = command.params["received_routes"]
+            failure = {vrf: ""}
 
-            # Verify if BGP peer is configured with provided vrf
-            if (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")) is None:
-                failures.setdefault("bgp_peers", {}).setdefault(peer, {})[vrf] = "Not configured"
+            # Verify if a BGP peer is configured with the provided vrf
+            if not (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")):
+                failure[vrf] = "Not configured"
+                failures["bgp_peers"][peer] = failure
                 continue
 
             # Validate advertised routes
@@ -568,7 +571,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
                 failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, peer, vrf, route_type="received_routes")
             failures = utils.deep_update(failures, failure_routes)
 
-        if not failures:
+        if not failures["bgp_peers"]:
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peers are not found or routes are not exchanged properly:\n{failures}")
