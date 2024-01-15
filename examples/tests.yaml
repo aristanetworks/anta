@@ -207,10 +207,6 @@ anta.tests.security:
           key_size: 4096
   - VerifyHostname:
       hostname: s1-spine1
-  - VerifySnmpLocation:
-      location: New York
-  - VerifySnmpContact:
-      contact: Jon@example.com
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -221,6 +217,10 @@ anta.tests.snmp:
   - VerifySnmpIPv6Acl:
       number: 3
       vrf: default
+  - VerifySnmpLocation:
+      location: New York
+  - VerifySnmpContact:
+      contact: Jon@example.com
 
 anta.tests.software:
   - VerifyEOSVersion:

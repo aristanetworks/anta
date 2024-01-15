@@ -15,8 +15,6 @@ from anta.tests.security import (
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
     VerifyHostname,
-    VerifySnmpContact,
-    VerifySnmpLocation,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -587,56 +585,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Expected `s1-spine1` as the hostname, but found `s1-spine2` instead."],
-        },
-    },
-    {
-        "name": "success",
-        "test": VerifySnmpLocation,
-        "eos_data": [
-            {
-                "location": {"location": "New York"},
-            }
-        ],
-        "inputs": {"location": "New York"},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-incorrect-location",
-        "test": VerifySnmpLocation,
-        "eos_data": [
-            {
-                "location": {"location": "Europe"},
-            }
-        ],
-        "inputs": {"location": "New York"},
-        "expected": {
-            "result": "failure",
-            "messages": ["Expected `New York` as the location, but found `Europe` instead."],
-        },
-    },
-    {
-        "name": "success",
-        "test": VerifySnmpContact,
-        "eos_data": [
-            {
-                "contact": {"contact": "Jon@example.com"},
-            }
-        ],
-        "inputs": {"contact": "Jon@example.com"},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-incorrect-contact",
-        "test": VerifySnmpContact,
-        "eos_data": [
-            {
-                "contact": {"contact": "Jon@example.com"},
-            }
-        ],
-        "inputs": {"contact": "Bob@example.com"},
-        "expected": {
-            "result": "failure",
-            "messages": ["Expected `Bob@example.com` as the contact, but found `Jon@example.com` instead."],
         },
     },
 ]
