@@ -423,13 +423,13 @@ class VerifyEVPNType2Route(AntaTest):
     categories = ["routing", "bgp"]
     commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
         """Inputs for the VerifyEVPNType2Route test."""
 
         vxlan_endpoints: List[VxlanEndpoint]
         """List of VXLAN endpoints to verify"""
 
-        class VxlanEndpoint(BaseModel):  # pylint: disable=missing-class-docstring
+        class VxlanEndpoint(BaseModel):
             """VXLAN endpoint input model."""
 
             address: Union[IPv4Address, MacAddress]
