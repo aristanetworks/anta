@@ -418,23 +418,27 @@ class VerifyEVPNType2Route(AntaTest):
         * failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
     """
 
-    name = "VerifyEVPNType2RouteIP"
+    name = "VerifyEVPNType2Route"
     description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
     categories = ["routing", "bgp"]
-    commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {endpoint} vni {vni}")]
+    commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+        """Inputs for the VerifyEVPNType2Route test."""
+
         vxlan_endpoints: List[VxlanEndpoint]
         """List of VXLAN endpoints to verify"""
 
         class VxlanEndpoint(BaseModel):  # pylint: disable=missing-class-docstring
-            endpoint: Union[IPv4Address, MacAddress]
+            """VXLAN endpoint input model."""
+
+            address: Union[IPv4Address, MacAddress]
             """IPv4 or MAC address of the VXLAN endpoint"""
             vni: Vni
             """VNI of the VXLAN endpoint"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        return [template.render(endpoint=endpoint.endpoint, vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
+        return [template.render(address=endpoint.address, vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -443,12 +447,12 @@ class VerifyEVPNType2Route(AntaTest):
         bad_evpn_routes = []
 
         for command in self.instance_commands:
-            endpoint = str(command.params["endpoint"])
+            address = str(command.params["address"])
             vni = command.params["vni"]
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:
-                no_evpn_routes.append((endpoint, vni))
+                no_evpn_routes.append((address, vni))
                 continue
             # Verify that each EVPN route has at least one valid and active path
             for route, route_data in evpn_routes.items():

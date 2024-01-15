@@ -310,9 +310,9 @@ anta.tests.routing:
               - 10.1.255.4
     - VerifyEVPNType2Route:
         vxlan_endpoints:
-          - endpoint: 192.168.20.102
+          - address: 192.168.20.102
             vni: 10020
-          - endpoint: aac1.ab5d.b41e
+          - address: aac1.ab5d.b41e
             vni: 10010
   ospf:
     - VerifyOSPFNeighborState:

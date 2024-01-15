@@ -1261,7 +1261,7 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {"result": "success"},
     },
     {
@@ -1303,7 +1303,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}, {"endpoint": "aac1.ab5d.b41e", "vni": 10010}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
         "expected": {"result": "success"},
     },
     {
@@ -1338,7 +1338,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {"result": "success"},
     },
     {
@@ -1373,7 +1373,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
         "expected": {"result": "success"},
     },
     {
@@ -1420,7 +1420,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {"result": "success"},
     },
     {
@@ -1467,14 +1467,14 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
         "expected": {"result": "success"},
     },
     {
         "name": "failure-no-routes",
         "test": VerifyEVPNType2Route,
         "eos_data": [{"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}}],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
             "result": "failure",
             "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('192.168.20.102', 10020)]"],
@@ -1502,7 +1502,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -1542,13 +1542,65 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
             "result": "failure",
             "messages": [
                 "The following EVPN Type-2 routes do not have at least one valid and active path: "
                 "['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102', "
                 "'RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-routes-multiple-paths-not-active",
+        "test": VerifyEVPNType2Route,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            },
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                },
+                            },
+                        ]
+                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
+                        "evpnRoutePaths": [
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                            {
+                                "routeType": {
+                                    "active": False,
+                                    "valid": False,
+                                },
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following EVPN Type-2 routes do not have at least one valid and active path: ['RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
             ],
         },
     },
@@ -1591,7 +1643,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "192.168.20.102", "vni": 10020}, {"endpoint": "aac1.ab5d.b41e", "vni": 10010}]},
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -1624,7 +1676,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}, {"endpoint": "192.168.10.101", "vni": 10010}]},
+        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}, {"address": "192.168.10.101", "vni": 10010}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -1641,7 +1693,7 @@ DATA: list[dict[str, Any]] = [
             {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
             {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
         ],
-        "inputs": {"vxlan_endpoints": [{"endpoint": "aac1.ab4e.bec2", "vni": 10020}, {"endpoint": "192.168.10.101", "vni": 10010}]},
+        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}, {"address": "192.168.10.101", "vni": 10010}]},
         "expected": {
             "result": "failure",
             "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020), ('192.168.10.101', 10010)]"],
