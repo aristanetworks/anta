@@ -14,6 +14,9 @@ from anta.tests.security import (
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
+    VerifyHostname,
+    VerifySnmpContact,
+    VerifySnmpLocation,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -567,6 +570,73 @@ DATA: list[dict[str, Any]] = [
                 "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
                 "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyHostname,
+        "eos_data": [{"hostname": "s1-spine1", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
+        "inputs": {"hostname": "s1-spine1"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-hostname",
+        "test": VerifyHostname,
+        "eos_data": [{"hostname": "s1-spine2", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
+        "inputs": {"hostname": "s1-spine1"},
+        "expected": {
+            "result": "failure",
+            "messages": ["Expected `s1-spine1` as the hostname, but found `s1-spine2` instead."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpLocation,
+        "eos_data": [
+            {
+                "location": {"location": "New York"},
+            }
+        ],
+        "inputs": {"location": "New York"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-location",
+        "test": VerifySnmpLocation,
+        "eos_data": [
+            {
+                "location": {"location": "Europe"},
+            }
+        ],
+        "inputs": {"location": "New York"},
+        "expected": {
+            "result": "failure",
+            "messages": ["Expected `New York` as the location, but found `Europe` instead."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpContact,
+        "eos_data": [
+            {
+                "contact": {"contact": "Jon@example.com"},
+            }
+        ],
+        "inputs": {"contact": "Jon@example.com"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-contact",
+        "test": VerifySnmpContact,
+        "eos_data": [
+            {
+                "contact": {"contact": "Jon@example.com"},
+            }
+        ],
+        "inputs": {"contact": "Bob@example.com"},
+        "expected": {
+            "result": "failure",
+            "messages": ["Expected `Bob@example.com` as the contact, but found `Jon@example.com` instead."],
         },
     },
 ]
