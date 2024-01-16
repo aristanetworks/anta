@@ -377,3 +377,61 @@ class VerifyAPISSLCertificate(AntaTest):
                 failed_log = f"SSL certificate `{certificate.certificate_name}` is not configured properly:"
                 failed_log += get_failed_logs(expected_certificate_details, actual_certificate_details)
                 self.result.is_failure(f"{failed_log}\n")
+
+
+class VerifyBannerLogin(AntaTest):
+    """
+    This class verifies the login banner of a device.
+    Expected results:
+        * success: The test will pass if the login banner matches the provided input.
+        * failure: The test will fail if the login banner does not match the provided input.
+    """
+
+    name = "VerifyBannerLogin"
+    description = "Verifies the login banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner login")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        login_banner: str
+        """Expected login banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        login_banner = self.instance_commands[0].json_output["loginBanner"]
+
+        if login_banner != self.inputs.login_banner:
+            self.result.is_failure(f"Expected `{self.inputs.login_banner}` as the login banner, but found `{login_banner}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifyBannerMotd(AntaTest):
+    """
+    This class verifies the motd banner of a device.
+    Expected results:
+        * success: The test will pass if the motd banner matches the provided input.
+        * failure: The test will fail if the motd banner does not match the provided input.
+    """
+
+    name = "VerifyBannerMotd"
+    description = "Verifies the motd banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner motd")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        motd_banner: str
+        """Expected motd banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        motd_banner = self.instance_commands[0].json_output["motd"]
+
+        if motd_banner != self.inputs.motd_banner:
+            self.result.is_failure(f"Expected `{self.inputs.motd_banner}` as the motd banner, but found `{motd_banner}` instead.")
+        else:
+            self.result.is_success()

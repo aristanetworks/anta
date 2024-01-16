@@ -14,6 +14,8 @@ from anta.tests.security import (
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
+    VerifyBannerLogin,
+    VerifyBannerMotd,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -566,6 +568,80 @@ DATA: list[dict[str, Any]] = [
                 "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
                 "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
                 "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-login-banner",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the login banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-motd-banner",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the motd banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
             ],
         },
     },
