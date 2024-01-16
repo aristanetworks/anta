@@ -1,0 +1,10 @@
+---
+anta.tests.connectivity:
+  - VerifyReachability:
+      hosts:
+        - source: Management0
+          destination: 8.8.8.8
+  - VerifyReachability:
+      hosts:
+        - source: Management0
+          destination: 8.8.8.8

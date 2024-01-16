@@ -15,6 +15,7 @@ from yaml import safe_load
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.models import AntaTest
+from anta.tests.connectivity import VerifyReachability
 from anta.tests.interfaces import VerifyL3MTU
 from anta.tests.mlag import VerifyMlagStatus
 from anta.tests.software import VerifyEOSVersion
@@ -309,3 +310,65 @@ class Test_AntaCatalog:
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
         tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
         assert len(tests) == 2
+
+    def test_add_test_to_catalog(self) -> None:
+        """Test when adding a test to AntaCatalog."""
+        catalog = AntaCatalog()
+        len_before = len(catalog.tests)
+        test_to_add = AntaTestDefinition(test=FakeTestWithInput, inputs=FakeTestWithInput.Input(string="test"))
+        catalog.add_test(test_to_add)
+
+        assert len(catalog.tests) == len_before + 1
+        assert test_to_add in catalog.tests
+
+        # Try to add an invalid test
+        with pytest.raises(TypeError, match="The test to add must be an AntaTestDefinition instance"):
+            catalog.add_test("This is not a valid AntaTestDefinition instance")  # type: ignore[arg-type]
+
+    def test_remove_test_from_catalog(self) -> None:
+        """Test when removing a test from AntaCatalog."""
+        catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
+        len_before = len(catalog.tests)
+        test_to_remove = AntaTestDefinition(test=VerifyUptime, inputs=VerifyUptime.Input(minimum=10, filters=VerifyUptime.Input.Filters(tags=["fabric"])))
+        catalog.remove_test(test_to_remove)
+
+        assert len(catalog.tests) == len_before - 1
+        assert test_to_remove not in catalog.tests
+
+        # Try to remove an invalid test
+        with pytest.raises(TypeError, match="The test to remove must be an AntaTestDefinition instance"):
+            catalog.remove_test("This is not a valid AntaTestDefinition instance")  # type: ignore[arg-type]
+
+    def test_remove_duplicates(self) -> None:
+        """Test removing duplicate tests from AntaCatalog."""
+        catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_duplicates.yml")
+        catalog.remove_duplicates()
+        assert len(catalog.tests) == 1
+        assert catalog.tests[0].test == VerifyReachability
+
+    @pytest.mark.parametrize("remove_duplicates", [True, False], ids=["remove_duplicates", "keep_duplicates"])
+    def test_merge_catalog(self, remove_duplicates: bool) -> None:
+        """Test merging two catalogs with and without removing duplicates."""
+        initial_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
+        initial_catalog_tests = set(initial_catalog.tests)
+        initial_catalog_length = len(initial_catalog.tests)
+        catalog_to_merge = AntaCatalog.parse(DATA_DIR / "test_catalog_to_merge.yml")
+        catalog_to_merge_length = len(catalog_to_merge.tests)
+
+        initial_catalog.merge_catalog(catalog_to_merge, remove_duplicates=remove_duplicates)
+
+        # Check if the merged catalog has the expected length
+        expected_length = (
+            initial_catalog_length + len(set(catalog_to_merge.tests) - initial_catalog_tests)
+            if remove_duplicates
+            else initial_catalog_length + catalog_to_merge_length
+        )
+        assert len(initial_catalog.tests) == expected_length
+
+        # Check if all tests from both catalogs are in the merged catalog
+        merged_tests_set = set(initial_catalog.tests)
+        assert initial_catalog_tests.union(set(catalog_to_merge.tests)) <= merged_tests_set
+
+        # Try to merge an invalid catalog
+        with pytest.raises(TypeError, match="The catalog to merge must be an AntaCatalog instance"):
+            initial_catalog.merge_catalog("This is not a valid AntaCatalog instance", remove_duplicates=remove_duplicates)  # type: ignore[arg-type]

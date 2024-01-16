@@ -184,15 +184,8 @@ class AntaCatalog:
             tests: A list of AntaTestDefinition instances.
             filename: The path from which the catalog is loaded.
         """
-        self._tests: list[AntaTestDefinition] = []
-        if tests is not None:
-            self._tests = tests
-        self._filename: Path | None = None
-        if filename is not None:
-            if isinstance(filename, Path):
-                self._filename = filename
-            else:
-                self._filename = Path(filename)
+        self._tests = tests or []
+        self._filename = Path(filename) if filename else None
 
     @property
     def filename(self) -> Path | None:
@@ -212,6 +205,56 @@ class AntaCatalog:
             if not isinstance(t, AntaTestDefinition):
                 raise ValueError("A test in the catalog must be an AntaTestDefinition instance")
         self._tests = value
+
+    def add_test(self, test_definition: AntaTestDefinition) -> None:
+        """
+        Add an AntaTestDefinition to the catalog.
+
+        Args:
+            test_definition: The AntaTestDefinition to add.
+        """
+        if not isinstance(test_definition, AntaTestDefinition):
+            raise TypeError("The test to add must be an AntaTestDefinition instance")
+
+        self._tests.append(test_definition)
+
+    def remove_test(self, test_definition: AntaTestDefinition) -> None:
+        """
+        Remove an AntaTestDefinition from the catalog.
+
+        Args:
+            test_definition: The AntaTestDefinition to remove.
+        """
+        if not isinstance(test_definition, AntaTestDefinition):
+            raise TypeError("The test to remove must be an AntaTestDefinition instance")
+
+        self._tests = [t for t in self._tests if t != test_definition]
+
+    def remove_duplicates(self) -> None:
+        """
+        Remove duplicate tests from the catalog.
+        """
+        unique_tests = []
+        for test in self._tests:
+            if test not in unique_tests:
+                unique_tests.append(test)
+        self._tests = unique_tests
+
+    def merge_catalog(self, catalog: AntaCatalog, *, remove_duplicates: bool = True) -> None:
+        """
+        Merge another AntaCatalog into this one.
+
+        Args:
+            catalog: The AntaCatalog to merge.
+            remove_duplicates: Remove duplicate tests after the merge. Defaults to True.
+        """
+        if not isinstance(catalog, AntaCatalog):
+            raise TypeError("The catalog to merge must be an AntaCatalog instance")
+
+        self._tests.extend(catalog.tests)
+
+        if remove_duplicates:
+            self.remove_duplicates()
 
     @staticmethod
     def parse(filename: str | Path) -> AntaCatalog:

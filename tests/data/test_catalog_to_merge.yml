@@ -1,0 +1,8 @@
+---
+anta.tests.system:
+  - VerifyCoredump:
+  - VerifyAgentLogs:
+
+anta.tests.configuration:
+  - VerifyZeroTouch:
+  - VerifyRunningConfigDiffs:
