@@ -256,6 +256,12 @@ anta.tests.system:
   - VerifyFileSystemUtilization:
   - VerifyNTP:
 
+anta.tests.vlan:
+  - VerifyVlanInternalPolicy:
+      policy: ascending
+      start_vlan_id: 1006
+      end_vlan_id: 4094
+
 anta.tests.vxlan:
   - VerifyVxlan1Interface:
   - VerifyVxlanConfigSanity:
