@@ -27,7 +27,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Vlan internal allocation policy is not configured properly:\n"
+                "The VLAN internal allocation policy is not configured properly:\n"
                 "Expected `ascending` as the policy, but found `descending` instead.\n"
                 "Expected `1006` as the startVlanId, but found `4094` instead.\n"
                 "Expected `4094` as the endVlanId, but found `1006` instead."
