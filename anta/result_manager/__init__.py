@@ -155,10 +155,8 @@ class ResultManager:
         Returns:
             str: JSON dumps of the list of results
         """
-        res = []
-        for device in self._result_entries:
-            res.append({k: v if isinstance(v, list) else str(v) for k, v in device})
-        return json.dumps(res, indent=4)
+        result = [result.model_dump() for result in self._result_entries]
+        return json.dumps(result, indent=4)
 
     def get_result_by_test(self, test_name: str) -> list[TestResult]:
         """
