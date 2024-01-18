@@ -10,8 +10,10 @@ from __future__ import annotations
 
 from pydantic import conint
 
+from anta.custom_types import MlagPriority
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
+from anta.tools.utils import get_failed_logs
 
 
 class VerifyMlagStatus(AntaTest):
@@ -192,3 +194,49 @@ class VerifyMlagDualPrimary(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The dual-primary parameters are not configured properly: {verified_output}")
+
+
+class VerifyMlagPrimaryPriority(AntaTest):
+    """
+    Test class to verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
+
+    Expected Results:
+        * Success: The test will pass if the MLAG state is set as 'primary' and the priority matches the input.
+        * Failure: The test will fail if the MLAG state is not 'primary' or the priority doesn't match the input.
+        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    """
+
+    name = "VerifyMlagPrimaryPriority"
+    description = "Verifies the configuration of the MLAG primary priority."
+    categories = ["mlag"]
+    commands = [AntaCommand(command="show mlag detail")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyMlagPrimaryPriority test."""
+
+        primary_priority: MlagPriority
+        """The expected MLAG primary priority."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output
+
+        # Skip the test if MLAG is disabled
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+            return
+
+        keys_to_verify = ["mlagState", "primaryPriority"]
+
+        # Extract the actual MLAG details
+        actual_mlag_details = {key: get_value(command_output["detail"], key) for key in keys_to_verify}
+
+        # Define the expected MLAG details
+        expected_mlag_details = {"mlagState": "primary", "primaryPriority": self.inputs.primary_priority}
+
+        # Check if the actual MLAG details match the expected details
+        if actual_mlag_details == expected_mlag_details:
+            self.result.is_success()
+        else:
+            failed_log = get_failed_logs(expected_mlag_details, actual_mlag_details)
+            self.result.is_failure(f"The device is not set as the MLAG primary or the primary priority does not match the expected value:{failed_log}")

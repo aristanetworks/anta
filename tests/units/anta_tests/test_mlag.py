@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagReloadDelay, VerifyMlagStatus
+from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagPrimaryPriority, VerifyMlagReloadDelay, VerifyMlagStatus
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -282,6 +282,67 @@ DATA: list[dict[str, Any]] = [
                     "'dualPrimaryMlagRecoveryDelay': 60, "
                     "'dualPrimaryNonMlagRecoveryDelay': 0}"
                 )
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyMlagPrimaryPriority,
+        "eos_data": [
+            {
+                "state": "active",
+                "detail": {"mlagState": "primary", "primaryPriority": 32767},
+            }
+        ],
+        "inputs": {
+            "primary_priority": 32767,
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "skipped-disabled",
+        "test": VerifyMlagPrimaryPriority,
+        "eos_data": [
+            {
+                "state": "disabled",
+            }
+        ],
+        "inputs": {"primary_priority": 32767},
+        "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
+    },
+    {
+        "name": "failure-not-primary",
+        "test": VerifyMlagPrimaryPriority,
+        "eos_data": [
+            {
+                "state": "active",
+                "detail": {"mlagState": "secondary", "primaryPriority": 32767},
+            }
+        ],
+        "inputs": {"primary_priority": 32767},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The device is not set as the MLAG primary or the primary priority does not match the expected value:\n"
+                "Expected `primary` as the mlagState, but found `secondary` instead."
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-priority",
+        "test": VerifyMlagPrimaryPriority,
+        "eos_data": [
+            {
+                "state": "active",
+                "detail": {"mlagState": "secondary", "primaryPriority": 32767},
+            }
+        ],
+        "inputs": {"primary_priority": 1},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The device is not set as the MLAG primary or the primary priority does not match the expected value:\n"
+                "Expected `primary` as the mlagState, but found `secondary` instead.\nExpected `1` as the primaryPriority, but found `32767` instead."
             ],
         },
     },
