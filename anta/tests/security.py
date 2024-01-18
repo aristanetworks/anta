@@ -402,8 +402,10 @@ class VerifyBannerLogin(AntaTest):
     def test(self) -> None:
         login_banner = self.instance_commands[0].json_output["loginBanner"]
 
-        if login_banner != self.inputs.login_banner:
-            self.result.is_failure(f"Expected `{self.inputs.login_banner}` as the login banner, but found `{login_banner}` instead.")
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
+        if login_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the login banner, but found `{login_banner}` instead.")
         else:
             self.result.is_success()
 
@@ -431,7 +433,9 @@ class VerifyBannerMotd(AntaTest):
     def test(self) -> None:
         motd_banner = self.instance_commands[0].json_output["motd"]
 
-        if motd_banner != self.inputs.motd_banner:
-            self.result.is_failure(f"Expected `{self.inputs.motd_banner}` as the motd banner, but found `{motd_banner}` instead.")
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
+        if motd_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the motd banner, but found `{motd_banner}` instead.")
         else:
             self.result.is_success()

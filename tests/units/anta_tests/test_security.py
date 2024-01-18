@@ -587,6 +587,22 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-multiline",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-incorrect-login-banner",
         "test": VerifyBannerLogin,
         "eos_data": [
@@ -620,6 +636,22 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
             "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiline",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
         },
         "expected": {"result": "success"},
     },
