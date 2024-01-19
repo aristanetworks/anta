@@ -206,6 +206,13 @@ anta.tests.security:
           encryption_algorithm: RSA
           key_size: 4096
 
+anta.tests.services:
+  - VerifyDNSLookup:
+      domain_names:
+        - arista.com
+        - www.google.com
+        - khatri.com
+
 anta.tests.snmp:
   - VerifySnmpStatus:
       vrf: default
