@@ -12,6 +12,7 @@ import pytest
 
 from anta.tools.get_dict_superset import get_dict_superset
 
+# pylint: disable=duplicate-code
 DUMMY_DATA = [
     ("id", 0),
     {
