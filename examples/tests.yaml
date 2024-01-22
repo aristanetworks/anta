@@ -206,6 +206,16 @@ anta.tests.security:
           encryption_algorithm: RSA
           key_size: 4096
 
+anta.tests.services:
+  - VerifyDNSServers:
+      dns_servers:
+        - server_address: 10.14.0.1
+          vrf: default
+          priority: 1
+        - server_address: 10.14.0.11
+          vrf: MGMT
+          priority: 0
+
 anta.tests.snmp:
   - VerifySnmpStatus:
       vrf: default
