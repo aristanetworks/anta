@@ -206,6 +206,14 @@ anta.tests.security:
           encryption_algorithm: RSA
           key_size: 4096
 
+anta.tests.services:
+  - VerifyErrdisableRecovery:
+      reasons:
+        - reason: acl
+          interval: 30
+        - reason: bpduguard
+          interval: 30
+
 anta.tests.snmp:
   - VerifySnmpStatus:
       vrf: default
