@@ -11,7 +11,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
+from anta.tests.routing.bgp import VerifyBGPExchangedRoutes, VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -1236,6 +1236,544 @@ DATA: list[dict[str, Any]] = [
                 "{'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 10, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
                 "{'afi': 'evpn', 'vrfs': {'default': {'10.1.0.2': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPExchangedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
+                },
+                {
+                    "peer_address": "172.30.11.5",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-routes",
+        "test": VerifyBGPExchangedRoutes,
+        "eos_data": [
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.3/32"],
+                    "received_routes": ["192.0.255.3/32"],
+                },
+                {
+                    "peer_address": "172.30.11.12",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.31/32"],
+                    "received_routes": ["192.0.255.31/32"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not found or routes are not exchanged properly:\n"
+                "{'bgp_peers': {'172.30.11.11': {'default': 'Not configured'}, '172.30.11.12': {'default': 'Not configured'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPExchangedRoutes,
+        "eos_data": [
+            {"vrfs": {}},
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {"vrfs": {}},
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                    "advertised_routes": ["192.0.254.3/32"],
+                    "received_routes": ["192.0.255.3/32"],
+                },
+                {
+                    "peer_address": "172.30.11.5",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': {'172.30.11.11': {'MGMT': 'Not configured'}}}"],
+        },
+    },
+    {
+        "name": "failure-missing-routes",
+        "test": VerifyBGPExchangedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
+                    "received_routes": ["192.0.254.31/32", "192.0.255.4/32"],
+                },
+                {
+                    "peer_address": "172.30.11.5",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.31/32", "192.0.254.5/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': "
+                "{'172.30.11.1': {'default': {'advertised_routes': {'192.0.254.51/32': 'Not found'}, 'received_routes': {'192.0.254.31/32': 'Not found'}}}, "
+                "'172.30.11.5': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found'}, 'received_routes': {'192.0.255.41/32': 'Not found'}}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-invalid-or-inactive-routes",
+        "test": VerifyBGPExchangedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                            "192.0.254.5/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": False,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": False,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                        },
+                                    }
+                                ],
+                            },
+                            "192.0.255.4/32": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                        },
+                                    }
+                                ],
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
+                    "received_routes": ["192.0.254.31/32", "192.0.255.4/32"],
+                },
+                {
+                    "peer_address": "172.30.11.5",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.31/32", "192.0.254.5/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': "
+                "{'172.30.11.1': {'default': {'advertised_routes': {'192.0.254.3/32': {'valid': True, 'active': False}, '192.0.254.51/32': 'Not found'}, "
+                "'received_routes': {'192.0.254.31/32': 'Not found', '192.0.255.4/32': {'valid': False, 'active': False}}}}, "
+                "'172.30.11.5': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found', '192.0.254.5/32': {'valid': True, 'active': False}}, "
+                "'received_routes': {'192.0.254.3/32': {'valid': False, 'active': True}, '192.0.255.41/32': 'Not found'}}}}}"
             ],
         },
     },

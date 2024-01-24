@@ -8,10 +8,10 @@ BGP test functions
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address
+from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
-from pydantic import BaseModel, PositiveInt, model_validator
+from pydantic import BaseModel, PositiveInt, model_validator, utils
 
 from anta.custom_types import Afi, Safi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -130,6 +130,53 @@ def _check_peer_issues(peer_data: Optional[dict[str, Any]]) -> dict[str, Any]:
         return {"peerState": peer_data["peerState"], "inMsgQueue": peer_data["inMsgQueue"], "outMsgQueue": peer_data["outMsgQueue"]}
 
     return {}
+
+
+def _add_bgp_routes_failure(
+    bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
+) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
+    """
+    Identifies missing BGP routes and invalid or inactive route entries.
+
+    This function checks the BGP output from the device against the expected routes.
+    It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.
+
+    Parameters:
+        bgp_routes (list[str]): The list of expected routes.
+        bgp_output (dict[str, Any]): The BGP output from the device.
+        peer (str): The IP address of the BGP peer.
+        vrf (str): The name of the VRF for which the routes need to be verified.
+        route_type (str, optional): The type of BGP routes. Defaults to 'advertised_routes'.
+
+    Returns:
+        dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
+    """
+
+    # Prepare the failure routes dictionary
+    failure_routes: dict[str, dict[str, Any]] = {}
+
+    # Iterate over the expected BGP routes
+    for route in bgp_routes:
+        route = str(route)
+        failure = {"bgp_peers": {peer: {vrf: {route_type: {route: Any}}}}}
+
+        # Check if the route is missing in the BGP output
+        if route not in bgp_output:
+            # If missing, add it to the failure routes dictionary
+            failure["bgp_peers"][peer][vrf][route_type][route] = "Not found"
+            failure_routes = utils.deep_update(failure_routes, failure)
+            continue
+
+        # Check if the route is active and valid
+        is_active = bgp_output[route]["bgpRoutePaths"][0]["routeType"]["valid"]
+        is_valid = bgp_output[route]["bgpRoutePaths"][0]["routeType"]["active"]
+
+        # If the route is either inactive or invalid, add it to the failure routes dictionary
+        if not is_active or not is_valid:
+            failure["bgp_peers"][peer][vrf][route_type][route] = {"valid": is_valid, "active": is_active}
+            failure_routes = utils.deep_update(failure_routes, failure)
+
+    return failure_routes
 
 
 class VerifyBGPPeerCount(AntaTest):
@@ -447,3 +494,84 @@ class VerifyBGPSpecificPeers(AntaTest):
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
+
+
+class VerifyBGPExchangedRoutes(AntaTest):
+    """
+    Verifies if the BGP peers have correctly advertised and received routes.
+    The route type should be 'valid' and 'active' for a specified VRF.
+
+    Expected results:
+        * success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
+        * failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+    """
+
+    name = "VerifyBGPExchangedRoutes"
+    description = "Verifies if BGP peers have correctly advertised/received routes with type as valid and active for a specified VRF."
+    categories = ["routing", "bgp"]
+    commands = [
+        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
+        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
+    ]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters of the testcase.
+        """
+
+        bgp_peers: List[BgpNeighbors]
+        """List of BGP peers"""
+
+        class BgpNeighbors(BaseModel):
+            """
+            This class defines the details of a BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer"""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            advertised_routes: List[IPv4Network]
+            """List of advertised routes of a BGP peer."""
+            received_routes: List[IPv4Network]
+            """List of received routes of a BGP peer."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Renders the template with the provided inputs. Returns a list of commands to be executed."""
+
+        return [
+            template.render(peer=bgp_peer.peer_address, vrf=bgp_peer.vrf, advertised_routes=bgp_peer.advertised_routes, received_routes=bgp_peer.received_routes)
+            for bgp_peer in self.inputs.bgp_peers
+        ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, dict[str, Any]] = {"bgp_peers": {}}
+
+        # Iterating over command output for different peers
+        for command in self.instance_commands:
+            peer = str(command.params["peer"])
+            vrf = command.params["vrf"]
+            advertised_routes = command.params["advertised_routes"]
+            received_routes = command.params["received_routes"]
+            failure = {vrf: ""}
+
+            # Verify if a BGP peer is configured with the provided vrf
+            if not (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")):
+                failure[vrf] = "Not configured"
+                failures["bgp_peers"][peer] = failure
+                continue
+
+            # Validate advertised routes
+            if "advertised-routes" in command.command:
+                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, peer, vrf)
+
+            # Validate received routes
+            else:
+                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, peer, vrf, route_type="received_routes")
+            failures = utils.deep_update(failures, failure_routes)
+
+        if not failures["bgp_peers"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not found or routes are not exchanged properly:\n{failures}")
