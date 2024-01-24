@@ -48,9 +48,9 @@ def interface_case_sensitivity(v: str) -> str:
     return v
 
 
-def bgp_capabilities_abbreviations(value: str) -> str:
+def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     """
-    Abbreviations for different BGP neighbor capabilities.
+    Abbreviations for different BGP multiprotocol capabilities.
     Examples:
         - IPv4 Unicast
         - L2vpnEVPN
@@ -90,4 +90,4 @@ Safi = Literal["unicast", "multicast", "labeled-unicast"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 521]
-MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_capabilities_abbreviations)]
+MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
