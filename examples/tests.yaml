@@ -335,6 +335,20 @@ anta.tests.routing:
               - 192.0.254.5/32
             received_routes:
               - 192.0.254.3/32
+    - VerifyBGPPeerMPCaps:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            capabilities:
+              - ipv4Unicast
+    - VerifyBGPPeerASNCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+    - VerifyBGPPeerRouteRefreshCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

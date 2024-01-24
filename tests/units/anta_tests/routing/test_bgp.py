@@ -11,7 +11,15 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import VerifyBGPExchangedRoutes, VerifyBGPPeerCount, VerifyBGPPeersHealth, VerifyBGPSpecificPeers  # noqa: E402
+from anta.tests.routing.bgp import (  # noqa: E402
+    VerifyBGPExchangedRoutes,
+    VerifyBGPPeerASNCap,
+    VerifyBGPPeerCount,
+    VerifyBGPPeerMPCaps,
+    VerifyBGPPeerRouteRefreshCap,
+    VerifyBGPPeersHealth,
+    VerifyBGPSpecificPeers,
+)
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -1774,6 +1782,627 @@ DATA: list[dict[str, Any]] = [
                 "'received_routes': {'192.0.254.31/32': 'Not found', '192.0.255.4/32': {'valid': False, 'active': False}}}}, "
                 "'172.30.11.5': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found', '192.0.254.5/32': {'valid': True, 'active': False}}, "
                 "'received_routes': {'192.0.254.3/32': {'valid': False, 'active': True}, '192.0.255.41/32': 'Not found'}}}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True},
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
+                                    }
+                                },
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4 Unicast", "ipv4mplslabels"],
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "default",
+                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                },
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-missing-capabilities",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 Unicast", "L2VpnEVPN"]}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'default': {'l2VpnEvpn': 'not found'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-capabilities",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": True, "enabled": False},
+                                    },
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "l2VpnEvpn": {"advertised": True, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": True},
+                                    },
+                                },
+                            },
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": False},
+                                    },
+                                },
+                            },
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "capabilities": ["ipv4unicast", "ipv4 mplsvpn", "L2vpnEVPN"]},
+                {"peer_address": "172.30.11.11", "vrf": "MGMT", "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'ipv4Unicast': {'advertised': False, 'received': False, 'enabled': False}, "
+                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': False}, 'l2VpnEvpn': 'not found'}}, "
+                "'172.30.11.10': {'MGMT': {'ipv4Unicast': 'not found', 'ipv4MplsVpn': {'advertised': False, 'received': False, 'enabled': True}, "
+                "'l2VpnEvpn': {'advertised': True, 'received': False, 'enabled': False}}}, "
+                "'172.30.11.11': {'MGMT': {'ipv4Unicast': {'advertised': False, 'received': False, 'enabled': False}, "
+                "'ipv4MplsVpn': {'advertised': False, 'received': False, 'enabled': False}, 'l2VpnEvpn': 'not found'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    }
+                },
+                "MGMT": {
+                    "peerList": [
+                        {
+                            "peerAddress": "172.30.11.10",
+                            "neighborCapabilities": {
+                                "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                            },
+                        }
+                    ]
+                },
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "default",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}, '172.30.11.10': {'default': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            },
+                        ]
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "default",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer four octet asn capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-missing-capabilities",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'fourOctetAsnCap': 'not found'}}, '172.30.11.10': {'MGMT': {'fourOctetAsnCap': 'not found'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-capabilities",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {"advertised": False, "received": False, "enabled": False},
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {"advertised": True, "received": False, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'fourOctetAsnCap': {'advertised': False, 'received': False, 'enabled': False}}}, "
+                "'172.30.11.10': {'MGMT': {'fourOctetAsnCap': {'advertised': True, 'received': False, 'enabled': True}}}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "CS",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer route refresh capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.12",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.12",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "CS",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer route refresh capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.12': {'default': {'status': 'Not configured'}}, '172.30.11.1': {'CS': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-missing-capabilities",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer route refresh capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'routeRefreshCap': 'not found'}}, '172.30.11.11': {'CS': {'routeRefreshCap': 'not found'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-capabilities",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {"advertised": False, "received": False, "enabled": False},
+                                },
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer route refresh capabilities are not found or not ok:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'routeRefreshCap': {'advertised': False, 'received': False, 'enabled': False}}}}}"
             ],
         },
     },
