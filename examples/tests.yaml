@@ -205,6 +205,22 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
+  - VerifyIpv4ACL:
+      ipv4_access_list:
+        - name: default-control-plane-acl
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit ip any any tracked
+            - sequence: 30
+              action: permit udp any any eq bfd ttl eq 255
+        - name: LabTest
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit tcp any any range 5900 5910
 
 anta.tests.snmp:
   - VerifySnmpStatus:

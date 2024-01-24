@@ -14,6 +14,7 @@ from anta.tests.security import (
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
+    VerifyIpv4ACL,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -566,6 +567,225 @@ DATA: list[dict[str, Any]] = [
                 "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
                 "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
                 "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyIpv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 20},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_list": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-acl-not-found",
+        "test": VerifyIpv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {"aclList": []},
+        ],
+        "inputs": {
+            "ipv4_access_list": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["LabTest: Not found"]},
+    },
+    {
+        "name": "failure-sequence-not-found",
+        "test": VerifyIpv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 40},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_list": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["default-control-plane-acl:\nSequence number `30` is not found.\n", "LabTest:\nSequence number `20` is not found.\n"],
+        },
+    },
+    {
+        "name": "failure-action-not-match",
+        "test": VerifyIpv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 20},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_list": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "default-control-plane-acl:\n"
+                "Expected `permit udp any any eq bfd ttl eq 255` as sequence number 30 action but found `permit tcp any any range 5900 5910` instead.\n",
+                "LabTest:\nExpected `permit tcp any any range 5900 5910` as sequence number 20 action but found `permit udp any any eq bfd ttl eq 255` instead.\n",
+            ],
+        },
+    },
+    {
+        "name": "failure-all-type",
+        "test": VerifyIpv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 40},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {"aclList": []},
+        ],
+        "inputs": {
+            "ipv4_access_list": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "default-control-plane-acl:\nSequence number `20` is not found.\n"
+                "Expected `permit udp any any eq bfd ttl eq 255` as sequence number 30 action but found `permit tcp any any range 5900 5910` instead.\n",
+                "LabTest: Not found",
             ],
         },
     },
