@@ -61,13 +61,13 @@ anta.tests.bfd:
       bfd_peers:
         - peer_address: 192.0.255.8
           vrf: default
-          tx_interval: 1200000
-          rx_interval: 1200000
+          tx_interval: 1200
+          rx_interval: 1200
           multiplier: 3
         - peer_address: 192.0.255.7
           vrf: default
-          tx_interval: 1200000
-          rx_interval: 1200000
+          tx_interval: 1200
+          rx_interval: 1200
           multiplier: 3
 
 anta.tests.configuration:

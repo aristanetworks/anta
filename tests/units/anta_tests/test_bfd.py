@@ -56,8 +56,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
             ]
         },
         "expected": {"result": "success"},
@@ -103,8 +103,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
             ]
         },
         "expected": {
@@ -127,7 +127,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerStats": {
                                     "": {
                                         "peerStatsDetail": {
-                                            "operTxInterval": 1200001,
+                                            "operTxInterval": 1300000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 4,
                                         }
@@ -156,15 +156,15 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200000, "rx_interval": 1200000, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
                 "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'default': {'tx_interval': 1200001, 'rx_interval': 1200000, 'multiplier': 4}}, "
+                "{'192.0.255.7': {'default': {'tx_interval': 1300000, 'rx_interval': 1200000, 'multiplier': 4}}, "
                 "'192.0.255.70': {'MGMT': {'tx_interval': 120000, 'rx_interval': 120000, 'multiplier': 5}}}"
             ],
         },
