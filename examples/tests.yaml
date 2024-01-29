@@ -205,6 +205,16 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
 
 anta.tests.snmp:
   - VerifySnmpStatus:
