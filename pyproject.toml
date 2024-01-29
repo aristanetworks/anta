@@ -55,7 +55,7 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
   "bumpver==2023.1129",
-  "black==23.12.1",
+  "black==24.1.1",
   "flake8==7.0.0",
   "isort==5.13.2",
   "mypy~=1.7",
