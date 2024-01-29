@@ -18,7 +18,8 @@ from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
-    VerifyBGPSpecificPeers, VerifyEVPNType2Route,
+    VerifyBGPSpecificPeers,
+    VerifyEVPNType2Route,
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
