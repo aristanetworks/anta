@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Test functions related to the EOS various security settings
+Test functions related to the EOS various services settings
 """
 from __future__ import annotations
 
