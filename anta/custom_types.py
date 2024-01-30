@@ -48,6 +48,30 @@ def interface_case_sensitivity(v: str) -> str:
     return v
 
 
+def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
+    """
+    Abbreviations for different BGP multiprotocol capabilities.
+    Examples:
+        - IPv4 Unicast
+        - L2vpnEVPN
+        - ipv4 MPLS Labels
+        - ipv4Mplsvpn
+    """
+    patterns = {
+        r"\b(l2[\s\-]?vpn[\s\-]?evpn)\b": "l2VpnEvpn",
+        r"\bipv4[\s_-]?mpls[\s_-]?label(s)?\b": "ipv4MplsLabels",
+        r"\bipv4[\s_-]?mpls[\s_-]?vpn\b": "ipv4MplsVpn",
+        r"\bipv4[\s_-]?uni[\s_-]?cast\b": "ipv4Unicast",
+    }
+
+    for pattern, replacement in patterns.items():
+        match = re.search(pattern, value, re.IGNORECASE)
+        if match:
+            return replacement
+
+    return value
+
+
 # ANTA framework
 TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
 
@@ -66,4 +90,4 @@ Safi = Literal["unicast", "multicast", "labeled-unicast"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 521]
-VlanPolicy = Literal["ascending", "descending"]
+MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]

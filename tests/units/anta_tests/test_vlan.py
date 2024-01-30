@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
-Tests for anta.tests.security.py
+Tests for anta.tests.vlan.py
 """
 from __future__ import annotations
 

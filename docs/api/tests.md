@@ -27,6 +27,7 @@ This section describes all the available tests provided by ANTA package.
 - [Software](tests.software.md)
 - [STP](tests.stp.md)
 - [System](tests.system.md)
+- [Vlan](tests.vlan.md)
 - [VXLAN](tests.vxlan.md)
 
 

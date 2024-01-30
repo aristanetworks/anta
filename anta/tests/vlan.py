@@ -7,7 +7,9 @@ Test functions related to VLAN
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 
-from anta.custom_types import Vlan, VlanPolicy
+from typing import Literal
+
+from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
@@ -33,7 +35,7 @@ class VerifyVlanInternalPolicy(AntaTest):
     class Input(AntaTest.Input):
         """Inputs for the VerifyVlanInternalPolicy test."""
 
-        policy: VlanPolicy
+        policy: Literal["ascending", "descending"]
         """The VLAN internal allocation policy."""
         start_vlan_id: Vlan
         """The starting VLAN ID in the range."""
