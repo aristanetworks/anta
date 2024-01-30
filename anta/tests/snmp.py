@@ -127,7 +127,7 @@ class VerifySnmpLocation(AntaTest):
 
     name = "VerifySnmpLocation"
     description = "Verifies the SNMP location of a device."
-    categories = ["security"]
+    categories = ["snmp"]
     commands = [AntaCommand(command="show snmp")]
 
     class Input(AntaTest.Input):
@@ -157,7 +157,7 @@ class VerifySnmpContact(AntaTest):
 
     name = "VerifySnmpContact"
     description = "Verifies the SNMP contact of a device."
-    categories = ["security"]
+    categories = ["snmp"]
     commands = [AntaCommand(command="show snmp")]
 
     class Input(AntaTest.Input):

@@ -14,7 +14,6 @@ from anta.tests.security import (
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
-    VerifyHostname,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -568,23 +567,6 @@ DATA: list[dict[str, Any]] = [
                 "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
                 "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
             ],
-        },
-    },
-    {
-        "name": "success",
-        "test": VerifyHostname,
-        "eos_data": [{"hostname": "s1-spine1", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
-        "inputs": {"hostname": "s1-spine1"},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-incorrect-hostname",
-        "test": VerifyHostname,
-        "eos_data": [{"hostname": "s1-spine2", "fqdn": "s1-spine1.fun.aristanetworks.com"}],
-        "inputs": {"hostname": "s1-spine1"},
-        "expected": {
-            "result": "failure",
-            "messages": ["Expected `s1-spine1` as the hostname, but found `s1-spine2` instead."],
         },
     },
 ]

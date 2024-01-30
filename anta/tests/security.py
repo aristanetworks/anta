@@ -377,33 +377,3 @@ class VerifyAPISSLCertificate(AntaTest):
                 failed_log = f"SSL certificate `{certificate.certificate_name}` is not configured properly:"
                 failed_log += get_failed_logs(expected_certificate_details, actual_certificate_details)
                 self.result.is_failure(f"{failed_log}\n")
-
-
-class VerifyHostname(AntaTest):
-    """
-    This class verifies the hostname of a device.
-
-    Expected results:
-        * success: The test will pass if the hostname matches the provided input.
-        * failure: The test will fail if the hostname does not match the provided input.
-    """
-
-    name = "VerifyHostname"
-    description = "Verifies the hostname of a device."
-    categories = ["security"]
-    commands = [AntaCommand(command="show hostname")]
-
-    class Input(AntaTest.Input):
-        """Defines the input parameters for this test case."""
-
-        hostname: str
-        """Expected hostname of the device."""
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        hostname = self.instance_commands[0].json_output["hostname"]
-
-        if hostname != self.inputs.hostname:
-            self.result.is_failure(f"Expected `{self.inputs.hostname}` as the hostname, but found `{hostname}` instead.")
-        else:
-            self.result.is_success()
