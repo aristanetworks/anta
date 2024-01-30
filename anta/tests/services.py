@@ -16,7 +16,7 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 class VerifyDNSLookup(AntaTest):
     """
-    This class verifies the DNS(Domain name service) name to IP address translation.
+    This class verifies the DNS (Domain name service) name to IP address translation.
 
     Expected Results:
         * success: The test will pass if a domain name is resolved to an IP address.
@@ -25,7 +25,7 @@ class VerifyDNSLookup(AntaTest):
     """
 
     name = "VerifyDNSLookup"
-    description = "Verifies the DNS(Domain name service) name to IP address translation."
+    description = "Verifies the DNS (Domain name service) name to IP address translation."
     categories = ["services"]
     commands = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
 
@@ -41,8 +41,11 @@ class VerifyDNSLookup(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         self.result.is_success()
+        failed_domains = []
         for command in self.instance_commands:
             domain = command.params["domain"]
             output = command.json_output["messages"][0]
             if f"Can't find {domain}: No answer" in output:
-                self.result.is_failure(f"Domain {domain} is not resolved to an IP address.")
+                failed_domains.append(domain)
+        if failed_domains:
+            self.result.is_failure(f"The following domain(s) are not resolved to an IP address: {', '.join(failed_domains)}")

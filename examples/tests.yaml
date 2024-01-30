@@ -211,7 +211,7 @@ anta.tests.services:
       domain_names:
         - arista.com
         - www.google.com
-        - khatri.com
+        - arista.ca
 
 anta.tests.snmp:
   - VerifySnmpStatus:
