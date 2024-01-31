@@ -27,7 +27,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
     Expected Results:
         * success: The test will pass if all interfaces have a usage below 75%.
-        * failure: The test will fail if one or more interfaces have a usage above 75%. 
+        * failure: The test will fail if one or more interfaces have a usage above 75%.
     """
 
     name = "VerifyInterfaceUtilization"
