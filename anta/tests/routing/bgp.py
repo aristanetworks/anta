@@ -194,7 +194,7 @@ class VerifyBGPPeerCount(AntaTest):
 
     name = "VerifyBGPPeerCount"
     description = "Verifies the count of BGP peers."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -298,7 +298,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
     name = "VerifyBGPPeersHealth"
     description = "Verifies the health of BGP peers"
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -404,7 +404,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
     name = "VerifyBGPSpecificPeers"
     description = "Verifies the health of specific BGP peer(s)."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -509,7 +509,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     name = "VerifyBGPExchangedRoutes"
     description = "Verifies if BGP peers have correctly advertised/received routes with type as valid and active for a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
         AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
@@ -588,7 +588,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
     name = "VerifyBGPPeerMPCaps"
     description = "Verifies the multiprotocol capabilities of a BGP peer in a specified VRF"
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -663,7 +663,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
     name = "VerifyBGPPeerASNCap"
     description = "Verifies the four octet asn capabilities of a BGP peer in a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -732,7 +732,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
     name = "VerifyBGPPeerRouteRefreshCap"
     description = "Verifies the route refresh capabilities of a BGP peer in a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
