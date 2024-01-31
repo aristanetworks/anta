@@ -173,6 +173,7 @@ nav:
   - Test Catalog Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
+    - BFD: api/tests.bfd.md
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
     - Field Notices: api/tests.field_notices.md

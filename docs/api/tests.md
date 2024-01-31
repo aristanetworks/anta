@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -10,6 +10,7 @@ This section describes all the available tests provided by ANTA package.
 
 
 - [AAA](tests.aaa.md)
+- [BFD](tests.bfd.md)
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)
 - [Field Notice](tests.field_notices.md)
