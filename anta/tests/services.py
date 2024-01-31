@@ -12,9 +12,8 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv6Address
 from typing import List, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from anta.custom_types import DnsServerPriority
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_dict_superset import get_dict_superset
 from anta.tools.get_item import get_item
@@ -47,8 +46,8 @@ class VerifyDNSServers(AntaTest):
             """The IPv4/IPv6 address of the DNS server."""
             vrf: str = "default"
             """The VRF for the DNS server. Defaults to 'default' if not provided."""
-            priority: DnsServerPriority
-            """The priority of the DNS server."""
+            priority: int = Field(ge=0, le=4)
+            """The priority of the DNS server from 0 to 4, lower is first."""
 
     @AntaTest.anta_test
     def test(self) -> None:
