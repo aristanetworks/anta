@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Union
 
-from pydantic import BaseModel, conint, model_validator
+from pydantic import BaseModel, Field, conint, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -380,7 +380,69 @@ class VerifyAPISSLCertificate(AntaTest):
                 self.result.is_failure(f"{failed_log}\n")
 
 
-class VerifyIpv4ACL(AntaTest):
+class VerifyBannerLogin(AntaTest):
+    """
+    This class verifies the login banner of a device.
+    Expected results:
+        * success: The test will pass if the login banner matches the provided input.
+        * failure: The test will fail if the login banner does not match the provided input.
+    """
+
+    name = "VerifyBannerLogin"
+    description = "Verifies the login banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner login")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        login_banner: str
+        """Expected login banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        login_banner = self.instance_commands[0].json_output["loginBanner"]
+
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
+        if login_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the login banner, but found `{login_banner}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifyBannerMotd(AntaTest):
+    """
+    This class verifies the motd banner of a device.
+    Expected results:
+        * success: The test will pass if the motd banner matches the provided input.
+        * failure: The test will fail if the motd banner does not match the provided input.
+    """
+
+    name = "VerifyBannerMotd"
+    description = "Verifies the motd banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner motd")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        motd_banner: str
+        """Expected motd banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        motd_banner = self.instance_commands[0].json_output["motd"]
+
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
+        if motd_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the motd banner, but found `{motd_banner}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifyIPv4ACL(AntaTest):
     """
     This class verifies the configuration and the correct operation of the IPv4 access lists.
 
@@ -389,36 +451,36 @@ class VerifyIpv4ACL(AntaTest):
         * failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
     """
 
-    name = "VerifyIpv4ACL"
+    name = "VerifyIPv4ACL"
     description = "Verifies the configuration and the correct operation of the IPv4 access lists."
     categories = ["security"]
     commands = [AntaTemplate(template="show ip access-lists {acl}")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyIpv4ACL test."""
+        """Inputs for the VerifyIPv4ACL test."""
 
-        ipv4_access_list: List[Ipv4Acl]
+        ipv4_access_lists: List[IPv4ACL]
         """List of IPv4 ACL to verify"""
 
-        class Ipv4Acl(BaseModel):
-            """Detail of IPv4 ACl"""
+        class IPv4ACL(BaseModel):
+            """Detail of IPv4 ACL"""
 
             name: str
             """Name of IPv4 ACL"""
 
-            entries: List[Ipv4AclEntries]
+            entries: List[IPv4ACLEntries]
             """List of IPv4 ACL entries"""
 
-            class Ipv4AclEntries(BaseModel):
+            class IPv4ACLEntries(BaseModel):
                 """IPv4 ACL entries details"""
 
-                sequence: int
-                """Sequence number of ACL entry"""
+                sequence: int = Field(ge=1, le=4294967295)
+                """Sequence number of an ACL entry"""
                 action: str
                 """Action of an ACL entry"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_list]
+        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
 
     @AntaTest.anta_test
     def test(self) -> None:

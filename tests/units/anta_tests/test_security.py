@@ -14,7 +14,9 @@ from anta.tests.security import (
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
     VerifyAPISSLCertificate,
-    VerifyIpv4ACL,
+    VerifyBannerLogin,
+    VerifyBannerMotd,
+    VerifyIPv4ACL,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -572,7 +574,113 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifyIpv4ACL,
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiline",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-login-banner",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the login banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiline",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-motd-banner",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the motd banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyIPv4ACL,
         "eos_data": [
             {
                 "aclList": [
@@ -597,7 +705,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ipv4_access_list": [
+            "ipv4_access_lists": [
                 {
                     "name": "default-control-plane-acl",
                     "entries": [
@@ -616,7 +724,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-acl-not-found",
-        "test": VerifyIpv4ACL,
+        "test": VerifyIPv4ACL,
         "eos_data": [
             {
                 "aclList": [
@@ -632,7 +740,7 @@ DATA: list[dict[str, Any]] = [
             {"aclList": []},
         ],
         "inputs": {
-            "ipv4_access_list": [
+            "ipv4_access_lists": [
                 {
                     "name": "default-control-plane-acl",
                     "entries": [
@@ -651,7 +759,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-sequence-not-found",
-        "test": VerifyIpv4ACL,
+        "test": VerifyIPv4ACL,
         "eos_data": [
             {
                 "aclList": [
@@ -676,7 +784,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ipv4_access_list": [
+            "ipv4_access_lists": [
                 {
                     "name": "default-control-plane-acl",
                     "entries": [
@@ -698,7 +806,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-action-not-match",
-        "test": VerifyIpv4ACL,
+        "test": VerifyIPv4ACL,
         "eos_data": [
             {
                 "aclList": [
@@ -723,7 +831,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ipv4_access_list": [
+            "ipv4_access_lists": [
                 {
                     "name": "default-control-plane-acl",
                     "entries": [
@@ -749,7 +857,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-all-type",
-        "test": VerifyIpv4ACL,
+        "test": VerifyIPv4ACL,
         "eos_data": [
             {
                 "aclList": [
@@ -765,7 +873,7 @@ DATA: list[dict[str, Any]] = [
             {"aclList": []},
         ],
         "inputs": {
-            "ipv4_access_list": [
+            "ipv4_access_lists": [
                 {
                     "name": "default-control-plane-acl",
                     "entries": [
