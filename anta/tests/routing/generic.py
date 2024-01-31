@@ -26,9 +26,7 @@ class VerifyRoutingProtocolModel(AntaTest):
     """
 
     name = "VerifyRoutingProtocolModel"
-    description = (
-        "Verifies the configured routing protocol model is the expected one and if there is no mismatch between the configured and operating routing protocol model."
-    )
+    description = "Verifies the configured routing protocol model."
     categories = ["routing", "generic"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 

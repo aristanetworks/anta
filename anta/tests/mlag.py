@@ -27,7 +27,7 @@ class VerifyMlagStatus(AntaTest):
     """
 
     name = "VerifyMlagStatus"
-    description = "This test verifies the health status of the MLAG configuration."
+    description = "Verifies the health status of the MLAG configuration."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -61,7 +61,7 @@ class VerifyMlagInterfaces(AntaTest):
     """
 
     name = "VerifyMlagInterfaces"
-    description = "This test verifies there are no inactive or active-partial MLAG ports."
+    description = "Verifies there are no inactive or active-partial MLAG ports."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -89,7 +89,7 @@ class VerifyMlagConfigSanity(AntaTest):
     """
 
     name = "VerifyMlagConfigSanity"
-    description = "This test verifies there are no MLAG config-sanity inconsistencies."
+    description = "Verifies there are no MLAG config-sanity inconsistencies."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag config-sanity", ofmt="json")]
 
@@ -121,7 +121,7 @@ class VerifyMlagReloadDelay(AntaTest):
     """
 
     name = "VerifyMlagReloadDelay"
-    description = "This test verifies the reload-delay parameters of the MLAG configuration."
+    description = "Verifies the MLAG reload-delay parameters."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -157,7 +157,7 @@ class VerifyMlagDualPrimary(AntaTest):
     """
 
     name = "VerifyMlagDualPrimary"
-    description = "This test verifies the dual-primary detection and its parameters of the MLAG configuration."
+    description = "Verifies the MLAG dual-primary detection parameters."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag detail", ofmt="json")]
 

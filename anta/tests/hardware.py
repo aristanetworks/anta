@@ -25,7 +25,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     """
 
     name = "VerifyTransceiversManufacturers"
-    description = "Verifies the transceiver's manufacturer against a list of approved manufacturers."
+    description = "Verifies if all the transceivers come from approved manufacturers."
     categories = ["hardware"]
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
@@ -56,7 +56,7 @@ class VerifyTemperature(AntaTest):
     """
 
     name = "VerifyTemperature"
-    description = "Verifies if the device temperature is within the acceptable range."
+    description = "Verifies the device temperature."
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
@@ -81,7 +81,7 @@ class VerifyTransceiversTemperature(AntaTest):
     """
 
     name = "VerifyTransceiversTemperature"
-    description = "Verifies that all transceivers are operating within the acceptable temperature range."
+    description = "Verifies the transceivers temperature."
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
 
@@ -138,7 +138,7 @@ class VerifyEnvironmentCooling(AntaTest):
     """
 
     name = "VerifyEnvironmentCooling"
-    description = "Verifies if the fans status are within the accepted states list."
+    description = "Verifies the status of power supply fans and all fan trays."
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
@@ -173,7 +173,7 @@ class VerifyEnvironmentPower(AntaTest):
     """
 
     name = "VerifyEnvironmentPower"
-    description = "Verifies if the power supplies status are within the accepted states list."
+    description = "Verifies the power supplies status."
     categories = ["hardware"]
     commands = [AntaCommand(command="show system environment power", ofmt="json")]
 
