@@ -31,7 +31,7 @@ class VerifyVxlan1Interface(AntaTest):
     """
 
     name = "VerifyVxlan1Interface"
-    description = "This test verifies if the Vxlan1 interface is configured and 'up/up'."
+    description = "Verifies the Vxlan1 interface status."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show interfaces description", ofmt="json")]
 
@@ -63,7 +63,7 @@ class VerifyVxlanConfigSanity(AntaTest):
     """
 
     name = "VerifyVxlanConfigSanity"
-    description = "This test verifies that no issues are detected with the VXLAN configuration."
+    description = "Verifies there are no VXLAN config-sanity inconsistencies."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
 
@@ -95,7 +95,7 @@ class VerifyVxlanVniBinding(AntaTest):
     """
 
     name = "VerifyVxlanVniBinding"
-    description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface"
+    description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show vxlan vni", ofmt="json")]
 
