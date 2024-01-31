@@ -109,15 +109,15 @@ class VerifyInterfaceDiscards(AntaTest):
 
 class VerifyInterfaceErrDisabled(AntaTest):
     """
-    Verifies there is no interface in errdisabled state.
+    Verifies there are no interfaces in errdisabled state.
 
     Expected Results:
-        * success: The test will pass if there is no interface in errdisabled state.
+        * success: The test will pass if there are no interfaces in errdisabled state.
         * failure: The test will fail if there is at least one interface in errdisabled state.
     """
 
     name = "VerifyInterfaceErrDisabled"
-    description = "Verifies there is no interface in the errdisabled state."
+    description = "Verifies there are no interfaces in the errdisabled state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces status")]
 
@@ -192,7 +192,7 @@ class VerifyStormControlDrops(AntaTest):
     Verifies the device did not drop packets due its to storm-control configuration.
 
     Expected Results:
-        * success: The test will pass if there is no storm-control drop counters.
+        * success: The test will pass if there are no storm-control drop counters.
         * failure: The test will fail if there is at least one storm-control drop counter.
     """
 
@@ -219,11 +219,11 @@ class VerifyStormControlDrops(AntaTest):
 
 class VerifyPortChannels(AntaTest):
     """
-    Verifies there is no inactive port in port channels.
+    Verifies there are no inactive ports in all port channels.
 
     Expected Results:
-        * success: The test will pass if there is no inactive port in port channels.
-        * failure: The test will fail if there is at least one inactive port in port channels.
+        * success: The test will pass if there are no inactive ports in all port channels.
+        * failure: The test will fail if there is at least one inactive port in a port channel.
     """
 
     name = "VerifyPortChannels"
@@ -247,11 +247,11 @@ class VerifyPortChannels(AntaTest):
 
 class VerifyIllegalLACP(AntaTest):
     """
-    Verifies there is no illegal LACP packets received.
+    Verifies there are no illegal LACP packets received.
 
     Expected Results:
-        * success: The test will pass if there is no illegal LACP packets received.
-        * failure: The test will fail if there is at least one illegal LACP packets received.
+        * success: The test will pass if there are no illegal LACP packets received.
+        * failure: The test will fail if there is at least one illegal LACP packet received.
     """
 
     name = "VerifyIllegalLACP"
@@ -314,7 +314,7 @@ class VerifyLoopbackCount(AntaTest):
 
 class VerifySVI(AntaTest):
     """
-    Verifies tthe status of all SVIs.
+    Verifies the status of all SVIs.
 
     Expected Results:
         * success: The test will pass if all SVIs are up.

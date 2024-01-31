@@ -25,7 +25,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     """
 
     name = "VerifyTransceiversManufacturers"
-    description = "Verifies if all the transceivers come from approved manufacturers."
+    description = "Verifies if all transceivers come from approved manufacturers."
     categories = ["hardware"]
     commands = [AntaCommand(command="show inventory", ofmt="json")]
 
