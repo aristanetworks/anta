@@ -322,10 +322,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"primary_priority": 32767},
         "expected": {
             "result": "failure",
-            "messages": [
-                "The device is not set as the MLAG primary or the primary priority does not match the expected value:\n"
-                "Expected `primary` as the mlagState, but found `secondary` instead."
-            ],
+            "messages": ["The device is not set as MLAG primary."],
         },
     },
     {
@@ -340,10 +337,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"primary_priority": 1},
         "expected": {
             "result": "failure",
-            "messages": [
-                "The device is not set as the MLAG primary or the primary priority does not match the expected value:\n"
-                "Expected `primary` as the mlagState, but found `secondary` instead.\nExpected `1` as the primaryPriority, but found `32767` instead."
-            ],
+            "messages": ["The device is not set as MLAG primary.", "The primary priority does not match expected. Expected `1`, but found `32767` instead."],
         },
     },
 ]

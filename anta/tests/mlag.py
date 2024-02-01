@@ -13,7 +13,6 @@ from pydantic import conint
 from anta.custom_types import MlagPriority
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
-from anta.tools.utils import get_failed_logs
 
 
 class VerifyMlagStatus(AntaTest):
@@ -220,23 +219,21 @@ class VerifyMlagPrimaryPriority(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-
+        self.result.is_success()
         # Skip the test if MLAG is disabled
         if command_output["state"] == "disabled":
             self.result.is_skipped("MLAG is disabled")
             return
 
-        keys_to_verify = ["mlagState", "primaryPriority"]
+        mlag_state = get_value(command_output, "detail.mlagState")
+        primary_priority = get_value(command_output, "detail.primaryPriority")
 
-        # Extract the actual MLAG details
-        actual_mlag_details = {key: get_value(command_output["detail"], key) for key in keys_to_verify}
+        # Check MLAG state
+        if mlag_state != "primary":
+            self.result.is_failure("The device is not set as MLAG primary.")
 
-        # Define the expected MLAG details
-        expected_mlag_details = {"mlagState": "primary", "primaryPriority": self.inputs.primary_priority}
-
-        # Check if the actual MLAG details match the expected details
-        if actual_mlag_details == expected_mlag_details:
-            self.result.is_success()
-        else:
-            failed_log = get_failed_logs(expected_mlag_details, actual_mlag_details)
-            self.result.is_failure(f"The device is not set as the MLAG primary or the primary priority does not match the expected value:{failed_log}")
+        # Check primary priority
+        if primary_priority != self.inputs.primary_priority:
+            self.result.is_failure(
+                f"The primary priority does not match expected. Expected `{self.inputs.primary_priority}`, but found `{primary_priority}` instead."
+            )
