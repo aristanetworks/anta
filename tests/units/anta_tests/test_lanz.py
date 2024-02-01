@@ -15,13 +15,13 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyLANZ,
         "eos_data": [{"lanzEnabled": True}],
         "inputs": None,
-        "expected": {"result": "success"},
+        "expected": {"result": "success", "message": ["LANZ is enabled"]},
     },
     {
         "name": "failure",
         "test": VerifyLANZ,
         "eos_data": [{"lanzEnabled": False}],
         "inputs": None,
-        "expected": {"result": "failure"},
+        "expected": {"result": "failure", "messages": ["LANZ is not enabled"]},
     },
 ]
