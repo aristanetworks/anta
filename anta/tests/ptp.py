@@ -4,8 +4,6 @@
 """
 Test functions related to PTP (Precision Time Protocol) in EOS
 """
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 from anta.models import AntaCommand, AntaTest

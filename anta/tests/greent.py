@@ -4,8 +4,6 @@
 """
 Test functions related to GreenT (Postcard Telemetry) in EOS
 """
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 from anta.models import AntaCommand, AntaTest
@@ -45,7 +43,7 @@ class VerifyGreenT(AntaTest):
     """
 
     name = "VerifyGreenT"
-    description = "Verifies if the greent."
+    description = "Verifies whether greent policy is created."
     categories = ["greent"]
     commands = [AntaCommand(command="show monitor telemetry postcard policy profile")]
 
