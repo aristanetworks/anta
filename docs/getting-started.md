@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -133,15 +133,41 @@ $ anta
 
 ```bash
 # NRFU part of ANTA
-$ anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
-  Run NRFU against inventory devices
+  Run ANTA tests on devices
 
 Options:
-  -c, --catalog FILE  Path to the test catalog YAML file  [env var:
-                      ANTA_CATALOG; required]
-  --help              Show this message and exit.
+  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
+                          required]
+  -p, --password TEXT     Password to connect to EOS that must be provided. It
+                          can be prompted using '--prompt' option.  [env var:
+                          ANTA_PASSWORD]
+  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
+                          be prompted using '--prompt' option. Requires '--
+                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
+  --enable                Some commands may require EOS Privileged EXEC mode.
+                          This option tries to access this mode before sending
+                          a command to the device.  [env var: ANTA_ENABLE]
+  -P, --prompt            Prompt for passwords if they are not provided.  [env
+                          var: ANTA_PROMPT]
+  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
+                          default: 30]
+  --insecure              Disable SSH Host Key validation  [env var:
+                          ANTA_INSECURE]
+  --disable-cache         Disable cache globally  [env var:
+                          ANTA_DISABLE_CACHE]
+  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+                          ANTA_INVENTORY; required]
+  -t, --tags TEXT         List of tags using comma as separator:
+                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  -c, --catalog FILE      Path to the test catalog YAML file  [env var:
+                          ANTA_CATALOG; required]
+  --ignore-status         Always exit with success  [env var:
+                          ANTA_NRFU_IGNORE_STATUS]
+  --ignore-error          Only report failures and not errors  [env var:
+                          ANTA_NRFU_IGNORE_ERROR]
+  --help                  Show this message and exit.
 
 Commands:
   json        ANTA command to check network state with JSON result
@@ -155,13 +181,14 @@ To run the NRFU, you need to select an output format amongst ["json", "table", "
 ### Default report using table
 
 ```bash
-anta \
+anta nrfu \
     --username tom \
     --password arista123 \
     --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu --catalog .personal/tests-bases.yml table --tags leaf
+    --catalog .personal/tests-bases.yml \
+    table --tags leaf
 
 
 ╭────────────────────── Settings ──────────────────────╮
@@ -195,13 +222,14 @@ anta \
 ### Report in text mode
 
 ```bash
-$ anta \
+$ anta nrfu \
     --username tom \
     --password arista123 \
     --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu --catalog .personal/tests-bases.yml text --tags leaf
+    --catalog .personal/tests-bases.yml \
+    text --tags leaf
 
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │
@@ -224,13 +252,14 @@ leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
 ### Report in JSON format
 
 ```bash
-$ anta \
+$ anta nrfu \
     --username tom \
     --password arista123 \
     --enable \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
-    nrfu --catalog .personal/tests-bases.yml json --tags leaf
+    --catalog .personal/tests-bases.yml \
+    json --tags leaf
 
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │

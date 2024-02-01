@@ -186,7 +186,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["Following BFD peers were down:\n 192.0.255.7 in default VRF has remote disc 0.\n 192.0.255.71 in default VRF has remote disc 0."],
+            "messages": ["Following BFD peers were down:\n192.0.255.7 in default VRF has remote disc 0.\n192.0.255.71 in default VRF has remote disc 0."],
         },
     },
     {

@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -26,10 +26,8 @@ class VerifyRoutingProtocolModel(AntaTest):
     """
 
     name = "VerifyRoutingProtocolModel"
-    description = (
-        "Verifies the configured routing protocol model is the expected one and if there is no mismatch between the configured and operating routing protocol model."
-    )
-    categories = ["routing", "generic"]
+    description = "Verifies the configured routing protocol model."
+    categories = ["routing"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
@@ -55,7 +53,7 @@ class VerifyRoutingTableSize(AntaTest):
 
     name = "VerifyRoutingTableSize"
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
-    categories = ["routing", "generic"]
+    categories = ["routing"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
@@ -92,7 +90,7 @@ class VerifyRoutingTableEntry(AntaTest):
 
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
-    categories = ["routing", "generic"]
+    categories = ["routing"]
     commands = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring

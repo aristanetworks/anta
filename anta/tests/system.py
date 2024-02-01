@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -25,7 +25,7 @@ class VerifyUptime(AntaTest):
     """
 
     name = "VerifyUptime"
-    description = "This test verifies if the device uptime is higher than the provided minimum uptime value."
+    description = "Verifies the device uptime."
     categories = ["system"]
     commands = [AntaCommand(command="show uptime")]
 
@@ -53,7 +53,7 @@ class VerifyReloadCause(AntaTest):
     """
 
     name = "VerifyReloadCause"
-    description = "This test verifies the last reload cause of the device."
+    description = "Verifies the last reload cause of the device."
     categories = ["system"]
     commands = [AntaCommand(command="show reload cause")]
 
@@ -91,7 +91,7 @@ class VerifyCoredump(AntaTest):
     """
 
     name = "VerifyCoredump"
-    description = "This test verifies if there are core dump files in the /var/core directory."
+    description = "Verifies there are no core dump files."
     categories = ["system"]
     commands = [AntaCommand(command="show system coredump", ofmt="json")]
 
@@ -117,7 +117,7 @@ class VerifyAgentLogs(AntaTest):
     """
 
     name = "VerifyAgentLogs"
-    description = "This test verifies that no agent crash reports are present on the device."
+    description = "Verifies there are no agent crash reports."
     categories = ["system"]
     commands = [AntaCommand(command="show agent logs crash", ofmt="text")]
 
@@ -142,7 +142,7 @@ class VerifyCPUUtilization(AntaTest):
     """
 
     name = "VerifyCPUUtilization"
-    description = "This test verifies whether the CPU utilization is below 75%."
+    description = "Verifies whether the CPU utilization is below 75%."
     categories = ["system"]
     commands = [AntaCommand(command="show processes top once")]
 
@@ -166,7 +166,7 @@ class VerifyMemoryUtilization(AntaTest):
     """
 
     name = "VerifyMemoryUtilization"
-    description = "This test verifies whether the memory utilization is below 75%."
+    description = "Verifies whether the memory utilization is below 75%."
     categories = ["system"]
     commands = [AntaCommand(command="show version")]
 
@@ -190,7 +190,7 @@ class VerifyFileSystemUtilization(AntaTest):
     """
 
     name = "VerifyFileSystemUtilization"
-    description = "This test verifies that no partition is utilizing more than 75% of its disk space."
+    description = "Verifies that no partition is utilizing more than 75% of its disk space."
     categories = ["system"]
     commands = [AntaCommand(command="bash timeout 10 df -h", ofmt="text")]
 
@@ -213,7 +213,7 @@ class VerifyNTP(AntaTest):
     """
 
     name = "VerifyNTP"
-    description = "This test verifies if NTP is synchronised."
+    description = "Verifies if NTP is synchronised."
     categories = ["system"]
     commands = [AntaCommand(command="show ntp status", ofmt="text")]
 

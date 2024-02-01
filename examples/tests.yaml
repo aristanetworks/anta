@@ -52,7 +52,7 @@ anta.tests.aaa:
 
 anta.tests.bfd:
   - VerifyBFDPeersHealth:
-      last_down: 2
+      down_threshold: 2
 
 anta.tests.configuration:
   - VerifyZeroTouch:
@@ -197,6 +197,44 @@ anta.tests.security:
   - VerifyAPIIPv6Acl:
       number: 3
       vrf: default
+  - VerifyAPISSLCertificate:
+      certificates:
+        - certificate_name: ARISTA_SIGNING_CA.crt
+          expiry_threshold: 30
+          common_name: AristaIT-ICA ECDSA Issuing Cert Authority
+          encryption_algorithm: ECDSA
+          key_size: 256
+        - certificate_name: ARISTA_ROOT_CA.crt
+          expiry_threshold: 30
+          common_name: Arista Networks Internal IT Root Cert Authority
+          encryption_algorithm: RSA
+          key_size: 4096
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyIpv4ACL:
+      ipv4_access_lists:
+        - name: default-control-plane-acl
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit ip any any tracked 
+            - sequence: 30
+              action: permit udp any any eq bfd ttl eq 255
+        - name: LabTest
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit tcp any any range 5900 5910
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -311,6 +349,35 @@ anta.tests.routing:
               - 10.1.255.0
               - 10.1.255.2
               - 10.1.255.4
+    - VerifyBGPExchangedRoutes:
+        bgp_peers:
+          - peer_address: 172.30.255.5
+            vrf: default
+            advertised_routes:
+              - 192.0.254.5/32
+            received_routes:
+              - 192.0.255.4/32
+          - peer_address: 172.30.255.1
+            vrf: default
+            advertised_routes:
+              - 192.0.255.1/32
+              - 192.0.254.5/32
+            received_routes:
+              - 192.0.254.3/32
+    - VerifyBGPPeerMPCaps:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            capabilities:
+              - ipv4Unicast
+    - VerifyBGPPeerASNCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+    - VerifyBGPPeerRouteRefreshCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

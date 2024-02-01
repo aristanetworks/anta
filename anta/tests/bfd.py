@@ -36,8 +36,8 @@ class VerifyBFDPeersHealth(AntaTest):
         "BFD peer last down in hours is optional check which should be above the threshold for all VRF."
     )
     categories = ["bfd"]
-
-    commands = [AntaCommand(command="show bfd peers"), AntaCommand(command="show clock")]
+    # revision 1 as later revision introduce additional nesting for type
+    commands = [AntaCommand(command="show bfd peers", revision=1), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):
         """

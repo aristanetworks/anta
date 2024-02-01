@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -84,7 +84,7 @@ class VerifyLLDPNeighbors(AntaTest):
     """
 
     name = "VerifyLLDPNeighbors"
-    description = "Verifies that the provided LLDP neighbors are present and connected with the correct configuration."
+    description = "Verifies that the provided LLDP neighbors are connected properly."
     categories = ["connectivity"]
     commands = [AntaCommand(command="show lldp neighbors detail")]
 
