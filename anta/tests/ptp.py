@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -7,8 +7,6 @@ Test functions related to PTP (Precision Time Protocol) in EOS
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
-
-from pydantic import conint
 
 from anta.models import AntaCommand, AntaTest
 
@@ -30,8 +28,8 @@ class VerifyPtpStatus(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output
-        ptpMode = command_output["ptpMode"]
-        if ptpMode != "ptpDisabled":
+
+        if "ptpMode" in command_output.keys():
             self.result.is_success()
         else:
-            self.result.is_failure(f"PTP agent disabled ")
+            self.result.is_failure("PTP agent disabled")
