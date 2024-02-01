@@ -4,6 +4,8 @@
 """
 Test functions related to LANZ
 """
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 
 from __future__ import annotations
 
