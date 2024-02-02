@@ -287,7 +287,7 @@ class AntaCatalog:
             filename: value to be set as AntaCatalog instance attribute
         """
         tests: list[AntaTestDefinition] = []
-        if data is None:
+        if not data:
             logger.warning("Catalog input data is empty")
             return AntaCatalog(filename=filename)
 
