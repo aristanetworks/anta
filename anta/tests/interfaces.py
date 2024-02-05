@@ -11,14 +11,59 @@ from __future__ import annotations
 import re
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Union
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, Field, conint
 
-from anta.custom_types import Interface
+from anta.custom_types import Interface, SpeedInterface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
+from anta.tools.utils import get_failed_logs
+
+SpeedPattern = r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|force(d)?\s\d{1,4}(g)?)$"
+
+
+def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
+    """
+    This function extracts the speed and lane information from the input string.
+
+    Parameters:
+    input_speed (str): The input string which contains the speed and lane information.
+
+    Returns:
+    tuple[Any, Any]: The extracted speed from the input string, and the extracted lane from the input string.
+                     If no lane information is found, it returns None.
+    """
+
+    # Regular expression pattern
+    pattern = r"(auto |force(d)? )?(?P<speed>\d+(\.\d+)?)(g)?(-(?P<lane>\d+))?"
+
+    # Find matches
+    match = re.match(pattern, input_speed)
+
+    if match:
+        # If a match is found, extract the speed and lane information
+        speed = match.group("speed")
+        lane = int(match.group("lane")) if match.group("lane") else None
+        return speed, lane
+
+    return None, None
+
+
+def custom_division(numerator: float, denominator: float) -> Union[int, float]:
+    """
+    Custom division that returns an integer if the result is an integer, otherwise a float.
+
+    Parameters:
+    numerator (float): The numerator.
+    denominator (float): The denominator.
+
+    Returns:
+    Union[int, float]: The result of the division.
+    """
+    result = numerator / denominator
+    return int(result) if result.is_integer() else result
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -438,3 +483,78 @@ class VerifyL2MTU(AntaTest):
             self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
         else:
             self.result.is_success()
+
+
+class VerifyInterfacesSpeed(AntaTest):
+    """
+    Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
+    If speed is auto then verify auto-negotiation as success and mode as full duplex.
+    If speed is auto with a value(auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
+    If speed is forced with a value(forces 10g) then verify mode as full duplex and speed as per input.
+    If speed with lane(100g-8) then verify mode as full duplex and speed/lanes as per input.
+
+    Expected Results:
+        * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
+        * Failure: The test will fail if an interface is not found, the speed or alnes does not match with input,
+                   auto-negotiation is not correct or mode is not full duplex.
+    """
+
+    name = "VerifyInterfacesSpeed"
+    description = "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces."
+    categories = ["interfaces"]
+    commands = [AntaCommand(command="show interfaces")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyInterfacesSpeed test."""
+
+        interfaces: List[Interfaces]
+        """List of interfaces to be tested"""
+
+        class Interfaces(BaseModel):
+            """Detail of an interface"""
+
+            interface: SpeedInterface
+            """Name of the interface"""
+            speed: str = Field(..., pattern=SpeedPattern)
+            """Speed of an interface in Gigabits per second"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Iterate over all the interfaces
+        for interface in self.inputs.interfaces:
+            intf = interface.interface
+
+            # Check if interface exists
+            if not (interface_output := get_value(command_output, f"interfaces.{intf}")):
+                self.result.is_failure(f"Interface `{intf}` not found.")
+                continue
+
+            auto_negotiation = interface_output.get("autoNegotiate")
+            duplex = interface_output.get("duplex")
+            actual_speed = interface_output.get("bandwidth")
+            actual_lanes = interface_output.get("lanes")
+            speed, lanes = extract_speed_and_lane(interface.speed)
+
+            # Collecting actual interface details
+            actual_interface_output = {
+                "auto negotiation": auto_negotiation if "auto" in interface.speed else "None",
+                "duplex mode": duplex,
+                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "None",
+                "lanes": actual_lanes if lanes is not None else "None",
+            }
+
+            # Forming expected interface details
+            expected_interface_output = {
+                "auto negotiation": "success" if "auto" in interface.speed else "None",
+                "duplex mode": "duplexFull",
+                "speed": f"{speed}Gbps" if interface.speed != "auto" else "None",
+                "lanes": lanes if lanes is not None else "None",
+            }
+
+            # Forming failure message
+            if actual_interface_output != expected_interface_output:
+                failed_log = get_failed_logs(expected_interface_output, actual_interface_output)
+                self.result.is_failure(f"For interface {intf}:{failed_log}\n")

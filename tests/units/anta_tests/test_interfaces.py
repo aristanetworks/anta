@@ -11,6 +11,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceDiscards,
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
+    VerifyInterfacesSpeed,
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
@@ -1059,5 +1060,312 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyInterfacesSpeed,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 2,
+                    },
+                    "Ethernet2": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 4,
+                    },
+                    "Ethernet3": {
+                        "bandwidth": 100000000000,
+                        "autoNegotiate": "success",
+                        "duplex": "duplexFull",
+                        "lanes": 8,
+                    },
+                    "Ethernet4": {
+                        "bandwidth": 2500000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 8,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet1", "speed": "1g"},
+                {"interface": "Ethernet1", "speed": "1"},
+                {"interface": "Ethernet1", "speed": "1g-2"},
+                {"interface": "Ethernet1", "speed": "1-2"},
+                {"interface": "Ethernet2", "speed": "forced 10g"},
+                {"interface": "Ethernet2", "speed": "forced 10"},
+                {"interface": "Ethernet2", "speed": "force 10"},
+                {"interface": "Ethernet3", "speed": "auto"},
+                {"interface": "Ethernet3", "speed": "auto 100g-8"},
+                {"interface": "Ethernet3", "speed": "auto 100g"},
+                {"interface": "Ethernet3", "speed": "auto 100"},
+                {"interface": "Ethernet3", "speed": "auto 100-8"},
+                {"interface": "Ethernet4", "speed": "2.5g"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-speed",
+        "test": VerifyInterfacesSpeed,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "bandwidth": 100000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 2,
+                    },
+                    "Ethernet2": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 4,
+                    },
+                    "Ethernet3": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "success",
+                        "duplex": "duplexFull",
+                        "lanes": 8,
+                    },
+                    "Ethernet4": {
+                        "bandwidth": 25000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 8,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet1", "speed": "1g"},
+                {"interface": "Ethernet1", "speed": "1"},
+                {"interface": "Ethernet2", "speed": "forced 10g"},
+                {"interface": "Ethernet2", "speed": "forced 10"},
+                {"interface": "Ethernet2", "speed": "force 10"},
+                {"interface": "Ethernet3", "speed": "auto 100g"},
+                {"interface": "Ethernet3", "speed": "auto 100"},
+                {"interface": "Ethernet4", "speed": "2.5g"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
+                "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
+                "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet4:\nExpected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-mode",
+        "test": VerifyInterfacesSpeed,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 2,
+                    },
+                    "Ethernet2": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 4,
+                    },
+                    "Ethernet3": {
+                        "bandwidth": 100000000000,
+                        "autoNegotiate": "success",
+                        "duplex": "duplexHalf",
+                        "lanes": 8,
+                    },
+                    "Ethernet4": {
+                        "bandwidth": 2500000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 8,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet1", "speed": "1g"},
+                {"interface": "Ethernet2", "speed": "forced 10g"},
+                {"interface": "Ethernet3", "speed": "auto"},
+                {"interface": "Ethernet3", "speed": "auto 100g-8"},
+                {"interface": "Ethernet3", "speed": "auto 100"},
+                {"interface": "Ethernet4", "speed": "2.5g"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-lane",
+        "test": VerifyInterfacesSpeed,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 4,
+                    },
+                    "Ethernet2": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 4,
+                    },
+                    "Ethernet3": {
+                        "bandwidth": 100000000000,
+                        "autoNegotiate": "success",
+                        "duplex": "duplexFull",
+                        "lanes": 4,
+                    },
+                    "Ethernet4": {
+                        "bandwidth": 2500000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 6,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet1", "speed": "1g-2"},
+                {"interface": "Ethernet1", "speed": "1-2"},
+                {"interface": "Ethernet3", "speed": "auto 100g-8"},
+                {"interface": "Ethernet3", "speed": "auto 100-8"},
+                {"interface": "Ethernet4", "speed": "2.5g-4"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface Ethernet1:\nExpected `2` as the lanes, but found `4` instead.",
+                "For interface Ethernet1:\nExpected `2` as the lanes, but found `4` instead.",
+                "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
+                "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
+                "For interface Ethernet4:\nExpected `4` as the lanes, but found `6` instead.",
+            ],
+        },
+    },
+    {
+        "name": "failure-all-type",
+        "test": VerifyInterfacesSpeed,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 2,
+                    },
+                    "Ethernet2": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 2,
+                    },
+                    "Ethernet3": {
+                        "bandwidth": 10000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 6,
+                    },
+                    "Ethernet4": {
+                        "bandwidth": 25000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 4,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"interface": "Ethernet1", "speed": "1g"},
+                {"interface": "Ethernet1", "speed": "1"},
+                {"interface": "Ethernet1", "speed": "1g-2"},
+                {"interface": "Ethernet1", "speed": "1-2"},
+                {"interface": "Ethernet2", "speed": "forced 10g"},
+                {"interface": "Ethernet2", "speed": "forced 10"},
+                {"interface": "Ethernet2", "speed": "force 10"},
+                {"interface": "Ethernet3", "speed": "auto"},
+                {"interface": "Ethernet3", "speed": "auto 100g-8"},
+                {"interface": "Ethernet3", "speed": "auto 100g"},
+                {"interface": "Ethernet3", "speed": "auto 100"},
+                {"interface": "Ethernet3", "speed": "auto 100-8"},
+                {"interface": "Ethernet4", "speed": "2.5g"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
+                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
+                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `100Gbps` as the speed, but found `10Gbps` instead.\n"
+                "Expected `8` as the lanes, but found `6` instead.",
+                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
+                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
+                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
+                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
+                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `100Gbps` as the speed, but found `10Gbps` instead.\n"
+                "Expected `8` as the lanes, but found `6` instead.",
+                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+            ],
+        },
     },
 ]

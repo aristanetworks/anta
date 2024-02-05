@@ -131,6 +131,18 @@ anta.tests.interfaces:
         - Vxlan1
       specific_mtu:
         - Ethernet1/1: 1500
+  - VerifyInterfacesSpeed:
+      interfaces:
+        - interface: eth2
+          speed: 100g
+        - interface: Eth3
+          speed: 1-0
+        - interface: Eth3
+          speed: auto 100-1
+        - interface: Ethernet2
+          speed: auto 2.5g
+        - interface: Et3
+          speed: forced 1
 
 anta.tests.logging:
   - VerifyLoggingPersistent:
