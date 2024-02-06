@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, conint
 
@@ -148,16 +148,18 @@ class VerifyInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input for the VerifyInterfacesStatus test."""
 
-        interfaces: List[InterfaceStatus]
+        interfaces: List[InterfaceState]
         """List of interfaces to validate with the expected state"""
 
-        class InterfaceStatus(BaseModel):
+        class InterfaceState(BaseModel):
             """Model for the interface state input."""
 
             name: Interface
             """Interface to validate."""
-            status: Literal["up", "adminDown"]
+            status: Literal["up", "down", "adminDown"]
             """Expected status of the interface."""
+            line_protocol_status: Optional[Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"]] = None
+            """Expected line protocol status of the interface."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -166,30 +168,31 @@ class VerifyInterfacesStatus(AntaTest):
         self.result.is_success()
 
         intf_not_configured = []
-        intf_wrong_status = []
+        intf_wrong_state = []
 
         for interface in self.inputs.interfaces:
-            intf_status = get_value(command_output["interfaceDescriptions"], interface.name, separator="..")
-            if intf_status is None:
-                intf_not_configured.append(interface.name)
-                continue
+            if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
+              intf_not_configured.append(interface.name)
+              continue
 
-            proto = intf_status["lineProtocolStatus"]
-            status = intf_status["interfaceStatus"]
+            status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
+            proto = "up" if intf_status["lineProtocolStatus"] in {"up", "connected"} else intf_status["lineProtocolStatus"]
 
-            # When the interface status is `up`, we expect the line protocol status to also be `up`.
-            if interface.status == "up" and (status not in {"connected", "up"} or proto not in {"connected", "up"}):
-                intf_wrong_status.append(f"{interface.name} is {status}/{proto}")
+            # If line protocol status is provided, prioritize checking against both status and line protocol status
+            if interface.line_protocol_status:
+                if interface.status != status or interface.line_protocol_status != proto:
+                    intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
 
-            # When the interface status is `adminDown` (shutdown), the line protocol status can be `down`, `notPresent` or `lowerLayerDown`.
-            elif interface.status == "adminDown" and (status != "adminDown" or proto not in {"down", "notPresent", "lowerLayerDown"}):
-                intf_wrong_status.append(f"{interface.name} is {status}/{proto}")
+            # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
+            # If interface status is not "up", check only the interface status without considering line protocol status
+            elif (interface.status == "up" and (status != "up" or proto != "up")) or (interface.status != status):
+                intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
 
         if intf_not_configured:
             self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
 
-        if intf_wrong_status:
-            self.result.is_failure(f"The following interface(s) are not in the expected state: {intf_wrong_status}")
+        if intf_wrong_state:
+            self.result.is_failure(f"The following interface(s) are not in the expected state: {intf_wrong_state}")
 
 
 class VerifyStormControlDrops(AntaTest):

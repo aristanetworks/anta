@@ -213,6 +213,38 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {"result": "success"},
     },
     {
+        "name": "success-up-with-line-protocol-status",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet8", "status": "up", "line_protocol_status": "down"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-with-line-protocol-status",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "testing"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet3.10": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "dormant"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [
+          {"name": "Ethernet2", "status": "adminDown", "line_protocol_status": "down"},
+          {"name": "Ethernet8", "status": "adminDown", "line_protocol_status": "testing"},
+          {"name": "Ethernet3.10", "status": "down", "line_protocol_status": "dormant"},
+        ]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-lower",
         "test": VerifyInterfacesStatus,
         "eos_data": [
@@ -295,6 +327,19 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {"result": "success"},
     },
     {
+        "name": "success-po-lowerlayerdown",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Port-Channel100", "status": "adminDown", "line_protocol_status": "lowerLayerDown"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-not-configured",
         "test": VerifyInterfacesStatus,
         "eos_data": [
@@ -367,6 +412,30 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "expected": {
             "result": "failure",
             "messages": ["The following interface(s) are not in the expected state: ['Port-Channel100 is down/lowerLayerDown'"],
+        },
+    },
+    {
+        "name": "failure-proto-unknown",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "unknown"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "status": "up", "line_protocol_status": "down"},
+                {"name": "Ethernet8", "status": "up"},
+                {"name": "Ethernet3", "status": "up"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/unknown'"],
         },
     },
     {
