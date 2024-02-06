@@ -204,14 +204,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {
-            "interfaces": [{"interface": "Ethernet2", "state": "adminDown"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -221,14 +219,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {
-            "interfaces": [{"interface": "ethernet2", "state": "adminDown"}, {"interface": "ethernet8", "state": "up"}, {"interface": "ethernet3", "state": "up"}]
-        },
+        "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -238,12 +234,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "eth2", "state": "adminDown"}, {"interface": "et8", "state": "up"}, {"interface": "et3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -256,7 +252,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "po100", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -269,7 +265,33 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet52/1.1963", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-transceiver-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet49/1": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "notPresent"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet49/1", "status": "adminDown"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-po-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "adminDown"}]},
         "expected": {"result": "success"},
     },
     {
@@ -283,37 +305,37 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
             "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
         },
     },
     {
-        "name": "failure-down",
+        "name": "failure-status-down",
         "test": VerifyInterfacesStatus,
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/adminDown expected up/up'"],
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/down'"],
         },
     },
     {
-        "name": "failure-up",
+        "name": "failure-proto-down",
         "test": VerifyInterfacesStatus,
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
@@ -321,14 +343,30 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {
             "interfaces": [
-                {"interface": "Ethernet2", "state": "adminDown", "protocol_status": "down"},
-                {"interface": "Ethernet8", "state": "adminDown"},
-                {"interface": "Ethernet3", "state": "up"},
+                {"name": "Ethernet2", "status": "up"},
+                {"name": "Ethernet8", "status": "up"},
+                {"name": "Ethernet3", "status": "up"},
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/up expected down/adminDown'"],
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is up/down'"],
+        },
+    },
+    {
+        "name": "failure-po-status-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not in the expected state: ['Port-Channel100 is down/lowerLayerDown'"],
         },
     },
     {
