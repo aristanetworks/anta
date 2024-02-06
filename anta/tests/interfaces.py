@@ -149,7 +149,7 @@ class VerifyInterfacesStatus(AntaTest):
         """Input for the VerifyInterfacesStatus test."""
 
         interfaces: List[InterfaceState]
-        """List of interfaces to validate with the expected state"""
+        """List of interfaces to validate with the expected state."""
 
         class InterfaceState(BaseModel):
             """Model for the interface state input."""
@@ -172,8 +172,8 @@ class VerifyInterfacesStatus(AntaTest):
 
         for interface in self.inputs.interfaces:
             if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
-              intf_not_configured.append(interface.name)
-              continue
+                intf_not_configured.append(interface.name)
+                continue
 
             status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
             proto = "up" if intf_status["lineProtocolStatus"] in {"up", "connected"} else intf_status["lineProtocolStatus"]
