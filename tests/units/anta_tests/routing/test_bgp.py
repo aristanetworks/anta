@@ -15,6 +15,7 @@ from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
+    VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
@@ -2403,6 +2404,216 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Following BGP peer route refresh capabilities are not found or not ok:\n"
                 "{'bgp_peers': {'172.30.11.1': {'default': {'routeRefreshCap': {'advertised': False, 'received': False, 'enabled': False}}}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "CS",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
+                "{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "default",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
+                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.11': {'default': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-established-peer",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "state": "Idle",
+                                "md5AuthEnabled": True,
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "state": "Idle",
+                                "md5AuthEnabled": False,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'state': 'Idle', 'md5_auth_enabled': True}}, "
+                "'172.30.11.10': {'MGMT': {'state': 'Idle', 'md5_auth_enabled': False}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-md5-peer",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "state": "Established",
+                            },
+                            {"peerAddress": "172.30.11.10", "state": "Established", "md5AuthEnabled": False},
+                        ]
+                    },
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.11", "state": "Established", "md5AuthEnabled": False}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'state': 'Established', 'md5_auth_enabled': None}}, "
+                "'172.30.11.11': {'MGMT': {'state': 'Established', 'md5_auth_enabled': False}}}}"
             ],
         },
     },
