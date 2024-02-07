@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -74,5 +74,55 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SNMP", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["SNMP IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SNMP']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpLocation,
+        "eos_data": [
+            {
+                "location": {"location": "New York"},
+            }
+        ],
+        "inputs": {"location": "New York"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-location",
+        "test": VerifySnmpLocation,
+        "eos_data": [
+            {
+                "location": {"location": "Europe"},
+            }
+        ],
+        "inputs": {"location": "New York"},
+        "expected": {
+            "result": "failure",
+            "messages": ["Expected `New York` as the location, but found `Europe` instead."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpContact,
+        "eos_data": [
+            {
+                "contact": {"contact": "Jon@example.com"},
+            }
+        ],
+        "inputs": {"contact": "Jon@example.com"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-contact",
+        "test": VerifySnmpContact,
+        "eos_data": [
+            {
+                "contact": {"contact": "Jon@example.com"},
+            }
+        ],
+        "inputs": {"contact": "Bob@example.com"},
+        "expected": {
+            "result": "failure",
+            "messages": ["Expected `Bob@example.com` as the contact, but found `Jon@example.com` instead."],
+        },
     },
 ]

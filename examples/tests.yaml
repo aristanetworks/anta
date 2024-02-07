@@ -50,6 +50,26 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.bfd:
+  - VerifyBFDSpecificPeers:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+        - peer_address: 192.0.255.7
+          vrf: default
+  - VerifyBFDPeersIntervals:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+        - peer_address: 192.0.255.7
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
@@ -160,6 +180,8 @@ anta.tests.mlag:
       errdisabled: True
       recovery_delay: 60
       recovery_delay_non_mlag: 0
+  - VerifyMlagPrimaryPriority:
+      primary_priority: 3276
 
 anta.tests.multicast:
   - VerifyIGMPSnoopingVlans:
@@ -205,6 +227,8 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
+
+anta.tests.services:
   - VerifyBannerLogin:
         login_banner: |
             # Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -215,6 +239,8 @@ anta.tests.security:
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
+  - VerifyHostname:
+      hostname: s1-spine1
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -225,6 +251,10 @@ anta.tests.snmp:
   - VerifySnmpIPv6Acl:
       number: 3
       vrf: default
+  - VerifySnmpLocation:
+      location: New York
+  - VerifySnmpContact:
+      contact: Jon@example.com
 
 anta.tests.software:
   - VerifyEOSVersion:
@@ -358,6 +388,12 @@ anta.tests.routing:
     - VerifyBGPPeerRouteRefreshCap:
         bgp_peers:
           - peer_address: 172.30.11.1
+            vrf: default
+    - VerifyBGPPeerMD5Auth:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+          - peer_address: 172.30.11.5
             vrf: default
     - VerifyEVPNType2Route:
         vxlan_endpoints:

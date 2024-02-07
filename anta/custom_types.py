@@ -78,6 +78,7 @@ TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan = Annotated[int, Field(ge=0, le=4094)]
+MlagPriority = Annotated[int, Field(ge=1, le=32767)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
 Interface = Annotated[
     str,
@@ -91,3 +92,5 @@ EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 521]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
+BfdInterval = Annotated[int, Field(ge=50, le=60000)]
+BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
