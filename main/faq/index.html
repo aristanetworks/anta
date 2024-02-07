@@ -1900,12 +1900,26 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pip-install-u-pyopenssl220" class="md-nav__link">
+  <a href="#__nscfconstantstring-initialize-error-on-osx" class="md-nav__link">
     <span class="md-ellipsis">
-      pip install -U pyopenssl&gt;22.0
-
+      __NSCFConstantString initialize error on OSX
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="__NSCFConstantString initialize error on OSX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-resolve-this-error_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      How can I resolve this error?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2014,12 +2028,26 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pip-install-u-pyopenssl220" class="md-nav__link">
+  <a href="#__nscfconstantstring-initialize-error-on-osx" class="md-nav__link">
     <span class="md-ellipsis">
-      pip install -U pyopenssl&gt;22.0
-
+      __NSCFConstantString initialize error on OSX
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="__NSCFConstantString initialize error on OSX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-can-i-resolve-this-error_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      How can I resolve this error?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2069,7 +2097,7 @@
 <div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;ssl&#39;</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;OpenSSL 1.0.2k-fips  26 Jan 2017&#39;</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
 </code></pre></div>
 <p>This error arises due to a compatibility issue between <code>urllib3</code> v2.0 and older versions of OpenSSL.</p>
-<h5 id="how-can-i-resolve-this-error">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error" title="Permanent link">&para;</a></h5>
+<h6 id="how-can-i-resolve-this-error">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p><em>Workaround</em>: Downgrade <code>urllib3</code></p>
@@ -2089,15 +2117,25 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
 </code></pre></div>
 <p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
-<h5 id="how-can-i-resolve-this-error_1">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error_1" title="Permanent link">&para;</a></h5>
+<h6 id="how-can-i-resolve-this-error_1">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error_1" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>Upgrade <code>pyopenssl</code></p>
-<h4 id="pip-install-u-pyopenssl220"><div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pyopenssl&gt;22.0
-</code></pre></div><a class="headerlink" href="#pip-install-u-pyopenssl220" title="Permanent link">&para;</a></h4>
-<h4 id="still-facing-issues">Still facing issues?<a class="headerlink" href="#still-facing-issues" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pyopenssl&gt;22.0
+</code></pre></div>
 </li>
 </ol>
+<h4 id="__nscfconstantstring-initialize-error-on-osx"><code>__NSCFConstantString initialize</code> error on OSX<a class="headerlink" href="#__nscfconstantstring-initialize-error-on-osx" title="Permanent link">&para;</a></h4>
+<p>This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. <a href="https://www.wefearchange.org/2018/11/forkmacos.rst.html">https://www.wefearchange.org/2018/11/forkmacos.rst.html</a></p>
+<h6 id="how-can-i-resolve-this-error_2">How can I resolve this error?<a class="headerlink" href="#how-can-i-resolve-this-error_2" title="Permanent link">&para;</a></h6>
+<ol>
+<li>
+<p>Set the following environment variable</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">OBJC_DISABLE_INITIALIZE_FORK_SAFETY</span><span class="o">=</span>YES
+</code></pre></div>
+</li>
+</ol>
+<h4 id="still-facing-issues">Still facing issues?<a class="headerlink" href="#still-facing-issues" title="Permanent link">&para;</a></h4>
 <p>If you&rsquo;ve tried the above solutions and continue to experience problems, please report the issue in our <a href="https://github.com/arista-netdevops-community/anta">GitHub repository</a>.</p>
 
 
@@ -2119,7 +2157,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 7, 2024</span>
   </span>
 
     
