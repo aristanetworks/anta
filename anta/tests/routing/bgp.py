@@ -12,54 +12,14 @@ from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
 from pydantic import BaseModel, PositiveInt, model_validator, utils
+from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, MultiProtocolCaps, Safi
+from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
 # Need to keep List for pydantic in python 3.8
-
-
-def _check_bgp_vrfs(bgp_vrfs: dict[str, Any]) -> dict[str, Any]:
-    """
-    Parse the output of the `show bgp <address family> unicast summary vrf <vrf>` 'vrfs' key
-    and returns a dictionary with the following structure:
-
-    {
-        <vrf>: {
-            <peer>:
-                {
-                    "peerState": <state>,
-                    "inMsgQueue": <count>,
-                    "outMsgQueue": <count>,
-                }
-        }
-    }
-
-    Args:
-        bgp_vrfs: Output of the `show bgp <address family> unicast summary vrf <vrf>` 'vrfs' key
-    """
-    state_issue: dict[str, Any] = {}
-    for vrf in bgp_vrfs:
-        for peer in bgp_vrfs[vrf]["peers"]:
-            if (
-                (bgp_vrfs[vrf]["peers"][peer]["peerState"] != "Established")
-                or (bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"] != 0)
-                or (bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"] != 0)
-            ):
-                vrf_dict = state_issue.setdefault(vrf, {})
-                vrf_dict.update(
-                    {
-                        peer: {
-                            "peerState": bgp_vrfs[vrf]["peers"][peer]["peerState"],
-                            "inMsgQueue": bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"],
-                            "outMsgQueue": bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"],
-                        }
-                    }
-                )
-
-    return state_issue
 
 
 def _add_bgp_failures(failures: dict[tuple[str, Union[str, None]], dict[str, Any]], afi: Afi, safi: Optional[Safi], vrf: str, issue: Any) -> None:
@@ -853,3 +813,65 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n{failures}")
+
+
+class VerifyEVPNType2Route(AntaTest):
+    """
+    This test verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
+
+    Expected Results:
+        * success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
+        * failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+    """
+
+    name = "VerifyEVPNType2Route"
+    description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
+    categories = ["routing", "bgp"]
+    commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyEVPNType2Route test."""
+
+        vxlan_endpoints: List[VxlanEndpoint]
+        """List of VXLAN endpoints to verify"""
+
+        class VxlanEndpoint(BaseModel):
+            """VXLAN endpoint input model."""
+
+            address: Union[IPv4Address, MacAddress]
+            """IPv4 or MAC address of the VXLAN endpoint"""
+            vni: Vni
+            """VNI of the VXLAN endpoint"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(address=endpoint.address, vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        no_evpn_routes = []
+        bad_evpn_routes = []
+
+        for command in self.instance_commands:
+            address = str(command.params["address"])
+            vni = command.params["vni"]
+            # Verify that the VXLAN endpoint is in the BGP EVPN table
+            evpn_routes = command.json_output["evpnRoutes"]
+            if not evpn_routes:
+                no_evpn_routes.append((address, vni))
+                continue
+            # Verify that each EVPN route has at least one valid and active path
+            for route, route_data in evpn_routes.items():
+                has_active_path = False
+                for path in route_data["evpnRoutePaths"]:
+                    if path["routeType"]["valid"] is True and path["routeType"]["active"] is True:
+                        # At least one path is valid and active, no need to check the other paths
+                        has_active_path = True
+                        break
+                if not has_active_path:
+                    bad_evpn_routes.append(route)
+
+        if no_evpn_routes:
+            self.result.is_failure(f"The following VXLAN endpoint do not have any EVPN Type-2 route: {no_evpn_routes}")
+        if bad_evpn_routes:
+            self.result.is_failure(f"The following EVPN Type-2 routes do not have at least one valid and active path: {bad_evpn_routes}")
