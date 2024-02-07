@@ -227,6 +227,8 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
+
+anta.tests.services:
   - VerifyBannerLogin:
         login_banner: |
             # Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -237,6 +239,8 @@ anta.tests.security:
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
+  - VerifyHostname:
+      hostname: s1-spine1
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -247,6 +251,10 @@ anta.tests.snmp:
   - VerifySnmpIPv6Acl:
       number: 3
       vrf: default
+  - VerifySnmpLocation:
+      location: New York
+  - VerifySnmpContact:
+      contact: Jon@example.com
 
 anta.tests.software:
   - VerifyEOSVersion:
