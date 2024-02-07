@@ -187,6 +187,7 @@ nav:
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
     - Security: api/tests.security.md
+    - Services: api/tests.services.md
     - SNMP: api/tests.snmp.md
     - STP: api/tests.stp.md
     - Software: api/tests.software.md

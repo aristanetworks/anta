@@ -50,6 +50,26 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.bfd:
+  - VerifyBFDSpecificPeers:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+        - peer_address: 192.0.255.7
+          vrf: default
+  - VerifyBFDPeersIntervals:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+        - peer_address: 192.0.255.7
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
@@ -160,6 +180,8 @@ anta.tests.mlag:
       errdisabled: True
       recovery_delay: 60
       recovery_delay_non_mlag: 0
+  - VerifyMlagPrimaryPriority:
+      primary_priority: 3276
 
 anta.tests.multicast:
   - VerifyIGMPSnoopingVlans:
@@ -193,6 +215,32 @@ anta.tests.security:
   - VerifyAPIIPv6Acl:
       number: 3
       vrf: default
+  - VerifyAPISSLCertificate:
+      certificates:
+        - certificate_name: ARISTA_SIGNING_CA.crt
+          expiry_threshold: 30
+          common_name: AristaIT-ICA ECDSA Issuing Cert Authority
+          encryption_algorithm: ECDSA
+          key_size: 256
+        - certificate_name: ARISTA_ROOT_CA.crt
+          expiry_threshold: 30
+          common_name: Arista Networks Internal IT Root Cert Authority
+          encryption_algorithm: RSA
+          key_size: 4096
+
+anta.tests.services:
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyHostname:
+      hostname: s1-spine1
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -203,6 +251,10 @@ anta.tests.snmp:
   - VerifySnmpIPv6Acl:
       number: 3
       vrf: default
+  - VerifySnmpLocation:
+      location: New York
+  - VerifySnmpContact:
+      contact: Jon@example.com
 
 anta.tests.software:
   - VerifyEOSVersion:
@@ -308,6 +360,41 @@ anta.tests.routing:
               - 10.1.255.0
               - 10.1.255.2
               - 10.1.255.4
+    - VerifyBGPExchangedRoutes:
+        bgp_peers:
+          - peer_address: 172.30.255.5
+            vrf: default
+            advertised_routes:
+              - 192.0.254.5/32
+            received_routes:
+              - 192.0.255.4/32
+          - peer_address: 172.30.255.1
+            vrf: default
+            advertised_routes:
+              - 192.0.255.1/32
+              - 192.0.254.5/32
+            received_routes:
+              - 192.0.254.3/32
+    - VerifyBGPPeerMPCaps:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            capabilities:
+              - ipv4Unicast
+    - VerifyBGPPeerASNCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+    - VerifyBGPPeerRouteRefreshCap:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+    - VerifyBGPPeerMD5Auth:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+          - peer_address: 172.30.11.5
+            vrf: default
     - VerifyBGPAdvCommunities:
         bgp_peers:
           - peer_address: 172.30.11.17

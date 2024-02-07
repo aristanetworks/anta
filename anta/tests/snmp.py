@@ -114,3 +114,63 @@ class VerifySnmpIPv6Acl(AntaTest):
             self.result.is_failure(f"SNMP IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
+
+
+class VerifySnmpLocation(AntaTest):
+    """
+    This class verifies the SNMP location of a device.
+
+    Expected results:
+        * success: The test will pass if the SNMP location matches the provided input.
+        * failure: The test will fail if the SNMP location does not match the provided input.
+    """
+
+    name = "VerifySnmpLocation"
+    description = "Verifies the SNMP location of a device."
+    categories = ["snmp"]
+    commands = [AntaCommand(command="show snmp")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        location: str
+        """Expected SNMP location of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        location = self.instance_commands[0].json_output["location"]["location"]
+
+        if location != self.inputs.location:
+            self.result.is_failure(f"Expected `{self.inputs.location}` as the location, but found `{location}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifySnmpContact(AntaTest):
+    """
+    This class verifies the SNMP contact of a device.
+
+    Expected results:
+        * success: The test will pass if the SNMP contact matches the provided input.
+        * failure: The test will fail if the SNMP contact does not match the provided input.
+    """
+
+    name = "VerifySnmpContact"
+    description = "Verifies the SNMP contact of a device."
+    categories = ["snmp"]
+    commands = [AntaCommand(command="show snmp")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        contact: str
+        """Expected SNMP contact details of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        contact = self.instance_commands[0].json_output["contact"]["contact"]
+
+        if contact != self.inputs.contact:
+            self.result.is_failure(f"Expected `{self.inputs.contact}` as the contact, but found `{contact}` instead.")
+        else:
+            self.result.is_success()
