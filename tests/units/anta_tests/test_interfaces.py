@@ -237,11 +237,13 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [
-          {"name": "Ethernet2", "status": "adminDown", "line_protocol_status": "down"},
-          {"name": "Ethernet8", "status": "adminDown", "line_protocol_status": "testing"},
-          {"name": "Ethernet3.10", "status": "down", "line_protocol_status": "dormant"},
-        ]},
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "status": "adminDown", "line_protocol_status": "down"},
+                {"name": "Ethernet8", "status": "adminDown", "line_protocol_status": "testing"},
+                {"name": "Ethernet3.10", "status": "down", "line_protocol_status": "dormant"},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
