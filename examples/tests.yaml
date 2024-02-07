@@ -180,6 +180,8 @@ anta.tests.mlag:
       errdisabled: True
       recovery_delay: 60
       recovery_delay_non_mlag: 0
+  - VerifyMlagPrimaryPriority:
+      primary_priority: 3276
 
 anta.tests.multicast:
   - VerifyIGMPSnoopingVlans:
