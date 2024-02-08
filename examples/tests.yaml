@@ -395,6 +395,12 @@ anta.tests.routing:
             vrf: default
           - peer_address: 172.30.11.5
             vrf: default
+    - VerifyEVPNType2Route:
+        vxlan_endpoints:
+          - address: 192.168.20.102
+            vni: 10020
+          - address: aac1.ab5d.b41e
+            vni: 10010
     - VerifyBGPAdvCommunities:
         bgp_peers:
           - peer_address: 172.30.11.17
