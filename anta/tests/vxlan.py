@@ -177,16 +177,16 @@ class VerifyVxlanVtep(AntaTest):
 
 class VerifyVxlan1ConnSettings(AntaTest):
     """
-    Verifies the VXLAN source interface and UDP port.
+    Verifies the interface vxlan1 source interface and UDP port.
 
     Expected Results:
-      * success: Passes if VXLAN source interface and UDP port are correct.
-      * failure: Fails if VXLAN source interface or UDP port are incorrect.
+      * success: Passes if the interface vxlan1 source interface and UDP port are correct.
+      * failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
       * skipped: Skips if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlan1ConnSettings"
-    description = "Verifies the VXLAN source interface and UDP port"
+    description = "Verifies the interface vxlan1 source interface and UDP port."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show interfaces")]
 
@@ -196,7 +196,7 @@ class VerifyVxlan1ConnSettings(AntaTest):
         source_interface: VxlanSrcIntf
         """Source loopback interface of vxlan1 interface"""
         udp_port: int = Field(ge=1024, le=65335)
-        """UDP port used for vxlan interface"""
+        """UDP port used for vxlan1 interface"""
 
     @AntaTest.anta_test
     def test(self) -> None:

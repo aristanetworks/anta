@@ -23,16 +23,20 @@ def interface_autocomplete(v: str) -> str:
 
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
-         - `po` will be changed to `Port-Channel`"""
+         - `po` will be changed to `Port-Channel`
+         - `lo`, `lb` will be changed to `Loopback`"""
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
         raise ValueError(f"Could not parse interface ID in interface '{v}'")
     intf_id = m[0]
-    if any(v.lower().startswith(p) for p in ["et", "eth"]):
-        return f"Ethernet{intf_id}"
-    if v.lower().startswith("po"):
-        return f"Port-Channel{intf_id}"
+
+    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback", "lb": "Loopback"}
+
+    for alias, full_name in alias_map.items():
+        if v.lower().startswith(alias):
+            return f"{full_name}{intf_id}"
+
     return v
 
 
@@ -42,6 +46,7 @@ def interface_case_sensitivity(v: str) -> str:
     Examples:
          - ethernet -> Ethernet
          - vlan -> Vlan
+         - loopback -> Loopback
     """
     if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
@@ -87,7 +92,7 @@ Interface = Annotated[
 ]
 VxlanSrcIntf = Annotated[
     str,
-    Field(pattern=r"^(Loopback)[0-9]+$"),
+    Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
