@@ -875,3 +875,65 @@ class VerifyEVPNType2Route(AntaTest):
             self.result.is_failure(f"The following VXLAN endpoint do not have any EVPN Type-2 route: {no_evpn_routes}")
         if bad_evpn_routes:
             self.result.is_failure(f"The following EVPN Type-2 routes do not have at least one valid and active path: {bad_evpn_routes}")
+
+
+class VerifyBGPAdvCommunities(AntaTest):
+    """
+    Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+    Expected results:
+        * success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+        * failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+    """
+
+    name = "VerifyBGPAdvCommunities"
+    description = "Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF."
+    categories = ["routing", "bgp"]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters for the test.
+        """
+
+        bgp_peers: List[BgpPeers]
+        """List of BGP peers"""
+
+        class BgpPeers(BaseModel):
+            """
+            This class defines the details of a BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, Any] = {"bgp_peers": {}}
+
+        # Iterate over each bgp peer
+        for bgp_peer in self.inputs.bgp_peers:
+            peer = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+
+            # Verify BGP peer
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
+            ):
+                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
+                failures = utils.deep_update(failures, failure)
+                continue
+
+            # Verify BGP peer's advertised communities
+            bgp_output = bgp_output.get("advertisedCommunities")
+            if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
+                failure["bgp_peers"][peer][vrf] = {"advertised_communities": bgp_output}
+                failures = utils.deep_update(failures, failure)
+
+        if not failures["bgp_peers"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")

@@ -401,6 +401,12 @@ anta.tests.routing:
             vni: 10020
           - address: aac1.ab5d.b41e
             vni: 10010
+    - VerifyBGPAdvCommunities:
+        bgp_peers:
+          - peer_address: 172.30.11.17
+            vrf: default
+          - peer_address: 172.30.11.21
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

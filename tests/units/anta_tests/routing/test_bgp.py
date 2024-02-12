@@ -12,6 +12,7 @@ from typing import Any
 # pylint: disable=C0413
 # because of the patch above
 from anta.tests.routing.bgp import (  # noqa: E402
+    VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
@@ -3076,6 +3077,168 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020), ('192.168.10.101', 10010)]"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-vrf",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.17",
+                    "vrf": "MGMT",
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
+                "{'bgp_peers': {'172.30.11.17': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.12",
+                    "vrf": "MGMT",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
+                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.12': {'MGMT': {'status': 'Not configured'}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-correct-communities",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {"standard": False, "extended": False, "large": False},
+                            }
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {"standard": True, "extended": True, "large": False},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "CS",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}, "
+                "'172.30.11.10': {'CS': {'advertised_communities': {'standard': True, 'extended': True, 'large': False}}}}}"
+            ],
         },
     },
 ]
