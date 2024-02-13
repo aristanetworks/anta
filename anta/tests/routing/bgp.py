@@ -12,54 +12,14 @@ from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator, utils
+from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, MultiProtocolCaps, Safi
+from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
 # Need to keep List for pydantic in python 3.8
-
-
-def _check_bgp_vrfs(bgp_vrfs: dict[str, Any]) -> dict[str, Any]:
-    """
-    Parse the output of the `show bgp <address family> unicast summary vrf <vrf>` 'vrfs' key
-    and returns a dictionary with the following structure:
-
-    {
-        <vrf>: {
-            <peer>:
-                {
-                    "peerState": <state>,
-                    "inMsgQueue": <count>,
-                    "outMsgQueue": <count>,
-                }
-        }
-    }
-
-    Args:
-        bgp_vrfs: Output of the `show bgp <address family> unicast summary vrf <vrf>` 'vrfs' key
-    """
-    state_issue: dict[str, Any] = {}
-    for vrf in bgp_vrfs:
-        for peer in bgp_vrfs[vrf]["peers"]:
-            if (
-                (bgp_vrfs[vrf]["peers"][peer]["peerState"] != "Established")
-                or (bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"] != 0)
-                or (bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"] != 0)
-            ):
-                vrf_dict = state_issue.setdefault(vrf, {})
-                vrf_dict.update(
-                    {
-                        peer: {
-                            "peerState": bgp_vrfs[vrf]["peers"][peer]["peerState"],
-                            "inMsgQueue": bgp_vrfs[vrf]["peers"][peer]["inMsgQueue"],
-                            "outMsgQueue": bgp_vrfs[vrf]["peers"][peer]["outMsgQueue"],
-                        }
-                    }
-                )
-
-    return state_issue
 
 
 def _add_bgp_failures(failures: dict[tuple[str, Union[str, None]], dict[str, Any]], afi: Afi, safi: Optional[Safi], vrf: str, issue: Any) -> None:
@@ -194,7 +154,7 @@ class VerifyBGPPeerCount(AntaTest):
 
     name = "VerifyBGPPeerCount"
     description = "Verifies the count of BGP peers."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -298,7 +258,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
     name = "VerifyBGPPeersHealth"
     description = "Verifies the health of BGP peers"
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -404,7 +364,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
     name = "VerifyBGPSpecificPeers"
     description = "Verifies the health of specific BGP peer(s)."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
@@ -509,7 +469,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     name = "VerifyBGPExchangedRoutes"
     description = "Verifies if BGP peers have correctly advertised/received routes with type as valid and active for a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [
         AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
         AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
@@ -588,7 +548,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
     name = "VerifyBGPPeerMPCaps"
     description = "Verifies the multiprotocol capabilities of a BGP peer in a specified VRF"
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -663,7 +623,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
     name = "VerifyBGPPeerASNCap"
     description = "Verifies the four octet asn capabilities of a BGP peer in a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -732,7 +692,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
     name = "VerifyBGPPeerRouteRefreshCap"
     description = "Verifies the route refresh capabilities of a BGP peer in a specified VRF."
-    categories = ["routing", "bgp"]
+    categories = ["bgp"]
     commands = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -789,6 +749,194 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peer route refresh capabilities are not found or not ok:\n{failures}")
+
+
+class VerifyBGPPeerMD5Auth(AntaTest):
+    """
+    Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+    Expected results:
+        * success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
+        * failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+    """
+
+    name = "VerifyBGPPeerMD5Auth"
+    description = "Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF"
+    categories = ["routing", "bgp"]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters of the test case.
+        """
+
+        bgp_peers: List[BgpPeers]
+        """List of IPv4 BGP peers"""
+
+        class BgpPeers(BaseModel):
+            """
+            This class defines the details of an IPv4 BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, Any] = {"bgp_peers": {}}
+
+        # Iterate over each command
+        for bgp_peer in self.inputs.bgp_peers:
+            peer = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+
+            # Check if BGP output exists
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
+            ):
+                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
+                failures = utils.deep_update(failures, failure)
+                continue
+
+            # Check if BGP peer state and authentication
+            state = bgp_output.get("state")
+            md5_auth_enabled = bgp_output.get("md5AuthEnabled")
+            if state != "Established" or not md5_auth_enabled:
+                failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
+                failures = utils.deep_update(failures, failure)
+
+        # Check if there are any failures
+        if not failures["bgp_peers"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n{failures}")
+
+
+class VerifyEVPNType2Route(AntaTest):
+    """
+    This test verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
+
+    Expected Results:
+        * success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
+        * failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+    """
+
+    name = "VerifyEVPNType2Route"
+    description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
+    categories = ["routing", "bgp"]
+    commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyEVPNType2Route test."""
+
+        vxlan_endpoints: List[VxlanEndpoint]
+        """List of VXLAN endpoints to verify"""
+
+        class VxlanEndpoint(BaseModel):
+            """VXLAN endpoint input model."""
+
+            address: Union[IPv4Address, MacAddress]
+            """IPv4 or MAC address of the VXLAN endpoint"""
+            vni: Vni
+            """VNI of the VXLAN endpoint"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(address=endpoint.address, vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        no_evpn_routes = []
+        bad_evpn_routes = []
+
+        for command in self.instance_commands:
+            address = str(command.params["address"])
+            vni = command.params["vni"]
+            # Verify that the VXLAN endpoint is in the BGP EVPN table
+            evpn_routes = command.json_output["evpnRoutes"]
+            if not evpn_routes:
+                no_evpn_routes.append((address, vni))
+                continue
+            # Verify that each EVPN route has at least one valid and active path
+            for route, route_data in evpn_routes.items():
+                has_active_path = False
+                for path in route_data["evpnRoutePaths"]:
+                    if path["routeType"]["valid"] is True and path["routeType"]["active"] is True:
+                        # At least one path is valid and active, no need to check the other paths
+                        has_active_path = True
+                        break
+                if not has_active_path:
+                    bad_evpn_routes.append(route)
+
+        if no_evpn_routes:
+            self.result.is_failure(f"The following VXLAN endpoint do not have any EVPN Type-2 route: {no_evpn_routes}")
+        if bad_evpn_routes:
+            self.result.is_failure(f"The following EVPN Type-2 routes do not have at least one valid and active path: {bad_evpn_routes}")
+
+
+class VerifyBGPAdvCommunities(AntaTest):
+    """
+    Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+    Expected results:
+        * success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+        * failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+    """
+
+    name = "VerifyBGPAdvCommunities"
+    description = "Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF."
+    categories = ["routing", "bgp"]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters for the test.
+        """
+
+        bgp_peers: List[BgpPeers]
+        """List of BGP peers"""
+
+        class BgpPeers(BaseModel):
+            """
+            This class defines the details of a BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, Any] = {"bgp_peers": {}}
+
+        # Iterate over each bgp peer
+        for bgp_peer in self.inputs.bgp_peers:
+            peer = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+
+            # Verify BGP peer
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
+            ):
+                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
+                failures = utils.deep_update(failures, failure)
+                continue
+
+            # Verify BGP peer's advertised communities
+            bgp_output = bgp_output.get("advertisedCommunities")
+            if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
+                failure["bgp_peers"][peer][vrf] = {"advertised_communities": bgp_output}
+                failures = utils.deep_update(failures, failure)
+
+        if not failures["bgp_peers"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")
 
 
 class VerifyBGPTimers(AntaTest):
