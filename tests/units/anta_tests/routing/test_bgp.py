@@ -21,6 +21,7 @@ from anta.tests.routing.bgp import (  # noqa: E402
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPSpecificPeers,
+    VerifyBGPTimers,
     VerifyEVPNType2Route,
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
@@ -3238,6 +3239,146 @@ DATA: list[dict[str, Any]] = [
                 "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
                 "{'bgp_peers': {'172.30.11.1': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}, "
                 "'172.30.11.10': {'CS': {'advertised_communities': {'standard': True, 'extended': True, 'large': False}}}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPTimers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-peer",
+        "test": VerifyBGPTimers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                            }
+                        ]
+                    },
+                    "MGMT": {"peerList": []},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
+                "{'172.30.11.1': {'MGMT': 'Not configured'}, '172.30.11.11': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-correct-timers",
+        "test": VerifyBGPTimers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "holdTime": 160,
+                                "keepaliveTime": 60,
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "holdTime": 120,
+                                "keepaliveTime": 40,
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
+                "{'172.30.11.1': {'default': {'hold_time': 160, 'keep_alive_time': 60}}, "
+                "'172.30.11.11': {'MGMT': {'hold_time': 120, 'keep_alive_time': 40}}}"
             ],
         },
     },

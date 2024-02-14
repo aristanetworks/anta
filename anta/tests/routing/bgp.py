@@ -11,7 +11,7 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
-from pydantic import BaseModel, PositiveInt, model_validator, utils
+from pydantic import BaseModel, Field, PositiveInt, model_validator, utils
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
@@ -937,3 +937,67 @@ class VerifyBGPAdvCommunities(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")
+
+
+class VerifyBGPTimers(AntaTest):
+    """
+    Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
+    Expected results:
+        * success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
+        * failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
+    """
+
+    name = "VerifyBGPTimers"
+    description = "Verifies if the BGP peers are configured with the correct hold and keep alive timers in the specified VRF."
+    categories = ["routing", "bgp"]
+    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters for the test.
+        """
+
+        bgp_peers: List[BgpPeers]
+        """List of BGP peers"""
+
+        class BgpPeers(BaseModel):
+            """
+            This class defines the details of a BGP peer.
+            """
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer"""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            hold_time: int = Field(ge=3, le=7200)
+            """BGP hold time in seconds"""
+            keep_alive_time: int = Field(ge=0, le=3600)
+            """BGP keep-alive time in seconds"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        failures: dict[str, Any] = {}
+
+        # Iterate over each bgp peer
+        for bgp_peer in self.inputs.bgp_peers:
+            peer_address = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+            hold_time = bgp_peer.hold_time
+            keep_alive_time = bgp_peer.keep_alive_time
+
+            # Verify BGP peer
+            if (
+                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
+                or (bgp_output := get_item(bgp_output, "peerAddress", peer_address)) is None
+            ):
+                failures[peer_address] = {vrf: "Not configured"}
+                continue
+
+            # Verify BGP peer's hold and keep alive timers
+            if bgp_output.get("holdTime") != hold_time or bgp_output.get("keepaliveTime") != keep_alive_time:
+                failures[peer_address] = {vrf: {"hold_time": bgp_output.get("holdTime"), "keep_alive_time": bgp_output.get("keepaliveTime")}}
+
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured or hold and keep-alive timers are not correct:\n{failures}")
