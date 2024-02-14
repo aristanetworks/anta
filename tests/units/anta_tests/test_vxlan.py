@@ -343,7 +343,7 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-wrong-interface",
         "test": VerifyVxlan1ConnSettings,
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
-        "inputs": {"source_interface": "Lb1", "udp_port": 4789},
+        "inputs": {"source_interface": "lo1", "udp_port": 4789},
         "expected": {
             "result": "failure",
             "messages": ["Source interface is not correct. Expected `Loopback1` as source interface but found `Loopback10` instead."],

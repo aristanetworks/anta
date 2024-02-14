@@ -24,14 +24,14 @@ def interface_autocomplete(v: str) -> str:
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
          - `po` will be changed to `Port-Channel`
-         - `lo`, `lb` will be changed to `Loopback`"""
+         - `lo` will be changed to `Loopback`"""
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
         raise ValueError(f"Could not parse interface ID in interface '{v}'")
     intf_id = m[0]
 
-    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback", "lb": "Loopback"}
+    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
 
     for alias, full_name in alias_map.items():
         if v.lower().startswith(alias):
