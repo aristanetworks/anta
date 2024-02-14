@@ -192,7 +192,7 @@ nav:
     - Software: api/tests.software.md
     - System: api/tests.system.md
     - VXLAN: api/tests.vxlan.md
-    - Vlan: api/tests.vlan.md
+    - VLAN: api/tests.vlan.md
   - API Documentation:
     - Inventory:
       - Inventory module: api/inventory.md
