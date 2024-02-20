@@ -151,6 +151,8 @@ anta.tests.interfaces:
         - Vxlan1
       specific_mtu:
         - Ethernet1/1: 1500
+  - VerifyIpVirtualRouterMac:
+      mac_address: 00:1c:73:00:dc:01
 
 anta.tests.logging:
   - VerifyLoggingPersistent:

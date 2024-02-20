@@ -14,10 +14,12 @@ import re
 from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel, conint
+from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
 
@@ -468,5 +470,35 @@ class VerifyL2MTU(AntaTest):
                     wrong_l2mtu_intf.append({interface: values["mtu"]})
         if wrong_l2mtu_intf:
             self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
+        else:
+            self.result.is_success()
+
+
+class VerifyIpVirtualRouterMac(AntaTest):
+    """
+    Verifies the IP virtual router MAC address.
+
+    Expected Results:
+        * success: The test will pass if the IP virtual router MAC address matches the input.
+        * failure: The test will fail if the IP virtual router MAC address does not match the input.
+    """
+
+    name = "VerifyIpVirtualRouterMac"
+    description = "Verifies the IP virtual router MAC address."
+    categories = ["interfaces"]
+    commands = [AntaCommand(command="show ip virtual-router")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyIpVirtualRouterMac test."""
+
+        mac_address: MacAddress
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output["virtualMacs"]
+        mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
+
+        if mac_address_found is None:
+            self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
         else:
             self.result.is_success()
