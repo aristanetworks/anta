@@ -492,6 +492,7 @@ class VerifyIpVirtualRouterMac(AntaTest):
         """Inputs for the VerifyIpVirtualRouterMac test."""
 
         mac_address: MacAddress
+        """IP virtual router MAC address"""
 
     @AntaTest.anta_test
     def test(self) -> None:
