@@ -15,6 +15,7 @@ from anta.tests.interfaces import (
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
+    VerifyIpVirtualRouterMac,
     VerifyL2MTU,
     VerifyL3MTU,
     VerifyLoopbackCount,
@@ -1267,5 +1268,35 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "`['10.10.11.0/31', '10.11.11.10/31']`.",
             ],
         },
+    },
+    {
+        "name": "success",
+        "test": VerifyIpVirtualRouterMac,
+        "eos_data": [
+            {
+                "virtualMacs": [
+                    {
+                        "macAddress": "00:1c:73:00:dc:01",
+                    }
+                ],
+            }
+        ],
+        "inputs": {"mac_address": "00:1c:73:00:dc:01"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "faliure-incorrect-mac-address",
+        "test": VerifyIpVirtualRouterMac,
+        "eos_data": [
+            {
+                "virtualMacs": [
+                    {
+                        "macAddress": "00:00:00:00:00:00",
+                    }
+                ],
+            }
+        ],
+        "inputs": {"mac_address": "00:1c:73:00:dc:01"},
+        "expected": {"result": "failure", "messages": ["IP virtual router MAC address `00:1c:73:00:dc:01` is not configured."]},
     },
 ]

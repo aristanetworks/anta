@@ -160,6 +160,8 @@ anta.tests.interfaces:
           secondary_ips:
             - 10.10.10.0/31
             - 10.10.10.10/31
+  - VerifyIpVirtualRouterMac:
+      mac_address: 00:1c:73:00:dc:01
 
 anta.tests.logging:
   - VerifyLoggingPersistent:
