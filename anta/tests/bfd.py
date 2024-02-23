@@ -159,8 +159,10 @@ class VerifyBFDPeersIntervals(AntaTest):
 class VerifyBFDPeersHealth(AntaTest):
     """
     This class verifies the health of IPv4 BFD peers across all VRFs.
+
     It checks that no BFD peer is in the down state and that the discriminator value of the remote system is not zero.
     Optionally, it can also verify that BFD peers have not been down before a specified threshold of hours.
+
     Expected results:
         * Success: The test will pass if all IPv4 BFD peers are up, the discriminator value of each remote system is non-zero,
                    and the last downtime of each peer is above the defined threshold.
@@ -169,10 +171,7 @@ class VerifyBFDPeersHealth(AntaTest):
     """
 
     name = "VerifyBFDPeersHealth"
-    description = (
-        "Verifies there is no IPv4 BFD peer in the down state and discriminator value of the remote system is not zero for all VRF. "
-        "BFD peer last down in hours is optional check which should be above the threshold for all VRF."
-    )
+    description = "Verifies the health of all IPv4 BFD peers."
     categories = ["bfd"]
     # revision 1 as later revision introduces additional nesting for type
     commands = [AntaCommand(command="show bfd peers", revision=1), AntaCommand(command="show clock")]
