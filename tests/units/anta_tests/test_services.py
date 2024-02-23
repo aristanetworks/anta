@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.services import VerifyDNSLookup, VerifyHostname
+from anta.tests.services import VerifyDNSLookup, VerifyDNSServers, VerifyHostname
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -54,5 +54,74 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"domain_names": ["arista.ca", "www.google.com", "google.ca"]},
         "expected": {"result": "failure", "messages": ["The following domain(s) are not resolved to an IP address: arista.ca, google.ca"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyDNSServers,
+        "eos_data": [
+            {
+                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
+            }
+        ],
+        "inputs": {
+            "dns_servers": [{"server_address": "10.14.0.1", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.11", "vrf": "MGMT", "priority": 1}]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-dns-missing",
+        "test": VerifyDNSServers,
+        "eos_data": [
+            {
+                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
+            }
+        ],
+        "inputs": {
+            "dns_servers": [{"server_address": "10.14.0.10", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.21", "vrf": "MGMT", "priority": 1}]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["DNS server `10.14.0.10` is not configured with any VRF.", "DNS server `10.14.0.21` is not configured with any VRF."],
+        },
+    },
+    {
+        "name": "failure-no-dns-found",
+        "test": VerifyDNSServers,
+        "eos_data": [
+            {
+                "nameServerConfigs": [],
+            }
+        ],
+        "inputs": {
+            "dns_servers": [{"server_address": "10.14.0.10", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.21", "vrf": "MGMT", "priority": 1}]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["DNS server `10.14.0.10` is not configured with any VRF.", "DNS server `10.14.0.21` is not configured with any VRF."],
+        },
+    },
+    {
+        "name": "failure-incorrect-dns-details",
+        "test": VerifyDNSServers,
+        "eos_data": [
+            {
+                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "CS", "priority": 1}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
+            }
+        ],
+        "inputs": {
+            "dns_servers": [
+                {"server_address": "10.14.0.1", "vrf": "CS", "priority": 0},
+                {"server_address": "10.14.0.11", "vrf": "default", "priority": 0},
+                {"server_address": "10.14.0.110", "vrf": "MGMT", "priority": 0},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For DNS server `10.14.0.1`, the expected priority is `0`, but `1` was found instead.",
+                "DNS server `10.14.0.11` is not configured with VRF `default`.",
+                "DNS server `10.14.0.110` is not configured with any VRF.",
+            ],
+        },
     },
 ]

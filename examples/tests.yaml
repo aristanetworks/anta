@@ -248,6 +248,14 @@ anta.tests.services:
         - arista.com
         - www.google.com
         - arista.ca
+  - VerifyDNSServers:
+      dns_servers:
+        - server_address: 10.14.0.1
+          vrf: default
+          priority: 1
+        - server_address: 10.14.0.11
+          vrf: MGMT
+          priority: 0
 
 anta.tests.snmp:
   - VerifySnmpStatus:
