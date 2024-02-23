@@ -121,6 +121,7 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
             test=f"VerifyTest{index}",
             categories=["test"],
             description=f"Verifies Test {index}",
+            custom_field=None,
         )
 
     return _create

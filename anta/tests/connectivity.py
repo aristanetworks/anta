@@ -84,7 +84,7 @@ class VerifyLLDPNeighbors(AntaTest):
     """
 
     name = "VerifyLLDPNeighbors"
-    description = "Verifies that the provided LLDP neighbors are present and connected with the correct configuration."
+    description = "Verifies that the provided LLDP neighbors are connected properly."
     categories = ["connectivity"]
     commands = [AntaCommand(command="show lldp neighbors detail")]
 
