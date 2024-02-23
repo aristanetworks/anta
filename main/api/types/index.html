@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.10">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.f2e4d321.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -387,10 +387,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
@@ -628,10 +626,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
@@ -772,13 +768,13 @@
       
         
       
-    
+        
+      
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
@@ -1051,10 +1047,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_12" >
@@ -1296,6 +1290,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.vlan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VLAN
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1329,10 +1344,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
@@ -1372,10 +1385,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
@@ -1509,10 +1520,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" checked>
@@ -1742,6 +1751,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#anta.custom_types.VxlanSrcIntf" class="md-nav__link">
+    <span class="md-ellipsis">
+      VxlanSrcIntf
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.custom_types.aaa_group_prefix" class="md-nav__link">
     <span class="md-ellipsis">
       aaa_group_prefix
@@ -1815,10 +1833,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
@@ -1908,10 +1924,8 @@
     
     
     
-    
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
@@ -2187,6 +2201,15 @@
   <a href="#anta.custom_types.Vni" class="md-nav__link">
     <span class="md-ellipsis">
       Vni
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.custom_types.VxlanSrcIntf" class="md-nav__link">
+    <span class="md-ellipsis">
+      VxlanSrcIntf
     </span>
   </a>
   
@@ -2579,6 +2602,27 @@
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="anta.custom_types.VxlanSrcIntf" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">VxlanSrcIntf</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.VxlanSrcIntf" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">VxlanSrcIntf</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]</span><span class="si">{3}</span><span class="s1">|8[01][0-9]</span><span class="si">{2}</span><span class="s1">|819[01])$&#39;</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
 
 
 
@@ -2637,12 +2681,7 @@ Examples:
 
           <details class="quote">
             <summary>Source code in <code>anta/custom_types.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -2658,7 +2697,12 @@ Examples:
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bgp_multiprotocol_capabilities_abbreviations</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bgp_multiprotocol_capabilities_abbreviations</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abbreviations for different BGP multiprotocol capabilities.</span>
 <span class="sd">    Examples:</span>
@@ -2708,6 +2752,7 @@ Examples:
   <ul>
 <li><code>et</code>, <code>eth</code> will be changed to <code>Ethernet</code></li>
 <li><code>po</code> will be changed to <code>Port-Channel</code></li>
+<li><code>lo</code> will be changed to <code>Loopback</code></li>
 </ul>
 </details>
           <details class="quote">
@@ -2727,21 +2772,29 @@ Examples:
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">interface_autocomplete</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">interface_autocomplete</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow the user to only provide the beginning of an interface name.</span>
 
 <span class="sd">    Supported alias:</span>
 <span class="sd">         - `et`, `eth` will be changed to `Ethernet`</span>
-<span class="sd">         - `po` will be changed to `Port-Channel`&quot;&quot;&quot;</span>
+<span class="sd">         - `po` will be changed to `Port-Channel`</span>
+<span class="sd">         - `lo` will be changed to `Loopback`&quot;&quot;&quot;</span>
     <span class="n">intf_id_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]+(\/[0-9]+)*(\.[0-9]+)?&quot;</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">intf_id_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse interface ID in interface &#39;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
     <span class="n">intf_id</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;et&quot;</span><span class="p">,</span> <span class="s2">&quot;eth&quot;</span><span class="p">]):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Ethernet</span><span class="si">{</span><span class="n">intf_id</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;po&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Port-Channel</span><span class="si">{</span><span class="n">intf_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">alias_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;et&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet&quot;</span><span class="p">,</span> <span class="s2">&quot;eth&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet&quot;</span><span class="p">,</span> <span class="s2">&quot;po&quot;</span><span class="p">:</span> <span class="s2">&quot;Port-Channel&quot;</span><span class="p">,</span> <span class="s2">&quot;lo&quot;</span><span class="p">:</span> <span class="s2">&quot;Loopback&quot;</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">full_name</span> <span class="ow">in</span> <span class="n">alias_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">alias</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">full_name</span><span class="si">}{</span><span class="n">intf_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
     <span class="k">return</span> <span class="n">v</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -2772,25 +2825,28 @@ Examples:
     <ul>
 <li>ethernet -&gt; Ethernet</li>
 <li>vlan -&gt; Vlan</li>
+<li>loopback -&gt; Loopback</li>
 </ul>
 
           <details class="quote">
             <summary>Source code in <code>anta/custom_types.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">interface_case_sensitivity</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">interface_case_sensitivity</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reformat interface name to match expected case sensitivity.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">         - ethernet -&gt; Ethernet</span>
 <span class="sd">         - vlan -&gt; Vlan</span>
+<span class="sd">         - loopback -&gt; Loopback</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
