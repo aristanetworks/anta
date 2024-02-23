@@ -69,6 +69,8 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+  - VerifyBFDPeersHealth:
+      down_threshold: 2
 
 anta.tests.configuration:
   - VerifyZeroTouch:
@@ -227,18 +229,6 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
-
-anta.tests.services:
-  - VerifyBannerLogin:
-        login_banner: |
-            # Copyright (c) 2023-2024 Arista Networks, Inc.
-            # Use of this source code is governed by the Apache License 2.0
-            # that can be found in the LICENSE file.
-  - VerifyBannerMotd:
-        motd_banner: |
-            # Copyright (c) 2023-2024 Arista Networks, Inc.
-            # Use of this source code is governed by the Apache License 2.0
-            # that can be found in the LICENSE file.
   - VerifyIpv4ACL:
       ipv4_access_lists:
         - name: default-control-plane-acl
@@ -255,8 +245,34 @@ anta.tests.services:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+
+anta.tests.services:
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
   - VerifyHostname:
       hostname: s1-spine1
+  - VerifyDNSLookup:
+      domain_names:
+        - arista.com
+        - www.google.com
+        - arista.ca
+  - VerifyDNSServers:
+      dns_servers:
+        - server_address: 10.14.0.1
+          vrf: default
+          priority: 1
+        - server_address: 10.14.0.11
+          vrf: MGMT
+          priority: 0
+
 anta.tests.snmp:
   - VerifySnmpStatus:
       vrf: default

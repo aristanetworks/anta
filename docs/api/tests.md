@@ -10,6 +10,7 @@ This section describes all the available tests provided by ANTA package.
 
 
 - [AAA](tests.aaa.md)
+- [BFD](tests.bfd.md)
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)
 - [Field Notice](tests.field_notices.md)

@@ -382,7 +382,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
 class VerifyBannerLogin(AntaTest):
     """
-    This class verifies the login banner of a device.
+    Verifies the login banner of a device.
+
     Expected results:
         * success: The test will pass if the login banner matches the provided input.
         * failure: The test will fail if the login banner does not match the provided input.
@@ -413,7 +414,8 @@ class VerifyBannerLogin(AntaTest):
 
 class VerifyBannerMotd(AntaTest):
     """
-    This class verifies the motd banner of a device.
+    Verifies the motd banner of a device.
+
     Expected results:
         * success: The test will pass if the motd banner matches the provided input.
         * failure: The test will fail if the motd banner does not match the provided input.
@@ -444,7 +446,7 @@ class VerifyBannerMotd(AntaTest):
 
 class VerifyIPv4ACL(AntaTest):
     """
-    This class verifies the configuration and the correct operation of the IPv4 access lists.
+    Verifies the configuration of IPv4 ACLs.
 
     Expected results:
         * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
@@ -452,7 +454,7 @@ class VerifyIPv4ACL(AntaTest):
     """
 
     name = "VerifyIPv4ACL"
-    description = "Verifies the configuration and the correct operation of the IPv4 access lists."
+    description = "Verifies the configuration of IPv4 ACLs."
     categories = ["security"]
     commands = [AntaTemplate(template="show ip access-lists {acl}")]
 
@@ -460,7 +462,7 @@ class VerifyIPv4ACL(AntaTest):
         """Inputs for the VerifyIPv4ACL test."""
 
         ipv4_access_lists: List[IPv4ACL]
-        """List of IPv4 ACL to verify"""
+        """List of IPv4 ACLs to verify"""
 
         class IPv4ACL(BaseModel):
             """Detail of IPv4 ACL"""
