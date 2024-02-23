@@ -32,3 +32,18 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
             failed_logs.append(f"\nExpected `{expected_data}` as the {element}, but found `{actual_data}` instead.")
 
     return "".join(failed_logs)
+
+
+def custom_division(numerator: int | float, denominator: int | float) -> int | float:
+    """
+    Custom division that returns an integer if the result is an integer, otherwise a float.
+
+    Parameters:
+    numerator (float): The numerator.
+    denominator (float): The denominator.
+
+    Returns:
+    Union[int, float]: The result of the division.
+    """
+    result = numerator / denominator
+    return int(result) if result.is_integer() else result

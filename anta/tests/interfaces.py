@@ -11,15 +11,15 @@ from __future__ import annotations
 import re
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal, Union
+from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel, Field, conint
 
-from anta.custom_types import Interface, SpeedInterface
+from anta.custom_types import EthernetInterface, Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-from anta.tools.utils import get_failed_logs
+from anta.tools.utils import custom_division, get_failed_logs
 
 SpeedPattern = r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|force(d)?\s\d{1,4}(g)?)$"
 
@@ -34,6 +34,14 @@ def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
     Returns:
     tuple[Any, Any]: The extracted speed from the input string, and the extracted lane from the input string.
                      If no lane information is found, it returns None.
+    Examples:
+        100g-8: (100, 8)
+        100g: (100, None)
+        100-8: (100, 8)
+        auto: (None, None)
+        forced 100g: (100, None)
+        auto 100g: (100, None)
+        auto 100g-4: (100, 4)
     """
 
     # Regular expression pattern
@@ -51,28 +59,17 @@ def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
     return None, None
 
 
-def custom_division(numerator: float, denominator: float) -> Union[int, float]:
-    """
-    Custom division that returns an integer if the result is an integer, otherwise a float.
-
-    Parameters:
-    numerator (float): The numerator.
-    denominator (float): The denominator.
-
-    Returns:
-    Union[int, float]: The result of the division.
-    """
-    result = numerator / denominator
-    return int(result) if result.is_integer() else result
-
-
 class VerifyInterfaceUtilization(AntaTest):
     """
     Verifies interfaces utilization is below 75%.
+
+    Expected Results:
+        * success: The test will pass if all interfaces have a usage below 75%.
+        * failure: The test will fail if one or more interfaces have a usage above 75%.
     """
 
     name = "VerifyInterfaceUtilization"
-    description = "Verifies interfaces utilization is below 75%."
+    description = "Verifies that all interfaces have a usage below 75%."
     categories = ["interfaces"]
     # TODO - move from text to json if possible
     commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
@@ -105,7 +102,7 @@ class VerifyInterfaceErrors(AntaTest):
     """
 
     name = "VerifyInterfaceErrors"
-    description = "Verifies that interfaces error counters are equal to zero."
+    description = "Verifies there are no interface error counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces counters errors")]
 
@@ -125,10 +122,14 @@ class VerifyInterfaceErrors(AntaTest):
 class VerifyInterfaceDiscards(AntaTest):
     """
     Verifies interfaces packet discard counters are equal to zero.
+
+    Expected Results:
+        * success: The test will pass if all interfaces have discard counters equal to zero.
+        * failure: The test will fail if one or more interfaces have non-zero discard counters.
     """
 
     name = "VerifyInterfaceDiscards"
-    description = "Verifies interfaces packet discard counters are equal to zero."
+    description = "Verifies there are no interface discard counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces counters discards")]
 
@@ -146,11 +147,15 @@ class VerifyInterfaceDiscards(AntaTest):
 
 class VerifyInterfaceErrDisabled(AntaTest):
     """
-    Verifies there is no interface in error disable state.
+    Verifies there are no interfaces in errdisabled state.
+
+    Expected Results:
+        * success: The test will pass if there are no interfaces in errdisabled state.
+        * failure: The test will fail if there is at least one interface in errdisabled state.
     """
 
     name = "VerifyInterfaceErrDisabled"
-    description = "Verifies there is no interface in error disable state."
+    description = "Verifies there are no interfaces in the errdisabled state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces status")]
 
@@ -174,7 +179,7 @@ class VerifyInterfacesStatus(AntaTest):
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies if the provided list of interfaces are all in the expected state."
+    description = "Verifies the status of the provided interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
@@ -223,10 +228,14 @@ class VerifyInterfacesStatus(AntaTest):
 class VerifyStormControlDrops(AntaTest):
     """
     Verifies the device did not drop packets due its to storm-control configuration.
+
+    Expected Results:
+        * success: The test will pass if there are no storm-control drop counters.
+        * failure: The test will fail if there is at least one storm-control drop counter.
     """
 
     name = "VerifyStormControlDrops"
-    description = "Verifies the device did not drop packets due its to storm-control configuration."
+    description = "Verifies there are no interface storm-control drop counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show storm-control")]
 
@@ -248,11 +257,15 @@ class VerifyStormControlDrops(AntaTest):
 
 class VerifyPortChannels(AntaTest):
     """
-    Verifies there is no inactive port in port channels.
+    Verifies there are no inactive ports in all port channels.
+
+    Expected Results:
+        * success: The test will pass if there are no inactive ports in all port channels.
+        * failure: The test will fail if there is at least one inactive port in a port channel.
     """
 
     name = "VerifyPortChannels"
-    description = "Verifies there is no inactive port in port channels."
+    description = "Verifies there are no inactive ports in all port channels."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show port-channel")]
 
@@ -272,11 +285,15 @@ class VerifyPortChannels(AntaTest):
 
 class VerifyIllegalLACP(AntaTest):
     """
-    Verifies there is no illegal LACP packets received.
+    Verifies there are no illegal LACP packets received.
+
+    Expected Results:
+        * success: The test will pass if there are no illegal LACP packets received.
+        * failure: The test will fail if there is at least one illegal LACP packet received.
     """
 
     name = "VerifyIllegalLACP"
-    description = "Verifies there is no illegal LACP packets received."
+    description = "Verifies there are no illegal LACP packets in all port channels."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show lacp counters all-ports")]
 
@@ -296,11 +313,15 @@ class VerifyIllegalLACP(AntaTest):
 
 class VerifyLoopbackCount(AntaTest):
     """
-    Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down.
+    Verifies that the device has the expected number of loopback interfaces and all are operational.
+
+    Expected Results:
+        * success: The test will pass if the device has the correct number of loopback interfaces and none are down.
+        * failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
     """
 
     name = "VerifyLoopbackCount"
-    description = "Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down."
+    description = "Verifies the number of loopback interfaces and their status."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
@@ -331,11 +352,15 @@ class VerifyLoopbackCount(AntaTest):
 
 class VerifySVI(AntaTest):
     """
-    Verifies there is no interface vlan down.
+    Verifies the status of all SVIs.
+
+    Expected Results:
+        * success: The test will pass if all SVIs are up.
+        * failure: The test will fail if one or many SVIs are not up.
     """
 
     name = "VerifySVI"
-    description = "Verifies there is no interface vlan down."
+    description = "Verifies the status of all SVIs."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
@@ -367,7 +392,7 @@ class VerifyL3MTU(AntaTest):
     """
 
     name = "VerifyL3MTU"
-    description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
+    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
@@ -412,7 +437,7 @@ class VerifyIPProxyARP(AntaTest):
     """
 
     name = "VerifyIPProxyARP"
-    description = "Verifies if Proxy-ARP is enabled for the provided list of interface(s)."
+    description = "Verifies if Proxy ARP is enabled."
     categories = ["interfaces"]
     commands = [AntaTemplate(template="show ip interface {intf}")]
 
@@ -450,7 +475,7 @@ class VerifyL2MTU(AntaTest):
     """
 
     name = "VerifyL2MTU"
-    description = "Verifies the global layer 2 Maximum Transfer Unit (MTU) for all layer 2 interfaces."
+    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
@@ -489,9 +514,9 @@ class VerifyInterfacesSpeed(AntaTest):
     """
     Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
     If speed is auto then verify auto-negotiation as success and mode as full duplex.
-    If speed is auto with a value(auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
-    If speed is forced with a value(forces 10g) then verify mode as full duplex and speed as per input.
-    If speed with lane(100g-8) then verify mode as full duplex and speed/lanes as per input.
+    If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
+    If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
+    If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
 
     Expected Results:
         * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
@@ -507,13 +532,13 @@ class VerifyInterfacesSpeed(AntaTest):
     class Input(AntaTest.Input):
         """Inputs for the VerifyInterfacesSpeed test."""
 
-        interfaces: List[Interfaces]
+        interfaces: List[InterfaceDetail]
         """List of interfaces to be tested"""
 
-        class Interfaces(BaseModel):
+        class InterfaceDetail(BaseModel):
             """Detail of an interface"""
 
-            interface: SpeedInterface
+            name: EthernetInterface
             """Name of the interface"""
             speed: str = Field(..., pattern=SpeedPattern)
             """Speed of an interface in Gigabits per second"""
@@ -525,7 +550,7 @@ class VerifyInterfacesSpeed(AntaTest):
 
         # Iterate over all the interfaces
         for interface in self.inputs.interfaces:
-            intf = interface.interface
+            intf = interface.name
 
             # Check if interface exists
             if not (interface_output := get_value(command_output, f"interfaces.{intf}")):
