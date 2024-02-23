@@ -243,6 +243,11 @@ anta.tests.services:
             # that can be found in the LICENSE file.
   - VerifyHostname:
       hostname: s1-spine1
+  - VerifyDNSLookup:
+      domain_names:
+        - arista.com
+        - www.google.com
+        - arista.ca
 
 anta.tests.snmp:
   - VerifySnmpStatus:
