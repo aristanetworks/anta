@@ -133,7 +133,7 @@ anta.tests.interfaces:
         - Ethernet1/1: 1500
   - VerifyInterfaceIPv4:
       interfaces:
-        - interface: Ethernet2
+        - name: Ethernet2
           primary_ip: 172.30.11.0/31
           secondary_ips:
             - 10.10.10.0/31
