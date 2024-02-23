@@ -443,8 +443,7 @@ class VerifyL2MTU(AntaTest):
 
 class VerifyInterfaceIPv4(AntaTest):
     """
-    This class verifies if an interface is configured with a correct primary and secondary IPv4 address.
-    Secondary IPv4 address verification is optional.
+    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
 
     Expected Results:
         * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
@@ -452,7 +451,7 @@ class VerifyInterfaceIPv4(AntaTest):
     """
 
     name = "VerifyInterfaceIPv4"
-    description = "Verifies if an interface is configured with a correct primary and secondary IPv4 address."
+    description = "Verifies the interface IPv4 addresses."
     categories = ["interfaces"]
     commands = [AntaTemplate(template="show ip interface {interface}")]
 
@@ -468,9 +467,9 @@ class VerifyInterfaceIPv4(AntaTest):
             name: Interface
             """Name of the interface"""
             primary_ip: IPv4Network
-            """Primary IPv4 network on interface"""
+            """Primary IPv4 address with subnet on interface"""
             secondary_ips: Optional[List[IPv4Network]] = None
-            """Optional list of secondary IPv4 networks on interface"""
+            """Optional list of secondary IPv4 addresses with subnet on interface"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         # Render the template for each interface
