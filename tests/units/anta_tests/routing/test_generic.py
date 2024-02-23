@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.generic import VerifyBFD, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.tests.routing.generic import VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -76,127 +76,6 @@ DATA: list[dict[str, Any]] = [
             "result": "error",
             "messages": ["Minimum 666 is greater than maximum 42"],
         },
-    },
-    {
-        "name": "success-no-peer",
-        "test": VerifyBFD,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success-peers-up",
-        "test": VerifyBFD,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "ipv6Neighbors": {},
-                        "ipv4Neighbors": {
-                            "7.7.7.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "authType": "None",
-                                        "kernelIfIndex": 0,
-                                        "lastDiag": "diagNone",
-                                        "authProfileName": "",
-                                        "lastUp": 1683288421.669188,
-                                        "remoteDisc": 345332116,
-                                        "sessType": "sessionTypeMultihop",
-                                        "localDisc": 1654273918,
-                                        "lastDown": 0.0,
-                                        "l3intf": "",
-                                        "tunnelId": 0,
-                                    }
-                                }
-                            },
-                            "10.3.0.1": {
-                                "peerStats": {
-                                    "Ethernet1": {
-                                        "status": "up",
-                                        "authType": "None",
-                                        "kernelIfIndex": 11,
-                                        "lastDiag": "diagNone",
-                                        "authProfileName": "",
-                                        "lastUp": 1683288900.004889,
-                                        "remoteDisc": 1017672851,
-                                        "sessType": "sessionTypeNormal",
-                                        "localDisc": 4269977256,
-                                        "lastDown": 0.0,
-                                        "l3intf": "Ethernet1",
-                                        "tunnelId": 0,
-                                    }
-                                }
-                            },
-                        },
-                        "ipv4ReflectorNeighbors": {},
-                        "ipv6ReflectorNeighbors": {},
-                        "ipv6InitiatorNeighbors": {},
-                        "ipv4InitiatorNeighbors": {},
-                    }
-                }
-            }
-        ],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyBFD,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "ipv6Neighbors": {},
-                        "ipv4Neighbors": {
-                            "7.7.7.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "down",
-                                        "authType": "None",
-                                        "kernelIfIndex": 0,
-                                        "lastDiag": "diagNone",
-                                        "authProfileName": "",
-                                        "lastUp": 1683288421.669188,
-                                        "remoteDisc": 345332116,
-                                        "sessType": "sessionTypeMultihop",
-                                        "localDisc": 1654273918,
-                                        "lastDown": 0.0,
-                                        "l3intf": "",
-                                        "tunnelId": 0,
-                                    }
-                                }
-                            },
-                            "10.3.0.1": {
-                                "peerStats": {
-                                    "Ethernet1": {
-                                        "status": "up",
-                                        "authType": "None",
-                                        "kernelIfIndex": 11,
-                                        "lastDiag": "diagNone",
-                                        "authProfileName": "",
-                                        "lastUp": 1683288900.004889,
-                                        "remoteDisc": 1017672851,
-                                        "sessType": "sessionTypeNormal",
-                                        "localDisc": 4269977256,
-                                        "lastDown": 0.0,
-                                        "l3intf": "Ethernet1",
-                                        "tunnelId": 0,
-                                    }
-                                }
-                            },
-                        },
-                        "ipv4ReflectorNeighbors": {},
-                        "ipv6ReflectorNeighbors": {},
-                        "ipv6InitiatorNeighbors": {},
-                        "ipv4InitiatorNeighbors": {},
-                    }
-                }
-            }
-        ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["bfd state for peer '' is down (expected up)."]},
     },
     {
         "name": "success",
