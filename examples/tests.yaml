@@ -69,6 +69,8 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+  - VerifyBFDPeersHealth:
+      down_threshold: 2
 
 anta.tests.configuration:
   - VerifyZeroTouch:
@@ -151,6 +153,13 @@ anta.tests.interfaces:
         - Vxlan1
       specific_mtu:
         - Ethernet1/1: 1500
+  - VerifyInterfaceIPv4:
+      interfaces:
+        - name: Ethernet2
+          primary_ip: 172.30.11.0/31
+          secondary_ips:
+            - 10.10.10.0/31
+            - 10.10.10.10/31
   - VerifyIpVirtualRouterMac:
       mac_address: 00:1c:73:00:dc:01
 
@@ -229,8 +238,6 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
-
-anta.tests.services:
   - VerifyBannerLogin:
         login_banner: |
             # Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -241,8 +248,45 @@ anta.tests.services:
             # Copyright (c) 2023-2024 Arista Networks, Inc.
             # Use of this source code is governed by the Apache License 2.0
             # that can be found in the LICENSE file.
+  - VerifyIPv4ACL:
+      ipv4_access_lists:
+        - name: default-control-plane-acl
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit ip any any tracked
+            - sequence: 30
+              action: permit udp any any eq bfd ttl eq 255
+        - name: LabTest
+          entries:
+            - sequence: 10
+              action: permit icmp any any
+            - sequence: 20
+              action: permit tcp any any range 5900 5910
+
+anta.tests.services:
   - VerifyHostname:
       hostname: s1-spine1
+  - VerifyDNSLookup:
+      domain_names:
+        - arista.com
+        - www.google.com
+        - arista.ca
+  - VerifyDNSServers:
+      dns_servers:
+        - server_address: 10.14.0.1
+          vrf: default
+          priority: 1
+        - server_address: 10.14.0.11
+          vrf: MGMT
+          priority: 0
+  - VerifyErrdisableRecovery:
+      reasons:
+        - reason: acl
+          interval: 30
+        - reason: bpduguard
+          interval: 30
 
 anta.tests.snmp:
   - VerifySnmpStatus:
@@ -298,6 +342,12 @@ anta.tests.system:
   - VerifyFileSystemUtilization:
   - VerifyNTP:
 
+anta.tests.vlan:
+  - VerifyVlanInternalPolicy:
+      policy: ascending
+      start_vlan_id: 1006
+      end_vlan_id: 4094
+
 anta.tests.vxlan:
   - VerifyVxlan1Interface:
   - VerifyVxlanConfigSanity:
@@ -309,6 +359,9 @@ anta.tests.vxlan:
       vteps:
         - 10.1.1.5
         - 10.1.1.6
+  - VerifyVxlan1ConnSettings:
+      source_interface: Loopback1
+      udp_port: 4789
 
 anta.tests.routing:
   generic:
@@ -317,7 +370,6 @@ anta.tests.routing:
     - VerifyRoutingTableSize:
         minimum: 2
         maximum: 20
-    - VerifyBFD:
     - VerifyRoutingTableEntry:
         vrf: default
         routes:

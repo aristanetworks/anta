@@ -11,10 +11,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Union
 
-from pydantic import BaseModel, conint, model_validator
+from pydantic import BaseModel, Field, conint, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
-from anta.models import AntaCommand, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
 
@@ -381,7 +382,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
 class VerifyBannerLogin(AntaTest):
     """
-    This class verifies the login banner of a device.
+    Verifies the login banner of a device.
+
     Expected results:
         * success: The test will pass if the login banner matches the provided input.
         * failure: The test will fail if the login banner does not match the provided input.
@@ -412,7 +414,8 @@ class VerifyBannerLogin(AntaTest):
 
 class VerifyBannerMotd(AntaTest):
     """
-    This class verifies the motd banner of a device.
+    Verifies the motd banner of a device.
+
     Expected results:
         * success: The test will pass if the motd banner matches the provided input.
         * failure: The test will fail if the motd banner does not match the provided input.
@@ -439,3 +442,73 @@ class VerifyBannerMotd(AntaTest):
             self.result.is_failure(f"Expected `{cleaned_banner}` as the motd banner, but found `{motd_banner}` instead.")
         else:
             self.result.is_success()
+
+
+class VerifyIPv4ACL(AntaTest):
+    """
+    Verifies the configuration of IPv4 ACLs.
+
+    Expected results:
+        * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
+        * failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+    """
+
+    name = "VerifyIPv4ACL"
+    description = "Verifies the configuration of IPv4 ACLs."
+    categories = ["security"]
+    commands = [AntaTemplate(template="show ip access-lists {acl}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyIPv4ACL test."""
+
+        ipv4_access_lists: List[IPv4ACL]
+        """List of IPv4 ACLs to verify"""
+
+        class IPv4ACL(BaseModel):
+            """Detail of IPv4 ACL"""
+
+            name: str
+            """Name of IPv4 ACL"""
+
+            entries: List[IPv4ACLEntries]
+            """List of IPv4 ACL entries"""
+
+            class IPv4ACLEntries(BaseModel):
+                """IPv4 ACL entries details"""
+
+                sequence: int = Field(ge=1, le=4294967295)
+                """Sequence number of an ACL entry"""
+                action: str
+                """Action of an ACL entry"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command_output in self.instance_commands:
+            # Collecting input ACL details
+            acl_name = command_output.params["acl"]
+            acl_entries = command_output.params["entries"]
+
+            # Check if ACL is configured
+            ipv4_acl_list = command_output.json_output["aclList"]
+            if not ipv4_acl_list:
+                self.result.is_failure(f"{acl_name}: Not found")
+                continue
+
+            # Check if the sequence number is configured and has the correct action applied
+            failed_log = f"{acl_name}:\n"
+            for acl_entry in acl_entries:
+                acl_seq = acl_entry.sequence
+                acl_action = acl_entry.action
+                if (actual_entry := get_item(ipv4_acl_list[0]["sequence"], "sequenceNumber", acl_seq)) is None:
+                    failed_log += f"Sequence number `{acl_seq}` is not found.\n"
+                    continue
+
+                if actual_entry["text"] != acl_action:
+                    failed_log += f"Expected `{acl_action}` as sequence number {acl_seq} action but found `{actual_entry['text']}` instead.\n"
+
+            if failed_log != f"{acl_name}:\n":
+                self.result.is_failure(f"{failed_log}")

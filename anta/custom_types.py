@@ -23,16 +23,20 @@ def interface_autocomplete(v: str) -> str:
 
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
-         - `po` will be changed to `Port-Channel`"""
+         - `po` will be changed to `Port-Channel`
+         - `lo` will be changed to `Loopback`"""
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
         raise ValueError(f"Could not parse interface ID in interface '{v}'")
     intf_id = m[0]
-    if any(v.lower().startswith(p) for p in ["et", "eth"]):
-        return f"Ethernet{intf_id}"
-    if v.lower().startswith("po"):
-        return f"Port-Channel{intf_id}"
+
+    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
+
+    for alias, full_name in alias_map.items():
+        if v.lower().startswith(alias):
+            return f"{full_name}{intf_id}"
+
     return v
 
 
@@ -42,6 +46,7 @@ def interface_case_sensitivity(v: str) -> str:
     Examples:
          - ethernet -> Ethernet
          - vlan -> Vlan
+         - loopback -> Loopback
     """
     if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
@@ -86,6 +91,12 @@ Interface = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
+VxlanSrcIntf = Annotated[
+    str,
+    Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
 Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership"]
 Safi = Literal["unicast", "multicast", "labeled-unicast"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]
@@ -94,3 +105,18 @@ EcdsaKeySize = Literal[256, 384, 521]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
 BfdInterval = Annotated[int, Field(ge=50, le=60000)]
 BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
+ErrDisableReasons = Literal[
+    "acl",
+    "arp-inspection",
+    "bpduguard",
+    "dot1x-session-replace",
+    "hitless-reload-down",
+    "lacp-rate-limit",
+    "link-flap",
+    "no-internal-vlan",
+    "portchannelguard",
+    "portsec",
+    "tapagg",
+    "uplink-failure-detection",
+]
+ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
