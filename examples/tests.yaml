@@ -153,6 +153,13 @@ anta.tests.interfaces:
         - Vxlan1
       specific_mtu:
         - Ethernet1/1: 1500
+  - VerifyInterfaceIPv4:
+      interfaces:
+        - name: Ethernet2
+          primary_ip: 172.30.11.0/31
+          secondary_ips:
+            - 10.10.10.0/31
+            - 10.10.10.10/31
 
 anta.tests.logging:
   - VerifyLoggingPersistent:

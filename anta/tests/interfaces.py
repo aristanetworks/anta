@@ -9,9 +9,10 @@ Test functions related to the device interfaces
 from __future__ import annotations
 
 import re
+from ipaddress import IPv4Network
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, conint
 
@@ -470,3 +471,84 @@ class VerifyL2MTU(AntaTest):
             self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
         else:
             self.result.is_success()
+
+
+class VerifyInterfaceIPv4(AntaTest):
+    """
+    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+
+    Expected Results:
+        * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
+        * failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+    """
+
+    name = "VerifyInterfaceIPv4"
+    description = "Verifies the interface IPv4 addresses."
+    categories = ["interfaces"]
+    commands = [AntaTemplate(template="show ip interface {interface}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyInterfaceIPv4 test."""
+
+        interfaces: List[InterfaceDetail]
+        """list of interfaces to be tested"""
+
+        class InterfaceDetail(BaseModel):
+            """Detail of an interface"""
+
+            name: Interface
+            """Name of the interface"""
+            primary_ip: IPv4Network
+            """Primary IPv4 address with subnet on interface"""
+            secondary_ips: Optional[List[IPv4Network]] = None
+            """Optional list of secondary IPv4 addresses with subnet on interface"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        # Render the template for each interface
+        return [
+            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
+        ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command in self.instance_commands:
+            intf = command.params["interface"]
+            input_primary_ip = str(command.params["primary_ip"])
+            failed_messages = []
+
+            # Check if the interface has an IP address configured
+            if not (interface_output := get_value(command.json_output, f"interfaces.{intf}.interfaceAddress")):
+                self.result.is_failure(f"For interface `{intf}`, IP address is not configured.")
+                continue
+
+            primary_ip = get_value(interface_output, "primaryIp")
+
+            # Combine IP address and subnet for primary IP
+            actual_primary_ip = f"{primary_ip['address']}/{primary_ip['maskLen']}"
+
+            # Check if the primary IP address matches the input
+            if actual_primary_ip != input_primary_ip:
+                failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
+
+            if command.params["secondary_ips"] is not None:
+                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+                secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
+
+                # Combine IP address and subnet for secondary IPs
+                actual_secondary_ips = sorted([f"{secondary_ip['address']}/{secondary_ip['maskLen']}" for secondary_ip in secondary_ips])
+
+                # Check if the secondary IP address is configured
+                if not actual_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP address is not configured."
+                    )
+
+                # Check if the secondary IP addresses match the input
+                elif actual_secondary_ips != input_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP addresses are `{actual_secondary_ips}`."
+                    )
+
+            if failed_messages:
+                self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))

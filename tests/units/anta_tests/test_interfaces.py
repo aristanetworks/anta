@@ -11,6 +11,7 @@ from anta.tests.interfaces import (
     VerifyInterfaceDiscards,
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
+    VerifyInterfaceIPv4,
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
@@ -1059,5 +1060,212 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.10", "maskLen": 31}, {"address": "10.10.10.20", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31", "secondary_ips": ["10.10.10.10/31", "10.10.10.20/31"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-without-secondary-ip",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31"},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-l3-interface",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [{"interfaces": {"Ethernet2": {"interfaceAddress": {}}}}, {"interfaces": {"Ethernet12": {"interfaceAddress": {}}}}],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.20/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["For interface `Ethernet2`, IP address is not configured.", "For interface `Ethernet12`, IP address is not configured."],
+        },
+    },
+    {
+        "name": "failure-ip-address-not-configured",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.0/31`, but the actual primary IP address is `0.0.0.0/0`. "
+                "The expected secondary IP addresses are `['10.10.10.0/31', '10.10.10.10/31']`, but the actual secondary IP address is not configured.",
+                "For interface `Ethernet12`, The expected primary IP address is `172.30.11.10/31`, but the actual primary IP address is `0.0.0.0/0`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP address is not configured.",
+            ],
+        },
+    },
+    {
+        "name": "failure-ip-address-missmatch",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet3": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.2/31", "secondary_ips": ["10.10.10.20/31", "10.10.10.30/31"]},
+                {"name": "Ethernet3", "primary_ip": "172.30.10.2/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
+                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP addresses are "
+                "`['10.10.10.0/31', '10.10.10.10/31']`.",
+                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
+                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+            ],
+        },
+    },
+    {
+        "name": "failure-secondary-ip-address",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet3": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.2/31", "secondary_ips": ["10.10.10.20/31", "10.10.10.30/31"]},
+                {"name": "Ethernet3", "primary_ip": "172.30.10.2/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
+                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP address is not configured.",
+                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
+                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+            ],
+        },
     },
 ]
