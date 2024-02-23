@@ -45,15 +45,16 @@ class VerifyHostname(AntaTest):
 
 class VerifyDNSLookup(AntaTest):
     """
-    This class verifies the DNS (Domain name service) name to IP address translation.
+    This class verifies the DNS (Domain name service) name to IP address resolution.
+
     Expected Results:
         * success: The test will pass if a domain name is resolved to an IP address.
         * failure: The test will fail if a domain name does not resolve to an IP address.
-        * error: This test will error out if a domain name is not correct.
+        * error: This test will error out if a domain name is invalid.
     """
 
     name = "VerifyDNSLookup"
-    description = "Verifies the DNS (Domain name service) name to IP address translation."
+    description = "Verifies the DNS name to IP address resolution."
     categories = ["services"]
     commands = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
 
