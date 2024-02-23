@@ -24,10 +24,12 @@ This section describes all the available tests provided by ANTA package.
 - [Routing BGP](tests.routing.bgp.md)
 - [Routing OSPF](tests.routing.ospf.md)
 - [Security](tests.security.md)
+- [Services](tests.services.md)
 - [SNMP](tests.snmp.md)
 - [Software](tests.software.md)
 - [STP](tests.stp.md)
 - [System](tests.system.md)
+- [VLAN](tests.vlan.md)
 - [VXLAN](tests.vxlan.md)
 
 
