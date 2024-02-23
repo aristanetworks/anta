@@ -11,9 +11,11 @@ from typing import List, Union
 
 from pydantic import BaseModel, Field
 
+from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_dict_superset import get_dict_superset
 from anta.tools.get_item import get_item
+from anta.tools.utils import get_failed_logs
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
@@ -21,7 +23,8 @@ from anta.tools.get_item import get_item
 
 class VerifyHostname(AntaTest):
     """
-    This class verifies the hostname of a device.
+    Verifies the hostname of a device.
+
     Expected results:
         * success: The test will pass if the hostname matches the provided input.
         * failure: The test will fail if the hostname does not match the provided input.
@@ -135,3 +138,62 @@ class VerifyDNSServers(AntaTest):
 
             if output["priority"] != priority:
                 self.result.is_failure(f"For DNS server `{address}`, the expected priority is `{priority}`, but `{output['priority']}` was found instead.")
+
+
+class VerifyErrdisableRecovery(AntaTest):
+    """
+    Verifies the errdisable recovery reason, status, and interval.
+
+    Expected Results:
+        * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
+        * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+    """
+
+    name = "VerifyErrdisableRecovery"
+    description = "Verifies the errdisable recovery reason, status, and interval."
+    categories = ["services"]
+    commands = [AntaCommand(command="show errdisable recovery", ofmt="text")]  # Command does not support JSON output hence using text output
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyErrdisableRecovery test."""
+
+        reasons: List[ErrDisableReason]
+        """List of errdisable reasons"""
+
+        class ErrDisableReason(BaseModel):
+            """Details of an errdisable reason"""
+
+            reason: ErrDisableReasons
+            """Type or name of the errdisable reason"""
+            interval: ErrDisableInterval
+            """Interval of the reason in seconds"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].text_output
+        self.result.is_success()
+        for error_reason in self.inputs.reasons:
+            input_reason = error_reason.reason
+            input_interval = error_reason.interval
+            reason_found = False
+
+            # Skip header and last empty line
+            lines = command_output.split("\n")[2:-1]
+            for line in lines:
+                # Skip empty lines
+                if not line.strip():
+                    continue
+                # Split by first two whitespaces
+                reason, status, interval = line.split(None, 2)
+                if reason != input_reason:
+                    continue
+                reason_found = True
+                actual_reason_data = {"interval": interval, "status": status}
+                expected_reason_data = {"interval": str(input_interval), "status": "Enabled"}
+                if actual_reason_data != expected_reason_data:
+                    failed_log = get_failed_logs(expected_reason_data, actual_reason_data)
+                    self.result.is_failure(f"`{input_reason}`:{failed_log}\n")
+                break
+
+            if not reason_found:
+                self.result.is_failure(f"`{input_reason}`: Not found.\n")

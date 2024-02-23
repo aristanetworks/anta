@@ -105,3 +105,18 @@ EcdsaKeySize = Literal[256, 384, 521]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
 BfdInterval = Annotated[int, Field(ge=50, le=60000)]
 BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
+ErrDisableReasons = Literal[
+    "acl",
+    "arp-inspection",
+    "bpduguard",
+    "dot1x-session-replace",
+    "hitless-reload-down",
+    "lacp-rate-limit",
+    "link-flap",
+    "no-internal-vlan",
+    "portchannelguard",
+    "portsec",
+    "tapagg",
+    "uplink-failure-detection",
+]
+ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
