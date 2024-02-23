@@ -229,7 +229,17 @@ anta.tests.security:
           common_name: Arista Networks Internal IT Root Cert Authority
           encryption_algorithm: RSA
           key_size: 4096
-  - VerifyIpv4ACL:
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyIPv4ACL:
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
@@ -247,16 +257,6 @@ anta.tests.security:
               action: permit tcp any any range 5900 5910
 
 anta.tests.services:
-  - VerifyBannerLogin:
-        login_banner: |
-            # Copyright (c) 2023-2024 Arista Networks, Inc.
-            # Use of this source code is governed by the Apache License 2.0
-            # that can be found in the LICENSE file.
-  - VerifyBannerMotd:
-        motd_banner: |
-            # Copyright (c) 2023-2024 Arista Networks, Inc.
-            # Use of this source code is governed by the Apache License 2.0
-            # that can be found in the LICENSE file.
   - VerifyHostname:
       hostname: s1-spine1
   - VerifyDNSLookup:
@@ -355,7 +355,6 @@ anta.tests.routing:
     - VerifyRoutingTableSize:
         minimum: 2
         maximum: 20
-    - VerifyBFD:
     - VerifyRoutingTableEntry:
         vrf: default
         routes:
