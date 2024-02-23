@@ -135,6 +135,10 @@ class VerifyInterfacesStatus(AntaTest):
     """
     This test verifies if the provided list of interfaces are all in the expected state.
 
+    - If line protocol status is provided, prioritize checking against both status and line protocol status
+    - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
+    - If interface status is not "up", check only the interface status without considering line protocol status
+
     Expected Results:
         * success: The test will pass if the provided interfaces are all in the expected state.
         * failure: The test will fail if any interface is not in the expected state.
