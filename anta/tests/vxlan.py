@@ -12,7 +12,9 @@ from ipaddress import IPv4Address
 # Need to keep List and Dict for pydantic in python 3.8
 from typing import Dict, List
 
-from anta.custom_types import Vlan, Vni
+from pydantic import Field
+
+from anta.custom_types import Vlan, Vni, VxlanSrcIntf
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 
@@ -31,7 +33,7 @@ class VerifyVxlan1Interface(AntaTest):
     """
 
     name = "VerifyVxlan1Interface"
-    description = "This test verifies if the Vxlan1 interface is configured and 'up/up'."
+    description = "Verifies the Vxlan1 interface status."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show interfaces description", ofmt="json")]
 
@@ -63,7 +65,7 @@ class VerifyVxlanConfigSanity(AntaTest):
     """
 
     name = "VerifyVxlanConfigSanity"
-    description = "This test verifies that no issues are detected with the VXLAN configuration."
+    description = "Verifies there are no VXLAN config-sanity inconsistencies."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
 
@@ -95,7 +97,7 @@ class VerifyVxlanVniBinding(AntaTest):
     """
 
     name = "VerifyVxlanVniBinding"
-    description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface"
+    description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface."
     categories = ["vxlan"]
     commands = [AntaCommand(command="show vxlan vni", ofmt="json")]
 
@@ -171,3 +173,47 @@ class VerifyVxlanVtep(AntaTest):
 
         if difference2:
             self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {sorted(difference2)}")
+
+
+class VerifyVxlan1ConnSettings(AntaTest):
+    """
+    Verifies the interface vxlan1 source interface and UDP port.
+
+    Expected Results:
+      * success: Passes if the interface vxlan1 source interface and UDP port are correct.
+      * failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
+      * skipped: Skips if the Vxlan1 interface is not configured.
+    """
+
+    name = "VerifyVxlan1ConnSettings"
+    description = "Verifies the interface vxlan1 source interface and UDP port."
+    categories = ["vxlan"]
+    commands = [AntaCommand(command="show interfaces")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyVxlan1ConnSettings test."""
+
+        source_interface: VxlanSrcIntf
+        """Source loopback interface of vxlan1 interface"""
+        udp_port: int = Field(ge=1024, le=65335)
+        """UDP port used for vxlan1 interface"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Skip the test case if vxlan1 interface is not configured
+        vxlan_output = get_value(command_output, "interfaces.Vxlan1")
+        if not vxlan_output:
+            self.result.is_skipped("Vxlan1 interface is not configured.")
+            return
+
+        src_intf = vxlan_output.get("srcIpIntf")
+        port = vxlan_output.get("udpPort")
+
+        # Check vxlan1 source interface and udp port
+        if src_intf != self.inputs.source_interface:
+            self.result.is_failure(f"Source interface is not correct. Expected `{self.inputs.source_interface}` as source interface but found `{src_intf}` instead.")
+        if port != self.inputs.udp_port:
+            self.result.is_failure(f"UDP port is not correct. Expected `{self.inputs.udp_port}` as UDP port but found `{port}` instead.")

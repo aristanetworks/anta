@@ -23,16 +23,20 @@ def interface_autocomplete(v: str) -> str:
 
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
-         - `po` will be changed to `Port-Channel`"""
+         - `po` will be changed to `Port-Channel`
+         - `lo` will be changed to `Loopback`"""
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
         raise ValueError(f"Could not parse interface ID in interface '{v}'")
     intf_id = m[0]
-    if any(v.lower().startswith(p) for p in ["et", "eth"]):
-        return f"Ethernet{intf_id}"
-    if v.lower().startswith("po"):
-        return f"Port-Channel{intf_id}"
+
+    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
+
+    for alias, full_name in alias_map.items():
+        if v.lower().startswith(alias):
+            return f"{full_name}{intf_id}"
+
     return v
 
 
@@ -42,6 +46,7 @@ def interface_case_sensitivity(v: str) -> str:
     Examples:
          - ethernet -> Ethernet
          - vlan -> Vlan
+         - loopback -> Loopback
     """
     if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
@@ -78,10 +83,17 @@ TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan = Annotated[int, Field(ge=0, le=4094)]
+MlagPriority = Annotated[int, Field(ge=1, le=32767)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
 Interface = Annotated[
     str,
     Field(pattern=r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+VxlanSrcIntf = Annotated[
+    str,
+    Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -91,7 +103,9 @@ EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 521]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
-ErrorDisableReasons = Literal[
+BfdInterval = Annotated[int, Field(ge=50, le=60000)]
+BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
+ErrDisableReasons = Literal[
     "acl",
     "arp-inspection",
     "bpduguard",

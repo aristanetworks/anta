@@ -50,6 +50,28 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.bfd:
+  - VerifyBFDSpecificPeers:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+        - peer_address: 192.0.255.7
+          vrf: default
+  - VerifyBFDPeersIntervals:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+        - peer_address: 192.0.255.7
+          vrf: default
+          tx_interval: 1200
+          rx_interval: 1200
+          multiplier: 3
+  - VerifyBFDPeersHealth:
+      down_threshold: 2
+
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
@@ -160,6 +182,8 @@ anta.tests.mlag:
       errdisabled: True
       recovery_delay: 60
       recovery_delay_non_mlag: 0
+  - VerifyMlagPrimaryPriority:
+      primary_priority: 3276
 
 anta.tests.multicast:
   - VerifyIGMPSnoopingVlans:
@@ -207,6 +231,31 @@ anta.tests.security:
           key_size: 4096
 
 anta.tests.services:
+  - VerifyBannerLogin:
+        login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyBannerMotd:
+        motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
+  - VerifyHostname:
+      hostname: s1-spine1
+  - VerifyDNSLookup:
+      domain_names:
+        - arista.com
+        - www.google.com
+        - arista.ca
+  - VerifyDNSServers:
+      dns_servers:
+        - server_address: 10.14.0.1
+          vrf: default
+          priority: 1
+        - server_address: 10.14.0.11
+          vrf: MGMT
+          priority: 0
   - VerifyErrdisableRecovery:
       reasons:
         - reason: acl
@@ -223,6 +272,10 @@ anta.tests.snmp:
   - VerifySnmpIPv6Acl:
       number: 3
       vrf: default
+  - VerifySnmpLocation:
+      location: New York
+  - VerifySnmpContact:
+      contact: Jon@example.com
 
 anta.tests.software:
   - VerifyEOSVersion:
@@ -264,6 +317,12 @@ anta.tests.system:
   - VerifyFileSystemUtilization:
   - VerifyNTP:
 
+anta.tests.vlan:
+  - VerifyVlanInternalPolicy:
+      policy: ascending
+      start_vlan_id: 1006
+      end_vlan_id: 4094
+
 anta.tests.vxlan:
   - VerifyVxlan1Interface:
   - VerifyVxlanConfigSanity:
@@ -275,6 +334,9 @@ anta.tests.vxlan:
       vteps:
         - 10.1.1.5
         - 10.1.1.6
+  - VerifyVxlan1ConnSettings:
+      source_interface: Loopback1
+      udp_port: 4789
 
 anta.tests.routing:
   generic:
@@ -357,6 +419,34 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+    - VerifyBGPPeerMD5Auth:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+          - peer_address: 172.30.11.5
+            vrf: default
+    - VerifyEVPNType2Route:
+        vxlan_endpoints:
+          - address: 192.168.20.102
+            vni: 10020
+          - address: aac1.ab5d.b41e
+            vni: 10010
+    - VerifyBGPAdvCommunities:
+        bgp_peers:
+          - peer_address: 172.30.11.17
+            vrf: default
+          - peer_address: 172.30.11.21
+            vrf: default
+    - VerifyBGPTimers:
+        bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            hold_time: 180
+            keep_alive_time: 60
+          - peer_address: 172.30.11.5
+            vrf: default
+            hold_time: 180
+            keep_alive_time: 60
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

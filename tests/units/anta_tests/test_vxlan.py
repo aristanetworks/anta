@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.vxlan import VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
+from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -324,5 +324,42 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"vteps": {}, "interfaces": {}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
         "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyVxlan1ConnSettings,
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback1", "udpPort": 4789}}}],
+        "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "skipped",
+        "test": VerifyVxlan1ConnSettings,
+        "eos_data": [{"interfaces": {}}],
+        "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
+        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured."]},
+    },
+    {
+        "name": "failure-wrong-interface",
+        "test": VerifyVxlan1ConnSettings,
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
+        "inputs": {"source_interface": "lo1", "udp_port": 4789},
+        "expected": {
+            "result": "failure",
+            "messages": ["Source interface is not correct. Expected `Loopback1` as source interface but found `Loopback10` instead."],
+        },
+    },
+    {
+        "name": "failure-wrong-port",
+        "test": VerifyVxlan1ConnSettings,
+        "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
+        "inputs": {"source_interface": "Lo1", "udp_port": 4780},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Source interface is not correct. Expected `Loopback1` as source interface but found `Loopback10` instead.",
+                "UDP port is not correct. Expected `4780` as UDP port but found `4789` instead.",
+            ],
+        },
     },
 ]

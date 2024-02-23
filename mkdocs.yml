@@ -173,6 +173,7 @@ nav:
   - Test Catalog Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
+    - BFD: api/tests.bfd.md
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
     - Field Notices: api/tests.field_notices.md
@@ -187,11 +188,13 @@ nav:
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
     - Security: api/tests.security.md
+    - Services: api/tests.services.md
     - SNMP: api/tests.snmp.md
     - STP: api/tests.stp.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
     - VXLAN: api/tests.vxlan.md
+    - VLAN: api/tests.vlan.md
   - API Documentation:
     - Inventory:
       - Inventory module: api/inventory.md
