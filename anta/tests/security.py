@@ -179,7 +179,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     """
 
     name = "VerifyAPIHttpsSSL"
-    description = "Verifies if eAPI HTTPS server SSL profile is configured and valid."
+    description = "Verifies if the eAPI has a valid SSL profile."
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands")]
 
