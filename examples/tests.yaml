@@ -124,12 +124,12 @@ anta.tests.interfaces:
       interfaces:
         - interface: Ethernet1
           state: up
-        - interface: Ethernet2
-          state: up
-          protocol_status: up
-        - interface: Vlan10
+        - interface: Port-Channel100
+          state: down
+          line_protocol_status: lowerLayerDown
+        - interface: Ethernet49/1
           state: adminDown
-          protocol_status: down
+          line_protocol_status: notPresent
   - VerifyStormControlDrops:
   - VerifyPortChannels:
   - VerifyIllegalLACP:
