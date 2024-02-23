@@ -10,8 +10,7 @@ from typing import Any
 
 import pytest
 
-from anta.tests.interfaces import extract_speed_and_lane
-from anta.tools.utils import custom_division, get_failed_logs
+from anta.tools.utils import custom_division, extract_speed_and_lane, get_failed_logs
 
 EXPECTED_OUTPUTS = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -68,7 +67,7 @@ def test_get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[An
     ],
 )
 def test_custom_division(numerator: int | float, denominator: int | float, expected_result: str, expected_raise: Any) -> None:
-    """Test get_failed_logs."""
+    """Test custom_division."""
     with expected_raise:
         assert custom_division(numerator, denominator) == expected_result
 

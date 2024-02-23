@@ -9,9 +9,10 @@ Test functions related to the device interfaces
 from __future__ import annotations
 
 import re
+from ipaddress import IPv4Network
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, conint
 
@@ -19,44 +20,9 @@ from anta.custom_types import EthernetInterface, Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-from anta.tools.utils import custom_division, get_failed_logs
+from anta.tools.utils import custom_division, extract_speed_and_lane, get_failed_logs
 
 SpeedPattern = r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|force(d)?\s\d{1,4}(g)?)$"
-
-
-def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
-    """
-    This function extracts the speed and lane information from the input string.
-
-    Parameters:
-    input_speed (str): The input string which contains the speed and lane information.
-
-    Returns:
-    tuple[Any, Any]: The extracted speed from the input string, and the extracted lane from the input string.
-                     If no lane information is found, it returns None.
-    Examples:
-        100g-8: (100, 8)
-        100g: (100, None)
-        100-8: (100, 8)
-        auto: (None, None)
-        forced 100g: (100, None)
-        auto 100g: (100, None)
-        auto 100g-4: (100, 4)
-    """
-
-    # Regular expression pattern
-    pattern = r"(auto |force(d)? )?(?P<speed>\d+(\.\d+)?)(g)?(-(?P<lane>\d+))?"
-
-    # Find matches
-    match = re.match(pattern, input_speed)
-
-    if match:
-        # If a match is found, extract the speed and lane information
-        speed = match.group("speed")
-        lane = int(match.group("lane")) if match.group("lane") else None
-        return speed, lane
-
-    return None, None
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -510,17 +476,99 @@ class VerifyL2MTU(AntaTest):
             self.result.is_success()
 
 
+class VerifyInterfaceIPv4(AntaTest):
+    """
+    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+
+    Expected Results:
+        * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
+        * failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+    """
+
+    name = "VerifyInterfaceIPv4"
+    description = "Verifies the interface IPv4 addresses."
+    categories = ["interfaces"]
+    commands = [AntaTemplate(template="show ip interface {interface}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyInterfaceIPv4 test."""
+
+        interfaces: List[InterfaceDetail]
+        """list of interfaces to be tested"""
+
+        class InterfaceDetail(BaseModel):
+            """Detail of an interface"""
+
+            name: Interface
+            """Name of the interface"""
+            primary_ip: IPv4Network
+            """Primary IPv4 address with subnet on interface"""
+            secondary_ips: Optional[List[IPv4Network]] = None
+            """Optional list of secondary IPv4 addresses with subnet on interface"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        # Render the template for each interface
+        return [
+            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
+        ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command in self.instance_commands:
+            intf = command.params["interface"]
+            input_primary_ip = str(command.params["primary_ip"])
+            failed_messages = []
+
+            # Check if the interface has an IP address configured
+            if not (interface_output := get_value(command.json_output, f"interfaces.{intf}.interfaceAddress")):
+                self.result.is_failure(f"For interface `{intf}`, IP address is not configured.")
+                continue
+
+            primary_ip = get_value(interface_output, "primaryIp")
+
+            # Combine IP address and subnet for primary IP
+            actual_primary_ip = f"{primary_ip['address']}/{primary_ip['maskLen']}"
+
+            # Check if the primary IP address matches the input
+            if actual_primary_ip != input_primary_ip:
+                failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
+
+            if command.params["secondary_ips"] is not None:
+                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+                secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
+
+                # Combine IP address and subnet for secondary IPs
+                actual_secondary_ips = sorted([f"{secondary_ip['address']}/{secondary_ip['maskLen']}" for secondary_ip in secondary_ips])
+
+                # Check if the secondary IP address is configured
+                if not actual_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP address is not configured."
+                    )
+
+                # Check if the secondary IP addresses match the input
+                elif actual_secondary_ips != input_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP addresses are `{actual_secondary_ips}`."
+                    )
+
+            if failed_messages:
+                self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))
+
+
 class VerifyInterfacesSpeed(AntaTest):
     """
     Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
-    If speed is auto then verify auto-negotiation as success and mode as full duplex.
-    If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
-    If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
-    If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
+
+    - If speed is auto then verify auto-negotiation as success and mode as full duplex.
+    - If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
+    - If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
+    - If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
 
     Expected Results:
         * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
-        * Failure: The test will fail if an interface is not found, the speed or alnes does not match with input,
+        * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
                    auto-negotiation is not correct or mode is not full duplex.
     """
 
@@ -565,18 +613,18 @@ class VerifyInterfacesSpeed(AntaTest):
 
             # Collecting actual interface details
             actual_interface_output = {
-                "auto negotiation": auto_negotiation if "auto" in interface.speed else "None",
+                "auto negotiation": auto_negotiation if "auto" in interface.speed else "NA",
                 "duplex mode": duplex,
-                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "None",
-                "lanes": actual_lanes if lanes is not None else "None",
+                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "NA",
+                "lanes": actual_lanes if lanes is not None else "NA",
             }
 
             # Forming expected interface details
             expected_interface_output = {
-                "auto negotiation": "success" if "auto" in interface.speed else "None",
+                "auto negotiation": "success" if "auto" in interface.speed else "NA",
                 "duplex mode": "duplexFull",
-                "speed": f"{speed}Gbps" if interface.speed != "auto" else "None",
-                "lanes": lanes if lanes is not None else "None",
+                "speed": f"{speed}Gbps" if interface.speed != "auto" else "NA",
+                "lanes": lanes if lanes is not None else "NA",
             }
 
             # Forming failure message

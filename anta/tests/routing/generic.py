@@ -79,31 +79,6 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
 
 
-class VerifyBFD(AntaTest):
-    """
-    Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
-    """
-
-    name = "VerifyBFD"
-    description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
-    categories = ["bfd"]
-    # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaCommand(command="show bfd peers", revision=1)]
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        command_output = self.instance_commands[0].json_output
-        self.result.is_success()
-        for _, vrf_data in command_output["vrfs"].items():
-            for _, neighbor_data in vrf_data["ipv4Neighbors"].items():
-                for peer, peer_data in neighbor_data["peerStats"].items():
-                    if (peer_status := peer_data["status"]) != "up":
-                        failure_message = f"bfd state for peer '{peer}' is {peer_status} (expected up)."
-                        if (peer_l3intf := peer_data.get("l3intf")) is not None and peer_l3intf != "":
-                            failure_message += f" Interface: {peer_l3intf}."
-                        self.result.is_failure(failure_message)
-
-
 class VerifyRoutingTableEntry(AntaTest):
     """
     This test verifies that the provided routes are present in the routing table of a specified VRF.
