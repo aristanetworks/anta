@@ -15,10 +15,12 @@ from ipaddress import IPv4Network
 from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, conint
+from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import EthernetInterface, Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 from anta.tools.utils import custom_division, extract_speed_and_lane, get_failed_logs
 
@@ -139,6 +141,10 @@ class VerifyInterfacesStatus(AntaTest):
     """
     This test verifies if the provided list of interfaces are all in the expected state.
 
+    - If line protocol status is provided, prioritize checking against both status and line protocol status
+    - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
+    - If interface status is not "up", check only the interface status without considering line protocol status
+
     Expected Results:
         * success: The test will pass if the provided interfaces are all in the expected state.
         * failure: The test will fail if any interface is not in the expected state.
@@ -149,14 +155,21 @@ class VerifyInterfacesStatus(AntaTest):
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: List[InterfaceStatus]
-        """List of interfaces to validate with the expected state"""
+    class Input(AntaTest.Input):
+        """Input for the VerifyInterfacesStatus test."""
 
-        class InterfaceStatus(BaseModel):  # pylint: disable=missing-class-docstring
-            interface: Interface
-            state: Literal["up", "adminDown"]
-            protocol_status: Literal["up", "down"] = "up"
+        interfaces: List[InterfaceState]
+        """List of interfaces to validate with the expected state."""
+
+        class InterfaceState(BaseModel):
+            """Model for the interface state input."""
+
+            name: Interface
+            """Interface to validate."""
+            status: Literal["up", "down", "adminDown"]
+            """Expected status of the interface."""
+            line_protocol_status: Optional[Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"]] = None
+            """Expected line protocol status of the interface."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -167,22 +180,23 @@ class VerifyInterfacesStatus(AntaTest):
         intf_not_configured = []
         intf_wrong_state = []
 
-        for interface_status in self.inputs.interfaces:
-            intf_status = get_value(command_output["interfaceDescriptions"], interface_status.interface, separator=";")
-            if intf_status is None:
-                intf_not_configured.append(interface_status.interface)
+        for interface in self.inputs.interfaces:
+            if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
+                intf_not_configured.append(interface.name)
                 continue
 
-            proto = intf_status["lineProtocolStatus"]
-            status = intf_status["interfaceStatus"]
+            status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
+            proto = "up" if intf_status["lineProtocolStatus"] in {"up", "connected"} else intf_status["lineProtocolStatus"]
 
-            if interface_status.state == "up" and not (re.match(r"connected|up", proto) and re.match(r"connected|up", status)):
-                intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
-            elif interface_status.state == "adminDown":
-                if interface_status.protocol_status == "up" and not (re.match(r"up", proto) and re.match(r"adminDown", status)):
-                    intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
-                elif interface_status.protocol_status == "down" and not (re.match(r"down", proto) and re.match(r"adminDown", status)):
-                    intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
+            # If line protocol status is provided, prioritize checking against both status and line protocol status
+            if interface.line_protocol_status:
+                if interface.status != status or interface.line_protocol_status != proto:
+                    intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
+
+            # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
+            # If interface status is not "up", check only the interface status without considering line protocol status
+            elif (interface.status == "up" and (status != "up" or proto != "up")) or (interface.status != status):
+                intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
 
         if intf_not_configured:
             self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
@@ -557,15 +571,44 @@ class VerifyInterfaceIPv4(AntaTest):
                 self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))
 
 
+class VerifyIpVirtualRouterMac(AntaTest):
+    """
+    Verifies the IP virtual router MAC address.
+
+    Expected Results:
+        * success: The test will pass if the IP virtual router MAC address matches the input.
+        * failure: The test will fail if the IP virtual router MAC address does not match the input.
+    """
+
+    name = "VerifyIpVirtualRouterMac"
+    description = "Verifies the IP virtual router MAC address."
+    categories = ["interfaces"]
+    commands = [AntaCommand(command="show ip virtual-router")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyIpVirtualRouterMac test."""
+
+        mac_address: MacAddress
+        """IP virtual router MAC address"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output["virtualMacs"]
+        mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
+
+        if mac_address_found is None:
+            self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
+        else:
+            self.result.is_success()
+
+
 class VerifyInterfacesSpeed(AntaTest):
     """
     Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
-
     - If speed is auto then verify auto-negotiation as success and mode as full duplex.
     - If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
     - If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
     - If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
-
     Expected Results:
         * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
         * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
@@ -613,18 +656,18 @@ class VerifyInterfacesSpeed(AntaTest):
 
             # Collecting actual interface details
             actual_interface_output = {
-                "auto negotiation": auto_negotiation if "auto" in interface.speed else "NA",
+                "auto negotiation": auto_negotiation if "auto" in interface.speed else "N/A",
                 "duplex mode": duplex,
-                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "NA",
-                "lanes": actual_lanes if lanes is not None else "NA",
+                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "N/A",
+                "lanes": actual_lanes if lanes is not None else "N/A",
             }
 
             # Forming expected interface details
             expected_interface_output = {
-                "auto negotiation": "success" if "auto" in interface.speed else "NA",
+                "auto negotiation": "success" if "auto" in interface.speed else "N/A",
                 "duplex mode": "duplexFull",
-                "speed": f"{speed}Gbps" if interface.speed != "auto" else "NA",
-                "lanes": lanes if lanes is not None else "NA",
+                "speed": f"{speed}Gbps" if interface.speed != "auto" else "N/A",
+                "lanes": lanes if lanes is not None else "N/A",
             }
 
             # Forming failure message
