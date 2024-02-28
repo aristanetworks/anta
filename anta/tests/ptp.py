@@ -17,7 +17,7 @@ class PtpModeStatus(AntaTest):
 
     name = "PtpModeStatus"
     description = "Check Boundary Clock mode is enabled"
-    categories = ["hardware"]
+    categories = ["ptp"]
     commands = [AntaCommand(command="show ptp", ofmt="json")]
 
     # Verify that all switches are running Boundary Clock
@@ -51,7 +51,7 @@ class PtpGMStatus(AntaTest):
 
     name = "PtpGMStatus"
     description = "Check device is locked to an allowed GM"
-    categories = ["hardware"]
+    categories = ["ptp"]
     commands = [AntaCommand(command="show ptp", ofmt="json")]
 
     # Verify that all switches are locked to the same GMID, and that this GMID is one of the provided GMs
@@ -80,7 +80,7 @@ class PtpLockStatus(AntaTest):
 
     name = "PtpLockStatus"
     description = "Check that the device was locked to the upstream GM in the last minute"
-    categories = ["hardware"]
+    categories = ["ptp"]
     commands = [AntaCommand(command="show ptp", ofmt="json")]
 
     # Verify that last lock time is within the last minute
@@ -114,7 +114,7 @@ class PtpOffset(AntaTest):
 
     name = "PtpOffset"
     description = "Check that the Offset From Master is within +/- 1000ns"
-    categories = ["hardware"]
+    categories = ["ptp"]
     commands = [AntaCommand(command="show ptp monitor", ofmt="json")]
 
     # Verify that offset from master is acceptable
@@ -145,7 +145,7 @@ class PtpPortModeStatus(AntaTest):
 
     name = "PtpPortModeStatus"
     description = "Check that all PTP enabled ports are not in transitory states"
-    categories = ["hardware"]
+    categories = ["ptp"]
     commands = [AntaCommand(command="show ptp", ofmt="json")]
 
     # Verify that ports are either Master / Slave / Passive or Disabled
