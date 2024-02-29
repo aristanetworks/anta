@@ -97,8 +97,8 @@ VxlanSrcIntf = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
-Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership"]
-Safi = Literal["unicast", "multicast", "labeled-unicast"]
+Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership", "path-selection", "link-state", "sr-te"]
+Safi = Literal["unicast", "multicast", "labeled-unicast", "ipv4", "ipv6"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 521]

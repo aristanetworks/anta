@@ -506,9 +506,70 @@ DATA: list[dict[str, Any]] = [
                         },
                     }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.20": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.30": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.32": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default"}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "path-selection"},
+                {"afi": "link-state"},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -553,13 +614,77 @@ DATA: list[dict[str, Any]] = [
                         },
                     }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.20": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Idle",
+                            },
+                            "10.1.255.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.30": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.32": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default"}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "path-selection"},
+                {"afi": "link-state"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.20': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.32': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
             ],
         },
     },
@@ -640,9 +765,41 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                    "PROD": {
+                        "peers": {
+                            "10.1.254.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "192.168.1.111": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                }
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}]},
+        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "sr-te", "safi": "ipv4", "vrf": "all"}]},
         "expected": {
             "result": "success",
         },
@@ -724,222 +881,95 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Idle",
+                            },
+                            "10.1.255.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                    "PROD": {
+                        "peers": {
+                            "10.1.254.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "192.168.1.111": {
+                                "inMsgQueue": 100,
+                                "outMsgQueue": 200,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                }
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}]},
+        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "sr-te", "safi": "ipv4", "vrf": "all"}]},
         "expected": {
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
-                "'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}}]"
+                "'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'default': {'10.1.255.10': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
+                "'PROD': {'192.168.1.111': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}}]"
             ],
         },
     },
     {
         "name": "failure-not-configured",
         "test": VerifyBGPPeersHealth,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}]"]},
-    },
-    {
-        "name": "failure-no-peers",
-        "test": VerifyBGPPeersHealth,
-        "eos_data": [{"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}}],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "multicast"}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': 'No Peers'}}]"]},
-    },
-    {
-        "name": "success-multiple-afi",
-        "test": VerifyBGPPeersHealth,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
-            },
-        ],
+        "eos_data": [{"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "PROD"},
-                {"afi": "evpn"},
-            ]
-        },
-        "expected": {
-            "result": "success",
-        },
-    },
-    {
-        "name": "failure-multiple-afi",
-        "test": VerifyBGPPeersHealth,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
-                                "inMsgQueue": 10,
-                                "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
-            },
-            {"vrfs": {}},
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
-                                "peerState": "Idle",
-                            },
-                        },
-                    }
-                }
-            },
-        ],
-        "inputs": {
-            "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "PROD"},
-                {"afi": "evpn"},
-                {"afi": "ipv6", "safi": "unicast", "vrf": "default"},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "link-state"},
+                {"afi": "path-selection"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': "
-                "{'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 10, 'outMsgQueue': 0}}}}, "
-                "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
-                "{'afi': 'evpn', 'vrfs': {'default': {'10.1.0.2': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'Not Configured'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Not Configured'}}]"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peers",
+        "test": VerifyBGPPeersHealth,
+        "eos_data": [
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"MGMT": {"vrf": "MGMT", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "multicast"},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "link-state"},
+                {"afi": "path-selection"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': 'No Peers'}}, {'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'No Peers'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'No Peers'}}, {'afi': 'path-selection', 'vrfs': {'default': 'No Peers'}}]"
             ],
         },
     },
@@ -985,9 +1015,70 @@ DATA: list[dict[str, Any]] = [
                         },
                     }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.20": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.30": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.255.32": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    }
+                }
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
+                {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -1032,70 +1123,37 @@ DATA: list[dict[str, Any]] = [
                         },
                     }
                 }
-            }
-        ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]}]},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
-            ],
-        },
-    },
-    {
-        "name": "failure-not-configured",
-        "test": VerifyBGPSpecificPeers,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "peers": ["10.1.255.0"]}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}]"]},
-    },
-    {
-        "name": "failure-no-peers",
-        "test": VerifyBGPSpecificPeers,
-        "eos_data": [{"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}}],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "multicast", "peers": ["10.1.255.0"]}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': {'10.1.255.0': {'peerNotFound': True}}}}]"],
-        },
-    },
-    {
-        "name": "success-multiple-afi",
-        "test": VerifyBGPSpecificPeers,
-        "eos_data": [
+            },
             {
                 "vrfs": {
-                    "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
+                    "MGMT": {
                         "peers": {
-                            "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
+                            "10.1.255.10": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
-                            "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
+                            "10.1.255.12": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
+                                "peerState": "Idle",
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.20": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Idle",
+                            },
+                            "10.1.255.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
                                 "peerState": "Established",
                             },
                         },
@@ -1105,128 +1163,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
+                            "10.1.255.30": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
+                            "10.1.255.32": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
-            },
-        ],
-        "inputs": {
-            "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "peers": ["10.1.254.1", "192.168.1.11"]},
-                {"afi": "evpn", "peers": ["10.1.0.1", "10.1.0.2"]},
-            ]
-        },
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-multiple-afi",
-        "test": VerifyBGPSpecificPeers,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
-                                "inMsgQueue": 10,
-                                "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
-            },
-            {"vrfs": {}},
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
                                 "peerState": "Idle",
                             },
                         },
@@ -1236,18 +1181,67 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "peers": ["10.1.254.1", "192.168.1.11"]},
-                {"afi": "evpn", "peers": ["10.1.0.1", "10.1.0.2"]},
-                {"afi": "ipv6", "safi": "unicast", "vrf": "default", "peers": ["10.1.0.1", "10.1.0.2"]},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
+                {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': "
-                "{'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 10, 'outMsgQueue': 0}}}}, "
-                "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
-                "{'afi': 'evpn', 'vrfs': {'default': {'10.1.0.2': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}"
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.20': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.32': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifyBGPSpecificPeers,
+        "eos_data": [{"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "peers": ["10.1.255.0"]},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {"afi": "link-state", "peers": ["10.1.255.20"]},
+                {"afi": "path-selection", "peers": ["10.1.255.30"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'Not Configured'}}, {'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Not Configured'}}]"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peers",
+        "test": VerifyBGPSpecificPeers,
+        "eos_data": [
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"MGMT": {"vrf": "MGMT", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "multicast", "peers": ["10.1.255.0"]},
+                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {"afi": "link-state", "peers": ["10.1.255.20"]},
+                {"afi": "path-selection", "peers": ["10.1.255.30"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': {'10.1.255.0': {'peerNotFound': True}}}}, "
+                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.10': {'peerNotFound': True}}}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.20': {'peerNotFound': True}}}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.30': {'peerNotFound': True}}}}]"
             ],
         },
     },

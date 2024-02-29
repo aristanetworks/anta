@@ -276,13 +276,13 @@ class VerifyBGPPeersHealth(AntaTest):
             safi: Optional[Safi] = None
             """Optional BGP subsequent service family (SAFI).
 
-            If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
+            If the input `afi` is `ipv4`, `ipv6` or `sr-te`, a valid `safi` must be provided.
             """
             vrf: str = "default"
             """
-            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
+            Optional VRF for IPv4, IPv6 and SR-TE. If not provided, it defaults to `default`.
 
-            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
+            If the input `afi` is not `ipv4`, `ipv6` or `sr-te`, e.g. `evpn`, `vrf` must be `default`.
             """
 
             @model_validator(mode="after")
@@ -290,25 +290,25 @@ class VerifyBGPPeersHealth(AntaTest):
                 """
                 Validate the inputs provided to the BgpAfi class.
 
-                If afi is either ipv4 or ipv6, safi must be provided.
+                If afi is ipv4, ipv6 or sr-te, safi must be provided.
 
-                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
+                If afi is not ipv4, ipv6 and sr-te, safi must not be provided and vrf must be default.
                 """
-                if self.afi in ["ipv4", "ipv6"]:
+                if self.afi in ["ipv4", "ipv6", "sr-te"]:
                     if self.safi is None:
-                        raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
+                        raise ValueError("'safi' must be provided when afi is ipv4, ipv6 or sr-te")
                 elif self.safi is not None:
-                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                    raise ValueError("'safi' must not be provided when afi is not ipv4, ipv6 or sr-te")
                 elif self.vrf != "default":
-                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
+                    raise ValueError("'vrf' must be default when afi is not ipv4, ipv6 or sr-te")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6", "sr-te"]:
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf))
-            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6", "sr-te"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf))
         return commands
 
@@ -382,15 +382,15 @@ class VerifyBGPSpecificPeers(AntaTest):
             safi: Optional[Safi] = None
             """Optional BGP subsequent service family (SAFI).
 
-            If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
+            If the input `afi` is `ipv4`, `ipv6` or `sr-te`, a valid `safi` must be provided.
             """
             vrf: str = "default"
             """
-            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
+            Optional VRF for IPv4, IPv6 and SR-TE. If not provided, it defaults to `default`.
 
             `all` is NOT supported.
 
-            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
+            If the input `afi` is not `ipv4`, `ipv6` or `sr-te`, e.g. `evpn`, `vrf` must be `default`.
             """
             peers: List[Union[IPv4Address, IPv6Address]]
             """List of BGP IPv4 or IPv6 peer"""
@@ -400,27 +400,27 @@ class VerifyBGPSpecificPeers(AntaTest):
                 """
                 Validate the inputs provided to the BgpAfi class.
 
-                If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
+                If afi is ipv4, ipv6 or sr-te, safi must be provided and vrf must NOT be all.
 
-                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
+                If afi is not ipv4, ipv6 or sr-te, safi must not be provided and vrf must be default.
                 """
-                if self.afi in ["ipv4", "ipv6"]:
+                if self.afi in ["ipv4", "ipv6", "sr-te"]:
                     if self.safi is None:
-                        raise ValueError("'safi' must be provided when afi is ipv4 or ipv6")
+                        raise ValueError("'safi' must be provided when afi is ipv4, ipv6 or sr-te")
                     if self.vrf == "all":
                         raise ValueError("'all' is not supported in this test. Use VerifyBGPPeersHealth test instead.")
                 elif self.safi is not None:
-                    raise ValueError("'safi' must not be provided when afi is not ipv4 or ipv6")
+                    raise ValueError("'safi' must not be provided when afi is not ipv4, ipv6 or sr-te")
                 elif self.vrf != "default":
-                    raise ValueError("'vrf' must be default when afi is not ipv4 or ipv6")
+                    raise ValueError("'vrf' must be default when afi is not ipv4, ipv6 or sr-te")
                 return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6", "sr-te"]:
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf, peers=afi.peers))
-            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6", "sr-te"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, peers=afi.peers))
         return commands
 
