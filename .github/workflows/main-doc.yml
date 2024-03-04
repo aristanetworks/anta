@@ -10,6 +10,7 @@ on:
       # May need to update this
       - "docs/**"
       - "mkdocs.yml"
+  workflow_dispatch:
 
 jobs:
   'build_latest_doc':
