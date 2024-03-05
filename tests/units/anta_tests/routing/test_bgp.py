@@ -565,7 +565,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT"},
                 {"afi": "path-selection"},
                 {"afi": "link-state"},
             ]
@@ -673,7 +673,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT"},
                 {"afi": "path-selection"},
                 {"afi": "link-state"},
             ]
@@ -682,7 +682,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.20': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.32': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
             ],
@@ -799,7 +799,7 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "sr-te", "safi": "ipv4", "vrf": "all"}]},
+        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "ipv4", "safi": "sr-te", "vrf": "all"}]},
         "expected": {
             "result": "success",
         },
@@ -915,13 +915,13 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "sr-te", "safi": "ipv4", "vrf": "all"}]},
+        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "ipv4", "safi": "sr-te", "vrf": "all"}]},
         "expected": {
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
                 "'PROD': {'192.168.1.11': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'default': {'10.1.255.10': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'default': {'10.1.255.10': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}, "
                 "'PROD': {'192.168.1.111': {'peerState': 'Established', 'inMsgQueue': 100, 'outMsgQueue': 200}}}}]"
             ],
         },
@@ -933,7 +933,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT"},
                 {"afi": "link-state"},
                 {"afi": "path-selection"},
             ]
@@ -942,7 +942,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'Not Configured'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Not Configured'}}, "
                 "{'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
                 "{'afi': 'path-selection', 'vrfs': {'default': 'Not Configured'}}]"
             ],
@@ -960,7 +960,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "multicast"},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT"},
                 {"afi": "link-state"},
                 {"afi": "path-selection"},
             ]
@@ -968,7 +968,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': 'No Peers'}}, {'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'No Peers'}}, "
+                "Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': 'No Peers'}}, {'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'No Peers'}}, "
                 "{'afi': 'link-state', 'vrfs': {'default': 'No Peers'}}, {'afi': 'path-selection', 'vrfs': {'default': 'No Peers'}}]"
             ],
         },
@@ -1074,7 +1074,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
                 {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
@@ -1182,7 +1182,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
                 {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
@@ -1191,7 +1191,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': {'10.1.255.0': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': {'10.1.255.12': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.20': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}, "
                 "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.32': {'peerState': 'Idle', 'inMsgQueue': 0, 'outMsgQueue': 0}}}}]"
             ],
@@ -1204,7 +1204,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "peers": ["10.1.255.0"]},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10"]},
                 {"afi": "link-state", "peers": ["10.1.255.20"]},
                 {"afi": "path-selection", "peers": ["10.1.255.30"]},
             ]
@@ -1213,7 +1213,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'DEV': 'Not Configured'}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': 'Not Configured'}}, {'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Not Configured'}}, {'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
                 "{'afi': 'path-selection', 'vrfs': {'default': 'Not Configured'}}]"
             ],
         },
@@ -1230,7 +1230,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "multicast", "peers": ["10.1.255.0"]},
-                {"afi": "sr-te", "safi": "ipv4", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10"]},
                 {"afi": "link-state", "peers": ["10.1.255.20"]},
                 {"afi": "path-selection", "peers": ["10.1.255.30"]},
             ]
@@ -1239,7 +1239,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'default': {'10.1.255.0': {'peerNotFound': True}}}}, "
-                "{'afi': 'sr-te', 'safi': 'ipv4', 'vrfs': {'MGMT': {'10.1.255.10': {'peerNotFound': True}}}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': {'10.1.255.10': {'peerNotFound': True}}}}, "
                 "{'afi': 'link-state', 'vrfs': {'default': {'10.1.255.20': {'peerNotFound': True}}}}, "
                 "{'afi': 'path-selection', 'vrfs': {'default': {'10.1.255.30': {'peerNotFound': True}}}}]"
             ],
