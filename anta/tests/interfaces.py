@@ -655,18 +655,18 @@ class VerifyInterfacesSpeed(AntaTest):
 
             # Collecting actual interface details
             actual_interface_output = {
-                "auto negotiation": auto_negotiation if "auto" in interface.speed else "N/A",
+                "auto negotiation": auto_negotiation if "auto" in interface.speed else None,
                 "duplex mode": duplex,
-                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else "N/A",
-                "lanes": actual_lanes if lanes is not None else "N/A",
+                "speed": f"{custom_division(actual_speed, 1000000000)}Gbps" if interface.speed != "auto" else None,
+                "lanes": actual_lanes if lanes is not None else None,
             }
 
             # Forming expected interface details
             expected_interface_output = {
-                "auto negotiation": "success" if "auto" in interface.speed else "N/A",
+                "auto negotiation": "success" if "auto" in interface.speed else None,
                 "duplex mode": "duplexFull",
-                "speed": f"{speed}Gbps" if interface.speed != "auto" else "N/A",
-                "lanes": lanes if lanes is not None else "N/A",
+                "speed": f"{speed}Gbps" if interface.speed != "auto" else None,
+                "lanes": lanes if lanes is not None else None,
             }
 
             # Forming failure message

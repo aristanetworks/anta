@@ -78,7 +78,7 @@ def test_custom_division(numerator: int | float, denominator: int | float, expec
         pytest.param("100g-4", ("100", 4), does_not_raise(), id="Speed with lane `100g-4`"),
         pytest.param("100g", ("100", None), does_not_raise(), id="Speed without lane `100g-4`"),
         pytest.param("auto 100g-8", ("100", 8), does_not_raise(), id="Auto speed with lane `auto 100g-8`"),
-        pytest.param("auto 10", ("10", None), does_not_raise(), id="Auto speed without lane `auto 10`"),
+        pytest.param("auto 10g", ("10", None), does_not_raise(), id="Auto speed without lane `auto 10g`"),
         pytest.param("auto", (None, None), does_not_raise(), id="Only auto speed `auto`"),
         pytest.param("forced 2.5g", ("2.5", None), does_not_raise(), id="Forced speed without lane `forced 2.5g`"),
     ],

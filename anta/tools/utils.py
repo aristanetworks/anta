@@ -25,9 +25,9 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
     failed_logs = []
 
     for element, expected_data in expected_output.items():
-        actual_data = actual_output.get(element)
+        actual_data = actual_output.get(element, "not found")
 
-        if actual_data is None:
+        if actual_data == "not found":
             failed_logs.append(f"\nExpected `{expected_data}` as the {element}, but it was not found in the actual output.")
         elif actual_data != expected_data:
             failed_logs.append(f"\nExpected `{expected_data}` as the {element}, but found `{actual_data}` instead.")
@@ -64,7 +64,6 @@ def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
     Examples:
         100g-8: (100, 8)
         100g: (100, None)
-        100-8: (100, 8)
         auto: (None, None)
         forced 100g: (100, None)
         auto 100g: (100, None)
@@ -72,7 +71,10 @@ def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
     """
 
     # Regular expression pattern
-    pattern = r"(auto |force(d)? )?(?P<speed>\d+(\.\d+)?)(g)?(-(?P<lane>\d+))?"
+    # auto or forced: optional prefixes
+    # speed: a number (integer or float) followed by a mandatory 'g'
+    # lane: a number after a dash
+    pattern = r"(auto |forced )?(?P<speed>\d+(\.\d+)?)(g)(-(?P<lane>\d+))?"
 
     # Find matches
     match = re.match(pattern, input_speed)

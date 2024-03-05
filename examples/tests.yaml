@@ -167,13 +167,13 @@ anta.tests.interfaces:
         - name: eth2
           speed: 100g
         - name: Eth3
-          speed: 1-0
+          speed: 1g-0
         - name: Eth3
-          speed: auto 100-1
+          speed: auto 100g-1
         - name: Ethernet2
           speed: auto 2.5g
         - name: Et3
-          speed: forced 1
+          speed: forced 1g
 
 anta.tests.logging:
   - VerifyLoggingPersistent:

@@ -97,7 +97,7 @@ EthernetInterface = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
-InterfaceSpeedPattern = Annotated[str, Field(pattern=r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|force(d)?\s\d{1,4}(g)?)$")]
+InterfaceSpeedPattern = Annotated[str, Field(pattern=r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|forced\s\d{1,4}(g)?)$")]
 VxlanSrcIntf = Annotated[
     str,
     Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),
