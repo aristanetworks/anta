@@ -164,7 +164,6 @@ class ResultManager:
 
         Args:
             test_name (str): Test name to use to filter results
-            output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
 
         Returns:
             list[TestResult]: List of results related to the test.
@@ -177,7 +176,6 @@ class ResultManager:
 
         Args:
             host_ip (str): IP Address of the host to use to filter results.
-            output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
 
         Returns:
             list[TestResult]: List of results related to the host.
