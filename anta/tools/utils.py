@@ -50,7 +50,7 @@ def custom_division(numerator: int | float, denominator: int | float) -> int | f
     return int(result) if result.is_integer() else result
 
 
-def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
+def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
     """
     This function extracts the speed and lane information from the input string.
 
@@ -58,8 +58,8 @@ def extract_speed_and_lane(input_speed: str) -> tuple[Any, Any]:
         input_speed (str): The input string which contains the speed and lane information.
 
     Returns:
-        tuple[Any, Any]: The extracted speed from the input string, and the extracted lane from the input string.
-                         If no lane information is found, it returns None.
+        tuple[str|None, int|None]: The extracted speed from the input string, and the extracted lane from the input string.
+                                   If no lane information is found, it returns None.
 
     Examples:
         100g-8: (100, 8)

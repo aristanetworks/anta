@@ -607,6 +607,7 @@ class VerifyInterfacesSpeed(AntaTest):
     - If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
     - If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
     - If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
+
     Expected Results:
         * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
         * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
