@@ -84,7 +84,6 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [anta]
           import:
             - https://docs.python.org/3/objects.inv
             - https://mkdocstrings.github.io/objects.inv
@@ -115,8 +114,8 @@ plugins:
 markdown_extensions:
   - attr_list
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - smarty
   - pymdownx.arithmatex
   - pymdownx.betterem:
@@ -173,6 +172,7 @@ nav:
   - Test Catalog Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
+    - BFD: api/tests.bfd.md
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
     - Field Notices: api/tests.field_notices.md
@@ -187,11 +187,13 @@ nav:
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
     - Security: api/tests.security.md
+    - Services: api/tests.services.md
     - SNMP: api/tests.snmp.md
     - STP: api/tests.stp.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
     - VXLAN: api/tests.vxlan.md
+    - VLAN: api/tests.vlan.md
   - API Documentation:
     - Inventory:
       - Inventory module: api/inventory.md
@@ -204,8 +206,6 @@ nav:
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
-    - Report Manager:
-      - Report Manager module: api/report_manager.md
-      - Report Manager models: api/report_manager_models.md
+    - Report Manager: api/report_manager.md
   - Contributions: contribution.md
   - FAQ: faq.md

@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -9,25 +9,32 @@ Test functions related to the device interfaces
 from __future__ import annotations
 
 import re
+from ipaddress import IPv4Network
 
 # Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, conint
+from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):
     """
     Verifies interfaces utilization is below 75%.
+
+    Expected Results:
+        * success: The test will pass if all interfaces have a usage below 75%.
+        * failure: The test will fail if one or more interfaces have a usage above 75%.
     """
 
     name = "VerifyInterfaceUtilization"
-    description = "Verifies interfaces utilization is below 75%."
+    description = "Verifies that all interfaces have a usage below 75%."
     categories = ["interfaces"]
     # TODO - move from text to json if possible
     commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
@@ -60,7 +67,7 @@ class VerifyInterfaceErrors(AntaTest):
     """
 
     name = "VerifyInterfaceErrors"
-    description = "Verifies that interfaces error counters are equal to zero."
+    description = "Verifies there are no interface error counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces counters errors")]
 
@@ -80,10 +87,14 @@ class VerifyInterfaceErrors(AntaTest):
 class VerifyInterfaceDiscards(AntaTest):
     """
     Verifies interfaces packet discard counters are equal to zero.
+
+    Expected Results:
+        * success: The test will pass if all interfaces have discard counters equal to zero.
+        * failure: The test will fail if one or more interfaces have non-zero discard counters.
     """
 
     name = "VerifyInterfaceDiscards"
-    description = "Verifies interfaces packet discard counters are equal to zero."
+    description = "Verifies there are no interface discard counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces counters discards")]
 
@@ -101,11 +112,15 @@ class VerifyInterfaceDiscards(AntaTest):
 
 class VerifyInterfaceErrDisabled(AntaTest):
     """
-    Verifies there is no interface in error disable state.
+    Verifies there are no interfaces in errdisabled state.
+
+    Expected Results:
+        * success: The test will pass if there are no interfaces in errdisabled state.
+        * failure: The test will fail if there is at least one interface in errdisabled state.
     """
 
     name = "VerifyInterfaceErrDisabled"
-    description = "Verifies there is no interface in error disable state."
+    description = "Verifies there are no interfaces in the errdisabled state."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces status")]
 
@@ -123,24 +138,35 @@ class VerifyInterfacesStatus(AntaTest):
     """
     This test verifies if the provided list of interfaces are all in the expected state.
 
+    - If line protocol status is provided, prioritize checking against both status and line protocol status
+    - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
+    - If interface status is not "up", check only the interface status without considering line protocol status
+
     Expected Results:
         * success: The test will pass if the provided interfaces are all in the expected state.
         * failure: The test will fail if any interface is not in the expected state.
     """
 
     name = "VerifyInterfacesStatus"
-    description = "Verifies if the provided list of interfaces are all in the expected state."
+    description = "Verifies the status of the provided interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces description")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: List[InterfaceStatus]
-        """List of interfaces to validate with the expected state"""
+    class Input(AntaTest.Input):
+        """Input for the VerifyInterfacesStatus test."""
 
-        class InterfaceStatus(BaseModel):  # pylint: disable=missing-class-docstring
-            interface: Interface
-            state: Literal["up", "adminDown"]
-            protocol_status: Literal["up", "down"] = "up"
+        interfaces: List[InterfaceState]
+        """List of interfaces to validate with the expected state."""
+
+        class InterfaceState(BaseModel):
+            """Model for the interface state input."""
+
+            name: Interface
+            """Interface to validate."""
+            status: Literal["up", "down", "adminDown"]
+            """Expected status of the interface."""
+            line_protocol_status: Optional[Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"]] = None
+            """Expected line protocol status of the interface."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -151,22 +177,23 @@ class VerifyInterfacesStatus(AntaTest):
         intf_not_configured = []
         intf_wrong_state = []
 
-        for interface_status in self.inputs.interfaces:
-            intf_status = get_value(command_output["interfaceDescriptions"], interface_status.interface, separator=";")
-            if intf_status is None:
-                intf_not_configured.append(interface_status.interface)
+        for interface in self.inputs.interfaces:
+            if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
+                intf_not_configured.append(interface.name)
                 continue
 
-            proto = intf_status["lineProtocolStatus"]
-            status = intf_status["interfaceStatus"]
+            status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
+            proto = "up" if intf_status["lineProtocolStatus"] in {"up", "connected"} else intf_status["lineProtocolStatus"]
 
-            if interface_status.state == "up" and not (re.match(r"connected|up", proto) and re.match(r"connected|up", status)):
-                intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
-            elif interface_status.state == "adminDown":
-                if interface_status.protocol_status == "up" and not (re.match(r"up", proto) and re.match(r"adminDown", status)):
-                    intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
-                elif interface_status.protocol_status == "down" and not (re.match(r"down", proto) and re.match(r"adminDown", status)):
-                    intf_wrong_state.append(f"{interface_status.interface} is {proto}/{status} expected {interface_status.protocol_status}/{interface_status.state}")
+            # If line protocol status is provided, prioritize checking against both status and line protocol status
+            if interface.line_protocol_status:
+                if interface.status != status or interface.line_protocol_status != proto:
+                    intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
+
+            # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
+            # If interface status is not "up", check only the interface status without considering line protocol status
+            elif (interface.status == "up" and (status != "up" or proto != "up")) or (interface.status != status):
+                intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
 
         if intf_not_configured:
             self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
@@ -178,10 +205,14 @@ class VerifyInterfacesStatus(AntaTest):
 class VerifyStormControlDrops(AntaTest):
     """
     Verifies the device did not drop packets due its to storm-control configuration.
+
+    Expected Results:
+        * success: The test will pass if there are no storm-control drop counters.
+        * failure: The test will fail if there is at least one storm-control drop counter.
     """
 
     name = "VerifyStormControlDrops"
-    description = "Verifies the device did not drop packets due its to storm-control configuration."
+    description = "Verifies there are no interface storm-control drop counters."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show storm-control")]
 
@@ -203,11 +234,15 @@ class VerifyStormControlDrops(AntaTest):
 
 class VerifyPortChannels(AntaTest):
     """
-    Verifies there is no inactive port in port channels.
+    Verifies there are no inactive ports in all port channels.
+
+    Expected Results:
+        * success: The test will pass if there are no inactive ports in all port channels.
+        * failure: The test will fail if there is at least one inactive port in a port channel.
     """
 
     name = "VerifyPortChannels"
-    description = "Verifies there is no inactive port in port channels."
+    description = "Verifies there are no inactive ports in all port channels."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show port-channel")]
 
@@ -227,11 +262,15 @@ class VerifyPortChannels(AntaTest):
 
 class VerifyIllegalLACP(AntaTest):
     """
-    Verifies there is no illegal LACP packets received.
+    Verifies there are no illegal LACP packets received.
+
+    Expected Results:
+        * success: The test will pass if there are no illegal LACP packets received.
+        * failure: The test will fail if there is at least one illegal LACP packet received.
     """
 
     name = "VerifyIllegalLACP"
-    description = "Verifies there is no illegal LACP packets received."
+    description = "Verifies there are no illegal LACP packets in all port channels."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show lacp counters all-ports")]
 
@@ -251,11 +290,15 @@ class VerifyIllegalLACP(AntaTest):
 
 class VerifyLoopbackCount(AntaTest):
     """
-    Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down.
+    Verifies that the device has the expected number of loopback interfaces and all are operational.
+
+    Expected Results:
+        * success: The test will pass if the device has the correct number of loopback interfaces and none are down.
+        * failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
     """
 
     name = "VerifyLoopbackCount"
-    description = "Verifies the number of loopback interfaces on the device is the one we expect and if none of the loopback is down."
+    description = "Verifies the number of loopback interfaces and their status."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
@@ -286,11 +329,15 @@ class VerifyLoopbackCount(AntaTest):
 
 class VerifySVI(AntaTest):
     """
-    Verifies there is no interface vlan down.
+    Verifies the status of all SVIs.
+
+    Expected Results:
+        * success: The test will pass if all SVIs are up.
+        * failure: The test will fail if one or many SVIs are not up.
     """
 
     name = "VerifySVI"
-    description = "Verifies there is no interface vlan down."
+    description = "Verifies the status of all SVIs."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show ip interface brief")]
 
@@ -322,7 +369,7 @@ class VerifyL3MTU(AntaTest):
     """
 
     name = "VerifyL3MTU"
-    description = "Verifies the global layer 3 Maximum Transfer Unit (MTU) for all layer 3 interfaces."
+    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
@@ -367,7 +414,7 @@ class VerifyIPProxyARP(AntaTest):
     """
 
     name = "VerifyIPProxyARP"
-    description = "Verifies if Proxy-ARP is enabled for the provided list of interface(s)."
+    description = "Verifies if Proxy ARP is enabled."
     categories = ["interfaces"]
     commands = [AntaTemplate(template="show ip interface {intf}")]
 
@@ -405,7 +452,7 @@ class VerifyL2MTU(AntaTest):
     """
 
     name = "VerifyL2MTU"
-    description = "Verifies the global layer 2 Maximum Transfer Unit (MTU) for all layer 2 interfaces."
+    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories = ["interfaces"]
     commands = [AntaCommand(command="show interfaces")]
 
@@ -436,5 +483,117 @@ class VerifyL2MTU(AntaTest):
                     wrong_l2mtu_intf.append({interface: values["mtu"]})
         if wrong_l2mtu_intf:
             self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
+        else:
+            self.result.is_success()
+
+
+class VerifyInterfaceIPv4(AntaTest):
+    """
+    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+
+    Expected Results:
+        * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
+        * failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+    """
+
+    name = "VerifyInterfaceIPv4"
+    description = "Verifies the interface IPv4 addresses."
+    categories = ["interfaces"]
+    commands = [AntaTemplate(template="show ip interface {interface}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyInterfaceIPv4 test."""
+
+        interfaces: List[InterfaceDetail]
+        """list of interfaces to be tested"""
+
+        class InterfaceDetail(BaseModel):
+            """Detail of an interface"""
+
+            name: Interface
+            """Name of the interface"""
+            primary_ip: IPv4Network
+            """Primary IPv4 address with subnet on interface"""
+            secondary_ips: Optional[List[IPv4Network]] = None
+            """Optional list of secondary IPv4 addresses with subnet on interface"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        # Render the template for each interface
+        return [
+            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
+        ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command in self.instance_commands:
+            intf = command.params["interface"]
+            input_primary_ip = str(command.params["primary_ip"])
+            failed_messages = []
+
+            # Check if the interface has an IP address configured
+            if not (interface_output := get_value(command.json_output, f"interfaces.{intf}.interfaceAddress")):
+                self.result.is_failure(f"For interface `{intf}`, IP address is not configured.")
+                continue
+
+            primary_ip = get_value(interface_output, "primaryIp")
+
+            # Combine IP address and subnet for primary IP
+            actual_primary_ip = f"{primary_ip['address']}/{primary_ip['maskLen']}"
+
+            # Check if the primary IP address matches the input
+            if actual_primary_ip != input_primary_ip:
+                failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
+
+            if command.params["secondary_ips"] is not None:
+                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+                secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
+
+                # Combine IP address and subnet for secondary IPs
+                actual_secondary_ips = sorted([f"{secondary_ip['address']}/{secondary_ip['maskLen']}" for secondary_ip in secondary_ips])
+
+                # Check if the secondary IP address is configured
+                if not actual_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP address is not configured."
+                    )
+
+                # Check if the secondary IP addresses match the input
+                elif actual_secondary_ips != input_secondary_ips:
+                    failed_messages.append(
+                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP addresses are `{actual_secondary_ips}`."
+                    )
+
+            if failed_messages:
+                self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))
+
+
+class VerifyIpVirtualRouterMac(AntaTest):
+    """
+    Verifies the IP virtual router MAC address.
+
+    Expected Results:
+        * success: The test will pass if the IP virtual router MAC address matches the input.
+        * failure: The test will fail if the IP virtual router MAC address does not match the input.
+    """
+
+    name = "VerifyIpVirtualRouterMac"
+    description = "Verifies the IP virtual router MAC address."
+    categories = ["interfaces"]
+    commands = [AntaCommand(command="show ip virtual-router")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyIpVirtualRouterMac test."""
+
+        mac_address: MacAddress
+        """IP virtual router MAC address"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output["virtualMacs"]
+        mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
+
+        if mac_address_found is None:
+            self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
         else:
             self.result.is_success()

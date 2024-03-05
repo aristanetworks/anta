@@ -1,16 +1,23 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
 Test functions related to the EOS various security settings
 """
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from pydantic import conint
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
+from datetime import datetime
+from typing import List, Union
 
-from anta.models import AntaCommand, AntaTest
+from pydantic import BaseModel, Field, conint, model_validator
+
+from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
+from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools.get_item import get_item
+from anta.tools.get_value import get_value
+from anta.tools.utils import get_failed_logs
 
 
 class VerifySSHStatus(AntaTest):
@@ -172,7 +179,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     """
 
     name = "VerifyAPIHttpsSSL"
-    description = "Verifies if eAPI HTTPS server SSL profile is configured and valid."
+    description = "Verifies if the eAPI has a valid SSL profile."
     categories = ["security"]
     commands = [AntaCommand(command="show management api http-commands")]
 
@@ -268,3 +275,240 @@ class VerifyAPIIPv6Acl(AntaTest):
             self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
         else:
             self.result.is_success()
+
+
+class VerifyAPISSLCertificate(AntaTest):
+    """
+    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+
+    Expected Results:
+        * success: The test will pass if the certificate's expiry date is greater than the threshold,
+                   and the certificate has the correct name, encryption algorithm, and key size.
+        * failure: The test will fail if the certificate is expired or is going to expire,
+                   or if the certificate has an incorrect name, encryption algorithm, or key size.
+    """
+
+    name = "VerifyAPISSLCertificate"
+    description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
+    categories = ["security"]
+    commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
+
+    class Input(AntaTest.Input):
+        """
+        Input parameters for the VerifyAPISSLCertificate test.
+        """
+
+        certificates: List[APISSLCertificates]
+        """List of API SSL certificates"""
+
+        class APISSLCertificates(BaseModel):
+            """
+            This class defines the details of an API SSL certificate.
+            """
+
+            certificate_name: str
+            """The name of the certificate to be verified."""
+            expiry_threshold: int
+            """The expiry threshold of the certificate in days."""
+            common_name: str
+            """The common subject name of the certificate."""
+            encryption_algorithm: EncryptionAlgorithm
+            """The encryption algorithm of the certificate."""
+            key_size: Union[RsaKeySize, EcdsaKeySize]
+            """The encryption algorithm key size of the certificate."""
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """
+                Validate the key size provided to the APISSLCertificates class.
+
+                If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
+
+                If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
+                """
+
+                if self.encryption_algorithm == "RSA" and self.key_size not in RsaKeySize.__args__:
+                    raise ValueError(f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}.")
+
+                if self.encryption_algorithm == "ECDSA" and self.key_size not in EcdsaKeySize.__args__:
+                    raise ValueError(
+                        f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {EcdsaKeySize.__args__}."
+                    )
+
+                return self
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        # Mark the result as success by default
+        self.result.is_success()
+
+        # Extract certificate and clock output
+        certificate_output = self.instance_commands[0].json_output
+        clock_output = self.instance_commands[1].json_output
+        current_timestamp = clock_output["utcTime"]
+
+        # Iterate over each API SSL certificate
+        for certificate in self.inputs.certificates:
+            # Collecting certificate expiry time and current EOS time.
+            # These times are used to calculate the number of days until the certificate expires.
+            if not (certificate_data := get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")):
+                self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
+                continue
+
+            expiry_time = certificate_data["notAfter"]
+            day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
+
+            # Verify certificate expiry
+            if 0 < day_difference < certificate.expiry_threshold:
+                self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is about to expire in {day_difference} days.\n")
+            elif day_difference < 0:
+                self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is expired.\n")
+
+            # Verify certificate common subject name, encryption algorithm and key size
+            keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
+            actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
+
+            expected_certificate_details = {
+                "subject.commonName": certificate.common_name,
+                "publicKey.encryptionAlgorithm": certificate.encryption_algorithm,
+                "publicKey.size": certificate.key_size,
+            }
+
+            if actual_certificate_details != expected_certificate_details:
+                failed_log = f"SSL certificate `{certificate.certificate_name}` is not configured properly:"
+                failed_log += get_failed_logs(expected_certificate_details, actual_certificate_details)
+                self.result.is_failure(f"{failed_log}\n")
+
+
+class VerifyBannerLogin(AntaTest):
+    """
+    Verifies the login banner of a device.
+
+    Expected results:
+        * success: The test will pass if the login banner matches the provided input.
+        * failure: The test will fail if the login banner does not match the provided input.
+    """
+
+    name = "VerifyBannerLogin"
+    description = "Verifies the login banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner login")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        login_banner: str
+        """Expected login banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        login_banner = self.instance_commands[0].json_output["loginBanner"]
+
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
+        if login_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the login banner, but found `{login_banner}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifyBannerMotd(AntaTest):
+    """
+    Verifies the motd banner of a device.
+
+    Expected results:
+        * success: The test will pass if the motd banner matches the provided input.
+        * failure: The test will fail if the motd banner does not match the provided input.
+    """
+
+    name = "VerifyBannerMotd"
+    description = "Verifies the motd banner of a device."
+    categories = ["security"]
+    commands = [AntaCommand(command="show banner motd")]
+
+    class Input(AntaTest.Input):
+        """Defines the input parameters for this test case."""
+
+        motd_banner: str
+        """Expected motd banner of the device."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        motd_banner = self.instance_commands[0].json_output["motd"]
+
+        # Remove leading and trailing whitespaces from each line
+        cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
+        if motd_banner != cleaned_banner:
+            self.result.is_failure(f"Expected `{cleaned_banner}` as the motd banner, but found `{motd_banner}` instead.")
+        else:
+            self.result.is_success()
+
+
+class VerifyIPv4ACL(AntaTest):
+    """
+    Verifies the configuration of IPv4 ACLs.
+
+    Expected results:
+        * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
+        * failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+    """
+
+    name = "VerifyIPv4ACL"
+    description = "Verifies the configuration of IPv4 ACLs."
+    categories = ["security"]
+    commands = [AntaTemplate(template="show ip access-lists {acl}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyIPv4ACL test."""
+
+        ipv4_access_lists: List[IPv4ACL]
+        """List of IPv4 ACLs to verify"""
+
+        class IPv4ACL(BaseModel):
+            """Detail of IPv4 ACL"""
+
+            name: str
+            """Name of IPv4 ACL"""
+
+            entries: List[IPv4ACLEntries]
+            """List of IPv4 ACL entries"""
+
+            class IPv4ACLEntries(BaseModel):
+                """IPv4 ACL entries details"""
+
+                sequence: int = Field(ge=1, le=4294967295)
+                """Sequence number of an ACL entry"""
+                action: str
+                """Action of an ACL entry"""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command_output in self.instance_commands:
+            # Collecting input ACL details
+            acl_name = command_output.params["acl"]
+            acl_entries = command_output.params["entries"]
+
+            # Check if ACL is configured
+            ipv4_acl_list = command_output.json_output["aclList"]
+            if not ipv4_acl_list:
+                self.result.is_failure(f"{acl_name}: Not found")
+                continue
+
+            # Check if the sequence number is configured and has the correct action applied
+            failed_log = f"{acl_name}:\n"
+            for acl_entry in acl_entries:
+                acl_seq = acl_entry.sequence
+                acl_action = acl_entry.action
+                if (actual_entry := get_item(ipv4_acl_list[0]["sequence"], "sequenceNumber", acl_seq)) is None:
+                    failed_log += f"Sequence number `{acl_seq}` is not found.\n"
+                    continue
+
+                if actual_entry["text"] != acl_action:
+                    failed_log += f"Expected `{acl_action}` as sequence number {acl_seq} action but found `{actual_entry['text']}` instead.\n"
+
+            if failed_log != f"{acl_name}:\n":
+                self.result.is_failure(f"{failed_log}")

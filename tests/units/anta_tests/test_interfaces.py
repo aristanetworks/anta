@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.hardware"""
@@ -11,9 +11,11 @@ from anta.tests.interfaces import (
     VerifyInterfaceDiscards,
     VerifyInterfaceErrDisabled,
     VerifyInterfaceErrors,
+    VerifyInterfaceIPv4,
     VerifyInterfacesStatus,
     VerifyInterfaceUtilization,
     VerifyIPProxyARP,
+    VerifyIpVirtualRouterMac,
     VerifyL2MTU,
     VerifyL3MTU,
     VerifyLoopbackCount,
@@ -204,13 +206,45 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-up-with-line-protocol-status",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet8", "status": "up", "line_protocol_status": "down"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-with-line-protocol-status",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "testing"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet3.10": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "dormant"},
+                }
+            }
+        ],
         "inputs": {
-            "interfaces": [{"interface": "Ethernet2", "state": "adminDown"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]
+            "interfaces": [
+                {"name": "Ethernet2", "status": "adminDown", "line_protocol_status": "down"},
+                {"name": "Ethernet8", "status": "adminDown", "line_protocol_status": "testing"},
+                {"name": "Ethernet3.10", "status": "down", "line_protocol_status": "dormant"},
+            ]
         },
         "expected": {"result": "success"},
     },
@@ -221,14 +255,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {
-            "interfaces": [{"interface": "ethernet2", "state": "adminDown"}, {"interface": "ethernet8", "state": "up"}, {"interface": "ethernet3", "state": "up"}]
-        },
+        "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -238,12 +270,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "up"},
+                    "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "eth2", "state": "adminDown"}, {"interface": "et8", "state": "up"}, {"interface": "et3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -256,7 +288,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "po100", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
         "expected": {"result": "success"},
     },
     {
@@ -269,7 +301,46 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet52/1.1963", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-transceiver-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet49/1": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "notPresent"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet49/1", "status": "adminDown"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-po-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "adminDown"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-po-lowerlayerdown",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Port-Channel100", "status": "adminDown", "line_protocol_status": "lowerLayerDown"}]},
         "expected": {"result": "success"},
     },
     {
@@ -283,37 +354,37 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
             "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
         },
     },
     {
-        "name": "failure-down",
+        "name": "failure-status-down",
         "test": VerifyInterfacesStatus,
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
             }
         ],
-        "inputs": {"interfaces": [{"interface": "Ethernet2", "state": "up"}, {"interface": "Ethernet8", "state": "up"}, {"interface": "Ethernet3", "state": "up"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/adminDown expected up/up'"],
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/down'"],
         },
     },
     {
-        "name": "failure-up",
+        "name": "failure-proto-down",
         "test": VerifyInterfacesStatus,
         "eos_data": [
             {
                 "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                 }
@@ -321,14 +392,54 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {
             "interfaces": [
-                {"interface": "Ethernet2", "state": "adminDown", "protocol_status": "down"},
-                {"interface": "Ethernet8", "state": "adminDown"},
-                {"interface": "Ethernet3", "state": "up"},
+                {"name": "Ethernet2", "status": "up"},
+                {"name": "Ethernet8", "status": "up"},
+                {"name": "Ethernet3", "status": "up"},
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/up expected down/adminDown'"],
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is up/down'"],
+        },
+    },
+    {
+        "name": "failure-po-status-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Port-Channel100": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "lowerLayerDown"},
+                }
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not in the expected state: ['Port-Channel100 is down/lowerLayerDown'"],
+        },
+    },
+    {
+        "name": "failure-proto-unknown",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "unknown"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "status": "up", "line_protocol_status": "down"},
+                {"name": "Ethernet8", "status": "up"},
+                {"name": "Ethernet3", "status": "up"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/unknown'"],
         },
     },
     {
@@ -1059,5 +1170,242 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.10", "maskLen": 31}, {"address": "10.10.10.20", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31", "secondary_ips": ["10.10.10.10/31", "10.10.10.20/31"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-without-secondary-ip",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31"},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-l3-interface",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [{"interfaces": {"Ethernet2": {"interfaceAddress": {}}}}, {"interfaces": {"Ethernet12": {"interfaceAddress": {}}}}],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.20/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["For interface `Ethernet2`, IP address is not configured.", "For interface `Ethernet12`, IP address is not configured."],
+        },
+    },
+    {
+        "name": "failure-ip-address-not-configured",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet12": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.0/31`, but the actual primary IP address is `0.0.0.0/0`. "
+                "The expected secondary IP addresses are `['10.10.10.0/31', '10.10.10.10/31']`, but the actual secondary IP address is not configured.",
+                "For interface `Ethernet12`, The expected primary IP address is `172.30.11.10/31`, but the actual primary IP address is `0.0.0.0/0`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP address is not configured.",
+            ],
+        },
+    },
+    {
+        "name": "failure-ip-address-missmatch",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet3": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.2/31", "secondary_ips": ["10.10.10.20/31", "10.10.10.30/31"]},
+                {"name": "Ethernet3", "primary_ip": "172.30.10.2/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
+                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP addresses are "
+                "`['10.10.10.0/31', '10.10.10.10/31']`.",
+                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
+                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+            ],
+        },
+    },
+    {
+        "name": "failure-secondary-ip-address",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet3": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.2/31", "secondary_ips": ["10.10.10.20/31", "10.10.10.30/31"]},
+                {"name": "Ethernet3", "primary_ip": "172.30.10.2/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
+                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP address is not configured.",
+                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
+                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
+                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyIpVirtualRouterMac,
+        "eos_data": [
+            {
+                "virtualMacs": [
+                    {
+                        "macAddress": "00:1c:73:00:dc:01",
+                    }
+                ],
+            }
+        ],
+        "inputs": {"mac_address": "00:1c:73:00:dc:01"},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "faliure-incorrect-mac-address",
+        "test": VerifyIpVirtualRouterMac,
+        "eos_data": [
+            {
+                "virtualMacs": [
+                    {
+                        "macAddress": "00:00:00:00:00:00",
+                    }
+                ],
+            }
+        ],
+        "inputs": {"mac_address": "00:1c:73:00:dc:01"},
+        "expected": {"result": "failure", "messages": ["IP virtual router MAC address `00:1c:73:00:dc:01` is not configured."]},
     },
 ]

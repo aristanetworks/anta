@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pydantic import conint
 
+from anta.custom_types import MlagPriority
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 
@@ -27,7 +28,7 @@ class VerifyMlagStatus(AntaTest):
     """
 
     name = "VerifyMlagStatus"
-    description = "This test verifies the health status of the MLAG configuration."
+    description = "Verifies the health status of the MLAG configuration."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -61,7 +62,7 @@ class VerifyMlagInterfaces(AntaTest):
     """
 
     name = "VerifyMlagInterfaces"
-    description = "This test verifies there are no inactive or active-partial MLAG ports."
+    description = "Verifies there are no inactive or active-partial MLAG ports."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -89,7 +90,7 @@ class VerifyMlagConfigSanity(AntaTest):
     """
 
     name = "VerifyMlagConfigSanity"
-    description = "This test verifies there are no MLAG config-sanity inconsistencies."
+    description = "Verifies there are no MLAG config-sanity inconsistencies."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag config-sanity", ofmt="json")]
 
@@ -121,7 +122,7 @@ class VerifyMlagReloadDelay(AntaTest):
     """
 
     name = "VerifyMlagReloadDelay"
-    description = "This test verifies the reload-delay parameters of the MLAG configuration."
+    description = "Verifies the MLAG reload-delay parameters."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
@@ -157,7 +158,7 @@ class VerifyMlagDualPrimary(AntaTest):
     """
 
     name = "VerifyMlagDualPrimary"
-    description = "This test verifies the dual-primary detection and its parameters of the MLAG configuration."
+    description = "Verifies the MLAG dual-primary detection parameters."
     categories = ["mlag"]
     commands = [AntaCommand(command="show mlag detail", ofmt="json")]
 
@@ -192,3 +193,47 @@ class VerifyMlagDualPrimary(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The dual-primary parameters are not configured properly: {verified_output}")
+
+
+class VerifyMlagPrimaryPriority(AntaTest):
+    """
+    Test class to verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
+
+    Expected Results:
+        * Success: The test will pass if the MLAG state is set as 'primary' and the priority matches the input.
+        * Failure: The test will fail if the MLAG state is not 'primary' or the priority doesn't match the input.
+        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    """
+
+    name = "VerifyMlagPrimaryPriority"
+    description = "Verifies the configuration of the MLAG primary priority."
+    categories = ["mlag"]
+    commands = [AntaCommand(command="show mlag detail")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyMlagPrimaryPriority test."""
+
+        primary_priority: MlagPriority
+        """The expected MLAG primary priority."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        # Skip the test if MLAG is disabled
+        if command_output["state"] == "disabled":
+            self.result.is_skipped("MLAG is disabled")
+            return
+
+        mlag_state = get_value(command_output, "detail.mlagState")
+        primary_priority = get_value(command_output, "detail.primaryPriority")
+
+        # Check MLAG state
+        if mlag_state != "primary":
+            self.result.is_failure("The device is not set as MLAG primary.")
+
+        # Check primary priority
+        if primary_priority != self.inputs.primary_priority:
+            self.result.is_failure(
+                f"The primary priority does not match expected. Expected `{self.inputs.primary_priority}`, but found `{primary_priority}` instead."
+            )

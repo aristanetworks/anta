@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -26,7 +26,7 @@ $ pip install -e .[dev]
 $ pip list -e
 Package Version Editable project location
 ------- ------- -------------------------
-anta    0.11.0   /mnt/lab/projects/anta
+anta    0.13.0   /mnt/lab/projects/anta
 ```
 
 Then, [`tox`](https://tox.wiki/) is configued with few environments to run CI locally:

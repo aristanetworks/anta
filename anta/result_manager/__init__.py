@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -155,10 +155,8 @@ class ResultManager:
         Returns:
             str: JSON dumps of the list of results
         """
-        res = []
-        for device in self._result_entries:
-            res.append({k: v if isinstance(v, list) else str(v) for k, v in device})
-        return json.dumps(res, indent=4)
+        result = [result.model_dump() for result in self._result_entries]
+        return json.dumps(result, indent=4)
 
     def get_result_by_test(self, test_name: str) -> list[TestResult]:
         """
@@ -166,7 +164,6 @@ class ResultManager:
 
         Args:
             test_name (str): Test name to use to filter results
-            output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
 
         Returns:
             list[TestResult]: List of results related to the test.
@@ -179,7 +176,6 @@ class ResultManager:
 
         Args:
             host_ip (str): IP Address of the host to use to filter results.
-            output_format (str, optional): format selector. Can be either native/list. Defaults to 'native'.
 
         Returns:
             list[TestResult]: List of results related to the host.

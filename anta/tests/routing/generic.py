@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -26,10 +26,8 @@ class VerifyRoutingProtocolModel(AntaTest):
     """
 
     name = "VerifyRoutingProtocolModel"
-    description = (
-        "Verifies the configured routing protocol model is the expected one and if there is no mismatch between the configured and operating routing protocol model."
-    )
-    categories = ["routing", "generic"]
+    description = "Verifies the configured routing protocol model."
+    categories = ["routing"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
@@ -55,7 +53,7 @@ class VerifyRoutingTableSize(AntaTest):
 
     name = "VerifyRoutingTableSize"
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
-    categories = ["routing", "generic"]
+    categories = ["routing"]
     commands = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
@@ -81,31 +79,6 @@ class VerifyRoutingTableSize(AntaTest):
             self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
 
 
-class VerifyBFD(AntaTest):
-    """
-    Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors).
-    """
-
-    name = "VerifyBFD"
-    description = "Verifies there is no BFD peer in down state (all VRF, IPv4 neighbors)."
-    categories = ["routing", "generic"]
-    # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaCommand(command="show bfd peers", revision=1)]
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        command_output = self.instance_commands[0].json_output
-        self.result.is_success()
-        for _, vrf_data in command_output["vrfs"].items():
-            for _, neighbor_data in vrf_data["ipv4Neighbors"].items():
-                for peer, peer_data in neighbor_data["peerStats"].items():
-                    if (peer_status := peer_data["status"]) != "up":
-                        failure_message = f"bfd state for peer '{peer}' is {peer_status} (expected up)."
-                        if (peer_l3intf := peer_data.get("l3intf")) is not None and peer_l3intf != "":
-                            failure_message += f" Interface: {peer_l3intf}."
-                        self.result.is_failure(failure_message)
-
-
 class VerifyRoutingTableEntry(AntaTest):
     """
     This test verifies that the provided routes are present in the routing table of a specified VRF.
@@ -117,7 +90,7 @@ class VerifyRoutingTableEntry(AntaTest):
 
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
-    categories = ["routing", "generic"]
+    categories = ["routing"]
     commands = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring

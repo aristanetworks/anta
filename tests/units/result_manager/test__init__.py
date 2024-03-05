@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -184,10 +184,18 @@ class Test_ResultManager:
             test.result = "success"
         result_manager.add_test_results(success_list)
 
-        res = result_manager.get_json_results()
-        assert isinstance(res, str)
-        # verifies it can be loaded as json
-        json.loads(res)
+        json_res = result_manager.get_json_results()
+        assert isinstance(json_res, str)
+
+        # Verifies it can be deserialized back to a list of dict with the correct values types
+        res = json.loads(json_res)
+        for test in res:
+            assert isinstance(test, dict)
+            assert isinstance(test.get("test"), str)
+            assert isinstance(test.get("categories"), list)
+            assert isinstance(test.get("description"), str)
+            assert test.get("custom_field") is None
+            assert test.get("result") == "success"
 
     # TODO
     # get_result_by_test

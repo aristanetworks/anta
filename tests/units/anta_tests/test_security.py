@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -13,6 +13,10 @@ from anta.tests.security import (
     VerifyAPIHttpStatus,
     VerifyAPIIPv4Acl,
     VerifyAPIIPv6Acl,
+    VerifyAPISSLCertificate,
+    VerifyBannerLogin,
+    VerifyBannerMotd,
+    VerifyIPv4ACL,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -216,5 +220,681 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
         "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_API']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-certificate-not-configured",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate 'ARISTA_ROOT_CA.crt', is not configured.\n"],
+        },
+    },
+    {
+        "name": "failure-certificate-expired",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 1702533518,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702622372.2240553,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate 'ARISTA_SIGNING_CA.crt', is not configured.\n", "SSL certificate `ARISTA_ROOT_CA.crt` is expired.\n"],
+        },
+    },
+    {
+        "name": "failure-certificate-about-to-expire",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 1704782709,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 1702533518,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702622372.2240553,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["SSL certificate `ARISTA_SIGNING_CA.crt` is expired.\n", "SSL certificate `ARISTA_ROOT_CA.crt` is about to expire in 25 days."],
+        },
+    },
+    {
+        "name": "failure-wrong-subject-name",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA Networks Internal IT Root Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "Arista ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `AristaIT-ICA ECDSA Issuing Cert Authority` as the subject.commonName, but found "
+                "`Arista ECDSA Issuing Cert Authority` instead.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `Arista Networks Internal IT Root Cert Authority` as the subject.commonName, "
+                "but found `AristaIT-ICA Networks Internal IT Root Cert Authority` instead.\n",
+            ],
+        },
+    },
+    {
+        "name": "failure-wrong-encryption-type-and-size",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "ECDSA",
+                            "size": 256,
+                        },
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                        "publicKey": {
+                            "encryptionAlgorithm": "RSA",
+                            "size": 4096,
+                        },
+                    },
+                }
+            },
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `ECDSA` as the publicKey.encryptionAlgorithm, but found `RSA` instead.\n"
+                "Expected `256` as the publicKey.size, but found `4096` instead.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `RSA` as the publicKey.encryptionAlgorithm, but found `ECDSA` instead.\n"
+                "Expected `4096` as the publicKey.size, but found `256` instead.\n",
+            ],
+        },
+    },
+    {
+        "name": "failure-missing-actual-output",
+        "test": VerifyAPISSLCertificate,
+        "eos_data": [
+            {
+                "certificates": {
+                    "ARISTA_ROOT_CA.crt": {
+                        "subject": {"commonName": "Arista Networks Internal IT Root Cert Authority"},
+                        "notAfter": 2127420899,
+                    },
+                    "ARISTA_SIGNING_CA.crt": {
+                        "subject": {"commonName": "AristaIT-ICA ECDSA Issuing Cert Authority"},
+                        "notAfter": 2127420899,
+                    },
+                }
+            },
+            {
+                "utcTime": 1702288467.6736515,
+            },
+        ],
+        "inputs": {
+            "certificates": [
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SSL certificate `ARISTA_SIGNING_CA.crt` is not configured properly:\n"
+                "Expected `ECDSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
+                "Expected `256` as the publicKey.size, but it was not found in the actual output.\n",
+                "SSL certificate `ARISTA_ROOT_CA.crt` is not configured properly:\n"
+                "Expected `RSA` as the publicKey.encryptionAlgorithm, but it was not found in the actual output.\n"
+                "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiline",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-login-banner",
+        "test": VerifyBannerLogin,
+        "eos_data": [
+            {
+                "loginBanner": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the login banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiline",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": """Copyright (c) 2023-2024 Arista Networks, Inc.
+                            Use of this source code is governed by the Apache License 2.0
+                            that can be found in the LICENSE file."""
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-motd-banner",
+        "test": VerifyBannerMotd,
+        "eos_data": [
+            {
+                "motd": "Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
+            }
+        ],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file.` as the motd banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
+                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 20},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-acl-not-found",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {"aclList": []},
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["LabTest: Not found"]},
+    },
+    {
+        "name": "failure-sequence-not-found",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 40},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["default-control-plane-acl:\nSequence number `30` is not found.\n", "LabTest:\nSequence number `20` is not found.\n"],
+        },
+    },
+    {
+        "name": "failure-action-not-match",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 20},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit udp any any eq bfd ttl eq 255", "sequenceNumber": 20},
+                        ],
+                    }
+                ]
+            },
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "default-control-plane-acl:\n"
+                "Expected `permit udp any any eq bfd ttl eq 255` as sequence number 30 action but found `permit tcp any any range 5900 5910` instead.\n",
+                "LabTest:\nExpected `permit tcp any any range 5900 5910` as sequence number 20 action but found `permit udp any any eq bfd ttl eq 255` instead.\n",
+            ],
+        },
+    },
+    {
+        "name": "failure-all-type",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {
+                "aclList": [
+                    {
+                        "sequence": [
+                            {"text": "permit icmp any any", "sequenceNumber": 10},
+                            {"text": "permit ip any any tracked", "sequenceNumber": 40},
+                            {"text": "permit tcp any any range 5900 5910", "sequenceNumber": 30},
+                        ],
+                    }
+                ]
+            },
+            {"aclList": []},
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                        {"sequence": 20, "action": "permit ip any any tracked"},
+                        {"sequence": 30, "action": "permit udp any any eq bfd ttl eq 255"},
+                    ],
+                },
+                {
+                    "name": "LabTest",
+                    "entries": [{"sequence": 10, "action": "permit icmp any any"}, {"sequence": 20, "action": "permit tcp any any range 5900 5910"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "default-control-plane-acl:\nSequence number `20` is not found.\n"
+                "Expected `permit udp any any eq bfd ttl eq 255` as sequence number 30 action but found `permit tcp any any range 5900 5910` instead.\n",
+                "LabTest: Not found",
+            ],
+        },
     },
 ]

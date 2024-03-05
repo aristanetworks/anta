@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -51,7 +51,7 @@ class VerifyOSPFNeighborState(AntaTest):
 
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
-    categories = ["routing", "ospf"]
+    categories = ["ospf"]
     commands = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
@@ -73,7 +73,7 @@ class VerifyOSPFNeighborCount(AntaTest):
 
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
-    categories = ["routing", "ospf"]
+    categories = ["ospf"]
     commands = [AntaCommand(command="show ip ospf neighbor")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring

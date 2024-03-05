@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Fixture for Anta Testing"""
@@ -121,6 +121,7 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
             test=f"VerifyTest{index}",
             categories=["test"],
             description=f"Verifies Test {index}",
+            custom_field=None,
         )
 
     return _create

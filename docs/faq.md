@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -16,7 +16,7 @@ ImportError: urllib3 v2.0 only supports OpenSSL 1.1.1+, currently the 'ssl' modu
 
 This error arises due to a compatibility issue between `urllib3` v2.0 and older versions of OpenSSL.
 
-### How can I resolve this error?
+#### How can I resolve this error?
 
 1. _Workaround_: Downgrade `urllib3`
 
@@ -42,14 +42,26 @@ AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'
 
 The error is a result of incompatibility between `cryptography` and `pyopenssl` when installing `asyncssh` which is a requirement of ANTA.
 
-### How can I resolve this error?
+#### How can I resolve this error?
 
 1. Upgrade `pyopenssl`
 
     ```bash
     pip install -U pyopenssl>22.0
     ```
----
+
+## `__NSCFConstantString initialize` error on OSX
+
+This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. https://www.wefearchange.org/2018/11/forkmacos.rst.html
+
+#### How can I resolve this error?
+
+1. Set the following environment variable
+
+    ```bash
+    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+    ```
+
 ## Still facing issues?
 
 If you've tried the above solutions and continue to experience problems, please report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).

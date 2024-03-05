@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import asyncio
 import itertools
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Literal
 
@@ -22,7 +23,7 @@ from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
-
+INVALID_CHAR = "`~!@#$/"
 logger = logging.getLogger(__name__)
 
 
@@ -61,16 +62,17 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
+        safe_command = re.sub(r"(/|\|$)", "_", command)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
             logger.error(f"Could not collect commands on device {dev.name}: {c.errors}")
             return
         if c.ofmt == "json":
-            outfile = outdir / f"{command}.json"
+            outfile = outdir / f"{safe_command}.json"
             content = json.dumps(c.json_output, indent=2)
         elif c.ofmt == "text":
-            outfile = outdir / f"{command}.log"
+            outfile = outdir / f"{safe_command}.log"
             content = c.text_output
         with outfile.open(mode="w", encoding="UTF-8") as f:
             f.write(content)
