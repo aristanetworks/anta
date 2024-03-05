@@ -1871,86 +1871,16 @@
   
   
   
-    
-    
-      
+    <li class="md-nav__item">
+      <a href="../report_manager/" class="md-nav__link">
         
-      
-        
-      
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
-        
-          
-          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
-            
   
   <span class="md-ellipsis">
     Report Manager
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_6">
-            <span class="md-nav__icon md-icon"></span>
-            Report Manager
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Report Manager module
-  </span>
-  
-
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../report_manager_models.md" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Report Manager models
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -2542,7 +2472,9 @@ error_status is set to True.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -2551,9 +2483,7 @@ error_status is set to True.</p>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get list of IP addresses in current manager.</span>
 
@@ -2681,20 +2611,6 @@ error_status is set to True.</p>
               <em>required</em>
           </td>
         </tr>
-        <tr>
-          <td><code>output_format</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>format selector. Can be either native/list. Defaults to &lsquo;native&rsquo;.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2724,7 +2640,8 @@ error_status is set to True.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
+<span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
@@ -2733,15 +2650,12 @@ error_status is set to True.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_result_by_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]:</span>
+<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_result_by_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get list of test result for a given host.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        host_ip (str): IP Address of the host to use to filter results.</span>
-<span class="sd">        output_format (str, optional): format selector. Can be either native/list. Defaults to &#39;native&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list[TestResult]: List of results related to the host.</span>
@@ -2797,20 +2711,6 @@ error_status is set to True.</p>
               <em>required</em>
           </td>
         </tr>
-        <tr>
-          <td><code>output_format</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>format selector. Can be either native/list. Defaults to &lsquo;native&rsquo;.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2850,14 +2750,12 @@ error_status is set to True.</p>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_result_by_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]:</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_result_by_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get list of test result for a given test.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        test_name (str): Test name to use to filter results</span>
-<span class="sd">        output_format (str, optional): format selector. Can be either native/list. Defaults to &#39;native&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list[TestResult]: List of results related to the test.</span>
@@ -3010,7 +2908,9 @@ error_status is set to True.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">187</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
@@ -3019,9 +2919,7 @@ error_status is set to True.</p>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_testcases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_testcases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get list of name of all test cases in current manager.</span>
 
