@@ -26,7 +26,6 @@ from anta.tests.interfaces import (
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
-# pylint: disable=C0302
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",

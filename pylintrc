@@ -15,7 +15,7 @@ max-args=6
 
 [FORMAT]
 max-line-length=165
-max-module-lines=1700
+max-module-lines=2666
 
 [SIMILARITIES]
 # making similarity lines limit a bit higher than default 4
