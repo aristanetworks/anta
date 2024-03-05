@@ -26,6 +26,7 @@ from anta.tests.interfaces import (
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
+# pylint: disable=C0302
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
@@ -1421,6 +1422,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "duplex": "duplexFull",
                         "lanes": 2,
                     },
+                    "Ethernet1/1/2": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 2,
+                    },
                     "Ethernet2": {
                         "bandwidth": 10000000000,
                         "autoNegotiate": "unknown",
@@ -1448,6 +1455,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 {"name": "Ethernet1", "speed": "1"},
                 {"name": "Ethernet1", "speed": "1g-2"},
                 {"name": "Ethernet1", "speed": "1-2"},
+                {"name": "Ethernet1/1/2", "speed": "1g"},
                 {"name": "Ethernet2", "speed": "forced 10g"},
                 {"name": "Ethernet2", "speed": "forced 10"},
                 {"name": "Ethernet2", "speed": "force 10"},
@@ -1468,6 +1476,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaces": {
                     "Ethernet1": {
+                        "bandwidth": 100000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 2,
+                    },
+                    "Ethernet1/1/1": {
                         "bandwidth": 100000000000,
                         "autoNegotiate": "unknown",
                         "duplex": "duplexFull",
@@ -1498,6 +1512,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             "interfaces": [
                 {"name": "Ethernet1", "speed": "1g"},
                 {"name": "Ethernet1", "speed": "1"},
+                {"name": "Ethernet1/1/1", "speed": "1g"},
                 {"name": "Ethernet2", "speed": "forced 10g"},
                 {"name": "Ethernet2", "speed": "forced 10"},
                 {"name": "Ethernet2", "speed": "force 10"},
@@ -1511,6 +1526,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             "messages": [
                 "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
                 "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
+                "For interface Ethernet1/1/1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
                 "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
@@ -1527,6 +1543,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaces": {
                     "Ethernet1": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 2,
+                    },
+                    "Ethernet1/2/2": {
                         "bandwidth": 1000000000,
                         "autoNegotiate": "unknown",
                         "duplex": "duplexHalf",
@@ -1556,6 +1578,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "inputs": {
             "interfaces": [
                 {"name": "Ethernet1", "speed": "1g"},
+                {"name": "Ethernet1/2/2", "speed": "1g"},
                 {"name": "Ethernet2", "speed": "forced 10g"},
                 {"name": "Ethernet3", "speed": "auto"},
                 {"name": "Ethernet3", "speed": "auto 100g-8"},
@@ -1567,6 +1590,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             "result": "failure",
             "messages": [
                 "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "For interface Ethernet1/2/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
@@ -1605,6 +1629,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "duplex": "duplexFull",
                         "lanes": 6,
                     },
+                    "Ethernet4/1/1": {
+                        "bandwidth": 2500000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexFull",
+                        "lanes": 6,
+                    },
                 }
             }
         ],
@@ -1615,6 +1645,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 {"name": "Ethernet3", "speed": "auto 100g-8"},
                 {"name": "Ethernet3", "speed": "auto 100-8"},
                 {"name": "Ethernet4", "speed": "2.5g-4"},
+                {"name": "Ethernet4/1/1", "speed": "2.5g-4"},
             ]
         },
         "expected": {
@@ -1625,6 +1656,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
                 "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
                 "For interface Ethernet4:\nExpected `4` as the lanes, but found `6` instead.",
+                "For interface Ethernet4/1/1:\nExpected `4` as the lanes, but found `6` instead.",
             ],
         },
     },
@@ -1641,6 +1673,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lanes": 2,
                     },
                     "Ethernet2": {
+                        "bandwidth": 1000000000,
+                        "autoNegotiate": "unknown",
+                        "duplex": "duplexHalf",
+                        "lanes": 2,
+                    },
+                    "Ethernet2/1/2": {
                         "bandwidth": 1000000000,
                         "autoNegotiate": "unknown",
                         "duplex": "duplexHalf",
@@ -1670,6 +1708,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 {"name": "Ethernet2", "speed": "forced 10g"},
                 {"name": "Ethernet2", "speed": "forced 10"},
                 {"name": "Ethernet2", "speed": "force 10"},
+                {"name": "Ethernet2/1/2", "speed": "forced 10g"},
                 {"name": "Ethernet3", "speed": "auto"},
                 {"name": "Ethernet3", "speed": "auto 100g-8"},
                 {"name": "Ethernet3", "speed": "auto 100g"},
@@ -1694,6 +1733,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
                 "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
+                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
+                "For interface Ethernet2/1/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
                 "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
                 "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",

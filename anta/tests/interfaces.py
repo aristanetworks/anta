@@ -14,17 +14,15 @@ from ipaddress import IPv4Network
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field, conint
+from pydantic import BaseModel, conint
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import EthernetInterface, Interface
+from anta.custom_types import EthernetInterface, Interface, InterfaceSpeedPattern
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 from anta.tools.utils import custom_division, extract_speed_and_lane, get_failed_logs
-
-SpeedPattern = r"^((auto)?\s?(\d{1,4}(\.\d{1})?(g)?(-\d{1,2})?)?|force(d)?\s\d{1,4}(g)?)$"
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -631,7 +629,7 @@ class VerifyInterfacesSpeed(AntaTest):
 
             name: EthernetInterface
             """Name of the interface"""
-            speed: str = Field(..., pattern=SpeedPattern)
+            speed: InterfaceSpeedPattern
             """Speed of an interface in Gigabits per second"""
 
     @AntaTest.anta_test
