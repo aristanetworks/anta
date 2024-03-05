@@ -89,7 +89,7 @@ doc = [
   "mkdocstrings[python]>=0.20.0",
   "fontawesome_markdown",
   "mike==2.0.0",
-  "griffe==0.41.1"
+  "griffe==0.41.3"
 ]
 
 [project.urls]
