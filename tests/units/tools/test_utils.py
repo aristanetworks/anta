@@ -17,6 +17,7 @@ EXPECTED_OUTPUTS = [
     {"id": 2, "name": "Bob", "age": 35, "email": "bob@example.com"},
     {"id": 3, "name": "Charlie", "age": 40, "email": "charlie@example.com"},
     {"id": 4, "name": "Jon", "age": 25, "email": "Jon@example.com"},
+    {"id": 5, "name": "Jon", "age": 45, "email": "Jon@example.com"},
 ]
 
 ACTUAL_OUTPUTS = [
@@ -24,6 +25,7 @@ ACTUAL_OUTPUTS = [
     {"id": 2, "name": "Bob", "age": 35, "email": "bob@example.com"},
     {"id": 3, "name": "Charlie", "age": 40, "email": "charlie@example.com"},
     {"id": 4, "name": "Rob", "age": 25, "email": "Jon@example.com"},
+    {"id": 5, "name": "Jon", "email": "Jon@example.com"},
 ]
 
 
@@ -49,6 +51,9 @@ ACTUAL_OUTPUTS = [
             id="empty actual output",
         ),
         pytest.param(EXPECTED_OUTPUTS[3], ACTUAL_OUTPUTS[3], "\nExpected `Jon` as the name, but found `Rob` instead.", does_not_raise(), id="different name"),
+        pytest.param(
+            EXPECTED_OUTPUTS[4], ACTUAL_OUTPUTS[4], "\nExpected `45` as the age, but it was not found in the actual output.", does_not_raise(), id="missing age"
+        ),
     ],
 )
 def test_get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any], expected_result: str, expected_raise: Any) -> None:
