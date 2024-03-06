@@ -29,7 +29,7 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
 
         if actual_data == expected_data:
             continue
-        elif actual_data is None:
+        if actual_data is None:
             failed_logs.append(f"\nExpected `{expected_data}` as the {element}, but it was not found in the actual output.")
         elif actual_data != expected_data:
             failed_logs.append(f"\nExpected `{expected_data}` as the {element}, but found `{actual_data}` instead.")
