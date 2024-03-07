@@ -264,6 +264,17 @@ anta.tests.security:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+  - VerifyIPSecConnHealth:
+  - VerifySpecificIPSecConn:
+      ip_sec_conn:
+        - peer: 10.255.0.1
+        - peer: 10.255.0.2
+          vrf: default
+          connection:
+            - source_address: 100.64.3.2
+              destination_address: 100.64.1.2
+            - source_address: 172.18.3.2
+              destination_address: 172.18.2.2
 
 anta.tests.services:
   - VerifyHostname:

@@ -16,7 +16,9 @@ from anta.tests.security import (
     VerifyAPISSLCertificate,
     VerifyBannerLogin,
     VerifyBannerMotd,
+    VerifyIPSecConnHealth,
     VerifyIPv4ACL,
+    VerifySpecificIPSecConn,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
     VerifySSHStatus,
@@ -894,6 +896,264 @@ DATA: list[dict[str, Any]] = [
                 "default-control-plane-acl:\nSequence number `20` is not found.\n"
                 "Expected `permit udp any any eq bfd ttl eq 255` as sequence number 30 action but found `permit tcp any any range 5900 5910` instead.\n",
                 "LabTest: Not found",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyIPSecConnHealth,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Established"},
+                    },
+                }
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-connection",
+        "test": VerifyIPSecConnHealth,
+        "eos_data": [{"connections": {}}],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["IP security connection are not configured."]},
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifyIPSecConnHealth,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                    },
+                }
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following IP security connection are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0"
+            ],
+        },
+    },
+    {
+        "name": "success-with-connection",
+        "test": VerifySpecificIPSecConn,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.2.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                    },
+                    "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                }
+            }
+        ],
+        "inputs": {
+            "ip_sec_conn": [
+                {
+                    "peer": "10.255.0.1",
+                    "vrf": "default",
+                    "connection": [
+                        {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
+                        {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-without-connection",
+        "test": VerifySpecificIPSecConn,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.2.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                    },
+                    "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                }
+            }
+        ],
+        "inputs": {
+            "ip_sec_conn": [
+                {
+                    "peer": "10.255.0.1",
+                    "vrf": "default",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-connection",
+        "test": VerifySpecificIPSecConn,
+        "eos_data": [
+            {"connections": {}},
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.2.2-srcUnused-0": {
+                        "pathDict": {"path9": "Established"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                    },
+                    "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                }
+            },
+        ],
+        "inputs": {
+            "ip_sec_conn": [
+                {
+                    "peer": "10.255.0.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer": "10.255.0.2",
+                    "vrf": "default",
+                    "connection": [
+                        {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
+                        {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["IP security connections are not configured for peer `10.255.0.1`."]},
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifySpecificIPSecConn,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                    },
+                },
+            },
+            {
+                "connections": {
+                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.2.2",
+                        "daddr": "172.18.1.2",
+                    },
+                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.2.2",
+                        "daddr": "100.64.1.2",
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "ip_sec_conn": [
+                {
+                    "peer": "10.255.0.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer": "10.255.0.2",
+                    "vrf": "default",
+                    "connection": [
+                        {"source_address": "100.64.2.2", "destination_address": "100.64.1.2"},
+                        {"source_address": "172.18.2.2", "destination_address": "172.18.1.2"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected state of IP security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
+                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
+                "Expected state of IP security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
+                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
+                "Expected state of IP security connection `100.64.2.2-100.64.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
+                "Expected state of IP security connection `172.18.2.2-172.18.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
+            ],
+        },
+    },
+    {
+        "name": "failure-missing-connection",
+        "test": VerifySpecificIPSecConn,
+        "eos_data": [
+            {
+                "connections": {
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                    },
+                },
+            },
+            {
+                "connections": {
+                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.2.2",
+                        "daddr": "172.18.1.2",
+                    },
+                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.2.2",
+                        "daddr": "100.64.1.2",
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "ip_sec_conn": [
+                {
+                    "peer": "10.255.0.1",
+                    "vrf": "default",
+                },
+                {
+                    "peer": "10.255.0.2",
+                    "vrf": "default",
+                    "connection": [
+                        {"source_address": "100.64.4.2", "destination_address": "100.64.1.2"},
+                        {"source_address": "172.18.4.2", "destination_address": "172.18.1.2"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Expected state of IP security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
+                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
+                "Expected state of IP security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
+                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
+                "IP security connection `100.64.4.2-100.64.1.2` for peer `10.255.0.2` is not found.",
+                "IP security connection `172.18.4.2-172.18.1.2` for peer `10.255.0.2` is not found.",
             ],
         },
     },

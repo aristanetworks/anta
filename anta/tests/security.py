@@ -9,7 +9,8 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
-from typing import List, Union
+from ipaddress import IPv4Address
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field, conint, model_validator
 
@@ -512,3 +513,130 @@ class VerifyIPv4ACL(AntaTest):
 
             if failed_log != f"{acl_name}:\n":
                 self.result.is_failure(f"{failed_log}")
+
+
+class VerifyIPSecConnHealth(AntaTest):
+    """
+    Verifies all IP security connections
+
+    Expected results:
+        * success: The test will pass if all the IP security connections are established in all vrf.
+        * failure: The test will fail if IP security is not configured or any of ip security connections are not established in any vrf.
+    """
+
+    name = "VerifyIPSecConnHealth"
+    description = "Verifies all IP security connections."
+    categories = ["security"]
+    commands = [AntaCommand(command="show ip security connection vrf all")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        failure_conn = []
+        command_output = self.instance_commands[0].json_output["connections"]
+
+        # Check if IP security connection is configured
+        if not command_output:
+            self.result.is_failure("IP security connection are not configured.")
+            return
+
+        # Iterate over all ip sec connection
+        for connection, conn_data in command_output.items():
+            state = list(conn_data["pathDict"].values())[0]
+            if state != "Established":
+                failure_conn.append(connection)
+        if failure_conn:
+            failure_msg = "\n".join(failure_conn)
+            self.result.is_failure(f"Following IP security connections are not establised:\n{failure_msg}.")
+
+
+class VerifySpecificIPSecConn(AntaTest):
+    """
+    Verifies IP security connections for a peer.
+
+    Expected results:
+        * success: The test passes if the IP security connection for a peer is established in the specified VRF.
+        * failure: The test fails if IP security is not configured, a connection is not found for a peer, or the connection is not established in the specified VRF.
+    """
+
+    name = "VerifySpecificIPSecConn"
+    description = "Verifies IP security connections for a peer."
+    categories = ["security"]
+    commands = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
+
+    class Input(AntaTest.Input):
+        """
+        This class defines the inputs for the VerifySpecificIPSecConn test.
+        """
+
+        ip_sec_conn: List[IPSecPeer]
+        """List of IP security peers."""
+
+        class IPSecPeer(BaseModel):
+            """
+            Details of IP security peers.
+            """
+
+            peer: IPv4Address
+            """IPv4 address of the peer."""
+
+            vrf: str = "default"
+            """This is the optional VRF for the IP security peer. It defaults to `default` if not provided."""
+
+            connection: Optional[List[IPSecConn]] = None
+            """List of IP security connections of a peer."""
+
+            class IPSecConn(BaseModel):
+                """
+                Details of IP security connections for a peer.
+                """
+
+                source_address: IPv4Address
+                """Source address of the connection."""
+                destination_address: IPv4Address
+                """Destination address of the connection."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """
+        This method renders the template with the provided inputs.
+        """
+        return [template.render(peer=conn.peer, vrf=conn.vrf, connections=conn.connection) for conn in self.inputs.ip_sec_conn]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        self.result.is_success()
+        for command_output in self.instance_commands:
+            conn_output = command_output.json_output["connections"]
+            peer = command_output.params["peer"]
+            connections = command_output.params["connections"]
+
+            # Check if IP security connection is configured
+            if not conn_output:
+                self.result.is_failure(f"IP security connections are not configured for peer `{peer}`.")
+                return
+
+            # If connection details are not provided then check all connection of a peer
+            if connections is None:
+                for connection, conn_data in conn_output.items():
+                    state = list(conn_data["pathDict"].values())[0]
+                    if state != "Established":
+                        self.result.is_failure(
+                            f"Expected state of IP security connection `{connection}` for peer `{peer}` is `Established` " f"but found `{state}` instead."
+                        )
+                continue
+
+            # Create a dictionary of existing connections for faster lookup
+            existing_connections = {(conn_data.get("saddr"), conn_data.get("daddr")): list(conn_data["pathDict"].values())[0] for conn_data in conn_output.values()}
+            for connection in connections:
+                source = str(connection.source_address)
+                destination = str(connection.destination_address)
+
+                if (source, destination) in existing_connections:
+                    existing_state = existing_connections[(source, destination)]
+                    if existing_state != "Established":
+                        self.result.is_failure(
+                            f"Expected state of IP security connection `{source}-{destination}` for peer `{peer}` is `Established` "
+                            f"but found `{existing_state}` instead."
+                        )
+                else:
+                    self.result.is_failure(f"IP security connection `{source}-{destination}` for peer `{peer}` is not found.")
