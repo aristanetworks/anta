@@ -584,7 +584,7 @@ class VerifySpecificIPSecConn(AntaTest):
             """This is the optional VRF for the IP security peer. It defaults to `default` if not provided."""
 
             connection: Optional[List[IPSecConn]] = None
-            """List of IP security connections of a peer."""
+            """Optional list of IP security connections of a peer."""
 
             class IPSecConn(BaseModel):
                 """
