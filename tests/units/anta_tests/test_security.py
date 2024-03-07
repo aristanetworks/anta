@@ -943,7 +943,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following IP security connection are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0"
+                "Following IP security connections are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0."
             ],
         },
     },
