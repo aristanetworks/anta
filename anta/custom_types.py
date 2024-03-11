@@ -120,3 +120,4 @@ ErrDisableReasons = Literal[
     "uplink-failure-detection",
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
+TcpPort = Annotated[int, Field(ge=1, le=65535)]
