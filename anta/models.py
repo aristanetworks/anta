@@ -22,9 +22,8 @@ from pydantic import BaseModel, ConfigDict, ValidationError, conint
 from rich.progress import Progress, TaskID
 
 from anta import GITHUB_SUGGESTION
-from anta.logger import anta_log_exception
+from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
-from anta.tools.misc import exc_to_str
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice

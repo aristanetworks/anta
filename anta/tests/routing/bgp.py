@@ -11,7 +11,8 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import Any, List, Optional, Union, cast
 
-from pydantic import BaseModel, Field, PositiveInt, model_validator, utils
+from pydantic import BaseModel, Field, PositiveInt, model_validator
+from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
@@ -125,7 +126,7 @@ def _add_bgp_routes_failure(
         if route not in bgp_output:
             # If missing, add it to the failure routes dictionary
             failure["bgp_peers"][peer][vrf][route_type][route] = "Not found"
-            failure_routes = utils.deep_update(failure_routes, failure)
+            failure_routes = deep_update(failure_routes, failure)
             continue
 
         # Check if the route is active and valid
@@ -135,7 +136,7 @@ def _add_bgp_routes_failure(
         # If the route is either inactive or invalid, add it to the failure routes dictionary
         if not is_active or not is_valid:
             failure["bgp_peers"][peer][vrf][route_type][route] = {"valid": is_valid, "active": is_active}
-            failure_routes = utils.deep_update(failure_routes, failure)
+            failure_routes = deep_update(failure_routes, failure)
 
     return failure_routes
 
@@ -530,7 +531,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
             # Validate received routes
             else:
                 failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, peer, vrf, route_type="received_routes")
-            failures = utils.deep_update(failures, failure_routes)
+            failures = deep_update(failures, failure_routes)
 
         if not failures["bgp_peers"]:
             self.result.is_success()
@@ -588,7 +589,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
                 failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
                 continue
 
             # Check each capability
@@ -599,12 +600,12 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 # Check if capabilities are missing
                 if not capability_output:
                     failure["bgp_peers"][peer][vrf][capability] = "not found"
-                    failures = utils.deep_update(failures, failure)
+                    failures = deep_update(failures, failure)
 
                 # Check if capabilities are not advertised, received, or enabled
                 elif not all(capability_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
                     failure["bgp_peers"][peer][vrf][capability] = capability_output
-                    failures = utils.deep_update(failures, failure)
+                    failures = deep_update(failures, failure)
 
         # Check if there are any failures
         if not failures["bgp_peers"]:
@@ -660,7 +661,7 @@ class VerifyBGPPeerASNCap(AntaTest):
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
                 failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
                 continue
 
             bgp_output = get_value(bgp_output, "neighborCapabilities.fourOctetAsnCap")
@@ -668,12 +669,12 @@ class VerifyBGPPeerASNCap(AntaTest):
             # Check if  four octet asn capabilities are found
             if not bgp_output:
                 failure["bgp_peers"][peer][vrf] = {"fourOctetAsnCap": "not found"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
             # Check if capabilities are not advertised, received, or enabled
             elif not all(bgp_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
                 failure["bgp_peers"][peer][vrf] = {"fourOctetAsnCap": bgp_output}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
         # Check if there are any failures
         if not failures["bgp_peers"]:
@@ -729,7 +730,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
                 failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
                 continue
 
             bgp_output = get_value(bgp_output, "neighborCapabilities.routeRefreshCap")
@@ -737,12 +738,12 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
             # Check if route refresh capabilities are found
             if not bgp_output:
                 failure["bgp_peers"][peer][vrf] = {"routeRefreshCap": "not found"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
             # Check if capabilities are not advertised, received, or enabled
             elif not all(bgp_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
                 failure["bgp_peers"][peer][vrf] = {"routeRefreshCap": bgp_output}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
         # Check if there are any failures
         if not failures["bgp_peers"]:
@@ -798,7 +799,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
                 failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
                 continue
 
             # Check if BGP peer state and authentication
@@ -806,7 +807,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             md5_auth_enabled = bgp_output.get("md5AuthEnabled")
             if state != "Established" or not md5_auth_enabled:
                 failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
         # Check if there are any failures
         if not failures["bgp_peers"]:
@@ -924,14 +925,14 @@ class VerifyBGPAdvCommunities(AntaTest):
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
             ):
                 failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
                 continue
 
             # Verify BGP peer's advertised communities
             bgp_output = bgp_output.get("advertisedCommunities")
             if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
                 failure["bgp_peers"][peer][vrf] = {"advertised_communities": bgp_output}
-                failures = utils.deep_update(failures, failure)
+                failures = deep_update(failures, failure)
 
         if not failures["bgp_peers"]:
             self.result.is_success()

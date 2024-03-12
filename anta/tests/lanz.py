@@ -7,6 +7,7 @@ Test functions related to LANZ
 
 from __future__ import annotations
 
+from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
 
@@ -24,6 +25,7 @@ class VerifyLANZ(AntaTest):
     categories = ["lanz"]
     commands = [AntaCommand(command="show queue-monitor length status")]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         command_output = self.instance_commands[0].json_output

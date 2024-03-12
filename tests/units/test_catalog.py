@@ -146,12 +146,12 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "no_input_when_required",
         "tests": [(FakeTestWithInput, None)],
-        "error": "Field required",
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Field required",
     },
     {
         "name": "wrong_input_type",
-        "tests": [(FakeTestWithInput, True)],
-        "error": "Value error, Coud not instantiate inputs as type bool is not valid",
+        "tests": [(FakeTestWithInput, {"string": True})],
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Input should be a valid string",
     },
 ]
 
@@ -243,7 +243,7 @@ class Test_AntaCatalog:
         assert len(caplog.record_tuples) >= 1
         _, _, message = caplog.record_tuples[0]
         assert "Unable to parse ANTA Test Catalog file" in message
-        assert "FileNotFoundError ([Errno 2] No such file or directory" in message
+        assert "FileNotFoundError: [Errno 2] No such file or directory" in message
 
     @pytest.mark.parametrize("catalog_data", CATALOG_FROM_LIST_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_LIST_FAIL_DATA))
     def test_from_list_fail(self, catalog_data: dict[str, Any]) -> None:

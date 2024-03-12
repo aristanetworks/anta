@@ -20,8 +20,8 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__, aioeapi
+from anta.logger import exc_to_str
 from anta.models import AntaCommand
-from anta.tools.misc import exc_to_str
 
 logger = logging.getLogger(__name__)
 
