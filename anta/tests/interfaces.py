@@ -47,13 +47,25 @@ class VerifyInterfaceUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        DUPLEX_FULL = "duplexFull"
+        failed_interfaces: dict[str, dict[str, float]] = {}
         rates = self.instance_commands[0].json_output
         interfaces = self.instance_commands[1].json_output
 
-        failed_interfaces = {}
+        def _test_intf(intf: str) -> None:
+            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+
+            def _test_rate(rate: str) -> None:
+                usage = rates[rate] / bandwidth * 100
+                if usage > self.inputs.threshold:
+                    if intf not in failed_interfaces:
+                        failed_interfaces[intf] = {}
+                    failed_interfaces[intf][rate] = usage
+
+            for rate in ["inBpsRate", "outBpsRate"]:
+                _test_rate(rate)
 
         for intf, rates in rates["interfaces"].items():
-            DUPLEX_FULL = "duplexFull"
             # Assuming the interface is full-duplex in the logic below
             if "duplex" in interfaces["interfaces"][intf]:
                 if interfaces["interfaces"][intf]["duplex"] != DUPLEX_FULL:
@@ -65,10 +77,7 @@ class VerifyInterfaceUtilization(AntaTest):
                     if stats["duplex"] != DUPLEX_FULL:
                         self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
                         return
-            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
-            usage = rates["inBpsRate"] / bandwidth
-            if usage > self.inputs.threshold:
-                failed_interfaces[intf] = usage
+            _test_intf(intf)
         if not failed_interfaces:
             self.result.is_success()
         else:
