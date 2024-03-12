@@ -41,13 +41,12 @@ repos:
           - '<!--|  ~|  -->'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
     rev: v0.3.2
     hooks:
-    # Run the linter.
     - id: ruff
+      name: Run Ruff linter
       args: [ --fix ]
-    # Run the formatter.
+      name: Run Ruff formatter
     - id: ruff-format
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
@@ -55,7 +54,7 @@ repos:
       - id: pylint
         entry: pylint
         language: python
-        name: Check for Linting error on Python files
+        name: Check code style with pylint
         description: This hook runs pylint.
         types: [python]
         args:
@@ -67,6 +66,7 @@ repos:
     rev: v1.9.0
     hooks:
       - id: mypy
+        name: Check typing with mypy
         args:
           - --config-file=pyproject.toml
         additional_dependencies:

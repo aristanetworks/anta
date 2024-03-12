@@ -270,6 +270,38 @@ depends = py311
 
 [tool.ruff]
 
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    ".github",
+    "aioeapi.py" # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
+]
+
 # Same as Black.
 line-length = 165
 
@@ -296,31 +328,6 @@ ignore = [
 fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
 unfixable = []
 
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
@@ -338,9 +345,9 @@ max-complexity = 10
   "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
   "S101",    # Complains about asserts
   "S108",    # Probable insecure usage of temporary file or directory
-  "FBT001",
-  "PLR0913",  # Too many arguments to function call (8 > 5)
-  "PLR2004",  # Magic value used in comparison, consider replacing {value} with a constant variable
+"FBT001",    # Boolean-typed positional argument in function definition
+  "PLR0913", # Too many arguments to function call (8 > 5)
+"PLR2004",   # Magic value used in comparison, consider replacing {value} with a constant variable
 ]
 "anta/*" = [
   "BLE001",  # Do not catch blind exception: `Exception` - caught by other linter
