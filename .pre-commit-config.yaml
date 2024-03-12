@@ -40,6 +40,16 @@ repos:
           - --comment-style
           - '<!--|  ~|  -->'
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.3.2
+    hooks:
+    # Run the linter.
+    - id: ruff
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
+
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
       - id: pylint
@@ -52,13 +62,6 @@ repos:
           - -rn                # Only display messages
           - -sn                # Don't display the score
           - --rcfile=pylintrc  # Link to config file
-
-  # Prepare to turn on ruff
-  # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   # Ruff version.
-  #   rev: v0.0.280
-  #   hooks:
-  #     - id: ruff
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0
