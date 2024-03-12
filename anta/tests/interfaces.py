@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, conint
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface
+from anta.custom_types import Interface, Percent
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
@@ -26,35 +26,53 @@ from anta.tools.get_value import get_value
 
 class VerifyInterfaceUtilization(AntaTest):
     """
-    Verifies interfaces utilization is below 75%.
+    Verifies interfaces utilization is below a threshold.
+    Load interval (default to 5 minutes) is defined in device configuration.
 
     Expected Results:
-        * success: The test will pass if all interfaces have a usage below 75%.
-        * failure: The test will fail if one or more interfaces have a usage above 75%.
+        * success: The test will pass if all interfaces have a usage below the threshold.
+        * failure: The test will fail if one or more interfaces have a usage above the threshold.
     """
 
     name = "VerifyInterfaceUtilization"
-    description = "Verifies that all interfaces have a usage below 75%."
+    description = "Verifies interfaces utilization is below a threshold."
     categories = ["interfaces"]
-    # TODO - move from text to json if possible
-    commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
+    commands = [AntaCommand(command="show interfaces counters rates"), AntaCommand(command="show interfaces")]
+
+    class Input(AntaTest.Input):
+        """Input for the VerifyInterfaceUtilization test."""
+
+        threshold: Percent = 75.0
+        """Interface utilization threshold above which the test will fail"""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        command_output = self.instance_commands[0].text_output
-        wrong_interfaces = {}
-        for line in command_output.split("\n")[1:]:
-            if len(line) > 0:
-                if line.split()[-5] == "-" or line.split()[-2] == "-":
-                    pass
-                elif float(line.split()[-5].replace("%", "")) > 75.0:
-                    wrong_interfaces[line.split()[0]] = line.split()[-5]
-                elif float(line.split()[-2].replace("%", "")) > 75.0:
-                    wrong_interfaces[line.split()[0]] = line.split()[-2]
-        if not wrong_interfaces:
+        rates = self.instance_commands[0].json_output
+        interfaces = self.instance_commands[1].json_output
+
+        failed_interfaces = {}
+
+        for intf, rates in rates["interfaces"].items():
+            DUPLEX_FULL = "duplexFull"
+            # Assuming the interface is full-duplex in the logic below
+            if "duplex" in interfaces["interfaces"][intf]:
+                if interfaces["interfaces"][intf]["duplex"] != DUPLEX_FULL:
+                    self.result.is_error(f"Interface {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
+                    return
+            elif "memberInterfaces" in interfaces["interfaces"][intf]:
+                # This is a Port-Channel
+                for member, stats in interfaces["interfaces"][intf]["memberInterfaces"].items():
+                    if stats["duplex"] != DUPLEX_FULL:
+                        self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
+                        return
+            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+            usage = rates["inBpsRate"] / bandwidth
+            if usage > self.inputs.threshold:
+                failed_interfaces[intf] = usage
+        if not failed_interfaces:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following interfaces have a usage > 75%: {wrong_interfaces}")
+            self.result.is_failure(f"The following interfaces have a usage > {self.inputs.threshold}%: {failed_interfaces}")
 
 
 class VerifyInterfaceErrors(AntaTest):
