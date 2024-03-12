@@ -1184,8 +1184,8 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "name": "Ethernet2",
+                    "Ethernet2/1": {
+                        "name": "Ethernet2/1",
                         "forwardingModel": "routed",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
