@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arista Networks, Inc.
+# Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.hardware"""
@@ -810,8 +810,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "name": "Ethernet2",
+                    "Ethernet2/1": {
+                        "name": "Ethernet2/1",
                         "forwardingModel": "routed",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
