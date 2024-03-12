@@ -146,12 +146,12 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "no_input_when_required",
         "tests": [(FakeTestWithInput, None)],
-        "error": "Field required",
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Field required",
     },
     {
         "name": "wrong_input_type",
-        "tests": [(FakeTestWithInput, True)],
-        "error": "Value error, Coud not instantiate inputs as type bool is not valid",
+        "tests": [(FakeTestWithInput, {"string": True})],
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Input should be a valid string",
     },
 ]
 

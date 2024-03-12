@@ -71,16 +71,16 @@ class AntaTestDefinition(BaseModel):
         if not (isclass(test_class) and issubclass(test_class, AntaTest)):
             raise ValueError(f"Could not validate inputs as no test class {test_class} is not a subclass of AntaTest")
 
-        if data is None:
-            return test_class.Input()
         if isinstance(data, AntaTest.Input):
             return data
-        if isinstance(data, dict):
-            try:
+        try:
+            if data is None:
+                return test_class.Input()
+            if isinstance(data, dict):
                 return test_class.Input(**data)
-            except ValidationError as e:
-                inputs_msg = str(e).replace("\n", "\n\t")
-                raise PydanticCustomError("wrong_test_inputs", f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
+        except ValidationError as e:
+            inputs_msg = str(e).replace("\n", "\n\t")
+            raise PydanticCustomError("wrong_test_inputs", f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
         raise ValueError(f"Coud not instantiate inputs as type {type(data).__name__} is not valid")
 
     @model_validator(mode="after")
