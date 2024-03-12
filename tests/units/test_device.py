@@ -744,7 +744,7 @@ class TestAsyncEOSDevice:
                 # No password
                 commands.append({"cmd": "enable"})
             if cmd.revision:
-                commands.append({"cmd": cmd.command, "revision": cmd.revision})
+                commands.append({"cmd": cmd.command, "revision": cmd.revision})  # type: ignore[dict-item]
             else:
                 commands.append({"cmd": cmd.command})
             async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version)

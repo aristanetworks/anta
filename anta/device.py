@@ -323,7 +323,7 @@ class AsyncEOSDevice(AntaDevice):
             # No password
             commands.append({"cmd": "enable"})
         if command.revision:
-            commands.append({"cmd": command.command, "revision": command.revision})  # type: ignore
+            commands.append({"cmd": command.command, "revision": command.revision})  # type: ignore[dict-item]
         else:
             commands.append({"cmd": command.command})
         try:
