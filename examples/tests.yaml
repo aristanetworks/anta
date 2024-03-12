@@ -121,6 +121,7 @@ anta.tests.hardware:
 
 anta.tests.interfaces:
   - VerifyInterfaceUtilization:
+      threshold: 70.0
   - VerifyInterfaceErrors:
   - VerifyInterfaceDiscards:
   - VerifyInterfaceErrDisabled:

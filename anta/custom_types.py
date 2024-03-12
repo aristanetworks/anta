@@ -120,3 +120,4 @@ ErrDisableReasons = Literal[
     "uplink-failure-detection",
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
+Percent = Annotated[float, Field(ge=0.0, le=100.0)]
