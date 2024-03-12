@@ -122,13 +122,13 @@ anta.tests.interfaces:
   - VerifyInterfaceErrDisabled:
   - VerifyInterfacesStatus:
       interfaces:
-        - interface: Ethernet1
-          state: up
-        - interface: Port-Channel100
-          state: down
+        - name: Ethernet1
+          status: up
+        - name: Port-Channel100
+          status: down
           line_protocol_status: lowerLayerDown
-        - interface: Ethernet49/1
-          state: adminDown
+        - name: Ethernet49/1
+          status: adminDown
           line_protocol_status: notPresent
   - VerifyStormControlDrops:
   - VerifyPortChannels:
