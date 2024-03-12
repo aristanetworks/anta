@@ -14,7 +14,7 @@ from ipaddress import IPv4Network
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface, Percent
@@ -328,7 +328,7 @@ class VerifyLoopbackCount(AntaTest):
     commands = [AntaCommand(command="show ip interface brief")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type: ignore
+        number: int = Field(..., ge=0)
         """Number of loopback interfaces expected to be present"""
 
     @AntaTest.anta_test

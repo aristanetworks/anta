@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from pydantic import conint
+from pydantic import Field
 
 from anta.models import AntaCommand, AntaTest
 
@@ -30,7 +30,7 @@ class VerifyUptime(AntaTest):
     commands = [AntaCommand(command="show uptime")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        minimum: conint(ge=0)  # type: ignore
+        minimum: int = Field(..., ge=0)
         """Minimum uptime in seconds"""
 
     @AntaTest.anta_test

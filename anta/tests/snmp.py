@@ -8,7 +8,7 @@ Test functions related to the EOS various SNMP settings
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from pydantic import conint
+from pydantic import Field
 
 from anta.models import AntaCommand, AntaTest
 
@@ -55,7 +55,7 @@ class VerifySnmpIPv4Acl(AntaTest):
     commands = [AntaCommand(command="show snmp ipv4 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SNMP agent"""
@@ -93,7 +93,7 @@ class VerifySnmpIPv6Acl(AntaTest):
     commands = [AntaCommand(command="show snmp ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SNMP agent"""

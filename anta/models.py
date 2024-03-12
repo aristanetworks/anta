@@ -18,7 +18,7 @@ from functools import wraps
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Dict, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, ValidationError, conint
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from rich.progress import Progress, TaskID
 
 from anta import GITHUB_SUGGESTION
@@ -68,7 +68,7 @@ class AntaTemplate(BaseModel):
 
     template: str
     version: Literal[1, "latest"] = "latest"
-    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
+    revision: Optional[int] = Field(default=None, ge=1, le=99)
     ofmt: Literal["json", "text"] = "json"
     use_cache: bool = True
 
@@ -126,7 +126,7 @@ class AntaCommand(BaseModel):
 
     command: str
     version: Literal[1, "latest"] = "latest"
-    revision: Optional[conint(ge=1, le=99)] = None  # type: ignore
+    revision: Optional[int] = Field(default=None, ge=1, le=99)
     ofmt: Literal["json", "text"] = "json"
     output: Optional[Union[Dict[str, Any], str]] = None
     template: Optional[AntaTemplate] = None

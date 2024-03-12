@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Union
 
-from pydantic import BaseModel, Field, conint, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -62,7 +62,7 @@ class VerifySSHIPv4Acl(AntaTest):
     commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SSHD agent"""
@@ -100,7 +100,7 @@ class VerifySSHIPv6Acl(AntaTest):
     commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SSHD agent"""
@@ -215,7 +215,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for eAPI"""
@@ -254,7 +254,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: int = Field(..., ge=0)
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for eAPI"""

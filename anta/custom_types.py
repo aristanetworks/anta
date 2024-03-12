@@ -121,3 +121,4 @@ ErrDisableReasons = Literal[
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
 Percent = Annotated[float, Field(ge=0.0, le=100.0)]
+Hostname = Annotated[str, Field(pattern=r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")]
