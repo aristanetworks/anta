@@ -4,11 +4,9 @@
 """Test functions related to VXLAN."""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
 from ipaddress import IPv4Address
-
-# Need to keep List and Dict for pydantic in python 3.8
-from typing import Dict, List
 
 from pydantic import Field
 
@@ -97,7 +95,7 @@ class VerifyVxlanVniBinding(AntaTest):
     commands = [AntaCommand(command="show vxlan vni", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        bindings: Dict[Vni, Vlan]
+        bindings: dict[Vni, Vlan]
         """VNI to VLAN bindings to verify"""
 
     @AntaTest.anta_test
@@ -146,7 +144,7 @@ class VerifyVxlanVtep(AntaTest):
     commands = [AntaCommand(command="show vxlan vtep", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vteps: List[IPv4Address]
+        vteps: list[IPv4Address]
         """List of VTEP peers to verify"""
 
     @AntaTest.anta_test

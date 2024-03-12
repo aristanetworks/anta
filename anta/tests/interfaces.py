@@ -9,8 +9,7 @@ from __future__ import annotations
 import re
 from ipaddress import IPv4Network
 
-# Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel
 from pydantic_extra_types.mac_address import MacAddress
@@ -176,7 +175,7 @@ class VerifyInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input for the VerifyInterfacesStatus test."""
 
-        interfaces: List[InterfaceState]
+        interfaces: list[InterfaceState]
         """List of interfaces to validate with the expected state."""
 
         class InterfaceState(BaseModel):
@@ -521,7 +520,7 @@ class VerifyInterfaceIPv4(AntaTest):
     class Input(AntaTest.Input):
         """Inputs for the VerifyInterfaceIPv4 test."""
 
-        interfaces: List[InterfaceDetail]
+        interfaces: list[InterfaceDetail]
         """list of interfaces to be tested"""
 
         class InterfaceDetail(BaseModel):
@@ -531,7 +530,7 @@ class VerifyInterfaceIPv4(AntaTest):
             """Name of the interface"""
             primary_ip: IPv4Network
             """Primary IPv4 address with subnet on interface"""
-            secondary_ips: Optional[List[IPv4Network]] = None
+            secondary_ips: Optional[list[IPv4Network]] = None
             """Optional list of secondary IPv4 addresses with subnet on interface"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:

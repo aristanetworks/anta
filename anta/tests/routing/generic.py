@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_interface
 
-# Need to keep List for pydantic in python 3.8
 from typing import Literal
 
 from pydantic import model_validator

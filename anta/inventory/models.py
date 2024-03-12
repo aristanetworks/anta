@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import logging
 
-# Need to keep List for pydantic in python 3.8
 from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, IPvAnyNetwork, constr
 from typing_extensions import Annotated
 

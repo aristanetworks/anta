@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-# Need to keep List and Set for pydantic in python 3.8
 from typing import Literal
 
 from anta.custom_types import AAAAuthMethod

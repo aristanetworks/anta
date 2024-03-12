@@ -13,7 +13,6 @@ from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
 
-# Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
