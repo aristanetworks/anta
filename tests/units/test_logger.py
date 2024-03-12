@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
-from anta.logger import anta_log_exception
+from anta.logger import anta_log_exception, exc_to_str, tb_to_str
 
 if TYPE_CHECKING:
     from pytest import LogCaptureFixture
@@ -78,3 +78,30 @@ def test_anta_log_exception(
     # the only place where we can see the stracktrace is in the capture.text
     if __DEBUG__value is True:
         assert "Traceback" in caplog.text
+
+
+def my_raising_function(exception: Exception) -> None:
+    """
+    dummy function to raise Exception
+    """
+    raise exception
+
+
+@pytest.mark.parametrize("exception, expected_output", [(ValueError("test"), "ValueError (test)"), (ValueError(), "ValueError")])
+def test_exc_to_str(exception: Exception, expected_output: str) -> None:
+    """
+    Test exc_to_str
+    """
+    assert exc_to_str(exception) == expected_output
+
+
+def test_tb_to_str() -> None:
+    """
+    Test tb_to_str
+    """
+    try:
+        my_raising_function(ValueError("test"))
+    except ValueError as e:
+        output = tb_to_str(e)
+        assert "Traceback" in output
+        assert 'my_raising_function(ValueError("test"))' in output
