@@ -21,18 +21,18 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize(
     "exception, message, calling_logger, __DEBUG__value, expected_message",
     [
-        pytest.param(ValueError("exception message"), None, None, False, "ValueError (exception message)", id="exception only"),
-        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message\nValueError (exception message)", id="custom message"),
+        pytest.param(ValueError("exception message"), None, None, False, "ValueError: exception message", id="exception only"),
+        pytest.param(ValueError("exception message"), "custom message", None, False, "custom message\nValueError: exception message", id="custom message"),
         pytest.param(
             ValueError("exception message"),
             "custom logger",
             logging.getLogger("custom"),
             False,
-            "custom logger\nValueError (exception message)",
+            "custom logger\nValueError: exception message",
             id="custom logger",
         ),
         pytest.param(
-            ValueError("exception message"), "Use with custom message", None, True, "Use with custom message\nValueError (exception message)", id="__DEBUG__ on"
+            ValueError("exception message"), "Use with custom message", None, True, "Use with custom message\nValueError: exception message", id="__DEBUG__ on"
         ),
     ],
 )
@@ -87,7 +87,7 @@ def my_raising_function(exception: Exception) -> None:
     raise exception
 
 
-@pytest.mark.parametrize("exception, expected_output", [(ValueError("test"), "ValueError (test)"), (ValueError(), "ValueError")])
+@pytest.mark.parametrize("exception, expected_output", [(ValueError("test"), "ValueError: test"), (ValueError(), "ValueError")])
 def test_exc_to_str(exception: Exception, expected_output: str) -> None:
     """
     Test exc_to_str

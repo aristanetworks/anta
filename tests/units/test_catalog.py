@@ -243,7 +243,7 @@ class Test_AntaCatalog:
         assert len(caplog.record_tuples) >= 1
         _, _, message = caplog.record_tuples[0]
         assert "Unable to parse ANTA Test Catalog file" in message
-        assert "FileNotFoundError ([Errno 2] No such file or directory" in message
+        assert "FileNotFoundError: [Errno 2] No such file or directory" in message
 
     @pytest.mark.parametrize("catalog_data", CATALOG_FROM_LIST_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_LIST_FAIL_DATA))
     def test_from_list_fail(self, catalog_data: dict[str, Any]) -> None:
