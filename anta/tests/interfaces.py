@@ -58,9 +58,7 @@ class VerifyInterfaceUtilization(AntaTest):
             def _test_rate(rate: str) -> None:
                 usage = rates[rate] / bandwidth * 100
                 if usage > self.inputs.threshold:
-                    if intf not in failed_interfaces:
-                        failed_interfaces[intf] = {}
-                    failed_interfaces[intf][rate] = usage
+                    failed_interfaces.setdefault(intf, {})[rate] = usage
 
             for rate in ["inBpsRate", "outBpsRate"]:
                 _test_rate(rate)
