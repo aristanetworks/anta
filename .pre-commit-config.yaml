@@ -40,27 +40,6 @@ repos:
           - --comment-style
           - '<!--|  ~|  -->'
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        name: Check for changes when running isort on all python files
-
-  - repo: https://github.com/psf/black
-    rev: 24.1.1
-    hooks:
-      - id: black
-        name: Check for changes when running Black on all python files
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        name: Check for PEP8 error on Python files
-        args:
-          - --config=/dev/null
-          - --max-line-length=165
-
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
       - id: pylint

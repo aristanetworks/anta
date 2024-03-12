@@ -82,7 +82,7 @@ jobs:
           config_file: .yamllint.yml
           file_or_dir: .
   lint-python:
-    name: Run isort, black, flake8 and pylint
+    name: Check the code style
     runs-on: ubuntu-20.04
     needs: file-changes
     if: needs.file-changes.outputs.code == 'true'
@@ -97,7 +97,7 @@ jobs:
       - name: "Run tox linting environment"
         run: tox -e lint
   type-python:
-    name: Run mypy
+    name: Check typing
     runs-on: ubuntu-20.04
     needs: file-changes
     if: needs.file-changes.outputs.code == 'true'
