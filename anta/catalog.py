@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
+from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_load
 
 from anta.logger import anta_log_exception
@@ -75,7 +76,11 @@ class AntaTestDefinition(BaseModel):
         if isinstance(data, AntaTest.Input):
             return data
         if isinstance(data, dict):
-            return test_class.Input(**data)
+            try:
+                return test_class.Input(**data)
+            except ValidationError as e:
+                inputs_msg = str(e).replace("\n", "\n\t")
+                raise PydanticCustomError("wrong_test_inputs", f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
         raise ValueError(f"Coud not instantiate inputs as type {type(data).__name__} is not valid")
 
     @model_validator(mode="after")
