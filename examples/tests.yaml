@@ -98,6 +98,10 @@ anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:
 
+anta.tests.greent:
+  - VerifyGreenT:
+  - VerifyGreenTCounters:
+
 anta.tests.hardware:
   - VerifyTransceiversManufacturers:
       manufacturers:
@@ -163,6 +167,9 @@ anta.tests.interfaces:
   - VerifyIpVirtualRouterMac:
       mac_address: 00:1c:73:00:dc:01
 
+anta.tests.lanz:
+  - VerifyLANZ:
+
 anta.tests.logging:
   - VerifyLoggingPersistent:
   - VerifyLoggingSourceIntf:
@@ -207,6 +214,14 @@ anta.tests.profiles:
       mode: 3
   - VerifyTcamProfile:
       profile: vxlan-routing
+
+anta.tests.ptp:
+  - PtpModeStatus:
+  - PtpPortModeStatus:
+  - PtpLockStatus:
+  - PtpGMStatus:
+      validGM: 0xec:46:70:ff:fe:00:ff:a9
+  - PtpOffset:
 
 anta.tests.security:
   - VerifySSHStatus:
