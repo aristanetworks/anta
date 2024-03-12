@@ -9,18 +9,15 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
-from typing import List, Union, TYPE_CHECKING
+from typing import List, Union
 
-from pydantic import BaseModel, Field, conint, model_validator
+from pydantic import BaseModel, Field, model_validator
 
-from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
+from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
-
-if TYPE_CHECKING:
-    from pydantic import conint
 
 
 class VerifySSHStatus(AntaTest):
@@ -63,7 +60,7 @@ class VerifySSHIPv4Acl(AntaTest):
     commands = [AntaCommand(command="show management ssh ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: PositiveInteger
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SSHD agent"""
@@ -100,7 +97,7 @@ class VerifySSHIPv6Acl(AntaTest):
     commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: PositiveInteger
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for the SSHD agent"""
@@ -211,7 +208,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: PositiveInteger
         """The number of expected IPv4 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for eAPI"""
@@ -249,7 +246,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
+        number: PositiveInteger
         """The number of expected IPv6 ACL(s)"""
         vrf: str = "default"
         """The name of the VRF in which to check for eAPI"""

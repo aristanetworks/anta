@@ -16,9 +16,10 @@ from functools import wraps
 # Need to keep Dict and List for pydantic in python 3.8
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, ValidationError, conint
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from anta import GITHUB_SUGGESTION
+from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
@@ -66,7 +67,7 @@ class AntaTemplate(BaseModel):
 
     template: str
     version: Literal[1, "latest"] = "latest"
-    revision: conint(ge=1, le=99) | None = None  # type: ignore
+    revision: Revision | None = None
     ofmt: Literal["json", "text"] = "json"
     use_cache: bool = True
 
@@ -127,7 +128,7 @@ class AntaCommand(BaseModel):
 
     command: str
     version: Literal[1, "latest"] = "latest"
-    revision: conint(ge=1, le=99) | None = None  # type: ignore
+    revision: Revision | None = None
     ofmt: Literal["json", "text"] = "json"
     output: dict[str, Any] | str | None = None
     template: AntaTemplate | None = None
@@ -412,7 +413,7 @@ class AntaTest(ABC):
         """Returns a list of all the commands that have failed."""
         return [command for command in self.instance_commands if command.errors]
 
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:  # pylint: disable=W0613
         """Render an AntaTemplate instance of this AntaTest using the provided
            AntaTest.Input instance at self.inputs.
 

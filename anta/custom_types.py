@@ -121,3 +121,5 @@ ErrDisableReasons = Literal[
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
 Percent = Annotated[float, Field(ge=0.0, le=100.0)]
+PositiveInteger = Annotated[int, Field(ge=0)]
+Revision = Annotated[int, Field(ge=1, le=99)]

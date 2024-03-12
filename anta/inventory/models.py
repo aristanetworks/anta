@@ -8,7 +8,8 @@ from __future__ import annotations
 import logging
 
 # Need to keep List for pydantic in python 3.8
-from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork, conint, constr
+from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, IPvAnyNetwork, constr
+from typing_extensions import Annotated
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class AntaInventoryHost(BaseModel):
 
     name: str | None = None
     host: constr(pattern=RFC_1123_REGEX) | IPvAnyAddress  # type: ignore
-    port: conint(gt=1, lt=65535) | None = None  # type: ignore
+    port: Annotated[int, Field(gt=1, lt=65535)] | None = None
     tags: list[str] | None = None
     disable_cache: bool = False
 

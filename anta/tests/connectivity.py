@@ -6,17 +6,12 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep List for pydantic in python 3.8
-from typing import TYPE_CHECKING
+from ipaddress import IPv4Address
 
 from pydantic import BaseModel
 
+from anta.custom_types import Interface
 from anta.models import AntaCommand, AntaMissingParamException, AntaTemplate, AntaTest
-
-if TYPE_CHECKING:
-    from ipaddress import IPv4Address
-
-    from anta.custom_types import Interface
 
 
 class VerifyReachability(AntaTest):

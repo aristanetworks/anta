@@ -18,7 +18,6 @@ from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__, aioeapi
 from anta.logger import exc_to_str
-from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -181,7 +180,7 @@ class AntaDevice(ABC):
             - `hw_model`: The hardware model of the device
         """
 
-    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
+    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:  # pylint: disable=W0613
         """Copy files to and from the device, usually through SCP.
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
@@ -312,7 +311,7 @@ class AsyncEOSDevice(AntaDevice):
             # No password
             commands.append({"cmd": "enable"})
         if command.revision:
-            commands.append({"cmd": command.command, "revision": command.revision})
+            commands.append({"cmd": command.command, "revision": str(command.revision)})
         else:
             commands.append({"cmd": command.command})
         try:

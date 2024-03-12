@@ -6,13 +6,8 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep Dict for pydantic in python 3.8
-from typing import TYPE_CHECKING
-
+from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from anta.custom_types import Vlan
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):

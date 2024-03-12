@@ -6,15 +6,13 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from ipaddress import IPv4Address
+
 # Need to keep List and Set for pydantic in python 3.8
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
+from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from ipaddress import IPv4Address
-
-    from anta.custom_types import AAAAuthMethod
 
 
 class VerifyTacacsSourceIntf(AntaTest):

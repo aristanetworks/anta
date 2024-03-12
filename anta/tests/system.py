@@ -7,12 +7,9 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 
+from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
-
-if TYPE_CHECKING:
-    from pydantic import conint
 
 
 class VerifyUptime(AntaTest):
@@ -29,7 +26,7 @@ class VerifyUptime(AntaTest):
     commands = [AntaCommand(command="show uptime")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        minimum: conint(ge=0)  # type: ignore
+        minimum: PositiveInteger
         """Minimum uptime in seconds"""
 
     @AntaTest.anta_test

@@ -4,13 +4,9 @@
 """Models related to anta.result_manager module."""
 from __future__ import annotations
 
-# Need to keep List for pydantic in 3.8
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from anta.custom_types import TestStatus
+from anta.custom_types import TestStatus
 
 
 class TestResult(BaseModel):

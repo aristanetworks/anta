@@ -10,15 +10,13 @@ NOTE: 'show logging' does not support json output yet
 from __future__ import annotations
 
 import re
-
-# Need to keep List for pydantic in python 3.8
+from ipaddress import IPv4Address
 from typing import TYPE_CHECKING
 
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
     import logging
-    from ipaddress import IPv4Address
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:

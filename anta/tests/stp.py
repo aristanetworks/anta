@@ -6,14 +6,11 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep List for pydantic in python 3.8
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
+from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_value import get_value
-
-if TYPE_CHECKING:
-    from anta.custom_types import Vlan
 
 
 class VerifySTPMode(AntaTest):

@@ -40,14 +40,14 @@ repos:
           - --comment-style
           - '<!--|  ~|  -->'
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.2
-    hooks:
-    - id: ruff
-      name: Run Ruff linter
-      args: [ --fix ]
-      name: Run Ruff formatter
-    - id: ruff-format
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.3.2
+  #   hooks:
+  #   - id: ruff
+  #     name: Run Ruff linter
+  #     args: [ --fix ]
+  #     name: Run Ruff formatter
+  #   - id: ruff-format
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:

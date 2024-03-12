@@ -91,7 +91,7 @@ def exc_to_str(exception: BaseException) -> str:
     return f"{type(exception).__name__}{f': {exception}' if str(exception) else ''}"
 
 
-def anta_log_exception(exception: BaseException, message: Optional[str] = None, calling_logger: Optional[logging.Logger] = None) -> None:
+def anta_log_exception(exception: BaseException, message: str | None = None, calling_logger: logging.Logger | None = None) -> None:
     """
     Helper function to help log exceptions:
     * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback

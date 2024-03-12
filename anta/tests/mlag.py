@@ -6,14 +6,9 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from anta.custom_types import MlagPriority
+from anta.custom_types import MlagPriority, PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
-
-if TYPE_CHECKING:
-    from pydantic import conint
 
 
 class VerifyMlagStatus(AntaTest):
@@ -124,9 +119,9 @@ class VerifyMlagReloadDelay(AntaTest):
     commands = [AntaCommand(command="show mlag", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        reload_delay: conint(ge=0)  # type: ignore
+        reload_delay: PositiveInteger
         """Delay (seconds) after reboot until non peer-link ports that are part of an MLAG are enabled"""
-        reload_delay_non_mlag: conint(ge=0)  # type: ignore
+        reload_delay_non_mlag: PositiveInteger
         """Delay (seconds) after reboot until ports that are not part of an MLAG are enabled"""
 
     @AntaTest.anta_test
@@ -159,13 +154,13 @@ class VerifyMlagDualPrimary(AntaTest):
     commands = [AntaCommand(command="show mlag detail", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        detection_delay: conint(ge=0)  # type: ignore
+        detection_delay: PositiveInteger
         """Delay detection (seconds)"""
         errdisabled: bool = False
         """Errdisabled all interfaces when dual-primary is detected"""
-        recovery_delay: conint(ge=0)  # type: ignore
+        recovery_delay: PositiveInteger
         """Delay (seconds) after dual-primary detection resolves until non peer-link ports that are part of an MLAG are enabled"""
-        recovery_delay_non_mlag: conint(ge=0)  # type: ignore
+        recovery_delay_non_mlag: PositiveInteger
         """Delay (seconds) after dual-primary detection resolves until ports that are not part of an MLAG are enabled"""
 
     @AntaTest.anta_test
