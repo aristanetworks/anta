@@ -3,10 +3,10 @@
 # that can be found in the LICENSE file.
 """Module related to generic routing tests."""
 
-from __future__ import annotations
-
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
+
 from ipaddress import IPv4Address, ip_interface
 from typing import ClassVar, Literal
 
