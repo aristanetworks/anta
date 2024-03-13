@@ -16,19 +16,27 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
 class VerifyIGMPSnoopingVlans(AntaTest):
-    """Verifies the IGMP snooping configuration for some VLANs."""
+    """Verifies the IGMP snooping status for the provided VLANs.
+
+    Expected Results:
+        * Success: The test will pass if the IGMP snooping status matches the expected status for the provided VLANs.
+        * Failure: The test will fail if the IGMP snooping status does not match the expected status for the provided VLANs.
+    """
 
     name = "VerifyIGMPSnoopingVlans"
-    description = "Verifies the IGMP snooping configuration for some VLANs."
-    categories: ClassVar[list[str]] = ["multicast", "igmp"]
+    description = "Verifies the IGMP snooping status for the provided VLANs."
+    categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIGMPSnoopingVlans test."""
+
         vlans: dict[Vlan, bool]
-        """Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)"""
+        """Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIGMPSnoopingVlans."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         for vlan, enabled in self.inputs.vlans.items():
@@ -42,19 +50,27 @@ class VerifyIGMPSnoopingVlans(AntaTest):
 
 
 class VerifyIGMPSnoopingGlobal(AntaTest):
-    """Verifies the IGMP snooping global configuration."""
+    """Verifies the IGMP snooping global status.
+
+    Expected Results:
+        * Success: The test will pass if the IGMP snooping global status matches the expected status.
+        * Failure: The test will fail if the IGMP snooping global status does not match the expected status.
+    """
 
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."
-    categories: ClassVar[list[str]] = ["multicast", "igmp"]
+    categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIGMPSnoopingGlobal test."""
+
         enabled: bool
-        """Expected global IGMP snooping configuration (True=enabled, False=disabled)"""
+        """Whether global IGMP snopping must be enabled (True) or disabled (False)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIGMPSnoopingGlobal."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         igmp_state = command_output["igmpSnoopingState"]
