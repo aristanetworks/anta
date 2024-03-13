@@ -7,15 +7,12 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
-from anta.decorators import deprecated_test
-from anta.decorators import skip_on_platforms
-from anta.models import AntaCommand
-from anta.models import AntaTemplate
-from anta.models import AntaTest
+
+from anta.decorators import deprecated_test, skip_on_platforms
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from tests.lib.fixture import DEVICE_HW_MODEL
 from tests.lib.utils import generate_test_ids
 
@@ -80,7 +77,9 @@ class FakeTestWithInput(AntaTest):
     categories = []
     commands = []
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithInput test."""
+
         string: str
 
     @AntaTest.anta_test
@@ -97,7 +96,9 @@ class FakeTestWithTemplate(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplate test."""
+
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -118,7 +119,9 @@ class FakeTestWithTemplateNoRender(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplateNoRender test."""
+
         interface: str
 
     @AntaTest.anta_test
@@ -137,7 +140,9 @@ class FakeTestWithTemplateBadRender1(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplateBadRender1 test."""
+
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -158,12 +163,14 @@ class FakeTestWithTemplateBadRender2(AntaTest):
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplateBadRender2 test."""
+
         interface: str
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render function."""
-        raise Exception(template)  # pylint: disable=broad-exception-raised
+        raise RuntimeError(template)
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -209,7 +216,9 @@ class SkipOnPlatformTestWithInput(AntaTest):
     categories = []
     commands = []
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for SkipOnPlatformTestWithInput test."""
+
         string: str
 
     @skip_on_platforms([DEVICE_HW_MODEL])
@@ -351,14 +360,14 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "Exception in render()",
+        "name": "RuntimeError in render()",
         "test": FakeTestWithTemplateBadRender2,
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {
                 "result": "error",
                 "messages": [
-                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): Exception"
+                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"
                 ],
             },
             "test": {"result": "error"},
