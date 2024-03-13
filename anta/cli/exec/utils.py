@@ -38,8 +38,8 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
         await dev.collect_commands(commands=commands)
         for command in commands:
             if not command.collected:
-                logger.error(f"Could not clear counters on device {dev.name}: {command.errors}")
-        logger.info(f"Cleared counters on {dev.name} ({dev.hw_model})")
+                logger.error("Could not clear counters on device %s: %s", dev.name, command.errors)
+        logger.info("Cleared counters on %s (%s)", dev.name, dev.hw_model)
 
     logger.info("Connecting to devices...")
     await anta_inventory.connect_inventory()
@@ -63,7 +63,7 @@ async def collect_commands(
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
-            logger.error(f"Could not collect commands on device {dev.name}: {c.errors}")
+            logger.error("Could not collect commands on device %s: %s", dev.name, c.errors)
             return
         if c.ofmt == "json":
             outfile = outdir / f"{safe_command}.json"
@@ -73,7 +73,7 @@ async def collect_commands(
             content = c.text_output
         with outfile.open(mode="w", encoding="UTF-8") as f:
             f.write(content)
-        logger.info(f"Collected command '{command}' from device {dev.name} ({dev.hw_model})")
+        logger.info("Collected command '%s' from device %s (%s)", command, dev.name, dev.hw_model)
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
@@ -87,7 +87,7 @@ async def collect_commands(
     res = await asyncio.gather(*coros, return_exceptions=True)
     for r in res:
         if isinstance(r, Exception):
-            logger.error(f"Error when collecting commands: {r!s}")
+            logger.error("Error when collecting commands: %s", str(r))
 
 
 async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
@@ -105,7 +105,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             if command.collected and command.text_output:
                 filenames = [Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}") for f in command.text_output.splitlines()]
             else:
-                logger.error(f"Unable to get tech-support filenames on {device.name}: verify that {EOS_SCHEDULED_TECH_SUPPORT} is not empty")
+                logger.error("Unable to get tech-support filenames on %s: verify that %s is not empty", device.name, EOS_SCHEDULED_TECH_SUPPORT)
                 return
 
             # Create directories
@@ -117,7 +117,7 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             await device.collect(command=command)
 
             if command.collected and not command.text_output:
-                logger.debug(f"'aaa authorization exec default local' is not configured on device {device.name}")
+                logger.debug("'aaa authorization exec default local' is not configured on device %s", device.name)
                 if configure:
                     # Otherwise mypy complains about enable
                     assert isinstance(device, AsyncEOSDevice)
@@ -133,20 +133,20 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
                             {"cmd": "aaa authorization exec default local"},
                         ],
                     )
-                    logger.warning(f"Configuring 'aaa authorization exec default local' on device {device.name}")
+                    logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
                     command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
                     await device._session.cli(commands=commands)  # pylint: disable=protected-access
-                    logger.info(f"Configured 'aaa authorization exec default local' on device {device.name}")
+                    logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
                 else:
-                    logger.error(f"Unable to collect tech-support on {device.name}: configuration 'aaa authorization exec default local' is not present")
+                    logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
                     return
-            logger.debug(f"'aaa authorization exec default local' is already configured on device {device.name}")
+            logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)
 
             await device.copy(sources=filenames, destination=outdir, direction="from")
-            logger.info(f"Collected {len(filenames)} scheduled tech-support from {device.name}")
+            logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
 
         except (EapiCommandError, HTTPError, ConnectError) as e:
-            logger.error(f"Unable to collect tech-support on {device.name}: {e!s}")
+            logger.error("Unable to collect tech-support on %s: %s", device.name, str(e))
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()

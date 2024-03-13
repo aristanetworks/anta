@@ -52,11 +52,11 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags).values())
 
     if not devices:
-        logger.info(
-            f"No device in the established state '{established_only}' "
-            f"{f'matching the tags {tags} ' if tags else ''}was found. There is no device to run tests against, exiting",
+        msg = (
+            f"No device in the established state '{established_only}' {f'matching the tags {tags} ' if tags else ''}was found. "
+            "There is no device to run tests against, exiting"
         )
-
+        logger.info(msg)
         return
     coros = []
     # Using a set to avoid inserting duplicate tests
@@ -75,7 +75,8 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     tests: list[AntaTestRunner] = list(tests_set)
 
     if not tests:
-        logger.info(f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run on current inventory. " "Exiting...")
+        msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run on current inventory, exiting"
+        logger.info(msg)
         return
 
     for test_definition, device in tests:
@@ -103,10 +104,11 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
         manager.add_test_result(r)
     for device in devices:
         if device.cache_statistics is not None:
-            logger.info(
+            msg = (
                 f"Cache statistics for '{device.name}': "
                 f"{device.cache_statistics['cache_hits']} hits / {device.cache_statistics['total_commands_sent']} "
-                f"command(s) ({device.cache_statistics['cache_hit_ratio']})",
+                f"command(s) ({device.cache_statistics['cache_hit_ratio']})"
             )
+            logger.info(msg)
         else:
-            logger.info(f"Caching is not enabled on {device.name}")
+            logger.info("Caching is not enabled on %s", device.name)

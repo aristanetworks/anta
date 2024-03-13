@@ -59,7 +59,7 @@ def snapshot(inventory: AntaInventory, tags: list[str] | None, commands_list: Pa
             file_content = file.read()
             eos_commands = safe_load(file_content)
     except FileNotFoundError:
-        logger.error(f"Error reading {commands_list}")
+        logger.error("Error reading %s", commands_list)
         sys.exit(1)
     asyncio.run(collect_commands(inventory, eos_commands, output, tags=tags))
 

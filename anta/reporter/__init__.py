@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import logging
-import os.path
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
@@ -205,7 +204,7 @@ class ReportTable:
             if host is None or str(host_read) == host:
                 results = result_manager.get_result_by_host(host_read)
                 logger.debug("data to use for computation")
-                logger.debug(f"{host}: {results}")
+                logger.debug("%s: %s", host, results)
                 nb_failure = len([result for result in results if result.result == "failure"])
                 nb_error = len([result for result in results if result.result == "error"])
                 list_failure = [str(result.test) for result in results if result.result in ["failure", "error"]]
@@ -226,13 +225,14 @@ class ReportJinja:
     """Report builder based on a Jinja2 template."""
 
     def __init__(self, template_path: pathlib.Path) -> None:
-        if os.path.isfile(template_path):
+        """Create a ReportJinja instance."""
+        if template_path.is_file():
             self.tempalte_path = template_path
         else:
             msg = f"template file is not found: {template_path}"
             raise FileNotFoundError(msg)
 
-    def render(self, data: list[dict[str, Any]], trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
+    def render(self, data: list[dict[str, Any]], *, trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
         """Build a report based on a Jinja2 template.
 
         Report is built based on a J2 template provided by user.
@@ -262,7 +262,7 @@ class ReportJinja:
             str: rendered template
 
         """
-        with open(self.tempalte_path, encoding="utf-8") as file_:
+        with self.tempalte_path.open(encoding="utf-8") as file_:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
 
         return template.render({"data": data})

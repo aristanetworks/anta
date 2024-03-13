@@ -34,7 +34,7 @@ class TestResult(BaseModel):
     custom_field: str | None = None
 
     def is_success(self, message: str | None = None) -> None:
-        """Helper to set status to success.
+        """Set status to success.
 
         Args:
         ----
@@ -44,7 +44,7 @@ class TestResult(BaseModel):
         self._set_status("success", message)
 
     def is_failure(self, message: str | None = None) -> None:
-        """Helper to set status to failure.
+        """Set status to failure.
 
         Args:
         ----
@@ -54,7 +54,7 @@ class TestResult(BaseModel):
         self._set_status("failure", message)
 
     def is_skipped(self, message: str | None = None) -> None:
-        """Helper to set status to skipped.
+        """Set status to skipped.
 
         Args:
         ----
@@ -64,7 +64,13 @@ class TestResult(BaseModel):
         self._set_status("skipped", message)
 
     def is_error(self, message: str | None = None) -> None:
-        """Helper to set status to error."""
+        """Set status to error.
+
+        Args:
+        ----
+            message: Optional message related to the test
+
+        """
         self._set_status("error", message)
 
     def _set_status(self, status: TestStatus, message: str | None = None) -> None:
@@ -81,5 +87,5 @@ class TestResult(BaseModel):
             self.messages.append(message)
 
     def __str__(self) -> str:
-        """Returns a human readable string of this TestResult."""
+        """Return a human readable string of this TestResult."""
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"

@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Result Manager Module for ANTA."""
+"""Result Manager module for ANTA."""
 
 from __future__ import annotations
 
@@ -99,8 +99,8 @@ class ResultManager:
 
     def _update_status(self, test_status: TestStatus) -> None:
         """Update ResultManager status based on the table above."""
-        ResultValidator = TypeAdapter(TestStatus)
-        ResultValidator.validate_python(test_status)
+        result_validator = TypeAdapter(TestStatus)
+        result_validator.validate_python(test_status)
         if test_status == "error":
             self.error_status = True
             return
@@ -132,8 +132,8 @@ class ResultManager:
         for e in entries:
             self.add_test_result(e)
 
-    def get_status(self, ignore_error: bool = False) -> str:
-        """Returns the current status including error_status if ignore_error is False."""
+    def get_status(self, *, ignore_error: bool = False) -> str:
+        """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
     def get_results(self) -> list[TestResult]:

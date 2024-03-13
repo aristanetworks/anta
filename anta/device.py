@@ -150,7 +150,7 @@ class AntaDevice(ABC):
                 cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
 
                 if cached_output is not None:
-                    logger.debug(f"Cache hit for {command.command} on {self.name}")
+                    logger.debug("Cache hit for %s on %s", command.command, self.name)
                     command.output = cached_output
                 else:
                     await self._collect(command=command)
@@ -173,7 +173,7 @@ class AntaDevice(ABC):
         unsupported = any("not supported on this hardware platform" in e for e in command.errors)
         logger.debug(command)
         if unsupported:
-            logger.debug(f"{command.command} is not supported on {self.hw_model}")
+            logger.debug("%s is not supported on %s", command.command, self.hw_model)
         return not unsupported
 
     @abstractmethod
@@ -333,16 +333,14 @@ class AsyncEOSDevice(AntaDevice):
         except aioeapi.EapiCommandError as e:
             command.errors = e.errors
             if self.supports(command):
-                message = f"Command '{command.command}' failed on {self.name}"
-                logger.error(message)
+                logger.error("Command '%s' failed on %s", command.command, self.name)
         except (HTTPError, ConnectError) as e:
             command.errors = [str(e)]
-            message = f"Cannot connect to device {self.name}"
-            logger.error(message)
+            logger.error("Cannot connect to device %s", self.name)
         else:
             # selecting only our command output
             command.output = response[-1]
-            logger.debug(f"{self.name}: {command}")
+            logger.debug("%s: %s", self.name, command)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
@@ -352,7 +350,7 @@ class AsyncEOSDevice(AntaDevice):
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
-        logger.debug(f"Refreshing device {self.name}")
+        logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
             COMMAND: str = "show version"
@@ -360,19 +358,19 @@ class AsyncEOSDevice(AntaDevice):
             try:
                 response = await self._session.cli(command=COMMAND)
             except aioeapi.EapiCommandError as e:
-                logger.warning(f"Cannot get hardware information from device {self.name}: {e.errmsg}")
+                logger.warning("Cannot get hardware information from device %s: %s", self.name, e.errmsg)
 
             except (HTTPError, ConnectError) as e:
-                logger.warning(f"Cannot get hardware information from device {self.name}: {exc_to_str(e)}")
+                logger.warning("Cannot get hardware information from device %s: %s", self.name, exc_to_str(e))
 
             else:
                 if HW_MODEL_KEY in response:
                     self.hw_model = response[HW_MODEL_KEY]
                 else:
-                    logger.warning(f"Cannot get hardware information from device {self.name}: cannot parse '{COMMAND}'")
+                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, COMMAND)
 
         else:
-            logger.warning(f"Could not connect to device {self.name}: cannot open eAPI port")
+            logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 
         self.established = bool(self.is_online and self.hw_model)
 
@@ -400,16 +398,18 @@ class AsyncEOSDevice(AntaDevice):
                 src = [(conn, file) for file in sources]
                 dst = destination
                 for file in sources:
-                    logger.info(f"Copying '{file}' from device {self.name} to '{destination}' locally")
+                    message = f"Copying '{file}' from device {self.name} to '{destination}' locally"
+                    logger.info(message)
 
             elif direction == "to":
                 src = sources
                 dst = conn, destination
                 for file in src:
-                    logger.info(f"Copying '{file}' to device {self.name} to '{destination}' remotely")
+                    message = f"Copying '{file}' to device {self.name} to '{destination}' remotely"
+                    logger.info(message)
 
             else:
-                logger.critical(f"'direction' argument to copy() fonction is invalid: {direction}")
+                logger.critical("'direction' argument to copy() fonction is invalid: %s", direction)
 
                 return
             await asyncssh.scp(src, dst)

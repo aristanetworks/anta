@@ -389,7 +389,7 @@ class AntaTest(ABC):
                         return
 
         if eos_data is not None:
-            self.logger.debug(f"Test {self.name} initialized with input data")
+            self.logger.debug("Test %s initialized with input data", self.name)
             self.save_commands_data(eos_data)
 
     def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
@@ -438,7 +438,7 @@ class AntaTest(ABC):
         for command in self.instance_commands:
             for pattern in BLACKLIST_REGEX:
                 if re.match(pattern, command.command):
-                    self.logger.error(f"Command <{command.command}> is blocked for security reason matching {BLACKLIST_REGEX}")
+                    self.logger.error("Command <%s> is blocked for security reason matching %s", command.command, BLACKLIST_REGEX)
                     self.result.is_error(f"<{command.command}> is blocked for security reason")
                     state = True
         return state
@@ -496,7 +496,7 @@ class AntaTest(ABC):
             # Data
             if eos_data is not None:
                 self.save_commands_data(eos_data)
-                self.logger.debug(f"Test {self.name} initialized with input data {eos_data}")
+                self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
             # If some data is missing, try to collect
             if not self.collected:
@@ -509,7 +509,8 @@ class AntaTest(ABC):
                     unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
                     self.logger.debug(unsupported_commands)
                     if unsupported_commands:
-                        self.logger.warning(f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}")
+                        msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
+                        self.logger.warning(msg)
                         self.result.is_skipped("\n".join(unsupported_commands))
                         return self.result
                     self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
@@ -526,7 +527,8 @@ class AntaTest(ABC):
                 self.result.is_error(message=exc_to_str(e))
 
             test_duration = time.time() - start_time
-            self.logger.debug(f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}")
+            msg = f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}"
+            self.logger.debug(msg)
 
             AntaTest.update_progress()
             return self.result

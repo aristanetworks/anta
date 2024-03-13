@@ -86,15 +86,15 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
     i = AntaInventoryInput(hosts=hosts)
     with open(output, "w", encoding="UTF-8") as out_fd:
         out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
-    logger.info(f"ANTA inventory file has been created: '{output}'")
+    logger.info("ANTA inventory file has been created: '%s'", output)
 
 
 def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
     """Create an inventory file from Arista CloudVision inventory."""
-    logger.debug(f"Received {len(inv)} device(s) from CloudVision")
+    logger.debug("Received %s device(s) from CloudVision", len(inv))
     hosts = []
     for dev in inv:
-        logger.info(f"   * adding entry for {dev['hostname']}")
+        logger.info("   * adding entry for %s", dev["hostname"])
         hosts.append(AntaInventoryHost(name=dev["hostname"], host=dev["ipAddress"], tags=[dev["containerName"].lower()]))
     write_inventory_to_file(hosts, output)
 
@@ -126,7 +126,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
             hosts = []
         for key, value in data.items():
             if isinstance(value, dict) and "ansible_host" in value:
-                logger.info(f"   * adding entry for {key}")
+                logger.info("   * adding entry for %s", key)
                 hosts.append(AntaInventoryHost(name=key, host=value["ansible_host"]))
             elif isinstance(value, dict):
                 deep_yaml_parsing(value, hosts)

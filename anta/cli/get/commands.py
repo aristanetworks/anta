@@ -41,25 +41,25 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
 
     TODO - handle get_inventory and get_devices_in_container failure
     """
-    logger.info(f"Getting authentication token for user '{username}' from CloudVision instance '{host}'")
+    logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
     token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password)
 
     clnt = CvpClient()
     try:
         clnt.connect(nodes=[host], username="", password="", api_token=token)
     except CvpApiError as error:
-        logger.error(f"Error connecting to CloudVision: {error}")
+        logger.error("Error connecting to CloudVision: %s", error)
         ctx.exit(ExitCode.USAGE_ERROR)
-    logger.info(f"Connected to CloudVision instance '{host}'")
+    logger.info("Connected to CloudVision instance '%s'", host)
 
     cvp_inventory = None
     if container is None:
         # Get a list of all devices
-        logger.info(f"Getting full inventory from CloudVision instance '{host}'")
+        logger.info("Getting full inventory from CloudVision instance '%s'", host)
         cvp_inventory = clnt.api.get_inventory()
     else:
         # Get devices under a container
-        logger.info(f"Getting inventory for container {container} from CloudVision instance '{host}'")
+        logger.info("Getting inventory for container %s from CloudVision instance '%s'", container, host)
         cvp_inventory = clnt.api.get_devices_in_container(container)
     create_inventory_from_cvp(cvp_inventory, output)
 
@@ -76,7 +76,7 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
     """Build ANTA inventory from an ansible inventory YAML file."""
-    logger.info(f"Building inventory from ansible file '{ansible_inventory}'")
+    logger.info("Building inventory from ansible file '%s'", ansible_inventory)
     try:
         create_inventory_from_ansible(
             inventory=ansible_inventory,
@@ -93,7 +93,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
 def inventory(inventory: AntaInventory, tags: list[str] | None, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-    logger.debug(f"Requesting devices for tags: {tags}")
+    logger.debug("Requesting devices for tags: %s", tags)
     console.print("Current inventory content is:", style="white on blue")
 
     if connected:
