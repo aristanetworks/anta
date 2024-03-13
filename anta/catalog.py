@@ -96,7 +96,7 @@ class AntaTestDefinition(BaseModel):
         """
         if not isinstance(self.inputs, self.test.Input):
             msg = f"Test input has type {self.inputs.__class__.__qualname__} but expected type {self.test.Input.__qualname__}"
-            raise ValueError(msg)
+            raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
         return self
 
 
@@ -160,7 +160,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                 else:
                     if not isinstance(tests, list):
                         msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
-                        raise ValueError(msg)
+                        raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
                     # This is a list of AntaTestDefinition
                     modules[module] = tests
             return modules
@@ -172,7 +172,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                 for test_definition in tests:
                     if not isinstance(test_definition, dict):
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
-                        raise ValueError(msg)
+                        raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
                     if len(test_definition) != 1:
                         msg = (
                             f"Syntax error when parsing: {test_definition}\n"
@@ -235,11 +235,11 @@ class AntaCatalog:
     def tests(self, value: list[AntaTestDefinition]) -> None:
         if not isinstance(value, list):
             msg = "The catalog must contain a list of tests"
-            raise ValueError(msg)
+            raise TypeError(msg)
         for t in value:
             if not isinstance(t, AntaTestDefinition):
                 msg = "A test in the catalog must be an AntaTestDefinition instance"
-                raise ValueError(msg)
+                raise TypeError(msg)
         self._tests = value
 
     @staticmethod
@@ -283,7 +283,7 @@ class AntaCatalog:
 
         if not isinstance(data, dict):
             msg = f"Wrong input type for catalog data{f' (from {filename})' if filename is not None else ''}, must be a dict, got {type(data).__name__}"
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         try:
             catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
