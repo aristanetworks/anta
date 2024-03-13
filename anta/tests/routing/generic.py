@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Generic routing test functions."""
+"""Module related to generic routing tests."""
 
 from __future__ import annotations
 
@@ -18,7 +18,10 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 class VerifyRoutingProtocolModel(AntaTest):
     """Verifies the configured routing protocol model is the one we expect.
-    And if there is no mismatch between the configured and operating routing protocol model.
+
+    Expected Results:
+        * Success: The test will pass if the configured routing protocol model is the one we expect.
+        * Failure: The test will fail if the configured routing protocol model is not the one we expect.
     """
 
     name = "VerifyRoutingProtocolModel"
@@ -26,12 +29,15 @@ class VerifyRoutingProtocolModel(AntaTest):
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingProtocolModel test."""
+
         model: Literal["multi-agent", "ribd"] = "multi-agent"
-        """Expected routing protocol model"""
+        """Expected routing protocol model. Defaults to `multi-agent`."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyRoutingProtocolModel."""
         command_output = self.instance_commands[0].json_output
         configured_model = command_output["protoModelStatus"]["configuredProtoModel"]
         operating_model = command_output["protoModelStatus"]["operatingProtoModel"]
@@ -42,22 +48,27 @@ class VerifyRoutingProtocolModel(AntaTest):
 
 
 class VerifyRoutingTableSize(AntaTest):
-    """Verifies the size of the IP routing table (default VRF).
-    Should be between the two provided thresholds.
+    """Verifies the size of the IP routing table of the default VRF.
+
+    Expected Results:
+        * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
+        * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.
     """
 
     name = "VerifyRoutingTableSize"
-    description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
+    description = "Verifies the size of the IP routing table of the default VRF."
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        minimum: int
-        """Expected minimum routing table (default VRF) size"""
-        maximum: int
-        """Expected maximum routing table (default VRF) size"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingTableSize test."""
 
-        @model_validator(mode="after")  # type: ignore
+        minimum: int
+        """Expected minimum routing table size."""
+        maximum: int
+        """Expected maximum routing table size."""
+
+        @model_validator(mode="after") # type: ignore[misc]
         def check_min_max(self) -> AntaTest.Input:
             """Validate that maximum is greater than minimum."""
             if self.minimum > self.maximum:
@@ -67,6 +78,7 @@ class VerifyRoutingTableSize(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyRoutingTableSize."""
         command_output = self.instance_commands[0].json_output
         total_routes = int(command_output["vrfs"]["default"]["totalRoutes"])
         if self.inputs.minimum <= total_routes <= self.inputs.maximum:
@@ -76,7 +88,7 @@ class VerifyRoutingTableSize(AntaTest):
 
 
 class VerifyRoutingTableEntry(AntaTest):
-    """This test verifies that the provided routes are present in the routing table of a specified VRF.
+    """Verifies that the provided routes are present in the routing table of a specified VRF.
 
     Expected Results:
         * Success: The test will pass if the provided routes are present in the routing table.
@@ -88,17 +100,21 @@ class VerifyRoutingTableEntry(AntaTest):
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingTableEntry test."""
+
         vrf: str = "default"
-        """VRF context"""
+        """VRF context. Defaults to `default` VRF."""
         routes: list[IPv4Address]
-        """Routes to verify"""
+        """List of routes to verify."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each route in the input list."""
         return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyRoutingTableEntry."""
         missing_routes = []
 
         for command in self.instance_commands:
