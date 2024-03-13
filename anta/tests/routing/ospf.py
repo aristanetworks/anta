@@ -7,10 +7,12 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar, TYPE_CHECKING
 
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
     """Count the number of OSPF neighbors."""
@@ -44,8 +46,8 @@ class VerifyOSPFNeighborState(AntaTest):
 
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
-    categories = ["ospf"]
-    commands = [AntaCommand(command="show ip ospf neighbor")]
+    categories: ClassVar[list[str]] = ["ospf"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -64,8 +66,8 @@ class VerifyOSPFNeighborCount(AntaTest):
 
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
-    categories = ["ospf"]
-    commands = [AntaCommand(command="show ip ospf neighbor")]
+    categories: ClassVar[list[str]] = ["ospf"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: int

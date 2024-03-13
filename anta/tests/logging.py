@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import re
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
     import logging
+
+    from anta.models import AntaTemplate
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
@@ -38,14 +40,14 @@ class VerifyLoggingPersistent(AntaTest):
     """Verifies if logging persistent is enabled and logs are saved in flash.
 
     Expected Results:
-        * success: The test will pass if logging persistent is enabled and logs are in flash.
-        * failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
+        * Success: The test will pass if logging persistent is enabled and logs are in flash.
+        * Failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
     """
 
     name = "VerifyLoggingPersistent"
     description = "Verifies if logging persistent is enabled and logs are saved in flash."
-    categories = ["logging"]
-    commands = [
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show logging", ofmt="text"),
         AntaCommand(command="dir flash:/persist/messages", ofmt="text"),
     ]
@@ -68,14 +70,14 @@ class VerifyLoggingSourceIntf(AntaTest):
     """Verifies logging source-interface for a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided logging source-interface is configured in the specified VRF.
-        * failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
+        * Success: The test will pass if the provided logging source-interface is configured in the specified VRF.
+        * Failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
     """
 
     name = "VerifyLoggingSourceInt"
     description = "Verifies logging source-interface for a specified VRF."
-    categories = ["logging"]
-    commands = [AntaCommand(command="show logging", ofmt="text")]
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         interface: str
@@ -97,14 +99,14 @@ class VerifyLoggingHosts(AntaTest):
     """Verifies logging hosts (syslog servers) for a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided syslog servers are configured in the specified VRF.
-        * failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
+        * Success: The test will pass if the provided syslog servers are configured in the specified VRF.
+        * Failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
     """
 
     name = "VerifyLoggingHosts"
     description = "Verifies logging hosts (syslog servers) for a specified VRF."
-    categories = ["logging"]
-    commands = [AntaCommand(command="show logging", ofmt="text")]
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: list[IPv4Address]
@@ -131,14 +133,14 @@ class VerifyLoggingLogsGeneration(AntaTest):
     """Verifies if logs are generated.
 
     Expected Results:
-        * success: The test will pass if logs are generated.
-        * failure: The test will fail if logs are NOT generated.
+        * Success: The test will pass if logs are generated.
+        * Failure: The test will fail if logs are NOT generated.
     """
 
     name = "VerifyLoggingLogsGeneration"
     description = "Verifies if logs are generated."
-    categories = ["logging"]
-    commands = [
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
@@ -159,14 +161,14 @@ class VerifyLoggingHostname(AntaTest):
     """Verifies if logs are generated with the device FQDN.
 
     Expected Results:
-        * success: The test will pass if logs are generated with the device FQDN.
-        * failure: The test will fail if logs are NOT generated with the device FQDN.
+        * Success: The test will pass if logs are generated with the device FQDN.
+        * Failure: The test will fail if logs are NOT generated with the device FQDN.
     """
 
     name = "VerifyLoggingHostname"
     description = "Verifies if logs are generated with the device FQDN."
-    categories = ["logging"]
-    commands = [
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname"),
         AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
@@ -194,14 +196,14 @@ class VerifyLoggingTimestamp(AntaTest):
     """Verifies if logs are generated with the approprate timestamp.
 
     Expected Results:
-        * success: The test will pass if logs are generated with the appropriated timestamp.
-        * failure: The test will fail if logs are NOT generated with the appropriated timestamp.
+        * Success: The test will pass if logs are generated with the appropriated timestamp.
+        * Failure: The test will fail if logs are NOT generated with the appropriated timestamp.
     """
 
     name = "VerifyLoggingTimestamp"
     description = "Verifies if logs are generated with the appropriate timestamp."
-    categories = ["logging"]
-    commands = [
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
@@ -227,14 +229,14 @@ class VerifyLoggingAccounting(AntaTest):
     """Verifies if AAA accounting logs are generated.
 
     Expected Results:
-        * success: The test will pass if AAA accounting logs are generated.
-        * failure: The test will fail if AAA accounting logs are NOT generated.
+        * Success: The test will pass if AAA accounting logs are generated.
+        * Failure: The test will fail if AAA accounting logs are NOT generated.
     """
 
     name = "VerifyLoggingAccounting"
     description = "Verifies if AAA accounting logs are generated."
-    categories = ["logging"]
-    commands = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -250,14 +252,14 @@ class VerifyLoggingErrors(AntaTest):
     """This test verifies there are no syslog messages with a severity of ERRORS or higher.
 
     Expected Results:
-      * success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
-      * failure: The test will fail if ERRORS or higher syslog messages are present.
+      * Success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
+      * Failure: The test will fail if ERRORS or higher syslog messages are present.
     """
 
     name = "VerifyLoggingWarning"
     description = "This test verifies there are no syslog messages with a severity of ERRORS or higher."
-    categories = ["logging"]
-    commands = [AntaCommand(command="show logging threshold errors", ofmt="text")]
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging threshold errors", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:

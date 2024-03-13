@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
+from typing import ClassVar
 
 from pydantic import BaseModel
 
@@ -19,14 +20,14 @@ class VerifyReachability(AntaTest):
     """Test network reachability to one or many destination IP(s).
 
     Expected Results:
-        * success: The test will pass if all destination IP(s) are reachable.
-        * failure: The test will fail if one or many destination IP(s) are unreachable.
+        * Success: The test will pass if all destination IP(s) are reachable.
+        * Failure: The test will fail if one or many destination IP(s) are unreachable.
     """
 
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
-    categories = ["connectivity"]
-    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
+    categories: ClassVar[list[str]] = ["connectivity"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         hosts: list[Host]
@@ -72,16 +73,16 @@ class VerifyLLDPNeighbors(AntaTest):
     """This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
     Expected Results:
-        * success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
-        * failure: The test will fail if any of the following conditions are met:
+        * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
+        * Failure: The test will fail if any of the following conditions are met:
             - The provided LLDP neighbor is not found.
             - The system name or port of the LLDP neighbor does not match the provided information.
     """
 
     name = "VerifyLLDPNeighbors"
     description = "Verifies that the provided LLDP neighbors are connected properly."
-    categories = ["connectivity"]
-    commands = [AntaCommand(command="show lldp neighbors detail")]
+    categories: ClassVar[list[str]] = ["connectivity"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         neighbors: list[Neighbor]

@@ -2,10 +2,15 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions to flag field notices."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyFieldNotice44Resolution(AntaTest):
     """Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44.
@@ -16,8 +21,8 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
     name = "VerifyFieldNotice44Resolution"
     description = "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44."
-    categories = ["field notices", "software"]
-    commands = [AntaCommand(command="show version detail")]
+    categories: ClassVar[list[str]] = ["field notices", "software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -109,8 +114,8 @@ class VerifyFieldNotice72Resolution(AntaTest):
 
     name = "VerifyFieldNotice72Resolution"
     description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
-    categories = ["field notices", "software"]
-    commands = [AntaCommand(command="show version detail")]
+    categories: ClassVar[list[str]] = ["field notices", "software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
     # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
-from typing import List, Union
+from typing import ClassVar, List, Union
 
 from pydantic import BaseModel, Field
 
@@ -24,14 +24,14 @@ class VerifyHostname(AntaTest):
     """Verifies the hostname of a device.
 
     Expected results:
-        * success: The test will pass if the hostname matches the provided input.
-        * failure: The test will fail if the hostname does not match the provided input.
+        * Success: The test will pass if the hostname matches the provided input.
+        * Failure: The test will fail if the hostname does not match the provided input.
     """
 
     name = "VerifyHostname"
     description = "Verifies the hostname of a device."
-    categories = ["services"]
-    commands = [AntaCommand(command="show hostname")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname")]
 
     class Input(AntaTest.Input):
         """Defines the input parameters for this test case."""
@@ -53,15 +53,15 @@ class VerifyDNSLookup(AntaTest):
     """This class verifies the DNS (Domain name service) name to IP address resolution.
 
     Expected Results:
-        * success: The test will pass if a domain name is resolved to an IP address.
-        * failure: The test will fail if a domain name does not resolve to an IP address.
+        * Success: The test will pass if a domain name is resolved to an IP address.
+        * Failure: The test will fail if a domain name does not resolve to an IP address.
         * error: This test will error out if a domain name is invalid.
     """
 
     name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
-    categories = ["services"]
-    commands = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyDNSLookup test."""
@@ -89,14 +89,14 @@ class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
     Expected Results:
-        * success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-        * failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+        * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
+        * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
     """
 
     name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
-    categories = ["services"]
-    commands = [AntaCommand(command="show ip name-server")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyDNSServers test."""
@@ -146,8 +146,9 @@ class VerifyErrdisableRecovery(AntaTest):
 
     name = "VerifyErrdisableRecovery"
     description = "Verifies the errdisable recovery reason, status, and interval."
-    categories = ["services"]
-    commands = [AntaCommand(command="show errdisable recovery", ofmt="text")]  # Command does not support JSON output hence using text output
+    categories: ClassVar[list[str]] = ["services"]
+    # NOTE: Only `text` output format is supported for this command
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show errdisable recovery", ofmt="text")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyErrdisableRecovery test."""

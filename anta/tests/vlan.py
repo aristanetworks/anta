@@ -4,14 +4,17 @@
 """Test functions related to VLAN"""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyVlanInternalPolicy(AntaTest):
     """This class checks if the VLAN internal allocation policy is ascending or descending and
@@ -26,8 +29,8 @@ class VerifyVlanInternalPolicy(AntaTest):
 
     name = "VerifyVlanInternalPolicy"
     description = "This test checks the VLAN internal allocation policy and the range of VLANs."
-    categories = ["vlan"]
-    commands = [AntaCommand(command="show vlan internal allocation policy")]
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan internal allocation policy")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyVlanInternalPolicy test."""

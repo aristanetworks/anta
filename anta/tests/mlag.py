@@ -7,26 +7,31 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.custom_types import MlagPriority, PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
+
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 
 class VerifyMlagStatus(AntaTest):
     """This test verifies the health status of the MLAG configuration.
 
     Expected Results:
-        * success: The test will pass if the MLAG state is 'active', negotiation status is 'connected',
+        * Success: The test will pass if the MLAG state is 'active', negotiation status is 'connected',
                    peer-link status and local interface status are 'up'.
-        * failure: The test will fail if the MLAG state is not 'active', negotiation status is not 'connected',
+        * Failure: The test will fail if the MLAG state is not 'active', negotiation status is not 'connected',
                    peer-link status or local interface status are not 'up'.
         * skipped: The test will be skipped if MLAG is 'disabled'.
     """
 
     name = "VerifyMlagStatus"
     description = "Verifies the health status of the MLAG configuration."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag", ofmt="json")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -51,15 +56,15 @@ class VerifyMlagInterfaces(AntaTest):
     """This test verifies there are no inactive or active-partial MLAG ports.
 
     Expected Results:
-        * success: The test will pass if there are NO inactive or active-partial MLAG ports.
-        * failure: The test will fail if there are inactive or active-partial MLAG ports.
+        * Success: The test will pass if there are NO inactive or active-partial MLAG ports.
+        * Failure: The test will fail if there are inactive or active-partial MLAG ports.
         * skipped: The test will be skipped if MLAG is 'disabled'.
     """
 
     name = "VerifyMlagInterfaces"
     description = "Verifies there are no inactive or active-partial MLAG ports."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag", ofmt="json")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -77,16 +82,16 @@ class VerifyMlagConfigSanity(AntaTest):
     """This test verifies there are no MLAG config-sanity inconsistencies.
 
     Expected Results:
-        * success: The test will pass if there are NO MLAG config-sanity inconsistencies.
-        * failure: The test will fail if there are MLAG config-sanity inconsistencies.
+        * Success: The test will pass if there are NO MLAG config-sanity inconsistencies.
+        * Failure: The test will fail if there are MLAG config-sanity inconsistencies.
         * skipped: The test will be skipped if MLAG is 'disabled'.
         * error: The test will give an error if 'mlagActive' is not found in the JSON response.
     """
 
     name = "VerifyMlagConfigSanity"
     description = "Verifies there are no MLAG config-sanity inconsistencies."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag config-sanity", ofmt="json")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag config-sanity", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -109,15 +114,15 @@ class VerifyMlagReloadDelay(AntaTest):
     """This test verifies the reload-delay parameters of the MLAG configuration.
 
     Expected Results:
-        * success: The test will pass if the reload-delay parameters are configured properly.
-        * failure: The test will fail if the reload-delay parameters are NOT configured properly.
+        * Success: The test will pass if the reload-delay parameters are configured properly.
+        * Failure: The test will fail if the reload-delay parameters are NOT configured properly.
         * skipped: The test will be skipped if MLAG is 'disabled'.
     """
 
     name = "VerifyMlagReloadDelay"
     description = "Verifies the MLAG reload-delay parameters."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag", ofmt="json")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         reload_delay: PositiveInteger
@@ -144,15 +149,15 @@ class VerifyMlagDualPrimary(AntaTest):
     """This test verifies the dual-primary detection and its parameters of the MLAG configuration.
 
     Expected Results:
-        * success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.
-        * failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.
+        * Success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.
+        * Failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.
         * skipped: The test will be skipped if MLAG is 'disabled'.
     """
 
     name = "VerifyMlagDualPrimary"
     description = "Verifies the MLAG dual-primary detection parameters."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag detail", ofmt="json")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         detection_delay: PositiveInteger
@@ -198,8 +203,8 @@ class VerifyMlagPrimaryPriority(AntaTest):
 
     name = "VerifyMlagPrimaryPriority"
     description = "Verifies the configuration of the MLAG primary priority."
-    categories = ["mlag"]
-    commands = [AntaCommand(command="show mlag detail")]
+    categories: ClassVar[list[str]] = ["mlag"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyMlagPrimaryPriority test."""

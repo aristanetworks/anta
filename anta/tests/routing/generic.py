@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_interface
-from typing import Literal
+from typing import ClassVar, Literal
 
 from pydantic import model_validator
 
@@ -23,8 +23,8 @@ class VerifyRoutingProtocolModel(AntaTest):
 
     name = "VerifyRoutingProtocolModel"
     description = "Verifies the configured routing protocol model."
-    categories = ["routing"]
-    commands = [AntaCommand(command="show ip route summary", revision=3)]
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         model: Literal["multi-agent", "ribd"] = "multi-agent"
@@ -48,8 +48,8 @@ class VerifyRoutingTableSize(AntaTest):
 
     name = "VerifyRoutingTableSize"
     description = "Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds."
-    categories = ["routing"]
-    commands = [AntaCommand(command="show ip route summary", revision=3)]
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         minimum: int
@@ -79,14 +79,14 @@ class VerifyRoutingTableEntry(AntaTest):
     """This test verifies that the provided routes are present in the routing table of a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided routes are present in the routing table.
-        * failure: The test will fail if one or many provided routes are missing from the routing table.
+        * Success: The test will pass if the provided routes are present in the routing table.
+        * Failure: The test will fail if one or many provided routes are missing from the routing table.
     """
 
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
-    categories = ["routing"]
-    commands = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vrf: str = "default"

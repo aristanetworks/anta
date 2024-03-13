@@ -8,7 +8,7 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime
-from typing import List, Union
+from typing import ClassVar, List, Union
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -23,14 +23,14 @@ class VerifySSHStatus(AntaTest):
     """Verifies if the SSHD agent is disabled in the default VRF.
 
     Expected Results:
-        * success: The test will pass if the SSHD agent is disabled in the default VRF.
-        * failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+        * Success: The test will pass if the SSHD agent is disabled in the default VRF.
+        * Failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
     """
 
     name = "VerifySSHStatus"
     description = "Verifies if the SSHD agent is disabled in the default VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh", ofmt="text")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -49,14 +49,14 @@ class VerifySSHIPv4Acl(AntaTest):
     """Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
-        * success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        * failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+        * Success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
+        * Failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
     """
 
     name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh ip access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: PositiveInteger
@@ -86,14 +86,14 @@ class VerifySSHIPv6Acl(AntaTest):
     """Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
-        * success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        * failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+        * Success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
+        * Failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
     """
 
     name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: PositiveInteger
@@ -123,14 +123,14 @@ class VerifyTelnetStatus(AntaTest):
     """Verifies if Telnet is disabled in the default VRF.
 
     Expected Results:
-        * success: The test will pass if Telnet is disabled in the default VRF.
-        * failure: The test will fail if Telnet is NOT disabled in the default VRF.
+        * Success: The test will pass if Telnet is disabled in the default VRF.
+        * Failure: The test will fail if Telnet is NOT disabled in the default VRF.
     """
 
     name = "VerifyTelnetStatus"
     description = "Verifies if Telnet is disabled in the default VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management telnet")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management telnet")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -145,14 +145,14 @@ class VerifyAPIHttpStatus(AntaTest):
     """Verifies if eAPI HTTP server is disabled globally.
 
     Expected Results:
-        * success: The test will pass if eAPI HTTP server is disabled globally.
-        * failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+        * Success: The test will pass if eAPI HTTP server is disabled globally.
+        * Failure: The test will fail if eAPI HTTP server is NOT disabled globally.
     """
 
     name = "VerifyAPIHttpStatus"
     description = "Verifies if eAPI HTTP server is disabled globally."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -167,14 +167,14 @@ class VerifyAPIHttpsSSL(AntaTest):
     """Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
     Expected results:
-        * success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
-        * failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+        * Success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
+        * Failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
     """
 
     name = "VerifyAPIHttpsSSL"
     description = "Verifies if the eAPI has a valid SSL profile."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         profile: str
@@ -197,14 +197,14 @@ class VerifyAPIIPv4Acl(AntaTest):
     """Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected results:
-        * success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
-        * failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+        * Success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
+        * Failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
     """
 
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ip access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: PositiveInteger
@@ -234,15 +234,15 @@ class VerifyAPIIPv6Acl(AntaTest):
     """Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected results:
-        * success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
-        * failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
+        * Success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
+        * Failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
         * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         number: PositiveInteger
@@ -272,16 +272,16 @@ class VerifyAPISSLCertificate(AntaTest):
     """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     Expected Results:
-        * success: The test will pass if the certificate's expiry date is greater than the threshold,
+        * Success: The test will pass if the certificate's expiry date is greater than the threshold,
                    and the certificate has the correct name, encryption algorithm, and key size.
-        * failure: The test will fail if the certificate is expired or is going to expire,
+        * Failure: The test will fail if the certificate is expired or is going to expire,
                    or if the certificate has an incorrect name, encryption algorithm, or key size.
     """
 
     name = "VerifyAPISSLCertificate"
     description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPISSLCertificate test."""
@@ -368,14 +368,14 @@ class VerifyBannerLogin(AntaTest):
     """Verifies the login banner of a device.
 
     Expected results:
-        * success: The test will pass if the login banner matches the provided input.
-        * failure: The test will fail if the login banner does not match the provided input.
+        * Success: The test will pass if the login banner matches the provided input.
+        * Failure: The test will fail if the login banner does not match the provided input.
     """
 
     name = "VerifyBannerLogin"
     description = "Verifies the login banner of a device."
-    categories = ["security"]
-    commands = [AntaCommand(command="show banner login")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner login")]
 
     class Input(AntaTest.Input):
         """Defines the input parameters for this test case."""
@@ -399,14 +399,14 @@ class VerifyBannerMotd(AntaTest):
     """Verifies the motd banner of a device.
 
     Expected results:
-        * success: The test will pass if the motd banner matches the provided input.
-        * failure: The test will fail if the motd banner does not match the provided input.
+        * Success: The test will pass if the motd banner matches the provided input.
+        * Failure: The test will fail if the motd banner does not match the provided input.
     """
 
     name = "VerifyBannerMotd"
     description = "Verifies the motd banner of a device."
-    categories = ["security"]
-    commands = [AntaCommand(command="show banner motd")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner motd")]
 
     class Input(AntaTest.Input):
         """Defines the input parameters for this test case."""
@@ -430,14 +430,14 @@ class VerifyIPv4ACL(AntaTest):
     """Verifies the configuration of IPv4 ACLs.
 
     Expected results:
-        * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
-        * failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+        * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
+        * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
     """
 
     name = "VerifyIPv4ACL"
     description = "Verifies the configuration of IPv4 ACLs."
-    categories = ["security"]
-    commands = [AntaTemplate(template="show ip access-lists {acl}")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip access-lists {acl}")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyIPv4ACL test."""

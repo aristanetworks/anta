@@ -5,21 +5,26 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.models import AntaCommand, AntaTest
+
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 
 class VerifyGreenTCounters(AntaTest):
     """Verifies whether GRE packets are sent.
 
     Expected Results:
-        * success: if >0 gre packets are sent
-        * failure: if no gre packets are sent
+        * Success: if >0 gre packets are sent
+        * Failure: if no gre packets are sent
     """
 
     name = "VerifyGreenTCounters"
     description = "Verifies if the greent counters are incremented."
-    categories = ["greent"]
-    commands = [AntaCommand(command="show monitor telemetry postcard counters")]
+    categories: ClassVar[list[str]] = ["greent"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard counters")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -35,14 +40,14 @@ class VerifyGreenT(AntaTest):
     """Verifies whether GreenT policy is created.
 
     Expected Results:
-        * success: if there exists any policy other than "default" policy.
-        * failure: if no policy is created.
+        * Success: if there exists any policy other than "default" policy.
+        * Failure: if no policy is created.
     """
 
     name = "VerifyGreenT"
     description = "Verifies whether greent policy is created."
-    categories = ["greent"]
-    commands = [AntaCommand(command="show monitor telemetry postcard policy profile")]
+    categories: ClassVar[list[str]] = ["greent"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard policy profile")]
 
     @AntaTest.anta_test
     def test(self) -> None:

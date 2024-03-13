@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Literal
+from typing import ClassVar, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -18,14 +18,14 @@ class VerifySTPMode(AntaTest):
     """Verifies the configured STP mode for a provided list of VLAN(s).
 
     Expected Results:
-        * success: The test will pass if the STP mode is configured properly in the specified VLAN(s).
-        * failure: The test will fail if the STP mode is NOT configured properly for one or more specified VLAN(s).
+        * Success: The test will pass if the STP mode is configured properly in the specified VLAN(s).
+        * Failure: The test will fail if the STP mode is NOT configured properly for one or more specified VLAN(s).
     """
 
     name = "VerifySTPMode"
     description = "Verifies the configured STP mode for a provided list of VLAN(s)."
-    categories = ["stp"]
-    commands = [AntaTemplate(template="show spanning-tree vlan {vlan}")]
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree vlan {vlan}")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
@@ -59,14 +59,14 @@ class VerifySTPBlockedPorts(AntaTest):
     """Verifies there is no STP blocked ports.
 
     Expected Results:
-        * success: The test will pass if there are NO ports blocked by STP.
-        * failure: The test will fail if there are ports blocked by STP.
+        * Success: The test will pass if there are NO ports blocked by STP.
+        * Failure: The test will fail if there are ports blocked by STP.
     """
 
     name = "VerifySTPBlockedPorts"
     description = "Verifies there is no STP blocked ports."
-    categories = ["stp"]
-    commands = [AntaCommand(command="show spanning-tree blockedports")]
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree blockedports")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -83,14 +83,14 @@ class VerifySTPCounters(AntaTest):
     """Verifies there is no errors in STP BPDU packets.
 
     Expected Results:
-        * success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
-        * failure: The test will fail if there are STP BPDU packet errors on one or many interface(s).
+        * Success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
+        * Failure: The test will fail if there are STP BPDU packet errors on one or many interface(s).
     """
 
     name = "VerifySTPCounters"
     description = "Verifies there is no errors in STP BPDU packets."
-    categories = ["stp"]
-    commands = [AntaCommand(command="show spanning-tree counters")]
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -108,14 +108,14 @@ class VerifySTPForwardingPorts(AntaTest):
     """Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
 
     Expected Results:
-        * success: The test will pass if all interfaces are in a forwarding state for the specified VLAN(s).
-        * failure: The test will fail if one or many interfaces are NOT in a forwarding state in the specified VLAN(s).
+        * Success: The test will pass if all interfaces are in a forwarding state for the specified VLAN(s).
+        * Failure: The test will fail if one or many interfaces are NOT in a forwarding state in the specified VLAN(s).
     """
 
     name = "VerifySTPForwardingPorts"
     description = "Verifies that all interfaces are forwarding for a provided list of VLAN(s)."
-    categories = ["stp"]
-    commands = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vlans: list[Vlan]
@@ -151,14 +151,14 @@ class VerifySTPRootPriority(AntaTest):
     """Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
 
     Expected Results:
-        * success: The test will pass if the STP root priority is configured properly for the specified VLAN or MST instance ID(s).
-        * failure: The test will fail if the STP root priority is NOT configured properly for the specified VLAN or MST instance ID(s).
+        * Success: The test will pass if the STP root priority is configured properly for the specified VLAN or MST instance ID(s).
+        * Failure: The test will fail if the STP root priority is NOT configured properly for the specified VLAN or MST instance ID(s).
     """
 
     name = "VerifySTPRootPriority"
     description = "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s)."
-    categories = ["stp"]
-    commands = [AntaCommand(command="show spanning-tree root detail")]
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree root detail")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         priority: int

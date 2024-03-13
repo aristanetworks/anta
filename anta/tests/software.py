@@ -7,16 +7,20 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyEOSVersion(AntaTest):
     """Verifies the device is running one of the allowed EOS version."""
 
     name = "VerifyEOSVersion"
     description = "Verifies the device is running one of the allowed EOS version."
-    categories = ["software"]
-    commands = [AntaCommand(command="show version")]
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         versions: list[str]
@@ -36,8 +40,8 @@ class VerifyTerminAttrVersion(AntaTest):
 
     name = "VerifyTerminAttrVersion"
     description = "Verifies the device is running one of the allowed TerminAttr version."
-    categories = ["software"]
-    commands = [AntaCommand(command="show version detail")]
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         versions: list[str]
@@ -58,8 +62,8 @@ class VerifyEOSExtensions(AntaTest):
 
     name = "VerifyEOSExtensions"
     description = "Verifies all EOS extensions installed on the device are enabled for boot persistence."
-    categories = ["software"]
-    commands = [AntaCommand(command="show extensions"), AntaCommand(command="show boot-extensions")]
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show extensions"), AntaCommand(command="show boot-extensions")]
 
     @AntaTest.anta_test
     def test(self) -> None:

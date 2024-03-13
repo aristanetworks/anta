@@ -5,22 +5,26 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyLANZ(AntaTest):
     """Verifies if LANZ is enabled
 
     Expected results:
-        * success: the test will pass if lanz is enabled
-        * failure: the test will fail if lanz is disabled
+        * Success: the test will pass if lanz is enabled
+        * Failure: the test will fail if lanz is disabled
     """
 
     name = "VerifyLANZ"
     description = "Verifies if LANZ is enabled."
-    categories = ["lanz"]
-    commands = [AntaCommand(command="show queue-monitor length status")]
+    categories: ClassVar[list[str]] = ["lanz"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show queue-monitor length status")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test

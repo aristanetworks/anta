@@ -8,23 +8,26 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyUptime(AntaTest):
     """This test verifies if the device uptime is higher than the provided minimum uptime value.
 
     Expected Results:
-      * success: The test will pass if the device uptime is higher than the provided value.
-      * failure: The test will fail if the device uptime is lower than the provided value.
+      * Success: The test will pass if the device uptime is higher than the provided value.
+      * Failure: The test will fail if the device uptime is lower than the provided value.
     """
 
     name = "VerifyUptime"
     description = "Verifies the device uptime."
-    categories = ["system"]
-    commands = [AntaCommand(command="show uptime")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         minimum: PositiveInteger
@@ -43,15 +46,15 @@ class VerifyReloadCause(AntaTest):
     """This test verifies the last reload cause of the device.
 
     Expected results:
-      * success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
-      * failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
+      * Success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
+      * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
       * error: The test will report an error if the reload cause is NOT available.
     """
 
     name = "VerifyReloadCause"
     description = "Verifies the last reload cause of the device."
-    categories = ["system"]
-    commands = [AntaCommand(command="show reload cause")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -78,8 +81,8 @@ class VerifyCoredump(AntaTest):
     """This test verifies if there are core dump files in the /var/core directory.
 
     Expected Results:
-      * success: The test will pass if there are NO core dump(s) in /var/core.
-      * failure: The test will fail if there are core dump(s) in /var/core.
+      * Success: The test will pass if there are NO core dump(s) in /var/core.
+      * Failure: The test will fail if there are core dump(s) in /var/core.
 
     Note:
     ----
@@ -89,8 +92,8 @@ class VerifyCoredump(AntaTest):
 
     name = "VerifyCoredump"
     description = "Verifies there are no core dump files."
-    categories = ["system"]
-    commands = [AntaCommand(command="show system coredump", ofmt="json")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -108,14 +111,14 @@ class VerifyAgentLogs(AntaTest):
     """This test verifies that no agent crash reports are present on the device.
 
     Expected Results:
-      * success: The test will pass if there is NO agent crash reported.
-      * failure: The test will fail if any agent crashes are reported.
+      * Success: The test will pass if there is NO agent crash reported.
+      * Failure: The test will fail if any agent crashes are reported.
     """
 
     name = "VerifyAgentLogs"
     description = "Verifies there are no agent crash reports."
-    categories = ["system"]
-    commands = [AntaCommand(command="show agent logs crash", ofmt="text")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show agent logs crash", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -132,14 +135,14 @@ class VerifyCPUUtilization(AntaTest):
     """This test verifies whether the CPU utilization is below 75%.
 
     Expected Results:
-      * success: The test will pass if the CPU utilization is below 75%.
-      * failure: The test will fail if the CPU utilization is over 75%.
+      * Success: The test will pass if the CPU utilization is below 75%.
+      * Failure: The test will fail if the CPU utilization is over 75%.
     """
 
     name = "VerifyCPUUtilization"
     description = "Verifies whether the CPU utilization is below 75%."
-    categories = ["system"]
-    commands = [AntaCommand(command="show processes top once")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -155,14 +158,14 @@ class VerifyMemoryUtilization(AntaTest):
     """This test verifies whether the memory utilization is below 75%.
 
     Expected Results:
-      * success: The test will pass if the memory utilization is below 75%.
-      * failure: The test will fail if the memory utilization is over 75%.
+      * Success: The test will pass if the memory utilization is below 75%.
+      * Failure: The test will fail if the memory utilization is over 75%.
     """
 
     name = "VerifyMemoryUtilization"
     description = "Verifies whether the memory utilization is below 75%."
-    categories = ["system"]
-    commands = [AntaCommand(command="show version")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -178,14 +181,14 @@ class VerifyFileSystemUtilization(AntaTest):
     """This test verifies that no partition is utilizing more than 75% of its disk space.
 
     Expected Results:
-      * success: The test will pass if all partitions are using less than 75% of its disk space.
-      * failure: The test will fail if any partitions are using more than 75% of its disk space.
+      * Success: The test will pass if all partitions are using less than 75% of its disk space.
+      * Failure: The test will fail if any partitions are using more than 75% of its disk space.
     """
 
     name = "VerifyFileSystemUtilization"
     description = "Verifies that no partition is utilizing more than 75% of its disk space."
-    categories = ["system"]
-    commands = [AntaCommand(command="bash timeout 10 df -h", ofmt="text")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="bash timeout 10 df -h", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -200,14 +203,14 @@ class VerifyNTP(AntaTest):
     """This test verifies that the Network Time Protocol (NTP) is synchronized.
 
     Expected Results:
-      * success: The test will pass if the NTP is synchronised.
-      * failure: The test will fail if the NTP is NOT synchronised.
+      * Success: The test will pass if the NTP is synchronised.
+      * Failure: The test will fail if the NTP is NOT synchronised.
     """
 
     name = "VerifyNTP"
     description = "Verifies if NTP is synchronised."
-    categories = ["system"]
-    commands = [AntaCommand(command="show ntp status", ofmt="text")]
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp status", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:

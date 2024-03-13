@@ -7,17 +7,21 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyIGMPSnoopingVlans(AntaTest):
     """Verifies the IGMP snooping configuration for some VLANs."""
 
     name = "VerifyIGMPSnoopingVlans"
     description = "Verifies the IGMP snooping configuration for some VLANs."
-    categories = ["multicast", "igmp"]
-    commands = [AntaCommand(command="show ip igmp snooping")]
+    categories: ClassVar[list[str]] = ["multicast", "igmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         vlans: dict[Vlan, bool]
@@ -42,8 +46,8 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
 
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."
-    categories = ["multicast", "igmp"]
-    commands = [AntaCommand(command="show ip igmp snooping")]
+    categories: ClassVar[list[str]] = ["multicast", "igmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         enabled: bool

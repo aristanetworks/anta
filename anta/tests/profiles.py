@@ -7,19 +7,21 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
     """Verifies the device is using the expected Unified Forwarding Table mode."""
 
     name = "VerifyUnifiedForwardingTableMode"
     description = ""
-    categories = ["profiles"]
-    commands = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
+    categories: ClassVar[list[str]] = ["profiles"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
@@ -40,8 +42,8 @@ class VerifyTcamProfile(AntaTest):
 
     name = "VerifyTcamProfile"
     description = "Verify that the assigned TCAM profile is actually running on the device"
-    categories = ["profiles"]
-    commands = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
+    categories: ClassVar[list[str]] = ["profiles"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         profile: str

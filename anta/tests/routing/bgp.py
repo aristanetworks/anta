@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import Any, List, Optional, Union, cast
+from typing import Any, ClassVar, List, Optional, Union, cast
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -148,14 +148,14 @@ class VerifyBGPPeerCount(AntaTest):
     Please refer to the Input class attributes below for details.
 
     Expected Results:
-        * success: If the count of BGP peers matches the expected count for each address family and VRF.
-        * failure: If the count of BGP peers does not match the expected count, or if BGP is not configured for an expected VRF or address family.
+        * Success: If the count of BGP peers matches the expected count for each address family and VRF.
+        * Failure: If the count of BGP peers does not match the expected count, or if BGP is not configured for an expected VRF or address family.
     """
 
     name = "VerifyBGPPeerCount"
     description = "Verifies the count of BGP peers."
-    categories = ["bgp"]
-    commands = [
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
     ]
@@ -253,14 +253,14 @@ class VerifyBGPPeersHealth(AntaTest):
     Please refer to the Input class attributes below for details.
 
     Expected Results:
-        * success: If all BGP sessions are established and all messages queues are empty for each address family and VRF.
-        * failure: If there are issues with any of the BGP sessions, or if BGP is not configured for an expected VRF or address family.
+        * Success: If all BGP sessions are established and all messages queues are empty for each address family and VRF.
+        * Failure: If there are issues with any of the BGP sessions, or if BGP is not configured for an expected VRF or address family.
     """
 
     name = "VerifyBGPPeersHealth"
     description = "Verifies the health of BGP peers"
-    categories = ["bgp"]
-    commands = [
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
     ]
@@ -360,14 +360,14 @@ class VerifyBGPSpecificPeers(AntaTest):
     Please refer to the Input class attributes below for details.
 
     Expected Results:
-        * success: If the BGP session is established and all messages queues are empty for each given peer.
-        * failure: If the BGP session has issues or is not configured, or if BGP is not configured for an expected VRF or address family.
+        * Success: If the BGP session is established and all messages queues are empty for each given peer.
+        * Failure: If the BGP session has issues or is not configured, or if BGP is not configured for an expected VRF or address family.
     """
 
     name = "VerifyBGPSpecificPeers"
     description = "Verifies the health of specific BGP peer(s)."
-    categories = ["bgp"]
-    commands = [
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
         AntaTemplate(template="show bgp {afi} summary"),
     ]
@@ -467,14 +467,14 @@ class VerifyBGPExchangedRoutes(AntaTest):
     The route type should be 'valid' and 'active' for a specified VRF.
 
     Expected results:
-        * success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
-        * failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+        * Success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
+        * Failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
     """
 
     name = "VerifyBGPExchangedRoutes"
     description = "Verifies if BGP peers have correctly advertised/received routes with type as valid and active for a specified VRF."
-    categories = ["bgp"]
-    commands = [
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
         AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
     ]
@@ -540,14 +540,14 @@ class VerifyBGPExchangedRoutes(AntaTest):
 class VerifyBGPPeerMPCaps(AntaTest):
     """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
     Expected results:
-        * success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
-        * failure: The test will fail if BGP peers are not found or multiprotocol capabilities are not advertised, received, and enabled in the specified VRF.
+        * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
+        * Failure: The test will fail if BGP peers are not found or multiprotocol capabilities are not advertised, received, and enabled in the specified VRF.
     """
 
     name = "VerifyBGPPeerMPCaps"
     description = "Verifies the multiprotocol capabilities of a BGP peer in a specified VRF"
-    categories = ["bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters of the testcase."""
@@ -610,14 +610,14 @@ class VerifyBGPPeerMPCaps(AntaTest):
 class VerifyBGPPeerASNCap(AntaTest):
     """Verifies the four octet asn capabilities of a BGP peer in a specified VRF.
     Expected results:
-        * success: The test will pass if BGP peer's four octet asn capabilities are advertised, received, and enabled in the specified VRF.
-        * failure: The test will fail if BGP peers are not found or four octet asn capabilities are not advertised, received, and enabled in the specified VRF.
+        * Success: The test will pass if BGP peer's four octet asn capabilities are advertised, received, and enabled in the specified VRF.
+        * Failure: The test will fail if BGP peers are not found or four octet asn capabilities are not advertised, received, and enabled in the specified VRF.
     """
 
     name = "VerifyBGPPeerASNCap"
     description = "Verifies the four octet asn capabilities of a BGP peer in a specified VRF."
-    categories = ["bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters of the testcase."""
@@ -674,14 +674,14 @@ class VerifyBGPPeerASNCap(AntaTest):
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
     """Verifies the route refresh capabilities of a BGP peer in a specified VRF.
     Expected results:
-        * success: The test will pass if the BGP peer's route refresh capabilities are advertised, received, and enabled in the specified VRF.
-        * failure: The test will fail if BGP peers are not found or route refresh capabilities are not advertised, received, and enabled in the specified VRF.
+        * Success: The test will pass if the BGP peer's route refresh capabilities are advertised, received, and enabled in the specified VRF.
+        * Failure: The test will fail if BGP peers are not found or route refresh capabilities are not advertised, received, and enabled in the specified VRF.
     """
 
     name = "VerifyBGPPeerRouteRefreshCap"
     description = "Verifies the route refresh capabilities of a BGP peer in a specified VRF."
-    categories = ["bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters of the testcase."""
@@ -738,14 +738,14 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 class VerifyBGPPeerMD5Auth(AntaTest):
     """Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
     Expected results:
-        * success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
-        * failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+        * Success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
+        * Failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
     """
 
     name = "VerifyBGPPeerMD5Auth"
     description = "Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF"
-    categories = ["routing", "bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters of the test case."""
@@ -798,14 +798,14 @@ class VerifyEVPNType2Route(AntaTest):
     """This test verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
 
     Expected Results:
-        * success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
-        * failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+        * Success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
+        * Failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
     """
 
     name = "VerifyEVPNType2Route"
     description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
-    categories = ["routing", "bgp"]
-    commands = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
+    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
 
     class Input(AntaTest.Input):
         """Inputs for the VerifyEVPNType2Route test."""
@@ -858,14 +858,14 @@ class VerifyEVPNType2Route(AntaTest):
 class VerifyBGPAdvCommunities(AntaTest):
     """Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
     Expected results:
-        * success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
-        * failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+        * Success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+        * Failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
     """
 
     name = "VerifyBGPAdvCommunities"
     description = "Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF."
-    categories = ["routing", "bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters for the test."""
@@ -915,14 +915,14 @@ class VerifyBGPAdvCommunities(AntaTest):
 class VerifyBGPTimers(AntaTest):
     """Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
     Expected results:
-        * success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
-        * failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
+        * Success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
+        * Failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
     """
 
     name = "VerifyBGPTimers"
     description = "Verifies if the BGP peers are configured with the correct hold and keep alive timers in the specified VRF."
-    categories = ["routing", "bgp"]
-    commands = [AntaCommand(command="show bgp neighbors vrf all")]
+    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
         """Input parameters for the test."""

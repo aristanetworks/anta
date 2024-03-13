@@ -7,22 +7,26 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyTransceiversManufacturers(AntaTest):
     """This test verifies if all the transceivers come from approved manufacturers.
 
     Expected Results:
-      * success: The test will pass if all transceivers are from approved manufacturers.
-      * failure: The test will fail if some transceivers are from unapproved manufacturers.
+      * Success: The test will pass if all transceivers are from approved manufacturers.
+      * Failure: The test will fail if some transceivers are from unapproved manufacturers.
     """
 
     name = "VerifyTransceiversManufacturers"
     description = "Verifies if all transceivers come from approved manufacturers."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show inventory", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         manufacturers: list[str]
@@ -45,14 +49,14 @@ class VerifyTemperature(AntaTest):
     """This test verifies if the device temperature is within acceptable limits.
 
     Expected Results:
-      * success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-      * failure: The test will fail if the device temperature is NOT OK.
+      * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
+      * Failure: The test will fail if the device temperature is NOT OK.
     """
 
     name = "VerifyTemperature"
     description = "Verifies the device temperature."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -69,14 +73,14 @@ class VerifyTransceiversTemperature(AntaTest):
     """This test verifies if all the transceivers are operating at an acceptable temperature.
 
     Expected Results:
-          * success: The test will pass if all transceivers status are OK: 'ok'.
-          * failure: The test will fail if some transceivers are NOT OK.
+          * Success: The test will pass if all transceivers status are OK: 'ok'.
+          * Failure: The test will fail if some transceivers are NOT OK.
     """
 
     name = "VerifyTransceiversTemperature"
     description = "Verifies the transceivers temperature."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -101,14 +105,14 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     """This test verifies the device's system cooling.
 
     Expected Results:
-      * success: The test will pass if the system cooling status is OK: 'coolingOk'.
-      * failure: The test will fail if the system cooling status is NOT OK.
+      * Success: The test will pass if the system cooling status is OK: 'coolingOk'.
+      * Failure: The test will fail if the system cooling status is NOT OK.
     """
 
     name = "VerifyEnvironmentSystemCooling"
     description = "Verifies the system cooling status."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -124,14 +128,14 @@ class VerifyEnvironmentCooling(AntaTest):
     """This test verifies the fans status.
 
     Expected Results:
-      * success: The test will pass if the fans status are within the accepted states list.
-      * failure: The test will fail if some fans status is not within the accepted states list.
+      * Success: The test will pass if the fans status are within the accepted states list.
+      * Failure: The test will fail if some fans status is not within the accepted states list.
     """
 
     name = "VerifyEnvironmentCooling"
     description = "Verifies the status of power supply fans and all fan trays."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         states: list[str]
@@ -158,14 +162,14 @@ class VerifyEnvironmentPower(AntaTest):
     """This test verifies the power supplies status.
 
     Expected Results:
-      * success: The test will pass if the power supplies status are within the accepted states list.
-      * failure: The test will fail if some power supplies status is not within the accepted states list.
+      * Success: The test will pass if the power supplies status are within the accepted states list.
+      * Failure: The test will fail if some power supplies status is not within the accepted states list.
     """
 
     name = "VerifyEnvironmentPower"
     description = "Verifies the power supplies status."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment power", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", ofmt="json")]
 
     class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
         states: list[str]
@@ -189,14 +193,14 @@ class VerifyAdverseDrops(AntaTest):
     """This test verifies if there are no adverse drops on DCS7280E and DCS7500E.
 
     Expected Results:
-      * success: The test will pass if there are no adverse drops.
-      * failure: The test will fail if there are adverse drops.
+      * Success: The test will pass if there are no adverse drops.
+      * Failure: The test will fail if there are adverse drops.
     """
 
     name = "VerifyAdverseDrops"
     description = "Verifies there are no adverse drops on DCS7280E and DCS7500E"
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show hardware counter drop", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", ofmt="json")]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test

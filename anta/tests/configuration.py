@@ -7,16 +7,20 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 class VerifyZeroTouch(AntaTest):
     """Verifies ZeroTouch is disabled."""
 
     name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled"
-    categories = ["configuration"]
-    commands = [AntaCommand(command="show zerotouch")]
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch")]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -33,8 +37,8 @@ class VerifyRunningConfigDiffs(AntaTest):
 
     name = "VerifyRunningConfigDiffs"
     description = "Verifies there is no difference between the running-config and the startup-config"
-    categories = ["configuration"]
-    commands = [AntaCommand(command="show running-config diffs", ofmt="text")]
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
