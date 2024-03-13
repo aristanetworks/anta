@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test functions related to PTP tests"""
+"""Module related to PTP tests."""
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
@@ -15,154 +15,177 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
-class PtpModeStatus(AntaTest):
-    """This test verifies that the device is in Boundary Clock Mode"""
+class VerifyPtpModeStatus(AntaTest):
+    """Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
 
-    name = "PtpModeStatus"
-    description = "Check Boundary Clock mode is enabled"
-    categories: ClassVar[list[str]] = ["ptp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
-
-    # Verify that all switches are running Boundary Clock
-
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
-    @AntaTest.anta_test
-    def test(self) -> None:
-        command_output = self.instance_commands[0].json_output
-        try:
-            ptp_mode = command_output["ptpMode"]
-        except KeyError:
-            self.result.is_error("ptpMode variable is not present in the command output")
-            return
-
-        if ptp_mode == "ptpBoundaryClock":
-            self.result.is_success(f"Valid PTP mode found: '{ptp_mode}'")
-        else:
-            self.result.is_failure(f"Device is not configured as a Boundary Clock: '{ptp_mode}'")
-
-
-class PtpGMStatus(AntaTest):
-    """This test verifies that the device is locked to a valid GM
-    The user should provide a single "validGM" as an input
-    To test PTP failover, re-run the test with secondary GMid configured.
+    Expected Results:
+        * Success: The test will pass if the device is a BC.
+        * Failure: The test will fail if the device is not a BC.
+        * Error: The test will error if the 'ptpMode' variable is not present in the command output.
     """
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        validGM: str
-        """ validGM is the identity of the grandmaster clock"""
-
-    name = "PtpGMStatus"
-    description = "Check device is locked to an allowed GM"
+    name = "VerifyPtpModeStatus"
+    description = "Verifies that the device is configured as a PTP Boundary Clock."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
-
-    # Verify that all switches are locked to the same GMID, and that this GMID is one of the provided GMs
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyPtpModeStatus."""
         command_output = self.instance_commands[0].json_output
-        validGM = self.inputs.validGM
-        try:
-            ptp_gmid = command_output["ptpClockSummary"]["gmClockIdentity"]
-        except KeyError:
-            self.result.is_error("gmClockIdentity variable is not present in the command output")
+
+        if (ptp_mode := command_output.get("ptpMode")) is None:
+            self.result.is_error("'ptpMode' variable is not present in the command output")
             return
 
-        if ptp_gmid == validGM:
-            self.result.is_success(f"Valid GM found: '{ptp_gmid}'")
+        if ptp_mode != "ptpBoundaryClock":
+            self.result.is_failure(f"The device is not configured as a PTP Boundary Clock: '{ptp_mode}'")
         else:
-            self.result.is_failure(f"Device is not locked to valid GM: '{ptp_gmid}'")
+            self.result.is_success()
 
 
-class PtpLockStatus(AntaTest):
-    """This test verifies that the device as a recent PTP lock"""
+class VerifyPtpGMStatus(AntaTest):
+    """Verifies that the device is locked to a valid Precision Time Protocol (PTP) Grandmaster (GM).
 
-    name = "PtpLockStatus"
-    description = "Check that the device was locked to the upstream GM in the last minute"
+    To test PTP failover, re-run the test with a secondary GMID configured.
+
+    Expected Results:
+        * Success: The test will pass if the device is locked to the provided Grandmaster.
+        * Failure: The test will fail if the device is not locked to the provided Grandmaster.
+        * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+    """
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPtpGMStatus test."""
+
+        gmid: str
+        """Identifier of the Grandmaster to which the device should be locked."""
+
+    name = "VerifyPtpGMStatus"
+    description = "Verifies that the device is locked to a valid PTP Grandmaster."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
-
-    # Verify that last lock time is within the last minute
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyPtpGMStatus."""
         command_output = self.instance_commands[0].json_output
-        try:
-            ptp_lastSyncTime = command_output["ptpClockSummary"]["lastSyncTime"]
-        except KeyError:
-            self.result.is_error("lastSyncTime variable is not present in the command output")
+
+        if (ptp_clock_summary := command_output.get("ptpClockSummary")) is None:
+            self.result.is_error("'ptpClockSummary' variable is not present in the command output")
             return
 
-        ptp_currentPtpSystemTime = (
-            command_output["ptpClockSummary"]["currentPtpSystemTime"] if "currentPtpSystemTime" in command_output["ptpClockSummary"].keys() else ""
-        )
-
-        time_to_last_sync = ptp_currentPtpSystemTime - ptp_lastSyncTime
-
-        if time_to_last_sync <= 60:
-            self.result.is_success(f"Current PTP lock found: '{time_to_last_sync}'s")
+        if ptp_clock_summary["gmClockIdentity"] != self.inputs.gmid:
+            self.result.is_failure(
+                f"The device is locked to the following Grandmaster: '{ptp_clock_summary['gmClockIdentity']}', which differ from the expected one.",
+            )
         else:
-            self.result.is_failure(f"Device Lock is old: '{time_to_last_sync}'s")
+            self.result.is_success()
 
 
-class PtpOffset(AntaTest):
-    """This test verifies that the has a reasonable offset from master (jitter) level"""
+class VerifyPtpLockStatus(AntaTest):
+    """Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
 
-    name = "PtpOffset"
-    description = "Check that the Offset From Master is within +/- 1000ns"
+    Expected Results:
+        * Success: The test will pass if the device was locked to the upstream GM in the last minute.
+        * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.
+        * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+    """
+
+    name = "VerifyPtpLockStatus"
+    description = "Verifies that the device was locked to the upstream PTP GM in the last minute."
+    categories: ClassVar[list[str]] = ["ptp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyPtpLockStatus."""
+        threshold = 60
+        command_output = self.instance_commands[0].json_output
+
+        if (ptp_clock_summary := command_output.get("ptpClockSummary")) is None:
+            self.result.is_error("'ptpClockSummary' variable is not present in the command output")
+            return
+
+        time_difference = ptp_clock_summary["currentPtpSystemTime"] - ptp_clock_summary["lastSyncTime"]
+
+        if time_difference >= threshold:
+            self.result.is_failure(f"The device lock is more than {threshold}s old: {time_difference}s")
+        else:
+            self.result.is_success()
+
+
+class VerifyPtpOffset(AntaTest):
+    """Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
+
+    Expected Results:
+        * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.
+        * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.
+        * Skipped: The test will be skipped if PTP is not configured.
+    """
+
+    name = "VerifyPtpOffset"
+    description = "Verifies that the PTP timing offset is within +/- 1000ns from the master clock."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp monitor", ofmt="json")]
 
-    # Verify that offset from master is acceptable
-
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyPtpOffset."""
+        threshold = 1000
+        offset_interfaces: dict[str, list[int]] = {}
         command_output = self.instance_commands[0].json_output
-        offsetMaxPos = 0
-        offsetMaxNeg = 0
+
+        if not command_output["ptpMonitorData"]:
+            self.result.is_skipped("PTP is not configured")
+            return
 
         for interface in command_output["ptpMonitorData"]:
-            if interface["offsetFromMaster"] > offsetMaxPos:
-                offsetMaxPos = interface["offsetFromMaster"]
-            elif interface["offsetFromMaster"] < offsetMaxNeg:
-                offsetMaxNeg = interface["offsetFromMaster"]
+            if abs(interface["offsetFromMaster"]) > threshold:
+                offset_interfaces.setdefault(interface["intf"], []).append(interface["offsetFromMaster"])
 
-        if (offsetMaxPos < 1000) and (offsetMaxNeg > -1000):
-            self.result.is_success(f"Max Offset From Master (Max/Min): '{offsetMaxPos, offsetMaxNeg}'s")
+        if offset_interfaces:
+            self.result.is_failure(f"The device timing offset from master is greater than +/- {threshold}ns: {offset_interfaces}")
         else:
-            self.result.is_failure(f"Bad max Offset From Master (Max/Min): '{offsetMaxPos, offsetMaxNeg}'")
+            self.result.is_success()
 
 
-class PtpPortModeStatus(AntaTest):
-    """This test verifies that all ports are in stable PTP modes"""
 
-    name = "PtpPortModeStatus"
-    description = "Check that all PTP enabled ports are not in transitory states"
+class VerifyPtpPortModeStatus(AntaTest):
+    """Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
+
+    The interfaces can be in one of the following state: Master, Slave, Passive, or Disabled.
+
+    Expected Results:
+        * Success: The test will pass if all PTP enabled interfaces are in a valid state.
+        * Failure: The test will fail if there are no PTP enabled interfaces or if some interfaces are not in a valid state.
+    """
+
+    name = "VerifyPtpPortModeStatus"
+    description = "Verifies the PTP interfaces state."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
 
-    # Verify that ports are either Master / Slave / Passive or Disabled
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
-        validPortModes = ["psMaster", "psSlave", "psPassive", "psDisabled"]
+        """Main test function for VerifyPtpPortModeStatus."""
+        valid_state = ("psMaster", "psSlave", "psPassive", "psDisabled")
         command_output = self.instance_commands[0].json_output
 
-        invalid_ports_found = False  # Initialize a boolean variable to track if any invalid ports are found
+        if not command_output["ptpIntfSummaries"]:
+            self.result.is_failure("No interfaces are PTP enabled")
+            return
 
-        for interface in command_output["ptpIntfSummaries"]:
-            for vlan in command_output["ptpIntfSummaries"][interface]["ptpIntfVlanSummaries"]:
-                if vlan["portState"] not in validPortModes:
-                    invalid_ports_found = True  # Set the boolean variable to True if an invalid port is found
-                    break  # Exit the inner loop if an invalid port is found
+        invalid_interfaces = [interface for interface in command_output["ptpIntfSummaries"]
+                              for vlan in command_output["ptpIntfSummaries"][interface]["ptpIntfVlanSummaries"]
+                              if vlan["portState"] not in valid_state]
 
-            if invalid_ports_found:
-                break  # Exit the outer loop if an invalid port is found
-
-        if not invalid_ports_found:
-            self.result.is_success("Ports all in valid state")
+        if not invalid_interfaces:
+            self.result.is_success()
         else:
-            self.result.is_failure("Some ports are not in valid states (Master / Slave / Passive / Disabled)")
+            self.result.is_failure(f"The following interface(s) are not in a valid PTP state: '{invalid_interfaces}'")

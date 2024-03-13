@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test functions related to the EOS various logging settings.
+"""Module related to the EOS various logging tests.
 
 NOTE: The EOS command `show logging` does not support JSON output format.
 """

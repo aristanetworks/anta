@@ -7,12 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.ptp import PtpGMStatus, PtpLockStatus, PtpModeStatus, PtpOffset, PtpPortModeStatus
+from anta.tests.ptp import VerifyPtpGMStatus, VerifyPtpLockStatus, VerifyPtpModeStatus, VerifyPtpOffset, VerifyPtpPortModeStatus
+from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
-        "test": PtpModeStatus,
+        "test": VerifyPtpModeStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -35,14 +36,21 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure",
-        "test": PtpModeStatus,
+        "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpMode": "ptpDisabled", "ptpIntfSummaries": {}}],
         "inputs": None,
-        "expected": {"result": "failure"},
+        "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock: 'ptpDisabled'"]},
+    },
+    {
+        "name": "error",
+        "test": VerifyPtpModeStatus,
+        "eos_data": [{"ptpIntfSummaries": {}}],
+        "inputs": None,
+        "expected": {"result": "error", "messages": ["'ptpMode' variable is not present in the command output"]},
     },
     {
         "name": "success",
-        "test": PtpGMStatus,
+        "test": VerifyPtpGMStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -63,12 +71,12 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": {"validGM": "0xec:46:70:ff:fe:00:ff:a9"},
+        "inputs": {"gmid": "0xec:46:70:ff:fe:00:ff:a8"},
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
-        "test": PtpGMStatus,
+        "test": VerifyPtpGMStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -87,12 +95,21 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": {"validGM": "0xec:46:70:ff:fe:00:ff:a9"},
-        "expected": {"result": "failure"},
+        "inputs": {"gmid": "0xec:46:70:ff:fe:00:ff:a8"},
+        "expected": {"result": "failure", "messages": [
+          "The device is locked to the following Grandmaster: '0x00:1c:73:ff:ff:0a:00:01', which differ from the expected one.",
+        ]},
+    },
+    {
+        "name": "error",
+        "test": VerifyPtpGMStatus,
+        "eos_data": [{"ptpIntfSummaries": {}}],
+        "inputs": {"gmid": "0xec:46:70:ff:fe:00:ff:a8"},
+        "expected": {"result": "error", "messages": ["'ptpClockSummary' variable is not present in the command output"]},
     },
     {
         "name": "success",
-        "test": PtpLockStatus,
+        "test": VerifyPtpLockStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -118,7 +135,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure",
-        "test": PtpLockStatus,
+        "test": VerifyPtpLockStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -138,11 +155,20 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
+        "expected": {"result": "failure", "messages": ["The device lock is more than 60s old: 157s"]},
+    },
+    {
+        "name": "error",
+        "test": VerifyPtpLockStatus,
+        "eos_data": [{"ptpIntfSummaries": {}}],
+        "inputs": None,
+        "expected": {"result": "error", "messages": [
+          "'ptpClockSummary' variable is not present in the command output",
+        ]},
     },
     {
         "name": "success",
-        "test": PtpOffset,
+        "test": VerifyPtpOffset,
         "eos_data": [
             {
                 "monitorEnabled": True,
@@ -174,7 +200,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure",
-        "test": PtpOffset,
+        "test": VerifyPtpOffset,
         "eos_data": [
             {
                 "monitorEnabled": True,
@@ -202,11 +228,29 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure"},
+        "expected": {
+          "result": "failure",
+          "messages": [(
+            "The device timing offset from master is greater than +/- 1000ns: "
+            "{'Ethernet27/1': [1200, -1300]}"
+          )],
+        },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyPtpOffset,
+        "eos_data": [
+            {
+                "monitorEnabled": True,
+                "ptpMonitorData": [],
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["PTP is not configured"]},
     },
     {
         "name": "success",
-        "test": PtpPortModeStatus,
+        "test": VerifyPtpPortModeStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -244,12 +288,19 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": {"validPortModes": ["psMaster", "psSlave", "psPassive", "psDisabled"]},
+        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
-        "test": PtpPortModeStatus,
+        "test": VerifyPtpPortModeStatus,
+        "eos_data": [{"ptpIntfSummaries": {}}],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["No interfaces are PTP enabled"]},
+    },
+    {
+        "name": "failure",
+        "test": VerifyPtpPortModeStatus,
         "eos_data": [
             {
                 "ptpMode": "ptpBoundaryClock",
@@ -280,7 +331,7 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": {"validPortModes": ["psMaster", "psSlave", "psPassive", "psDisabled"]},
-        "expected": {"result": "failure"},
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["The following interface(s) are not in a valid PTP state: '['Ethernet53', 'Ethernet1']'"]},
     },
 ]
