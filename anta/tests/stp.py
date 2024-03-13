@@ -1,13 +1,15 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test functions related to various Spanning Tree Protocol (STP) settings."""
+"""Module related to various Spanning Tree Protocol (STP) tests."""
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 from typing import ClassVar, Literal
+
+from pydantic import Field
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -27,17 +29,21 @@ class VerifySTPMode(AntaTest):
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree vlan {vlan}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPMode test."""
+
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
-        """STP mode to verify"""
+        """STP mode to verify. Supported values: mstp, rstp, rapidPvst. Defaults to mstp."""
         vlans: list[Vlan]
-        """List of VLAN on which to verify STP mode"""
+        """List of VLAN on which to verify STP mode."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each VLAN in the input list."""
         return [template.render(vlan=vlan) for vlan in self.inputs.vlans]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySTPMode."""
         not_configured = []
         wrong_stp_mode = []
         for command in self.instance_commands:
@@ -70,6 +76,7 @@ class VerifySTPBlockedPorts(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySTPBlockedPorts."""
         command_output = self.instance_commands[0].json_output
         if not (stp_instances := command_output["spanningTreeInstances"]):
             self.result.is_success()
@@ -94,6 +101,7 @@ class VerifySTPCounters(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySTPCounters."""
         command_output = self.instance_commands[0].json_output
         interfaces_with_errors = [
             interface for interface, counters in command_output["interfaces"].items() if counters["bpduTaggedError"] or counters["bpduOtherError"] != 0
@@ -117,15 +125,19 @@ class VerifySTPForwardingPorts(AntaTest):
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPForwardingPorts test."""
+
         vlans: list[Vlan]
-        """List of VLAN on which to verify forwarding states"""
+        """List of VLAN on which to verify forwarding states."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each VLAN in the input list."""
         return [template.render(vlan=vlan) for vlan in self.inputs.vlans]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySTPForwardingPorts."""
         not_configured = []
         not_forwarding = []
         for command in self.instance_commands:
@@ -160,14 +172,17 @@ class VerifySTPRootPriority(AntaTest):
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree root detail")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPRootPriority test."""
+
         priority: int
-        """STP root priority to verify"""
-        instances: list[Vlan] = []
+        """STP root priority to verify."""
+        instances: list[Vlan] = Field(default=[])
         """List of VLAN or MST instance ID(s). If empty, ALL VLAN or MST instance ID(s) will be verified."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySTPRootPriority."""
         command_output = self.instance_commands[0].json_output
         if not (stp_instances := command_output["instances"]):
             self.result.is_failure("No STP instances configured")
