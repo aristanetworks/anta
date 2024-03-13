@@ -16,20 +16,28 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
-    """Verifies the device is using the expected Unified Forwarding Table mode."""
+    """Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
+
+    Expected Results:
+        * Success: The test will pass if the device is using the expected UFT mode.
+        * Failure: The test will fail if the device is not using the expected UFT mode.
+    """
 
     name = "VerifyUnifiedForwardingTableMode"
-    description = ""
+    description = "Verifies the device is using the expected UFT mode."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident forwarding-table partition", ofmt="json")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyUnifiedForwardingTableMode test."""
+
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
-        """Expected UFT mode"""
+        """Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or "flexible"."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyUnifiedForwardingTableMode."""
         command_output = self.instance_commands[0].json_output
         if command_output["uftMode"] == str(self.inputs.mode):
             self.result.is_success()
@@ -38,20 +46,28 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 
 
 class VerifyTcamProfile(AntaTest):
-    """Verifies the device is using the configured TCAM profile."""
+    """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
+
+    Expected Results:
+        * Success: The test will pass if the provided TCAM profile is actually running on the device.
+        * Failure: The test will fail if the provided TCAM profile is not running on the device.
+    """
 
     name = "VerifyTcamProfile"
-    description = "Verify that the assigned TCAM profile is actually running on the device"
+    description = "Verifies the device TCAM profile."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware tcam profile", ofmt="json")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTcamProfile test."""
+
         profile: str
-        """Expected TCAM profile"""
+        """Expected TCAM profile."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTcamProfile."""
         command_output = self.instance_commands[0].json_output
         if command_output["pmfProfiles"]["FixedSystem"]["status"] == command_output["pmfProfiles"]["FixedSystem"]["config"] == self.inputs.profile:
             self.result.is_success()
