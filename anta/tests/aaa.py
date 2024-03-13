@@ -36,7 +36,7 @@ class VerifyTacacsSourceIntf(AntaTest):
         intf: str
         """Source-interface to use as source IP of TACACS messages."""
         vrf: str = "default"
-        """The name of the VRF to transport TACACS messages."""
+        """The name of the VRF to transport TACACS messages. Defaults to `default`."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -70,7 +70,7 @@ class VerifyTacacsServers(AntaTest):
         servers: list[IPv4Address]
         """List of TACACS servers."""
         vrf: str = "default"
-        """The name of the VRF to transport TACACS messages."""
+        """The name of the VRF to transport TACACS messages. Defaults to `default`."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -110,7 +110,7 @@ class VerifyTacacsServerGroups(AntaTest):
         """Input model for the VerifyTacacsServerGroups test."""
 
         groups: list[str]
-        """List of TACACS server group."""
+        """List of TACACS server groups."""
 
     @AntaTest.anta_test
     def test(self) -> None:

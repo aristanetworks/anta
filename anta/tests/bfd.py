@@ -37,7 +37,7 @@ class VerifyBFDSpecificPeers(AntaTest):
         """Input model for the VerifyBFDSpecificPeers test."""
 
         bfd_peers: list[BFDPeer]
-        """List of IPv4 BFD peer."""
+        """List of IPv4 BFD peers."""
 
         class BFDPeer(BaseModel):
             """Model for an IPv4 BFD peer."""
@@ -90,7 +90,7 @@ class VerifyBFDPeersIntervals(AntaTest):
         """Input model for the VerifyBFDPeersIntervals test."""
 
         bfd_peers: list[BFDPeer]
-        """List of BFD peers"""
+        """List of BFD peers."""
 
         class BFDPeer(BaseModel):
             """Model for an IPv4 BFD peer."""

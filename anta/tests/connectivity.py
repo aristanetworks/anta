@@ -29,27 +29,31 @@ class VerifyReachability(AntaTest):
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyReachability test."""
+
         hosts: list[Host]
-        """List of hosts to ping"""
+        """List of host to ping."""
 
         class Host(BaseModel):
-            """Remote host to ping."""
+            """Model for a remote host to ping."""
 
             destination: IPv4Address
-            """IPv4 address to ping"""
+            """IPv4 address to ping."""
             source: IPv4Address | Interface
-            """IPv4 address source IP or Egress interface to use"""
+            """IPv4 address source IP or egress interface to use."""
             vrf: str = "default"
-            """VRF context"""
+            """VRF context. Defaults to `default`."""
             repeat: int = 2
-            """Number of ping repetition (default=2)"""
+            """Number of ping repetition. Defaults to 2."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each host in the input list."""
         return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyReachability."""
         failures = []
         for command in self.instance_commands:
             src = command.params.get("source")
@@ -70,7 +74,7 @@ class VerifyReachability(AntaTest):
 
 
 class VerifyLLDPNeighbors(AntaTest):
-    """This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.
+    """Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
     Expected Results:
         * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
@@ -84,22 +88,25 @@ class VerifyLLDPNeighbors(AntaTest):
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLLDPNeighbors test."""
+
         neighbors: list[Neighbor]
-        """List of LLDP neighbors"""
+        """List of LLDP neighbors."""
 
         class Neighbor(BaseModel):
-            """LLDP neighbor."""
+            """Model for an LLDP neighbor."""
 
             port: Interface
-            """LLDP port"""
+            """LLDP port."""
             neighbor_device: str
-            """LLDP neighbor device"""
+            """LLDP neighbor device."""
             neighbor_port: Interface
-            """LLDP neighbor port"""
+            """LLDP neighbor port."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyLLDPNeighbors."""
         command_output = self.instance_commands[0].json_output
 
         failures: dict[str, list[str]] = {}
