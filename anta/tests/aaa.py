@@ -8,33 +8,39 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import AAAAuthMethod
 from anta.models import AntaCommand, AntaTest
+
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
 
 
 class VerifyTacacsSourceIntf(AntaTest):
     """Verifies TACACS source-interface for a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
-        * failure: The test will fail if the provided TACACS source-interface is NOT configured in the specified VRF.
+        * Success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
+        * Failure: The test will fail if the provided TACACS source-interface is NOT configured in the specified VRF.
     """
 
     name = "VerifyTacacsSourceIntf"
     description = "Verifies TACACS source-interface for a specified VRF."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show tacacs")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTacacsSourceIntf test."""
+
         intf: str
-        """Source-interface to use as source IP of TACACS messages"""
+        """Source-interface to use as source IP of TACACS messages."""
         vrf: str = "default"
-        """The name of the VRF to transport TACACS messages"""
+        """The name of the VRF to transport TACACS messages."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTacacsSourceIntf."""
         command_output = self.instance_commands[0].json_output
         try:
             if command_output["srcIntf"][self.inputs.vrf] == self.inputs.intf:
@@ -49,23 +55,26 @@ class VerifyTacacsServers(AntaTest):
     """Verifies TACACS servers are configured for a specified VRF.
 
     Expected Results:
-        * success: The test will pass if the provided TACACS servers are configured in the specified VRF.
-        * failure: The test will fail if the provided TACACS servers are NOT configured in the specified VRF.
+        * Success: The test will pass if the provided TACACS servers are configured in the specified VRF.
+        * Failure: The test will fail if the provided TACACS servers are NOT configured in the specified VRF.
     """
 
     name = "VerifyTacacsServers"
     description = "Verifies TACACS servers are configured for a specified VRF."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show tacacs")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTacacsServers test."""
+
         servers: list[IPv4Address]
-        """List of TACACS servers"""
+        """List of TACACS servers."""
         vrf: str = "default"
-        """The name of the VRF to transport TACACS messages"""
+        """The name of the VRF to transport TACACS messages."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTacacsServers."""
         command_output = self.instance_commands[0].json_output
         tacacs_servers = command_output["tacacsServers"]
         if not tacacs_servers:
@@ -88,21 +97,24 @@ class VerifyTacacsServerGroups(AntaTest):
     """Verifies if the provided TACACS server group(s) are configured.
 
     Expected Results:
-        * success: The test will pass if the provided TACACS server group(s) are configured.
-        * failure: The test will fail if one or all the provided TACACS server group(s) are NOT configured.
+        * Success: The test will pass if the provided TACACS server group(s) are configured.
+        * Failure: The test will fail if one or all the provided TACACS server group(s) are NOT configured.
     """
 
     name = "VerifyTacacsServerGroups"
     description = "Verifies if the provided TACACS server group(s) are configured."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show tacacs")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTacacsServerGroups test."""
+
         groups: list[str]
-        """List of TACACS server group"""
+        """List of TACACS server group."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTacacsServerGroups."""
         command_output = self.instance_commands[0].json_output
         tacacs_groups = command_output["groups"]
         if not tacacs_groups:
@@ -119,23 +131,26 @@ class VerifyAuthenMethods(AntaTest):
     """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
     Expected Results:
-        * success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
-        * failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+        * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
+        * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
     """
 
     name = "VerifyAuthenMethods"
     description = "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x)."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show aaa methods authentication")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authentication")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAuthenMethods test."""
+
         methods: list[AAAAuthMethod]
-        """List of AAA authentication methods. Methods should be in the right order"""
+        """List of AAA authentication methods. Methods should be in the right order."""
         types: set[Literal["login", "enable", "dot1x"]]
-        """List of authentication types to verify"""
+        """List of authentication types to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAuthenMethods."""
         command_output = self.instance_commands[0].json_output
         not_matching = []
         for k, v in command_output.items():
@@ -163,23 +178,26 @@ class VerifyAuthzMethods(AntaTest):
     """Verifies the AAA authorization method lists for different authorization types (commands, exec).
 
     Expected Results:
-        * success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
-        * failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
+        * Success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
+        * Failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
     """
 
     name = "VerifyAuthzMethods"
     description = "Verifies the AAA authorization method lists for different authorization types (commands, exec)."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show aaa methods authorization")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authorization")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAuthzMethods test."""
+
         methods: list[AAAAuthMethod]
-        """List of AAA authorization methods. Methods should be in the right order"""
+        """List of AAA authorization methods. Methods should be in the right order."""
         types: set[Literal["commands", "exec"]]
-        """List of authorization types to verify"""
+        """List of authorization types to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAuthzMethods."""
         command_output = self.instance_commands[0].json_output
         not_matching = []
         for k, v in command_output.items():
@@ -200,23 +218,26 @@ class VerifyAcctDefaultMethods(AntaTest):
     """Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results:
-        * success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
-        * failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
+        * Success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
+        * Failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
     """
 
     name = "VerifyAcctDefaultMethods"
     description = "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x)."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show aaa methods accounting")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAcctDefaultMethods test."""
+
         methods: list[AAAAuthMethod]
-        """List of AAA accounting methods. Methods should be in the right order"""
+        """List of AAA accounting methods. Methods should be in the right order."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
-        """List of accounting types to verify"""
+        """List of accounting types to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAcctDefaultMethods."""
         command_output = self.instance_commands[0].json_output
         not_matching = []
         not_configured = []
@@ -243,23 +264,26 @@ class VerifyAcctConsoleMethods(AntaTest):
     """Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results:
-        * success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
-        * failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
+        * Success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
+        * Failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
     """
 
     name = "VerifyAcctConsoleMethods"
     description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
-    categories = ["aaa"]
-    commands = [AntaCommand(command="show aaa methods accounting")]
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAcctConsoleMethods test."""
+
         methods: list[AAAAuthMethod]
-        """List of AAA accounting console methods. Methods should be in the right order"""
+        """List of AAA accounting console methods. Methods should be in the right order."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
-        """List of accounting console types to verify"""
+        """List of accounting console types to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAcctConsoleMethods."""
         command_output = self.instance_commands[0].json_output
         not_matching = []
         not_configured = []
