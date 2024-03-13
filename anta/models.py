@@ -47,7 +47,7 @@ class AntaMissingParamException(Exception):
     """
 
     def __init__(self, message: str) -> None:
-        self.message = "\n".join([message, GITHUB_SUGGESTION])
+        self.message = f"{message}\n{GITHUB_SUGGESTION}"
         super().__init__(self.message)
 
 

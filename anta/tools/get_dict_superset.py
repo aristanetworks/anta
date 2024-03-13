@@ -6,16 +6,16 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],
-    default: Optional[Any] = None,
+    default: Any | None = None,
     required: bool = False,
-    var_name: Optional[str] = None,
-    custom_error_msg: Optional[str] = None,
+    var_name: str | None = None,
+    custom_error_msg: str | None = None,
 ) -> Any:
     """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 

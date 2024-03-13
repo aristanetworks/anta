@@ -87,7 +87,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
 
 def exc_to_str(exception: BaseException) -> str:
-    """Helper function that returns a human readable string from an BaseException object"""
+    """Helper function that returns a human readable string from an BaseException object."""
     return f"{type(exception).__name__}{f': {exception}' if str(exception) else ''}"
 
 
@@ -112,5 +112,5 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
 
 def tb_to_str(exception: BaseException) -> str:
-    """Helper function that returns a traceback string from an BaseException object"""
+    """Helper function that returns a traceback string from an BaseException object."""
     return "Traceback (most recent call last):\n" + "".join(traceback.format_tb(exception.__traceback__))
