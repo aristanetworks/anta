@@ -7,6 +7,10 @@ usage:
 
 python generate_svg.py anta ...
 """
+# This script is not a package
+# ruff: noqa: INP001
+# This script contains print statements
+# ruff: noqa: T201
 
 import io
 import os
@@ -74,11 +78,9 @@ if __name__ == "__main__":
 
     # Redirect stdout of the program towards another StringIO to capture help
     # that is not part or anta rich console
-    with redirect_stdout(io.StringIO()) as f:
-        # redirect potential progress bar output to console by patching
-        with patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar):
-            with suppress(SystemExit):
-                function()
+    # redirect potential progress bar output to console by patching
+    with redirect_stdout(io.StringIO()) as f, patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
+        function()
     # print to our new console the output of anta console
     new_console.print(console.export_text())
     # print the content of the stdout to our new_console
