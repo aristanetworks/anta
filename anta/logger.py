@@ -35,6 +35,7 @@ LogLevel = Literal[Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG]
 
 def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     """Configure logging for ANTA.
+
     By default, the logging level is INFO for all loggers except for httpx and asyncssh which are too verbose:
     their logging level is WARNING.
 
@@ -66,51 +67,51 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout
-    richHandler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
+    rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
     # In ANTA debug mode, show Python module in stdout
     fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if __DEBUG__ else "%(message)s"
     formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
-    richHandler.setFormatter(formatter)
-    root.addHandler(richHandler)
+    rich_handler.setFormatter(formatter)
+    root.addHandler(rich_handler)
     # Add FileHandler if file is provided
     if file:
-        fileHandler = logging.FileHandler(file)
+        file_handler = logging.FileHandler(file)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        fileHandler.setFormatter(formatter)
-        root.addHandler(fileHandler)
+        file_handler.setFormatter(formatter)
+        root.addHandler(file_handler)
         # If level is DEBUG and file is provided, do not send DEBUG level to stdout
         if loglevel == logging.DEBUG:
-            richHandler.setLevel(logging.INFO)
+            rich_handler.setLevel(logging.INFO)
 
     if __DEBUG__:
         logger.debug("ANTA Debug Mode enabled")
 
 
 def exc_to_str(exception: BaseException) -> str:
-    """Helper function that returns a human readable string from an BaseException object."""
+    """Return a human readable string from an BaseException object."""
     return f"{type(exception).__name__}{f': {exception}' if str(exception) else ''}"
 
 
 def anta_log_exception(exception: BaseException, message: str | None = None, calling_logger: logging.Logger | None = None) -> None:
-    """Helper function to help log exceptions:
-    * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback
-    * otherwise logger.error is called.
+    """Log exception.
+
+    If `anta.__DEBUG__` is True then the `logger.exception` method is called to get the traceback, otherwise `logger.error` is called.
 
     Args:
     ----
         exception (BaseException): The Exception being logged
         message (str): An optional message
-        calling_logger (logging.Logger): A logger to which the exception should be logged
-                                         if not present, the logger in this file is used.
+        calling_logger (logging.Logger): A logger to which the exception should be logged. If not present, the logger in this file is used.
 
     """
     if calling_logger is None:
         calling_logger = logger
     calling_logger.critical(f"{message}\n{exc_to_str(exception)}" if message else exc_to_str(exception))
     if __DEBUG__:
-        calling_logger.exception(f"[ANTA Debug Mode]{f' {message}' if message else ''}", exc_info=exception)
+        msg = f"[ANTA Debug Mode]{f' {message}' if message else ''}"
+        calling_logger.exception(msg, exc_info=exception)
 
 
 def tb_to_str(exception: BaseException) -> str:
-    """Helper function that returns a traceback string from an BaseException object."""
+    """Return a traceback string from an BaseException object."""
     return "Traceback (most recent call last):\n" + "".join(traceback.format_tb(exception.__traceback__))
