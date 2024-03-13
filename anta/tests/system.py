@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test functions related to system-level features and protocols."""
+"""Module related to system-level features and protocols tests."""
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
 class VerifyUptime(AntaTest):
-    """This test verifies if the device uptime is higher than the provided minimum uptime value.
+    """Verifies if the device uptime is higher than the provided minimum uptime value.
 
     Expected Results:
       * Success: The test will pass if the device uptime is higher than the provided value.
@@ -29,12 +29,15 @@ class VerifyUptime(AntaTest):
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyUptime test."""
+
         minimum: PositiveInteger
-        """Minimum uptime in seconds"""
+        """Minimum uptime in seconds."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyUptime."""
         command_output = self.instance_commands[0].json_output
         if command_output["upTime"] > self.inputs.minimum:
             self.result.is_success()
@@ -43,12 +46,12 @@ class VerifyUptime(AntaTest):
 
 
 class VerifyReloadCause(AntaTest):
-    """This test verifies the last reload cause of the device.
+    """Verifies the last reload cause of the device.
 
     Expected results:
       * Success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
       * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
-      * error: The test will report an error if the reload cause is NOT available.
+      * Error: The test will report an error if the reload cause is NOT available.
     """
 
     name = "VerifyReloadCause"
@@ -58,6 +61,7 @@ class VerifyReloadCause(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyReloadCause."""
         command_output = self.instance_commands[0].json_output
         if "resetCauses" not in command_output:
             self.result.is_error(message="No reload causes available")
@@ -78,7 +82,7 @@ class VerifyReloadCause(AntaTest):
 
 
 class VerifyCoredump(AntaTest):
-    """This test verifies if there are core dump files in the /var/core directory.
+    """Verifies if there are core dump files in the /var/core directory.
 
     Expected Results:
       * Success: The test will pass if there are NO core dump(s) in /var/core.
@@ -97,6 +101,7 @@ class VerifyCoredump(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyCoredump."""
         command_output = self.instance_commands[0].json_output
         core_files = command_output["coreFiles"]
         if "minidump" in core_files:
@@ -108,7 +113,7 @@ class VerifyCoredump(AntaTest):
 
 
 class VerifyAgentLogs(AntaTest):
-    """This test verifies that no agent crash reports are present on the device.
+    """Verifies that no agent crash reports are present on the device.
 
     Expected Results:
       * Success: The test will pass if there is NO agent crash reported.
@@ -122,6 +127,7 @@ class VerifyAgentLogs(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAgentLogs."""
         command_output = self.instance_commands[0].text_output
         if len(command_output) == 0:
             self.result.is_success()
@@ -132,7 +138,7 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """This test verifies whether the CPU utilization is below 75%.
+    """Verifies whether the CPU utilization is below 75%.
 
     Expected Results:
       * Success: The test will pass if the CPU utilization is below 75%.
@@ -146,6 +152,7 @@ class VerifyCPUUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyCPUUtilization."""
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
         if command_output_data > 25:
@@ -155,7 +162,7 @@ class VerifyCPUUtilization(AntaTest):
 
 
 class VerifyMemoryUtilization(AntaTest):
-    """This test verifies whether the memory utilization is below 75%.
+    """Verifies whether the memory utilization is below 75%.
 
     Expected Results:
       * Success: The test will pass if the memory utilization is below 75%.
@@ -169,6 +176,7 @@ class VerifyMemoryUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyMemoryUtilization."""
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
         if memory_usage > 0.25:
@@ -178,7 +186,7 @@ class VerifyMemoryUtilization(AntaTest):
 
 
 class VerifyFileSystemUtilization(AntaTest):
-    """This test verifies that no partition is utilizing more than 75% of its disk space.
+    """Verifies that no partition is utilizing more than 75% of its disk space.
 
     Expected Results:
       * Success: The test will pass if all partitions are using less than 75% of its disk space.
@@ -192,6 +200,7 @@ class VerifyFileSystemUtilization(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyFileSystemUtilization."""
         command_output = self.instance_commands[0].text_output
         self.result.is_success()
         for line in command_output.split("\n")[1:]:
@@ -200,7 +209,7 @@ class VerifyFileSystemUtilization(AntaTest):
 
 
 class VerifyNTP(AntaTest):
-    """This test verifies that the Network Time Protocol (NTP) is synchronized.
+    """Verifies that the Network Time Protocol (NTP) is synchronized.
 
     Expected Results:
       * Success: The test will pass if the NTP is synchronised.
@@ -214,6 +223,7 @@ class VerifyNTP(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyNTP."""
         command_output = self.instance_commands[0].text_output
         if command_output.split("\n")[0].split(" ")[0] == "synchronised":
             self.result.is_success()
