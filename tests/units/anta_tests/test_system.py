@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.system."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -46,7 +47,12 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "resetCauses": [
-                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False},
+                    {
+                        "recommendedAction": "No action necessary.",
+                        "description": "Reload requested by the user.",
+                        "timestamp": 1683186892.0,
+                        "debugInfoIsDir": False,
+                    },
                 ],
                 "full": False,
             },

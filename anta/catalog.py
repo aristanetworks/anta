@@ -158,14 +158,16 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
                         raise ValueError(msg)
                     if len(test_definition) != 1:
-                        msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary with a single entry. Check the indentation in the test catalog."
+                        msg = (f"Syntax error when parsing: {test_definition}\n"
+                               "It must be a dictionary with a single entry. Check the indentation in the test catalog.")
                         raise ValueError(
                             msg,
                         )
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         if test is None:
-                            msg = f"{test_name} is not defined in Python module {module.__name__}{f' (from {module.__file__})' if module.__file__ is not None else ''}"
+                            msg = (f"{test_name} is not defined in Python module {module.__name__}"
+                                   f"{f' (from {module.__file__})' if module.__file__ is not None else ''}")
                             raise ValueError(
                                 msg,
                             )
@@ -286,11 +288,16 @@ class AntaCatalog:
 
     def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
         """Return all the tests that have matching tags in their input filters.
+
         If strict=True, returns only tests that match all the tags provided as input.
         If strict=False, return all the tests that match at least one tag provided as input.
         """
         result: list[AntaTestDefinition] = []
         for test in self.tests:
-            if test.inputs.filters and (f := test.inputs.filters.tags) and ((strict and all(t in tags for t in f)) or (not strict and any(t in tags for t in f))):
-                result.append(test)
+            if test.inputs.filters and (f := test.inputs.filters.tags):
+                if strict:
+                    if all(t in tags for t in f):
+                        result.append(test)
+                elif any(t in tags for t in f):
+                    result.append(test)
         return result

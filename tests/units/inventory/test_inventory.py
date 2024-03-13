@@ -58,7 +58,7 @@ class Test_AntaInventory:
             AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             logging.error("Exceptions is: %s", str(exc))
-            raise AssertionError
+            raise AssertionError from exc
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict)
     def test_init_invalid(self, test_definition: dict[str, Any], tmp_path: Path) -> None:
