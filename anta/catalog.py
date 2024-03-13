@@ -43,8 +43,9 @@ class AntaTestDefinition(BaseModel):
     test: type[AntaTest]
     inputs: AntaTest.Input
 
-    def __init__(self, **data: Any) -> None:
-        """Inject test in the context to allow to instantiate Input in the BeforeValidator
+    def __init__(self, **data: type[AntaTest]| AntaTest.Input | dict[str, Any] | None) -> None:
+        """Inject test in the context to allow to instantiate Input in the BeforeValidator.
+
         https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization.
         """
         self.__pydantic_validator__.validate_python(
@@ -57,7 +58,9 @@ class AntaTestDefinition(BaseModel):
     @field_validator("inputs", mode="before")
     @classmethod
     def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) -> AntaTest.Input:
-        """If the test has no inputs, allow the user to omit providing the `inputs` field.
+        """Ensure the test inputs can be instantiated and thus are valid.
+
+        If the test has no inputs, allow the user to omit providing the `inputs` field.
         If the test has inputs, allow the user to provide a valid dictionary of the input fields.
         This model validator will instantiate an Input class from the `test` class field.
         """
@@ -80,12 +83,17 @@ class AntaTestDefinition(BaseModel):
                 return test_class.Input(**data)
         except ValidationError as e:
             inputs_msg = str(e).replace("\n", "\n\t")
-            raise PydanticCustomError("wrong_test_inputs", f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
-        raise ValueError(f"Coud not instantiate inputs as type {type(data).__name__} is not valid")
+            err_type = "wrong_test_inputs"
+            raise PydanticCustomError(err_type, f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
+        msg = f"Coud not instantiate inputs as type {type(data).__name__} is not valid"
+        raise ValueError(msg)
 
     @model_validator(mode="after")
     def check_inputs(self) -> AntaTestDefinition:
-        """The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`."""
+        """Check the `inputs` field typing.
+
+        The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.
+        """
         if not isinstance(self.inputs, self.test.Input):
             msg = f"Test input has type {self.inputs.__class__.__qualname__} but expected type {self.test.Input.__qualname__}"
             raise ValueError(msg)
@@ -93,12 +101,17 @@ class AntaTestDefinition(BaseModel):
 
 
 class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
-    """This model represents an ANTA Test Catalog File.
+    """Represents an ANTA Test Catalog File.
 
-    A valid test catalog file must have the following structure:
-    <Python module>:
-    - <AntaTest subclass>:
-    <AntaTest.Input compliant dictionary>
+    Example:
+    -------
+        A valid test catalog file must have the following structure:
+        ```
+        <Python module>:
+            - <AntaTest subclass>:
+                <AntaTest.Input compliant dictionary>
+        ```
+
     """
 
     root: dict[ImportString[Any], list[AntaTestDefinition]]
@@ -107,6 +120,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
     @classmethod
     def check_tests(cls, data: Any) -> Any:
         """Allow the user to provide a Python data structure that only has string values.
+
         This validator will try to flatten and import Python modules, check if the tests classes
         are actually defined in their respective Python module and instantiate Input instances
         with provided value to validate test inputs.
@@ -189,7 +203,7 @@ class AntaCatalog:
     """
 
     def __init__(self, tests: list[AntaTestDefinition] | None = None, filename: str | Path | None = None) -> None:
-        """Constructor of AntaCatalog.
+        """Instantiate an AntaCatalog instance.
 
         Args:
         ----
@@ -238,8 +252,9 @@ class AntaCatalog:
 
         """
         try:
-            with open(file=filename, encoding="UTF-8") as file:
-                data = safe_load(file)
+            file: Path = filename if isinstance(filename, Path) else Path(filename)
+            with file.open(encoding="UTF-8") as f:
+                data = safe_load(f)
         except (TypeError, YAMLError, OSError) as e:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
@@ -250,6 +265,7 @@ class AntaCatalog:
     @staticmethod
     def from_dict(data: RawCatalogInput, filename: str | Path | None = None) -> AntaCatalog:
         """Create an AntaCatalog instance from a dictionary data structure.
+
         See RawCatalogInput type alias for details.
         It is the data structure returned by `yaml.load()` function of a valid
         YAML Test Catalog file.
@@ -281,6 +297,7 @@ class AntaCatalog:
     @staticmethod
     def from_list(data: ListAntaTestTuples) -> AntaCatalog:
         """Create an AntaCatalog instance from a list data structure.
+
         See ListAntaTestTuples type alias for details.
 
         Args:
