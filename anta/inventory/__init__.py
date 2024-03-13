@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -31,7 +31,7 @@ class AntaInventory(dict):  # type: ignore
     # Root key of inventory part of the inventory file
     INVENTORY_ROOT_KEY = "anta_inventory"
     # Supported Output format
-    INVENTORY_OUTPUT_FORMAT = ["native", "json"]
+    INVENTORY_OUTPUT_FORMAT: ClassVar[list[str]] = ["native", "json"]
 
     def __str__(self) -> str:
         """Human readable string representing the inventory."""

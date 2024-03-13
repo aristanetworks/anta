@@ -309,23 +309,19 @@ line-length = 165
 target-version = "py38"
 
 [tool.ruff.lint]
-# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-# select = ["E", "F"]
 # select all cause we like being suffering
-select = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+select = ["ALL"]
 ignore = [
   "ANN101",  # Missing type annotation for `self` in method - we know what self is..
-  # TODO - discuss if we want to enforce this next one going forward
-  "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar - ignoring this as we would need to add this for every test categories and commands definition
-  "D203",  # Ignoring conflicting D* warnings - one-blank-line-before-class
-  "D213",  # Ignoring conflicting D* warning - multi-line-summary-second-line
+  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
+  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
 ]
 
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+fixable = ["ALL"]
 unfixable = []
 
 # Allow unused variables when underscore-prefixed.
@@ -340,6 +336,11 @@ max-complexity = 10
   "RICH_COLOR_PALETTE"
 ]
 
+[tool.ruff.lint.flake8-type-checking]
+# These classes require that type annotations be available at runtime
+runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.Input"]
+
+
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
@@ -347,11 +348,11 @@ max-complexity = 10
 ]
 "tests/units/*" = [
   "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
-  "FBT001",    # Boolean-typed positional argument in function definition
+  "FBT001",  # Boolean-typed positional argument in function definition
   "PLR0913", # Too many arguments to function call (8 > 5)
-  "PLR2004",   # Magic value used in comparison, consider replacing {value} with a constant variable
-  "S105",  # Passwords are indeed hardcoded in tests
-  "S106",  # Passwords are indeed hardcoded in tests
+  "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
+  "S105",    # Passwords are indeed hardcoded in tests
+  "S106",    # Passwords are indeed hardcoded in tests
   "S108",    # Probable insecure usage of temporary file or directory
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
@@ -362,11 +363,8 @@ max-complexity = 10
   "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
 ]
 "anta/tests*" = [
-  "D102",  # We accept no docstring for render and AntaInput
-  "D106",  # We accept no docstring for render and AntaInput
-  # TODO revisit this given that we are using `This` everywhere in tests ...
-  "D404",  # First word of the docstring should not be "This"
 ]
+
 "anta/tests/field_notices.py" = [
   "PLR2004",  # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
 ]

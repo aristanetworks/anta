@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
@@ -26,8 +26,8 @@ class FakeTest(AntaTest):
 
     name = "FakeTest"
     description = "ANTA test that always succeed"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -40,8 +40,8 @@ class FakeTestWithFailedCommand(AntaTest):
 
     name = "FakeTestWithFailedCommand"
     description = "ANTA test with a command that failed"
-    categories = []
-    commands = [AntaCommand(command="show version", errors=["failed command"])]
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaCommand(command="show version", errors=["failed command"])]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -54,8 +54,8 @@ class FakeTestWithUnsupportedCommand(AntaTest):
 
     name = "FakeTestWithUnsupportedCommand"
     description = "ANTA test with an unsupported command"
-    categories = []
-    commands = [
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[
         AntaCommand(
             command="show hardware counter drop",
             errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
@@ -73,8 +73,8 @@ class FakeTestWithInput(AntaTest):
 
     name = "FakeTestWithInput"
     description = "ANTA test with inputs that always succeed"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithInput test."""
@@ -92,8 +92,8 @@ class FakeTestWithTemplate(AntaTest):
 
     name = "FakeTestWithTemplate"
     description = "ANTA test with template that always succeed"
-    categories = []
-    commands = [AntaTemplate(template="show interface {interface}")]
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplate test."""
@@ -115,8 +115,8 @@ class FakeTestWithTemplateNoRender(AntaTest):
 
     name = "FakeTestWithTemplateNoRender"
     description = "ANTA test with template that miss the render() method"
-    categories = []
-    commands = [AntaTemplate(template="show interface {interface}")]
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateNoRender test."""
@@ -134,8 +134,8 @@ class FakeTestWithTemplateBadRender1(AntaTest):
 
     name = "FakeTestWithTemplateBadRender"
     description = "ANTA test with template that raises a AntaTemplateRenderError exception"
-    categories = []
-    commands = [AntaTemplate(template="show interface {interface}")]
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateBadRender1 test."""
@@ -157,8 +157,8 @@ class FakeTestWithTemplateBadRender2(AntaTest):
 
     name = "FakeTestWithTemplateBadRender2"
     description = "ANTA test with template that raises an arbitrary exception"
-    categories = []
-    commands = [AntaTemplate(template="show interface {interface}")]
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateBadRender2 test."""
@@ -180,8 +180,8 @@ class SkipOnPlatformTest(AntaTest):
 
     name = "SkipOnPlatformTest"
     description = "ANTA test that is skipped on a specific platform"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     @skip_on_platforms([DEVICE_HW_MODEL])
     @AntaTest.anta_test
@@ -195,8 +195,8 @@ class UnSkipOnPlatformTest(AntaTest):
 
     name = "UnSkipOnPlatformTest"
     description = "ANTA test that is skipped on a specific platform"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     @skip_on_platforms(["dummy"])
     @AntaTest.anta_test
@@ -210,8 +210,8 @@ class SkipOnPlatformTestWithInput(AntaTest):
 
     name = "SkipOnPlatformTestWithInput"
     description = "ANTA test skipped on platforms but with Input"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     class Input(AntaTest.Input):
         """Inputs for SkipOnPlatformTestWithInput test."""
@@ -230,8 +230,8 @@ class DeprecatedTestWithoutNewTest(AntaTest):
 
     name = "DeprecatedTestWitouthNewTest"
     description = "ANTA test that is deprecated without new test"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     @deprecated_test()
     @AntaTest.anta_test
@@ -245,8 +245,8 @@ class DeprecatedTestWithNewTest(AntaTest):
 
     name = "DeprecatedTestWithNewTest"
     description = "ANTA deprecated test with New Test"
-    categories = []
-    commands = []
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
     @deprecated_test(new_tests=["NewTest"])
     @AntaTest.anta_test
@@ -449,8 +449,8 @@ class TestAntaTest:
                 """ANTA test that is missing a name."""
 
                 description = "ANTA test that is missing a name"
-                categories = []
-                commands = []
+                categories: ClassVar[list[str]] = []
+                commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
                 @AntaTest.anta_test
                 def test(self) -> None:
@@ -464,8 +464,8 @@ class TestAntaTest:
                 """ANTA test that is missing a description."""
 
                 name = "WrongTestNoDescription"
-                categories = []
-                commands = []
+                categories: ClassVar[list[str]] = []
+                commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
                 @AntaTest.anta_test
                 def test(self) -> None:
@@ -480,7 +480,7 @@ class TestAntaTest:
 
                 name = "WrongTestNoCategories"
                 description = "ANTA test that is missing categories"
-                commands = []
+                commands: ClassVar[list[AntaCommand | AntaTemplate]] =[]
 
                 @AntaTest.anta_test
                 def test(self) -> None:
@@ -495,7 +495,7 @@ class TestAntaTest:
 
                 name = "WrongTestNoCommands"
                 description = "ANTA test that is missing commands"
-                categories = []
+                categories: ClassVar[list[str]] = []
 
                 @AntaTest.anta_test
                 def test(self) -> None:
@@ -537,8 +537,8 @@ def test_blacklist(device: AntaDevice, data: str) -> None:
 
         name = "FakeTestWithBlacklist"
         description = "ANTA test that has blacklisted command"
-        categories = []
-        commands = [AntaCommand(command=data)]
+        categories: ClassVar[list[str]] = []
+        commands: ClassVar[list[AntaCommand | AntaTemplate]] =[AntaCommand(command=data)]
 
         @AntaTest.anta_test
         def test(self) -> None:

@@ -16,6 +16,10 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+CPU_IDLE_THRESHOLD = 25
+MEMORY_THRESHOLD = 0.25
+DISK_SPACE_THRESHOLD = 75
+
 class VerifyUptime(AntaTest):
     """Verifies if the device uptime is higher than the provided minimum uptime value.
 
@@ -155,7 +159,7 @@ class VerifyCPUUtilization(AntaTest):
         """Main test function for VerifyCPUUtilization."""
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
-        if command_output_data > 25:
+        if command_output_data > CPU_IDLE_THRESHOLD:
             self.result.is_success()
         else:
             self.result.is_failure(f"Device has reported a high CPU utilization: {100 - command_output_data}%")
@@ -179,7 +183,7 @@ class VerifyMemoryUtilization(AntaTest):
         """Main test function for VerifyMemoryUtilization."""
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
-        if memory_usage > 0.25:
+        if memory_usage > MEMORY_THRESHOLD:
             self.result.is_success()
         else:
             self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage)*100:.2f}%")
@@ -204,7 +208,7 @@ class VerifyFileSystemUtilization(AntaTest):
         command_output = self.instance_commands[0].text_output
         self.result.is_success()
         for line in command_output.split("\n")[1:]:
-            if "loop" not in line and len(line) > 0 and (percentage := int(line.split()[4].replace("%", ""))) > 75:
+            if "loop" not in line and len(line) > 0 and (percentage := int(line.split()[4].replace("%", ""))) > DISK_SPACE_THRESHOLD:
                 self.result.is_failure(f"Mount point {line} is higher than 75%: reported {percentage}%")
 
 
