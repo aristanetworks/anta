@@ -11,7 +11,15 @@ from inspect import isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    RootModel,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_load
@@ -43,7 +51,7 @@ class AntaTestDefinition(BaseModel):
     test: type[AntaTest]
     inputs: AntaTest.Input
 
-    def __init__(self, **data: type[AntaTest]| AntaTest.Input | dict[str, Any] | None) -> None:
+    def __init__(self, **data: type[AntaTest] | AntaTest.Input | dict[str, Any] | None) -> None:
         """Inject test in the context to allow to instantiate Input in the BeforeValidator.
 
         https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization.
@@ -57,7 +65,11 @@ class AntaTestDefinition(BaseModel):
 
     @field_validator("inputs", mode="before")
     @classmethod
-    def instantiate_inputs(cls, data: AntaTest.Input | dict[str, Any] | None, info: ValidationInfo) -> AntaTest.Input:
+    def instantiate_inputs(
+        cls: AntaTestDefinition,
+        data: AntaTest.Input | dict[str, Any] | None,
+        info: ValidationInfo,
+    ) -> AntaTest.Input:
         """Ensure the test inputs can be instantiated and thus are valid.
 
         If the test has no inputs, allow the user to omit providing the `inputs` field.
@@ -84,7 +96,11 @@ class AntaTestDefinition(BaseModel):
         except ValidationError as e:
             inputs_msg = str(e).replace("\n", "\n\t")
             err_type = "wrong_test_inputs"
-            raise PydanticCustomError(err_type, f"{test_class.name} test inputs are not valid: {inputs_msg}\n", {"errors": e.errors()}) from e
+            raise PydanticCustomError(
+                err_type,
+                f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
+                {"errors": e.errors()},
+            ) from e
         msg = f"Coud not instantiate inputs as type {type(data).__name__} is not valid"
         raise ValueError(msg)
 
@@ -116,57 +132,60 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
 
     root: dict[ImportString[Any], list[AntaTestDefinition]]
 
+    @staticmethod
+    def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
+        """Allow the user to provide a data structure with nested Python modules.
+
+        Example:
+        -------
+            ```
+            anta.tests.routing:
+              generic:
+                - <AntaTestDefinition>
+              bgp:
+                - <AntaTestDefinition>
+            ```
+            `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
+
+        """
+        modules: dict[ModuleType, list[Any]] = {}
+        for module_name, tests in data.items():
+            if package and not module_name.startswith("."):
+                # PLW2901 - we redefine the loop variable on purpose here.
+                module_name = f".{module_name}"  # noqa: PLW2901
+            try:
+                module: ModuleType = importlib.import_module(name=module_name, package=package)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                # A test module is potentially user-defined code.
+                # We need to catch everything if we want to have meaningful logs
+                module_str = f"{module_name[1:] if module_name.startswith('.') else module_name}{f' from package {package}' if package else ''}"
+                message = f"Module named {module_str} cannot be imported. Verify that the module exists and there is no Python syntax issues."
+                anta_log_exception(e, message, logger)
+                raise ValueError(message) from e
+            if isinstance(tests, dict):
+                # This is an inner Python module
+                modules.update(AntaCatalogFile.flatten_modules(data=tests, package=module.__name__))
+            else:
+                if not isinstance(tests, list):
+                    msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
+                    raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+                # This is a list of AntaTestDefinition
+                modules[module] = tests
+        return modules
+
+    # ANN401 - Any ok for this validator as we are validating the received data
+    # and cannot know in advance what it is.
     @model_validator(mode="before")
     @classmethod
-    def check_tests(cls, data: Any) -> Any:
+    def check_tests(cls: AntaCatalogFile, data: Any) -> Any:  # noqa: ANN401
         """Allow the user to provide a Python data structure that only has string values.
 
         This validator will try to flatten and import Python modules, check if the tests classes
         are actually defined in their respective Python module and instantiate Input instances
         with provided value to validate test inputs.
         """
-
-        def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
-            """Allow the user to provide a data structure with nested Python modules.
-
-            Example:
-            -------
-                ```
-                anta.tests.routing:
-                  generic:
-                    - <AntaTestDefinition>
-                  bgp:
-                    - <AntaTestDefinition>
-                ```
-                `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
-
-            """
-            modules: dict[ModuleType, list[Any]] = {}
-            for module_name, tests in data.items():
-                if package and not module_name.startswith("."):
-                    module_name = f".{module_name}"
-                try:
-                    module: ModuleType = importlib.import_module(name=module_name, package=package)
-                except Exception as e:  # pylint: disable=broad-exception-caught
-                    # A test module is potentially user-defined code.
-                    # We need to catch everything if we want to have meaningful logs
-                    module_str = f"{module_name[1:] if module_name.startswith('.') else module_name}{f' from package {package}' if package else ''}"
-                    message = f"Module named {module_str} cannot be imported. Verify that the module exists and there is no Python syntax issues."
-                    anta_log_exception(e, message, logger)
-                    raise ValueError(message) from e
-                if isinstance(tests, dict):
-                    # This is an inner Python module
-                    modules.update(flatten_modules(data=tests, package=module.__name__))
-                else:
-                    if not isinstance(tests, list):
-                        msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
-                        raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
-                    # This is a list of AntaTestDefinition
-                    modules[module] = tests
-            return modules
-
         if isinstance(data, dict):
-            typed_data: dict[ModuleType, list[Any]] = flatten_modules(data)
+            typed_data: dict[ModuleType, list[Any]] = AntaCatalogFile.flatten_modules(data)
             for module, tests in typed_data.items():
                 test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
@@ -202,7 +221,11 @@ class AntaCatalog:
     It can be instantiated using its contructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
     """
 
-    def __init__(self, tests: list[AntaTestDefinition] | None = None, filename: str | Path | None = None) -> None:
+    def __init__(
+        self,
+        tests: list[AntaTestDefinition] | None = None,
+        filename: str | Path | None = None,
+    ) -> None:
         """Instantiate an AntaCatalog instance.
 
         Args:
@@ -288,7 +311,11 @@ class AntaCatalog:
         try:
             catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
         except ValidationError as e:
-            anta_log_exception(e, f"Test catalog is invalid!{f' (from {filename})' if filename is not None else ''}", logger)
+            anta_log_exception(
+                e,
+                f"Test catalog is invalid!{f' (from {filename})' if filename is not None else ''}",
+                logger,
+            )
             raise
         for t in catalog_data.root.values():
             tests.extend(t)
@@ -313,7 +340,7 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    def get_tests_by_tags(self, tags: list[str], strict: bool = False) -> list[AntaTestDefinition]:
+    def get_tests_by_tags(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
         """Return all the tests that have matching tags in their input filters.
 
         If strict=True, returns only tests that match all the tags provided as input.
