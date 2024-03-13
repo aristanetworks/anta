@@ -16,7 +16,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyLANZ,
         "eos_data": [{"lanzEnabled": True}],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["LANZ is enabled"]},
+        "expected": {"result": "success"},
     },
     {
         "name": "failure",

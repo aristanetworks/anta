@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test functions related to LANZ"""
+"""Test functions related to LANZ."""
 
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
 class VerifyLANZ(AntaTest):
-    """Verifies if LANZ is enabled
+    """Verifies if LANZ (Latency Analyzer) is enabled.
 
     Expected results:
-        * Success: the test will pass if lanz is enabled
-        * Failure: the test will fail if lanz is disabled
+        * Success: The test will pass if LANZ is enabled.
+        * Failure: The test will fail if LANZ is disabled.
     """
 
     name = "VerifyLANZ"
@@ -29,9 +29,10 @@ class VerifyLANZ(AntaTest):
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyLANZ."""
         command_output = self.instance_commands[0].json_output
 
         if command_output["lanzEnabled"] is not True:
             self.result.is_failure("LANZ is not enabled")
         else:
-            self.result.is_success("LANZ is enabled")
+            self.result.is_success()
