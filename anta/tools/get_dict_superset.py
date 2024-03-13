@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 
 """Get one dictionary from a list of dictionaries by matching the given key and values."""
+
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -46,6 +47,7 @@ def get_dict_superset(
     ------
     ValueError
         If the keys and values are not found and "required" == True
+
     """
     if not isinstance(list_of_dicts, list) or not list_of_dicts or not isinstance(input_dict, dict) or not input_dict:
         if required:

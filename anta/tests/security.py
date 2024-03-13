@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various security settings
-"""
+"""Test functions related to the EOS various security settings"""
+
 from __future__ import annotations
 
 # Mypy does not understand AntaTest.Input typing
@@ -270,8 +269,7 @@ class VerifyAPIIPv6Acl(AntaTest):
 
 
 class VerifyAPISSLCertificate(AntaTest):
-    """
-    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+    """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     Expected Results:
         * success: The test will pass if the certificate's expiry date is greater than the threshold,
@@ -286,17 +284,13 @@ class VerifyAPISSLCertificate(AntaTest):
     commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):
-        """
-        Input parameters for the VerifyAPISSLCertificate test.
-        """
+        """Input parameters for the VerifyAPISSLCertificate test."""
 
         certificates: List[APISSLCertificates]
         """List of API SSL certificates"""
 
         class APISSLCertificates(BaseModel):
-            """
-            This class defines the details of an API SSL certificate.
-            """
+            """This class defines the details of an API SSL certificate."""
 
             certificate_name: str
             """The name of the certificate to be verified."""
@@ -311,14 +305,12 @@ class VerifyAPISSLCertificate(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
-                """
-                Validate the key size provided to the APISSLCertificates class.
+                """Validate the key size provided to the APISSLCertificates class.
 
                 If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
 
                 If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
                 """
-
                 if self.encryption_algorithm == "RSA" and self.key_size not in RsaKeySize.__args__:
                     raise ValueError(f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}.")
 
@@ -373,8 +365,7 @@ class VerifyAPISSLCertificate(AntaTest):
 
 
 class VerifyBannerLogin(AntaTest):
-    """
-    Verifies the login banner of a device.
+    """Verifies the login banner of a device.
 
     Expected results:
         * success: The test will pass if the login banner matches the provided input.
@@ -405,8 +396,7 @@ class VerifyBannerLogin(AntaTest):
 
 
 class VerifyBannerMotd(AntaTest):
-    """
-    Verifies the motd banner of a device.
+    """Verifies the motd banner of a device.
 
     Expected results:
         * success: The test will pass if the motd banner matches the provided input.
@@ -437,8 +427,7 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """
-    Verifies the configuration of IPv4 ACLs.
+    """Verifies the configuration of IPv4 ACLs.
 
     Expected results:
         * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.

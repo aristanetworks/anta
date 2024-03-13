@@ -2,13 +2,13 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to the device interfaces."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 import re
 from ipaddress import IPv4Network
-
 from typing import Any, Literal, Optional
 
 from pydantic import BaseModel
@@ -22,8 +22,7 @@ from anta.tools.get_value import get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):
-    """
-    Verifies interfaces utilization is below a threshold.
+    """Verifies interfaces utilization is below a threshold.
     Load interval (default to 5 minutes) is defined in device configuration.
 
     Expected Results:
@@ -106,8 +105,7 @@ class VerifyInterfaceErrors(AntaTest):
 
 
 class VerifyInterfaceDiscards(AntaTest):
-    """
-    Verifies interfaces packet discard counters are equal to zero.
+    """Verifies interfaces packet discard counters are equal to zero.
 
     Expected Results:
         * success: The test will pass if all interfaces have discard counters equal to zero.
@@ -132,8 +130,7 @@ class VerifyInterfaceDiscards(AntaTest):
 
 
 class VerifyInterfaceErrDisabled(AntaTest):
-    """
-    Verifies there are no interfaces in errdisabled state.
+    """Verifies there are no interfaces in errdisabled state.
 
     Expected Results:
         * success: The test will pass if there are no interfaces in errdisabled state.
@@ -223,8 +220,7 @@ class VerifyInterfacesStatus(AntaTest):
 
 
 class VerifyStormControlDrops(AntaTest):
-    """
-    Verifies the device did not drop packets due its to storm-control configuration.
+    """Verifies the device did not drop packets due its to storm-control configuration.
 
     Expected Results:
         * success: The test will pass if there are no storm-control drop counters.
@@ -253,8 +249,7 @@ class VerifyStormControlDrops(AntaTest):
 
 
 class VerifyPortChannels(AntaTest):
-    """
-    Verifies there are no inactive ports in all port channels.
+    """Verifies there are no inactive ports in all port channels.
 
     Expected Results:
         * success: The test will pass if there are no inactive ports in all port channels.
@@ -281,8 +276,7 @@ class VerifyPortChannels(AntaTest):
 
 
 class VerifyIllegalLACP(AntaTest):
-    """
-    Verifies there are no illegal LACP packets received.
+    """Verifies there are no illegal LACP packets received.
 
     Expected Results:
         * success: The test will pass if there are no illegal LACP packets received.
@@ -309,8 +303,7 @@ class VerifyIllegalLACP(AntaTest):
 
 
 class VerifyLoopbackCount(AntaTest):
-    """
-    Verifies that the device has the expected number of loopback interfaces and all are operational.
+    """Verifies that the device has the expected number of loopback interfaces and all are operational.
 
     Expected Results:
         * success: The test will pass if the device has the correct number of loopback interfaces and none are down.
@@ -348,8 +341,7 @@ class VerifyLoopbackCount(AntaTest):
 
 
 class VerifySVI(AntaTest):
-    """
-    Verifies the status of all SVIs.
+    """Verifies the status of all SVIs.
 
     Expected Results:
         * success: The test will pass if all SVIs are up.
@@ -504,8 +496,7 @@ class VerifyL2MTU(AntaTest):
 
 
 class VerifyInterfaceIPv4(AntaTest):
-    """
-    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+    """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
 
     Expected Results:
         * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
@@ -585,8 +576,7 @@ class VerifyInterfaceIPv4(AntaTest):
 
 
 class VerifyIpVirtualRouterMac(AntaTest):
-    """
-    Verifies the IP virtual router MAC address.
+    """Verifies the IP virtual router MAC address.
 
     Expected Results:
         * success: The test will pass if the IP virtual router MAC address matches the input.

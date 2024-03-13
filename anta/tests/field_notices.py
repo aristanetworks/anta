@@ -8,16 +8,14 @@ from anta.models import AntaCommand, AntaTest
 
 
 class VerifyFieldNotice44Resolution(AntaTest):
-    """Verifies the device is using an Aboot version that fix the bug discussed
-    in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+    """Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44.
 
+    (Aboot manages system settings prior to EOS initialization).
     https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44
     """
 
     name = "VerifyFieldNotice44Resolution"
-    description = (
-        "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)"
-    )
+    description = "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44."
     categories = ["field notices", "software"]
     commands = [AntaCommand(command="show version detail")]
 
@@ -87,13 +85,19 @@ class VerifyFieldNotice44Resolution(AntaTest):
             if component["name"] == "Aboot":
                 aboot_version = component["version"].split("-")[2]
         self.result.is_success()
-        if aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7:
+        incorrect_aboot_version = (
+            aboot_version.startswith("4.0.")
+            and int(aboot_version.split(".")[2]) < 7
+            or aboot_version.startswith("4.1.")
+            and int(aboot_version.split(".")[2]) < 1
+            or (
+                aboot_version.startswith("6.0.")
+                and int(aboot_version.split(".")[2]) < 9
+                or aboot_version.startswith("6.1.")
+                and int(aboot_version.split(".")[2]) < 7
+            )
+        )
+        if incorrect_aboot_version:
             self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
 
 

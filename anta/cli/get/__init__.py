@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands to get information from or generate inventories."""
+
 import click
 
 from anta.cli.get import commands

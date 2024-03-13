@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """Click commands to get information from or generate inventories."""
+
 from __future__ import annotations
 
 import asyncio

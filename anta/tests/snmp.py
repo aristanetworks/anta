@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to the EOS various SNMP settings."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -111,8 +112,7 @@ class VerifySnmpIPv6Acl(AntaTest):
 
 
 class VerifySnmpLocation(AntaTest):
-    """
-    This class verifies the SNMP location of a device.
+    """This class verifies the SNMP location of a device.
 
     Expected results:
         * success: The test will pass if the SNMP location matches the provided input.
@@ -141,8 +141,7 @@ class VerifySnmpLocation(AntaTest):
 
 
 class VerifySnmpContact(AntaTest):
-    """
-    This class verifies the SNMP contact of a device.
+    """This class verifies the SNMP contact of a device.
 
     Expected results:
         * success: The test will pass if the SNMP contact matches the provided input.

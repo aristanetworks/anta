@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to various connectivity checks."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations

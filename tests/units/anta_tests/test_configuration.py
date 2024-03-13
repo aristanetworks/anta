@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.configuration."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """Click commands to execute EOS commands on remote devices."""
+
 from __future__ import annotations
 
 import asyncio
@@ -48,7 +49,13 @@ def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal[
 @click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
 @click.argument("params", required=True, nargs=-1)
 def run_template(
-    ctx: click.Context, device: AntaDevice, template: str, params: list[str], ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int,
+    ctx: click.Context,
+    device: AntaDevice,
+    template: str,
+    params: list[str],
+    ofmt: Literal["json", "text"],
+    version: Literal["1", "latest"],
+    revision: int,
 ) -> None:
     # pylint: disable=too-many-arguments
     """Run arbitrary templated command to an ANTA device.
@@ -58,6 +65,7 @@ def run_template(
     Example:
     -------
     anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
+
     """
     template_params = dict(zip(params[::2], params[1::2]))
 

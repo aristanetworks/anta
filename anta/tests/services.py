@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various services settings
-"""
+"""Test functions related to the EOS various services settings"""
+
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
@@ -22,8 +21,7 @@ from anta.tools.utils import get_failed_logs
 
 
 class VerifyHostname(AntaTest):
-    """
-    Verifies the hostname of a device.
+    """Verifies the hostname of a device.
 
     Expected results:
         * success: The test will pass if the hostname matches the provided input.
@@ -52,8 +50,7 @@ class VerifyHostname(AntaTest):
 
 
 class VerifyDNSLookup(AntaTest):
-    """
-    This class verifies the DNS (Domain name service) name to IP address resolution.
+    """This class verifies the DNS (Domain name service) name to IP address resolution.
 
     Expected Results:
         * success: The test will pass if a domain name is resolved to an IP address.
@@ -89,8 +86,7 @@ class VerifyDNSLookup(AntaTest):
 
 
 class VerifyDNSServers(AntaTest):
-    """
-    Verifies if the DNS (Domain Name Service) servers are correctly configured.
+    """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
     Expected Results:
         * success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
@@ -141,8 +137,7 @@ class VerifyDNSServers(AntaTest):
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """
-    Verifies the errdisable recovery reason, status, and interval.
+    """Verifies the errdisable recovery reason, status, and interval.
 
     Expected Results:
         * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.

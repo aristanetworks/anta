@@ -1,9 +1,8 @@
 # Copyright (c) 2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to PTP tests
-"""
+"""Test functions related to PTP tests"""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from anta.decorators import skip_on_platforms
@@ -11,9 +10,7 @@ from anta.models import AntaCommand, AntaTest
 
 
 class PtpModeStatus(AntaTest):
-    """
-    This test verifies that the device is in Boundary Clock Mode
-    """
+    """This test verifies that the device is in Boundary Clock Mode"""
 
     name = "PtpModeStatus"
     description = "Check Boundary Clock mode is enabled"
@@ -39,8 +36,7 @@ class PtpModeStatus(AntaTest):
 
 
 class PtpGMStatus(AntaTest):
-    """
-    This test verifies that the device is locked to a valid GM
+    """This test verifies that the device is locked to a valid GM
     The user should provide a single "validGM" as an input
     To test PTP failover, re-run the test with secondary GMid configured.
     """
@@ -74,9 +70,7 @@ class PtpGMStatus(AntaTest):
 
 
 class PtpLockStatus(AntaTest):
-    """
-    This test verifies that the device as a recent PTP lock
-    """
+    """This test verifies that the device as a recent PTP lock"""
 
     name = "PtpLockStatus"
     description = "Check that the device was locked to the upstream GM in the last minute"
@@ -108,9 +102,7 @@ class PtpLockStatus(AntaTest):
 
 
 class PtpOffset(AntaTest):
-    """
-    This test verifies that the has a reasonable offset from master (jitter) level
-    """
+    """This test verifies that the has a reasonable offset from master (jitter) level"""
 
     name = "PtpOffset"
     description = "Check that the Offset From Master is within +/- 1000ns"
@@ -139,9 +131,7 @@ class PtpOffset(AntaTest):
 
 
 class PtpPortModeStatus(AntaTest):
-    """
-    This test verifies that all ports are in stable PTP modes
-    """
+    """This test verifies that all ports are in stable PTP modes"""
 
     name = "PtpPortModeStatus"
     description = "Check that all PTP enabled ports are not in transitory states"

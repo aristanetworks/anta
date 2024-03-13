@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.get.commands."""
+
 from __future__ import annotations
 
 import filecmp
@@ -53,9 +54,13 @@ def test_from_cvp(
 
     # always get a token
     with patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"), patch(
-        "cvprac.cvp_client.CvpClient.connect", autospec=True, side_effect=mock_cvp_connect,
+        "cvprac.cvp_client.CvpClient.connect",
+        autospec=True,
+        side_effect=mock_cvp_connect,
     ) as mocked_cvp_connect, patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory, patch(
-        "cvprac.cvp_client.CvpApi.get_devices_in_container", autospec=True, return_value=[],
+        "cvprac.cvp_client.CvpApi.get_devices_in_container",
+        autospec=True,
+        return_value=[],
     ) as mocked_get_devices_in_container:
         result = click_runner.invoke(anta, cli_args)
 

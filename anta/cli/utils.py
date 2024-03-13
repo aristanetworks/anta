@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli module."""
+
 from __future__ import annotations
 
 import enum
@@ -63,6 +64,7 @@ def exit_with_code(ctx: click.Context) -> None:
     Args:
     ----
         ctx: Click Context
+
     """
     if ctx.obj.get("ignore_status"):
         ctx.exit(ExitCode.OK)
@@ -216,7 +218,10 @@ def inventory_options(f: Any) -> Any:
                 password = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
             if enable and enable_password is None and click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
                 enable_password = click.prompt(
-                    "Please enter a password to enter EOS privileged EXEC mode", type=str, hide_input=True, confirmation_prompt=True,
+                    "Please enter a password to enter EOS privileged EXEC mode",
+                    type=str,
+                    hide_input=True,
+                    confirmation_prompt=True,
                 )
         if password is None:
             msg = "EOS password needs to be provided by using either the '--password' option or the '--prompt' option."

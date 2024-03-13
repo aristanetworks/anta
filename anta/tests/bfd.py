@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-BFD test functions
-"""
+"""BFD test functions"""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -20,8 +19,7 @@ from anta.tools.get_value import get_value
 
 
 class VerifyBFDSpecificPeers(AntaTest):
-    """
-    This class verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
+    """This class verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
 
     Expected results:
         * success: The test will pass if IPv4 BFD peers are up and remote disc is non-zero in the specified VRF.
@@ -34,17 +32,13 @@ class VerifyBFDSpecificPeers(AntaTest):
     commands = [AntaCommand(command="show bfd peers")]
 
     class Input(AntaTest.Input):
-        """
-        This class defines the input parameters of the test case.
-        """
+        """This class defines the input parameters of the test case."""
 
         bfd_peers: List[BFDPeers]
         """List of IPv4 BFD peers"""
 
         class BFDPeers(BaseModel):
-            """
-            This class defines the details of an IPv4 BFD peer.
-            """
+            """This class defines the details of an IPv4 BFD peer."""
 
             peer_address: IPv4Address
             """IPv4 address of a BFD peer"""
@@ -77,8 +71,7 @@ class VerifyBFDSpecificPeers(AntaTest):
 
 
 class VerifyBFDPeersIntervals(AntaTest):
-    """
-    This class verifies the timers of the IPv4 BFD peers in the specified VRF.
+    """This class verifies the timers of the IPv4 BFD peers in the specified VRF.
 
     Expected results:
         * success: The test will pass if the timers of the IPv4 BFD peers are correct in the specified VRF.
@@ -91,17 +84,13 @@ class VerifyBFDPeersIntervals(AntaTest):
     commands = [AntaCommand(command="show bfd peers detail")]
 
     class Input(AntaTest.Input):
-        """
-        This class defines the input parameters of the test case.
-        """
+        """This class defines the input parameters of the test case."""
 
         bfd_peers: List[BFDPeers]
         """List of BFD peers"""
 
         class BFDPeers(BaseModel):
-            """
-            This class defines the details of an IPv4 BFD peer.
-            """
+            """This class defines the details of an IPv4 BFD peer."""
 
             peer_address: IPv4Address
             """IPv4 address of a BFD peer"""
@@ -157,8 +146,7 @@ class VerifyBFDPeersIntervals(AntaTest):
 
 
 class VerifyBFDPeersHealth(AntaTest):
-    """
-    This class verifies the health of IPv4 BFD peers across all VRFs.
+    """This class verifies the health of IPv4 BFD peers across all VRFs.
 
     It checks that no BFD peer is in the down state and that the discriminator value of the remote system is not zero.
     Optionally, it can also verify that BFD peers have not been down before a specified threshold of hours.
@@ -177,9 +165,7 @@ class VerifyBFDPeersHealth(AntaTest):
     commands = [AntaCommand(command="show bfd peers", revision=1), AntaCommand(command="show clock")]
 
     class Input(AntaTest.Input):
-        """
-        This class defines the input parameters of the test case.
-        """
+        """This class defines the input parameters of the test case."""
 
         down_threshold: Optional[int] = Field(default=None, gt=0)
         """Optional down threshold in hours to check if a BFD peer was down before those hours or not."""

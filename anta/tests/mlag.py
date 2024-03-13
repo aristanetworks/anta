@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to Multi-chassis Link Aggregation (MLAG)."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -187,8 +188,7 @@ class VerifyMlagDualPrimary(AntaTest):
 
 
 class VerifyMlagPrimaryPriority(AntaTest):
-    """
-    Test class to verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
+    """Test class to verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
 
     Expected Results:
         * Success: The test will pass if the MLAG state is set as 'primary' and the priority matches the input.

@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 
 """Tests for `anta.tools.get_item`."""
+
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise

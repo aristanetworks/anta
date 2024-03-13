@@ -5,6 +5,7 @@
 
 NOTE: 'show logging' does not support json output yet
 """
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -26,6 +27,7 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     Args:
     ----
         command_output: The 'show logging' output
+
     """
     log_states = command_output.partition("\n\nExternal configuration:")[0]
     logger.debug(f"Device logging states:\n{log_states}")

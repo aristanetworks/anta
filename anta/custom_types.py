@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
+
 import re
 from typing import Literal
 
@@ -22,7 +23,8 @@ def interface_autocomplete(v: str) -> str:
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
          - `po` will be changed to `Port-Channel`
-         - `lo` will be changed to `Loopback`"""
+    - `lo` will be changed to `Loopback`
+    """
     intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
     m = intf_id_re.search(v)
     if m is None:
@@ -47,6 +49,7 @@ def interface_case_sensitivity(v: str) -> str:
          - ethernet -> Ethernet
          - vlan -> Vlan
          - loopback -> Loopback
+
     """
     if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
@@ -54,13 +57,15 @@ def interface_case_sensitivity(v: str) -> str:
 
 
 def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
-    """
-    Abbreviations for different BGP multiprotocol capabilities.
-    Examples:
+    """Abbreviations for different BGP multiprotocol capabilities.
+
+    Examples
+    --------
         - IPv4 Unicast
         - L2vpnEVPN
         - ipv4 MPLS Labels
         - ipv4Mplsvpn
+
     """
     patterns = {
         r"\b(l2[\s\-]?vpn[\s\-]?evpn)\b": "l2VpnEvpn",

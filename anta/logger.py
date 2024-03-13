@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Configure logging for ANTA."""
+
 from __future__ import annotations
 
 import logging
@@ -50,6 +51,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     ----
         level: ANTA logging level
         file: Send logs to a file
+
     """
     # Init root logger
     root = logging.getLogger()
@@ -85,19 +87,17 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
 
 def exc_to_str(exception: BaseException) -> str:
-    """
-    Helper function that returns a human readable string from an BaseException object
-    """
+    """Helper function that returns a human readable string from an BaseException object"""
     return f"{type(exception).__name__}{f': {exception}' if str(exception) else ''}"
 
 
 def anta_log_exception(exception: BaseException, message: str | None = None, calling_logger: logging.Logger | None = None) -> None:
-    """
-    Helper function to help log exceptions:
+    """Helper function to help log exceptions:
     * if anta.__DEBUG__ is True then the logger.exception method is called to get the traceback
     * otherwise logger.error is called.
 
     Args:
+    ----
         exception (BaseException): The Exception being logged
         message (str): An optional message
         calling_logger (logging.Logger): A logger to which the exception should be logged
@@ -112,7 +112,5 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
 
 def tb_to_str(exception: BaseException) -> str:
-    """
-    Helper function that returns a traceback string from an BaseException object
-    """
+    """Helper function that returns a traceback string from an BaseException object"""
     return "Traceback (most recent call last):\n" + "".join(traceback.format_tb(exception.__traceback__))

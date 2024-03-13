@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Report management for ANTA."""
+
 # pylint: disable = too-few-public-methods
 from __future__ import annotations
 
@@ -37,6 +38,7 @@ class ReportTable:
         Returns:
         -------
             str: Multi-lines string
+
         """
         if delimiter is not None:
             return "\n".join(f"{delimiter} {line}" for line in usr_list)
@@ -55,6 +57,7 @@ class ReportTable:
         Returns:
         -------
             Table: A rich Table instance with headers
+
         """
         for idx, header in enumerate(headers):
             if idx == 0:
@@ -76,6 +79,7 @@ class ReportTable:
         Returns:
         -------
         str: the colored string
+
         """
         color = RICH_COLOR_THEME.get(status, "")
         return f"[{color}]{status}" if color != "" else str(status)
@@ -101,6 +105,7 @@ class ReportTable:
         Returns:
         -------
             Table: A fully populated rich Table
+
         """
         table = Table(title=title, show_lines=True)
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
@@ -134,6 +139,7 @@ class ReportTable:
         Returns:
         -------
             Table: A fully populated rich Table
+
         """
         # sourcery skip: class-extract-method
         table = Table(title=title, show_lines=True)
@@ -183,6 +189,7 @@ class ReportTable:
         Returns:
         -------
             Table: A fully populated rich Table
+
         """
         table = Table(title=title, show_lines=True)
         headers = [
@@ -253,6 +260,7 @@ class ReportJinja:
         Returns:
         -------
             str: rendered template
+
         """
         with open(self.tempalte_path, encoding="utf-8") as file_:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)

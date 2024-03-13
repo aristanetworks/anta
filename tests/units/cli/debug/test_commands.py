@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.debug.commands."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
@@ -27,7 +28,13 @@ if TYPE_CHECKING:
     ],
 )
 def test_run_cmd(
-    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"] | None, revision: int | None, device: str, failed: bool,
+    click_runner: CliRunner,
+    command: str,
+    ofmt: Literal["json", "text"],
+    version: Literal["1", "latest"] | None,
+    revision: int | None,
+    device: str,
+    failed: bool,
 ) -> None:
     """Test `anta debug run-cmd`."""
     # pylint: disable=too-many-arguments

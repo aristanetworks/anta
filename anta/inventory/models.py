@@ -27,6 +27,7 @@ class AntaInventoryHost(BaseModel):
         name (str): (Optional) Name to display during tests report. Default is hostname:port
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per host. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -46,6 +47,7 @@ class AntaInventoryNetwork(BaseModel):
         network (IPvAnyNetwork): Subnet to use for testing.
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per network. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -64,6 +66,7 @@ class AntaInventoryRange(BaseModel):
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per range of hosts. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -82,6 +85,7 @@ class AntaInventoryInput(BaseModel):
         networks (list[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
         hosts (list[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
         range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
+
     """
 
     model_config = ConfigDict(extra="forbid")

@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # print the content of the stdout to our new_console
     new_console.print(f.getvalue())
 
-    filename = f"{'_'.join((x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args))}.svg"
+    filename = f"{'_'.join(x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args)}.svg"
     filename = f"{OUTPUT_DIR}/{filename}"
     print(f"File saved at {filename}")
     new_console.save_svg(filename, title=" ".join(args))

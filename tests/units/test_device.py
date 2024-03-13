@@ -356,7 +356,11 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
             "command": "show version",
             "patch_kwargs": {
                 "side_effect": aioeapi.EapiCommandError(
-                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[],
+                    passed=[],
+                    failed="show version",
+                    errors=["Authorization denied for command 'show version'"],
+                    errmsg="Invalid command",
+                    not_exec=[],
                 ),
             },
         },
@@ -507,7 +511,11 @@ REFRESH_DATA: list[dict[str, Any]] = [
             {"return_value": True},
             {
                 "side_effect": aioeapi.EapiCommandError(
-                    passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[],
+                    passed=[],
+                    failed="show version",
+                    errors=["Authorization denied for command 'show version'"],
+                    errmsg="Invalid command",
+                    not_exec=[],
                 ),
             },
         ),

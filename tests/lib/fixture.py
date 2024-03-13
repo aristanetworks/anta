@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Fixture for Anta Testing."""
+
 from __future__ import annotations
 
 import logging
@@ -41,7 +42,11 @@ MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
     "clear counters": {},
     "clear hardware counter drop": {},
     "undefined": aioeapi.EapiCommandError(
-        passed=[], failed="show version", errors=["Authorization denied for command 'show version'"], errmsg="Invalid command", not_exec=[],
+        passed=[],
+        failed="show version",
+        errors=["Authorization denied for command 'show version'"],
+        errmsg="Invalid command",
+        not_exec=[],
     ),
 }
 
@@ -183,7 +188,11 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
             return result
 
     def cli(
-        command: str | None = None, commands: list[dict[str, Any]] | None = None, ofmt: str = "json", version: int | str | None = "latest", **kwargs: Any,
+        command: str | None = None,
+        commands: list[dict[str, Any]] | None = None,
+        ofmt: str = "json",
+        version: int | str | None = "latest",
+        **kwargs: Any,
     ) -> dict[str, Any] | list[dict[str, Any]]:
         # pylint: disable=unused-argument
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:

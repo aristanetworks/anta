@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable=too-many-branches
 """ANTA runner function."""
+
 from __future__ import annotations
 
 import asyncio
@@ -39,6 +40,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     Returns:
     -------
         any: ResultManager object gets updated with the test results.
+
     """
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")

@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to VLAN
-"""
+"""Test functions related to VLAN"""
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 
@@ -16,8 +14,7 @@ from anta.tools.utils import get_failed_logs
 
 
 class VerifyVlanInternalPolicy(AntaTest):
-    """
-    This class checks if the VLAN internal allocation policy is ascending or descending and
+    """This class checks if the VLAN internal allocation policy is ascending or descending and
     if the VLANs are within the specified range.
 
     Expected Results:

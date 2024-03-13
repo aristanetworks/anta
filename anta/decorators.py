@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """decorators for tests."""
+
 from __future__ import annotations
 
 from functools import wraps
@@ -26,6 +27,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     Returns:
     -------
         Callable[[F], F]: A decorator that can be used to wrap test functions.
+
     """
 
     def decorator(function: F) -> F:
@@ -38,6 +40,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
         Returns:
         -------
             F: The decorated function.
+
         """
 
         @wraps(function)
@@ -68,6 +71,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
     Returns:
     -------
         Callable[[F], F]: A decorator that can be used to wrap test functions.
+
     """
 
     def decorator(function: F) -> F:
@@ -80,6 +84,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
         Returns:
         -------
             F: The decorated function.
+
         """
 
         @wraps(function)

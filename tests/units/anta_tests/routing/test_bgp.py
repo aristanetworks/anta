@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.bgp.py."""
+
 # pylint: disable=C0302
 from __future__ import annotations
 
@@ -9,7 +10,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import (  # noqa: E402
+from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,

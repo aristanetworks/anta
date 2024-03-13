@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models to define a TestStructure."""
+
 from __future__ import annotations
 
 import hashlib
@@ -12,7 +13,6 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
-
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -62,6 +62,7 @@ class AntaTemplate(BaseModel):
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text - default is json
         use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it - default is True
+
     """
 
     template: str
@@ -83,6 +84,7 @@ class AntaTemplate(BaseModel):
             command: The rendered AntaCommand.
                      This AntaCommand instance have a template attribute that references this
                      AntaTemplate instance.
+
         """
         try:
             return AntaCommand(
@@ -123,6 +125,7 @@ class AntaCommand(BaseModel):
         params: Dictionary of variables with string values to render the template
         errors: If the command execution fails, eAPI returns a list of strings detailing the error
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
+
     """
 
     command: str
@@ -181,6 +184,7 @@ class AntaTemplateRenderError(RuntimeError):
         ----
             template: The AntaTemplate instance that failed to render
             key: Key that has not been provided to render the template
+
         """
         self.template = template
         self.key = key
@@ -232,6 +236,7 @@ class AntaTest(ABC):
         instance_commands: List of AntaCommand instances of this test
         result: TestResult instance representing the result of this test
         logger: Python logger for this test instance
+
     """
 
     # Mandatory class attributes
@@ -261,6 +266,7 @@ class AntaTest(ABC):
             ```
         Attributes:
             result_overwrite: Define fields to overwrite in the TestResult object
+
         """
 
         model_config = ConfigDict(extra="forbid")
@@ -281,6 +287,7 @@ class AntaTest(ABC):
                 description: overwrite TestResult.description
                 categories: overwrite TestResult.categories
                 custom_field: a free string that will be included in the TestResult object
+
             """
 
             model_config = ConfigDict(extra="forbid")
@@ -294,6 +301,7 @@ class AntaTest(ABC):
             Attributes
             ----------
                 tags: List of device's tags for the test.
+
             """
 
             model_config = ConfigDict(extra="forbid")
@@ -313,6 +321,7 @@ class AntaTest(ABC):
             inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
             eos_data: Populate outputs of the test commands instead of collecting from devices.
                       This list must have the same length and order than the `instance_commands` instance attribute.
+
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -473,6 +482,7 @@ class AntaTest(ABC):
             Returns
             -------
                 result: TestResult instance attribute populated with error status if any
+
             """
 
             def format_td(seconds: float, digits: int = 3) -> str:
@@ -546,4 +556,5 @@ class AntaTest(ABC):
                     if not self._test_command(command): # _test_command() is an arbitrary test logic
                         self.result.is_failure("Failure reson")
             ```
+
         """

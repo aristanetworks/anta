@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Inventory unit tests."""
+
 from __future__ import annotations
 
 import logging
@@ -57,7 +58,7 @@ class Test_AntaInventory:
         try:
             AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
-            logging.error("Exceptions is: %s", str(exc))
+            logging.exception("Exceptions is: %s", str(exc))
             raise AssertionError from exc
 
     @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict)

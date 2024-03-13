@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Catalog related functions."""
+
 from __future__ import annotations
 
 import importlib
@@ -124,6 +125,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                     - <AntaTestDefinition>
                 ```
                 `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
+
             """
             modules: dict[ModuleType, list[Any]] = {}
             for module_name, tests in data.items():
@@ -158,16 +160,20 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
                         raise ValueError(msg)
                     if len(test_definition) != 1:
-                        msg = (f"Syntax error when parsing: {test_definition}\n"
-                               "It must be a dictionary with a single entry. Check the indentation in the test catalog.")
+                        msg = (
+                            f"Syntax error when parsing: {test_definition}\n"
+                            "It must be a dictionary with a single entry. Check the indentation in the test catalog."
+                        )
                         raise ValueError(
                             msg,
                         )
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         if test is None:
-                            msg = (f"{test_name} is not defined in Python module {module.__name__}"
-                                   f"{f' (from {module.__file__})' if module.__file__ is not None else ''}")
+                            msg = (
+                                f"{test_name} is not defined in Python module {module.__name__}"
+                                f"{f' (from {module.__file__})' if module.__file__ is not None else ''}"
+                            )
                             raise ValueError(
                                 msg,
                             )
@@ -189,6 +195,7 @@ class AntaCatalog:
         ----
             tests: A list of AntaTestDefinition instances.
             filename: The path from which the catalog is loaded.
+
         """
         self._tests: list[AntaTestDefinition] = []
         if tests is not None:
@@ -228,6 +235,7 @@ class AntaCatalog:
         Args:
         ----
             filename: Path to test catalog YAML file
+
         """
         try:
             with open(file=filename, encoding="UTF-8") as file:
@@ -250,6 +258,7 @@ class AntaCatalog:
         ----
             data: Python dictionary used to instantiate the AntaCatalog instance
             filename: value to be set as AntaCatalog instance attribute
+
         """
         tests: list[AntaTestDefinition] = []
         if data is None:
@@ -277,6 +286,7 @@ class AntaCatalog:
         Args:
         ----
             data: Python list used to instantiate the AntaCatalog instance
+
         """
         tests: list[AntaTestDefinition] = []
         try:

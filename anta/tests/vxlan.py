@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to VXLAN."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -168,8 +169,7 @@ class VerifyVxlanVtep(AntaTest):
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
-    """
-    Verifies the interface vxlan1 source interface and UDP port.
+    """Verifies the interface vxlan1 source interface and UDP port.
 
     Expected Results:
       * success: Passes if the interface vxlan1 source interface and UDP port are correct.

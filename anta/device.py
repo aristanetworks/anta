@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Device Abstraction Module."""
+
 from __future__ import annotations
 
 import asyncio
@@ -41,6 +42,7 @@ class AntaDevice(ABC):
         tags: List of tags for this device
         cache: In-memory cache from aiocache library for this device (None if cache is disabled)
         cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled
+
     """
 
     def __init__(self, name: str, tags: list[str] | None = None, disable_cache: bool = False) -> None:
@@ -51,6 +53,7 @@ class AntaDevice(ABC):
             name: Device name
             tags: List of tags for this device
             disable_cache: Disable caching for all commands for this device. Defaults to False.
+
         """
         self.name: str = name
         self.hw_model: str | None = None
@@ -121,6 +124,7 @@ class AntaDevice(ABC):
         Args:
         ----
             command: the command to collect
+
         """
 
     async def collect(self, command: AntaCommand) -> None:
@@ -137,6 +141,7 @@ class AntaDevice(ABC):
         Args:
         ----
             command (AntaCommand): The command to process.
+
         """
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
@@ -159,6 +164,7 @@ class AntaDevice(ABC):
         Args:
         ----
             commands: the commands to collect
+
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
@@ -189,6 +195,7 @@ class AntaDevice(ABC):
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
+
         """
         msg = f"copy() method has not been implemented in {self.__class__.__name__} definition"
         raise NotImplementedError(msg)
@@ -204,6 +211,7 @@ class AsyncEOSDevice(AntaDevice):
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
         tags: List of tags for this device
+
     """
 
     def __init__(  # pylint: disable=R0913
@@ -239,6 +247,7 @@ class AsyncEOSDevice(AntaDevice):
             insecure: Disable SSH Host Key validation
             proto: eAPI protocol. Value can be 'http' or 'https'
             disable_cache: Disable caching for all commands for this device. Defaults to False.
+
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -298,6 +307,7 @@ class AsyncEOSDevice(AntaDevice):
         Args:
         ----
             command: the command to collect
+
         """
         commands = []
         if self.enable and self._enable_password is not None:
@@ -374,6 +384,7 @@ class AsyncEOSDevice(AntaDevice):
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
+
         """
         async with asyncssh.connect(
             host=self._ssh_opts.host,

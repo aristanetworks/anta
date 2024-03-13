@@ -52,6 +52,7 @@ class AntaInventory(dict):  # type: ignore
         ----
             inventory_disable_cache (bool): The value of disable_cache in the inventory
             kwargs: The kwargs to instantiate the device
+
         """
         updated_kwargs = kwargs.copy()
         updated_kwargs["disable_cache"] = inventory_disable_cache or kwargs.get("disable_cache")
@@ -65,6 +66,7 @@ class AntaInventory(dict):  # type: ignore
         ----
             inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
             inventory (AntaInventory): AntaInventory to add the parsed devices to
+
         """
         if inventory_input.hosts is None:
             return
@@ -86,6 +88,7 @@ class AntaInventory(dict):  # type: ignore
         Raises:
         ------
             InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+
         """
         if inventory_input.networks is None:
             return
@@ -113,6 +116,7 @@ class AntaInventory(dict):  # type: ignore
         Raises:
         ------
             InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+
         """
         if inventory_input.ranges is None:
             return
@@ -167,6 +171,7 @@ class AntaInventory(dict):  # type: ignore
         ------
             InventoryRootKeyError: Root key of inventory is missing.
             InventoryIncorrectSchema: Inventory file is not following AntaInventory Schema.
+
         """
         inventory = AntaInventory()
         kwargs: dict[str, Any] = {
@@ -232,6 +237,7 @@ class AntaInventory(dict):  # type: ignore
         Returns:
         -------
             AntaInventory: An inventory with filtered AntaDevice objects.
+
         """
 
         def _filter_devices(device: AntaDevice) -> bool:
@@ -264,6 +270,7 @@ class AntaInventory(dict):  # type: ignore
         Args:
         ----
             device: Device object to be added
+
         """
         self[device.name] = device
 

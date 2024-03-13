@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Result Manager Module for ANTA."""
+
 from __future__ import annotations
 
 import json
@@ -63,6 +64,7 @@ class ResultManager:
                     message=None
                 ),
             ]
+
     """
 
     def __init__(self) -> None:
@@ -102,9 +104,7 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset":
-            self.status = test_status
-        elif self.status == "skipped" and test_status in {"success", "failure"}:
+        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
             self.status = "failure"
@@ -115,6 +115,7 @@ class ResultManager:
         Args:
         ----
             entry (TestResult): TestResult data to add to the report
+
         """
         logger.debug(entry)
         self._result_entries.append(entry)
@@ -126,6 +127,7 @@ class ResultManager:
         Args:
         ----
             entries (list[TestResult]): List of TestResult data to add to the report
+
         """
         for e in entries:
             self.add_test_result(e)
@@ -140,6 +142,7 @@ class ResultManager:
         Returns
         -------
             any: List of results.
+
         """
         return self._result_entries
 
@@ -149,6 +152,7 @@ class ResultManager:
         Returns
         -------
             str: JSON dumps of the list of results
+
         """
         result = [result.model_dump() for result in self._result_entries]
         return json.dumps(result, indent=4)
@@ -163,6 +167,7 @@ class ResultManager:
         Returns:
         -------
             list[TestResult]: List of results related to the test.
+
         """
         return [result for result in self._result_entries if str(result.test) == test_name]
 
@@ -176,6 +181,7 @@ class ResultManager:
         Returns:
         -------
             list[TestResult]: List of results related to the host.
+
         """
         return [result for result in self._result_entries if str(result.name) == host_ip]
 
@@ -185,6 +191,7 @@ class ResultManager:
         Returns
         -------
             list[str]: List of names for all tests.
+
         """
         result_list = []
         for testcase in self._result_entries:
@@ -198,6 +205,7 @@ class ResultManager:
         Returns
         -------
             list[str]: List of IP addresses.
+
         """
         result_list = []
         for testcase in self._result_entries:

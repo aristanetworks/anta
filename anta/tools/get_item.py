@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 
 """Get one dictionary from a list of dictionaries by matching the given key and value."""
+
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -53,6 +54,7 @@ def get_item(
     ------
     ValueError
         If the key and value is not found and "required" == True
+
     """
     if var_name is None:
         var_name = key

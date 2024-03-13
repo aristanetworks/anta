@@ -1,17 +1,15 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to GreenT (Postcard Telemetry) in EOS
-"""
+"""Test functions related to GreenT (Postcard Telemetry) in EOS"""
+
 from __future__ import annotations
 
 from anta.models import AntaCommand, AntaTest
 
 
 class VerifyGreenTCounters(AntaTest):
-    """
-    Verifies whether GRE packets are sent.
+    """Verifies whether GRE packets are sent.
 
     Expected Results:
         * success: if >0 gre packets are sent
@@ -34,8 +32,7 @@ class VerifyGreenTCounters(AntaTest):
 
 
 class VerifyGreenT(AntaTest):
-    """
-    Verifies whether GreenT policy is created.
+    """Verifies whether GreenT policy is created.
 
     Expected Results:
         * success: if there exists any policy other than "default" policy.

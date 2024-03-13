@@ -1,9 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to LANZ
-"""
+"""Test functions related to LANZ"""
 
 from __future__ import annotations
 
@@ -12,8 +10,7 @@ from anta.models import AntaCommand, AntaTest
 
 
 class VerifyLANZ(AntaTest):
-    """
-    Verifies if LANZ is enabled
+    """Verifies if LANZ is enabled
 
     Expected results:
         * success: the test will pass if lanz is enabled

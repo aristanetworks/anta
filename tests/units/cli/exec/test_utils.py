@@ -89,31 +89,27 @@ async def test_clear_counters_utils(
             calls.append(
                 call(
                     device,
-                    **{
-                        "command": AntaCommand(
-                            command="clear counters",
-                            version="latest",
-                            revision=None,
-                            ofmt="json",
-                            output=per_device_command_output.get(device.name, ""),
-                            errors=[],
-                        ),
-                    },
+                    command=AntaCommand(
+                        command="clear counters",
+                        version="latest",
+                        revision=None,
+                        ofmt="json",
+                        output=per_device_command_output.get(device.name, ""),
+                        errors=[],
+                    ),
                 ),
             )
             if device.hw_model not in ["cEOSLab", "vEOS-lab"]:
                 calls.append(
                     call(
                         device,
-                        **{
-                            "command": AntaCommand(
-                                command="clear hardware counter drop",
-                                version="latest",
-                                revision=None,
-                                ofmt="json",
-                                output=per_device_command_output.get(device.name, ""),
-                            ),
-                        },
+                        command=AntaCommand(
+                            command="clear hardware counter drop",
+                            version="latest",
+                            revision=None,
+                            ofmt="json",
+                            output=per_device_command_output.get(device.name, ""),
+                        ),
                     ),
                 )
         mocked_collect.assert_has_awaits(calls)

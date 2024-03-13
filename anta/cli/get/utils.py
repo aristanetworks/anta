@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
+
 from __future__ import annotations
 
 import functools
@@ -106,6 +107,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         inventory: Ansible Inventory file to read
         output: ANTA inventory file to generate.
         ansible_group: Ansible group from where to extract data.
+
     """
 
     def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | None:

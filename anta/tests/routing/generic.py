@@ -2,10 +2,10 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Generic routing test functions."""
+
 from __future__ import annotations
 
 from ipaddress import IPv4Address, ip_interface
-
 from typing import Literal
 
 from pydantic import model_validator

@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Get a value from a dictionary or nested dictionaries."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -9,7 +10,12 @@ from typing import Any
 
 # pylint: disable=too-many-arguments
 def get_value(
-    dictionary: dict[Any, Any], key: str, default: Any | None = None, required: bool = False, org_key: str | None = None, separator: str = ".",
+    dictionary: dict[Any, Any],
+    key: str,
+    default: Any | None = None,
+    required: bool = False,
+    org_key: str | None = None,
+    separator: str = ".",
 ) -> Any:
     """Get a value from a dictionary or nested dictionaries.
     Key supports dot-notation like "foo.bar" to do deeper lookups.
@@ -40,6 +46,7 @@ def get_value(
     ------
     ValueError
         If the key is not found and required == True.
+
     """
     if org_key is None:
         org_key = key

@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models related to anta.result_manager module."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel
@@ -21,6 +22,7 @@ class TestResult(BaseModel):
         result: Result of the test. Can be one of "unset", "success", "failure", "error" or "skipped".
         messages: Message to report after the test if any.
         custom_field: Custom field to store a string for flexibility in integrating with ANTA
+
     """
 
     name: str
@@ -37,6 +39,7 @@ class TestResult(BaseModel):
         Args:
         ----
             message: Optional message related to the test
+
         """
         self._set_status("success", message)
 
@@ -46,6 +49,7 @@ class TestResult(BaseModel):
         Args:
         ----
             message: Optional message related to the test
+
         """
         self._set_status("failure", message)
 
@@ -55,6 +59,7 @@ class TestResult(BaseModel):
         Args:
         ----
             message: Optional message related to the test
+
         """
         self._set_status("skipped", message)
 
@@ -69,6 +74,7 @@ class TestResult(BaseModel):
         ----
             status: status of the test
             message: optional message
+
         """
         self.result = status
         if message is not None:

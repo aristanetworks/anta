@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test anta.report.__init__.py."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
