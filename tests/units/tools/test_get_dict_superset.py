@@ -4,8 +4,9 @@
 """Tests for `anta.tools.get_dict_superset`."""
 from __future__ import annotations
 
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
-from typing import Any, ContextManager
+from typing import Any
 
 import pytest
 
@@ -241,7 +242,7 @@ def test_get_dict_superset(
     var_name: str | None,
     custom_error_msg: str | None,
     expected_result: str,
-    expected_raise: ContextManager,
+    expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_dict_superset."""
     # pylint: disable=too-many-arguments

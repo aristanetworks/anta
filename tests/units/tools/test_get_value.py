@@ -4,8 +4,9 @@
 """Tests for anta.tools.get_value."""
 from __future__ import annotations
 
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
-from typing import Any, ContextManager
+from typing import Any
 
 import pytest
 
@@ -81,8 +82,7 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
             None,
             None,
             None,
-            # TODO investigate type ignore
-            pytest.raises(ValueError(42)),  # type: ignore[call-overload]
+            pytest.raises(ValueError, match="missing_required"),
             id="required",
         ),
         pytest.param(
@@ -93,7 +93,7 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
             "custom_org_key",
             None,
             None,
-            pytest.raises(ValueError(42)),  # type: ignore[call-overload]
+            pytest.raises(ValueError, match="custom_org_key"),
             id="custom org_key",
         ),
         pytest.param(
@@ -117,7 +117,7 @@ def test_get_value(
     org_key: str | None,
     separator: str | None,
     expected_result: int | str | None,
-    expected_raise: ContextManager,
+    expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_value."""
     # pylint: disable=too-many-arguments

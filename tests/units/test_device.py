@@ -652,7 +652,8 @@ class TestAntaDevice:
 
     @pytest.mark.parametrize(("device", "expected"), CACHE_STATS_DATA, indirect=["device"])
     def test_cache_statistics(self, device: AntaDevice, expected: dict[str, Any] | None) -> None:
-        """Verify that when cache statistics attribute does not exist
+        """Verify that when cache statistics attribute does not exist.
+
         TODO add a test where cache has some value.
         """
         assert device.cache_statistics == expected
@@ -682,7 +683,7 @@ class TestAsyncEOSDevice:
             assert device.cache_locks is not None
         hash(device)
 
-        with patch("anta.device.__DEBUG__", True):
+        with patch("anta.device.__DEBUG__", new=True):
             rprint(device)
 
     @pytest.mark.parametrize("data", EQUALITY_DATA, ids=generate_test_ids_list(EQUALITY_DATA))

@@ -2,7 +2,6 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.logger."""
-
 from __future__ import annotations
 
 import logging
@@ -14,7 +13,7 @@ from anta.logger import anta_log_exception, exc_to_str, tb_to_str
 
 
 @pytest.mark.parametrize(
-    ("exception", "message", "calling_logger", "__DEBUG__value", "expected_message"),
+    ("exception", "message", "calling_logger", "debug_value", "expected_message"),
     [
         pytest.param(
             ValueError("exception message"),
@@ -55,7 +54,7 @@ def test_anta_log_exception(
     exception: Exception,
     message: str | None,
     calling_logger: logging.Logger | None,
-    __DEBUG__value: bool,
+    debug_value: bool,
     expected_message: str,
 ) -> None:
     """Test anta_log_exception."""
@@ -69,11 +68,11 @@ def test_anta_log_exception(
     try:
         raise exception
     except ValueError as e:
-        with patch("anta.logger.__DEBUG__", __DEBUG__value):
+        with patch("anta.logger.__DEBUG__", new=debug_value):
             anta_log_exception(e, message=message, calling_logger=calling_logger)
 
     # Two log captured
-    if __DEBUG__value:
+    if debug_value:
         assert len(caplog.record_tuples) == 2
     else:
         assert len(caplog.record_tuples) == 1
@@ -87,7 +86,7 @@ def test_anta_log_exception(
     assert level == logging.CRITICAL
     assert message == expected_message
     # the only place where we can see the stracktrace is in the capture.text
-    if __DEBUG__value is True:
+    if debug_value:
         assert "Traceback" in caplog.text
 
 

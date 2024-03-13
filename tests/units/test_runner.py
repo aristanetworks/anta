@@ -2,11 +2,9 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.runner.py."""
-
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -18,14 +16,13 @@ from anta.runner import main
 
 from .test_models import FakeTest
 
-if TYPE_CHECKING:
-    from pytest import LogCaptureFixture
-
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
 @pytest.mark.asyncio()
-async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: AntaInventory) -> None:
+async def test_runner_empty_tests(
+    caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory
+) -> None:
     """Test that when the list of tests is empty, a log is raised.
 
     caplog is the pytest fixture to capture logs
@@ -41,7 +38,7 @@ async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: Ant
 
 
 @pytest.mark.asyncio()
-async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
+async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     """Test that when the Inventory is empty, a log is raised.
 
     caplog is the pytest fixture to capture logs
@@ -56,7 +53,9 @@ async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
 
 
 @pytest.mark.asyncio()
-async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_inventory: AntaInventory) -> None:
+async def test_runner_no_selected_device(
+    caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory
+) -> None:
     """Test that when the list of established device.
 
     caplog is the pytest fixture to capture logs
@@ -67,12 +66,16 @@ async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_invento
     manager = ResultManager()
     await main(manager, test_inventory, FAKE_CATALOG)
 
-    assert "No device in the established state 'True' was found. There is no device to run tests against, exiting" in [record.message for record in caplog.records]
+    assert (
+        "No device in the established state 'True' was found. There is no device to run tests against, exiting"
+        in [record.message for record in caplog.records]
+    )
 
     #  Reset logs and run with tags
     caplog.clear()
     await main(manager, test_inventory, FAKE_CATALOG, tags=["toto"])
 
-    assert "No device in the established state 'True' matching the tags ['toto'] was found. There is no device to run tests against, exiting" in [
-        record.message for record in caplog.records
-    ]
+    assert (
+        "No device in the established state 'True' matching the tags ['toto'] was found. There is no device to run tests against, exiting"
+        in [record.message for record in caplog.records]
+    )

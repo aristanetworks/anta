@@ -6,8 +6,9 @@
 
 from __future__ import annotations
 
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
-from typing import Any, ContextManager
+from typing import Any
 
 import pytest
 
@@ -37,7 +38,7 @@ DUMMY_DATA = [
 
 
 @pytest.mark.parametrize(
-    ("list_of_dicts", "key", "value", "default", "required, case_sensitive", "var_name", "custom_error_msg", "expected_result", "expected_raise"),
+    ("list_of_dicts", "key", "value", "default", "required", "case_sensitive", "var_name", "custom_error_msg", "expected_result", "expected_raise"),
     [
         pytest.param([], "name", "Bob", None, False, False, None, None, None, does_not_raise(), id="empty list"),
         pytest.param([], "name", "Bob", None, True, False, None, None, None, pytest.raises(ValueError, match="name"), id="empty list and required"),
@@ -65,7 +66,7 @@ def test_get_item(
     var_name: str | None,
     custom_error_msg: str | None,
     expected_result: str,
-    expected_raise: ContextManager,
+    expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_item."""
     # pylint: disable=too-many-arguments

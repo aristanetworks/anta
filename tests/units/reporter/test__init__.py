@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
 
 
-class Test_ReportTable:
+class TestReportTable:
     """Test ReportTable class."""
 
     # not testing __init__ as nothing is going on there
