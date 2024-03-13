@@ -15,7 +15,12 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
 class VerifyZeroTouch(AntaTest):
-    """Verifies ZeroTouch is disabled."""
+    """Verifies ZeroTouch is disabled.
+
+    Expected Results:
+      * Success: The test will pass if ZeroTouch is disabled.
+      * Failure: The test will fail if ZeroTouch is enabled.
+    """
 
     name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled"
@@ -24,8 +29,8 @@ class VerifyZeroTouch(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        command_output = self.instance_commands[0].output
-        assert isinstance(command_output, dict)
+        """Main test function for VerifyZeroTouch."""
+        command_output = self.instance_commands[0].json_output
         if command_output["mode"] == "disabled":
             self.result.is_success()
         else:
@@ -33,7 +38,13 @@ class VerifyZeroTouch(AntaTest):
 
 
 class VerifyRunningConfigDiffs(AntaTest):
-    """Verifies there is no difference between the running-config and the startup-config."""
+    """Verifies there is no difference between the running-config and the startup-config.
+
+    Expected Results:
+      * Success: The test will pass if there is no difference between the running-config and the startup-config.
+      * Failure: The test will fail if there is a difference between the running-config and the startup-config.
+
+    """
 
     name = "VerifyRunningConfigDiffs"
     description = "Verifies there is no difference between the running-config and the startup-config"
@@ -42,9 +53,9 @@ class VerifyRunningConfigDiffs(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        command_output = self.instance_commands[0].output
-        if command_output is None or command_output == "":
+        """Main test function for VerifyRunningConfigDiffs."""
+        command_output = self.instance_commands[0].text_output
+        if command_output == "":
             self.result.is_success()
         else:
-            self.result.is_failure()
-            self.result.is_failure(str(command_output))
+            self.result.is_failure(command_output)
