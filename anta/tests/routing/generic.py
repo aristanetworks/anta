@@ -5,15 +5,14 @@
 
 from __future__ import annotations
 
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from ipaddress import IPv4Address, ip_interface
 from typing import ClassVar, Literal
 
 from pydantic import model_validator
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 
 
 class VerifyRoutingProtocolModel(AntaTest):
