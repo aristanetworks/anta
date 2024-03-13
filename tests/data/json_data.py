@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: skip-file
+"""JSON Data for unit tests."""
 
 INVENTORY_MODEL_HOST_VALID = [
     {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},

@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for `anta.tools.get_dict_superset`."""
+
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
@@ -122,9 +123,7 @@ DUMMY_DATA = [
             "custom_var_name",
             None,
             None,
-            pytest.raises(
-                ValueError, match="custom_var_name not found in the provided list."
-            ),
+            pytest.raises(ValueError, match="custom_var_name not found in the provided list."),
             id="custom var_name",
         ),
         pytest.param(
@@ -247,9 +246,4 @@ def test_get_dict_superset(
     """Test get_dict_superset."""
     # pylint: disable=too-many-arguments
     with expected_raise:
-        assert (
-            get_dict_superset(
-                list_of_dicts, input_dict, default, required, var_name, custom_error_msg
-            )
-            == expected_result
-        )
+        assert get_dict_superset(list_of_dicts, input_dict, default, required, var_name, custom_error_msg) == expected_result

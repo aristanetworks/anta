@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.models.py."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -57,9 +58,7 @@ class FakeTestWithUnsupportedCommand(AntaTest):
     commands = [
         AntaCommand(
             command="show hardware counter drop",
-            errors=[
-                "Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"
-            ],
+            errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
         )
     ]
 
@@ -134,9 +133,7 @@ class FakeTestWithTemplateBadRender1(AntaTest):
     """ANTA test with template that raises a AntaTemplateRenderError exception."""
 
     name = "FakeTestWithTemplateBadRender"
-    description = (
-        "ANTA test with template that raises a AntaTemplateRenderError exception"
-    )
+    description = "ANTA test with template that raises a AntaTemplateRenderError exception"
     categories = []
     commands = [AntaTemplate(template="show interface {interface}")]
 
@@ -338,9 +335,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender"
-                ],
+                "messages": ["AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender"],
             },
             "test": {"result": "error"},
         },
@@ -352,9 +347,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"
-                ],
+                "messages": ["Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"],
             },
             "test": {"result": "error"},
         },
@@ -366,9 +359,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"
-                ],
+                "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"],
             },
             "test": {"result": "error"},
         },
@@ -438,9 +429,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {"result": "unset"},
             "test": {
                 "result": "skipped",
-                "messages": [
-                    "Skipped because show hardware counter drop is not supported on pytest"
-                ],
+                "messages": ["Skipped because show hardware counter drop is not supported on pytest"],
             },
         },
     },
@@ -467,10 +456,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoName is missing required class attribute name"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoName is missing required class attribute name"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -485,10 +471,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoDescription is missing required class attribute description"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoDescription is missing required class attribute description"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -503,10 +486,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoCategories is missing required class attribute categories"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCategories is missing required class attribute categories"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -521,31 +501,22 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
 
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]
         if "messages" in expected:
-            for result_msg, expected_msg in zip(
-                test.result.messages, expected["messages"]
-            ):  # NOTE: zip(strict=True) has been added in Python 3.10
+            for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
-    @pytest.mark.parametrize(
-        "data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA)
-    )
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest constructor."""
         expected = data["expected"]["__init__"]
         test = data["test"](device, inputs=data["inputs"])
         self._assert_test(test, expected)
 
-    @pytest.mark.parametrize(
-        "data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA)
-    )
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest.test method."""
         expected = data["expected"]["test"]

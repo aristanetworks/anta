@@ -16,7 +16,7 @@ def generate_test_ids_dict(val: dict[str, Any], key: str = "name") -> str:
 
 def generate_test_ids_list(val: list[dict[str, Any]], key: str = "name") -> list[str]:
     """generate_test_ids Helper to generate test ID for parametrize."""
-    return [entry[key] if key in entry else "unamed_test" for entry in val]
+    return [entry.get(key, "unamed_test") for entry in val]
 
 
 def generate_test_ids(data: list[dict[str, Any]]) -> list[str]:

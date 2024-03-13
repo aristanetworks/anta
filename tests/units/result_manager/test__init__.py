@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test anta.result_manager.__init__.py."""
+
 from __future__ import annotations
 
 import json
@@ -22,9 +23,7 @@ class TestResultManager:
 
     # not testing __init__ as nothing is going on there
 
-    def test__len__(
-        self, list_result_factory: Callable[[int], list[TestResult]]
-    ) -> None:
+    def test__len__(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """Test __len__."""
         list_result = list_result_factory(3)
         result_manager = ResultManager()
@@ -37,16 +36,10 @@ class TestResultManager:
         ("starting_status", "test_status", "expected_status", "expected_raise"),
         [
             pytest.param("unset", "unset", "unset", nullcontext(), id="unset->unset"),
-            pytest.param(
-                "unset", "success", "success", nullcontext(), id="unset->success"
-            ),
+            pytest.param("unset", "success", "success", nullcontext(), id="unset->success"),
             pytest.param("unset", "error", "unset", nullcontext(), id="set error"),
-            pytest.param(
-                "skipped", "skipped", "skipped", nullcontext(), id="skipped->skipped"
-            ),
-            pytest.param(
-                "skipped", "unset", "skipped", nullcontext(), id="skipped, add unset"
-            ),
+            pytest.param("skipped", "skipped", "skipped", nullcontext(), id="skipped->skipped"),
+            pytest.param("skipped", "unset", "skipped", nullcontext(), id="skipped, add unset"),
             pytest.param(
                 "skipped",
                 "success",
@@ -61,9 +54,7 @@ class TestResultManager:
                 nullcontext(),
                 id="skipped, add failure",
             ),
-            pytest.param(
-                "success", "unset", "success", nullcontext(), id="success, add unset"
-            ),
+            pytest.param("success", "unset", "success", nullcontext(), id="success, add unset"),
             pytest.param(
                 "success",
                 "skipped",
@@ -71,18 +62,10 @@ class TestResultManager:
                 nullcontext(),
                 id="success, add skipped",
             ),
-            pytest.param(
-                "success", "success", "success", nullcontext(), id="success->success"
-            ),
-            pytest.param(
-                "success", "failure", "failure", nullcontext(), id="success->failure"
-            ),
-            pytest.param(
-                "failure", "unset", "failure", nullcontext(), id="failure->failure"
-            ),
-            pytest.param(
-                "failure", "skipped", "failure", nullcontext(), id="failure, add unset"
-            ),
+            pytest.param("success", "success", "success", nullcontext(), id="success->success"),
+            pytest.param("success", "failure", "failure", nullcontext(), id="success->failure"),
+            pytest.param("failure", "unset", "failure", nullcontext(), id="failure->failure"),
+            pytest.param("failure", "skipped", "failure", nullcontext(), id="failure, add unset"),
             pytest.param(
                 "failure",
                 "success",
@@ -121,9 +104,7 @@ class TestResultManager:
             else:
                 assert result_manager.status == expected_status
 
-    def test_add_test_result(
-        self, test_result_factory: Callable[[int], TestResult]
-    ) -> None:
+    def test_add_test_result(self, test_result_factory: Callable[[int], TestResult]) -> None:
         """Test ResultManager.add_test_result."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
@@ -162,9 +143,7 @@ class TestResultManager:
         assert result_manager.error_status is True
         assert len(result_manager) == 4
 
-    def test_add_test_results(
-        self, list_result_factory: Callable[[int], list[TestResult]]
-    ) -> None:
+    def test_add_test_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """Test ResultManager.add_test_results."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
@@ -194,9 +173,7 @@ class TestResultManager:
         [
             pytest.param("success", False, True, "success", id="no error"),
             pytest.param("success", True, True, "success", id="error, ignore error"),
-            pytest.param(
-                "success", True, False, "error", id="error, do not ignore error"
-            ),
+            pytest.param("success", True, False, "error", id="error, do not ignore error"),
         ],
     )
     def test_get_status(
@@ -213,9 +190,7 @@ class TestResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    def test_get_results(
-        self, list_result_factory: Callable[[int], list[TestResult]]
-    ) -> None:
+    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """Test ResultManager.get_results."""
         result_manager = ResultManager()
 
@@ -227,9 +202,7 @@ class TestResultManager:
         res = result_manager.get_results()
         assert isinstance(res, list)
 
-    def test_get_json_results(
-        self, list_result_factory: Callable[[int], list[TestResult]]
-    ) -> None:
+    def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """Test ResultManager.get_json_results."""
         result_manager = ResultManager()
 

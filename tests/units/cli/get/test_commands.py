@@ -42,13 +42,23 @@ def test_from_cvp(
     This test verifies that username and password are NOT mandatory to run this command
     """
     output: Path = tmp_path / "output.yml"
-    cli_args = ["get", "from-cvp", "--output", str(output), "--host", "42.42.42.42", "--username", "anta", "--password", "anta"]
+    cli_args = [
+        "get",
+        "from-cvp",
+        "--output",
+        str(output),
+        "--host",
+        "42.42.42.42",
+        "--username",
+        "anta",
+        "--password",
+        "anta",
+    ]
 
     if cvp_container is not None:
         cli_args.extend(["--container", cvp_container])
 
-    def mock_cvp_connect(self: CvpClient, *args: str, **kwargs: str) -> None:
-        # pylint: disable=unused-argument
+    def mock_cvp_connect(_self: CvpClient, *_args: str, **_kwargs: str) -> None:
         if cvp_connect_failure:
             raise CvpApiError(msg="mocked CvpApiError")
 
@@ -85,8 +95,20 @@ def test_from_cvp(
     [
         pytest.param("ansible_inventory.yml", None, ExitCode.OK, None, id="no group"),
         pytest.param("ansible_inventory.yml", "ATD_LEAFS", ExitCode.OK, None, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", ExitCode.USAGE_ERROR, "Group DUMMY not found in Ansible inventory", id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, ExitCode.USAGE_ERROR, "is empty", id="empty inventory"),
+        pytest.param(
+            "ansible_inventory.yml",
+            "DUMMY",
+            ExitCode.USAGE_ERROR,
+            "Group DUMMY not found in Ansible inventory",
+            id="group not found",
+        ),
+        pytest.param(
+            "empty_ansible_inventory.yml",
+            None,
+            ExitCode.USAGE_ERROR,
+            "is empty",
+            id="empty inventory",
+        ),
     ],
 )
 def test_from_ansible(
@@ -108,7 +130,14 @@ def test_from_ansible(
     output: Path = tmp_path / "output.yml"
     ansible_inventory_path = DATA_DIR / ansible_inventory
     # Init cli_args
-    cli_args = ["get", "from-ansible", "--output", str(output), "--ansible-inventory", str(ansible_inventory_path)]
+    cli_args = [
+        "get",
+        "from-ansible",
+        "--output",
+        str(output),
+        "--ansible-inventory",
+        str(ansible_inventory_path),
+    ]
 
     # Set --ansible-group
     if ansible_group is not None:
@@ -129,8 +158,24 @@ def test_from_ansible(
 @pytest.mark.parametrize(
     ("env_set", "overwrite", "is_tty", "prompt", "expected_exit", "expected_log"),
     [
-        pytest.param(True, False, True, "y", ExitCode.OK, "", id="no-overwrite-tty-init-prompt-yes"),
-        pytest.param(True, False, True, "N", ExitCode.INTERNAL_ERROR, "Aborted", id="no-overwrite-tty-init-prompt-no"),
+        pytest.param(
+            True,
+            False,
+            True,
+            "y",
+            ExitCode.OK,
+            "",
+            id="no-overwrite-tty-init-prompt-yes",
+        ),
+        pytest.param(
+            True,
+            False,
+            True,
+            "N",
+            ExitCode.INTERNAL_ERROR,
+            "Aborted",
+            id="no-overwrite-tty-init-prompt-no",
+        ),
         pytest.param(
             True,
             False,
@@ -177,7 +222,12 @@ def test_from_ansible_overwrite(
     ansible_inventory_path = DATA_DIR / "ansible_inventory.yml"
     expected_anta_inventory_path = DATA_DIR / "expected_anta_inventory.yml"
     tmp_output = tmp_path / "output.yml"
-    cli_args = ["get", "from-ansible", "--ansible-inventory", str(ansible_inventory_path)]
+    cli_args = [
+        "get",
+        "from-ansible",
+        "--ansible-inventory",
+        str(ansible_inventory_path),
+    ]
 
     if env_set:
         tmp_inv = Path(str(temp_env["ANTA_INVENTORY"]))

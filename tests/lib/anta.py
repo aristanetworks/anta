@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 def test(device: AntaDevice, data: dict[str, Any]) -> None:
     """Generic test function for AntaTest subclass.
+
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
     # Instantiate the AntaTest subclass

@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Inventory unit tests."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -32,14 +33,9 @@ class TestAntaInventory:
 
     def check_parameter(self, parameter: str, test_definition: dict[Any, Any]) -> bool:
         """Check if parameter is configured in testbed."""
-        return (
-            "parameters" in test_definition
-            and parameter in test_definition["parameters"]
-        )
+        return "parameters" in test_definition and parameter in test_definition["parameters"]
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS_VALID, ids=generate_test_ids_dict
-    )
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_VALID, ids=generate_test_ids_dict)
     def test_init_valid(self, test_definition: dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with valid data.
 
@@ -57,22 +53,14 @@ class TestAntaInventory:
         }
 
         """
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
         try:
-            AntaInventory.parse(
-                filename=inventory_file, username="arista", password="arista123"
-            )
+            AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")
         except ValidationError as exc:
             raise AssertionError from exc
 
-    @pytest.mark.parametrize(
-        "test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict
-    )
-    def test_init_invalid(
-        self, test_definition: dict[str, Any], tmp_path: Path
-    ) -> None:
+    @pytest.mark.parametrize("test_definition", ANTA_INVENTORY_TESTS_INVALID, ids=generate_test_ids_dict)
+    def test_init_invalid(self, test_definition: dict[str, Any], tmp_path: Path) -> None:
         """Test class constructor with invalid data.
 
         Test structure:
@@ -89,12 +77,6 @@ class TestAntaInventory:
         }
 
         """
-        inventory_file = self.create_inventory(
-            content=test_definition["input"], tmp_path=tmp_path
-        )
-        with pytest.raises(
-            (InventoryIncorrectSchema, InventoryRootKeyError, ValidationError)
-        ):
-            AntaInventory.parse(
-                filename=inventory_file, username="arista", password="arista123"
-            )
+        inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
+        with pytest.raises((InventoryIncorrectSchema, InventoryRootKeyError, ValidationError)):
+            AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")

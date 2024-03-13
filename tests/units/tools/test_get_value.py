@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tools.get_value."""
+
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
@@ -27,9 +28,7 @@ INPUT_DICT = {"test_value": 42, "nested_test": {"nested_value": 43}}
         "expected_raise",
     ),
     [
-        pytest.param(
-            {}, "test", None, False, None, None, None, does_not_raise(), id="empty dict"
-        ),
+        pytest.param({}, "test", None, False, None, None, None, does_not_raise(), id="empty dict"),
         pytest.param(
             INPUT_DICT,
             "test_value",

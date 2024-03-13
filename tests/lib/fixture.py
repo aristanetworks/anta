@@ -12,7 +12,6 @@ from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner, Result
-from pytest import CaptureFixture
 
 from anta import aioeapi
 from anta.cli.console import console
@@ -60,7 +59,7 @@ MOCK_CLI_TEXT: dict[str, aioeapi.EapiCommandError | str] = {
 
 @pytest.fixture()
 def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
-    """Returns an AntaDevice instance with mocked abstract method."""
+    """Return an AntaDevice instance with mocked abstract method."""
 
     def _collect(command: AntaCommand) -> None:
         command.output = COMMAND_OUTPUT
@@ -95,8 +94,13 @@ def test_inventory() -> AntaInventory:
 # tests.unit.test_device.py fixture
 @pytest.fixture()
 def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
-    """Returns an AsyncEOSDevice instance."""
-    kwargs = {"name": DEVICE_NAME, "host": "42.42.42.42", "username": "anta", "password": "anta"}
+    """Return an AsyncEOSDevice instance."""
+    kwargs = {
+        "name": DEVICE_NAME,
+        "host": "42.42.42.42",
+        "username": "anta",
+        "password": "anta",
+    }
 
     if hasattr(request, "param"):
         # Fixture is parametrized indirectly
@@ -129,7 +133,7 @@ def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Cal
     # pylint: disable=redefined-outer-name
 
     def _factory(size: int = 0) -> list[TestResult]:
-        """Factory for list[TestResult] entry of size entries."""
+        """Create a factory for list[TestResult] entry of size entries."""
         result: list[TestResult] = []
         for i in range(size):
             result.append(test_result_factory(i))
@@ -144,7 +148,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     # pylint: disable=redefined-outer-name
 
     def _factory(number: int = 0) -> ResultManager:
-        """Factory for list[TestResult] entry of size entries."""
+        """Create a factory for list[TestResult] entry of size entries."""
         result_manager = ResultManager()
         result_manager.add_test_results(list_result_factory(number))
         return result_manager
@@ -155,8 +159,9 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 # tests.units.cli fixtures
 @pytest.fixture()
 def temp_env(tmp_path: Path) -> dict[str, str | None]:
-    """Fixture that create a temporary ANTA inventory that can be overriden
-    and returns the corresponding environment variables.
+    """Fixture that create a temporary ANTA inventory.
+
+    The inventory can be overriden and returns the corresponding environment variables.
     """
     env = default_anta_env()
     anta_inventory = str(env["ANTA_INVENTORY"])
@@ -167,13 +172,18 @@ def temp_env(tmp_path: Path) -> dict[str, str | None]:
 
 
 @pytest.fixture()
-def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
-    """Convenience fixture to return a click.CliRunner for cli testing."""
+# Disabling C901 - too complex as we like our runner like this
+def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # noqa: C901
+    """Return a click.CliRunner for cli testing."""
 
     class AntaCliRunner(CliRunner):
         """Override CliRunner to inject specific variables for ANTA."""
 
-        def invoke(self, *args, **kwargs) -> Result:  # type: ignore[no-untyped-def]
+        def invoke(
+            self,
+            *args: Any,  # noqa: ANN401
+            **kwargs: Any,  # noqa: ANN401
+        ) -> Result:
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
             # Deterministic terminal width
@@ -183,18 +193,18 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
             # Way to fix https://github.com/pallets/click/issues/824
             with capsys.disabled():
                 result = super().invoke(*args, **kwargs)
-            print("--- CLI Output ---")
-            print(result.output)
+            # disabling T201 as we want to print here
+            print("--- CLI Output ---")  # noqa: T201
+            print(result.output)  # noqa: T201
             return result
 
     def cli(
         command: str | None = None,
         commands: list[dict[str, Any]] | None = None,
         ofmt: str = "json",
-        version: int | str | None = "latest",
-        **kwargs: Any,
+        _version: int | str | None = "latest",
+        **_kwargs: Any,  # noqa: ANN401
     ) -> dict[str, Any] | list[dict[str, Any]]:
-        # pylint: disable=unused-argument
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
             if isinstance(command, dict):
                 command = command["cmd"]
@@ -205,7 +215,7 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
                 mock_cli = MOCK_CLI_TEXT
             for mock_cmd, output in mock_cli.items():
                 if command == mock_cmd:
-                    logger.info(f"Mocking command {mock_cmd}")
+                    logger.info("Mocking command %s", mock_cmd)
                     if isinstance(output, aioeapi.EapiCommandError):
                         raise output
                     return output
@@ -215,12 +225,12 @@ def click_runner(capsys: CaptureFixture[str]) -> Iterator[CliRunner]:
 
         res: dict[str, Any] | list[dict[str, Any]]
         if command is not None:
-            logger.debug(f"Mock input {command}")
+            logger.debug("Mock input %s", command)
             res = get_output(command)
         if commands is not None:
-            logger.debug(f"Mock input {commands}")
+            logger.debug("Mock input %s", commands)
             res = list(map(get_output, commands))
-        logger.debug(f"Mock output {res}")
+        logger.debug("Mock output %s", res)
         return res
 
     # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py

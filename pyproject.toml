@@ -341,16 +341,18 @@ max-complexity = 10
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "S101",    # Complains about asserts in units and libs.
+  "SLF001",  # Lots of private member accessed for test purposes
+]
 "tests/units/*" = [
   "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
-  "S101",    # Complains about asserts
-  "S108",    # Probable insecure usage of temporary file or directory
   "FBT001",    # Boolean-typed positional argument in function definition
   "PLR0913", # Too many arguments to function call (8 > 5)
   "PLR2004",   # Magic value used in comparison, consider replacing {value} with a constant variable
-  "SLF001",  # Lots of private member accessed for test purposes
   "S105",  # Passwords are indeed hardcoded in tests
   "S106",  # Passwords are indeed hardcoded in tests
+  "S108",    # Probable insecure usage of temporary file or directory
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs
