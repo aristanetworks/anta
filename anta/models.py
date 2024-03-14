@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models to define a TestStructure."""
+
 from __future__ import annotations
 
 import hashlib
@@ -187,9 +188,7 @@ class AntaTemplateRenderError(RuntimeError):
         """
         self.template = template
         self.key = key
-        super().__init__(
-            f"'{self.key}' was not provided for template '{self.template.template}'"
-        )
+        super().__init__(f"'{self.key}' was not provided for template '{self.template.template}'")
 
 
 class AntaTest(ABC):
@@ -325,9 +324,7 @@ class AntaTest(ABC):
                       This list must have the same length and order than the `instance_commands` instance attribute.
 
         """
-        self.logger: logging.Logger = logging.getLogger(
-            f"{self.__module__}.{self.__class__.__name__}"
-        )
+        self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
@@ -384,9 +381,7 @@ class AntaTest(ABC):
                     try:
                         self.instance_commands.extend(self.render(cmd))
                     except AntaTemplateRenderError as e:
-                        self.result.is_error(
-                            message=f"Cannot render template {{{e.template}}}"
-                        )
+                        self.result.is_error(message=f"Cannot render template {{{e.template}}}")
                         return
                     except NotImplementedError as e:
                         self.result.is_error(message=e.args[0])
@@ -407,14 +402,10 @@ class AntaTest(ABC):
     def save_commands_data(self, eos_data: list[dict[str, Any] | str]) -> None:
         """Populate output of all AntaCommand instances in `instance_commands`."""
         if len(eos_data) > len(self.instance_commands):
-            self.result.is_error(
-                message="Test initialization error: Trying to save more data than there are commands for the test"
-            )
+            self.result.is_error(message="Test initialization error: Trying to save more data than there are commands for the test")
             return
         if len(eos_data) < len(self.instance_commands):
-            self.result.is_error(
-                message="Test initialization error: Trying to save less data than there are commands for the test"
-            )
+            self.result.is_error(message="Test initialization error: Trying to save less data than there are commands for the test")
             return
         for index, data in enumerate(eos_data or []):
             self.instance_commands[index].output = data
@@ -459,9 +450,7 @@ class AntaTest(ABC):
                         command.command,
                         BLACKLIST_REGEX,
                     )
-                    self.result.is_error(
-                        f"<{command.command}> is blocked for security reason"
-                    )
+                    self.result.is_error(f"<{command.command}> is blocked for security reason")
                     state = True
         return state
 
@@ -522,9 +511,7 @@ class AntaTest(ABC):
             # Data
             if eos_data is not None:
                 self.save_commands_data(eos_data)
-                self.logger.debug(
-                    "Test %s initialized with input data %s", self.name, eos_data
-                )
+                self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
             # If some data is missing, try to collect
             if not self.collected:
@@ -534,25 +521,14 @@ class AntaTest(ABC):
 
                 if cmds := self.failed_commands:
                     self.logger.debug(self.device.supports)
-                    unsupported_commands = [
-                        f"Skipped because {c.command} is not supported on {self.device.hw_model}"
-                        for c in cmds
-                        if not self.device.supports(c)
-                    ]
+                    unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
                     self.logger.debug(unsupported_commands)
                     if unsupported_commands:
                         msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
                         self.logger.warning(msg)
                         self.result.is_skipped("\n".join(unsupported_commands))
                         return self.result
-                    self.result.is_error(
-                        message="\n".join(
-                            [
-                                f"{c.command} has failed: {', '.join(c.errors)}"
-                                for c in cmds
-                            ]
-                        )
-                    )
+                    self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
                     return self.result
 
             try:

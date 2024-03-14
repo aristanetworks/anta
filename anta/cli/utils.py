@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli module."""
+
 from __future__ import annotations
 
 import enum
@@ -69,9 +70,7 @@ def exit_with_code(ctx: click.Context) -> None:
         ctx.exit(ExitCode.OK)
 
     # If ignore_error is True then status can never be "error"
-    status = ctx.obj["result_manager"].get_status(
-        ignore_error=bool(ctx.obj.get("ignore_error"))
-    )
+    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.obj.get("ignore_error")))
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)
@@ -191,9 +190,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         required=True,
-        type=click.Path(
-            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path
-        ),
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
     )
     @click.option(
         "--tags",
@@ -235,13 +232,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
                     hide_input=True,
                     confirmation_prompt=True,
                 )
-            if (
-                enable
-                and enable_password is None
-                and click.confirm(
-                    "Is a password required to enter EOS privileged EXEC mode?"
-                )
-            ):
+            if enable and enable_password is None and click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
                 enable_password = click.prompt(
                     "Please enter a password to enter EOS privileged EXEC mode",
                     type=str,
@@ -282,14 +273,21 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
         show_envvar=True,
         help="Path to the test catalog YAML file",
         type=click.Path(
-            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path,
+            file_okay=True,
+            dir_okay=False,
+            exists=True,
+            readable=True,
+            path_type=Path,
         ),
         required=True,
     )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
-        ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any],
+        ctx: click.Context,
+        *args: tuple[Any],
+        catalog: Path,
+        **kwargs: dict[str, Any],
     ) -> Any:
         # If help is invoke somewhere, do not parse catalog
         if ctx.obj.get("_anta_help"):

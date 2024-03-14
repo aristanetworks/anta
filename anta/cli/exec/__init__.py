@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands to execute various scripts on EOS devices."""
+
 import click
 
 from anta.cli.exec import commands

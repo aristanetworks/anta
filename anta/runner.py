@@ -48,6 +48,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
         else:
             logger.info("Caching is not enabled on %s", device.name)
 
+
 async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, *, established_only: bool = True) -> None:
     """Run ANTA.
 

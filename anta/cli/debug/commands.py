@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """Click commands to execute EOS commands on remote devices."""
+
 from __future__ import annotations
 
 import asyncio
@@ -81,9 +82,7 @@ def run_template(
     """
     template_params = dict(zip(params[::2], params[1::2]))
 
-    console.print(
-        f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]"
-    )
+    console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it
     v: Literal[1, "latest"] = version if version == "latest" else 1
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)

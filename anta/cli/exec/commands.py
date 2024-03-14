@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands to execute various scripts on EOS devices."""
+
 from __future__ import annotations
 
 import asyncio
@@ -39,24 +40,18 @@ def clear_counters(inventory: AntaInventory, tags: list[str] | None) -> None:
     help="File with list of commands to collect",
     required=True,
     show_envvar=True,
-    type=click.Path(
-        file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path
-    ),
+    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
 )
 @click.option(
     "--output",
     "-o",
     show_envvar=True,
-    type=click.Path(
-        file_okay=False, dir_okay=True, exists=False, writable=True, path_type=Path
-    ),
+    type=click.Path(file_okay=False, dir_okay=True, exists=False, writable=True, path_type=Path),
     help="Directory to save commands output.",
     default=f"anta_snapshot_{datetime.now(tz=timezone.utc).astimezone().strftime('%Y-%m-%d_%H_%M_%S')}",
     show_default=True,
 )
-def snapshot(
-    inventory: AntaInventory, tags: list[str] | None, commands_list: Path, output: Path
-) -> None:
+def snapshot(inventory: AntaInventory, tags: list[str] | None, commands_list: Path, output: Path) -> None:
     """Collect commands output from devices in inventory."""
     console.print(f"Collecting data for {commands_list}")
     console.print(f"Output directory is {output}")
@@ -103,8 +98,4 @@ def collect_tech_support(
     configure: bool,
 ) -> None:
     """Collect scheduled tech-support from EOS devices."""
-    asyncio.run(
-        collect_scheduled_show_tech(
-            inventory, output, configure=configure, tags=tags, latest=latest
-        )
-    )
+    asyncio.run(collect_scheduled_show_tech(inventory, output, configure=configure, tags=tags, latest=latest))

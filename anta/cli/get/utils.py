@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
+
 from __future__ import annotations
 
 import functools
@@ -35,9 +36,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         help="Path to save inventory file",
-        type=click.Path(
-            file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path
-        ),
+        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
     )
     @click.option(
         "--overwrite",
@@ -70,9 +69,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 )
             else:
                 # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
-                logger.critical(
-                    "Conversion aborted since destination file is not empty (not running in interactive TTY)"
-                )
+                logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
                 ctx.exit(ExitCode.USAGE_ERROR)
         output.parent.mkdir(parents=True, exist_ok=True)
         return f(*args, output=output, **kwargs)
@@ -89,9 +86,7 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     payload = json.dumps({"userId": cvp_username, "password": cvp_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.request(
-        "POST", url, headers=headers, data=payload, verify=False, timeout=10
-    )
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False, timeout=10)
     return response.json()["sessionId"]
 
 
@@ -99,11 +94,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
     """Write a file inventory from pydantic models."""
     i = AntaInventoryInput(hosts=hosts)
     with output.open(mode="w", encoding="UTF-8") as out_fd:
-        out_fd.write(
-            yaml.dump(
-                {AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}
-            )
-        )
+        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
     logger.info("ANTA inventory file has been created: '%s'", output)
 
 
@@ -135,9 +126,7 @@ def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | Non
     return None
 
 
-def deep_yaml_parsing(
-    data: dict[str, Any], hosts: list[AntaInventoryHost] | None = None
-) -> list[AntaInventoryHost]:
+def deep_yaml_parsing(data: dict[str, Any], hosts: list[AntaInventoryHost] | None = None) -> list[AntaInventoryHost]:
     """Deep parsing of YAML file to extract hosts and associated IPs."""
     if hosts is None:
         hosts = []
@@ -152,9 +141,7 @@ def deep_yaml_parsing(
     return hosts
 
 
-def create_inventory_from_ansible(
-    inventory: Path, output: Path, ansible_group: str = "all"
-) -> None:
+def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
     """Create an ANTA inventory from an Ansible inventory YAML file.
 
     Args:

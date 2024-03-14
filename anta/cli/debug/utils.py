@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.debug module."""
+
 from __future__ import annotations
 
 import functools
@@ -35,12 +36,8 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         default="latest",
         help="EOS eAPI version",
     )
-    @click.option(
-        "--revision", "-r", type=int, help="eAPI command revision", required=False
-    )
-    @click.option(
-        "--device", "-d", type=str, required=True, help="Device from inventory to use"
-    )
+    @click.option("--revision", "-r", type=int, help="eAPI command revision", required=False)
+    @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
