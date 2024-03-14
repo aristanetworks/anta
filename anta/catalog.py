@@ -197,9 +197,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                             f"Syntax error when parsing: {test_definition}\n"
                             "It must be a dictionary with a single entry. Check the indentation in the test catalog."
                         )
-                        raise ValueError(
-                            msg,
-                        )
+                        raise ValueError(msg)
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         if test is None:
@@ -207,9 +205,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
                                 f"{test_name} is not defined in Python module {module.__name__}"
                                 f"{f' (from {module.__file__})' if module.__file__ is not None else ''}"
                             )
-                            raise ValueError(
-                                msg,
-                            )
+                            raise ValueError(msg)
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
         return typed_data

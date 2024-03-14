@@ -776,7 +776,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
 
     name = "VerifyBGPPeerMD5Auth"
     description = "Verifies the MD5 authentication and state of a BGP peer."
-    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -837,7 +837,7 @@ class VerifyEVPNType2Route(AntaTest):
 
     name = "VerifyEVPNType2Route"
     description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
-    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
 
     class Input(AntaTest.Input):
@@ -900,7 +900,7 @@ class VerifyBGPAdvCommunities(AntaTest):
 
     name = "VerifyBGPAdvCommunities"
     description = "Verifies the advertised communities of a BGP peer."
-    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
@@ -959,7 +959,7 @@ class VerifyBGPTimers(AntaTest):
 
     name = "VerifyBGPTimers"
     description = "Verifies the timers of a BGP peer."
-    categories: ClassVar[list[str]] = ["routing", "bgp"]
+    categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
 
     class Input(AntaTest.Input):
