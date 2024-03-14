@@ -19,6 +19,7 @@ This section describes all the available tests provided by ANTA package.
 - [Logging](tests.logging.md)
 - [MLAG](tests.mlag.md)
 - [Multicast](tests.multicast.md)
+- [Router Path Selection](tests.path_selection.md)
 - [Profiles](tests.profiles.md)
 - [Routing Generic](tests.routing.generic.md)
 - [Routing BGP](tests.routing.bgp.md)
