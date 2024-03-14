@@ -10,14 +10,15 @@ from typing import Any
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
     """Get the failed log for a test.
+
     Returns the failed log or an empty string if there is no difference between the expected and actual output.
 
-    Parameters
-    ----------
+    Args:
+    ----
     expected_output (dict): Expected output of a test.
     actual_output (dict): Actual output of a test
 
-    Returns
+    Returns:
     -------
     str: Failed log of a test.
 
