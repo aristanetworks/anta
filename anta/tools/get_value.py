@@ -13,12 +13,15 @@ def get_value(
     dictionary: dict[Any, Any],
     key: str,
     default: Any | None = None,
-    required: bool = False,
     org_key: str | None = None,
     separator: str = ".",
+    *,
+    required: bool = False,
 ) -> Any:
     """Get a value from a dictionary or nested dictionaries.
+
     Key supports dot-notation like "foo.bar" to do deeper lookups.
+
     Returns the supplied default value or None if the key is not found and required is False.
 
     Parameters

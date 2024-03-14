@@ -13,9 +13,10 @@ def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],
     default: Any | None = None,
-    required: bool = False,
     var_name: str | None = None,
     custom_error_msg: str | None = None,
+    *,
+    required: bool = False,
 ) -> Any:
     """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 

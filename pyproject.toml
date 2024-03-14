@@ -371,3 +371,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
+"anta/tools/get*.py" = [
+  "ANN401",   # Ok to use Any type hint in our custom get functions
+  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions 
+]

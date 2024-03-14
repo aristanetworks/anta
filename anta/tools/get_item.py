@@ -15,10 +15,11 @@ def get_item(
     key: Any,
     value: Any,
     default: Any | None = None,
-    required: bool = False,
-    case_sensitive: bool = False,
     var_name: str | None = None,
     custom_error_msg: str | None = None,
+    *,
+    required: bool = False,
+    case_sensitive: bool = False,
 ) -> Any:
     """Get one dictionary from a list of dictionaries by matching the given key and value.
 
