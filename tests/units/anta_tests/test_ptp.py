@@ -96,9 +96,12 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"gmid": "0xec:46:70:ff:fe:00:ff:a8"},
-        "expected": {"result": "failure", "messages": [
-          "The device is locked to the following Grandmaster: '0x00:1c:73:ff:ff:0a:00:01', which differ from the expected one.",
-        ]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The device is locked to the following Grandmaster: '0x00:1c:73:ff:ff:0a:00:01', which differ from the expected one.",
+            ],
+        },
     },
     {
         "name": "error",
@@ -162,9 +165,12 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyPtpLockStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": None,
-        "expected": {"result": "error", "messages": [
-          "'ptpClockSummary' variable is not present in the command output",
-        ]},
+        "expected": {
+            "result": "error",
+            "messages": [
+                "'ptpClockSummary' variable is not present in the command output",
+            ],
+        },
     },
     {
         "name": "success",
@@ -229,11 +235,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {
-          "result": "failure",
-          "messages": [(
-            "The device timing offset from master is greater than +/- 1000ns: "
-            "{'Ethernet27/1': [1200, -1300]}"
-          )],
+            "result": "failure",
+            "messages": [("The device timing offset from master is greater than +/- 1000ns: {'Ethernet27/1': [1200, -1300]}")],
         },
     },
     {

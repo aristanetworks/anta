@@ -15,6 +15,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyUnifiedForwardingTableMode(AntaTest):
     """Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
 

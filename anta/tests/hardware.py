@@ -15,6 +15,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
 

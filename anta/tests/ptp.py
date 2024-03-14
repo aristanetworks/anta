@@ -15,6 +15,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyPtpModeStatus(AntaTest):
     """Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
 
@@ -154,7 +155,6 @@ class VerifyPtpOffset(AntaTest):
             self.result.is_success()
 
 
-
 class VerifyPtpPortModeStatus(AntaTest):
     """Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
 
@@ -181,9 +181,12 @@ class VerifyPtpPortModeStatus(AntaTest):
             self.result.is_failure("No interfaces are PTP enabled")
             return
 
-        invalid_interfaces = [interface for interface in command_output["ptpIntfSummaries"]
-                              for vlan in command_output["ptpIntfSummaries"][interface]["ptpIntfVlanSummaries"]
-                              if vlan["portState"] not in valid_state]
+        invalid_interfaces = [
+            interface
+            for interface in command_output["ptpIntfSummaries"]
+            for vlan in command_output["ptpIntfSummaries"][interface]["ptpIntfVlanSummaries"]
+            if vlan["portState"] not in valid_state
+        ]
 
         if not invalid_interfaces:
             self.result.is_success()

@@ -17,6 +17,7 @@ from anta.tools.utils import get_failed_logs
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyVlanInternalPolicy(AntaTest):
     """Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.
 

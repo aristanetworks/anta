@@ -20,6 +20,7 @@ CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
 DISK_SPACE_THRESHOLD = 75
 
+
 class VerifyUptime(AntaTest):
     """Verifies if the device uptime is higher than the provided minimum uptime value.
 

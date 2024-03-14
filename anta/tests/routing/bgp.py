@@ -97,7 +97,11 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def _add_bgp_routes_failure(
-    bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes",
+    bgp_routes: list[str],
+    bgp_output: dict[str, Any],
+    peer: str,
+    vrf: str,
+    route_type: str = "advertised_routes",
 ) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
     """Identify missing BGP routes and invalid or inactive route entries.
 

@@ -14,6 +14,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
     """Count the number of OSPF neighbors.
 

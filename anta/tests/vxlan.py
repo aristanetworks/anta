@@ -19,6 +19,7 @@ from anta.tools.get_value import get_value
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyVxlan1Interface(AntaTest):
     """Verifies if the Vxlan1 interface is configured and 'up/up'.
 

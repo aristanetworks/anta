@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to field notices tests."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
@@ -11,6 +12,7 @@ from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
+
 
 class VerifyFieldNotice44Resolution(AntaTest):
     """Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.

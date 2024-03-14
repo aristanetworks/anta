@@ -15,6 +15,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyIGMPSnoopingVlans(AntaTest):
     """Verifies the IGMP snooping status for the provided VLANs.
 

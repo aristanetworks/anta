@@ -14,6 +14,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyEOSVersion(AntaTest):
     """Verifies that the device is running one of the allowed EOS version.
 

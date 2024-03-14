@@ -20,6 +20,7 @@ from anta.tools.get_value import get_value
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyBFDSpecificPeers(AntaTest):
     """Verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
 

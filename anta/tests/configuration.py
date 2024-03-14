@@ -14,6 +14,7 @@ from anta.models import AntaCommand, AntaTest
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 
+
 class VerifyZeroTouch(AntaTest):
     """Verifies ZeroTouch is disabled.
 
