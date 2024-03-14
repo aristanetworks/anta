@@ -1,28 +1,29 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Result Manager Module for ANTA.
-"""
+"""Result Manager module for ANTA."""
+
 from __future__ import annotations
 
 import json
 import logging
+from typing import TYPE_CHECKING
 
 from pydantic import TypeAdapter
 
 from anta.custom_types import TestStatus
-from anta.result_manager.models import TestResult
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
 class ResultManager:
-    """
-    Helper to manage Test Results and generate reports.
+    """Helper to manage Test Results and generate reports.
 
-    Examples:
-
+    Examples
+    --------
         Create Inventory:
 
             inventory_anta = AntaInventory.parse(
@@ -63,11 +64,11 @@ class ResultManager:
                     message=None
                 ),
             ]
+
     """
 
     def __init__(self) -> None:
-        """
-        Class constructor.
+        """Class constructor.
 
         The status of the class is initialized to "unset"
 
@@ -93,101 +94,104 @@ class ResultManager:
         self.error_status = False
 
     def __len__(self) -> int:
-        """
-        Implement __len__ method to count number of results.
-        """
+        """Implement __len__ method to count number of results."""
         return len(self._result_entries)
 
     def _update_status(self, test_status: TestStatus) -> None:
-        """
-        Update ResultManager status based on the table above.
-        """
-        ResultValidator = TypeAdapter(TestStatus)
-        ResultValidator.validate_python(test_status)
+        """Update ResultManager status based on the table above."""
+        result_validator = TypeAdapter(TestStatus)
+        result_validator.validate_python(test_status)
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset":
-            self.status = test_status
-        elif self.status == "skipped" and test_status in {"success", "failure"}:
+        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
             self.status = "failure"
 
     def add_test_result(self, entry: TestResult) -> None:
-        """Add a result to the list
+        """Add a result to the list.
 
         Args:
+        ----
             entry (TestResult): TestResult data to add to the report
+
         """
         logger.debug(entry)
         self._result_entries.append(entry)
         self._update_status(entry.result)
 
     def add_test_results(self, entries: list[TestResult]) -> None:
-        """Add a list of results to the list
+        """Add a list of results to the list.
 
         Args:
+        ----
             entries (list[TestResult]): List of TestResult data to add to the report
+
         """
         for e in entries:
             self.add_test_result(e)
 
-    def get_status(self, ignore_error: bool = False) -> str:
-        """
-        Returns the current status including error_status if ignore_error is False
-        """
+    def get_status(self, *, ignore_error: bool = False) -> str:
+        """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
     def get_results(self) -> list[TestResult]:
-        """
-        Expose list of all test results in different format
+        """Expose list of all test results in different format.
 
-        Returns:
+        Returns
+        -------
             any: List of results.
+
         """
         return self._result_entries
 
     def get_json_results(self) -> str:
-        """
-        Expose list of all test results in JSON
+        """Expose list of all test results in JSON.
 
-        Returns:
+        Returns
+        -------
             str: JSON dumps of the list of results
+
         """
         result = [result.model_dump() for result in self._result_entries]
         return json.dumps(result, indent=4)
 
     def get_result_by_test(self, test_name: str) -> list[TestResult]:
-        """
-        Get list of test result for a given test.
+        """Get list of test result for a given test.
 
         Args:
+        ----
             test_name (str): Test name to use to filter results
 
         Returns:
+        -------
             list[TestResult]: List of results related to the test.
+
         """
         return [result for result in self._result_entries if str(result.test) == test_name]
 
     def get_result_by_host(self, host_ip: str) -> list[TestResult]:
-        """
-        Get list of test result for a given host.
+        """Get list of test result for a given host.
 
         Args:
+        ----
             host_ip (str): IP Address of the host to use to filter results.
 
         Returns:
+        -------
             list[TestResult]: List of results related to the host.
+
         """
         return [result for result in self._result_entries if str(result.name) == host_ip]
 
     def get_testcases(self) -> list[str]:
-        """
-        Get list of name of all test cases in current manager.
+        """Get list of name of all test cases in current manager.
 
-        Returns:
+        Returns
+        -------
             list[str]: List of names for all tests.
+
         """
         result_list = []
         for testcase in self._result_entries:
@@ -196,11 +200,12 @@ class ResultManager:
         return result_list
 
     def get_hosts(self) -> list[str]:
-        """
-        Get list of IP addresses in current manager.
+        """Get list of IP addresses in current manager.
 
-        Returns:
+        Returns
+        -------
             list[str]: List of IP addresses.
+
         """
         result_list = []
         for testcase in self._result_entries:

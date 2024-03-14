@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Patch for aioeapi waiting for https://github.com/jeremyschulman/aio-eapi/pull/13"""
+"""Patch for aioeapi waiting for https://github.com/jeremyschulman/aio-eapi/pull/13."""
 from __future__ import annotations
 
 from typing import Any, AnyStr
@@ -12,8 +12,7 @@ Device = aioeapi.Device
 
 
 class EapiCommandError(RuntimeError):
-    """
-    Exception class for EAPI command errors
+    """Exception class for EAPI command errors.
 
     Attributes
     ----------
@@ -25,8 +24,8 @@ class EapiCommandError(RuntimeError):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]):
-        """Initializer for the EapiCommandError exception"""
+    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]) -> None:
+        """Initializer for the EapiCommandError exception."""
         self.failed = failed
         self.errmsg = errmsg
         self.errors = errors
@@ -35,7 +34,7 @@ class EapiCommandError(RuntimeError):
         super().__init__()
 
     def __str__(self) -> str:
-        """returns the error message associated with the exception"""
+        """Returns the error message associated with the exception."""
         return self.errmsg
 
 
@@ -43,8 +42,7 @@ aioeapi.EapiCommandError = EapiCommandError
 
 
 async def jsonrpc_exec(self, jsonrpc: dict) -> list[dict | AnyStr]:  # type: ignore
-    """
-    Execute the JSON-RPC dictionary object.
+    """Execute the JSON-RPC dictionary object.
 
     Parameters
     ----------
@@ -101,7 +99,7 @@ async def jsonrpc_exec(self, jsonrpc: dict) -> list[dict | AnyStr]:  # type: ign
         failed=commands[err_at]["cmd"],
         errors=cmd_data[err_at]["errors"],
         errmsg=err_msg,
-        not_exec=commands[err_at + 1 :],  # noqa: E203
+        not_exec=commands[err_at + 1 :],
     )
 
 

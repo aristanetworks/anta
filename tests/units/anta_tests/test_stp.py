@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.stp.py
-"""
+"""Tests for anta.tests.stp.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -84,8 +83,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaces": {
                     "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
                     "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 6, "bpduRateLimitCount": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]},
@@ -162,7 +161,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL20": {
                         "rootBridge": {
@@ -172,7 +171,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL30": {
                         "rootBridge": {
@@ -182,10 +181,10 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"priority": 32768, "instances": [10, 20]},
         "expected": {"result": "success"},
@@ -204,7 +203,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL20": {
                         "rootBridge": {
@@ -214,7 +213,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL30": {
                         "rootBridge": {
@@ -224,10 +223,10 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"priority": 32768},
         "expected": {"result": "success"},
@@ -246,10 +245,10 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
-                    }
-                }
-            }
+                        },
+                    },
+                },
+            },
         ],
         "inputs": {"priority": 16384, "instances": [0]},
         "expected": {"result": "success"},
@@ -268,10 +267,10 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
-                    }
-                }
-            }
+                        },
+                    },
+                },
+            },
         ],
         "inputs": {"priority": 32768, "instances": [0]},
         "expected": {"result": "failure", "messages": ["Unsupported STP instance type: WRONG0"]},
@@ -297,7 +296,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL20": {
                         "rootBridge": {
@@ -307,7 +306,7 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
                     "VL30": {
                         "rootBridge": {
@@ -317,10 +316,10 @@ DATA: list[dict[str, Any]] = [
                             "helloTime": 2.0,
                             "maxAge": 20,
                             "forwardDelay": 15,
-                        }
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
         "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]},

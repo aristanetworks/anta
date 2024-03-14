@@ -3,18 +3,20 @@
 # that can be found in the LICENSE file.
 
 """Get one dictionary from a list of dictionaries by matching the given key and values."""
+
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],
-    default: Optional[Any] = None,
+    default: Any | None = None,
+    var_name: str | None = None,
+    custom_error_msg: str | None = None,
+    *,
     required: bool = False,
-    var_name: Optional[str] = None,
-    custom_error_msg: Optional[str] = None,
 ) -> Any:
     """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 
@@ -46,6 +48,7 @@ def get_dict_superset(
     ------
     ValueError
         If the keys and values are not found and "required" == True
+
     """
     if not isinstance(list_of_dicts, list) or not list_of_dicts or not isinstance(input_dict, dict) or not input_dict:
         if required:
