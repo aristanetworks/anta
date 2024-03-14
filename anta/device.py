@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 class AntaDevice(ABC):
     """Abstract class representing a device in ANTA.
+
     An implementation of this class must override the abstract coroutines `_collect()` and
     `refresh()`.
 
@@ -45,8 +46,8 @@ class AntaDevice(ABC):
 
     """
 
-    def __init__(self, name: str, tags: list[str] | None = None, disable_cache: bool = False) -> None:
-        """Constructor of AntaDevice.
+    def __init__(self, name: str, tags: list[str] | None = None, *, disable_cache: bool = False) -> None:
+        """Initialize an AntaDevice.
 
         Args:
         ----
@@ -98,7 +99,8 @@ class AntaDevice(ABC):
         return None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
-        """Implements Rich Repr Protocol
+        """Implement Rich Repr Protocol.
+
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield "name", self.name
@@ -111,6 +113,7 @@ class AntaDevice(ABC):
     @abstractmethod
     async def _collect(self, command: AntaCommand) -> None:
         """Collect device command output.
+
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
 
@@ -128,7 +131,7 @@ class AntaDevice(ABC):
         """
 
     async def collect(self, command: AntaCommand) -> None:
-        """Collects the output for a specified command.
+        """Collect the output for a specified command.
 
         When caching is activated on both the device and the command,
         this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
@@ -169,7 +172,7 @@ class AntaDevice(ABC):
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
     def supports(self, command: AntaCommand) -> bool:
-        """Returns True if the command is supported on the device hardware platform, False otherwise."""
+        """Return True if the command is supported on the device hardware platform, False otherwise."""
         unsupported = any("not supported on this hardware platform" in e for e in command.errors)
         logger.debug(command)
         if unsupported:
@@ -186,8 +189,9 @@ class AntaDevice(ABC):
             - `hw_model`: The hardware model of the device
         """
 
-    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:  # pylint: disable=W0613
+    async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device, usually through SCP.
+
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
         Args:
@@ -197,6 +201,7 @@ class AntaDevice(ABC):
             direction: Defines if this coroutine copies files to or from the device.
 
         """
+        _ = (sources, destination, direction)
         msg = f"copy() method has not been implemented in {self.__class__.__name__} definition"
         raise NotImplementedError(msg)
 
@@ -214,23 +219,25 @@ class AsyncEOSDevice(AntaDevice):
 
     """
 
-    def __init__(  # pylint: disable=R0913
+    # pylint: disable=R0913
+    def __init__(
         self,
         host: str,
         username: str,
         password: str,
         name: str | None = None,
-        enable: bool = False,
         enable_password: str | None = None,
         port: int | None = None,
         ssh_port: int | None = 22,
         tags: list[str] | None = None,
         timeout: float | None = None,
-        insecure: bool = False,
         proto: Literal["http", "https"] = "https",
+        *,
+        enable: bool = False,
+        insecure: bool = False,
         disable_cache: bool = False,
     ) -> None:
-        """Constructor of AsyncEOSDevice.
+        """Instantiate an AsyncEOSDevice.
 
         Args:
         ----
@@ -255,7 +262,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
-        super().__init__(name, tags, disable_cache)
+        super().__init__(name, tags, disable_cache=disable_cache)
         if username is None:
             message = f"'username' is required to instantiate device '{self.name}'"
             logger.error(message)
@@ -273,7 +280,8 @@ class AsyncEOSDevice(AntaDevice):
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
-        """Implements Rich Repr Protocol
+        """Implement Rich Repr Protocol.
+
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
@@ -284,15 +292,16 @@ class AsyncEOSDevice(AntaDevice):
         yield ("insecure", self._ssh_opts.known_hosts is None)
         if __DEBUG__:
             _ssh_opts = vars(self._ssh_opts).copy()
-            PASSWORD_VALUE = "<removed>"
-            _ssh_opts["password"] = PASSWORD_VALUE
-            _ssh_opts["kwargs"]["password"] = PASSWORD_VALUE
+            removed_pw = "<removed>"
+            _ssh_opts["password"] = removed_pw
+            _ssh_opts["kwargs"]["password"] = removed_pw
             yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
 
     @property
     def _keys(self) -> tuple[Any, ...]:
         """Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
+
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
         return (self._session.host, self._session.port)
@@ -353,10 +362,10 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
-            COMMAND: str = "show version"
-            HW_MODEL_KEY: str = "modelName"
+            show_version = "show version"
+            hw_model_key = "modelName"
             try:
-                response = await self._session.cli(command=COMMAND)
+                response = await self._session.cli(command=show_version)
             except aioeapi.EapiCommandError as e:
                 logger.warning("Cannot get hardware information from device %s: %s", self.name, e.errmsg)
 
@@ -364,10 +373,10 @@ class AsyncEOSDevice(AntaDevice):
                 logger.warning("Cannot get hardware information from device %s: %s", self.name, exc_to_str(e))
 
             else:
-                if HW_MODEL_KEY in response:
-                    self.hw_model = response[HW_MODEL_KEY]
+                if hw_model_key in response:
+                    self.hw_model = response[hw_model_key]
                 else:
-                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, COMMAND)
+                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, show_version)
 
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
