@@ -71,4 +71,4 @@ def test_get_item(
     """Test get_item."""
     # pylint: disable=too-many-arguments
     with expected_raise:
-        assert get_item(list_of_dicts, key, value, default, required, case_sensitive, var_name, custom_error_msg) == expected_result
+        assert get_item(list_of_dicts, key, value, default, var_name, custom_error_msg, required=required, case_sensitive=case_sensitive) == expected_result

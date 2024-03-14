@@ -246,4 +246,4 @@ def test_get_dict_superset(
     """Test get_dict_superset."""
     # pylint: disable=too-many-arguments
     with expected_raise:
-        assert get_dict_superset(list_of_dicts, input_dict, default, required, var_name, custom_error_msg) == expected_result
+        assert get_dict_superset(list_of_dicts, input_dict, default, var_name, custom_error_msg, required=required) == expected_result
