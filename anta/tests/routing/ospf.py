@@ -46,20 +46,18 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
       list[dict[str, Any]]: A list of OSPF neighbors whose adjacency state is not `full`.
 
     """
-    not_full_neighbors = []
-    for vrf, vrf_data in ospf_neighbor_json["vrfs"].items():
-        for instance, instance_data in vrf_data["instList"].items():
-            for neighbor_data in instance_data.get("ospfNeighborEntries", []):
-                if (state := neighbor_data["adjacencyState"]) != "full":
-                    not_full_neighbors.append(
-                        {
-                            "vrf": vrf,
-                            "instance": instance,
-                            "neighbor": neighbor_data["routerId"],
-                            "state": state,
-                        },
-                    )
-    return not_full_neighbors
+    return [
+        {
+            "vrf": vrf,
+            "instance": instance,
+            "neighbor": neighbor_data["routerId"],
+            "state": state,
+        }
+        for vrf, vrf_data in ospf_neighbor_json["vrfs"].items()
+        for instance, instance_data in vrf_data["instList"].items()
+        for neighbor_data in instance_data.get("ospfNeighborEntries", [])
+        if (state := neighbor_data["adjacencyState"]) != "full"
+    ]
 
 
 class VerifyOSPFNeighborState(AntaTest):

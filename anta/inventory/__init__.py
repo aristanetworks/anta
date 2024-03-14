@@ -21,7 +21,7 @@ from anta.logger import anta_log_exception
 logger = logging.getLogger(__name__)
 
 
-# TODO: remove when dropping 3.8
+# TODO: Replace to `dict[str, AntaDevice]` when we drop Python 3.8
 class AntaInventory(Dict[str, AntaDevice]):
     """Inventory abstraction for ANTA framework."""
 
