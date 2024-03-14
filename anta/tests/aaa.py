@@ -152,7 +152,7 @@ class VerifyAuthenMethods(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyAuthenMethods."""
         command_output = self.instance_commands[0].json_output
-        not_matching = []
+        not_matching: list[str] = []
         for k, v in command_output.items():
             auth_type = k.replace("AuthenMethods", "")
             if auth_type not in self.inputs.types:
@@ -198,7 +198,7 @@ class VerifyAuthzMethods(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyAuthzMethods."""
         command_output = self.instance_commands[0].json_output
-        not_matching = []
+        not_matching: list[str] = []
         for k, v in command_output.items():
             authz_type = k.replace("AuthzMethods", "")
             if authz_type not in self.inputs.types:
