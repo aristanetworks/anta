@@ -2,7 +2,6 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
-
 from __future__ import annotations
 
 import functools
@@ -10,7 +9,7 @@ import json
 import logging
 from pathlib import Path
 from sys import stdin
-from typing import Any
+from typing import Any, Callable
 
 import click
 import requests
@@ -26,7 +25,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger(__name__)
 
 
-def inventory_output_options(f: Any) -> Any:
+def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options required when an inventory is being generated."""
 
     @click.option(
@@ -36,7 +35,9 @@ def inventory_output_options(f: Any) -> Any:
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         help="Path to save inventory file",
-        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+        type=click.Path(
+            file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path
+        ),
     )
     @click.option(
         "--overwrite",
@@ -49,7 +50,13 @@ def inventory_output_options(f: Any) -> Any:
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], output: Path, overwrite: bool, **kwargs: dict[str, Any]) -> Any:
+    def wrapper(
+        ctx: click.Context,
+        *args: tuple[Any],
+        output: Path,
+        overwrite: bool,
+        **kwargs: dict[str, Any],
+    ) -> Any:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty
@@ -57,10 +64,15 @@ def inventory_output_options(f: Any) -> Any:
             is_tty = stdin.isatty()
             if is_tty:
                 # File has content and it is in an interactive TTY --> Prompt user
-                click.confirm(f"Your destination file '{output}' is not empty, continue?", abort=True)
+                click.confirm(
+                    f"Your destination file '{output}' is not empty, continue?",
+                    abort=True,
+                )
             else:
                 # File has content and it is not interactive TTY nor overwrite set to True --> execution stop
-                logger.critical("Conversion aborted since destination file is not empty (not running in interactive TTY)")
+                logger.critical(
+                    "Conversion aborted since destination file is not empty (not running in interactive TTY)"
+                )
                 ctx.exit(ExitCode.USAGE_ERROR)
         output.parent.mkdir(parents=True, exist_ok=True)
         return f(*args, output=output, **kwargs)
@@ -70,22 +82,28 @@ def inventory_output_options(f: Any) -> Any:
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     """Generate AUTH token from CVP using password."""
-    # TODO, need to handle requests eror
+    # TODO: need to handle requests eror
 
     # use CVP REST API to generate a token
-    URL = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
+    url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
     payload = json.dumps({"userId": cvp_username, "password": cvp_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.request("POST", URL, headers=headers, data=payload, verify=False, timeout=10)
+    response = requests.request(
+        "POST", url, headers=headers, data=payload, verify=False, timeout=10
+    )
     return response.json()["sessionId"]
 
 
 def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
     """Write a file inventory from pydantic models."""
     i = AntaInventoryInput(hosts=hosts)
-    with open(output, "w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
+    with output.open(mode="w", encoding="UTF-8") as out_fd:
+        out_fd.write(
+            yaml.dump(
+                {AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}
+            )
+        )
     logger.info("ANTA inventory file has been created: '%s'", output)
 
 
@@ -95,11 +113,48 @@ def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
     hosts = []
     for dev in inv:
         logger.info("   * adding entry for %s", dev["hostname"])
-        hosts.append(AntaInventoryHost(name=dev["hostname"], host=dev["ipAddress"], tags=[dev["containerName"].lower()]))
+        hosts.append(
+            AntaInventoryHost(
+                name=dev["hostname"],
+                host=dev["ipAddress"],
+                tags=[dev["containerName"].lower()],
+            )
+        )
     write_inventory_to_file(hosts, output)
 
 
-def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
+def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | None:
+    """Retrieve Ansible group from an input data dict."""
+    for k, v in data.items():
+        if isinstance(v, dict):
+            if k == group and ("children" in v or "hosts" in v):
+                return v
+            d = find_ansible_group(v, group)
+            if d is not None:
+                return d
+    return None
+
+
+def deep_yaml_parsing(
+    data: dict[str, Any], hosts: list[AntaInventoryHost] | None = None
+) -> list[AntaInventoryHost]:
+    """Deep parsing of YAML file to extract hosts and associated IPs."""
+    if hosts is None:
+        hosts = []
+    for key, value in data.items():
+        if isinstance(value, dict) and "ansible_host" in value:
+            logger.info("   * adding entry for %s", key)
+            hosts.append(AntaInventoryHost(name=key, host=value["ansible_host"]))
+        elif isinstance(value, dict):
+            deep_yaml_parsing(value, hosts)
+        else:
+            return hosts
+    return hosts
+
+
+def create_inventory_from_ansible(
+    inventory: Path, output: Path, ansible_group: str = "all"
+) -> None:
     """Create an ANTA inventory from an Ansible inventory YAML file.
 
     Args:
@@ -109,33 +164,8 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         ansible_group: Ansible group from where to extract data.
 
     """
-
-    def find_ansible_group(data: dict[str, Any], group: str) -> dict[str, Any] | None:
-        for k, v in data.items():
-            if isinstance(v, dict):
-                if k == group and ("children" in v or "hosts" in v):
-                    return v
-                d = find_ansible_group(v, group)
-                if d is not None:
-                    return d
-        return None
-
-    def deep_yaml_parsing(data: dict[str, Any], hosts: list[AntaInventoryHost] | None = None) -> list[AntaInventoryHost]:
-        """Deep parsing of YAML file to extract hosts and associated IPs."""
-        if hosts is None:
-            hosts = []
-        for key, value in data.items():
-            if isinstance(value, dict) and "ansible_host" in value:
-                logger.info("   * adding entry for %s", key)
-                hosts.append(AntaInventoryHost(name=key, host=value["ansible_host"]))
-            elif isinstance(value, dict):
-                deep_yaml_parsing(value, hosts)
-            else:
-                return hosts
-        return hosts
-
     try:
-        with open(inventory, encoding="utf-8") as inv:
+        with inventory.open(encoding="utf-8") as inv:
             ansible_inventory = yaml.safe_load(inv)
     except OSError as exc:
         msg = f"Could not parse {inventory}."

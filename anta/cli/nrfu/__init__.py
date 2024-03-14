@@ -24,15 +24,16 @@ if TYPE_CHECKING:
 
 
 class IgnoreRequiredWithHelp(AliasedGroup):
-    """https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
+    """Custom Click Group.
+
+    https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
+
     Solution to allow help without required options on subcommand
     This is not planned to be fixed in click as per: https://github.com/pallets/click/issues/295#issuecomment-708129734.
     """
 
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
-        """Ignore MissingParameter exception when parsing arguments if `--help`
-        is present for a subcommand.
-        """
+        """Ignore MissingParameter exception when parsing arguments if `--help` is present for a subcommand."""
         # Adding a flag for potential callbacks
         ctx.ensure_object(dict)
         if "--help" in args:
@@ -57,7 +58,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @catalog_options
 @click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
 @click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, ignore_status: bool, ignore_error: bool) -> None:
+def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, *, ignore_status: bool, ignore_error: bool) -> None:
     """Run ANTA tests on devices."""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):

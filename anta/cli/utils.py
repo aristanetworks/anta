@@ -2,14 +2,13 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli module."""
-
 from __future__ import annotations
 
 import enum
 import functools
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 import click
 from pydantic import ValidationError
@@ -26,9 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class ExitCode(enum.IntEnum):
-    """Encodes the valid exit codes by anta
-    inspired from pytest.
-    """
+    """Encodes the valid exit codes by anta inspired from pytest."""
 
     # Tests passed.
     OK = 0
@@ -44,6 +41,7 @@ class ExitCode(enum.IntEnum):
 
 def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
     # pylint: disable=unused-argument
+    # ruff: noqa: ARG001
     """Click option callback to parse an ANTA inventory tags."""
     if value is not None:
         return value.split(",") if "," in value else [value]
@@ -52,6 +50,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | Non
 
 def exit_with_code(ctx: click.Context) -> None:
     """Exit the Click application with an exit code.
+
     This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
     from the `ResultManger` instance.
     If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
@@ -70,7 +69,9 @@ def exit_with_code(ctx: click.Context) -> None:
         ctx.exit(ExitCode.OK)
 
     # If ignore_error is True then status can never be "error"
-    status = ctx.obj["result_manager"].get_status(ignore_error=bool(ctx.obj.get("ignore_error")))
+    status = ctx.obj["result_manager"].get_status(
+        ignore_error=bool(ctx.obj.get("ignore_error"))
+    )
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)
@@ -86,6 +87,7 @@ def exit_with_code(ctx: click.Context) -> None:
 
 class AliasedGroup(click.Group):
     """Implements a subclass of Group that accepts a prefix for a command.
+
     If there were a command called push, it would accept pus as an alias (so long as it was unique)
     From Click documentation.
     """
@@ -107,11 +109,13 @@ class AliasedGroup(click.Group):
         """Todo: document code."""
         # always return the full command name
         _, cmd, args = super().resolve_command(ctx, args)
-        return cmd.name, cmd, args  # type: ignore
+        if not cmd:
+            return None, None, None
+        return cmd.name, cmd, args
 
 
 # TODO: check code of click.pass_context that raise mypy errors for types and adapt this decorator
-def inventory_options(f: Any) -> Any:
+def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options when requiring an inventory to interact with devices."""
 
     @click.option(
@@ -171,7 +175,15 @@ def inventory_options(f: Any) -> Any:
         is_flag=True,
         show_default=True,
     )
-    @click.option("--disable-cache", help="Disable cache globally", show_envvar=True, envvar="ANTA_DISABLE_CACHE", show_default=True, is_flag=True, default=False)
+    @click.option(
+        "--disable-cache",
+        help="Disable cache globally",
+        show_envvar=True,
+        envvar="ANTA_DISABLE_CACHE",
+        show_default=True,
+        is_flag=True,
+        default=False,
+    )
     @click.option(
         "--inventory",
         "-i",
@@ -179,7 +191,9 @@ def inventory_options(f: Any) -> Any:
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         required=True,
-        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        type=click.Path(
+            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path
+        ),
     )
     @click.option(
         "--tags",
@@ -215,8 +229,19 @@ def inventory_options(f: Any) -> Any:
         if prompt:
             # User asked for a password prompt
             if password is None:
-                password = click.prompt("Please enter a password to connect to EOS", type=str, hide_input=True, confirmation_prompt=True)
-            if enable and enable_password is None and click.confirm("Is a password required to enter EOS privileged EXEC mode?"):
+                password = click.prompt(
+                    "Please enter a password to connect to EOS",
+                    type=str,
+                    hide_input=True,
+                    confirmation_prompt=True,
+                )
+            if (
+                enable
+                and enable_password is None
+                and click.confirm(
+                    "Is a password required to enter EOS privileged EXEC mode?"
+                )
+            ):
                 enable_password = click.prompt(
                     "Please enter a password to enter EOS privileged EXEC mode",
                     type=str,
@@ -247,7 +272,7 @@ def inventory_options(f: Any) -> Any:
     return wrapper
 
 
-def catalog_options(f: Any) -> Any:
+def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options when requiring a test catalog to execute ANTA tests."""
 
     @click.option(
@@ -256,12 +281,16 @@ def catalog_options(f: Any) -> Any:
         envvar="ANTA_CATALOG",
         show_envvar=True,
         help="Path to the test catalog YAML file",
-        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        type=click.Path(
+            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path
+        ),
         required=True,
     )
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]) -> Any:
+    def wrapper(
+        ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]
+    ) -> Any:
         # If help is invoke somewhere, do not parse catalog
         if ctx.obj.get("_anta_help"):
             return f(*args, catalog=None, **kwargs)

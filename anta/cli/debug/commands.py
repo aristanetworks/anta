@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """Click commands to execute EOS commands on remote devices."""
-# Functions in this file can have more than 5 arguments
-# ruff: noqa: PLR0913
 from __future__ import annotations
 
 import asyncio

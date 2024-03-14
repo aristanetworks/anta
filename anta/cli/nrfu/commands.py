@@ -54,7 +54,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.pass_context
 @click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
-def text(ctx: click.Context, search: str | None, skip_error: bool) -> None:
+def text(ctx: click.Context, search: str | None, *, skip_error: bool) -> None:
     """ANTA command to check network states with text result."""
     print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
     exit_with_code(ctx)

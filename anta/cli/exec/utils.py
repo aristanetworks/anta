@@ -125,7 +125,8 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, con
                     # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
                     # TODO: Should enable be also included in AntaDevice?
                     if not isinstance(device, AsyncEOSDevice):
-                        raise UsageError("anta exec collect-tech-support is only supported with AsyncEOSDevice for now.")
+                        msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
+                        raise UsageError(msg)
                     if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
                         commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
                     elif device.enable:

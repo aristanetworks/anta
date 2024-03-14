@@ -91,8 +91,10 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.command
 @inventory_options
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(inventory: AntaInventory, tags: list[str] | None, connected: bool) -> None:
+def inventory(inventory: AntaInventory, tags: list[str] | None, *, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
+    # TODO: @gmuloc - tags come from context - we cannot have everything..
+    # ruff: noqa: ARG001
     logger.debug("Requesting devices for tags: %s", tags)
     console.print("Current inventory content is:", style="white on blue")
 

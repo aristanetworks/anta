@@ -60,7 +60,7 @@ def print_json(results: ResultManager, output: pathlib.Path | None = None) -> No
     console.print(Panel("JSON results of all tests", style="cyan"))
     rich.print_json(results.get_json_results())
     if output is not None:
-        with open(output, "w", encoding="utf-8") as fout:
+        with output.open(mode="w", encoding="utf-8") as fout:
             fout.write(results.get_json_results())
 
 
@@ -70,11 +70,11 @@ def print_list(results: ResultManager, output: pathlib.Path | None = None) -> No
     console.print(Panel.fit("List results of all tests", style="cyan"))
     pprint(results.get_results())
     if output is not None:
-        with open(output, "w", encoding="utf-8") as fout:
+        with output.open(mode="w", encoding="utf-8") as fout:
             fout.write(str(results.get_results()))
 
 
-def print_text(results: ResultManager, search: str | None = None, skip_error: bool = False) -> None:
+def print_text(results: ResultManager, search: str | None = None, *, skip_error: bool = False) -> None:
     """Print results as simple text."""
     console.print()
     regexp = re.compile(search or ".*")
@@ -92,7 +92,7 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     report = reporter.render(json_data)
     console.print(report)
     if output is not None:
-        with open(output, "w", encoding="utf-8") as file:
+        with output.open(mode="w", encoding="utf-8") as file:
             file.write(report)
 
 
