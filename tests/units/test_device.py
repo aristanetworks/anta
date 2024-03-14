@@ -728,7 +728,7 @@ class TestAsyncEOSDevice:
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
         with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
             await async_device.collect(cmd)
-            commands = []
+            commands: list[dict[str, Any]] = []
             if async_device.enable and async_device._enable_password is not None:
                 commands.append(
                     {
@@ -740,7 +740,7 @@ class TestAsyncEOSDevice:
                 # No password
                 commands.append({"cmd": "enable"})
             if cmd.revision:
-                commands.append({"cmd": cmd.command, "revision": str(cmd.revision)})
+                commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
             async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version)

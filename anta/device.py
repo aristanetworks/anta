@@ -318,7 +318,7 @@ class AsyncEOSDevice(AntaDevice):
             command: the command to collect
 
         """
-        commands = []
+        commands: list[dict[str, Any]] = []
         if self.enable and self._enable_password is not None:
             commands.append(
                 {
@@ -330,7 +330,7 @@ class AsyncEOSDevice(AntaDevice):
             # No password
             commands.append({"cmd": "enable"})
         if command.revision:
-            commands.append({"cmd": command.command, "revision": str(command.revision)})
+            commands.append({"cmd": command.command, "revision": command.revision})
         else:
             commands.append({"cmd": command.command})
         try:
