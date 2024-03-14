@@ -282,14 +282,14 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
         show_envvar=True,
         help="Path to the test catalog YAML file",
         type=click.Path(
-            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path
+            file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path,
         ),
         required=True,
     )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
-        ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any]
+        ctx: click.Context, *args: tuple[Any], catalog: Path, **kwargs: dict[str, Any],
     ) -> Any:
         # If help is invoke somewhere, do not parse catalog
         if ctx.obj.get("_anta_help"):
