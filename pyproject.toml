@@ -241,6 +241,7 @@ commands =
 [testenv:lint]
 description = Check the code style
 commands =
+  ruff check .
   pylint --rcfile=pylintrc anta
   pylint --rcfile=pylintrc tests
 
