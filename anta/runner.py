@@ -25,8 +25,32 @@ logger = logging.getLogger(__name__)
 AntaTestRunner = Tuple[AntaTestDefinition, AntaDevice]
 
 
-async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, established_only: bool = True) -> None:
-    """Main coroutine to run ANTA.
+def log_cache_statistics(devices: list[AntaDevice]) -> None:
+    """Log cache statistics for each device in the inventory.
+
+    Args:
+    ----
+        devices: List of devices in the inventory.
+
+    Returns:
+    -------
+        None: Log the cache statistics for each device in the inventory.
+
+    """
+    for device in devices:
+        if device.cache_statistics is not None:
+            msg = (
+                f"Cache statistics for '{device.name}': "
+                f"{device.cache_statistics['cache_hits']} hits / {device.cache_statistics['total_commands_sent']} "
+                f"command(s) ({device.cache_statistics['cache_hit_ratio']})"
+            )
+            logger.info(msg)
+        else:
+            logger.info("Caching is not enabled on %s", device.name)
+
+async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, *, established_only: bool = True) -> None:
+    """Run ANTA.
+
     Use this as an entrypoint to the test framwork in your script.
 
     Args:
@@ -95,6 +119,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
                 ],
             )
             anta_log_exception(e, message, logger)
+
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
@@ -102,13 +127,5 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     test_results = await asyncio.gather(*coros)
     for r in test_results:
         manager.add_test_result(r)
-    for device in devices:
-        if device.cache_statistics is not None:
-            msg = (
-                f"Cache statistics for '{device.name}': "
-                f"{device.cache_statistics['cache_hits']} hits / {device.cache_statistics['total_commands_sent']} "
-                f"command(s) ({device.cache_statistics['cache_hit_ratio']})"
-            )
-            logger.info(msg)
-        else:
-            logger.info("Caching is not enabled on %s", device.name)
+
+    log_cache_statistics(devices)
