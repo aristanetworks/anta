@@ -17,7 +17,7 @@ from yaml import YAMLError
 
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
-from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
+from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
 if TYPE_CHECKING:
     from click import Option
@@ -240,7 +240,7 @@ def inventory_options(f: Any) -> Any:
                 insecure=insecure,
                 disable_cache=disable_cache,
             )
-        except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchema, InventoryRootKeyError):
+        except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, inventory=i, tags=tags, **kwargs)
 

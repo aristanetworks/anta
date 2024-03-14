@@ -7,14 +7,11 @@ from __future__ import annotations
 
 import logging
 
-from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, IPvAnyNetwork, constr
-from typing_extensions import Annotated
+from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork
+
+from anta.custom_types import Hostname, Port
 
 logger = logging.getLogger(__name__)
-
-# Pydantic models for input validation
-
-RFC_1123_REGEX = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 
 
 class AntaInventoryHost(BaseModel):
@@ -33,8 +30,8 @@ class AntaInventoryHost(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str | None = None
-    host: constr(pattern=RFC_1123_REGEX) | IPvAnyAddress  # type: ignore
-    port: Annotated[int, Field(gt=1, lt=65535)] | None = None
+    host: Hostname | IPvAnyAddress
+    port: Port | None = None
     tags: list[str] | None = None
     disable_cache: bool = False
 

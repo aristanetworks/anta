@@ -12,7 +12,7 @@ import yaml
 from pydantic import ValidationError
 
 from anta.inventory import AntaInventory
-from anta.inventory.exceptions import InventoryIncorrectSchema, InventoryRootKeyError
+from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from tests.data.json_data import ANTA_INVENTORY_TESTS_INVALID, ANTA_INVENTORY_TESTS_VALID
 from tests.lib.utils import generate_test_ids_dict
 
@@ -78,5 +78,5 @@ class TestAntaInventory:
 
         """
         inventory_file = self.create_inventory(content=test_definition["input"], tmp_path=tmp_path)
-        with pytest.raises((InventoryIncorrectSchema, InventoryRootKeyError, ValidationError)):
+        with pytest.raises((InventoryIncorrectSchemaError, InventoryRootKeyError, ValidationError)):
             AntaInventory.parse(filename=inventory_file, username="arista", password="arista123")
