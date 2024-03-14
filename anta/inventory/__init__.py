@@ -2,14 +2,13 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Inventory module for ANTA."""
-
 from __future__ import annotations
 
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -22,7 +21,8 @@ from anta.logger import anta_log_exception
 logger = logging.getLogger(__name__)
 
 
-class AntaInventory(dict[str, AntaDevice]):
+# TODO: remove when dropping 3.8
+class AntaInventory(Dict[str, AntaDevice]):
     """Inventory abstraction for ANTA framework."""
 
     # Root key of inventory part of the inventory file
@@ -41,7 +41,9 @@ class AntaInventory(dict[str, AntaDevice]):
         return f"ANTA Inventory contains {' '.join([f'{n} devices ({t})' for t, n in devs.items()])}"
 
     @staticmethod
-    def _update_disable_cache(kwargs: dict[str, Any], *, inventory_disable_cache: bool) -> dict[str, Any]:
+    def _update_disable_cache(
+        kwargs: dict[str, Any], *, inventory_disable_cache: bool
+    ) -> dict[str, Any]:
         """Return new dictionary, replacing kwargs with added disable_cache value from inventory_value if disable_cache has not been set by CLI.
 
         Args:
@@ -51,11 +53,17 @@ class AntaInventory(dict[str, AntaDevice]):
 
         """
         updated_kwargs = kwargs.copy()
-        updated_kwargs["disable_cache"] = inventory_disable_cache or kwargs.get("disable_cache")
+        updated_kwargs["disable_cache"] = inventory_disable_cache or kwargs.get(
+            "disable_cache"
+        )
         return updated_kwargs
 
     @staticmethod
-    def _parse_hosts(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: dict[str, Any]) -> None:
+    def _parse_hosts(
+        inventory_input: AntaInventoryInput,
+        inventory: AntaInventory,
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Parse the host section of an AntaInventoryInput and add the devices to the inventory.
 
         Args:
@@ -69,12 +77,24 @@ class AntaInventory(dict[str, AntaDevice]):
             return
 
         for host in inventory_input.hosts:
-            updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=host.disable_cache)
-            device = AsyncEOSDevice(name=host.name, host=str(host.host), port=host.port, tags=host.tags, **updated_kwargs)
+            updated_kwargs = AntaInventory._update_disable_cache(
+                kwargs, inventory_disable_cache=host.disable_cache
+            )
+            device = AsyncEOSDevice(
+                name=host.name,
+                host=str(host.host),
+                port=host.port,
+                tags=host.tags,
+                **updated_kwargs,
+            )
             inventory.add_device(device)
 
     @staticmethod
-    def _parse_networks(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: dict[str, Any]) -> None:
+    def _parse_networks(
+        inventory_input: AntaInventoryInput,
+        inventory: AntaInventory,
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Parse the network section of an AntaInventoryInput and add the devices to the inventory.
 
         Args:
@@ -93,9 +113,13 @@ class AntaInventory(dict[str, AntaDevice]):
 
         try:
             for network in inventory_input.networks:
-                updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=network.disable_cache)
+                updated_kwargs = AntaInventory._update_disable_cache(
+                    kwargs, inventory_disable_cache=network.disable_cache
+                )
                 for host_ip in ip_network(str(network.network)):
-                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
+                    device = AsyncEOSDevice(
+                        host=str(host_ip), tags=network.tags, **updated_kwargs
+                    )
                     inventory.add_device(device)
         except ValueError as e:
             message = "Could not parse the network section in the inventory"
@@ -103,7 +127,11 @@ class AntaInventory(dict[str, AntaDevice]):
             raise InventoryIncorrectSchemaError(message) from e
 
     @staticmethod
-    def _parse_ranges(inventory_input: AntaInventoryInput, inventory: AntaInventory, **kwargs: dict[str, Any]) -> None:
+    def _parse_ranges(
+        inventory_input: AntaInventoryInput,
+        inventory: AntaInventory,
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Parse the range section of an AntaInventoryInput and add the devices to the inventory.
 
         Args:
@@ -122,13 +150,17 @@ class AntaInventory(dict[str, AntaDevice]):
 
         try:
             for range_def in inventory_input.ranges:
-                updated_kwargs = AntaInventory._update_disable_cache(kwargs, inventory_disable_cache=range_def.disable_cache)
+                updated_kwargs = AntaInventory._update_disable_cache(
+                    kwargs, inventory_disable_cache=range_def.disable_cache
+                )
                 range_increment = ip_address(str(range_def.start))
                 range_stop = ip_address(str(range_def.end))
                 while range_increment <= range_stop:  # type: ignore[operator]
                     # mypy raise an issue about comparing IPv4Address and IPv6Address
                     # but this is handled by the ipaddress module natively by raising a TypeError
-                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **updated_kwargs)
+                    device = AsyncEOSDevice(
+                        host=str(range_increment), tags=range_def.tags, **updated_kwargs
+                    )
                     inventory.add_device(device)
                     range_increment += 1
         except ValueError as e:
@@ -136,7 +168,9 @@ class AntaInventory(dict[str, AntaDevice]):
             anta_log_exception(e, message, logger)
             raise InventoryIncorrectSchemaError(message) from e
         except TypeError as e:
-            message = "A range in the inventory has different address families (IPv4 vs IPv6)"
+            message = (
+                "A range in the inventory has different address families (IPv4 vs IPv6)"
+            )
             anta_log_exception(e, message, logger)
             raise InventoryIncorrectSchemaError(message) from e
 
@@ -203,14 +237,22 @@ class AntaInventory(dict[str, AntaDevice]):
             raise
 
         if AntaInventory.INVENTORY_ROOT_KEY not in data:
-            exc = InventoryRootKeyError(f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory")
-            anta_log_exception(exc, f"Device inventory is invalid! (from {filename})", logger)
+            exc = InventoryRootKeyError(
+                f"Inventory root key ({AntaInventory.INVENTORY_ROOT_KEY}) is not defined in your inventory"
+            )
+            anta_log_exception(
+                exc, f"Device inventory is invalid! (from {filename})", logger
+            )
             raise exc
 
         try:
-            inventory_input = AntaInventoryInput(**data[AntaInventory.INVENTORY_ROOT_KEY])
+            inventory_input = AntaInventoryInput(
+                **data[AntaInventory.INVENTORY_ROOT_KEY]
+            )
         except ValidationError as e:
-            anta_log_exception(e, f"Device inventory is invalid! (from {filename})", logger)
+            anta_log_exception(
+                e, f"Device inventory is invalid! (from {filename})", logger
+            )
             raise
 
         # Read data from input
@@ -228,7 +270,9 @@ class AntaInventory(dict[str, AntaDevice]):
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None) -> AntaInventory:
+    def get_inventory(
+        self, *, established_only: bool = False, tags: list[str] | None = None
+    ) -> AntaInventory:
         """Return a filtered inventory.
 
         Args:
