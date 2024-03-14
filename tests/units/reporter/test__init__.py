@@ -125,7 +125,7 @@ class TestReportTable:
     ) -> None:
         """Test report_summary_tests."""
         # pylint: disable=too-many-arguments
-        # TODO refactor this later... this is injecting double test results by modyfing the device name
+        # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         rm = result_manager_factory(number_of_tests)
         new_results = [result.model_copy() for result in rm.get_results()]
@@ -161,7 +161,7 @@ class TestReportTable:
     ) -> None:
         """Test report_summary_hosts."""
         # pylint: disable=too-many-arguments
-        # TODO refactor this later... this is injecting double test results by modyfing the device name
+        # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         rm = result_manager_factory(number_of_tests)
         new_results = [result.model_copy() for result in rm.get_results()]

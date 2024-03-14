@@ -134,10 +134,7 @@ def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Cal
 
     def _factory(size: int = 0) -> list[TestResult]:
         """Create a factory for list[TestResult] entry of size entries."""
-        result: list[TestResult] = []
-        for i in range(size):
-            result.append(test_result_factory(i))
-        return result
+        return [test_result_factory(i) for i in range(size)]
 
     return _factory
 

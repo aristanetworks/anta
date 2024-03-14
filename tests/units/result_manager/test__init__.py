@@ -224,7 +224,7 @@ class TestResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
-    # TODO
+    # TODO: implement missing functions
     # get_result_by_test
     # get_result_by_host
     # get_testcases

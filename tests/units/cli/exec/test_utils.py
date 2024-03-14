@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from anta.inventory import AntaInventory
 
 
-# TODO complete test cases
+# TODO: complete test cases
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
     ("inventory_state", "per_device_command_output", "tags"),

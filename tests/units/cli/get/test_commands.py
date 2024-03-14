@@ -152,7 +152,7 @@ def test_from_ansible(
         assert expected_log in result.output
     else:
         assert output.exists()
-        # TODO check size of generated inventory to validate the group functionality!
+        # TODO: check size of generated inventory to validate the group functionality!
 
 
 @pytest.mark.parametrize(
