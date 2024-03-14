@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import functools
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import click
 
 from anta.cli.utils import ExitCode, inventory_options
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -19,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def debug_options(f: Any) -> Any:
+def debug_options(f: F) -> F:
     """Click common options required to execute a command on a specific device."""
 
     @inventory_options
@@ -29,8 +31,10 @@ def debug_options(f: Any) -> Any:
     @click.option("--device", "-d", type=str, required=True, help="Device from inventory to use")
     @click.pass_context
     @functools.wraps(f)
-    def wrapper(ctx: click.Context, *args: tuple[Any], inventory: AntaInventory, tags: list[str] | None, device: str, **kwargs: dict[str, Any]) -> Any:
+    def wrapper(ctx: click.Context, *args: tuple[Any], inventory: AntaInventory, tags: list[str] | None, device: str, **kwargs: Any) -> Any:
+        # TODO: @gmuloc - tags come from context https://github.com/arista-netdevops-community/anta/issues/584
         # pylint: disable=unused-argument
+        # ruff: noqa: ARG001
         try:
             d = inventory[device]
         except KeyError as e:

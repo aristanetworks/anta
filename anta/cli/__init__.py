@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
@@ -15,7 +14,7 @@ import click
 from anta import GITHUB_SUGGESTION, __version__
 from anta.cli.check import check as check_command
 from anta.cli.debug import debug as debug_command
-from anta.cli.exec import exec as exec_command
+from anta.cli.exec import _exec as exec_command
 from anta.cli.get import get as get_command
 from anta.cli.nrfu import nrfu as nrfu_command
 from anta.cli.utils import AliasedGroup, ExitCode

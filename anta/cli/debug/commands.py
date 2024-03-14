@@ -3,7 +3,8 @@
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
 """Click commands to execute EOS commands on remote devices."""
-
+# Functions in this file can have more than 5 arguments
+# ruff: noqa: PLR0913
 from __future__ import annotations
 
 import asyncio
@@ -27,7 +28,14 @@ logger = logging.getLogger(__name__)
 @debug_options
 @click.pass_context
 @click.option("--command", "-c", type=str, required=True, help="Command to run")
-def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"], revision: int) -> None:
+def run_cmd(
+    ctx: click.Context,
+    device: AntaDevice,
+    command: str,
+    ofmt: Literal["json", "text"],
+    version: Literal["1", "latest"],
+    revision: int,
+) -> None:
     """Run arbitrary command to an ANTA device."""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it
@@ -46,7 +54,13 @@ def run_cmd(ctx: click.Context, device: AntaDevice, command: str, ofmt: Literal[
 @click.command
 @debug_options
 @click.pass_context
-@click.option("--template", "-t", type=str, required=True, help="Command template to run. E.g. 'show vlan {vlan_id}'")
+@click.option(
+    "--template",
+    "-t",
+    type=str,
+    required=True,
+    help="Command template to run. E.g. 'show vlan {vlan_id}'",
+)
 @click.argument("params", required=True, nargs=-1)
 def run_template(
     ctx: click.Context,
@@ -69,11 +83,13 @@ def run_template(
     """
     template_params = dict(zip(params[::2], params[1::2]))
 
-    console.print(f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]")
+    console.print(
+        f"Run templated command [blue]'{template}'[/blue] with [orange]{template_params}[/orange] on [red]{device.name}[/red]"
+    )
     # I do not assume the following line, but click make me do it
     v: Literal[1, "latest"] = version if version == "latest" else 1
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
-    c = t.render(**template_params)  # type: ignore
+    c = t.render(**template_params)  # type: ignore[arg-type]
     asyncio.run(device.collect(c))
     if not c.collected:
         console.print(f"[bold red] Command '{c.command}' failed to execute!")

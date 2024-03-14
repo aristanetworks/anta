@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from aioeapi import EapiCommandError
+from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
@@ -90,7 +91,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:
@@ -119,10 +120,12 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, config
             if command.collected and not command.text_output:
                 logger.debug("'aaa authorization exec default local' is not configured on device %s", device.name)
                 if configure:
-                    # Otherwise mypy complains about enable
-                    assert isinstance(device, AsyncEOSDevice)
-                    # TODO - @mtache - add `config` field to `AntaCommand` object to handle this use case.
                     commands = []
+                    # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
+                    # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
+                    # TODO: Should enable be also included in AntaDevice?
+                    if not isinstance(device, AsyncEOSDevice):
+                        raise UsageError("anta exec collect-tech-support is only supported with AsyncEOSDevice for now.")
                     if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
                         commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
                     elif device.enable:
