@@ -46,8 +46,8 @@ repos:
     - id: ruff
       name: Run Ruff linter
       args: [ --fix ]
-      name: Run Ruff formatter
     - id: ruff-format
+      name: Run Ruff formatter
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:

@@ -393,5 +393,5 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "PLR0913",     # Ok to have more than 5 arguments in the AntaDevice classes
 ]
 "anta/inventory/__init__.py" = [
-  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory classe
+  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
