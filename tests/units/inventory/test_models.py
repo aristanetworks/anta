@@ -347,12 +347,12 @@ class TestInventoryDeviceModel:
         if test_definition["expected_result"] == "invalid":
             pytest.skip("Not concerned by the test")
 
-        for entity in test_definition["input"]:
-            try:
+        try:
+            for entity in test_definition["input"]:
                 AsyncEOSDevice(**entity)
-            except TypeError as exc:
-                logging.warning("Error: %s", str(exc))
-                raise AssertionError from exc
+        except TypeError as exc:
+            logging.warning("Error: %s", str(exc))
+            raise AssertionError from exc
 
     @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_INVALID, ids=generate_test_ids_dict)
     def test_inventory_device_invalid(self, test_definition: dict[str, Any]) -> None:
@@ -382,10 +382,10 @@ class TestInventoryDeviceModel:
         if test_definition["expected_result"] == "valid":
             pytest.skip("Not concerned by the test")
 
-        for entity in test_definition["input"]:
-            try:
+        try:
+            for entity in test_definition["input"]:
                 AsyncEOSDevice(**entity)
-            except TypeError as exc:
-                logging.info("Error: %s", str(exc))
-            else:
-                raise AssertionError
+        except TypeError as exc:
+            logging.info("Error: %s", str(exc))
+        else:
+            raise AssertionError

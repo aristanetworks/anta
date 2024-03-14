@@ -165,9 +165,8 @@ class VerifyAuthenMethods(AntaTest):
                 if v["login"]["methods"] != self.inputs.methods:
                     self.result.is_failure(f"AAA authentication methods {self.inputs.methods} are not matching for login console")
                     return
-            for methods in v.values():
-                if methods["methods"] != self.inputs.methods:
-                    not_matching.append(auth_type)
+            not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)
+
         if not not_matching:
             self.result.is_success()
         else:
@@ -205,9 +204,8 @@ class VerifyAuthzMethods(AntaTest):
             if authz_type not in self.inputs.types:
                 # We do not need to verify this accounting type
                 continue
-            for methods in v.values():
-                if methods["methods"] != self.inputs.methods:
-                    not_matching.append(authz_type)
+            not_matching.extend(authz_type for methods in v.values() if methods["methods"] != self.inputs.methods)
+
         if not not_matching:
             self.result.is_success()
         else:

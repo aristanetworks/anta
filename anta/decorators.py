@@ -13,7 +13,7 @@ from anta.models import AntaTest, logger
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
-# TODO - should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
+# TODO: should probably use mypy Awaitable in some places rather than this everywhere - @gmuloc
 F = TypeVar("F", bound=Callable[..., Any])
 
 
