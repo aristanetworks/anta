@@ -84,7 +84,7 @@ class VerifySpecificRouterPath(AntaTest):
             peer: IPv4Address
             """Static peer IPv4 address"""
 
-            path_groups: list[str]
+            path_groups: List[str]
             """Router path group names"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
