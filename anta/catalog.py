@@ -66,7 +66,7 @@ class AntaTestDefinition(BaseModel):
     @field_validator("inputs", mode="before")
     @classmethod
     def instantiate_inputs(
-        cls: AntaTestDefinition,
+        cls: type[AntaTestDefinition],
         data: AntaTest.Input | dict[str, Any] | None,
         info: ValidationInfo,
     ) -> AntaTest.Input:
@@ -177,7 +177,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
     # and cannot know in advance what it is.
     @model_validator(mode="before")
     @classmethod
-    def check_tests(cls: AntaCatalogFile, data: Any) -> Any:  # noqa: ANN401
+    def check_tests(cls: type[AntaCatalogFile], data: Any) -> Any:  # noqa: ANN401
         """Allow the user to provide a Python data structure that only has string values.
 
         This validator will try to flatten and import Python modules, check if the tests classes
