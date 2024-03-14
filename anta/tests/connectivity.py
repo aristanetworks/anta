@@ -133,22 +133,38 @@ class VerifyLLDPNeighbors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLLDPNeighbors."""
-        command_output = self.instance_commands[0].json_output
-
+        failure_type_map = {
+            "port_not_configured": "Port(s) not configured",
+            "no_lldp_neighbor": "No LLDP neighbor(s)",
+            "wrong_lldp_neighbor": "Wrong LLDP neighbor(s)",
+        }
         failures: dict[str, list[str]] = {}
 
+        command_output = self.instance_commands[0].json_output
+
         for neighbor in self.inputs.neighbors:
+            neighbor_found = False
             if neighbor.port not in command_output["lldpNeighbors"]:
                 failures.setdefault("port_not_configured", []).append(neighbor.port)
-            elif len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
+                continue
+
+            if len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
                 failures.setdefault("no_lldp_neighbor", []).append(neighbor.port)
-            elif (
-                lldp_neighbor_info[0]["systemName"] != neighbor.neighbor_device
-                or lldp_neighbor_info[0]["neighborInterfaceInfo"]["interfaceId_v2"] != neighbor.neighbor_port
-            ):
+                continue
+
+            for info in lldp_neighbor_info:
+                if info["systemName"] == neighbor.neighbor_device and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port:
+                    neighbor_found = True
+                    break
+
+            if neighbor_found is False:
                 failures.setdefault("wrong_lldp_neighbor", []).append(neighbor.port)
 
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following port(s) have issues: {failures}")
+            failure_messages = []
+            for failure_type, ports in failures.items():
+                ports_str = ", ".join(ports)
+                failure_messages.append(f"{failure_type_map[failure_type]}: {ports_str}")
+            self.result.is_failure("\n".join(failure_messages))
