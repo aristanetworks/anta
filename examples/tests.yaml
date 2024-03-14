@@ -217,12 +217,12 @@ anta.tests.profiles:
       profile: vxlan-routing
 
 anta.tests.ptp:
-  - PtpModeStatus:
-  - PtpPortModeStatus:
-  - PtpLockStatus:
-  - PtpGMStatus:
-      validGM: 0xec:46:70:ff:fe:00:ff:a9
-  - PtpOffset:
+  - VerifyPtpModeStatus:
+  - VerifyPtpPortModeStatus:
+  - VerifyPtpLockStatus:
+  - VerifyPtpGMStatus:
+      gmid: 0xec:46:70:ff:fe:00:ff:a9
+  - VerifyPtpOffset:
 
 anta.tests.security:
   - VerifySSHStatus:
