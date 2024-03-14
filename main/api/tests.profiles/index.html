@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1125,6 +1125,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.profiles.VerifyTcamProfile.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1161,6 +1170,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -1972,6 +1990,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.profiles.VerifyTcamProfile.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2008,6 +2035,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -2057,7 +2093,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Test functions related to ASIC profiles</p>
+      <p>Module related to ASIC profile tests.</p>
 
   
 
@@ -2086,19 +2122,18 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the device is using the configured TCAM profile.</p>
+      <p>Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the provided TCAM profile is actually running on the device.</li>
+<li>Failure: The test will fail if the provided TCAM profile is not running on the device.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -2111,23 +2146,43 @@
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTcamProfile</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the device is using the configured TCAM profile.</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTcamProfile</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the provided TCAM profile is actually running on the device.</span>
+<span class="sd">        * Failure: The test will fail if the provided TCAM profile is not running on the device.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTcamProfile&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verify that the assigned TCAM profile is actually running on the device&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the device TCAM profile.&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show hardware tcam profile&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyTcamProfile test.&quot;&quot;&quot;</span>
+
         <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile.&quot;&quot;&quot;</span>
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyTcamProfile.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">profile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -2162,14 +2217,20 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyTcamProfile test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyTcamProfile test.&quot;&quot;&quot;</span>
+
     <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected TCAM profile.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2201,7 +2262,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Expected TCAM profile</p>
+      <p>Expected TCAM profile.</p>
   </div>
 
 </div>
@@ -2217,6 +2278,48 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.profiles.VerifyTcamProfile.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.profiles.VerifyTcamProfile.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyTcamProfile.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/profiles.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+<span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyTcamProfile.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;pmfProfiles&quot;</span><span class="p">][</span><span class="s2">&quot;FixedSystem&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">profile</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect profile running on device: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;pmfProfiles&#39;</span><span class="p">][</span><span class="s1">&#39;FixedSystem&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2243,13 +2346,18 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the device is using the expected Unified Forwarding Table mode.</p>
+      <p>Verifies the device is using the expected UFT (Unified Forwarding Table) mode.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the device is using the expected UFT mode.</li>
+<li>Failure: The test will fail if the device is not using the expected UFT mode.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -2268,23 +2376,37 @@
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyUnifiedForwardingTableMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the device is using the expected Unified Forwarding Table mode.</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyUnifiedForwardingTableMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the device is using the expected UFT (Unified Forwarding Table) mode.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the device is using the expected UFT mode.</span>
+<span class="sd">        * Failure: The test will fail if the device is not using the expected UFT mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyUnifiedForwardingTableMode&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the device is using the expected UFT mode.&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show platform trident forwarding-table partition&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyUnifiedForwardingTableMode test.&quot;&quot;&quot;</span>
+
         <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;flexible&quot;</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected UFT mode&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or &quot;flexible&quot;.&quot;&quot;&quot;</span>
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyUnifiedForwardingTableMode.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;uftMode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mode</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -2319,14 +2441,20 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyUnifiedForwardingTableMode test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/profiles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyUnifiedForwardingTableMode test.&quot;&quot;&quot;</span>
+
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;flexible&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected UFT mode&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or &quot;flexible&quot;.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2358,7 +2486,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Expected UFT mode</p>
+      <p>Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or &ldquo;flexible&rdquo;.</p>
   </div>
 
 </div>
@@ -2374,6 +2502,48 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.profiles.VerifyUnifiedForwardingTableMode.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.profiles.VerifyUnifiedForwardingTableMode.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyUnifiedForwardingTableMode.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/profiles.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+<span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyUnifiedForwardingTableMode.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="k">if</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;uftMode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device is not running correct UFT mode (expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> / running: </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;uftMode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 

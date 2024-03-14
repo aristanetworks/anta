@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1758,6 +1758,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#anta.result_manager.models.TestResult--attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attributes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.result_manager.models.TestResult.is_error" class="md-nav__link">
     <span class="md-ellipsis">
       is_error
@@ -1942,6 +1951,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#anta.result_manager.models.TestResult--attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attributes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#anta.result_manager.models.TestResult.is_error" class="md-nav__link">
     <span class="md-ellipsis">
       is_error
@@ -2035,98 +2053,15 @@
 
   
       <p>Describe the result of a test from a single device.</p>
-
-
-
-  <p><strong>Attributes:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.name">name</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Device name where the test has run.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.test">test</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Test name runs on the device.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.categories">categories</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>List of categories the TestResult belongs to, by default the AntaTest categories.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.description">description</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>TestResult description, by default the AntaTest description.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.result">result</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="anta.custom_types.TestStatus" href="../types/#anta.custom_types.TestStatus">TestStatus</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Result of the test. Can be one of &ldquo;unset&rdquo;, &ldquo;success&rdquo;, &ldquo;failure&rdquo;, &ldquo;error&rdquo; or &ldquo;skipped&rdquo;.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.messages">messages</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Message to report after the test if any.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><code><span title="anta.result_manager.models.TestResult.custom_field">custom_field</span></code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Custom field to store a string for flexibility in integrating with ANTA</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+<h6 id="anta.result_manager.models.TestResult--attributes">Attributes<a class="headerlink" href="#anta.result_manager.models.TestResult--attributes" title="Permanent link">&para;</a></h6>
+<div class="codehilite"><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">where</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">run</span><span class="o">.</span>
+<span class="n">test</span><span class="o">:</span><span class="w"> </span><span class="n">Test</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">runs</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
+<span class="n">categories</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">categories</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">TestResult</span><span class="w"> </span><span class="n">belongs</span><span class="w"> </span><span class="n">to</span><span class="o">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaTest</span><span class="w"> </span><span class="n">categories</span><span class="o">.</span>
+<span class="n">description</span><span class="o">:</span><span class="w"> </span><span class="n">TestResult</span><span class="w"> </span><span class="n">description</span><span class="o">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaTest</span><span class="w"> </span><span class="n">description</span><span class="o">.</span>
+<span class="n">result</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="s2">&quot;unset&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;failure&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="s2">&quot;skipped&quot;</span><span class="o">.</span>
+<span class="n">messages</span><span class="o">:</span><span class="w"> </span><span class="n">Message</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">after</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">any</span><span class="o">.</span>
+<span class="n">custom_field</span><span class="o">:</span><span class="w"> </span><span class="n">Custom</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">flexibility</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">integrating</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">ANTA</span>
+</code></pre></div>
 
 
   
@@ -2156,17 +2091,28 @@
 
   <div class="doc doc-contents ">
   
-      <p>Helper to set status to error</p>
+      <p>Set status to error.</p>
+      <hr />
+<div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
+</code></pre></div>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper to set status to error</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to error.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        message: Optional message related to the test</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2190,37 +2136,10 @@
 
   <div class="doc doc-contents ">
   
-      <p>Helper to set status to failure</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>message</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional message related to the test</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      <p>Set status to failure.</p>
+      <hr />
+<div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
+</code></pre></div>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/models.py</code></summary>
@@ -2231,12 +2150,14 @@
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper to set status to failure</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to failure.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">    ----</span>
 <span class="sd">        message: Optional message related to the test</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2260,53 +2181,28 @@
 
   <div class="doc doc-contents ">
   
-      <p>Helper to set status to skipped</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>message</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional message related to the test</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      <p>Set status to skipped.</p>
+      <hr />
+<div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
+</code></pre></div>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper to set status to skipped</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to skipped.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">    ----</span>
 <span class="sd">        message: Optional message related to the test</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;skipped&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2330,41 +2226,15 @@
 
   <div class="doc doc-contents ">
   
-      <p>Helper to set status to success</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>message</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional message related to the test</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      <p>Set status to success.</p>
+      <hr />
+<div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
+</code></pre></div>
 
           <details class="quote">
             <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+<span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
@@ -2372,11 +2242,12 @@
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper to set status to success</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to success.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">    ----</span>
 <span class="sd">        message: Optional message related to the test</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1014,6 +1014,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyLLDPNeighbors.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1095,6 +1104,24 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyReachability.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyReachability.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -2089,6 +2116,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyLLDPNeighbors.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2173,6 +2209,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyReachability.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.connectivity.VerifyReachability.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2219,7 +2273,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Test functions related to various connectivity checks</p>
+      <p>Module related to various connectivity tests.</p>
 
   
 
@@ -2248,13 +2302,13 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.</p>
+      <p>Verifies that the provided LLDP neighbors are present and connected with the correct configuration.</p>
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</li>
-<li>failure: The test will fail if any of the following conditions are met:<ul>
+<li>Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</li>
+<li>Failure: The test will fail if any of the following conditions are met:<ul>
 <li>The provided LLDP neighbor is not found.</li>
 <li>The system name or port of the LLDP neighbor does not match the provided information.</li>
 </ul>
@@ -2263,8 +2317,7 @@
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
-<span class="normal"> 76</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 76</span>
 <span class="normal"> 77</span>
 <span class="normal"> 78</span>
 <span class="normal"> 79</span>
@@ -2313,38 +2366,43 @@
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the provided LLDP neighbors are present and connected with the correct configuration.</span>
 
 <span class="sd">    Expected Results:</span>
-<span class="sd">        * success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</span>
-<span class="sd">        * failure: The test will fail if any of the following conditions are met:</span>
+<span class="sd">        * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</span>
+<span class="sd">        * Failure: The test will fail if any of the following conditions are met:</span>
 <span class="sd">            - The provided LLDP neighbor is not found.</span>
 <span class="sd">            - The system name or port of the LLDP neighbor does not match the provided information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyLLDPNeighbors&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies that the provided LLDP neighbors are connected properly.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show lldp neighbors detail&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show lldp neighbors detail&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-        <span class="n">neighbors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLLDPNeighbors test.&quot;&quot;&quot;</span>
+
+        <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors.&quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for an LLDP neighbor.&quot;&quot;&quot;</span>
 
             <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP port&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP port.&quot;&quot;&quot;</span>
             <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device.&quot;&quot;&quot;</span>
             <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLLDPNeighbors.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2393,6 +2451,8 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyLLDPNeighbors test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
@@ -2408,19 +2468,23 @@
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">neighbors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors&quot;&quot;&quot;</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLLDPNeighbors test.&quot;&quot;&quot;</span>
+
+    <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors.&quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP neighbor&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model for an LLDP neighbor.&quot;&quot;&quot;</span>
 
         <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP port&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP port.&quot;&quot;&quot;</span>
         <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device.&quot;&quot;&quot;</span>
         <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2447,12 +2511,12 @@
   </span>
 
 <a href="#anta.tests.connectivity.VerifyLLDPNeighbors.Input.neighbors" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">neighbors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>List of LLDP neighbors</p>
+      <p>List of LLDP neighbors.</p>
   </div>
 
 </div>
@@ -2474,27 +2538,27 @@
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>LLDP neighbor</p>
+      <p>Model for an LLDP neighbor.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP neighbor&quot;&quot;&quot;</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an LLDP neighbor.&quot;&quot;&quot;</span>
 
     <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP port&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP port.&quot;&quot;&quot;</span>
     <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device.&quot;&quot;&quot;</span>
     <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2526,7 +2590,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>LLDP neighbor device</p>
+      <p>LLDP neighbor device.</p>
   </div>
 
 </div>
@@ -2549,7 +2613,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>LLDP neighbor port</p>
+      <p>LLDP neighbor port.</p>
   </div>
 
 </div>
@@ -2572,7 +2636,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>LLDP port</p>
+      <p>LLDP port.</p>
   </div>
 
 </div>
@@ -2598,6 +2662,74 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.connectivity.VerifyLLDPNeighbors.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.connectivity.VerifyLLDPNeighbors.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyLLDPNeighbors.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLLDPNeighbors.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+    <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">neighbors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">port</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;lldpNeighbors&quot;</span><span class="p">]:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;port_not_configured&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">lldp_neighbor_info</span> <span class="o">:=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;lldpNeighbors&quot;</span><span class="p">][</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">][</span><span class="s2">&quot;lldpNeighborInfo&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;no_lldp_neighbor&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">lldp_neighbor_info</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;systemName&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span>
+            <span class="ow">or</span> <span class="n">lldp_neighbor_info</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;neighborInterfaceInfo&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceId_v2&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_port</span>
+        <span class="p">):</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;wrong_lldp_neighbor&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following port(s) have issues: </span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2629,13 +2761,16 @@
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>success: The test will pass if all destination IP(s) are reachable.</li>
-<li>failure: The test will fail if one or many destination IP(s) are unreachable.</li>
+<li>Success: The test will pass if all destination IP(s) are reachable.</li>
+<li>Failure: The test will fail if one or many destination IP(s) are unreachable.</li>
 </ul>
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -2685,41 +2820,45 @@
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test network reachability to one or many destination IP(s).</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results:</span>
-<span class="sd">        * success: The test will pass if all destination IP(s) are reachable.</span>
-<span class="sd">        * failure: The test will fail if one or many destination IP(s) are unreachable.</span>
+<span class="sd">        * Success: The test will pass if all destination IP(s) are reachable.</span>
+<span class="sd">        * Failure: The test will fail if one or many destination IP(s) are unreachable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyReachability&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Test the network reachability to one or many destination IP(s).&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;ping vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{destination}</span><span class="s2"> source </span><span class="si">{source}</span><span class="s2"> repeat </span><span class="si">{repeat}</span><span class="s2">&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;connectivity&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;ping vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{destination}</span><span class="s2"> source </span><span class="si">{source}</span><span class="s2"> repeat </span><span class="si">{repeat}</span><span class="s2">&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-        <span class="n">hosts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of hosts to ping&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyReachability test.&quot;&quot;&quot;</span>
+
+        <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of host to ping.&quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Remote host to ping&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for a remote host to ping.&quot;&quot;&quot;</span>
 
             <span class="n">destination</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping&quot;&quot;&quot;</span>
-            <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">,</span> <span class="n">Interface</span><span class="p">]</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or Egress interface to use&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping.&quot;&quot;&quot;</span>
+            <span class="n">source</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">Interface</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or egress interface to use.&quot;&quot;&quot;</span>
             <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;VRF context&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default`.&quot;&quot;&quot;</span>
             <span class="n">repeat</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Number of ping repetition (default=2)&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Number of ping repetition. Defaults to 2.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each host in the input list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">vrf</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="p">)</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyReachability.&quot;&quot;&quot;</span>
         <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
             <span class="n">src</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span>
@@ -2727,7 +2866,8 @@
             <span class="n">repeat</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">repeat</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="n">AntaMissingParamException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A parameter is missing to execute the test for command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A parameter is missing to execute the test for command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">AntaMissingParamError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst</span><span class="p">)))</span>
@@ -2765,10 +2905,16 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyReachability test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
@@ -2780,23 +2926,23 @@
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">hosts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of hosts to ping&quot;&quot;&quot;</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyReachability test.&quot;&quot;&quot;</span>
+
+    <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of host to ping.&quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remote host to ping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model for a remote host to ping.&quot;&quot;&quot;</span>
 
         <span class="n">destination</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping&quot;&quot;&quot;</span>
-        <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">,</span> <span class="n">Interface</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or Egress interface to use&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping.&quot;&quot;&quot;</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">Interface</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or egress interface to use.&quot;&quot;&quot;</span>
         <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;VRF context&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default`.&quot;&quot;&quot;</span>
         <span class="n">repeat</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of ping repetition (default=2)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of ping repetition. Defaults to 2.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2823,12 +2969,12 @@
   </span>
 
 <a href="#anta.tests.connectivity.VerifyReachability.Input.hosts" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">hosts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>List of hosts to ping</p>
+      <p>List of host to ping.</p>
   </div>
 
 </div>
@@ -2850,11 +2996,13 @@
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Remote host to ping</p>
+      <p>Model for a remote host to ping.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
@@ -2862,19 +3010,17 @@
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remote host to ping&quot;&quot;&quot;</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a remote host to ping.&quot;&quot;&quot;</span>
 
     <span class="n">destination</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping&quot;&quot;&quot;</span>
-    <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">,</span> <span class="n">Interface</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or Egress interface to use&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 address to ping.&quot;&quot;&quot;</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">Interface</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 address source IP or egress interface to use.&quot;&quot;&quot;</span>
     <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default`.&quot;&quot;&quot;</span>
     <span class="n">repeat</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of ping repetition (default=2)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of ping repetition. Defaults to 2.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2906,7 +3052,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>IPv4 address to ping</p>
+      <p>IPv4 address to ping.</p>
   </div>
 
 </div>
@@ -2930,7 +3076,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Number of ping repetition (default=2)</p>
+      <p>Number of ping repetition. Defaults to 2.</p>
   </div>
 
 </div>
@@ -2948,12 +3094,12 @@
   </span>
 
 <a href="#anta.tests.connectivity.VerifyReachability.Input.Host.source" class="headerlink" title="Permanent link">&para;</a></h5>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">,</span> <span class="n">Interface</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">source</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">Interface</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>IPv4 address source IP or Egress interface to use</p>
+      <p>IPv4 address source IP or egress interface to use.</p>
   </div>
 
 </div>
@@ -2977,7 +3123,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>VRF context</p>
+      <p>VRF context. Defaults to <code>default</code>.</p>
   </div>
 
 </div>
@@ -3003,6 +3149,100 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.connectivity.VerifyReachability.render" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">render</span>
+
+
+<a href="#anta.tests.connectivity.VerifyReachability.render" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Render the template for each host in the input list.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the template for each host in the input list.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">vrf</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">repeat</span><span class="p">)</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">hosts</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.connectivity.VerifyReachability.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.connectivity.VerifyReachability.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyReachability.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyReachability.&quot;&quot;&quot;</span>
+    <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">)</span>
+        <span class="n">repeat</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">repeat</span><span class="p">)):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A parameter is missing to execute the test for command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="n">AntaMissingParamError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">repeat</span><span class="si">}</span><span class="s2"> received&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connectivity test failed for the following source-destination pairs: </span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 

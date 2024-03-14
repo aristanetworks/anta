@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1104,6 +1104,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.multicast.VerifyIGMPSnoopingGlobal.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1140,6 +1149,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.multicast.VerifyIGMPSnoopingVlans.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -1972,6 +1990,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.multicast.VerifyIGMPSnoopingGlobal.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2008,6 +2035,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.multicast.VerifyIGMPSnoopingVlans.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -2057,7 +2093,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Test functions related to multicast</p>
+      <p>Module related to multicast and IGMP tests.</p>
 
   
 
@@ -2086,18 +2122,18 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the IGMP snooping global configuration.</p>
+      <p>Verifies the IGMP snooping global status.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the IGMP snooping global status matches the expected status.</li>
+<li>Failure: The test will fail if the IGMP snooping global status does not match the expected status.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
@@ -2110,22 +2146,41 @@
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIGMPSnoopingGlobal</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the IGMP snooping global configuration.</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIGMPSnoopingGlobal</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the IGMP snooping global status.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the IGMP snooping global status matches the expected status.</span>
+<span class="sd">        * Failure: The test will fail if the IGMP snooping global status does not match the expected status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyIGMPSnoopingGlobal&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the IGMP snooping global configuration.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;multicast&quot;</span><span class="p">,</span> <span class="s2">&quot;igmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;multicast&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyIGMPSnoopingGlobal test.&quot;&quot;&quot;</span>
+
         <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected global IGMP snooping configuration (True=enabled, False=disabled)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether global IGMP snopping must be enabled (True) or disabled (False).&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIGMPSnoopingGlobal.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">igmp_state</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;igmpSnoopingState&quot;</span><span class="p">]</span>
@@ -2160,14 +2215,20 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyIGMPSnoopingGlobal test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyIGMPSnoopingGlobal test.&quot;&quot;&quot;</span>
+
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected global IGMP snooping configuration (True=enabled, False=disabled)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether global IGMP snopping must be enabled (True) or disabled (False).&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2199,7 +2260,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Expected global IGMP snooping configuration (True=enabled, False=disabled)</p>
+      <p>Whether global IGMP snopping must be enabled (True) or disabled (False).</p>
   </div>
 
 </div>
@@ -2215,6 +2276,46 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.multicast.VerifyIGMPSnoopingGlobal.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.multicast.VerifyIGMPSnoopingGlobal.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyIGMPSnoopingGlobal.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/multicast.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIGMPSnoopingGlobal.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="n">igmp_state</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;igmpSnoopingState&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">igmp_state</span> <span class="o">!=</span> <span class="s2">&quot;enabled&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">enabled</span> <span class="k">else</span> <span class="n">igmp_state</span> <span class="o">!=</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;IGMP state is not valid: </span><span class="si">{</span><span class="n">igmp_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2241,12 +2342,18 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the IGMP snooping configuration for some VLANs.</p>
+      <p>Verifies the IGMP snooping status for the provided VLANs.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the IGMP snooping status matches the expected status for the provided VLANs.</li>
+<li>Failure: The test will fail if the IGMP snooping status does not match the expected status for the provided VLANs.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -2270,22 +2377,35 @@
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIGMPSnoopingVlans</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the IGMP snooping configuration for some VLANs.</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIGMPSnoopingVlans</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the IGMP snooping status for the provided VLANs.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the IGMP snooping status matches the expected status for the provided VLANs.</span>
+<span class="sd">        * Failure: The test will fail if the IGMP snooping status does not match the expected status for the provided VLANs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyIGMPSnoopingVlans&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the IGMP snooping configuration for some VLANs.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;multicast&quot;</span><span class="p">,</span> <span class="s2">&quot;igmp&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the IGMP snooping status for the provided VLANs.&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;multicast&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip igmp snooping&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-        <span class="n">vlans</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyIGMPSnoopingVlans test.&quot;&quot;&quot;</span>
+
+        <span class="n">vlans</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False).&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIGMPSnoopingVlans.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span> <span class="n">enabled</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vlans</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2325,14 +2445,20 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyIGMPSnoopingVlans test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/multicast.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">vlans</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyIGMPSnoopingVlans test.&quot;&quot;&quot;</span>
+
+    <span class="n">vlans</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False).&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2359,12 +2485,12 @@
   </span>
 
 <a href="#anta.tests.multicast.VerifyIGMPSnoopingVlans.Input.vlans" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">vlans</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">vlans</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vlan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)</p>
+      <p>Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False).</p>
   </div>
 
 </div>
@@ -2380,6 +2506,56 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.multicast.VerifyIGMPSnoopingVlans.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.multicast.VerifyIGMPSnoopingVlans.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyIGMPSnoopingVlans.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/multicast.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIGMPSnoopingVlans.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">vlan</span><span class="p">,</span> <span class="n">enabled</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vlans</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">vlan</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;vlans&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Supplied vlan </span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> is not present on the device.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">igmp_state</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;vlans&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">vlan</span><span class="p">)][</span><span class="s2">&quot;igmpSnoopingState&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">igmp_state</span> <span class="o">!=</span> <span class="s2">&quot;enabled&quot;</span> <span class="k">if</span> <span class="n">enabled</span> <span class="k">else</span> <span class="n">igmp_state</span> <span class="o">!=</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;IGMP state for vlan </span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">igmp_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 

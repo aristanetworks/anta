@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1233,6 +1233,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborCount.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1244,6 +1253,21 @@
       VerifyOSPFNeighborState
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="VerifyOSPFNeighborState">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborState.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1944,6 +1968,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborCount.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1955,6 +1988,21 @@
       VerifyOSPFNeighborState
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="VerifyOSPFNeighborState">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborState.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1999,7 +2047,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>OSPF test functions</p>
+      <p>Module related to OSPF tests.</p>
 
   
 
@@ -2030,50 +2078,71 @@
   
       <p>Verifies the number of OSPF neighbors in FULL state is the one we expect.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the number of OSPF neighbors in FULL state is the one we expect.</li>
+<li>Failure: The test will fail if the number of OSPF neighbors in FULL state is not the one we expect.</li>
+<li>Skipped: The test will be skipped if no OSPF neighbor is found.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyOSPFNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the number of OSPF neighbors in FULL state is the one we expect.</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyOSPFNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the number of OSPF neighbors in FULL state is the one we expect.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the number of OSPF neighbors in FULL state is the one we expect.</span>
+<span class="sd">        * Failure: The test will fail if the number of OSPF neighbors in FULL state is not the one we expect.</span>
+<span class="sd">        * Skipped: The test will be skipped if no OSPF neighbor is found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyOSPFNeighborCount&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the number of OSPF neighbors in FULL state is the one we expect.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyOSPFNeighborCount test.&quot;&quot;&quot;</span>
+
         <span class="n">number</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The expected number of OSPF neighbors in FULL state&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The expected number of OSPF neighbors in FULL state.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborCount.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">neighbor_count</span> <span class="o">:=</span> <span class="n">_count_ospf_neighbor</span><span class="p">(</span><span class="n">command_output</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;no OSPF neighbor found&quot;</span><span class="p">)</span>
@@ -2082,7 +2151,6 @@
         <span class="k">if</span> <span class="n">neighbor_count</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device has </span><span class="si">{</span><span class="n">neighbor_count</span><span class="si">}</span><span class="s2"> neighbors (expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
         <span class="n">not_full_neighbors</span> <span class="o">=</span> <span class="n">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">not_full_neighbors</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">not_full_neighbors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not correctly configured: </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2114,14 +2182,20 @@
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyOSPFNeighborCount test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyOSPFNeighborCount test.&quot;&quot;&quot;</span>
+
     <span class="n">number</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The expected number of OSPF neighbors in FULL state&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The expected number of OSPF neighbors in FULL state.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2153,7 +2227,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>The expected number of OSPF neighbors in FULL state</p>
+      <p>The expected number of OSPF neighbors in FULL state.</p>
   </div>
 
 </div>
@@ -2169,6 +2243,56 @@
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.ospf.VerifyOSPFNeighborCount.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.routing.ospf.VerifyOSPFNeighborCount.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyOSPFNeighborCount.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborCount.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">neighbor_count</span> <span class="o">:=</span> <span class="n">_count_ospf_neighbor</span><span class="p">(</span><span class="n">command_output</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;no OSPF neighbor found&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">neighbor_count</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device has </span><span class="si">{</span><span class="n">neighbor_count</span><span class="si">}</span><span class="s2"> neighbors (expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">not_full_neighbors</span> <span class="o">=</span> <span class="n">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">not_full_neighbors</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not correctly configured: </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2197,39 +2321,57 @@
   
       <p>Verifies all OSPF neighbors are in FULL state.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all OSPF neighbors are in FULL state.</li>
+<li>Failure: The test will fail if some OSPF neighbors are not in FULL state.</li>
+<li>Skipped: The test will be skipped if no OSPF neighbor is found.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyOSPFNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies all OSPF neighbors are in FULL state.</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyOSPFNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies all OSPF neighbors are in FULL state.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if all OSPF neighbors are in FULL state.</span>
+<span class="sd">        * Failure: The test will fail if some OSPF neighbors are not in FULL state.</span>
+<span class="sd">        * Skipped: The test will be skipped if no OSPF neighbor is found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyOSPFNeighborState&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies all OSPF neighbors are in FULL state.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ospf&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip ospf neighbor&quot;</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborState.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="n">_count_ospf_neighbor</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;no OSPF neighbor found&quot;</span><span class="p">)</span>
@@ -2252,6 +2394,52 @@
 
 
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.ospf.VerifyOSPFNeighborState.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.routing.ospf.VerifyOSPFNeighborState.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyOSPFNeighborState.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyOSPFNeighborState.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="k">if</span> <span class="n">_count_ospf_neighbor</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;no OSPF neighbor found&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="n">not_full_neighbors</span> <span class="o">=</span> <span class="n">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">not_full_neighbors</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not correctly configured: </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 

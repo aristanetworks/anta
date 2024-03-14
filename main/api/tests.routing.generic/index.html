@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1191,6 +1191,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingProtocolModel.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1236,6 +1245,24 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -1293,6 +1320,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableSize.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -2040,6 +2076,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingProtocolModel.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2085,6 +2130,24 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
   
 </li>
         
@@ -2145,6 +2208,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.routing.generic.VerifyRoutingTableSize.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2191,7 +2263,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Generic routing test functions</p>
+      <p>Module related to generic routing tests.</p>
 
   
 
@@ -2220,12 +2292,22 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the configured routing protocol model is the one we expect.
-And if there is no mismatch between the configured and operating routing protocol model.</p>
+      <p>Verifies the configured routing protocol model is the one we expect.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the configured routing protocol model is the one we expect.</li>
+<li>Failure: The test will fail if the configured routing protocol model is not the one we expect.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -2248,23 +2330,29 @@ And if there is no mismatch between the configured and operating routing protoco
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
-<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingProtocolModel</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the configured routing protocol model is the one we expect.</span>
-<span class="sd">    And if there is no mismatch between the configured and operating routing protocol model.</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingProtocolModel</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the configured routing protocol model is the one we expect.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the configured routing protocol model is the one we expect.</span>
+<span class="sd">        * Failure: The test will fail if the configured routing protocol model is not the one we expect.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyRoutingProtocolModel&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the configured routing protocol model.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip route summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip route summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingProtocolModel test.&quot;&quot;&quot;</span>
+
         <span class="n">model</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;multi-agent&quot;</span><span class="p">,</span> <span class="s2">&quot;ribd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;multi-agent&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected routing protocol model&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected routing protocol model. Defaults to `multi-agent`.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingProtocolModel.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">configured_model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;protoModelStatus&quot;</span><span class="p">][</span><span class="s2">&quot;configuredProtoModel&quot;</span><span class="p">]</span>
         <span class="n">operating_model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;protoModelStatus&quot;</span><span class="p">][</span><span class="s2">&quot;operatingProtoModel&quot;</span><span class="p">]</span>
@@ -2301,14 +2389,20 @@ And if there is no mismatch between the configured and operating routing protoco
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyRoutingProtocolModel test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingProtocolModel test.&quot;&quot;&quot;</span>
+
     <span class="n">model</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;multi-agent&quot;</span><span class="p">,</span> <span class="s2">&quot;ribd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;multi-agent&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected routing protocol model&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected routing protocol model. Defaults to `multi-agent`.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2341,7 +2435,7 @@ And if there is no mismatch between the configured and operating routing protoco
 
   <div class="doc doc-contents ">
   
-      <p>Expected routing protocol model</p>
+      <p>Expected routing protocol model. Defaults to <code>multi-agent</code>.</p>
   </div>
 
 </div>
@@ -2357,6 +2451,50 @@ And if there is no mismatch between the configured and operating routing protoco
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.generic.VerifyRoutingProtocolModel.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.routing.generic.VerifyRoutingProtocolModel.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyRoutingProtocolModel.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingProtocolModel.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="n">configured_model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;protoModelStatus&quot;</span><span class="p">][</span><span class="s2">&quot;configuredProtoModel&quot;</span><span class="p">]</span>
+    <span class="n">operating_model</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;protoModelStatus&quot;</span><span class="p">][</span><span class="s2">&quot;operatingProtoModel&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">configured_model</span> <span class="o">==</span> <span class="n">operating_model</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">model</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routing model is misconfigured: configured: </span><span class="si">{</span><span class="n">configured_model</span><span class="si">}</span><span class="s2"> - operating: </span><span class="si">{</span><span class="n">operating_model</span><span class="si">}</span><span class="s2"> - expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2383,25 +2521,18 @@ And if there is no mismatch between the configured and operating routing protoco
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>This test verifies that the provided routes are present in the routing table of a specified VRF.</p>
+      <p>Verifies that the provided routes are present in the routing table of a specified VRF.</p>
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>success: The test will pass if the provided routes are present in the routing table.</li>
-<li>failure: The test will fail if one or many provided routes are missing from the routing table.</li>
+<li>Success: The test will pass if the provided routes are present in the routing table.</li>
+<li>Failure: The test will fail if one or many provided routes are missing from the routing table.</li>
 </ul>
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -2430,37 +2561,50 @@ And if there is no mismatch between the configured and operating routing protoco
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingTableEntry</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This test verifies that the provided routes are present in the routing table of a specified VRF.</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingTableEntry</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the provided routes are present in the routing table of a specified VRF.</span>
 
 <span class="sd">    Expected Results:</span>
-<span class="sd">        * success: The test will pass if the provided routes are present in the routing table.</span>
-<span class="sd">        * failure: The test will fail if one or many provided routes are missing from the routing table.</span>
+<span class="sd">        * Success: The test will pass if the provided routes are present in the routing table.</span>
+<span class="sd">        * Failure: The test will fail if one or many provided routes are missing from the routing table.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyRoutingTableEntry&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies that the provided routes are present in the routing table of a specified VRF.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show ip route vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{route}</span><span class="s2">&quot;</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show ip route vrf </span><span class="si">{vrf}</span><span class="s2"> </span><span class="si">{route}</span><span class="s2">&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingTableEntry test.&quot;&quot;&quot;</span>
+
         <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;VRF context&quot;&quot;&quot;</span>
-        <span class="n">routes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Routes to verify&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default` VRF.&quot;&quot;&quot;</span>
+        <span class="n">routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of routes to verify.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each route in the input list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">vrf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">)</span> <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">routes</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingTableEntry.&quot;&quot;&quot;</span>
         <span class="n">missing_routes</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;vrf&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="s2">&quot;route&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
                 <span class="n">vrf</span><span class="p">,</span> <span class="n">route</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;vrf&quot;</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span> <span class="o">:=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="n">vrf</span><span class="p">][</span><span class="s2">&quot;routes&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">route</span> <span class="o">!=</span> <span class="n">ip_interface</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">routes</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">ip</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span> <span class="o">:=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="n">vrf</span><span class="p">][</span><span class="s2">&quot;routes&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">route</span> <span class="o">!=</span> <span class="n">ip_interface</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">routes</span><span class="p">)))</span><span class="o">.</span><span class="n">ip</span><span class="p">:</span>
                     <span class="n">missing_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">route</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_routes</span><span class="p">:</span>
@@ -2496,18 +2640,24 @@ And if there is no mismatch between the configured and operating routing protoco
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyRoutingTableEntry test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingTableEntry test.&quot;&quot;&quot;</span>
+
     <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context&quot;&quot;&quot;</span>
-    <span class="n">routes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Routes to verify&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default` VRF.&quot;&quot;&quot;</span>
+    <span class="n">routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of routes to verify.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2534,12 +2684,12 @@ And if there is no mismatch between the configured and operating routing protoco
   </span>
 
 <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.Input.routes" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">routes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Address</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-      <p>Routes to verify</p>
+      <p>List of routes to verify.</p>
   </div>
 
 </div>
@@ -2563,7 +2713,7 @@ And if there is no mismatch between the configured and operating routing protoco
 
   <div class="doc doc-contents ">
   
-      <p>VRF context</p>
+      <p>VRF context. Defaults to <code>default</code> VRF.</p>
   </div>
 
 </div>
@@ -2579,6 +2729,90 @@ And if there is no mismatch between the configured and operating routing protoco
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.generic.VerifyRoutingTableEntry.render" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">render</span>
+
+
+<a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.render" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Render the template for each route in the input list.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the template for each route in the input list.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">vrf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">)</span> <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">routes</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.generic.VerifyRoutingTableEntry.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.routing.generic.VerifyRoutingTableEntry.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyRoutingTableEntry.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingTableEntry.&quot;&quot;&quot;</span>
+    <span class="n">missing_routes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;vrf&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="s2">&quot;route&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">vrf</span><span class="p">,</span> <span class="n">route</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;vrf&quot;</span><span class="p">],</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span> <span class="o">:=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="n">vrf</span><span class="p">][</span><span class="s2">&quot;routes&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">route</span> <span class="o">!=</span> <span class="n">ip_interface</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">routes</span><span class="p">)))</span><span class="o">.</span><span class="n">ip</span><span class="p">:</span>
+                <span class="n">missing_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">route</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_routes</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following route(s) are missing from the routing table of VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">missing_routes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
@@ -2605,13 +2839,18 @@ And if there is no mismatch between the configured and operating routing protoco
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>Verifies the size of the IP routing table (default VRF).
-Should be between the two provided thresholds.</p>
+      <p>Verifies the size of the IP routing table of the default VRF.</p>
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the routing table size is between the provided minimum and maximum values.</li>
+<li>Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.</li>
+</ul>
+</details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
-<span class="normal">49</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -2641,32 +2880,45 @@ Should be between the two provided thresholds.</p>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingTableSize</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies the size of the IP routing table (default VRF).</span>
-<span class="sd">    Should be between the two provided thresholds.</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyRoutingTableSize</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the size of the IP routing table of the default VRF.</span>
+
+<span class="sd">    Expected Results:</span>
+<span class="sd">        * Success: The test will pass if the routing table size is between the provided minimum and maximum values.</span>
+<span class="sd">        * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyRoutingTableSize&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the size of the IP routing table (default VRF). Should be between the two provided thresholds.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip route summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the size of the IP routing table of the default VRF.&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip route summary&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingTableSize test.&quot;&quot;&quot;</span>
+
         <span class="n">minimum</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected minimum routing table (default VRF) size&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected minimum routing table size.&quot;&quot;&quot;</span>
         <span class="n">maximum</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected maximum routing table (default VRF) size&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expected maximum routing table size.&quot;&quot;&quot;</span>
 
-        <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
         <span class="k">def</span> <span class="nf">check_min_max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum.&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingTableSize.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">total_routes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">][</span><span class="s2">&quot;totalRoutes&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span> <span class="o">&lt;=</span> <span class="n">total_routes</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
@@ -2702,13 +2954,12 @@ Should be between the two provided thresholds.</p>
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
+  
+      <p>Input model for the VerifyRoutingTableSize test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
@@ -2716,17 +2967,26 @@ Should be between the two provided thresholds.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
-    <span class="n">minimum</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected minimum routing table (default VRF) size&quot;&quot;&quot;</span>
-    <span class="n">maximum</span><span class="p">:</span> <span class="nb">int</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected maximum routing table (default VRF) size&quot;&quot;&quot;</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingTableSize test.&quot;&quot;&quot;</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">minimum</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected minimum routing table size.&quot;&quot;&quot;</span>
+    <span class="n">maximum</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected maximum routing table size.&quot;&quot;&quot;</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
     <span class="k">def</span> <span class="nf">check_min_max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2759,7 +3019,7 @@ Should be between the two provided thresholds.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Expected maximum routing table (default VRF) size</p>
+      <p>Expected maximum routing table size.</p>
   </div>
 
 </div>
@@ -2782,7 +3042,7 @@ Should be between the two provided thresholds.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Expected minimum routing table (default VRF) size</p>
+      <p>Expected minimum routing table size.</p>
   </div>
 
 </div>
@@ -2804,20 +3064,22 @@ Should be between the two provided thresholds.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Validate that maximum is greater than minimum</p>
+      <p>Validate that maximum is greater than minimum.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
 <span class="k">def</span> <span class="nf">check_min_max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that maximum is greater than minimum.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Minimum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2"> is greater than maximum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -2834,6 +3096,48 @@ Should be between the two provided thresholds.</p>
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.routing.generic.VerifyRoutingTableSize.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.routing.generic.VerifyRoutingTableSize.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyRoutingTableSize.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingTableSize.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+    <span class="n">total_routes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">][</span><span class="s2">&quot;totalRoutes&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span> <span class="o">&lt;=</span> <span class="n">total_routes</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routing-table has </span><span class="si">{</span><span class="n">total_routes</span><span class="si">}</span><span class="s2"> routes and not between min (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2">) and maximum (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 

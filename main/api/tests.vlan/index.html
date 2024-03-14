@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -1425,6 +1425,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.vlan.VerifyVlanInternalPolicy.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1969,6 +1978,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#anta.tests.vlan.VerifyVlanInternalPolicy.test" class="md-nav__link">
+    <span class="md-ellipsis">
+      test
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2015,7 +2033,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Test functions related to VLAN</p>
+      <p>Module related to VLAN tests.</p>
 
   
 
@@ -2044,8 +2062,7 @@
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest" href="../models/#anta.models.AntaTest">AntaTest</a></code></p>
 
   
-      <p>This class checks if the VLAN internal allocation policy is ascending or descending and
-if the VLANs are within the specified range.</p>
+      <p>Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.</p>
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2058,10 +2075,7 @@ if the VLANs are within the specified range.</p>
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/tests/vlan.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
@@ -2099,10 +2113,10 @@ if the VLANs are within the specified range.</p>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVlanInternalPolicy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This class checks if the VLAN internal allocation policy is ascending or descending and</span>
-<span class="sd">    if the VLANs are within the specified range.</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyVlanInternalPolicy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.</span>
 
 <span class="sd">    Expected Results:</span>
 <span class="sd">      * Success: The test will pass if the VLAN internal allocation policy is either ascending or descending</span>
@@ -2112,15 +2126,15 @@ if the VLANs are within the specified range.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyVlanInternalPolicy&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;This test checks the VLAN internal allocation policy and the range of VLANs.&quot;</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan internal allocation policy&quot;</span><span class="p">)]</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the VLAN internal allocation policy and the range of VLANs.&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show vlan internal allocation policy&quot;</span><span class="p">)]</span>
 
     <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inputs for the VerifyVlanInternalPolicy test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyVlanInternalPolicy test.&quot;&quot;&quot;</span>
 
         <span class="n">policy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ascending&quot;</span><span class="p">,</span> <span class="s2">&quot;descending&quot;</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The VLAN internal allocation policy.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The VLAN internal allocation policy. Supported values: ascending, descending.&quot;&quot;&quot;</span>
         <span class="n">start_vlan_id</span><span class="p">:</span> <span class="n">Vlan</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The starting VLAN ID in the range.&quot;&quot;&quot;</span>
         <span class="n">end_vlan_id</span><span class="p">:</span> <span class="n">Vlan</span>
@@ -2128,6 +2142,7 @@ if the VLANs are within the specified range.</p>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVlanInternalPolicy.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;policy&quot;</span><span class="p">,</span> <span class="s2">&quot;startVlanId&quot;</span><span class="p">,</span> <span class="s2">&quot;endVlanId&quot;</span><span class="p">]</span>
@@ -2171,23 +2186,23 @@ if the VLANs are within the specified range.</p>
             Bases: <code><a class="autorefs autorefs-internal" title="anta.models.AntaTest.Input" href="../models/#anta.models.AntaTest.Input">Input</a></code></p>
 
   
-      <p>Inputs for the VerifyVlanInternalPolicy test.</p>
+      <p>Input model for the VerifyVlanInternalPolicy test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/tests/vlan.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
-<span class="normal">36</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inputs for the VerifyVlanInternalPolicy test.&quot;&quot;&quot;</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyVlanInternalPolicy test.&quot;&quot;&quot;</span>
 
     <span class="n">policy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ascending&quot;</span><span class="p">,</span> <span class="s2">&quot;descending&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The VLAN internal allocation policy.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The VLAN internal allocation policy. Supported values: ascending, descending.&quot;&quot;&quot;</span>
     <span class="n">start_vlan_id</span><span class="p">:</span> <span class="n">Vlan</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The starting VLAN ID in the range.&quot;&quot;&quot;</span>
     <span class="n">end_vlan_id</span><span class="p">:</span> <span class="n">Vlan</span>
@@ -2246,7 +2261,7 @@ if the VLANs are within the specified range.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The VLAN internal allocation policy.</p>
+      <p>The VLAN internal allocation policy. Supported values: ascending, descending.</p>
   </div>
 
 </div>
@@ -2285,6 +2300,62 @@ if the VLANs are within the specified range.</p>
 
 </div>
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.tests.vlan.VerifyVlanInternalPolicy.test" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">test</span>
+
+
+<a href="#anta.tests.vlan.VerifyVlanInternalPolicy.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Main test function for VerifyVlanInternalPolicy.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/tests/vlan.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVlanInternalPolicy.&quot;&quot;&quot;</span>
+    <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+    <span class="n">keys_to_verify</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;policy&quot;</span><span class="p">,</span> <span class="s2">&quot;startVlanId&quot;</span><span class="p">,</span> <span class="s2">&quot;endVlanId&quot;</span><span class="p">]</span>
+    <span class="n">actual_policy_output</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_verify</span><span class="p">}</span>
+    <span class="n">expected_policy_output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;policy&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;startVlanId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">start_vlan_id</span><span class="p">,</span> <span class="s2">&quot;endVlanId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">end_vlan_id</span><span class="p">}</span>
+
+    <span class="c1"># Check if the actual output matches the expected output</span>
+    <span class="k">if</span> <span class="n">actual_policy_output</span> <span class="o">!=</span> <span class="n">expected_policy_output</span><span class="p">:</span>
+        <span class="n">failed_log</span> <span class="o">=</span> <span class="s2">&quot;The VLAN internal allocation policy is not configured properly:&quot;</span>
+        <span class="n">failed_log</span> <span class="o">+=</span> <span class="n">get_failed_logs</span><span class="p">(</span><span class="n">expected_policy_output</span><span class="p">,</span> <span class="n">actual_policy_output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="n">failed_log</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
 
 
 
