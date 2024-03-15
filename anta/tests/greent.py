@@ -16,9 +16,10 @@ if TYPE_CHECKING:
 class VerifyGreenTCounters(AntaTest):
     """Verifies if the GreenT (GRE Encapsulated Telemetry) counters are incremented.
 
-    Expected Results:
-        * Success: The test will pass if the GreenT counters are incremented.
-        * Failure: The test will fail if the GreenT counters are not incremented.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the GreenT counters are incremented.
+    * Failure: The test will fail if the GreenT counters are not incremented.
     """
 
     name = "VerifyGreenTCounters"
@@ -40,9 +41,10 @@ class VerifyGreenTCounters(AntaTest):
 class VerifyGreenT(AntaTest):
     """Verifies if a GreenT (GRE Encapsulated Telemetry) policy other than the default is created.
 
-    Expected Results:
-        * Success: The test will pass if a GreenT policy is created other than the default one.
-        * Failure: The test will fail if no other GreenT policy is created.
+    Expected Results
+    ----------------
+    * Success: The test will pass if a GreenT policy is created other than the default one.
+    * Failure: The test will fail if no other GreenT policy is created.
     """
 
     name = "VerifyGreenT"

@@ -22,9 +22,10 @@ from anta.tools.utils import get_failed_logs
 class VerifyHostname(AntaTest):
     """Verifies the hostname of a device.
 
-    Expected results:
-        * Success: The test will pass if the hostname matches the provided input.
-        * Failure: The test will fail if the hostname does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the hostname matches the provided input.
+    * Failure: The test will fail if the hostname does not match the provided input.
     """
 
     name = "VerifyHostname"
@@ -52,9 +53,10 @@ class VerifyHostname(AntaTest):
 class VerifyDNSLookup(AntaTest):
     """Verifies the DNS (Domain Name Service) name to IP address resolution.
 
-    Expected Results:
-        * Success: The test will pass if a domain name is resolved to an IP address.
-        * Failure: The test will fail if a domain name does not resolve to an IP address.
+    Expected Results
+    ----------------
+    * Success: The test will pass if a domain name is resolved to an IP address.
+    * Failure: The test will fail if a domain name does not resolve to an IP address.
         * Error: This test will error out if a domain name is invalid.
     """
 
@@ -90,9 +92,10 @@ class VerifyDNSLookup(AntaTest):
 class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
-    Expected Results:
-        * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-        * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
+    * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
     """
 
     name = "VerifyDNSServers"
@@ -142,9 +145,10 @@ class VerifyDNSServers(AntaTest):
 class VerifyErrdisableRecovery(AntaTest):
     """Verifies the errdisable recovery reason, status, and interval.
 
-    Expected Results:
-        * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
-        * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
+    * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
     """
 
     name = "VerifyErrdisableRecovery"

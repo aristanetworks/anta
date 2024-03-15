@@ -164,7 +164,7 @@ class ResultManager:
         ----
             test_name (str): Test name to use to filter results
 
-        Returns:
+        Returns
         -------
             list[TestResult]: List of results related to the test.
 
@@ -178,7 +178,7 @@ class ResultManager:
         ----
             host_ip (str): IP Address of the host to use to filter results.
 
-        Returns:
+        Returns
         -------
             list[TestResult]: List of results related to the host.
 

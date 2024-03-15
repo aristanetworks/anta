@@ -23,13 +23,22 @@ if TYPE_CHECKING:
 class VerifyVxlan1Interface(AntaTest):
     """Verifies if the Vxlan1 interface is configured and 'up/up'.
 
-    !!! warning
-        The name of this test has been updated from 'VerifyVxlan' for better representation.
+    Warning
+    -------
+    The name of this test has been updated from 'VerifyVxlan' for better representation.
 
-    Expected Results:
-      * Success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
-      * Failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.
-      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
+    * Failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.
+    * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+
+    Examples
+    --------
+    ```yaml
+    TODO
+    ```
+
     """
 
     name = "VerifyVxlan1Interface"
@@ -58,10 +67,18 @@ class VerifyVxlan1Interface(AntaTest):
 class VerifyVxlanConfigSanity(AntaTest):
     """Verifies that no issues are detected with the VXLAN configuration.
 
-    Expected Results:
-      * Success: The test will pass if no issues are detected with the VXLAN configuration.
-      * Failure: The test will fail if issues are detected with the VXLAN configuration.
-      * Skipped: The test will be skipped if VXLAN is not configured on the device.
+    Expected Results
+    ----------------
+    * Success: The test will pass if no issues are detected with the VXLAN configuration.
+    * Failure: The test will fail if issues are detected with the VXLAN configuration.
+    * Skipped: The test will be skipped if VXLAN is not configured on the device.
+
+    Examples
+    --------
+    ```yaml
+    TODO
+    ```
+
     """
 
     name = "VerifyVxlanConfigSanity"
@@ -90,10 +107,18 @@ class VerifyVxlanConfigSanity(AntaTest):
 class VerifyVxlanVniBinding(AntaTest):
     """Verifies the VNI-VLAN bindings of the Vxlan1 interface.
 
-    Expected Results:
-      * Success: The test will pass if the VNI-VLAN bindings provided are properly configured.
-      * Failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
-      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the VNI-VLAN bindings provided are properly configured.
+    * Failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
+    * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+
+    Examples
+    --------
+    ```yaml
+    TODO
+    ```
+
     """
 
     name = "VerifyVxlanVniBinding"
@@ -142,10 +167,18 @@ class VerifyVxlanVniBinding(AntaTest):
 class VerifyVxlanVtep(AntaTest):
     """Verifies the VTEP peers of the Vxlan1 interface.
 
-    Expected Results:
-      * Success: The test will pass if all provided VTEP peers are identified and matching.
-      * Failure: The test will fail if any VTEP peer is missing or there are unexpected VTEP peers.
-      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all provided VTEP peers are identified and matching.
+    * Failure: The test will fail if any VTEP peer is missing or there are unexpected VTEP peers.
+    * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
+
+    Examples
+    --------
+    ```yaml
+    TODO
+    ```
+
     """
 
     name = "VerifyVxlanVtep"
@@ -183,10 +216,18 @@ class VerifyVxlanVtep(AntaTest):
 class VerifyVxlan1ConnSettings(AntaTest):
     """Verifies the interface vxlan1 source interface and UDP port.
 
-    Expected Results:
-      * Success: Passes if the interface vxlan1 source interface and UDP port are correct.
-      * Failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
-      * Skipped: Skips if the Vxlan1 interface is not configured.
+    Expected Results
+    ----------------
+    * Success: Passes if the interface vxlan1 source interface and UDP port are correct.
+    * Failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
+    * Skipped: Skips if the Vxlan1 interface is not configured.
+
+    Examples
+    --------
+    ```yaml
+    TODO
+    ```
+
     """
 
     name = "VerifyVxlan1ConnSettings"

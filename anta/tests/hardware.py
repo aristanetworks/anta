@@ -19,9 +19,10 @@ if TYPE_CHECKING:
 class VerifyTransceiversManufacturers(AntaTest):
     """Verifies if all the transceivers come from approved manufacturers.
 
-    Expected Results:
-      * Success: The test will pass if all transceivers are from approved manufacturers.
-      * Failure: The test will fail if some transceivers are from unapproved manufacturers.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all transceivers are from approved manufacturers.
+    * Failure: The test will fail if some transceivers are from unapproved manufacturers.
     """
 
     name = "VerifyTransceiversManufacturers"
@@ -52,9 +53,10 @@ class VerifyTransceiversManufacturers(AntaTest):
 class VerifyTemperature(AntaTest):
     """Verifies if the device temperature is within acceptable limits.
 
-    Expected Results:
-      * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-      * Failure: The test will fail if the device temperature is NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
+    * Failure: The test will fail if the device temperature is NOT OK.
     """
 
     name = "VerifyTemperature"
@@ -77,9 +79,10 @@ class VerifyTemperature(AntaTest):
 class VerifyTransceiversTemperature(AntaTest):
     """Verifies if all the transceivers are operating at an acceptable temperature.
 
-    Expected Results:
-          * Success: The test will pass if all transceivers status are OK: 'ok'.
-          * Failure: The test will fail if some transceivers are NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all transceivers status are OK: 'ok'.
+    * Failure: The test will fail if some transceivers are NOT OK.
     """
 
     name = "VerifyTransceiversTemperature"
@@ -110,9 +113,10 @@ class VerifyTransceiversTemperature(AntaTest):
 class VerifyEnvironmentSystemCooling(AntaTest):
     """Verifies the device's system cooling status.
 
-    Expected Results:
-      * Success: The test will pass if the system cooling status is OK: 'coolingOk'.
-      * Failure: The test will fail if the system cooling status is NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the system cooling status is OK: 'coolingOk'.
+    * Failure: The test will fail if the system cooling status is NOT OK.
     """
 
     name = "VerifyEnvironmentSystemCooling"
@@ -134,9 +138,10 @@ class VerifyEnvironmentSystemCooling(AntaTest):
 class VerifyEnvironmentCooling(AntaTest):
     """Verifies the status of power supply fans and all fan trays.
 
-    Expected Results:
-      * Success: The test will pass if the fans status are within the accepted states list.
-      * Failure: The test will fail if some fans status is not within the accepted states list.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the fans status are within the accepted states list.
+    * Failure: The test will fail if some fans status is not within the accepted states list.
     """
 
     name = "VerifyEnvironmentCooling"
@@ -171,9 +176,10 @@ class VerifyEnvironmentCooling(AntaTest):
 class VerifyEnvironmentPower(AntaTest):
     """Verifies the power supplies status.
 
-    Expected Results:
-      * Success: The test will pass if the power supplies status are within the accepted states list.
-      * Failure: The test will fail if some power supplies status is not within the accepted states list.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the power supplies status are within the accepted states list.
+    * Failure: The test will fail if some power supplies status is not within the accepted states list.
     """
 
     name = "VerifyEnvironmentPower"
@@ -205,9 +211,10 @@ class VerifyEnvironmentPower(AntaTest):
 class VerifyAdverseDrops(AntaTest):
     """Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches (Arad/Jericho chips).
 
-    Expected Results:
-      * Success: The test will pass if there are no adverse drops.
-      * Failure: The test will fail if there are adverse drops.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no adverse drops.
+    * Failure: The test will fail if there are adverse drops.
     """
 
     name = "VerifyAdverseDrops"

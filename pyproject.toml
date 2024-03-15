@@ -87,7 +87,6 @@ doc = [
   "mkdocstrings[python]>=0.20.0",
   "mike==2.0.0",
   "griffe",
-  "polyfactory>=2.13.0",
 ]
 
 [project.urls]
@@ -303,7 +302,6 @@ exclude = [
     "aioeapi.py" # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
 ]
 
-# Same as Black.
 line-length = 165
 
 # Assume Python 3.8 as this is the lowest supported version for ANTA
@@ -330,6 +328,9 @@ unfixable = []
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

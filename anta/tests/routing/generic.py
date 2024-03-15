@@ -18,9 +18,10 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 class VerifyRoutingProtocolModel(AntaTest):
     """Verifies the configured routing protocol model is the one we expect.
 
-    Expected Results:
-        * Success: The test will pass if the configured routing protocol model is the one we expect.
-        * Failure: The test will fail if the configured routing protocol model is not the one we expect.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the configured routing protocol model is the one we expect.
+    * Failure: The test will fail if the configured routing protocol model is not the one we expect.
     """
 
     name = "VerifyRoutingProtocolModel"
@@ -49,9 +50,10 @@ class VerifyRoutingProtocolModel(AntaTest):
 class VerifyRoutingTableSize(AntaTest):
     """Verifies the size of the IP routing table of the default VRF.
 
-    Expected Results:
-        * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
-        * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
+    * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.
     """
 
     name = "VerifyRoutingTableSize"
@@ -89,9 +91,10 @@ class VerifyRoutingTableSize(AntaTest):
 class VerifyRoutingTableEntry(AntaTest):
     """Verifies that the provided routes are present in the routing table of a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the provided routes are present in the routing table.
-        * Failure: The test will fail if one or many provided routes are missing from the routing table.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided routes are present in the routing table.
+    * Failure: The test will fail if one or many provided routes are missing from the routing table.
     """
 
     name = "VerifyRoutingTableEntry"

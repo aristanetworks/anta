@@ -22,9 +22,10 @@ from anta.tools.utils import get_failed_logs
 class VerifySSHStatus(AntaTest):
     """Verifies if the SSHD agent is disabled in the default VRF.
 
-    Expected Results:
-        * Success: The test will pass if the SSHD agent is disabled in the default VRF.
-        * Failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent is disabled in the default VRF.
+    * Failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
     """
 
     name = "VerifySSHStatus"
@@ -49,9 +50,10 @@ class VerifySSHStatus(AntaTest):
 class VerifySSHIPv4Acl(AntaTest):
     """Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        * Failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
     """
 
     name = "VerifySSHIPv4Acl"
@@ -88,9 +90,10 @@ class VerifySSHIPv4Acl(AntaTest):
 class VerifySSHIPv6Acl(AntaTest):
     """Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        * Failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
     """
 
     name = "VerifySSHIPv6Acl"
@@ -127,9 +130,10 @@ class VerifySSHIPv6Acl(AntaTest):
 class VerifyTelnetStatus(AntaTest):
     """Verifies if Telnet is disabled in the default VRF.
 
-    Expected Results:
-        * Success: The test will pass if Telnet is disabled in the default VRF.
-        * Failure: The test will fail if Telnet is NOT disabled in the default VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if Telnet is disabled in the default VRF.
+    * Failure: The test will fail if Telnet is NOT disabled in the default VRF.
     """
 
     name = "VerifyTelnetStatus"
@@ -150,9 +154,10 @@ class VerifyTelnetStatus(AntaTest):
 class VerifyAPIHttpStatus(AntaTest):
     """Verifies if eAPI HTTP server is disabled globally.
 
-    Expected Results:
-        * Success: The test will pass if eAPI HTTP server is disabled globally.
-        * Failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI HTTP server is disabled globally.
+    * Failure: The test will fail if eAPI HTTP server is NOT disabled globally.
     """
 
     name = "VerifyAPIHttpStatus"
@@ -173,9 +178,10 @@ class VerifyAPIHttpStatus(AntaTest):
 class VerifyAPIHttpsSSL(AntaTest):
     """Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
-    Expected results:
-        * Success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
-        * Failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
+    * Failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
     """
 
     name = "VerifyAPIHttpsSSL"
@@ -206,9 +212,10 @@ class VerifyAPIHttpsSSL(AntaTest):
 class VerifyAPIIPv4Acl(AntaTest):
     """Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
-        * Failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
+    * Failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
     """
 
     name = "VerifyAPIIPv4Acl"
@@ -245,9 +252,10 @@ class VerifyAPIIPv4Acl(AntaTest):
 class VerifyAPIIPv6Acl(AntaTest):
     """Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
-        * Failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
+    * Failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
         * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
     """
 
@@ -285,10 +293,11 @@ class VerifyAPIIPv6Acl(AntaTest):
 class VerifyAPISSLCertificate(AntaTest):
     """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
-    Expected Results:
-        * Success: The test will pass if the certificate's expiry date is greater than the threshold,
+    Expected Results
+    ----------------
+    * Success: The test will pass if the certificate's expiry date is greater than the threshold,
                    and the certificate has the correct name, encryption algorithm, and key size.
-        * Failure: The test will fail if the certificate is expired or is going to expire,
+    * Failure: The test will fail if the certificate is expired or is going to expire,
                    or if the certificate has an incorrect name, encryption algorithm, or key size.
     """
 
@@ -382,9 +391,10 @@ class VerifyAPISSLCertificate(AntaTest):
 class VerifyBannerLogin(AntaTest):
     """Verifies the login banner of a device.
 
-    Expected results:
-        * Success: The test will pass if the login banner matches the provided input.
-        * Failure: The test will fail if the login banner does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the login banner matches the provided input.
+    * Failure: The test will fail if the login banner does not match the provided input.
     """
 
     name = "VerifyBannerLogin"
@@ -414,9 +424,10 @@ class VerifyBannerLogin(AntaTest):
 class VerifyBannerMotd(AntaTest):
     """Verifies the motd banner of a device.
 
-    Expected results:
-        * Success: The test will pass if the motd banner matches the provided input.
-        * Failure: The test will fail if the motd banner does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the motd banner matches the provided input.
+    * Failure: The test will fail if the motd banner does not match the provided input.
     """
 
     name = "VerifyBannerMotd"
@@ -446,9 +457,10 @@ class VerifyBannerMotd(AntaTest):
 class VerifyIPv4ACL(AntaTest):
     """Verifies the configuration of IPv4 ACLs.
 
-    Expected results:
-        * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
-        * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+    Expected Results
+    ----------------
+    * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
+    * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
     """
 
     name = "VerifyIPv4ACL"

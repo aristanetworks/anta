@@ -21,9 +21,10 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
     Reference: https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44
 
-    Expected Results:
-        * Success: The test will pass if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
-        * Failure: The test will fail if the device is not using an Aboot version that fixes the bug discussed in the Field Notice 44.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
+    * Failure: The test will fail if the device is not using an Aboot version that fixes the bug discussed in the Field Notice 44.
     """
 
     name = "VerifyFieldNotice44Resolution"
@@ -117,9 +118,10 @@ class VerifyFieldNotice72Resolution(AntaTest):
 
     Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072
 
-    Expected Results:
-        * Success: The test will pass if the device is not exposed to FN72 and the issue has been mitigated.
-        * Failure: The test will fail if the device is exposed to FN72 and the issue has not been mitigated.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not exposed to FN72 and the issue has been mitigated.
+    * Failure: The test will fail if the device is exposed to FN72 and the issue has not been mitigated.
     """
 
     name = "VerifyFieldNotice72Resolution"

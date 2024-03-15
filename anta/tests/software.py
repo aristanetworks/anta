@@ -18,9 +18,10 @@ if TYPE_CHECKING:
 class VerifyEOSVersion(AntaTest):
     """Verifies that the device is running one of the allowed EOS version.
 
-    Expected Results:
-        * Success: The test will pass if the device is running one of the allowed EOS version.
-        * Failure: The test will fail if the device is not running one of the allowed EOS version.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is running one of the allowed EOS version.
+    * Failure: The test will fail if the device is not running one of the allowed EOS version.
     """
 
     name = "VerifyEOSVersion"
@@ -47,9 +48,10 @@ class VerifyEOSVersion(AntaTest):
 class VerifyTerminAttrVersion(AntaTest):
     """Verifies that he device is running one of the allowed TerminAttr version.
 
-    Expected Results:
-        * Success: The test will pass if the device is running one of the allowed TerminAttr version.
-        * Failure: The test will fail if the device is not running one of the allowed TerminAttr version.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is running one of the allowed TerminAttr version.
+    * Failure: The test will fail if the device is not running one of the allowed TerminAttr version.
     """
 
     name = "VerifyTerminAttrVersion"
@@ -77,9 +79,10 @@ class VerifyTerminAttrVersion(AntaTest):
 class VerifyEOSExtensions(AntaTest):
     """Verifies that all EOS extensions installed on the device are enabled for boot persistence.
 
-    Expected Results:
-        * Success: The test will pass if all EOS extensions installed on the device are enabled for boot persistence.
-        * Failure: The test will fail if some EOS extensions installed on the device are not enabled for boot persistence.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all EOS extensions installed on the device are enabled for boot persistence.
+    * Failure: The test will fail if some EOS extensions installed on the device are not enabled for boot persistence.
     """
 
     name = "VerifyEOSExtensions"

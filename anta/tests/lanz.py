@@ -17,9 +17,10 @@ if TYPE_CHECKING:
 class VerifyLANZ(AntaTest):
     """Verifies if LANZ (Latency Analyzer) is enabled.
 
-    Expected results:
-        * Success: The test will pass if LANZ is enabled.
-        * Failure: The test will fail if LANZ is disabled.
+    Expected Results
+    ----------------
+    * Success: The test will pass if LANZ is enabled.
+    * Failure: The test will fail if LANZ is disabled.
     """
 
     name = "VerifyLANZ"
