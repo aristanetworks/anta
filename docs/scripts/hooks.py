@@ -5,34 +5,15 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import griffe
 import yaml
-from anta.tests import aaa
-from anta.tests import configuration
-from anta.tests import connectivity
-from anta.tests import field_notices
-from anta.tests import hardware
-from anta.tests import interfaces
-from anta.tests import mlag
-from anta.tests import multicast
-from anta.tests import profiles
-from anta.tests import security
-from anta.tests import snmp
-from anta.tests import software
-from anta.tests import stp
-from anta.tests import system
-from anta.tests import vxlan
-from anta.tests.routing import bgp
-from anta.tests.routing import generic
-from anta.tests.routing import ospf
-from griffe import Class
-from griffe import Extension
-from griffe import ObjectNode
-from griffe.docstrings.dataclasses import DocstringSectionExamples
+from griffe import Class, Extension, ObjectNode
 from griffe.docstrings.dataclasses import DocstringSectionKind
+
+from anta.tests import aaa, configuration, connectivity, field_notices, hardware, interfaces, mlag, multicast, profiles, security, snmp, software, stp, system, vxlan
+from anta.tests.routing import bgp, generic, ospf
 
 if TYPE_CHECKING:
     import ast
@@ -117,80 +98,6 @@ def find_tests(module: ModuleType) -> list[Class]:
         for griffe_class in griffe_classes
         if "AntaTest" in [base.name for base in griffe_class.bases]
     ]
-
-
-def generate_test_input_2(test_class: Class) -> str:
-    r"""Take a Griffe class and returm a string that represent a test input read from the docstring.
-
-    When a single DocstringSectionKind.examples section is found in the docstring of the Inputs class,
-    the parsing looks like (there be black voodoo magic):
-        {'kind': 'examples',
-         'value': [(<DocstringSectionKind.text: 'text'>,
-                    'anta.tests.aaa:\n'
-                    '    - VerifyAuthenMethods:\n'
-                    '      methods:\n'
-                    '        - local\n'
-                    '        - none\n'
-                    '        - logging\n'
-                    '      types:\n'
-                    '        - login\n'
-                    '        - enable\n'
-                    '        - dot1x')]}
-    so need to retrieve the unique value (for now, and then the string in tuple)
-
-    Args:
-    ----
-       test_class (griffe.Class): The AntaTest class griffe representation to generate inputs for.
-
-    """
-    try:
-        # Dear future self, or someone else, I apologize, Parsing is weak in this piece of code.
-        # But you know, this is for documentation so it probably breaks every 17 months and someone
-        # needs to understand everything all over again. And who knows, there may be a better solution now?
-        # May the parsing fun be with you.
-        test_input = test_class.get_member("Input")
-        parsed_docstring = test_input.docstring.parse(parser="numpy")
-        examples = [
-            section
-            for section in parsed_docstring
-            if section.kind == DocstringSectionKind.examples
-        ]
-        if len(examples) > 1:
-            return examples
-        else:
-            inputs = f"TODO: add an example in {test_class.name}.Input docstring."
-            LOGGER.debug(inputs)
-            return [
-                DocstringSectionExamples(
-                    value=[
-                        (
-                            DocstringSectionKind.examples,
-                            yaml.safe_dump(
-                                {test_class.parent.path: [{test_class.name: inputs}]}
-                            ),
-                        )
-                    ],
-                    title="Example - WIP",
-                )
-            ]
-    except KeyError:
-        # no Input class
-        inputs = None
-        return [
-            DocstringSectionExamples(
-                value=[
-                    (
-                        DocstringSectionKind.examples,
-                        yaml.safe_dump(
-                            {test_class.parent.path: [{test_class.name: inputs}]}
-                        ),
-                    )
-                ]
-            )
-        ]
-
-    # return yaml.safe_dump({test_class.parent.path: [{test_class.name: inputs}]})
-
 
 class GenerateInput(Extension):
     """Extension for Griffe to add an extra argument to AntaTest Class parsed for documentation.
