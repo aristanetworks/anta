@@ -1,150 +1,218 @@
-# hooks.py
-import importlib
+# Copyright (c) 2024 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+"""Script hooks.py to help mkdocstring python build documentation."""
+from __future__ import annotations
+
 import logging
-from inspect import isclass, ismodule
-from types import ModuleType
-from typing import Any, get_args
+from typing import Any
+from typing import TYPE_CHECKING
 
-from mkdocs import plugins
-from polyfactory import Use
-from polyfactory.factories.pydantic_factory import ModelFactory
-from pydantic import BaseModel
-from yaml import safe_dump
+import griffe
+import yaml
+from anta.tests import aaa
+from anta.tests import configuration
+from anta.tests import connectivity
+from anta.tests import field_notices
+from anta.tests import hardware
+from anta.tests import interfaces
+from anta.tests import mlag
+from anta.tests import multicast
+from anta.tests import profiles
+from anta.tests import security
+from anta.tests import snmp
+from anta.tests import software
+from anta.tests import stp
+from anta.tests import system
+from anta.tests import vxlan
+from anta.tests.routing import bgp
+from anta.tests.routing import generic
+from anta.tests.routing import ospf
+from griffe import Class
+from griffe import Extension
+from griffe import ObjectNode
+from griffe.docstrings.dataclasses import DocstringSectionExamples
+from griffe.docstrings.dataclasses import DocstringSectionKind
 
-from anta.models import AntaTest
-from anta.tests import aaa, configuration, connectivity, field_notices, hardware, interfaces, mlag, multicast, profiles, security, snmp, software, stp, system, vxlan
-from anta.tests.routing import bgp, generic, ospf
-
-# from anta.tests import logging
+if TYPE_CHECKING:
+    import ast
+    from types import ModuleType
 
 LOGGER = logging.getLogger(__name__)
 
 
-def sanitize_inputs(inputs: Any) -> Any:
-    if inputs == None:
-        return
-    elif isinstance(inputs, BaseModel):
-        return sanitize_inputs(inputs.dict())
-    elif isinstance(inputs, list):
-        # TODO filter None
-        return [sanitize_inputs(e) for e in inputs]
-    elif isinstance(inputs, dict):
-        res = {}
-        for key, value in inputs.items():
-            if (v := sanitize_inputs(value)) is not None:
-                res[key] = v
-        return res
-    elif not isinstance(inputs, (int, bool, str)):
-        return str(inputs)
-    else:
-        print(type(inputs), inputs)
-        return inputs
+# ninjutsu - https://stackoverflow.com/questions/37200150/can-i-dump-blank-instead-of-null-in-yaml-pyyaml
+def represent_none(
+    self: yaml.representer.BaseRepresenter, _: Any
+) -> yaml.nodes.ScalarNode:
+    # Accept Any
+    # ruff: noqa: ANN401
+    """Overewrite default representation of None from null to empty string."""
+    return self.represent_scalar("tag:yaml.org,2002:null", "")
 
 
-def generate_test_input(test_class: type[AntaTest]) -> dict | None:
-    if hasattr(test_class, "Input") and issubclass(test_class.Input, AntaTest.Input):
-
-        class InputFactory(ModelFactory[test_class.Input]):
-            # TODO complete this
-            __random_seed__ = 1
-            __randomize_collection_length__ = True
-            __min_collection_length__ = 2
-            __max_collection_length__ = 2
-
-            # Always setting filters and result_overwrite to None for default
-            filters = None
-            result_overwrite = None
-            # Setting default value for various keys
-            manufacturers = ["AristaNetworks", "SomeOtherManufactuer"]
-            vrf = "PROD"
-            interface = intf = "Ethernet1"
-            groups = ["group1", "group2"]
-            methods = ["local", "group2"]
-            vteps = servers = ["10.42.42.42", "172.16.66.6"]
-            number = 42
-            bindings = {10042: 42, 10666: 666}
-            detection_delay = 42
-            errdisabled = True
-            specific_mtu = [{"Ethernet1": 666}, {"Ethernet2": 2048}]
-            reload_delay = reload_delay_non_mlag = recovery_delay_non_mlag = recovery_delay = 42
-            ignored_interfaces = ["Ethernet42", "Ethernet43"]
-
-            # @classmethod
-            # def vlans(cls) -> Any:
-            #    if (field := test_class.Input.model_fields.get("vlans")) is None:
-            #        return
-            #    import typing
-
-            #    print(field.annotation, field.annotation == typing.Dict, type(field.annotation))
-            #    # TODO return stuff depending on the type of the field.annotation or find a better way
-            #    return {42, 666}
-
-        try:
-            inputs = sanitize_inputs(InputFactory.build().__dict__)
-        except Exception:
-            inputs = {}
-
-        return {test_class.__module__: [{test_class.__name__: inputs}]}
-    return None
+yaml.representer.SafeRepresenter.add_representer(type(None), represent_none)
 
 
-def find_tests(module: ModuleType) -> list[type[AntaTest]]:
-    return module.AntaTest.__subclasses__()
+def generate_test_input(test_class: Class) -> str:
+    r"""Take a Griffe class and returm a string that represent a test input read from the docstring.
+
+    When a single DocstringSectionKind.examples section is found in the docstring of the Inputs class,
+    the parsing looks like (there be black voodoo magic):
+        {'kind': 'examples',
+         'value': [(<DocstringSectionKind.text: 'text'>,
+                    'anta.tests.aaa:\n'
+                    '    - VerifyAuthenMethods:\n'
+                    '      methods:\n'
+                    '        - local\n'
+                    '        - none\n'
+                    '        - logging\n'
+                    '      types:\n'
+                    '        - login\n'
+                    '        - enable\n'
+                    '        - dot1x')]}
+    so need to retrieve the unique value (for now, and then the string in tuple)
+
+    Args:
+    ----
+       test_class (griffe.Class): The AntaTest class griffe representation to generate inputs for.
+
+    """
+    try:
+        # Dear future self, or someone else, I apologize, Parsing is weak in this piece of code.
+        # But you know, this is for documentation so it probably breaks every 17 months and someone
+        # needs to understand everything all over again. And who knows, there may be a better solution now?
+        # May the parsing fun be with you.
+        test_input = test_class.get_member("Input")
+        parsed_docstring = test_input.docstring.parse(parser="numpy")
+        examples = [
+            section
+            for section in parsed_docstring
+            if section.kind == DocstringSectionKind.examples
+        ]
+        if len(examples) > 1:
+            inputs = f"TODO: Multiple examples section found in {test_class.name}.Input docstring, expecting only one."
+            LOGGER.debug(inputs)
+        elif len(examples) == 1:
+            example = examples[0]
+            inputs = yaml.safe_load(example.value[0][1])
+        else:
+            inputs = f"TODO: add an example in {test_class.name}.Input docstring."
+            LOGGER.debug(inputs)
+    except KeyError:
+        # no Input class
+        inputs = None
+
+    return yaml.safe_dump({test_class.parent.path: [{test_class.name: inputs}]})
 
 
-def input_to_yaml(test_class: type[AntaTest]) -> str:
-    return safe_dump(generate_test_input(test_class))
+def find_tests(module: ModuleType) -> list[Class]:
+    """Probably can do fancy filtering."""
+    griffe_module = griffe.load(module.__name__)
+    griffe_classes = [
+        griffe_module.get_member(class_name) for class_name in griffe_module.classes
+    ]
+    return [
+        griffe_class
+        for griffe_class in griffe_classes
+        if "AntaTest" in [base.name for base in griffe_class.bases]
+    ]
 
 
-# This does not work because of mkdocstrings recreating its own Jinja2 Environment
-# @plugins.event_priority(1000)
-# def on_env(env, config, files, **kwargs):
-#    env.filters["generate"] = input_to_yaml
-#    return env
+def generate_test_input_2(test_class: Class) -> str:
+    r"""Take a Griffe class and returm a string that represent a test input read from the docstring.
 
-# This does not work because can only extend mkdocstings handler with template location but cannot overwrite today the update_env
-# def update_env(md: Markdown, config: dict) -> None
-#     """
-#     """
-#     super().update_env(md, config)
-#     self.env.trim_blocks = True
-#     self.env.lstrip_blocks = True
-#     self.env.keep_trailing_newline = False
-#     self.env.filters["split_path"] = rendering.do_split_path
-#     self.env.filters["crossref"] = rendering.do_crossref
-#     self.env.filters["multi_crossref"] = rendering.do_multi_crossref
-#     self.env.filters["order_members"] = rendering.do_order_members
-#     self.env.filters["format_code"] = rendering.do_format_code
-#     self.env.filters["format_signature"] = rendering.do_format_signature
-#     self.env.filters["format_attribute"] = rendering.do_format_attribute
-#     self.env.filters["filter_objects"] = rendering.do_filter_objects
-#     self.env.filters["stash_crossref"] = lambda ref, length: ref
-#     self.env.filters["get_template"] = rendering.do_get_template
-#     self.env.filters["as_attributes_section"] = rendering.do_as_attributes_section
-#     self.env.filters["as_functions_section"] = rendering.do_as_functions_section
-#     self.env.filters["as_classes_section"] = rendering.do_as_classes_section
-#     self.env.filters["as_modules_section"] = rendering.do_as_modules_section
-#     self.env.filters["as_modules_section"] = rendering.do_as_modules_section
-#     self.env.filters["generare"] = input_to_yaml
-#     self.env.tests["existing_template"] = lambda template_name: template_name in self.env.list_templates()
+    When a single DocstringSectionKind.examples section is found in the docstring of the Inputs class,
+    the parsing looks like (there be black voodoo magic):
+        {'kind': 'examples',
+         'value': [(<DocstringSectionKind.text: 'text'>,
+                    'anta.tests.aaa:\n'
+                    '    - VerifyAuthenMethods:\n'
+                    '      methods:\n'
+                    '        - local\n'
+                    '        - none\n'
+                    '        - logging\n'
+                    '      types:\n'
+                    '        - login\n'
+                    '        - enable\n'
+                    '        - dot1x')]}
+    so need to retrieve the unique value (for now, and then the string in tuple)
 
-import ast
-import inspect
+    Args:
+    ----
+       test_class (griffe.Class): The AntaTest class griffe representation to generate inputs for.
 
-from griffe import Class, Docstring, Extension, Object, ObjectNode, dynamic_import, get_logger
+    """
+    try:
+        # Dear future self, or someone else, I apologize, Parsing is weak in this piece of code.
+        # But you know, this is for documentation so it probably breaks every 17 months and someone
+        # needs to understand everything all over again. And who knows, there may be a better solution now?
+        # May the parsing fun be with you.
+        test_input = test_class.get_member("Input")
+        parsed_docstring = test_input.docstring.parse(parser="numpy")
+        examples = [
+            section
+            for section in parsed_docstring
+            if section.kind == DocstringSectionKind.examples
+        ]
+        if len(examples) > 1:
+            return examples
+        else:
+            inputs = f"TODO: add an example in {test_class.name}.Input docstring."
+            LOGGER.debug(inputs)
+            return [
+                DocstringSectionExamples(
+                    value=[
+                        (
+                            DocstringSectionKind.examples,
+                            yaml.safe_dump(
+                                {test_class.parent.path: [{test_class.name: inputs}]}
+                            ),
+                        )
+                    ],
+                    title="Example - WIP",
+                )
+            ]
+    except KeyError:
+        # no Input class
+        inputs = None
+        return [
+            DocstringSectionExamples(
+                value=[
+                    (
+                        DocstringSectionKind.examples,
+                        yaml.safe_dump(
+                            {test_class.parent.path: [{test_class.name: inputs}]}
+                        ),
+                    )
+                ]
+            )
+        ]
+
+    # return yaml.safe_dump({test_class.parent.path: [{test_class.name: inputs}]})
 
 
 class GenerateInput(Extension):
-    def on_class_instance(self, node: ast.AST | ObjectNode, cls: Class):
+    """Extension for Griffe to add an extra argument to AntaTest Class parsed for documentation.
+
+    The extra argument is called anta_input.
+    """
+
+    # TODO: maybe an even better technique is simply to append the docstring Example from Input to the main docstring
+    def on_class_instance(self, node: ast.AST | ObjectNode, cls: Class) -> None:
+        """Add an anta_input attribute on classes during Griffe parsing is they are subclasses of AntaTest."""
         # Only for subclass of AntaTest
         if "AntaTest" in [base.id for base in node.bases if hasattr(base, "id")]:
-            LOGGER.debug(f"Generating input for {cls.path}")
-            module = importlib.import_module(cls.module.path)
-            test_class = getattr(module, cls.name)
-            cls.anta_input = input_to_yaml(test_class)
+            LOGGER.debug("Generating input for %s", cls.path)
+            griffe_module = griffe.load(cls.module.path)
+            test_class = griffe_module.get_member(cls.name)
+            cls.anta_input = generate_test_input(test_class)
+            LOGGER.debug("Example input for %s:\n%s", test_class, cls.anta_input)
 
 
 if __name__ == "__main__":
+    """Test."""
+    logging.basicConfig(level=logging.DEBUG)
     all_test_classes = [
         test
         for module in [
@@ -170,7 +238,7 @@ if __name__ == "__main__":
         ]
         for test in find_tests(module)
     ]
-    print(all_test_classes)
+    LOGGER.warning(all_test_classes)
 
     for test_class in all_test_classes:
-        print(safe_dump(generate_test_input(test_class)))
+        LOGGER.warning(generate_test_input(test_class))

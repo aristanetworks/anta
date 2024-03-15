@@ -141,7 +141,22 @@ class VerifyAuthenMethods(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authentication")]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyAuthenMethods test."""
+        """Input model for the VerifyAuthenMethods test.
+
+        Examples
+        --------
+        anta.tests.aaa:
+            - VerifyAuthenMethods:
+              methods:
+                - local
+                - none
+                - logging
+              types:
+                - login
+                - enable
+                - dot1x
+
+        """
 
         methods: list[AAAAuthMethod]
         """List of AAA authentication methods. Methods should be in the right order."""
