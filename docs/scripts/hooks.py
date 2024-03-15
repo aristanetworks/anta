@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Script hooks.py to help mkdocstring python build documentation."""
+
 from __future__ import annotations
 
 import logging
@@ -23,9 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 # ninjutsu - https://stackoverflow.com/questions/37200150/can-i-dump-blank-instead-of-null-in-yaml-pyyaml
-def represent_none(
-    self: yaml.representer.BaseRepresenter, _: Any
-) -> yaml.nodes.ScalarNode:
+def represent_none(self: yaml.representer.BaseRepresenter, _: Any) -> yaml.nodes.ScalarNode:
     # Accept Any
     # ruff: noqa: ANN401
     """Overewrite default representation of None from null to empty string."""
@@ -66,17 +65,14 @@ def generate_test_input(test_class: Class) -> str:
         # May the parsing fun be with you.
         test_input = test_class.get_member("Input")
         parsed_docstring = test_input.docstring.parse(parser="numpy")
-        examples = [
-            section
-            for section in parsed_docstring
-            if section.kind == DocstringSectionKind.examples
-        ]
+        examples = [section for section in parsed_docstring if section.kind == DocstringSectionKind.examples]
+        if len(examples) == 1:
+            example = examples[0]
+            return yaml.safe_dump(yaml.safe_load(example.value[0][1]))
+
         if len(examples) > 1:
             inputs = f"TODO: Multiple examples section found in {test_class.name}.Input docstring, expecting only one."
             LOGGER.debug(inputs)
-        elif len(examples) == 1:
-            example = examples[0]
-            inputs = yaml.safe_load(example.value[0][1])
         else:
             inputs = f"TODO: add an example in {test_class.name}.Input docstring."
             LOGGER.debug(inputs)
@@ -90,14 +86,8 @@ def generate_test_input(test_class: Class) -> str:
 def find_tests(module: ModuleType) -> list[Class]:
     """Probably can do fancy filtering."""
     griffe_module = griffe.load(module.__name__)
-    griffe_classes = [
-        griffe_module.get_member(class_name) for class_name in griffe_module.classes
-    ]
-    return [
-        griffe_class
-        for griffe_class in griffe_classes
-        if "AntaTest" in [base.name for base in griffe_class.bases]
-    ]
+    griffe_classes = [griffe_module.get_member(class_name) for class_name in griffe_module.classes]
+    return [griffe_class for griffe_class in griffe_classes if "AntaTest" in [base.name for base in griffe_class.bases]]
 
 
 class GenerateInput(Extension):
@@ -107,8 +97,10 @@ class GenerateInput(Extension):
     """
 
     # TODO: maybe an even better technique is simply to append the docstring Example from Input to the main docstring
-    def on_class_instance(self, node: ast.AST | ObjectNode, cls: Class) -> None:
+    def on_class_instance(self, node: ast.AST | ObjectNode, cls: griffe.dataclasses.Class) -> None:
         """Add an anta_input attribute on classes during Griffe parsing is they are subclasses of AntaTest."""
+        # Somehow pylint is crashing on this overriding.. complaining about 3 args vs 3 args
+        # pylint: disable=arguments-differ
         # Only for subclass of AntaTest
         if "AntaTest" in [base.id for base in node.bases if hasattr(base, "id")]:
             LOGGER.debug("Generating input for %s", cls.path)
@@ -119,7 +111,6 @@ class GenerateInput(Extension):
 
 
 if __name__ == "__main__":
-    """Test."""
     logging.basicConfig(level=logging.DEBUG)
     all_test_classes = [
         test
