@@ -10,4 +10,8 @@
     options:
       show_root_heading: false
       show_root_toc_entry: false
+      show_bases: false
       merge_init_into_class: false
+      show_labels: true
+      filters:
+        - "!test"

@@ -99,6 +99,7 @@ def find_tests(module: ModuleType) -> list[Class]:
         if "AntaTest" in [base.name for base in griffe_class.bases]
     ]
 
+
 class GenerateInput(Extension):
     """Extension for Griffe to add an extra argument to AntaTest Class parsed for documentation.
 
@@ -147,5 +148,5 @@ if __name__ == "__main__":
     ]
     LOGGER.warning(all_test_classes)
 
-    for test_class in all_test_classes:
-        LOGGER.warning(generate_test_input(test_class))
+    for _test_class in all_test_classes:
+        LOGGER.warning(generate_test_input(_test_class))

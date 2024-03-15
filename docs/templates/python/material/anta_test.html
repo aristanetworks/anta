@@ -52,63 +52,17 @@
             {% with heading_level = heading_level + extra_level %}
               {% for class in classes|order_members(config.members_order, members_list) %}
                 {% if class.name == "Input" %}
-                {% filter heading(heading_level, id=html_id ~ "-attributes") %}Inputs{% endfilter %}
-
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>Default</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for member, data in class.members.items() %}
-                        <tr>
-                          <td><code>{{ member }}</code></td>
-                          <td>
-                            {% if data.annotation %}
-                              {% with expression = data.annotation %}
-                                <code>{% include "expression.html" with context %}</code>
-                              {% endwith %}
-                            {% endif %}
-                          </td>
-                          <td>
-                            <div class="doc-md-description">
-                              {{ data.docstring.value }}
-                            </div>
-                          </td>
-                          <td>
-                            {% if data.value %}
-                              {% with expression = data.value %}
-                                <code>{% include "expression.html" with context %}</code>
-                              {% endwith %}
-                            {% else %}
-                              <em>-</em>
-                            {% endif %}
-                          </td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-
-                  {#
-                  {% for section in obj.anta_input %}
-                  {% filter heading(heading_level + 1, id=html_id ~ "-attributes") %}{{ section.title or lang.t("Example:") }}{% endfilter %}
-                    {% for section_type, sub_section in section.value %}
-                      {% if section_type.value == "text" %}
-                          {{ sub_section|convert_markdown(heading_level, html_id) }}
-                      {% elif section_type.value == "examples" %}
-                          {{ sub_section|highlight(language="yaml", linenums=False) }}
-                      {% endif %}
-                    {% endfor %}
-                  {% endfor %}
-                  #}
                   <details class="example" open>
                       <summary>{{ "Example" | convert_markdown(heading_level +1, html_id, strip_paragraph=True) }}</summary>
                         {{ obj.anta_input |  highlight(language="yaml", linestart=0, linenums=False) }}
                   </details>
+                  {% filter heading(heading_level, id=html_id ~ "-attributes") %}Inputs{% endfilter %}
+                  {% set root = False %}
+                  {% set heading_level = heading_level + 1 %}
+                  {% set old_obj = obj %}
+                  {% set obj = class %}
+                  {% include "attributes_table.html" with context %}
+                  {% set obj = old_obj %}
                 {% else %}
                   {% if members_list is not none or class.is_public(check_name=False) %}
                     {% include class|get_template with context %}
