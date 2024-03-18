@@ -6,87 +6,87 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional, Union
 
-# Need to keep List for pydantic in python 3.8
-from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, IPvAnyNetwork
+from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork
 
-from anta.custom_types import Hostname
+from anta.custom_types import Hostname, Port
 
 logger = logging.getLogger(__name__)
 
-# Pydantic models for input validation
-
 
 class AntaInventoryHost(BaseModel):
-    """
-    Host definition for user's inventory.
+    """Host definition for user's inventory.
 
-    Attributes:
+    Attributes
+    ----------
         host (IPvAnyAddress): IPv4 or IPv6 address of the device
         port (int): (Optional) eAPI port to use Default is 443.
         name (str): (Optional) Name to display during tests report. Default is hostname:port
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per host. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    name: Optional[str] = None
-    host: Union[Hostname, IPvAnyAddress]
-    port: Optional[int] = Field(default=None, gt=1, lt=65535)
-    tags: Optional[List[str]] = None
+    name: str | None = None
+    host: Hostname | IPvAnyAddress
+    port: Port | None = None
+    tags: list[str] | None = None
     disable_cache: bool = False
 
 
 class AntaInventoryNetwork(BaseModel):
-    """
-    Network definition for user's inventory.
+    """Network definition for user's inventory.
 
-    Attributes:
+    Attributes
+    ----------
         network (IPvAnyNetwork): Subnet to use for testing.
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per network. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
 
     network: IPvAnyNetwork
-    tags: Optional[List[str]] = None
+    tags: list[str] | None = None
     disable_cache: bool = False
 
 
 class AntaInventoryRange(BaseModel):
-    """
-    IP Range definition for user's inventory.
+    """IP Range definition for user's inventory.
 
-    Attributes:
+    Attributes
+    ----------
         start (IPvAnyAddress): IPv4 or IPv6 address for the begining of the range.
         stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
         tags (list[str]): List of attached tags read from inventory file.
         disable_cache (bool): Disable cache per range of hosts. Defaults to False.
+
     """
 
     model_config = ConfigDict(extra="forbid")
 
     start: IPvAnyAddress
     end: IPvAnyAddress
-    tags: Optional[List[str]] = None
+    tags: list[str] | None = None
     disable_cache: bool = False
 
 
 class AntaInventoryInput(BaseModel):
-    """
-    User's inventory model.
+    """User's inventory model.
 
-    Attributes:
+    Attributes
+    ----------
         networks (list[AntaInventoryNetwork],Optional): List of AntaInventoryNetwork objects for networks.
         hosts (list[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
         range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.
+
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    networks: Optional[List[AntaInventoryNetwork]] = None
-    hosts: Optional[List[AntaInventoryHost]] = None
-    ranges: Optional[List[AntaInventoryRange]] = None
+    networks: list[AntaInventoryNetwork] | None = None
+    hosts: list[AntaInventoryHost] | None = None
+    ranges: list[AntaInventoryRange] | None = None

@@ -22,11 +22,11 @@ dependencies = [
   "click~=8.1.6",
   "click-help-colors~=0.9",
   "cvprac~=1.3.1",
-  "pydantic>=2.1.1,<2.7.0",
+  "pydantic>=2.6.1,<2.7.0",
   "pydantic-extra-types>=2.1.0",
+  "eval-type-backport~=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
   "PyYAML~=6.0",
   "requests~=2.31.0",
-  "rich>=13.5.2,<13.8.0",
   "rich>=13.5.2,<13.8.0",
   "asyncssh>=2.13.2,<2.15.0",
   "Jinja2~=3.1.2",
@@ -56,14 +56,11 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
   "bumpver==2023.1129",
-  "black==24.2.0",
-  "flake8==7.0.0",
-  "isort==5.13.2",
   "mypy~=1.9",
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",
   "pylint>=2.17.5",
-  "ruff>=0.0.280",
+  "ruff~=0.3.2",
   "pytest>=7.4.0",
   "pytest-asyncio>=0.21.1",
   "pytest-cov>=4.1.0",
@@ -126,21 +123,6 @@ push = false
 "docs/requirements-and-installation.md " = ["anta, version v{version}"]
 
 ################################
-# Linting
-################################
-[tool.isort]
-profile = "black"
-line_length = 165
-
-[tool.black]
-line-length = 165
-force-exclude = """
-(
-.*data.py|
-)
-"""
-
-################################
 # Typing
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
@@ -188,10 +170,10 @@ testpaths = ["tests"]
 branch = true
 source = ["anta"]
 parallel = true
-omit = [
+omit= [
   # omit aioeapi patch
-    "anta/aioeapi.py",
-  ]
+  "anta/aioeapi.py",
+]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -259,11 +241,9 @@ commands =
 [testenv:lint]
 description = Check the code style
 commands =
-  black --check --diff --color .
-  isort --check --diff --color .
-  flake8 --max-line-length=165 --config=/dev/null anta tests
-  pylint anta
-  pylint tests
+  ruff check .
+  pylint --rcfile=pylintrc anta
+  pylint --rcfile=pylintrc tests
 
 [testenv:type]
 description = Check typing
@@ -289,17 +269,7 @@ commands =
 depends = py311
 """
 
-# TRYING RUFF - NOT ENABLED IN CI NOR PRE-COMMIT
 [tool.ruff]
-# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-# select = ["E", "F"]
-# select all cause we like being suffering
-select = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-ignore = []
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -309,32 +279,119 @@ exclude = [
     ".git",
     ".git-rewrite",
     ".hg",
+    ".ipynb_checkpoints",
     ".mypy_cache",
     ".nox",
     ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
     ".pytype",
     ".ruff_cache",
     ".svn",
     ".tox",
     ".venv",
+    ".vscode",
     "__pypackages__",
     "_build",
     "buck-out",
     "build",
     "dist",
     "node_modules",
+    "site-packages",
     "venv",
+    ".github",
+    "aioeapi.py" # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
 ]
 
 # Same as Black.
 line-length = 165
 
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 # Assume Python 3.8 as this is the lowest supported version for ANTA
 target-version = "py38"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint]
+# select all cause we like being suffering
+select = ["ALL"]
+ignore = [
+  "ANN101",  # Missing type annotation for `self` in method - we know what self is..
+  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
+  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
+  "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
+  "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
+  "TD002",   # We don't have require authors in TODO
+  "TD003",   # We don't have an issue link for all TODOs today
+  "FIX002",  # Line contains TODO - ignoring for ruff for now
+]
+
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10
+
+[tool.ruff.lint.pep8-naming]
+"ignore-names" = [
+  "RICH_COLOR_PALETTE"
+]
+
+[tool.ruff.lint.flake8-type-checking]
+# These classes require that type annotations be available at runtime
+runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.Input"]
+
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "S101",    # Complains about asserts in units and libs.
+  "SLF001",  # Lots of private member accessed for test purposes
+]
+"tests/units/*" = [
+  "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
+  "FBT001",  # Boolean-typed positional argument in function definition
+  "PLR0913", # Too many arguments to function call (8 > 5)
+  "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
+  "S105",    # Passwords are indeed hardcoded in tests
+  "S106",    # Passwords are indeed hardcoded in tests
+  "S108",    # Probable insecure usage of temporary file or directory
+]
+"tests/units/anta_tests/test_interfaces.py" = [
+  "S104",  # False positive for 0.0.0.0 bindings in test inputs
+]
+"anta/*" = [
+  "BLE001",  # Do not catch blind exception: `Exception` - caught by other linter
+  "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
+]
+"anta/cli/exec/utils.py" = [
+  "SLF001",  # TODO: some private members, lets try to fix
+]
+"anta/cli/*" = [
+  "PLR0913",  # Allow more than 5 input arguments in CLI functions
+  "ANN401",   # TODO: Check if we can update the Any type hints in the CLI
+]
+"anta/tests/field_notices.py" = [
+  "PLR2004",  # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
+  "C901",     # TODO: test function is too complex, needs a refactor
+  "PLR0911",  # TODO: Too many return statements, same as above needs a refactor
+]
+"anta/decorators.py" = [
+  "ANN401",  # Ok to use Any type hint in our decorators
+]
+"anta/tools/get*.py" = [
+  "ANN401",   # Ok to use Any type hint in our custom get functions
+  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions 
+]
+"anta/runner.py" = [
+  "C901",     # TODO: main function is too complex, needs a refactor
+  "PERF203",  # TODO: try - except within a loop, same sa above needs a refactor
+]
+"anta/device.py" = [
+  "PLR0913",     # Ok to have more than 5 arguments in the AntaDevice classes
+]
+"anta/inventory/__init__.py" = [
+  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
+]

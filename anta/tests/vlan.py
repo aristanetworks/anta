@@ -1,24 +1,25 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to VLAN
-"""
+"""Module related to VLAN tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyVlanInternalPolicy(AntaTest):
-    """
-    This class checks if the VLAN internal allocation policy is ascending or descending and
-    if the VLANs are within the specified range.
+    """Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.
 
     Expected Results:
       * Success: The test will pass if the VLAN internal allocation policy is either ascending or descending
@@ -28,15 +29,15 @@ class VerifyVlanInternalPolicy(AntaTest):
     """
 
     name = "VerifyVlanInternalPolicy"
-    description = "This test checks the VLAN internal allocation policy and the range of VLANs."
-    categories = ["vlan"]
-    commands = [AntaCommand(command="show vlan internal allocation policy")]
+    description = "Verifies the VLAN internal allocation policy and the range of VLANs."
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan internal allocation policy")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyVlanInternalPolicy test."""
+        """Input model for the VerifyVlanInternalPolicy test."""
 
         policy: Literal["ascending", "descending"]
-        """The VLAN internal allocation policy."""
+        """The VLAN internal allocation policy. Supported values: ascending, descending."""
         start_vlan_id: Vlan
         """The starting VLAN ID in the range."""
         end_vlan_id: Vlan
@@ -44,6 +45,7 @@ class VerifyVlanInternalPolicy(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVlanInternalPolicy."""
         command_output = self.instance_commands[0].json_output
 
         keys_to_verify = ["policy", "startVlanId", "endVlanId"]

@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.cli.debug.commands
-"""
+"""Tests for anta.cli.debug.commands."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "command, ofmt, version, revision, device, failed",
+    ("command", "ofmt", "version", "revision", "device", "failed"),
     [
         pytest.param("show version", "json", None, None, "dummy", False, id="json command"),
         pytest.param("show version", "text", None, None, "dummy", False, id="text command"),
@@ -29,11 +28,15 @@ if TYPE_CHECKING:
     ],
 )
 def test_run_cmd(
-    click_runner: CliRunner, command: str, ofmt: Literal["json", "text"], version: Literal["1", "latest"] | None, revision: int | None, device: str, failed: bool
+    click_runner: CliRunner,
+    command: str,
+    ofmt: Literal["json", "text"],
+    version: Literal["1", "latest"] | None,
+    revision: int | None,
+    device: str,
+    failed: bool,
 ) -> None:
-    """
-    Test `anta debug run-cmd`
-    """
+    """Test `anta debug run-cmd`."""
     # pylint: disable=too-many-arguments
     cli_args = ["-l", "debug", "debug", "run-cmd", "--command", command, "--device", device]
 

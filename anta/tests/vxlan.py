@@ -1,16 +1,14 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to VXLAN
-"""
+"""Module related to VXLAN tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+from __future__ import annotations
 
 from ipaddress import IPv4Address
-
-# Need to keep List and Dict for pydantic in python 3.8
-from typing import Dict, List
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import Field
 
@@ -18,27 +16,30 @@ from anta.custom_types import Vlan, Vni, VxlanSrcIntf
 from anta.models import AntaCommand, AntaTest
 from anta.tools.get_value import get_value
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyVxlan1Interface(AntaTest):
-    """
-    This test verifies if the Vxlan1 interface is configured and 'up/up'.
+    """Verifies if the Vxlan1 interface is configured and 'up/up'.
 
     !!! warning
         The name of this test has been updated from 'VerifyVxlan' for better representation.
 
     Expected Results:
-      * success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
-      * failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.
-      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
+      * Success: The test will pass if the Vxlan1 interface is configured with line protocol status and interface status 'up'.
+      * Failure: The test will fail if the Vxlan1 interface line protocol status or interface status are not 'up'.
+      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlan1Interface"
     description = "Verifies the Vxlan1 interface status."
-    categories = ["vxlan"]
-    commands = [AntaCommand(command="show interfaces description", ofmt="json")]
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVxlan1Interface."""
         command_output = self.instance_commands[0].json_output
         if "Vxlan1" not in command_output["interfaceDescriptions"]:
             self.result.is_skipped("Vxlan1 interface is not configured")
@@ -50,27 +51,27 @@ class VerifyVxlan1Interface(AntaTest):
         else:
             self.result.is_failure(
                 f"Vxlan1 interface is {command_output['interfaceDescriptions']['Vxlan1']['lineProtocolStatus']}"
-                f"/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}"
+                f"/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}",
             )
 
 
 class VerifyVxlanConfigSanity(AntaTest):
-    """
-    This test verifies that no issues are detected with the VXLAN configuration.
+    """Verifies that no issues are detected with the VXLAN configuration.
 
     Expected Results:
-      * success: The test will pass if no issues are detected with the VXLAN configuration.
-      * failure: The test will fail if issues are detected with the VXLAN configuration.
-      * skipped: The test will be skipped if VXLAN is not configured on the device.
+      * Success: The test will pass if no issues are detected with the VXLAN configuration.
+      * Failure: The test will fail if issues are detected with the VXLAN configuration.
+      * Skipped: The test will be skipped if VXLAN is not configured on the device.
     """
 
     name = "VerifyVxlanConfigSanity"
     description = "Verifies there are no VXLAN config-sanity inconsistencies."
-    categories = ["vxlan"]
-    commands = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVxlanConfigSanity."""
         command_output = self.instance_commands[0].json_output
         if "categories" not in command_output or len(command_output["categories"]) == 0:
             self.result.is_skipped("VXLAN is not configured")
@@ -87,26 +88,28 @@ class VerifyVxlanConfigSanity(AntaTest):
 
 
 class VerifyVxlanVniBinding(AntaTest):
-    """
-    This test verifies the VNI-VLAN bindings of the Vxlan1 interface.
+    """Verifies the VNI-VLAN bindings of the Vxlan1 interface.
 
     Expected Results:
-      * success: The test will pass if the VNI-VLAN bindings provided are properly configured.
-      * failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
-      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
+      * Success: The test will pass if the VNI-VLAN bindings provided are properly configured.
+      * Failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
+      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlanVniBinding"
     description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface."
-    categories = ["vxlan"]
-    commands = [AntaCommand(command="show vxlan vni", ofmt="json")]
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vni", ofmt="json")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        bindings: Dict[Vni, Vlan]
-        """VNI to VLAN bindings to verify"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVxlanVniBinding test."""
+
+        bindings: dict[Vni, Vlan]
+        """VNI to VLAN bindings to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVxlanVniBinding."""
         self.result.is_success()
 
         no_binding = []
@@ -117,17 +120,17 @@ class VerifyVxlanVniBinding(AntaTest):
             return
 
         for vni, vlan in self.inputs.bindings.items():
-            vni = str(vni)
-            if vni in vxlan1["vniBindings"]:
-                retrieved_vlan = vxlan1["vniBindings"][vni]["vlan"]
-            elif vni in vxlan1["vniBindingsToVrf"]:
-                retrieved_vlan = vxlan1["vniBindingsToVrf"][vni]["vlan"]
+            str_vni = str(vni)
+            if str_vni in vxlan1["vniBindings"]:
+                retrieved_vlan = vxlan1["vniBindings"][str_vni]["vlan"]
+            elif str_vni in vxlan1["vniBindingsToVrf"]:
+                retrieved_vlan = vxlan1["vniBindingsToVrf"][str_vni]["vlan"]
             else:
-                no_binding.append(vni)
+                no_binding.append(str_vni)
                 retrieved_vlan = None
 
             if retrieved_vlan and vlan != retrieved_vlan:
-                wrong_binding.append({vni: retrieved_vlan})
+                wrong_binding.append({str_vni: retrieved_vlan})
 
         if no_binding:
             self.result.is_failure(f"The following VNI(s) have no binding: {no_binding}")
@@ -137,26 +140,28 @@ class VerifyVxlanVniBinding(AntaTest):
 
 
 class VerifyVxlanVtep(AntaTest):
-    """
-    This test verifies the VTEP peers of the Vxlan1 interface.
+    """Verifies the VTEP peers of the Vxlan1 interface.
 
     Expected Results:
-      * success: The test will pass if all provided VTEP peers are identified and matching.
-      * failure: The test will fail if any VTEP peer is missing or there are unexpected VTEP peers.
-      * skipped: The test will be skipped if the Vxlan1 interface is not configured.
+      * Success: The test will pass if all provided VTEP peers are identified and matching.
+      * Failure: The test will fail if any VTEP peer is missing or there are unexpected VTEP peers.
+      * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlanVtep"
     description = "Verifies the VTEP peers of the Vxlan1 interface"
-    categories = ["vxlan"]
-    commands = [AntaCommand(command="show vxlan vtep", ofmt="json")]
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vtep", ofmt="json")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vteps: List[IPv4Address]
-        """List of VTEP peers to verify"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVxlanVtep test."""
+
+        vteps: list[IPv4Address]
+        """List of VTEP peers to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVxlanVtep."""
         self.result.is_success()
 
         inputs_vteps = [str(input_vtep) for input_vtep in self.inputs.vteps]
@@ -176,30 +181,30 @@ class VerifyVxlanVtep(AntaTest):
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
-    """
-    Verifies the interface vxlan1 source interface and UDP port.
+    """Verifies the interface vxlan1 source interface and UDP port.
 
     Expected Results:
-      * success: Passes if the interface vxlan1 source interface and UDP port are correct.
-      * failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
-      * skipped: Skips if the Vxlan1 interface is not configured.
+      * Success: Passes if the interface vxlan1 source interface and UDP port are correct.
+      * Failure: Fails if the interface vxlan1 source interface or UDP port are incorrect.
+      * Skipped: Skips if the Vxlan1 interface is not configured.
     """
 
     name = "VerifyVxlan1ConnSettings"
     description = "Verifies the interface vxlan1 source interface and UDP port."
-    categories = ["vxlan"]
-    commands = [AntaCommand(command="show interfaces")]
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyVxlan1ConnSettings test."""
+        """Input model for the VerifyVxlan1ConnSettings test."""
 
         source_interface: VxlanSrcIntf
-        """Source loopback interface of vxlan1 interface"""
+        """Source loopback interface of vxlan1 interface."""
         udp_port: int = Field(ge=1024, le=65335)
-        """UDP port used for vxlan1 interface"""
+        """UDP port used for vxlan1 interface."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyVxlan1ConnSettings."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 

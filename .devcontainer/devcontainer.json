@@ -15,8 +15,6 @@
 		"vscode": {
 			"settings": {},
 			"extensions": [
-				"ms-python.black-formatter",
-				"ms-python.isort",
 				"formulahendry.github-actions",
 				"matangover.mypy",
 				"ms-python.mypy-type-checker",

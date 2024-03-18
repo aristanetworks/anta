@@ -1,12 +1,11 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.cli.get.utils
-"""
+"""Tests for anta.cli.get.utils."""
+
 from __future__ import annotations
 
-from contextlib import nullcontext
+from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -21,9 +20,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 def test_get_cv_token() -> None:
-    """
-    Test anta.get.utils.get_cv_token
-    """
+    """Test anta.get.utils.get_cv_token."""
     ip = "42.42.42.42"
     username = "ant"
     password = "formica"
@@ -72,9 +69,7 @@ CVP_INVENTORY = [
     ],
 )
 def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any]]) -> None:
-    """
-    Test anta.get.utils.create_inventory_from_cvp
-    """
+    """Test anta.get.utils.create_inventory_from_cvp."""
     output = tmp_path / "output.yml"
 
     create_inventory_from_cvp(inventory, output)
@@ -86,19 +81,41 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
 
 
 @pytest.mark.parametrize(
-    "inventory_filename, ansible_group, expected_raise, expected_inv_length",
+    ("inventory_filename", "ansible_group", "expected_raise", "expected_inv_length"),
     [
         pytest.param("ansible_inventory.yml", None, nullcontext(), 7, id="no group"),
         pytest.param("ansible_inventory.yml", "ATD_LEAFS", nullcontext(), 4, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", pytest.raises(ValueError, match="Group DUMMY not found in Ansible inventory"), 0, id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, pytest.raises(ValueError, match="Ansible inventory .* is empty"), 0, id="empty inventory"),
-        pytest.param("wrong_ansible_inventory.yml", None, pytest.raises(ValueError, match="Could not parse"), 0, id="os error inventory"),
+        pytest.param(
+            "ansible_inventory.yml",
+            "DUMMY",
+            pytest.raises(ValueError, match="Group DUMMY not found in Ansible inventory"),
+            0,
+            id="group not found",
+        ),
+        pytest.param(
+            "empty_ansible_inventory.yml",
+            None,
+            pytest.raises(ValueError, match="Ansible inventory .* is empty"),
+            0,
+            id="empty inventory",
+        ),
+        pytest.param(
+            "wrong_ansible_inventory.yml",
+            None,
+            pytest.raises(ValueError, match="Could not parse"),
+            0,
+            id="os error inventory",
+        ),
     ],
 )
-def test_create_inventory_from_ansible(tmp_path: Path, inventory_filename: Path, ansible_group: str | None, expected_raise: Any, expected_inv_length: int) -> None:
-    """
-    Test anta.get.utils.create_inventory_from_ansible
-    """
+def test_create_inventory_from_ansible(
+    tmp_path: Path,
+    inventory_filename: Path,
+    ansible_group: str | None,
+    expected_raise: AbstractContextManager[Exception],
+    expected_inv_length: int,
+) -> None:
+    """Test anta.get.utils.create_inventory_from_ansible."""
     target_file = tmp_path / "inventory.yml"
     inventory_file_path = DATA_DIR / inventory_filename
 

@@ -1,33 +1,40 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions to flag field notices
-"""
+"""Module related to field notices tests."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyFieldNotice44Resolution(AntaTest):
-    """
-    Verifies the device is using an Aboot version that fix the bug discussed
-    in the field notice 44 (Aboot manages system settings prior to EOS initialization).
+    """Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
 
-    https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44
+    Aboot manages system settings prior to EOS initialization.
+
+    Reference: https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44
+
+    Expected Results:
+        * Success: The test will pass if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
+        * Failure: The test will fail if the device is not using an Aboot version that fixes the bug discussed in the Field Notice 44.
     """
 
     name = "VerifyFieldNotice44Resolution"
-    description = (
-        "Verifies the device is using an Aboot version that fix the bug discussed in the field notice 44 (Aboot manages system settings prior to EOS initialization)"
-    )
-    categories = ["field notices", "software"]
-    commands = [AntaCommand(command="show version detail")]
+    description = "Verifies that the device is using the correct Aboot version per FN0044."
+    categories: ClassVar[list[str]] = ["field notices"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
-    # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyFieldNotice44Resolution."""
         command_output = self.instance_commands[0].json_output
 
         devices = [
@@ -79,7 +86,6 @@ class VerifyFieldNotice44Resolution(AntaTest):
         variants = ["-SSD-F", "-SSD-R", "-M-F", "-M-R", "-F", "-R"]
 
         model = command_output["modelName"]
-        # TODO this list could be a regex
         for variant in variants:
             model = model.replace(variant, "")
         if model not in devices:
@@ -90,32 +96,41 @@ class VerifyFieldNotice44Resolution(AntaTest):
             if component["name"] == "Aboot":
                 aboot_version = component["version"].split("-")[2]
         self.result.is_success()
-        if aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
-        elif aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7:
+        incorrect_aboot_version = (
+            aboot_version.startswith("4.0.")
+            and int(aboot_version.split(".")[2]) < 7
+            or aboot_version.startswith("4.1.")
+            and int(aboot_version.split(".")[2]) < 1
+            or (
+                aboot_version.startswith("6.0.")
+                and int(aboot_version.split(".")[2]) < 9
+                or aboot_version.startswith("6.1.")
+                and int(aboot_version.split(".")[2]) < 7
+            )
+        )
+        if incorrect_aboot_version:
             self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
 
 
 class VerifyFieldNotice72Resolution(AntaTest):
-    """
-    Checks if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
+    """Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
 
-    https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072
+    Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072
+
+    Expected Results:
+        * Success: The test will pass if the device is not exposed to FN72 and the issue has been mitigated.
+        * Failure: The test will fail if the device is exposed to FN72 and the issue has not been mitigated.
     """
 
     name = "VerifyFieldNotice72Resolution"
-    description = "Verifies if the device has exposeure to FN72, and if the issue has been mitigated"
-    categories = ["field notices", "software"]
-    commands = [AntaCommand(command="show version detail")]
+    description = "Verifies if the device is exposed to FN0072, and if the issue has been mitigated."
+    categories: ClassVar[list[str]] = ["field notices"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
-    # TODO maybe implement ONLY ON PLATFORMS instead
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyFieldNotice72Resolution."""
         command_output = self.instance_commands[0].json_output
 
         devices = ["DCS-7280SR3-48YC8", "DCS-7280SR3K-48YC8"]
@@ -151,8 +166,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
             self.result.is_skipped("Device not exposed")
             return
 
-        # Because each of the if checks above will return if taken, we only run the long
-        # check if we get this far
+        # Because each of the if checks above will return if taken, we only run the long check if we get this far
         for entry in command_output["details"]["components"]:
             if entry["name"] == "FixedSystemvrm1":
                 if int(entry["version"]) < 7:
@@ -161,5 +175,5 @@ class VerifyFieldNotice72Resolution(AntaTest):
                     self.result.is_success("FN72 is mitigated")
                 return
         # We should never hit this point
-        self.result.is_error(message="Error in running test - FixedSystemvrm1 not found")
+        self.result.is_error("Error in running test - FixedSystemvrm1 not found")
         return
