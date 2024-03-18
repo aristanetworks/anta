@@ -320,7 +320,6 @@ ignore = [
   "FIX002",  # Line contains TODO - ignoring for ruff for now
 ]
 
-
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
@@ -330,6 +329,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.ruff.lint.pylint]
+max-args = 7
+max-branches = 13
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

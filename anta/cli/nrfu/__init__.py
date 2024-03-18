@@ -104,7 +104,7 @@ def nrfu(
     ctx.obj["test"] = test
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, search_device=device, search_test=test))
     # Invoke `anta nrfu table` if no command is passed
     if ctx.invoked_subcommand is None:
         ctx.invoke(commands.table)

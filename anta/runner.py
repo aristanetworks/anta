@@ -49,7 +49,19 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
-async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCatalog, tags: list[str] | None = None, *, established_only: bool = True) -> None:
+# pylint: disable=too-many-arguments
+
+
+async def main(
+    manager: ResultManager,
+    inventory: AntaInventory,
+    catalog: AntaCatalog,
+    search_device: str | None = None,
+    search_test: str | None = None,
+    tags: list[str] | None = None,
+    *,
+    established_only: bool = True,
+) -> None:
     """Run ANTA.
 
     Use this as an entrypoint to the test framwork in your script.
@@ -61,6 +73,8 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
         catalog: AntaCatalog object that includes the list of tests.
         tags: List of tags to filter devices from the inventory. Defaults to None.
         established_only: Include only established device(s). Defaults to True.
+        search_device: device to run tests. Default to None
+        search_test: test to run against devices. Default to None
 
     Returns
     -------
@@ -86,16 +100,22 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
     coros = []
     # Using a set to avoid inserting duplicate tests
     tests_set: set[AntaTestRunner] = set()
-    for device in devices:
-        if tags:
-            # If there are CLI tags, only execute tests with matching tags
-            tests_set.update((test, device) for test in catalog.get_tests_by_tags(tags))
-        else:
-            # If there is no CLI tags, execute all tests without filters
-            tests_set.update((t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None)
 
-            # Then add the tests with matching tags from device tags
-            tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
+    for device in devices:
+        if search_device is None or search_device == device.name:
+            if tags:
+                # If there are CLI tags, only execute tests with matching tags
+                tests_set.update((t, device) for t in catalog.get_tests_by_tags(tags) if search_device is None or t.test.name == search_device)
+            else:
+                # If there is no CLI tags, execute all tests without filters
+                tests_set.update(
+                    (t, device)
+                    for t in catalog.tests
+                    if (t.inputs.filters is None or t.inputs.filters.tags is None) and (search_test is None or t.test.name == search_test)
+                )
+
+                # Then add the tests with matching tags from device tags
+                tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags) if search_test is None or t.test.name == search_test)
 
     tests: list[AntaTestRunner] = list(tests_set)
 

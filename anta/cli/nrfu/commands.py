@@ -28,9 +28,7 @@ logger = logging.getLogger(__name__)
 )
 def table(ctx: click.Context, group_by: str) -> None:
     """ANTA command to check network states with table result."""
-    device = ctx.obj["device"]
-    test = ctx.obj["test"]
-    print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
+    print_table(results=ctx.obj["result_manager"], group_by=group_by)
     exit_with_code(ctx)
 
 
@@ -52,20 +50,38 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 
 @click.command()
 @click.pass_context
-@click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
-def text(ctx: click.Context, *, skip_error: bool) -> None:
+@click.option(
+    "--skip-error",
+    help="Hide tests in errors due to connectivity issue",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--skip-failure",
+    help="Hide tests in failure",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--skip-success",
+    help="Hide tests in success to focus on error or failure",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+def text(ctx: click.Context, *, skip_error: bool, skip_failure: bool, skip_success: bool) -> None:
     """ANTA command to check network states with text result."""
-    device = ctx.obj["device"]
-    test = ctx.obj["test"]
-    search = ".*"
-    if device is not None and test is not None:
-        search = f".*{device}.*{test}.*"
-    elif device is not None:
-        search = f".*{device}.*"
-    elif test is not None:
-        search = f".*{test}.*"
-
-    print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
+    print_text(
+        results=ctx.obj["result_manager"],
+        skip_error=skip_error,
+        skip_failure=skip_failure,
+        skip_success=skip_success,
+    )
     exit_with_code(ctx)
 
 

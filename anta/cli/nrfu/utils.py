@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from typing import TYPE_CHECKING
 
 import rich
@@ -38,7 +37,7 @@ def print_settings(
     console.print()
 
 
-def print_table(results: ResultManager, device: str | None = None, test: str | None = None, group_by: str | None = None) -> None:
+def print_table(results: ResultManager, group_by: str | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -48,7 +47,7 @@ def print_table(results: ResultManager, device: str | None = None, test: str | N
     elif group_by == "test":
         console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
     else:
-        console.print(reporter.report_all(result_manager=results, host=device, testcase=test))
+        console.print(reporter.report_all(result_manager=results))
 
 
 def print_json(results: ResultManager, output: pathlib.Path | None = None) -> None:
@@ -71,12 +70,11 @@ def print_list(results: ResultManager, output: pathlib.Path | None = None) -> No
             fout.write(str(results.get_results()))
 
 
-def print_text(results: ResultManager, search: str, *, skip_error: bool = False) -> None:
+def print_text(results: ResultManager, *, skip_error: bool = False, skip_failure: bool = False, skip_success: bool = False) -> None:
     """Print results as simple text."""
     console.print()
-    regexp = re.compile(search)
     for line in results.get_results():
-        if regexp.match(f"{line.name} {line.test}") and (not skip_error or line.result != "error"):
+        if not (skip_error and "error" in line.result) and not (skip_failure and "failure" in line.result) and not (skip_success and "success" in line.result):
             message = f" ({line.messages[0]!s})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
 
