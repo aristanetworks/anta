@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for vlan tests
+# ANTA catalog for VLAN tests
 
 ::: anta.tests.vlan
     options:
@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"

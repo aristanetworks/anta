@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for mlag tests
+# ANTA catalog for MLAG tests
 
 ::: anta.tests.mlag
     options:
@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"

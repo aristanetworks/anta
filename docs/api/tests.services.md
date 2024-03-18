@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"

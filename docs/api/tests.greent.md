@@ -4,9 +4,9 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for system tests
+# ANTA catalog for GreenT tests
 
-::: anta.tests.system
+::: anta.tests.greent
     options:
       show_root_heading: false
       show_root_toc_entry: false

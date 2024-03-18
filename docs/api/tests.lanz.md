@@ -4,9 +4,9 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for system tests
+# ANTA catalog for LANZ tests
 
-::: anta.tests.system
+::: anta.tests.lanz
     options:
       show_root_heading: false
       show_root_toc_entry: false

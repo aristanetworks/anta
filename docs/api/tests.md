@@ -6,7 +6,7 @@
 
 # ANTA Tests landing page
 
-This section describes all the available tests provided by ANTA package.
+This section describes all the available tests provided by the ANTA package.
 
 
 - [AAA](tests.aaa.md)
@@ -14,12 +14,15 @@ This section describes all the available tests provided by ANTA package.
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)
 - [Field Notice](tests.field_notices.md)
+- [GreenT](tests.greent.md)
 - [Hardware](tests.hardware.md)
 - [Interfaces](tests.interfaces.md)
+- [LANZ](tests.lanz.md)
 - [Logging](tests.logging.md)
 - [MLAG](tests.mlag.md)
 - [Multicast](tests.multicast.md)
 - [Profiles](tests.profiles.md)
+- [PTP](tests.ptp.md)
 - [Routing Generic](tests.routing.generic.md)
 - [Routing BGP](tests.routing.bgp.md)
 - [Routing OSPF](tests.routing.ospf.md)
@@ -34,4 +37,4 @@ This section describes all the available tests provided by ANTA package.
 
 
 
-All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the anta cli](../cli/nrfu.md) or in your [own framework](../advanced_usages/as-python-lib.md)
+All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the ANTA CLI](../cli/nrfu.md) or in your [own framework](../advanced_usages/as-python-lib.md).

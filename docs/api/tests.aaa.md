@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for interfaces tests
+# ANTA catalog for AAA tests
 
 ::: anta.tests.aaa
     options:
@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"

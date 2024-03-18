@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for multicast tests
+# ANTA catalog for multicast and IGMP tests
 
 ::: anta.tests.multicast
     options:
@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"

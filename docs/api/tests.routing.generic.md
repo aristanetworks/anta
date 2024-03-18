@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for routing-generic tests
+# ANTA catalog for generic routing tests
 
 ::: anta.tests.routing.generic
     options:
@@ -15,3 +15,4 @@
       show_labels: true
       filters:
         - "!test"
+        - "!render"
