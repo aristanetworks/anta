@@ -23,6 +23,17 @@ class VerifyTransceiversManufacturers(AntaTest):
     ----------------
     * Success: The test will pass if all transceivers are from approved manufacturers.
     * Failure: The test will fail if some transceivers are from unapproved manufacturers.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTransceiversManufacturers:
+          manufacturers:
+            - Not Present
+            - Arista Networks
+            - Arastra, Inc.
+    ```
     """
 
     name = "VerifyTransceiversManufacturers"
@@ -57,6 +68,13 @@ class VerifyTemperature(AntaTest):
     ----------------
     * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
     * Failure: The test will fail if the device temperature is NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTemperature:
+    ```
     """
 
     name = "VerifyTemperature"
@@ -83,6 +101,13 @@ class VerifyTransceiversTemperature(AntaTest):
     ----------------
     * Success: The test will pass if all transceivers status are OK: 'ok'.
     * Failure: The test will fail if some transceivers are NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTransceiversTemperature:
+    ```
     """
 
     name = "VerifyTransceiversTemperature"
@@ -117,6 +142,13 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     ----------------
     * Success: The test will pass if the system cooling status is OK: 'coolingOk'.
     * Failure: The test will fail if the system cooling status is NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentSystemCooling:
+    ```
     """
 
     name = "VerifyEnvironmentSystemCooling"
@@ -142,6 +174,15 @@ class VerifyEnvironmentCooling(AntaTest):
     ----------------
     * Success: The test will pass if the fans status are within the accepted states list.
     * Failure: The test will fail if some fans status is not within the accepted states list.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentCooling:
+          states:
+            - ok
+    ```
     """
 
     name = "VerifyEnvironmentCooling"
@@ -180,6 +221,15 @@ class VerifyEnvironmentPower(AntaTest):
     ----------------
     * Success: The test will pass if the power supplies status are within the accepted states list.
     * Failure: The test will fail if some power supplies status is not within the accepted states list.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentPower:
+          states:
+            - ok
+    ```
     """
 
     name = "VerifyEnvironmentPower"
@@ -215,6 +265,13 @@ class VerifyAdverseDrops(AntaTest):
     ----------------
     * Success: The test will pass if there are no adverse drops.
     * Failure: The test will fail if there are adverse drops.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyAdverseDrops:
+    ```
     """
 
     name = "VerifyAdverseDrops"

@@ -23,6 +23,16 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     ----------------
     * Success: The test will pass if the IGMP snooping status matches the expected status for the provided VLANs.
     * Failure: The test will fail if the IGMP snooping status does not match the expected status for the provided VLANs.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.multicast:
+      - VerifyIGMPSnoopingVlans:
+          vlans:
+            10: False
+            12: False
+    ```
     """
 
     name = "VerifyIGMPSnoopingVlans"
@@ -58,6 +68,14 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     ----------------
     * Success: The test will pass if the IGMP snooping global status matches the expected status.
     * Failure: The test will fail if the IGMP snooping global status does not match the expected status.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.multicast:
+      - VerifyIGMPSnoopingGlobal:
+          enabled: True
+    ```
     """
 
     name = "VerifyIGMPSnoopingGlobal"

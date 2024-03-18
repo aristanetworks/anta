@@ -23,6 +23,12 @@ class VerifyZeroTouch(AntaTest):
     * Success: The test will pass if ZeroTouch is disabled.
     * Failure: The test will fail if ZeroTouch is enabled.
 
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyZeroTouch:
+    ```
     """
 
     name = "VerifyZeroTouch"
@@ -48,6 +54,12 @@ class VerifyRunningConfigDiffs(AntaTest):
     * Success: The test will pass if there is no difference between the running-config and the startup-config.
     * Failure: The test will fail if there is a difference between the running-config and the startup-config.
 
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyRunningConfigDiffs:
+    ```
     """
 
     name = "VerifyRunningConfigDiffs"

@@ -32,7 +32,13 @@ class VerifyBFDSpecificPeers(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.bfd:
+      - VerifyBFDSpecificPeers:
+          bfd_peers:
+            - peer_address: 192.0.255.8
+              vrf: default
+            - peer_address: 192.0.255.7
+              vrf: default
     ```
     """
 
@@ -101,7 +107,19 @@ class VerifyBFDPeersIntervals(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.bfd:
+      - VerifyBFDPeersIntervals:
+          bfd_peers:
+            - peer_address: 192.0.255.8
+              vrf: default
+              tx_interval: 1200
+              rx_interval: 1200
+              multiplier: 3
+            - peer_address: 192.0.255.7
+              vrf: default
+              tx_interval: 1200
+              rx_interval: 1200
+              multiplier: 3
     ```
     """
 
@@ -194,7 +212,9 @@ class VerifyBFDPeersHealth(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.bfd:
+      - VerifyBFDPeersHealth:
+          down_threshold: 2
     ```
     """
 

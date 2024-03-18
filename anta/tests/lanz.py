@@ -21,6 +21,13 @@ class VerifyLANZ(AntaTest):
     ----------------
     * Success: The test will pass if LANZ is enabled.
     * Failure: The test will fail if LANZ is disabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.lanz:
+      - VerifyLANZ:
+    ```
     """
 
     name = "VerifyLANZ"

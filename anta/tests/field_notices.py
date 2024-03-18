@@ -25,6 +25,13 @@ class VerifyFieldNotice44Resolution(AntaTest):
     ----------------
     * Success: The test will pass if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
     * Failure: The test will fail if the device is not using an Aboot version that fixes the bug discussed in the Field Notice 44.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.field_notices:
+      - VerifyFieldNotice44Resolution:
+    ```
     """
 
     name = "VerifyFieldNotice44Resolution"
@@ -122,6 +129,13 @@ class VerifyFieldNotice72Resolution(AntaTest):
     ----------------
     * Success: The test will pass if the device is not exposed to FN72 and the issue has been mitigated.
     * Failure: The test will fail if the device is exposed to FN72 and the issue has not been mitigated.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.field_notices:
+      - VerifyFieldNotice72Resolution:
+    ```
     """
 
     name = "VerifyFieldNotice72Resolution"

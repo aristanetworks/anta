@@ -20,6 +20,13 @@ class VerifyGreenTCounters(AntaTest):
     ----------------
     * Success: The test will pass if the GreenT counters are incremented.
     * Failure: The test will fail if the GreenT counters are not incremented.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.greent:
+      - VerifyGreenT:
+    ```
     """
 
     name = "VerifyGreenTCounters"
@@ -45,6 +52,13 @@ class VerifyGreenT(AntaTest):
     ----------------
     * Success: The test will pass if a GreenT policy is created other than the default one.
     * Failure: The test will fail if no other GreenT policy is created.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.greent:
+      - VerifyGreenTCounters:
+    ```
     """
 
     name = "VerifyGreenT"

@@ -47,6 +47,13 @@ class VerifyLoggingPersistent(AntaTest):
     ----------------
     * Success: The test will pass if logging persistent is enabled and logs are in flash.
     * Failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingPersistent:
+    ```
     """
 
     name = "VerifyLoggingPersistent"
@@ -79,6 +86,15 @@ class VerifyLoggingSourceIntf(AntaTest):
     ----------------
     * Success: The test will pass if the provided logging source-interface is configured in the specified VRF.
     * Failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingSourceIntf:
+          interface: Management0
+          vrf: default
+    ```
     """
 
     name = "VerifyLoggingSourceInt"
@@ -112,6 +128,17 @@ class VerifyLoggingHosts(AntaTest):
     ----------------
     * Success: The test will pass if the provided syslog servers are configured in the specified VRF.
     * Failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingHosts:
+          hosts:
+            - 1.1.1.1
+            - 2.2.2.2
+          vrf: default
+    ```
     """
 
     name = "VerifyLoggingHosts"
@@ -150,6 +177,13 @@ class VerifyLoggingLogsGeneration(AntaTest):
     ----------------
     * Success: The test will pass if logs are generated.
     * Failure: The test will fail if logs are NOT generated.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingLogsGeneration:
+    ```
     """
 
     name = "VerifyLoggingLogsGeneration"
@@ -180,6 +214,13 @@ class VerifyLoggingHostname(AntaTest):
     ----------------
     * Success: The test will pass if logs are generated with the device FQDN.
     * Failure: The test will fail if logs are NOT generated with the device FQDN.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingHostname:
+    ```
     """
 
     name = "VerifyLoggingHostname"
@@ -217,6 +258,13 @@ class VerifyLoggingTimestamp(AntaTest):
     ----------------
     * Success: The test will pass if logs are generated with the appropriated timestamp.
     * Failure: The test will fail if logs are NOT generated with the appropriated timestamp.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingTimestamp:
+    ```
     """
 
     name = "VerifyLoggingTimestamp"
@@ -252,6 +300,13 @@ class VerifyLoggingAccounting(AntaTest):
     ----------------
     * Success: The test will pass if AAA accounting logs are generated.
     * Failure: The test will fail if AAA accounting logs are NOT generated.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingAccounting:
+    ```
     """
 
     name = "VerifyLoggingAccounting"
@@ -277,6 +332,13 @@ class VerifyLoggingErrors(AntaTest):
     ----------------
       * Success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
       * Failure: The test will fail if ERRORS or higher syslog messages are present.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingErrors:
+    ```
     """
 
     name = "VerifyLoggingErrors"
