@@ -42,16 +42,13 @@ def print_table(results: ResultManager, device: str | None = None, test: str | N
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
-    if device:
-        console.print(reporter.report_all(result_manager=results, host=device))
-    elif test:
-        console.print(reporter.report_all(result_manager=results, testcase=test))
-    elif group_by == "device":
+
+    if group_by == "device":
         console.print(reporter.report_summary_hosts(result_manager=results, host=None))
     elif group_by == "test":
         console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
     else:
-        console.print(reporter.report_all(result_manager=results))
+        console.print(reporter.report_all(result_manager=results, host=device, testcase=test))
 
 
 def print_json(results: ResultManager, output: pathlib.Path | None = None) -> None:
@@ -74,12 +71,12 @@ def print_list(results: ResultManager, output: pathlib.Path | None = None) -> No
             fout.write(str(results.get_results()))
 
 
-def print_text(results: ResultManager, search: str | None = None, *, skip_error: bool = False) -> None:
+def print_text(results: ResultManager, search: str, *, skip_error: bool = False) -> None:
     """Print results as simple text."""
     console.print()
-    regexp = re.compile(search or ".*")
+    regexp = re.compile(search)
     for line in results.get_results():
-        if any(regexp.match(entry) for entry in [line.name, line.test]) and (not skip_error or line.result != "error"):
+        if regexp.match(f"{line.name} {line.test}") and (not skip_error or line.result != "error"):
             message = f" ({line.messages[0]!s})" if len(line.messages) > 0 else ""
             console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
 

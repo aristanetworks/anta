@@ -19,8 +19,6 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.pass_context
-@click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
-@click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
     "--group-by",
     default=None,
@@ -28,8 +26,10 @@ logger = logging.getLogger(__name__)
     help="Group result by test or host. default none",
     required=False,
 )
-def table(ctx: click.Context, device: str | None, test: str | None, group_by: str) -> None:
+def table(ctx: click.Context, group_by: str) -> None:
     """ANTA command to check network states with table result."""
+    device = ctx.obj["device"]
+    test = ctx.obj["test"]
     print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
     exit_with_code(ctx)
 
@@ -52,10 +52,19 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 
 @click.command()
 @click.pass_context
-@click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
 @click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
-def text(ctx: click.Context, search: str | None, *, skip_error: bool) -> None:
+def text(ctx: click.Context, *, skip_error: bool) -> None:
     """ANTA command to check network states with text result."""
+    device = ctx.obj["device"]
+    test = ctx.obj["test"]
+    search = ".*"
+    if device is not None and test is not None:
+        search = f".*{device}.*{test}.*"
+    elif device is not None:
+        search = f".*{device}.*"
+    elif test is not None:
+        search = f".*{test}.*"
+
     print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
     exit_with_code(ctx)
 

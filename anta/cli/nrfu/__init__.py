@@ -56,9 +56,41 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @click.pass_context
 @inventory_options
 @catalog_options
-@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
-@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, *, ignore_status: bool, ignore_error: bool) -> None:
+@click.option(
+    "--ignore-status",
+    help="Always exit with success",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--ignore-error",
+    help="Only report failures and not errors",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--device",
+    "-d",
+    help="Show a summary for this device",
+    type=str,
+    required=False,
+    default=None,
+)
+@click.option("--test", help="Show a summary for this test", type=str, required=False, default=None)
+# pylint: disable=too-many-arguments
+def nrfu(
+    ctx: click.Context,
+    inventory: AntaInventory,
+    tags: list[str] | None,
+    catalog: AntaCatalog,
+    device: str | None,
+    test: str | None,
+    *,
+    ignore_status: bool,
+    ignore_error: bool,
+) -> None:
     """Run ANTA tests on devices."""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
@@ -68,6 +100,8 @@ def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, c
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
+    ctx.obj["device"] = device
+    ctx.obj["test"] = test
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags))
