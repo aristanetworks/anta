@@ -22,6 +22,15 @@ class VerifyRoutingProtocolModel(AntaTest):
     ----------------
     * Success: The test will pass if the configured routing protocol model is the one we expect.
     * Failure: The test will fail if the configured routing protocol model is not the one we expect.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingProtocolModel:
+            model: multi-agent
+    ```
     """
 
     name = "VerifyRoutingProtocolModel"
@@ -54,6 +63,16 @@ class VerifyRoutingTableSize(AntaTest):
     ----------------
     * Success: The test will pass if the routing table size is between the provided minimum and maximum values.
     * Failure: The test will fail if the routing table size is not between the provided minimum and maximum values.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingTableSize:
+            minimum: 2
+            maximum: 20
+    ```
     """
 
     name = "VerifyRoutingTableSize"
@@ -95,6 +114,18 @@ class VerifyRoutingTableEntry(AntaTest):
     ----------------
     * Success: The test will pass if the provided routes are present in the routing table.
     * Failure: The test will fail if one or many provided routes are missing from the routing table.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingTableEntry:
+            vrf: default
+            routes:
+              - 10.1.0.1
+              - 10.1.0.2
+    ```
     """
 
     name = "VerifyRoutingTableEntry"

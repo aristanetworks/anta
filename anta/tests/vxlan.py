@@ -36,9 +36,9 @@ class VerifyVxlan1Interface(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vxlan:
+      - VerifyVxlan1Interface:
     ```
-
     """
 
     name = "VerifyVxlan1Interface"
@@ -76,9 +76,9 @@ class VerifyVxlanConfigSanity(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vxlan:
+      - VerifyVxlanConfigSanity:
     ```
-
     """
 
     name = "VerifyVxlanConfigSanity"
@@ -116,9 +116,12 @@ class VerifyVxlanVniBinding(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vxlan:
+      - VerifyVxlanVniBinding:
+          bindings:
+            10010: 10
+            10020: 20
     ```
-
     """
 
     name = "VerifyVxlanVniBinding"
@@ -176,9 +179,12 @@ class VerifyVxlanVtep(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vxlan:
+      - VerifyVxlanVtep:
+          vteps:
+            - 10.1.1.5
+            - 10.1.1.6
     ```
-
     """
 
     name = "VerifyVxlanVtep"
@@ -225,9 +231,11 @@ class VerifyVxlan1ConnSettings(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vxlan:
+      - VerifyVxlan1ConnSettings:
+          source_interface: Loopback1
+          udp_port: 4789
     ```
-
     """
 
     name = "VerifyVxlan1ConnSettings"

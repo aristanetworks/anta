@@ -29,9 +29,11 @@ class VerifySTPMode(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPMode:
-        TODO
+          mode: rapidPvst
+          vlans:
+            - 10
+            - 20
     ```
-
     """
 
     name = "VerifySTPMode"
@@ -83,7 +85,6 @@ class VerifySTPBlockedPorts(AntaTest):
     ----------------
     * Success: The test will pass if there are NO ports blocked by STP.
     * Failure: The test will fail if there are ports blocked by STP.
-    * Failure: The test will fail if the STP mode is NOT configured properly for one or more specified VLAN(s).
 
     Examples
     --------
@@ -91,7 +92,6 @@ class VerifySTPBlockedPorts(AntaTest):
     anta.tests.stp:
       - VerifySTPBlockedPorts:
     ```
-
     """
 
     name = "VerifySTPBlockedPorts"
@@ -125,7 +125,6 @@ class VerifySTPCounters(AntaTest):
     anta.tests.stp:
       - VerifySTPCounters:
     ```
-
     """
 
     name = "VerifySTPCounters"
@@ -159,9 +158,10 @@ class VerifySTPForwardingPorts(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPForwardingPorts:
-        TODO
+          vlans:
+            - 10
+            - 20
     ```
-
     """
 
     name = "VerifySTPForwardingPorts"
@@ -216,9 +216,11 @@ class VerifySTPRootPriority(AntaTest):
     ```yaml
     anta.tests.stp:
       - VerifySTPRootPriority:
-        TODO
+          priority: 32768
+          instances:
+            - 10
+            - 20
     ```
-
     """
 
     name = "VerifySTPRootPriority"

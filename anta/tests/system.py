@@ -32,9 +32,10 @@ class VerifyUptime(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.system:
+      - VerifyUptime:
+          minimum: 86400
     ```
-
     """
 
     name = "VerifyUptime"
@@ -73,7 +74,6 @@ class VerifyReloadCause(AntaTest):
     anta.tests.system:
       - VerifyReloadCause:
     ```
-
     """
 
     name = "VerifyReloadCause"
@@ -121,7 +121,6 @@ class VerifyCoredump(AntaTest):
     anta.tests.system:
       - VerifyCoreDump:
     ```
-
     """
 
     name = "VerifyCoredump"
@@ -156,7 +155,6 @@ class VerifyAgentLogs(AntaTest):
     anta.tests.system:
       - VerifyAgentLogs:
     ```
-
     """
 
     name = "VerifyAgentLogs"
@@ -190,7 +188,6 @@ class VerifyCPUUtilization(AntaTest):
     anta.tests.system:
       - VerifyCPUUtilization:
     ```
-
     """
 
     name = "VerifyCPUUtilization"
@@ -223,7 +220,6 @@ class VerifyMemoryUtilization(AntaTest):
     anta.tests.system:
       - VerifyMemoryUtilization:
     ```
-
     """
 
     name = "VerifyMemoryUtilization"
@@ -256,7 +252,6 @@ class VerifyFileSystemUtilization(AntaTest):
     anta.tests.system:
       - VerifyFileSystemUtilization:
     ```
-
     """
 
     name = "VerifyFileSystemUtilization"
@@ -288,7 +283,6 @@ class VerifyNTP(AntaTest):
     anta.tests.system:
       - VerifyNTP:
     ```
-
     """
 
     name = "VerifyNTP"

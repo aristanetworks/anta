@@ -68,6 +68,14 @@ class VerifyOSPFNeighborState(AntaTest):
     * Success: The test will pass if all OSPF neighbors are in FULL state.
     * Failure: The test will fail if some OSPF neighbors are not in FULL state.
     * Skipped: The test will be skipped if no OSPF neighbor is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      ospf:
+        - VerifyOSPFNeighborState:
+    ```
     """
 
     name = "VerifyOSPFNeighborState"
@@ -96,6 +104,15 @@ class VerifyOSPFNeighborCount(AntaTest):
     * Success: The test will pass if the number of OSPF neighbors in FULL state is the one we expect.
     * Failure: The test will fail if the number of OSPF neighbors in FULL state is not the one we expect.
     * Skipped: The test will be skipped if no OSPF neighbor is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      ospf:
+        - VerifyOSPFNeighborCount:
+            number: 3
+    ```
     """
 
     name = "VerifyOSPFNeighborCount"

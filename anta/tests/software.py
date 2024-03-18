@@ -22,6 +22,16 @@ class VerifyEOSVersion(AntaTest):
     ----------------
     * Success: The test will pass if the device is running one of the allowed EOS version.
     * Failure: The test will fail if the device is not running one of the allowed EOS version.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.software:
+      - VerifyEOSVersion:
+          versions:
+            - 4.25.4M
+            - 4.26.1F
+    ```
     """
 
     name = "VerifyEOSVersion"
@@ -52,6 +62,16 @@ class VerifyTerminAttrVersion(AntaTest):
     ----------------
     * Success: The test will pass if the device is running one of the allowed TerminAttr version.
     * Failure: The test will fail if the device is not running one of the allowed TerminAttr version.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.software:
+      - VerifyTerminAttrVersion:
+          versions:
+            - v1.13.6
+            - v1.8.0
+    ```
     """
 
     name = "VerifyTerminAttrVersion"
@@ -83,6 +103,13 @@ class VerifyEOSExtensions(AntaTest):
     ----------------
     * Success: The test will pass if all EOS extensions installed on the device are enabled for boot persistence.
     * Failure: The test will fail if some EOS extensions installed on the device are not enabled for boot persistence.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.software:
+      - VerifyEOSExtensions:
+    ```
     """
 
     name = "VerifyEOSExtensions"

@@ -31,9 +31,12 @@ class VerifyVlanInternalPolicy(AntaTest):
     Examples
     --------
     ```yaml
-    TODO
+    anta.tests.vlan:
+      - VerifyVlanInternalPolicy:
+          policy: ascending
+          start_vlan_id: 1006
+          end_vlan_id: 4094
     ```
-
     """
 
     name = "VerifyVlanInternalPolicy"
