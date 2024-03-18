@@ -23,7 +23,14 @@ class VerifyPtpModeStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device is a BC.
     * Failure: The test will fail if the device is not a BC.
-        * Error: The test will error if the 'ptpMode' variable is not present in the command output.
+    * Error: The test will error if the 'ptpMode' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpModeStatus:
+    ```
     """
 
     name = "VerifyPtpModeStatus"
@@ -56,7 +63,15 @@ class VerifyPtpGMStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device is locked to the provided Grandmaster.
     * Failure: The test will fail if the device is not locked to the provided Grandmaster.
-        * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+    * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpGMStatus:
+          gmid: 0xec:46:70:ff:fe:00:ff:a9
+    ```
     """
 
     class Input(AntaTest.Input):
@@ -95,7 +110,14 @@ class VerifyPtpLockStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device was locked to the upstream GM in the last minute.
     * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.
-        * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+    * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpLockStatus:
+    ```
     """
 
     name = "VerifyPtpLockStatus"
@@ -130,6 +152,13 @@ class VerifyPtpOffset(AntaTest):
     * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.
     * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.
     * Skipped: The test will be skipped if PTP is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpOffset:
+    ```
     """
 
     name = "VerifyPtpOffset"
@@ -168,6 +197,13 @@ class VerifyPtpPortModeStatus(AntaTest):
     ----------------
     * Success: The test will pass if all PTP enabled interfaces are in a valid state.
     * Failure: The test will fail if there are no PTP enabled interfaces or if some interfaces are not in a valid state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpPortModeStatus:
+    ```
     """
 
     name = "VerifyPtpPortModeStatus"

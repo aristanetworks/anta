@@ -26,6 +26,13 @@ class VerifySSHStatus(AntaTest):
     ----------------
     * Success: The test will pass if the SSHD agent is disabled in the default VRF.
     * Failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHStatus:
+    ```
     """
 
     name = "VerifySSHStatus"
@@ -54,6 +61,15 @@ class VerifySSHIPv4Acl(AntaTest):
     ----------------
     * Success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
     * Failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHIPv4Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySSHIPv4Acl"
@@ -94,6 +110,15 @@ class VerifySSHIPv6Acl(AntaTest):
     ----------------
     * Success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
     * Failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHIPv6Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySSHIPv6Acl"
@@ -134,6 +159,13 @@ class VerifyTelnetStatus(AntaTest):
     ----------------
     * Success: The test will pass if Telnet is disabled in the default VRF.
     * Failure: The test will fail if Telnet is NOT disabled in the default VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyTelnetStatus:
+    ```
     """
 
     name = "VerifyTelnetStatus"
@@ -158,6 +190,13 @@ class VerifyAPIHttpStatus(AntaTest):
     ----------------
     * Success: The test will pass if eAPI HTTP server is disabled globally.
     * Failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIHttpStatus:
+    ```
     """
 
     name = "VerifyAPIHttpStatus"
@@ -182,6 +221,14 @@ class VerifyAPIHttpsSSL(AntaTest):
     ----------------
     * Success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
     * Failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIHttpsSSL:
+          profile: default
+    ```
     """
 
     name = "VerifyAPIHttpsSSL"
@@ -216,6 +263,15 @@ class VerifyAPIIPv4Acl(AntaTest):
     ----------------
     * Success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
     * Failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIIPv4Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifyAPIIPv4Acl"
@@ -256,7 +312,16 @@ class VerifyAPIIPv6Acl(AntaTest):
     ----------------
     * Success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
     * Failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
-        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+    * Skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIIPv6Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifyAPIIPv6Acl"
@@ -299,6 +364,24 @@ class VerifyAPISSLCertificate(AntaTest):
                    and the certificate has the correct name, encryption algorithm, and key size.
     * Failure: The test will fail if the certificate is expired or is going to expire,
                    or if the certificate has an incorrect name, encryption algorithm, or key size.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPISSLCertificate:
+          certificates:
+            - certificate_name: ARISTA_SIGNING_CA.crt
+              expiry_threshold: 30
+              common_name: AristaIT-ICA ECDSA Issuing Cert Authority
+              encryption_algorithm: ECDSA
+              key_size: 256
+            - certificate_name: ARISTA_ROOT_CA.crt
+              expiry_threshold: 30
+              common_name: Arista Networks Internal IT Root Cert Authority
+              encryption_algorithm: RSA
+              key_size: 4096
+    ```
     """
 
     name = "VerifyAPISSLCertificate"
@@ -395,6 +478,17 @@ class VerifyBannerLogin(AntaTest):
     ----------------
     * Success: The test will pass if the login banner matches the provided input.
     * Failure: The test will fail if the login banner does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyBannerLogin:
+            login_banner: |
+                # Copyright (c) 2023-2024 Arista Networks, Inc.
+                # Use of this source code is governed by the Apache License 2.0
+                # that can be found in the LICENSE file.
+    ```
     """
 
     name = "VerifyBannerLogin"
@@ -428,6 +522,17 @@ class VerifyBannerMotd(AntaTest):
     ----------------
     * Success: The test will pass if the motd banner matches the provided input.
     * Failure: The test will fail if the motd banner does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyBannerMotd:
+            motd_banner: |
+                # Copyright (c) 2023-2024 Arista Networks, Inc.
+                # Use of this source code is governed by the Apache License 2.0
+                # that can be found in the LICENSE file.
+    ```
     """
 
     name = "VerifyBannerMotd"
@@ -461,6 +566,28 @@ class VerifyIPv4ACL(AntaTest):
     ----------------
     * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
     * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyIPv4ACL:
+          ipv4_access_lists:
+            - name: default-control-plane-acl
+              entries:
+                - sequence: 10
+                  action: permit icmp any any
+                - sequence: 20
+                  action: permit ip any any tracked
+                - sequence: 30
+                  action: permit udp any any eq bfd ttl eq 255
+            - name: LabTest
+              entries:
+                - sequence: 10
+                  action: permit icmp any any
+                - sequence: 20
+                  action: permit tcp any any range 5900 5910
+    ```
     """
 
     name = "VerifyIPv4ACL"
