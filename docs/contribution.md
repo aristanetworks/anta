@@ -219,7 +219,7 @@ Image will be generated under `docs/imgs/uml/` and can be inserted in your docum
 Writing documentation is crucial but managing links can be cumbersome. To be sure there is no dead links, you can use [`muffet`](https://github.com/raviqqe/muffet) with the following command:
 
 ```bash
-muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com
+muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 ```
 
 ## Continuous Integration

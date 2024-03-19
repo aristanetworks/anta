@@ -157,7 +157,7 @@ nav:
   - Getting Started: getting-started.md
   - Installation: requirements-and-installation.md
   - Inventory & Tests catalog: usage-inventory-catalog.md
-  - Anta CLI:
+  - ANTA CLI:
     - Overview: cli/overview.md
     - NRFU: cli/nrfu.md
     - Execute commands: cli/exec.md
@@ -171,7 +171,7 @@ nav:
     - Caching in ANTA: advanced_usages/caching.md
     - Developing ANTA tests: advanced_usages/custom-tests.md
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
-  - Test Catalog Documentation:
+  - Tests Documentation:
     - Overview: api/tests.md
     - AAA: api/tests.aaa.md
     - BFD: api/tests.bfd.md

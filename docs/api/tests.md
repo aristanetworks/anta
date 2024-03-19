@@ -4,10 +4,13 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA Tests landing page
+# ANTA Tests Landing Page
 
 This section describes all the available tests provided by the ANTA package.
 
+## Available Tests
+
+Here are the tests that we currently provide:
 
 - [AAA](tests.aaa.md)
 - [BFD](tests.bfd.md)
@@ -35,6 +38,6 @@ This section describes all the available tests provided by the ANTA package.
 - [VLAN](tests.vlan.md)
 - [VXLAN](tests.vxlan.md)
 
-
+## Using the Tests
 
 All these tests can be imported in a [catalog](../usage-inventory-catalog.md) to be used by [the ANTA CLI](../cli/nrfu.md) or in your [own framework](../advanced_usages/as-python-lib.md).
