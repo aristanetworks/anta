@@ -220,11 +220,11 @@ class VerifyBGPPeerCount(AntaTest):
         """Render the template for each BGP address family in the input list."""
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
+            if template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf, num_peers=afi.num_peers))
 
             # For SR-TE address family command support sr-te first then ipv4/ipv6
-            elif template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
+            elif template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
             elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
