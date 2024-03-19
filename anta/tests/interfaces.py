@@ -645,7 +645,7 @@ class VerifyInterfacesSpeed(AntaTest):
 
     name = "VerifyInterfacesSpeed"
     description = "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces."
-    categories: ClassVar[list[str]]
+    categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
 
     class Input(AntaTest.Input):
