@@ -319,6 +319,7 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
+  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 
@@ -384,7 +385,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/tools/get*.py" = [
   "ANN401",   # Ok to use Any type hint in our custom get functions
-  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions 
+  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions
 ]
 "anta/runner.py" = [
   "C901",     # TODO: main function is too complex, needs a refactor
