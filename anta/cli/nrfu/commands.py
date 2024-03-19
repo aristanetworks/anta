@@ -26,9 +26,49 @@ logger = logging.getLogger(__name__)
     help="Group result by test or host. default none",
     required=False,
 )
-def table(ctx: click.Context, group_by: str) -> None:
+@click.option(
+    "--skip-error",
+    help="Hide tests in errors due to connectivity issue",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--skip-failure",
+    help="Hide tests in failure",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--skip-success",
+    help="Hide tests in success to focus on error or failure",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+def table(
+    ctx: click.Context,
+    group_by: str,
+    *,
+    skip_error: bool,
+    skip_failure: bool,
+    skip_success: bool,
+) -> None:
     """ANTA command to check network states with table result."""
-    print_table(results=ctx.obj["result_manager"], group_by=group_by)
+    if skip_error:
+        ignore_state = "error"
+    elif skip_failure:
+        ignore_state = "failure"
+    elif skip_success:
+        ignore_state = "success"
+    else:
+        ignore_state = None
+
+    print_table(results=ctx.obj["result_manager"], group_by=group_by, ignore_state=ignore_state)
     exit_with_code(ctx)
 
 

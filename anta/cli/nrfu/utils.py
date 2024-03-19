@@ -37,7 +37,7 @@ def print_settings(
     console.print()
 
 
-def print_table(results: ResultManager, group_by: str | None = None) -> None:
+def print_table(results: ResultManager, group_by: str | None = None, ignore_state: str | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -47,7 +47,7 @@ def print_table(results: ResultManager, group_by: str | None = None) -> None:
     elif group_by == "test":
         console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
     else:
-        console.print(reporter.report_all(result_manager=results))
+        console.print(reporter.report_all(result_manager=results, ignore_state=ignore_state))
 
 
 def print_json(results: ResultManager, output: pathlib.Path | None = None) -> None:

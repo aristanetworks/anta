@@ -85,11 +85,7 @@ class ReportTable:
         return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(
-        self,
-        result_manager: ResultManager,
-        host: str | None = None,
-        testcase: str | None = None,
-        title: str = "All tests results",
+        self, result_manager: ResultManager, host: str | None = None, testcase: str | None = None, title: str = "All tests results", ignore_state: str | None = None
     ) -> Table:
         """Create a table report with all tests for one or all devices.
 
@@ -101,6 +97,7 @@ class ReportTable:
             host (str, optional): IP Address of a host to search for. Defaults to None.
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
+            ignore_state (str, optional): Test status to ignore in the report. Default to None.
 
         Returns
         -------
@@ -127,7 +124,7 @@ class ReportTable:
                 and host is not None
                 and testcase == str(result.test)
                 and str(result.name) == host
-            ):
+            ) and (ignore_state is None or result.result != ignore_state):
                 table = add_line(table=table, result=result)
         return table
 
