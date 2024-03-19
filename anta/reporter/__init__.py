@@ -120,8 +120,6 @@ class ReportTable:
             if (
                 (host is None and testcase is None)
                 or ((testcase is None and host is not None and str(result.name) == host) or (host is None and testcase is not None and testcase == str(result.test)))
-                or testcase is not None
-                and host is not None
                 and testcase == str(result.test)
                 and str(result.name) == host
             ) and (ignore_state is None or result.result != ignore_state):
