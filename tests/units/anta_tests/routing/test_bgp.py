@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.routing.bgp.py
-"""
+"""Tests for anta.tests.routing.bgp.py."""
+
 # pylint: disable=C0302
 from __future__ import annotations
 
@@ -11,7 +10,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.routing.bgp import (  # noqa: E402
+from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
@@ -34,44 +33,100 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
-                    }
-                }
-            }
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.255.0.21": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.1": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.255.0.2": {
+                                "description": "DC1-SPINE2_Ethernet1",
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.255.0.12": {
+                                "description": "DC1-SPINE2_Ethernet1",
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.21": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.255.0.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 1},
+                {"afi": "evpn", "num_peers": 2},
+                {"afi": "link-state", "num_peers": 2},
+                {"afi": "path-selection", "num_peers": 2},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -81,59 +136,189 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
-                    }
-                }
-            }
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.255.0.21": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.1": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.255.0.2": {
+                                "description": "DC1-SPINE2_Ethernet1",
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.255.0.12": {
+                                "description": "DC1-SPINE2_Ethernet1",
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.255.0.21": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 3}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': 'Expected: 3, Actual: 2'}}]"]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 3},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 2},
+                {"afi": "evpn", "num_peers": 1},
+                {"afi": "link-state", "num_peers": 3},
+                {"afi": "path-selection", "num_peers": 3},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': 'Expected: 3, Actual: 2'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Expected: 2, Actual: 1'}}, "
+                "{'afi': 'evpn', 'vrfs': {'default': 'Expected: 1, Actual: 2'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'Expected: 3, Actual: 2'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Expected: 3, Actual: 1'}}]"
+            ],
+        },
     },
     {
         "name": "failure-no-peers",
         "test": VerifyBGPPeerCount,
-        "eos_data": [{"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}}],
-        "inputs": {"address_families": [{"afi": "ipv6", "safi": "unicast", "vrf": "default", "num_peers": 3}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Expected: 3, Actual: 0'}}]"]},
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {},
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 1},
+                {"afi": "evpn", "num_peers": 2},
+                {"afi": "link-state", "num_peers": 2},
+                {"afi": "path-selection", "num_peers": 2},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'default': 'Expected: 2, Actual: 0'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Expected: 1, Actual: 0'}}, "
+                "{'afi': 'evpn', 'vrfs': {'default': 'Expected: 2, Actual: 0'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'Expected: 2, Actual: 0'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Expected: 2, Actual: 0'}}]"
+            ],
+        },
     },
     {
         "name": "failure-not-configured",
         "test": VerifyBGPPeerCount,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": {"address_families": [{"afi": "ipv6", "safi": "multicast", "vrf": "DEV", "num_peers": 3}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv6', 'safi': 'multicast', 'vrfs': {'DEV': 'Not Configured'}}]"]},
+        "eos_data": [{"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv6", "safi": "multicast", "vrf": "DEV", "num_peers": 3},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 1},
+                {"afi": "evpn", "num_peers": 2},
+                {"afi": "link-state", "num_peers": 2},
+                {"afi": "path-selection", "num_peers": 2},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv6', 'safi': 'multicast', 'vrfs': {'DEV': 'Not Configured'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Not Configured'}}, "
+                "{'afi': 'evpn', 'vrfs': {'default': 'Not Configured'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'Not Configured'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Not Configured'}}]"
+            ],
+        },
     },
     {
         "name": "success-vrf-all",
@@ -142,65 +327,59 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
                     "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
-                }
-            }
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.255.10": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                    "PROD": {
+                        "peers": {
+                            "10.1.254.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all", "num_peers": 3}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "all", "num_peers": 3},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "all", "num_peers": 2},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -210,158 +389,70 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
                     "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
-                }
-            }
-        ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all", "num_peers": 5}]},
-        "expected": {"result": "failure", "messages": ["Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'all': 'Expected: 5, Actual: 3'}}]"]},
-    },
-    {
-        "name": "success-multiple-afi",
-        "test": VerifyBGPPeerCount,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
-                        "peers": {
-                            "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                        },
-                    }
-                }
+                },
             },
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
+                            "10.1.255.10": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
-                                "peerState": "Established",
-                            },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
-                                "inMsgQueue": 0,
-                                "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
-                    }
-                }
+                    },
+                    "PROD": {
+                        "peers": {
+                            "10.1.254.1": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "192.168.1.12": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
             },
         ],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "num_peers": 2},
-                {"afi": "evpn", "num_peers": 2},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "all", "num_peers": 5},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "all", "num_peers": 2},
             ]
         },
         "expected": {
-            "result": "success",
+            "result": "failure",
+            "messages": [
+                "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'all': 'Expected: 5, Actual: 3'}}, "
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'all': 'Expected: 2, Actual: 3'}}]"
+            ],
         },
     },
     {
@@ -371,96 +462,114 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
-                    }
-                }
+                    },
+                },
             },
             {"vrfs": {}},
             {
                 "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
+                    "MGMT": {
                         "peers": {
-                            "10.1.0.1": {
-                                "description": "DC1-SPINE1",
-                                "version": 4,
-                                "msgReceived": 3894,
-                                "msgSent": 3897,
+                            "10.1.254.11": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266296.584472,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
-                            "10.1.0.2": {
-                                "description": "DC1-SPINE2",
-                                "version": 4,
-                                "msgReceived": 3893,
-                                "msgSent": 3902,
+                            "192.168.1.21": {
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266297.433896,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
-                    }
-                }
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.0.1": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.0.2": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.0.11": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.0.21": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.1.0.2": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                            "10.1.0.22": {
+                                "inMsgQueue": 0,
+                                "outMsgQueue": 0,
+                                "peerState": "Established",
+                            },
+                        },
+                    },
+                },
             },
         ],
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "num_peers": 3},
-                {"afi": "evpn", "num_peers": 3},
                 {"afi": "ipv6", "safi": "unicast", "vrf": "default", "num_peers": 3},
-            ]
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 3},
+                {"afi": "evpn", "num_peers": 3},
+                {"afi": "link-state", "num_peers": 4},
+                {"afi": "path-selection", "num_peers": 1},
+            ],
         },
         "expected": {
             "result": "failure",
             "messages": [
                 "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Expected: 3, Actual: 2'}}, "
                 "{'afi': 'ipv6', 'safi': 'unicast', 'vrfs': {'default': 'Not Configured'}}, "
-                "{'afi': 'evpn', 'vrfs': {'default': 'Expected: 3, Actual: 2'}}"
+                "{'afi': 'ipv4', 'safi': 'sr-te', 'vrfs': {'MGMT': 'Expected: 3, Actual: 2'}}, "
+                "{'afi': 'evpn', 'vrfs': {'default': 'Expected: 3, Actual: 2'}}, "
+                "{'afi': 'link-state', 'vrfs': {'default': 'Expected: 4, Actual: 2'}}, "
+                "{'afi': 'path-selection', 'vrfs': {'default': 'Expected: 1, Actual: 2'}}]",
             ],
         },
     },
@@ -471,36 +580,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -579,36 +667,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Idle",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -695,71 +762,29 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
                     "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -799,7 +824,12 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "ipv4", "safi": "sr-te", "vrf": "all"}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "all"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "all"},
+            ]
+        },
         "expected": {
             "result": "success",
         },
@@ -811,71 +841,29 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Idle",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
                     },
                     "PROD": {
-                        "vrf": "PROD",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.254.1": {
-                                "description": "DC1-LEAF1B",
-                                "version": 4,
-                                "msgReceived": 3777,
-                                "msgSent": 3764,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65120",
-                                "prefixAccepted": 2,
-                                "prefixReceived": 2,
-                                "upDownTime": 1694266296.659891,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "192.168.1.11": {
-                                "description": "K8S-CLUSTER1",
-                                "version": 4,
-                                "msgReceived": 6417,
-                                "msgSent": 7546,
                                 "inMsgQueue": 100,
                                 "outMsgQueue": 200,
-                                "asn": "65000",
-                                "prefixAccepted": 1,
-                                "prefixReceived": 1,
-                                "upDownTime": 1694266329.978035,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -915,7 +903,12 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"address_families": [{"afi": "ipv4", "safi": "unicast", "vrf": "all"}, {"afi": "ipv4", "safi": "sr-te", "vrf": "all"}]},
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "vrf": "all"},
+                {"afi": "ipv4", "safi": "sr-te", "vrf": "all"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -952,10 +945,46 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-no-peers",
         "test": VerifyBGPPeersHealth,
         "eos_data": [
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"MGMT": {"vrf": "MGMT", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "vrf": "MGMT",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
         ],
         "inputs": {
             "address_families": [
@@ -980,36 +1009,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -1073,8 +1081,18 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
-                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {
+                    "afi": "ipv4",
+                    "safi": "unicast",
+                    "vrf": "default",
+                    "peers": ["10.1.255.0", "10.1.255.2"],
+                },
+                {
+                    "afi": "ipv4",
+                    "safi": "sr-te",
+                    "vrf": "MGMT",
+                    "peers": ["10.1.255.10", "10.1.255.12"],
+                },
                 {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
@@ -1088,36 +1106,15 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "vrf": "default",
-                        "routerId": "10.1.0.3",
-                        "asn": "65120",
                         "peers": {
                             "10.1.255.0": {
-                                "description": "DC1-SPINE1_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 0,
-                                "msgSent": 0,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 0,
-                                "prefixReceived": 0,
-                                "upDownTime": 1694266295.098931,
-                                "underMaintenance": False,
                                 "peerState": "Idle",
                             },
                             "10.1.255.2": {
-                                "description": "DC1-SPINE2_Ethernet1",
-                                "version": 4,
-                                "msgReceived": 3759,
-                                "msgSent": 3757,
                                 "inMsgQueue": 0,
                                 "outMsgQueue": 0,
-                                "asn": "65100",
-                                "prefixAccepted": 14,
-                                "prefixReceived": 14,
-                                "upDownTime": 1694266296.367261,
-                                "underMaintenance": False,
                                 "peerState": "Established",
                             },
                         },
@@ -1181,8 +1178,18 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "peers": ["10.1.255.0", "10.1.255.2"]},
-                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10", "10.1.255.12"]},
+                {
+                    "afi": "ipv4",
+                    "safi": "unicast",
+                    "vrf": "default",
+                    "peers": ["10.1.255.0", "10.1.255.2"],
+                },
+                {
+                    "afi": "ipv4",
+                    "safi": "sr-te",
+                    "vrf": "MGMT",
+                    "peers": ["10.1.255.10", "10.1.255.12"],
+                },
                 {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
@@ -1203,8 +1210,18 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}, {"vrfs": {}}],
         "inputs": {
             "address_families": [
-                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "peers": ["10.1.255.0"]},
-                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {
+                    "afi": "ipv4",
+                    "safi": "unicast",
+                    "vrf": "DEV",
+                    "peers": ["10.1.255.0"],
+                },
+                {
+                    "afi": "ipv4",
+                    "safi": "sr-te",
+                    "vrf": "MGMT",
+                    "peers": ["10.1.255.10"],
+                },
                 {"afi": "link-state", "peers": ["10.1.255.20"]},
                 {"afi": "path-selection", "peers": ["10.1.255.30"]},
             ]
@@ -1222,15 +1239,56 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-no-peers",
         "test": VerifyBGPSpecificPeers,
         "eos_data": [
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"MGMT": {"vrf": "MGMT", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "10.1.0.3", "asn": "65120", "peers": {}}}},
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "vrf": "MGMT",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {},
+                    }
+                }
+            },
         ],
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "multicast", "peers": ["10.1.255.0"]},
-                {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "peers": ["10.1.255.10"]},
+                {
+                    "afi": "ipv4",
+                    "safi": "sr-te",
+                    "vrf": "MGMT",
+                    "peers": ["10.1.255.10"],
+                },
                 {"afi": "link-state", "peers": ["10.1.255.20"]},
                 {"afi": "path-selection", "peers": ["10.1.255.30"]},
             ]
@@ -1384,10 +1442,46 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-no-routes",
         "test": VerifyBGPExchangedRoutes,
         "eos_data": [
-            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
-            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "192.0.255.1",
+                        "asn": "65001",
+                        "bgpRouteEntries": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "192.0.255.1",
+                        "asn": "65001",
+                        "bgpRouteEntries": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "192.0.255.1",
+                        "asn": "65001",
+                        "bgpRouteEntries": {},
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "192.0.255.1",
+                        "asn": "65001",
+                        "bgpRouteEntries": {},
+                    }
+                }
+            },
         ],
         "inputs": {
             "bgp_peers": [
@@ -1795,8 +1889,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
-                                        "ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
                                     }
                                 },
                             }
@@ -1808,8 +1910,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
-                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
                                     }
                                 },
                             }
@@ -1846,8 +1956,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
-                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
                                     }
                                 },
                             }
@@ -1883,7 +2001,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -1893,7 +2017,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -1934,7 +2064,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -1942,7 +2078,15 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 Unicast", "L2VpnEVPN"]}]},
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "capabilities": ["ipv4 Unicast", "L2VpnEVPN"],
+                }
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -1962,8 +2106,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
-                                        "ipv4MplsVpn": {"advertised": False, "received": True, "enabled": False},
+                                        "ipv4Unicast": {
+                                            "advertised": False,
+                                            "received": False,
+                                            "enabled": False,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": False,
+                                        },
                                     },
                                 },
                             }
@@ -1975,8 +2127,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "l2VpnEvpn": {"advertised": True, "received": False, "enabled": False},
-                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": True},
+                                        "l2VpnEvpn": {
+                                            "advertised": True,
+                                            "received": False,
+                                            "enabled": False,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": False,
+                                            "enabled": True,
+                                        },
                                     },
                                 },
                             },
@@ -1984,8 +2144,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.11",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
-                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": False},
+                                        "ipv4Unicast": {
+                                            "advertised": False,
+                                            "received": False,
+                                            "enabled": False,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": False,
+                                            "enabled": False,
+                                        },
                                     },
                                 },
                             },
@@ -1996,9 +2164,21 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"]},
-                {"peer_address": "172.30.11.10", "vrf": "MGMT", "capabilities": ["ipv4unicast", "ipv4 mplsvpn", "L2vpnEVPN"]},
-                {"peer_address": "172.30.11.11", "vrf": "MGMT", "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"]},
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4unicast", "ipv4 mplsvpn", "L2vpnEVPN"],
+                },
+                {
+                    "peer_address": "172.30.11.11",
+                    "vrf": "MGMT",
+                    "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"],
+                },
             ]
         },
         "expected": {
@@ -2025,7 +2205,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2035,7 +2219,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
-                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2068,7 +2256,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2079,7 +2271,11 @@ DATA: list[dict[str, Any]] = [
                         {
                             "peerAddress": "172.30.11.10",
                             "neighborCapabilities": {
-                                "fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True},
+                                "fourOctetAsnCap": {
+                                    "advertised": True,
+                                    "received": True,
+                                    "enabled": True,
+                                },
                             },
                         }
                     ]
@@ -2117,7 +2313,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             },
                         ]
@@ -2151,7 +2353,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2161,7 +2369,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2169,7 +2383,12 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "vrf": "default"},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -2189,7 +2408,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "fourOctetAsnCap": {"advertised": False, "received": False, "enabled": False},
+                                    "fourOctetAsnCap": {
+                                        "advertised": False,
+                                        "received": False,
+                                        "enabled": False,
+                                    },
                                 },
                             }
                         ]
@@ -2199,7 +2422,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
-                                    "fourOctetAsnCap": {"advertised": True, "received": False, "enabled": True},
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": False,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2207,7 +2434,12 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "vrf": "default"},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -2228,7 +2460,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2238,7 +2474,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.11",
                                 "neighborCapabilities": {
-                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2290,7 +2530,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ip4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2300,7 +2546,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.12",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ip4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2339,7 +2591,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2349,7 +2607,13 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.11",
                                 "neighborCapabilities": {
-                                    "multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}},
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        }
+                                    },
                                 },
                             }
                         ]
@@ -2357,7 +2621,12 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "vrf": "default"},
+                {"peer_address": "172.30.11.11", "vrf": "CS"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -2377,7 +2646,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
-                                    "routeRefreshCap": {"advertised": False, "received": False, "enabled": False},
+                                    "routeRefreshCap": {
+                                        "advertised": False,
+                                        "received": False,
+                                        "enabled": False,
+                                    },
                                 },
                             }
                         ]
@@ -2387,7 +2660,11 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.11",
                                 "neighborCapabilities": {
-                                    "routeRefreshCap": {"advertised": True, "received": True, "enabled": True},
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
                                 },
                             }
                         ]
@@ -2395,7 +2672,12 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "vrf": "default"},
+                {"peer_address": "172.30.11.11", "vrf": "CS"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -2586,10 +2868,22 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "state": "Established",
                             },
-                            {"peerAddress": "172.30.11.10", "state": "Established", "md5AuthEnabled": False},
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "state": "Established",
+                                "md5AuthEnabled": False,
+                            },
                         ]
                     },
-                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.11", "state": "Established", "md5AuthEnabled": False}]},
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.11",
+                                "state": "Established",
+                                "md5AuthEnabled": False,
+                            }
+                        ]
+                    },
                 }
             }
         ],
@@ -2678,7 +2972,12 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
+        "inputs": {
+            "vxlan_endpoints": [
+                {"address": "192.168.20.102", "vni": 10020},
+                {"address": "aac1.ab5d.b41e", "vni": 10010},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -3018,7 +3317,12 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
+        "inputs": {
+            "vxlan_endpoints": [
+                {"address": "192.168.20.102", "vni": 10020},
+                {"address": "aac1.ab5d.b41e", "vni": 10010},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -3051,7 +3355,12 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}, {"address": "192.168.10.101", "vni": 10010}]},
+        "inputs": {
+            "vxlan_endpoints": [
+                {"address": "aac1.ab4e.bec2", "vni": 10020},
+                {"address": "192.168.10.101", "vni": 10010},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
@@ -3068,7 +3377,12 @@ DATA: list[dict[str, Any]] = [
             {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
             {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
         ],
-        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}, {"address": "192.168.10.101", "vni": 10010}]},
+        "inputs": {
+            "vxlan_endpoints": [
+                {"address": "aac1.ab4e.bec2", "vni": 10020},
+                {"address": "192.168.10.101", "vni": 10010},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020), ('192.168.10.101', 10010)]"],
@@ -3084,7 +3398,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": True,
+                                },
                             }
                         ]
                     },
@@ -3092,7 +3410,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.10",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": True,
+                                },
                             }
                         ]
                     },
@@ -3122,7 +3444,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": True,
+                                },
                             }
                         ]
                     },
@@ -3155,7 +3481,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": True,
+                                },
                             }
                         ]
                     },
@@ -3163,7 +3493,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": True},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": True,
+                                },
                             }
                         ]
                     },
@@ -3200,7 +3534,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {"standard": False, "extended": False, "large": False},
+                                "advertisedCommunities": {
+                                    "standard": False,
+                                    "extended": False,
+                                    "large": False,
+                                },
                             }
                         ]
                     },
@@ -3208,7 +3546,11 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.10",
-                                "advertisedCommunities": {"standard": True, "extended": True, "large": False},
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": False,
+                                },
                             }
                         ]
                     },

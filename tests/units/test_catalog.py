@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-test anta.device.py
-"""
+"""test anta.device.py."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -146,12 +145,12 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "no_input_when_required",
         "tests": [(FakeTestWithInput, None)],
-        "error": "Field required",
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Field required",
     },
     {
         "name": "wrong_input_type",
-        "tests": [(FakeTestWithInput, True)],
-        "error": "Value error, Coud not instantiate inputs as type bool is not valid",
+        "tests": [(FakeTestWithInput, {"string": True})],
+        "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Input should be a valid string",
     },
 ]
 
@@ -169,64 +168,52 @@ TESTS_SETTER_FAIL_DATA: list[dict[str, Any]] = [
 ]
 
 
-class Test_AntaCatalog:
-    """
-    Test for anta.catalog.AntaCatalog
-    """
+class TestAntaCatalog:
+    """Test for anta.catalog.AntaCatalog."""
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test_parse(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Instantiate AntaCatalog from a file
-        """
+        """Instantiate AntaCatalog from a file."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
 
         assert len(catalog.tests) == len(catalog_data["tests"])
-        for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
+        for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
             assert catalog.tests[test_id].test == test
-            if inputs is not None:
-                if isinstance(inputs, dict):
-                    inputs = test.Input(**inputs)
+            if inputs_data is not None:
+                inputs = test.Input(**inputs_data) if isinstance(inputs_data, dict) else inputs_data
                 assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test_from_list(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Instantiate AntaCatalog from a list
-        """
+        """Instantiate AntaCatalog from a list."""
         catalog: AntaCatalog = AntaCatalog.from_list(catalog_data["tests"])
 
         assert len(catalog.tests) == len(catalog_data["tests"])
-        for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
+        for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
             assert catalog.tests[test_id].test == test
-            if inputs is not None:
-                if isinstance(inputs, dict):
-                    inputs = test.Input(**inputs)
+            if inputs_data is not None:
+                inputs = test.Input(**inputs_data) if isinstance(inputs_data, dict) else inputs_data
                 assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test_from_dict(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Instantiate AntaCatalog from a dict
-        """
-        with open(file=str(DATA_DIR / catalog_data["filename"]), mode="r", encoding="UTF-8") as file:
-            data = safe_load(file)
+        """Instantiate AntaCatalog from a dict."""
+        file = DATA_DIR / catalog_data["filename"]
+        with file.open(encoding="UTF-8") as f:
+            data = safe_load(f)
             catalog: AntaCatalog = AntaCatalog.from_dict(data)
 
         assert len(catalog.tests) == len(catalog_data["tests"])
-        for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
+        for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
             assert catalog.tests[test_id].test == test
-            if inputs is not None:
-                if isinstance(inputs, dict):
-                    inputs = test.Input(**inputs)
+            if inputs_data is not None:
+                inputs = test.Input(**inputs_data) if isinstance(inputs_data, dict) else inputs_data
                 assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize("catalog_data", CATALOG_PARSE_FAIL_DATA, ids=generate_test_ids_list(CATALOG_PARSE_FAIL_DATA))
     def test_parse_fail(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Errors when instantiating AntaCatalog from a file
-        """
-        with pytest.raises((ValidationError, ValueError)) as exec_info:
+        """Errors when instantiating AntaCatalog from a file."""
+        with pytest.raises((ValidationError, TypeError)) as exec_info:
             AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
         if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
@@ -234,34 +221,29 @@ class Test_AntaCatalog:
             assert catalog_data["error"] in str(exec_info)
 
     def test_parse_fail_parsing(self, caplog: pytest.LogCaptureFixture) -> None:
-        """
-        Errors when instantiating AntaCatalog from a file
-        """
-        with pytest.raises(Exception) as exec_info:
+        """Errors when instantiating AntaCatalog from a file."""
+        with pytest.raises(FileNotFoundError) as exec_info:
             AntaCatalog.parse(str(DATA_DIR / "catalog_does_not_exist.yml"))
         assert "No such file or directory" in str(exec_info)
         assert len(caplog.record_tuples) >= 1
         _, _, message = caplog.record_tuples[0]
         assert "Unable to parse ANTA Test Catalog file" in message
-        assert "FileNotFoundError ([Errno 2] No such file or directory" in message
+        assert "FileNotFoundError: [Errno 2] No such file or directory" in message
 
     @pytest.mark.parametrize("catalog_data", CATALOG_FROM_LIST_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_LIST_FAIL_DATA))
     def test_from_list_fail(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Errors when instantiating AntaCatalog from a list of tuples
-        """
+        """Errors when instantiating AntaCatalog from a list of tuples."""
         with pytest.raises(ValidationError) as exec_info:
             AntaCatalog.from_list(catalog_data["tests"])
         assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
 
     @pytest.mark.parametrize("catalog_data", CATALOG_FROM_DICT_FAIL_DATA, ids=generate_test_ids_list(CATALOG_FROM_DICT_FAIL_DATA))
     def test_from_dict_fail(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Errors when instantiating AntaCatalog from a list of tuples
-        """
-        with open(file=str(DATA_DIR / catalog_data["filename"]), mode="r", encoding="UTF-8") as file:
-            data = safe_load(file)
-        with pytest.raises((ValidationError, ValueError)) as exec_info:
+        """Errors when instantiating AntaCatalog from a list of tuples."""
+        file = DATA_DIR / catalog_data["filename"]
+        with file.open(encoding="UTF-8") as f:
+            data = safe_load(f)
+        with pytest.raises((ValidationError, TypeError)) as exec_info:
             AntaCatalog.from_dict(data)
         if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
@@ -269,9 +251,7 @@ class Test_AntaCatalog:
             assert catalog_data["error"] in str(exec_info)
 
     def test_filename(self) -> None:
-        """
-        Test filename
-        """
+        """Test filename."""
         catalog = AntaCatalog(filename="test")
         assert catalog.filename == Path("test")
         catalog = AntaCatalog(filename=Path("test"))
@@ -279,33 +259,26 @@ class Test_AntaCatalog:
 
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test__tests_setter_success(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Success when setting AntaCatalog.tests from a list of tuples
-        """
+        """Success when setting AntaCatalog.tests from a list of tuples."""
         catalog = AntaCatalog()
         catalog.tests = [AntaTestDefinition(test=test, inputs=inputs) for test, inputs in catalog_data["tests"]]
         assert len(catalog.tests) == len(catalog_data["tests"])
-        for test_id, (test, inputs) in enumerate(catalog_data["tests"]):
+        for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
             assert catalog.tests[test_id].test == test
-            if inputs is not None:
-                if isinstance(inputs, dict):
-                    inputs = test.Input(**inputs)
+            if inputs_data is not None:
+                inputs = test.Input(**inputs_data) if isinstance(inputs_data, dict) else inputs_data
                 assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize("catalog_data", TESTS_SETTER_FAIL_DATA, ids=generate_test_ids_list(TESTS_SETTER_FAIL_DATA))
     def test__tests_setter_fail(self, catalog_data: dict[str, Any]) -> None:
-        """
-        Errors when setting AntaCatalog.tests from a list of tuples
-        """
+        """Errors when setting AntaCatalog.tests from a list of tuples."""
         catalog = AntaCatalog()
-        with pytest.raises(ValueError) as exec_info:
+        with pytest.raises(TypeError) as exec_info:
             catalog.tests = catalog_data["tests"]
         assert catalog_data["error"] in str(exec_info)
 
     def test_get_tests_by_tags(self) -> None:
-        """
-        Test AntaCatalog.test_get_tests_by_tags()
-        """
+        """Test AntaCatalog.get_tests_by_tags()."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
         tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
         assert len(tests) == 2

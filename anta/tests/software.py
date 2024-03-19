@@ -1,35 +1,42 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS software
-"""
+"""Module related to the EOS software tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep List for pydantic in python 3.8
-from typing import List
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyEOSVersion(AntaTest):
-    """
-    Verifies the device is running one of the allowed EOS version.
+    """Verifies that the device is running one of the allowed EOS version.
+
+    Expected Results:
+        * Success: The test will pass if the device is running one of the allowed EOS version.
+        * Failure: The test will fail if the device is not running one of the allowed EOS version.
     """
 
     name = "VerifyEOSVersion"
-    description = "Verifies the device is running one of the allowed EOS version."
-    categories = ["software"]
-    commands = [AntaCommand(command="show version")]
+    description = "Verifies the EOS version of the device."
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: List[str]
-        """List of allowed EOS versions"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyEOSVersion test."""
+
+        versions: list[str]
+        """List of allowed EOS versions."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyEOSVersion."""
         command_output = self.instance_commands[0].json_output
         if command_output["version"] in self.inputs.versions:
             self.result.is_success()
@@ -38,21 +45,27 @@ class VerifyEOSVersion(AntaTest):
 
 
 class VerifyTerminAttrVersion(AntaTest):
-    """
-    Verifies the device is running one of the allowed TerminAttr version.
+    """Verifies that he device is running one of the allowed TerminAttr version.
+
+    Expected Results:
+        * Success: The test will pass if the device is running one of the allowed TerminAttr version.
+        * Failure: The test will fail if the device is not running one of the allowed TerminAttr version.
     """
 
     name = "VerifyTerminAttrVersion"
-    description = "Verifies the device is running one of the allowed TerminAttr version."
-    categories = ["software"]
-    commands = [AntaCommand(command="show version detail")]
+    description = "Verifies the TerminAttr version of the device."
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        versions: List[str]
-        """List of allowed TerminAttr versions"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTerminAttrVersion test."""
+
+        versions: list[str]
+        """List of allowed TerminAttr versions."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTerminAttrVersion."""
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["details"]["packages"]["TerminAttr-core"]["version"]
         if command_output_data in self.inputs.versions:
@@ -62,17 +75,21 @@ class VerifyTerminAttrVersion(AntaTest):
 
 
 class VerifyEOSExtensions(AntaTest):
-    """
-    Verifies all EOS extensions installed on the device are enabled for boot persistence.
+    """Verifies that all EOS extensions installed on the device are enabled for boot persistence.
+
+    Expected Results:
+        * Success: The test will pass if all EOS extensions installed on the device are enabled for boot persistence.
+        * Failure: The test will fail if some EOS extensions installed on the device are not enabled for boot persistence.
     """
 
     name = "VerifyEOSExtensions"
-    description = "Verifies all EOS extensions installed on the device are enabled for boot persistence."
-    categories = ["software"]
-    commands = [AntaCommand(command="show extensions"), AntaCommand(command="show boot-extensions")]
+    description = "Verifies that all EOS extensions installed on the device are enabled for boot persistence."
+    categories: ClassVar[list[str]] = ["software"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show extensions"), AntaCommand(command="show boot-extensions")]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyEOSExtensions."""
         boot_extensions = []
         show_extensions_command_output = self.instance_commands[0].json_output
         show_boot_extensions_command_output = self.instance_commands[1].json_output
@@ -80,9 +97,9 @@ class VerifyEOSExtensions(AntaTest):
             extension for extension, extension_data in show_extensions_command_output["extensions"].items() if extension_data["status"] == "installed"
         ]
         for extension in show_boot_extensions_command_output["extensions"]:
-            extension = extension.strip("\n")
-            if extension != "":
-                boot_extensions.append(extension)
+            formatted_extension = extension.strip("\n")
+            if formatted_extension != "":
+                boot_extensions.append(formatted_extension)
         installed_extensions.sort()
         boot_extensions.sort()
         if installed_extensions == boot_extensions:
