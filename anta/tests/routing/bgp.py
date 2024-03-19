@@ -68,11 +68,11 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
     ----
         peer_data (dict, optional): The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
-    Returns:
+    Returns
     -------
         dict: Dictionary with keys indicating issues or an empty dictionary if no issues.
 
-    Raises:
+    Raises
     ------
         ValueError: If any of the required keys ("peerState", "inMsgQueue", "outMsgQueue") are missing in `peer_data`, i.e. invalid BGP peer data.
 
@@ -117,7 +117,7 @@ def _add_bgp_routes_failure(
         vrf (str): The name of the VRF for which the routes need to be verified.
         route_type (str, optional): The type of BGP routes. Defaults to 'advertised_routes'.
 
-    Returns:
+    Returns
     -------
         dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
 
@@ -158,9 +158,33 @@ class VerifyBGPPeerCount(AntaTest):
 
     Please refer to the Input class attributes below for details.
 
-    Expected Results:
-        * Success: If the count of BGP peers matches the expected count for each address family and VRF.
-        * Failure: If the count of BGP peers does not match the expected count, or if BGP is not configured for an expected VRF or address family.
+    Expected Results
+    ----------------
+    * Success: If the count of BGP peers matches the expected count for each address family and VRF.
+    * Failure: If the count of BGP peers does not match the expected count, or if BGP is not configured for an expected VRF or address family.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerCount:
+            address_families:
+              - afi: "evpn"
+                num_peers: 2
+              - afi: "ipv4"
+                safi: "unicast"
+                vrf: "PROD"
+                num_peers: 2
+              - afi: "ipv4"
+                safi: "unicast"
+                vrf: "default"
+                num_peers: 3
+              - afi: "ipv4"
+                safi: "multicast"
+                vrf: "DEV"
+                num_peers: 3
+    ```
     """
 
     name = "VerifyBGPPeerCount"
@@ -278,9 +302,26 @@ class VerifyBGPPeersHealth(AntaTest):
 
     Please refer to the Input class attributes below for details.
 
-    Expected Results:
-        * Success: If all BGP sessions are established and all messages queues are empty for each address family and VRF.
-        * Failure: If there are issues with any of the BGP sessions, or if BGP is not configured for an expected VRF or address family.
+    Expected Results
+    ----------------
+    * Success: If all BGP sessions are established and all messages queues are empty for each address family and VRF.
+    * Failure: If there are issues with any of the BGP sessions, or if BGP is not configured for an expected VRF or address family.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeersHealth:
+            address_families:
+              - afi: "evpn"
+              - afi: "ipv4"
+                safi: "unicast"
+                vrf: "default"
+              - afi: "ipv6"
+                safi: "unicast"
+                vrf: "DEV"
+    ```
     """
 
     name = "VerifyBGPPeersHealth"
@@ -400,9 +441,30 @@ class VerifyBGPSpecificPeers(AntaTest):
 
     Please refer to the Input class attributes below for details.
 
-    Expected Results:
-        * Success: If the BGP session is established and all messages queues are empty for each given peer.
-        * Failure: If the BGP session has issues or is not configured, or if BGP is not configured for an expected VRF or address family.
+    Expected Results
+    ----------------
+    * Success: If the BGP session is established and all messages queues are empty for each given peer.
+    * Failure: If the BGP session has issues or is not configured, or if BGP is not configured for an expected VRF or address family.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPSpecificPeers:
+            address_families:
+              - afi: "evpn"
+                peers:
+                  - 10.1.0.1
+                  - 10.1.0.2
+              - afi: "ipv4"
+                safi: "unicast"
+                peers:
+                  - 10.1.254.1
+                  - 10.1.255.0
+                  - 10.1.255.2
+                  - 10.1.255.4
+    ```
     """
 
     name = "VerifyBGPSpecificPeers"
@@ -521,9 +583,32 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     The route type should be 'valid' and 'active' for a specified VRF.
 
-    Expected results:
-        * Success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
-        * Failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+    Expected Results
+    ----------------
+    * Success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
+    * Failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPExchangedRoutes:
+            bgp_peers:
+              - peer_address: 172.30.255.5
+                vrf: default
+                advertised_routes:
+                  - 192.0.254.5/32
+                received_routes:
+                  - 192.0.255.4/32
+              - peer_address: 172.30.255.1
+                vrf: default
+                advertised_routes:
+                  - 192.0.255.1/32
+                  - 192.0.254.5/32
+                received_routes:
+                  - 192.0.254.3/32
+    ```
     """
 
     name = "VerifyBGPExchangedRoutes"
@@ -596,9 +681,23 @@ class VerifyBGPExchangedRoutes(AntaTest):
 class VerifyBGPPeerMPCaps(AntaTest):
     """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
-        * Failure: The test will fail if BGP peers are not found or multiprotocol capabilities are not advertised, received, and enabled in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
+    * Failure: The test will fail if BGP peers are not found or multiprotocol capabilities are not advertised, received, and enabled in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerMPCaps:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+                capabilities:
+                  - ipv4Unicast
+    ```
     """
 
     name = "VerifyBGPPeerMPCaps"
@@ -668,9 +767,21 @@ class VerifyBGPPeerMPCaps(AntaTest):
 class VerifyBGPPeerASNCap(AntaTest):
     """Verifies the four octet asn capabilities of a BGP peer in a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if BGP peer's four octet asn capabilities are advertised, received, and enabled in the specified VRF.
-        * Failure: The test will fail if BGP peers are not found or four octet asn capabilities are not advertised, received, and enabled in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if BGP peer's four octet asn capabilities are advertised, received, and enabled in the specified VRF.
+    * Failure: The test will fail if BGP peers are not found or four octet asn capabilities are not advertised, received, and enabled in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerASNCap:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+    ```
     """
 
     name = "VerifyBGPPeerASNCap"
@@ -734,9 +845,21 @@ class VerifyBGPPeerASNCap(AntaTest):
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
     """Verifies the route refresh capabilities of a BGP peer in a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the BGP peer's route refresh capabilities are advertised, received, and enabled in the specified VRF.
-        * Failure: The test will fail if BGP peers are not found or route refresh capabilities are not advertised, received, and enabled in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the BGP peer's route refresh capabilities are advertised, received, and enabled in the specified VRF.
+    * Failure: The test will fail if BGP peers are not found or route refresh capabilities are not advertised, received, and enabled in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerRouteRefreshCap:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+    ```
     """
 
     name = "VerifyBGPPeerRouteRefreshCap"
@@ -800,9 +923,23 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 class VerifyBGPPeerMD5Auth(AntaTest):
     """Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
-        * Failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
+    * Failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerMD5Auth:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+              - peer_address: 172.30.11.5
+                vrf: default
+    ```
     """
 
     name = "VerifyBGPPeerMD5Auth"
@@ -861,9 +998,23 @@ class VerifyBGPPeerMD5Auth(AntaTest):
 class VerifyEVPNType2Route(AntaTest):
     """Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
 
-    Expected Results:
-        * Success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
-        * Failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+    Expected Results
+    ----------------
+    * Success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
+    * Failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyEVPNType2Route:
+            vxlan_endpoints:
+              - address: 192.168.20.102
+                vni: 10020
+              - address: aac1.ab5d.b41e
+                vni: 10010
+    ```
     """
 
     name = "VerifyEVPNType2Route"
@@ -924,9 +1075,23 @@ class VerifyEVPNType2Route(AntaTest):
 class VerifyBGPAdvCommunities(AntaTest):
     """Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
-        * Failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+    * Failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPAdvCommunities:
+            bgp_peers:
+              - peer_address: 172.30.11.17
+                vrf: default
+              - peer_address: 172.30.11.21
+                vrf: default
+    ```
     """
 
     name = "VerifyBGPAdvCommunities"
@@ -983,9 +1148,27 @@ class VerifyBGPAdvCommunities(AntaTest):
 class VerifyBGPTimers(AntaTest):
     """Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
-        * Failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
+    * Failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPTimers:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+                hold_time: 180
+                keep_alive_time: 60
+              - peer_address: 172.30.11.5
+                vrf: default
+                hold_time: 180
+                keep_alive_time: 60
+    ```
     """
 
     name = "VerifyBGPTimers"

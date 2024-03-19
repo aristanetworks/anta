@@ -98,7 +98,7 @@ class AntaInventory(Dict[str, AntaDevice]):
             inventory (AntaInventory): AntaInventory to add the parsed devices to
             **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
 
-        Raises:
+        Raises
         ------
             InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
 
@@ -131,7 +131,7 @@ class AntaInventory(Dict[str, AntaDevice]):
             inventory (AntaInventory): AntaInventory to add the parsed devices to
             **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
 
-        Raises:
+        Raises
         ------
             InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
 
@@ -187,7 +187,7 @@ class AntaInventory(Dict[str, AntaDevice]):
             insecure (bool): Disable SSH Host Key validation
             disable_cache (bool): Disable cache globally
 
-        Raises:
+        Raises
         ------
             InventoryRootKeyError: Root key of inventory is missing.
             InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
@@ -255,7 +255,7 @@ class AntaInventory(Dict[str, AntaDevice]):
             established_only: Whether or not to include only established devices. Default False.
             tags: List of tags to filter devices.
 
-        Returns:
+        Returns
         -------
             AntaInventory: An inventory with filtered AntaDevice objects.
 

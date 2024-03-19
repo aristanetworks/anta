@@ -32,7 +32,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
     ----
         devices: List of devices in the inventory.
 
-    Returns:
+    Returns
     -------
         None: Log the cache statistics for each device in the inventory.
 
@@ -62,7 +62,7 @@ async def main(manager: ResultManager, inventory: AntaInventory, catalog: AntaCa
         tags: List of tags to filter devices from the inventory. Defaults to None.
         established_only: Include only established device(s). Defaults to True.
 
-    Returns:
+    Returns
     -------
         any: ResultManager object gets updated with the test results.
 

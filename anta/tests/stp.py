@@ -19,9 +19,21 @@ from anta.tools.get_value import get_value
 class VerifySTPMode(AntaTest):
     """Verifies the configured STP mode for a provided list of VLAN(s).
 
-    Expected Results:
-        * Success: The test will pass if the STP mode is configured properly in the specified VLAN(s).
-        * Failure: The test will fail if the STP mode is NOT configured properly for one or more specified VLAN(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if the STP mode is configured properly in the specified VLAN(s).
+    * Failure: The test will fail if the STP mode is NOT configured properly for one or more specified VLAN(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPMode:
+          mode: rapidPvst
+          vlans:
+            - 10
+            - 20
+    ```
     """
 
     name = "VerifySTPMode"
@@ -49,7 +61,12 @@ class VerifySTPMode(AntaTest):
         for command in self.instance_commands:
             if "vlan" in command.params:
                 vlan_id = command.params["vlan"]
-            if not (stp_mode := get_value(command.json_output, f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol")):
+            if not (
+                stp_mode := get_value(
+                    command.json_output,
+                    f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol",
+                )
+            ):
                 not_configured.append(vlan_id)
             elif stp_mode != self.inputs.mode:
                 wrong_stp_mode.append(vlan_id)
@@ -64,9 +81,17 @@ class VerifySTPMode(AntaTest):
 class VerifySTPBlockedPorts(AntaTest):
     """Verifies there is no STP blocked ports.
 
-    Expected Results:
-        * Success: The test will pass if there are NO ports blocked by STP.
-        * Failure: The test will fail if there are ports blocked by STP.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are NO ports blocked by STP.
+    * Failure: The test will fail if there are ports blocked by STP.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPBlockedPorts:
+    ```
     """
 
     name = "VerifySTPBlockedPorts"
@@ -89,9 +114,17 @@ class VerifySTPBlockedPorts(AntaTest):
 class VerifySTPCounters(AntaTest):
     """Verifies there is no errors in STP BPDU packets.
 
-    Expected Results:
-        * Success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
-        * Failure: The test will fail if there are STP BPDU packet errors on one or many interface(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are NO STP BPDU packet errors under all interfaces participating in STP.
+    * Failure: The test will fail if there are STP BPDU packet errors on one or many interface(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPCounters:
+    ```
     """
 
     name = "VerifySTPCounters"
@@ -115,9 +148,20 @@ class VerifySTPCounters(AntaTest):
 class VerifySTPForwardingPorts(AntaTest):
     """Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
 
-    Expected Results:
-        * Success: The test will pass if all interfaces are in a forwarding state for the specified VLAN(s).
-        * Failure: The test will fail if one or many interfaces are NOT in a forwarding state in the specified VLAN(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces are in a forwarding state for the specified VLAN(s).
+    * Failure: The test will fail if one or many interfaces are NOT in a forwarding state in the specified VLAN(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPForwardingPorts:
+          vlans:
+            - 10
+            - 20
+    ```
     """
 
     name = "VerifySTPForwardingPorts"
@@ -162,9 +206,21 @@ class VerifySTPForwardingPorts(AntaTest):
 class VerifySTPRootPriority(AntaTest):
     """Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
 
-    Expected Results:
-        * Success: The test will pass if the STP root priority is configured properly for the specified VLAN or MST instance ID(s).
-        * Failure: The test will fail if the STP root priority is NOT configured properly for the specified VLAN or MST instance ID(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if the STP root priority is configured properly for the specified VLAN or MST instance ID(s).
+    * Failure: The test will fail if the STP root priority is NOT configured properly for the specified VLAN or MST instance ID(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPRootPriority:
+          priority: 32768
+          instances:
+            - 10
+            - 20
+    ```
     """
 
     name = "VerifySTPRootPriority"

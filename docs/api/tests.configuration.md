@@ -4,10 +4,15 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for configuration tests
+# ANTA catalog for device configuration tests
 
 ::: anta.tests.configuration
     options:
       show_root_heading: false
       show_root_toc_entry: false
+      show_bases: false
       merge_init_into_class: false
+      show_labels: true
+      filters:
+        - "!test"
+        - "!render"

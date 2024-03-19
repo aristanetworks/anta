@@ -26,9 +26,18 @@ class VerifyInterfaceUtilization(AntaTest):
 
     Load interval (default to 5 minutes) is defined in device configuration.
 
-    Expected Results:
-        * Success: The test will pass if all interfaces have a usage below the threshold.
-        * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have a usage below the threshold.
+    * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceUtilization:
+          threshold: 70.0
+    ```
     """
 
     name = "VerifyInterfaceUtilization"
@@ -79,9 +88,17 @@ class VerifyInterfaceUtilization(AntaTest):
 class VerifyInterfaceErrors(AntaTest):
     """Verifies that the interfaces error counters are equal to zero.
 
-    Expected Results:
-        * Success: The test will pass if all interfaces have error counters equal to zero.
-        * Failure: The test will fail if one or more interfaces have non-zero error counters.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have error counters equal to zero.
+    * Failure: The test will fail if one or more interfaces have non-zero error counters.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceErrors:
+    ```
     """
 
     name = "VerifyInterfaceErrors"
@@ -106,9 +123,17 @@ class VerifyInterfaceErrors(AntaTest):
 class VerifyInterfaceDiscards(AntaTest):
     """Verifies that the interfaces packet discard counters are equal to zero.
 
-    Expected Results:
-        * Success: The test will pass if all interfaces have discard counters equal to zero.
-        * Failure: The test will fail if one or more interfaces have non-zero discard counters.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have discard counters equal to zero.
+    * Failure: The test will fail if one or more interfaces have non-zero discard counters.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceDiscards:
+    ```
     """
 
     name = "VerifyInterfaceDiscards"
@@ -132,9 +157,17 @@ class VerifyInterfaceDiscards(AntaTest):
 class VerifyInterfaceErrDisabled(AntaTest):
     """Verifies there are no interfaces in the errdisabled state.
 
-    Expected Results:
-        * Success: The test will pass if there are no interfaces in the errdisabled state.
-        * Failure: The test will fail if there is at least one interface in the errdisabled state.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no interfaces in the errdisabled state.
+    * Failure: The test will fail if there is at least one interface in the errdisabled state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceErrDisabled:
+    ```
     """
 
     name = "VerifyInterfaceErrDisabled"
@@ -160,9 +193,26 @@ class VerifyInterfacesStatus(AntaTest):
     - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
     - If interface status is not "up", check only the interface status without considering line protocol status
 
-    Expected Results:
-        * Success: The test will pass if the provided interfaces are all in the expected state.
-        * Failure: The test will fail if any interface is not in the expected state.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided interfaces are all in the expected state.
+    * Failure: The test will fail if any interface is not in the expected state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesStatus:
+          interfaces:
+            - name: Ethernet1
+              status: up
+            - name: Port-Channel100
+              status: down
+              line_protocol_status: lowerLayerDown
+            - name: Ethernet49/1
+              status: adminDown
+              line_protocol_status: notPresent
+    ```
     """
 
     name = "VerifyInterfacesStatus"
@@ -224,9 +274,17 @@ class VerifyInterfacesStatus(AntaTest):
 class VerifyStormControlDrops(AntaTest):
     """Verifies there are no interface storm-control drop counters.
 
-    Expected Results:
-        * Success: The test will pass if there are no storm-control drop counters.
-        * Failure: The test will fail if there is at least one storm-control drop counter.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no storm-control drop counters.
+    * Failure: The test will fail if there is at least one storm-control drop counter.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyStormControlDrops:
+    ```
     """
 
     name = "VerifyStormControlDrops"
@@ -254,9 +312,17 @@ class VerifyStormControlDrops(AntaTest):
 class VerifyPortChannels(AntaTest):
     """Verifies there are no inactive ports in all port channels.
 
-    Expected Results:
-        * Success: The test will pass if there are no inactive ports in all port channels.
-        * Failure: The test will fail if there is at least one inactive port in a port channel.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no inactive ports in all port channels.
+    * Failure: The test will fail if there is at least one inactive port in a port channel.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyPortChannels:
+    ```
     """
 
     name = "VerifyPortChannels"
@@ -282,9 +348,17 @@ class VerifyPortChannels(AntaTest):
 class VerifyIllegalLACP(AntaTest):
     """Verifies there are no illegal LACP packets in all port channels.
 
-    Expected Results:
-        * Success: The test will pass if there are no illegal LACP packets received.
-        * Failure: The test will fail if there is at least one illegal LACP packet received.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no illegal LACP packets received.
+    * Failure: The test will fail if there is at least one illegal LACP packet received.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIllegalLACP:
+    ```
     """
 
     name = "VerifyIllegalLACP"
@@ -310,9 +384,18 @@ class VerifyIllegalLACP(AntaTest):
 class VerifyLoopbackCount(AntaTest):
     """Verifies that the device has the expected number of loopback interfaces and all are operational.
 
-    Expected Results:
-        * Success: The test will pass if the device has the correct number of loopback interfaces and none are down.
-        * Failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device has the correct number of loopback interfaces and none are down.
+    * Failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyLoopbackCount:
+          number: 3
+    ```
     """
 
     name = "VerifyLoopbackCount"
@@ -351,9 +434,17 @@ class VerifyLoopbackCount(AntaTest):
 class VerifySVI(AntaTest):
     """Verifies the status of all SVIs.
 
-    Expected Results:
-        * Success: The test will pass if all SVIs are up.
-        * Failure: The test will fail if one or many SVIs are not up.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all SVIs are up.
+    * Failure: The test will fail if one or many SVIs are not up.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifySVI:
+    ```
     """
 
     name = "VerifySVI"
@@ -383,9 +474,22 @@ class VerifyL3MTU(AntaTest):
 
     You can define a global MTU to check, or an MTU per interface and you can also ignored some interfaces.
 
-    Expected Results:
-        * Success: The test will pass if all layer 3 interfaces have the proper MTU configured.
-        * Failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all layer 3 interfaces have the proper MTU configured.
+    * Failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyL3MTU:
+          mtu: 1500
+          ignored_interfaces:
+              - Vxlan1
+          specific_mtu:
+              - Ethernet1: 2500
+    ```
     """
 
     name = "VerifyL3MTU"
@@ -430,9 +534,20 @@ class VerifyL3MTU(AntaTest):
 class VerifyIPProxyARP(AntaTest):
     """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
 
-    Expected Results:
-        * Success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
-        * Failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
+    * Failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIPProxyARP:
+          interfaces:
+            - Ethernet1
+            - Ethernet2
+    ```
     """
 
     name = "VerifyIPProxyARP"
@@ -471,9 +586,23 @@ class VerifyL2MTU(AntaTest):
     Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-    Expected Results:
-        * Success: The test will pass if all layer 2 interfaces have the proper MTU configured.
-        * Failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all layer 2 interfaces have the proper MTU configured.
+    * Failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyL2MTU:
+          mtu: 1500
+          ignored_interfaces:
+            - Management1
+            - Vxlan1
+          specific_mtu:
+            - Ethernet1/1: 1500
+    ```
     """
 
     name = "VerifyL2MTU"
@@ -519,9 +648,23 @@ class VerifyL2MTU(AntaTest):
 class VerifyInterfaceIPv4(AntaTest):
     """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
 
-    Expected Results:
-        * Success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
-        * Failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
+    * Failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceIPv4:
+          interfaces:
+            - name: Ethernet2
+              primary_ip: 172.30.11.0/31
+              secondary_ips:
+                - 10.10.10.0/31
+                - 10.10.10.10/31
+    ```
     """
 
     name = "VerifyInterfaceIPv4"
@@ -600,9 +743,18 @@ class VerifyInterfaceIPv4(AntaTest):
 class VerifyIpVirtualRouterMac(AntaTest):
     """Verifies the IP virtual router MAC address.
 
-    Expected Results:
-        * Success: The test will pass if the IP virtual router MAC address matches the input.
-        * Failure: The test will fail if the IP virtual router MAC address does not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the IP virtual router MAC address matches the input.
+    * Failure: The test will fail if the IP virtual router MAC address does not match the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIpVirtualRouterMac:
+          mac_address: 00:1c:73:00:dc:01
+    ```
     """
 
     name = "VerifyIpVirtualRouterMac"

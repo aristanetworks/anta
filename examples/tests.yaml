@@ -218,11 +218,11 @@ anta.tests.profiles:
 
 anta.tests.ptp:
   - VerifyPtpModeStatus:
-  - VerifyPtpPortModeStatus:
-  - VerifyPtpLockStatus:
   - VerifyPtpGMStatus:
       gmid: 0xec:46:70:ff:fe:00:ff:a9
+  - VerifyPtpLockStatus:
   - VerifyPtpOffset:
+  - VerifyPtpPortModeStatus:
 
 anta.tests.security:
   - VerifySSHStatus:

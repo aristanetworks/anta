@@ -19,9 +19,24 @@ from anta.models import AntaCommand, AntaMissingParamError, AntaTemplate, AntaTe
 class VerifyReachability(AntaTest):
     """Test network reachability to one or many destination IP(s).
 
-    Expected Results:
-        * Success: The test will pass if all destination IP(s) are reachable.
-        * Failure: The test will fail if one or many destination IP(s) are unreachable.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all destination IP(s) are reachable.
+    * Failure: The test will fail if one or many destination IP(s) are unreachable.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.connectivity:
+      - VerifyReachability:
+          hosts:
+            - source: Management0
+              destination: 1.1.1.1
+              vrf: MGMT
+            - source: Management0
+              destination: 8.8.8.8
+              vrf: MGMT
+    ```
     """
 
     name = "VerifyReachability"
@@ -76,11 +91,26 @@ class VerifyReachability(AntaTest):
 class VerifyLLDPNeighbors(AntaTest):
     """Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
-    Expected Results:
-        * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
-        * Failure: The test will fail if any of the following conditions are met:
-            - The provided LLDP neighbor is not found.
-            - The system name or port of the LLDP neighbor does not match the provided information.
+    Expected Results
+    ----------------
+    * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
+    * Failure: The test will fail if any of the following conditions are met:
+        - The provided LLDP neighbor is not found.
+        - The system name or port of the LLDP neighbor does not match the provided information.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.connectivity:
+      - VerifyLLDPNeighbors:
+          neighbors:
+            - port: Ethernet1
+              neighbor_device: DC1-SPINE1
+              neighbor_port: Ethernet1
+            - port: Ethernet2
+              neighbor_device: DC1-SPINE2
+              neighbor_port: Ethernet1
+    ```
     """
 
     name = "VerifyLLDPNeighbors"

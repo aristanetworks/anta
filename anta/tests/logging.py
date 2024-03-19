@@ -30,7 +30,7 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
         logger: The logger object.
         command_output: The `show logging` output.
 
-    Returns:
+    Returns
     -------
         str: The operational logging states.
 
@@ -43,9 +43,17 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
 class VerifyLoggingPersistent(AntaTest):
     """Verifies if logging persistent is enabled and logs are saved in flash.
 
-    Expected Results:
-        * Success: The test will pass if logging persistent is enabled and logs are in flash.
-        * Failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
+    Expected Results
+    ----------------
+    * Success: The test will pass if logging persistent is enabled and logs are in flash.
+    * Failure: The test will fail if logging persistent is disabled or no logs are saved in flash.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingPersistent:
+    ```
     """
 
     name = "VerifyLoggingPersistent"
@@ -74,9 +82,19 @@ class VerifyLoggingPersistent(AntaTest):
 class VerifyLoggingSourceIntf(AntaTest):
     """Verifies logging source-interface for a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the provided logging source-interface is configured in the specified VRF.
-        * Failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided logging source-interface is configured in the specified VRF.
+    * Failure: The test will fail if the provided logging source-interface is NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingSourceIntf:
+          interface: Management0
+          vrf: default
+    ```
     """
 
     name = "VerifyLoggingSourceInt"
@@ -106,9 +124,21 @@ class VerifyLoggingSourceIntf(AntaTest):
 class VerifyLoggingHosts(AntaTest):
     """Verifies logging hosts (syslog servers) for a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the provided syslog servers are configured in the specified VRF.
-        * Failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided syslog servers are configured in the specified VRF.
+    * Failure: The test will fail if the provided syslog servers are NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingHosts:
+          hosts:
+            - 1.1.1.1
+            - 2.2.2.2
+          vrf: default
+    ```
     """
 
     name = "VerifyLoggingHosts"
@@ -143,9 +173,17 @@ class VerifyLoggingHosts(AntaTest):
 class VerifyLoggingLogsGeneration(AntaTest):
     """Verifies if logs are generated.
 
-    Expected Results:
-        * Success: The test will pass if logs are generated.
-        * Failure: The test will fail if logs are NOT generated.
+    Expected Results
+    ----------------
+    * Success: The test will pass if logs are generated.
+    * Failure: The test will fail if logs are NOT generated.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingLogsGeneration:
+    ```
     """
 
     name = "VerifyLoggingLogsGeneration"
@@ -172,9 +210,17 @@ class VerifyLoggingLogsGeneration(AntaTest):
 class VerifyLoggingHostname(AntaTest):
     """Verifies if logs are generated with the device FQDN.
 
-    Expected Results:
-        * Success: The test will pass if logs are generated with the device FQDN.
-        * Failure: The test will fail if logs are NOT generated with the device FQDN.
+    Expected Results
+    ----------------
+    * Success: The test will pass if logs are generated with the device FQDN.
+    * Failure: The test will fail if logs are NOT generated with the device FQDN.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingHostname:
+    ```
     """
 
     name = "VerifyLoggingHostname"
@@ -208,9 +254,17 @@ class VerifyLoggingHostname(AntaTest):
 class VerifyLoggingTimestamp(AntaTest):
     """Verifies if logs are generated with the approprate timestamp.
 
-    Expected Results:
-        * Success: The test will pass if logs are generated with the appropriated timestamp.
-        * Failure: The test will fail if logs are NOT generated with the appropriated timestamp.
+    Expected Results
+    ----------------
+    * Success: The test will pass if logs are generated with the appropriated timestamp.
+    * Failure: The test will fail if logs are NOT generated with the appropriated timestamp.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingTimestamp:
+    ```
     """
 
     name = "VerifyLoggingTimestamp"
@@ -242,9 +296,17 @@ class VerifyLoggingTimestamp(AntaTest):
 class VerifyLoggingAccounting(AntaTest):
     """Verifies if AAA accounting logs are generated.
 
-    Expected Results:
-        * Success: The test will pass if AAA accounting logs are generated.
-        * Failure: The test will fail if AAA accounting logs are NOT generated.
+    Expected Results
+    ----------------
+    * Success: The test will pass if AAA accounting logs are generated.
+    * Failure: The test will fail if AAA accounting logs are NOT generated.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingAccounting:
+    ```
     """
 
     name = "VerifyLoggingAccounting"
@@ -266,9 +328,17 @@ class VerifyLoggingAccounting(AntaTest):
 class VerifyLoggingErrors(AntaTest):
     """Verifies there are no syslog messages with a severity of ERRORS or higher.
 
-    Expected Results:
+    Expected Results
+    ----------------
       * Success: The test will pass if there are NO syslog messages with a severity of ERRORS or higher.
       * Failure: The test will fail if ERRORS or higher syslog messages are present.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingErrors:
+    ```
     """
 
     name = "VerifyLoggingErrors"

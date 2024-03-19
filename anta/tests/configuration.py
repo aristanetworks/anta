@@ -18,9 +18,17 @@ if TYPE_CHECKING:
 class VerifyZeroTouch(AntaTest):
     """Verifies ZeroTouch is disabled.
 
-    Expected Results:
-      * Success: The test will pass if ZeroTouch is disabled.
-      * Failure: The test will fail if ZeroTouch is enabled.
+    Expected Results
+    ----------------
+    * Success: The test will pass if ZeroTouch is disabled.
+    * Failure: The test will fail if ZeroTouch is enabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyZeroTouch:
+    ```
     """
 
     name = "VerifyZeroTouch"
@@ -41,10 +49,17 @@ class VerifyZeroTouch(AntaTest):
 class VerifyRunningConfigDiffs(AntaTest):
     """Verifies there is no difference between the running-config and the startup-config.
 
-    Expected Results:
-      * Success: The test will pass if there is no difference between the running-config and the startup-config.
-      * Failure: The test will fail if there is a difference between the running-config and the startup-config.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there is no difference between the running-config and the startup-config.
+    * Failure: The test will fail if there is a difference between the running-config and the startup-config.
 
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyRunningConfigDiffs:
+    ```
     """
 
     name = "VerifyRunningConfigDiffs"

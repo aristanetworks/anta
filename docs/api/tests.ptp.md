@@ -4,9 +4,9 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for system tests
+# ANTA catalog for PTP tests
 
-::: anta.tests.system
+::: anta.tests.ptp
     options:
       show_root_heading: false
       show_root_toc_entry: false

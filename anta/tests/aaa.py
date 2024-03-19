@@ -20,9 +20,19 @@ if TYPE_CHECKING:
 class VerifyTacacsSourceIntf(AntaTest):
     """Verifies TACACS source-interface for a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
-        * Failure: The test will fail if the provided TACACS source-interface is NOT configured in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided TACACS source-interface is configured in the specified VRF.
+    * Failure: The test will fail if the provided TACACS source-interface is NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyTacacsSourceIntf:
+          intf: Management0
+          vrf: MGMT
+    ```
     """
 
     name = "VerifyTacacsSourceIntf"
@@ -54,9 +64,21 @@ class VerifyTacacsSourceIntf(AntaTest):
 class VerifyTacacsServers(AntaTest):
     """Verifies TACACS servers are configured for a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the provided TACACS servers are configured in the specified VRF.
-        * Failure: The test will fail if the provided TACACS servers are NOT configured in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided TACACS servers are configured in the specified VRF.
+    * Failure: The test will fail if the provided TACACS servers are NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyTacacsServers:
+          servers:
+            - 10.10.10.21
+            - 10.10.10.22
+          vrf: MGMT
+    ```
     """
 
     name = "VerifyTacacsServers"
@@ -96,9 +118,20 @@ class VerifyTacacsServers(AntaTest):
 class VerifyTacacsServerGroups(AntaTest):
     """Verifies if the provided TACACS server group(s) are configured.
 
-    Expected Results:
-        * Success: The test will pass if the provided TACACS server group(s) are configured.
-        * Failure: The test will fail if one or all the provided TACACS server group(s) are NOT configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided TACACS server group(s) are configured.
+    * Failure: The test will fail if one or all the provided TACACS server group(s) are NOT configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyTacacsServerGroups:
+          groups:
+            - TACACS-GROUP1
+            - TACACS-GROUP2
+    ```
     """
 
     name = "VerifyTacacsServerGroups"
@@ -130,9 +163,25 @@ class VerifyTacacsServerGroups(AntaTest):
 class VerifyAuthenMethods(AntaTest):
     """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
-    Expected Results:
-        * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
-        * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
+    * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAuthenMethods:
+        methods:
+          - local
+          - none
+          - logging
+        types:
+          - login
+          - enable
+          - dot1x
+    ```
     """
 
     name = "VerifyAuthenMethods"
@@ -176,9 +225,24 @@ class VerifyAuthenMethods(AntaTest):
 class VerifyAuthzMethods(AntaTest):
     """Verifies the AAA authorization method lists for different authorization types (commands, exec).
 
-    Expected Results:
-        * Success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
-        * Failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided AAA authorization method list is matching in the configured authorization types.
+    * Failure: The test will fail if the provided AAA authorization method list is NOT matching in the configured authorization types.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAuthzMethods:
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - commands
+            - exec
+    ```
     """
 
     name = "VerifyAuthzMethods"
@@ -215,9 +279,26 @@ class VerifyAuthzMethods(AntaTest):
 class VerifyAcctDefaultMethods(AntaTest):
     """Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
 
-    Expected Results:
-        * Success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
-        * Failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided AAA accounting default method list is matching in the configured accounting types.
+    * Failure: The test will fail if the provided AAA accounting default method list is NOT matching in the configured accounting types.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAcctDefaultMethods:
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - system
+            - exec
+            - commands
+            - dot1x
+    ```
     """
 
     name = "VerifyAcctDefaultMethods"
@@ -261,9 +342,26 @@ class VerifyAcctDefaultMethods(AntaTest):
 class VerifyAcctConsoleMethods(AntaTest):
     """Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
 
-    Expected Results:
-        * Success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
-        * Failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided AAA accounting console method list is matching in the configured accounting types.
+    * Failure: The test will fail if the provided AAA accounting console method list is NOT matching in the configured accounting types.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAcctConsoleMethods:
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - system
+            - exec
+            - commands
+            - dot1x
+    ```
     """
 
     name = "VerifyAcctConsoleMethods"

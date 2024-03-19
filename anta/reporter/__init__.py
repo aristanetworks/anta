@@ -34,7 +34,7 @@ class ReportTable:
             usr_list (list[str]): List of string to concatenate
             delimiter (str, optional): A delimiter to use to start string. Defaults to None.
 
-        Returns:
+        Returns
         -------
             str: Multi-lines string
 
@@ -53,7 +53,7 @@ class ReportTable:
             headers (list[str]): List of headers
             table (Table): A rich Table instance
 
-        Returns:
+        Returns
         -------
             Table: A rich Table instance with headers
 
@@ -75,7 +75,7 @@ class ReportTable:
         ----
             status (TestStatus): status value to color
 
-        Returns:
+        Returns
         -------
         str: the colored string
 
@@ -101,7 +101,7 @@ class ReportTable:
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
-        Returns:
+        Returns
         -------
             Table: A fully populated rich Table
 
@@ -135,7 +135,7 @@ class ReportTable:
             testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
-        Returns:
+        Returns
         -------
             Table: A fully populated rich Table
 
@@ -185,7 +185,7 @@ class ReportTable:
             host (str, optional): IP Address of a host to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
 
-        Returns:
+        Returns
         -------
             Table: A fully populated rich Table
 
@@ -257,7 +257,7 @@ class ReportJinja:
             trim_blocks (bool, optional): enable trim_blocks for J2 rendering. Defaults to True.
             lstrip_blocks (bool, optional): enable lstrip_blocks for J2 rendering. Defaults to True.
 
-        Returns:
+        Returns
         -------
             str: rendered template
 

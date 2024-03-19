@@ -22,7 +22,7 @@ def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
     ----
       ospf_neighbor_json (dict[str, Any]): The JSON output of the `show ip ospf neighbor` command.
 
-    Returns:
+    Returns
     -------
       int: The number of OSPF neighbors.
 
@@ -41,7 +41,7 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
     ----
       ospf_neighbor_json (dict[str, Any]): The JSON output of the `show ip ospf neighbor` command.
 
-    Returns:
+    Returns
     -------
       list[dict[str, Any]]: A list of OSPF neighbors whose adjacency state is not `full`.
 
@@ -63,10 +63,19 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
 class VerifyOSPFNeighborState(AntaTest):
     """Verifies all OSPF neighbors are in FULL state.
 
-    Expected Results:
-        * Success: The test will pass if all OSPF neighbors are in FULL state.
-        * Failure: The test will fail if some OSPF neighbors are not in FULL state.
-        * Skipped: The test will be skipped if no OSPF neighbor is found.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all OSPF neighbors are in FULL state.
+    * Failure: The test will fail if some OSPF neighbors are not in FULL state.
+    * Skipped: The test will be skipped if no OSPF neighbor is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      ospf:
+        - VerifyOSPFNeighborState:
+    ```
     """
 
     name = "VerifyOSPFNeighborState"
@@ -90,10 +99,20 @@ class VerifyOSPFNeighborState(AntaTest):
 class VerifyOSPFNeighborCount(AntaTest):
     """Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
-    Expected Results:
-        * Success: The test will pass if the number of OSPF neighbors in FULL state is the one we expect.
-        * Failure: The test will fail if the number of OSPF neighbors in FULL state is not the one we expect.
-        * Skipped: The test will be skipped if no OSPF neighbor is found.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the number of OSPF neighbors in FULL state is the one we expect.
+    * Failure: The test will fail if the number of OSPF neighbors in FULL state is not the one we expect.
+    * Skipped: The test will be skipped if no OSPF neighbor is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      ospf:
+        - VerifyOSPFNeighborCount:
+            number: 3
+    ```
     """
 
     name = "VerifyOSPFNeighborCount"

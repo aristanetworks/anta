@@ -80,7 +80,7 @@ class AntaTemplate(BaseModel):
         ----
             params: dictionary of variables with string values to render the Python f-string
 
-        Returns:
+        Returns
         -------
             command: The rendered AntaCommand.
                      This AntaCommand instance have a template attribute that references this
@@ -494,7 +494,7 @@ class AntaTest(ABC):
                           This list must have the same length and order than the `instance_commands` instance attribute.
                 kwargs: Any keyword argument to pass to the test.
 
-            Returns:
+            Returns
             -------
                 result: TestResult instance attribute populated with error status if any
 

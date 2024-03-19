@@ -1,0 +1,70 @@
+{% if obj.members %}
+  {{ log.debug("Rendering children of " + obj.path) }}
+
+  <div class="doc doc-children">
+    {# Notice inherited members false #}
+    {% with attributes = obj.attributes|filter_objects(
+        filters=config.filters,
+        members_list=members_list,
+        inherited_members=false,
+        keep_no_docstrings=config.show_if_no_docstring,
+      ) %}
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attribute in attributes %}
+              <tr>
+                <td><code>{{ attribute.name }}</code></td>
+                <td>
+                  {% if attribute.annotation %}
+                    {% with expression = attribute.annotation %}
+                      <code>{% include "expression.html" with context %}</code>
+                    {% endwith %}
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    {{ attribute.docstring.value }}
+                  </div>
+                </td>
+                <td>
+                  {% if attribute.value %}
+                    {% with expression = attribute.value %}
+                      <code>{% include "expression.html" with context %}</code>
+                    {% endwith %}
+                  {% else %}
+                    <em>-</em>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {%endwith %}
+      {% with classes = obj.classes|filter_objects(
+        filters=config.filters,
+        members_list=members_list,
+        inherited_members=false,
+        keep_no_docstrings=config.show_if_no_docstring,
+      ) %}
+        {% for class in classes %}
+          {% filter heading(heading_level, id=html_id ~ "-attributes") %}{{class.name}}{% endfilter %}
+          <div class="doc doc-children doc-contents">
+          {% set root = False %}
+          {% set heading_level = heading_level + 1 %}
+          {% set old_obj = obj %}
+          {% set obj = class %}
+          {% include "attributes_table.html" with context %}
+          {% set obj = old_obj %}
+          </div>
+        {% endfor %}
+      {%endwith %}
+  </div>
+{% endif %}

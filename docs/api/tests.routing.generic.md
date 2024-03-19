@@ -4,10 +4,15 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# ANTA catalog for routing-generic tests
+# ANTA catalog for generic routing tests
 
 ::: anta.tests.routing.generic
     options:
       show_root_heading: false
       show_root_toc_entry: false
+      show_bases: false
       merge_init_into_class: false
+      show_labels: true
+      filters:
+        - "!test"
+        - "!render"

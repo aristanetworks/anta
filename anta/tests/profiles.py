@@ -19,9 +19,18 @@ if TYPE_CHECKING:
 class VerifyUnifiedForwardingTableMode(AntaTest):
     """Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
 
-    Expected Results:
-        * Success: The test will pass if the device is using the expected UFT mode.
-        * Failure: The test will fail if the device is not using the expected UFT mode.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is using the expected UFT mode.
+    * Failure: The test will fail if the device is not using the expected UFT mode.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.profiles:
+      - VerifyUnifiedForwardingTableMode:
+          mode: 3
+    ```
     """
 
     name = "VerifyUnifiedForwardingTableMode"
@@ -49,9 +58,18 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 class VerifyTcamProfile(AntaTest):
     """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
 
-    Expected Results:
-        * Success: The test will pass if the provided TCAM profile is actually running on the device.
-        * Failure: The test will fail if the provided TCAM profile is not running on the device.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided TCAM profile is actually running on the device.
+    * Failure: The test will fail if the provided TCAM profile is not running on the device.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.profiles:
+      - VerifyTcamProfile:
+          profile: vxlan-routing
+    ```
     """
 
     name = "VerifyTcamProfile"
