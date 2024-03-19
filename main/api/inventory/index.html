@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.10ba22f1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -398,7 +398,7 @@
             
   
   <span class="md-ellipsis">
-    Anta CLI
+    ANTA CLI
   </span>
   
 
@@ -408,7 +408,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Anta CLI
+            ANTA CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -772,6 +772,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -786,7 +792,7 @@
             
   
   <span class="md-ellipsis">
-    Test Catalog Documentation
+    Tests Documentation
   </span>
   
 
@@ -796,7 +802,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            Test Catalog Documentation
+            Tests Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -933,6 +939,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../tests.greent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GreenT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tests.hardware/" class="md-nav__link">
         
   
@@ -959,6 +986,27 @@
   
   <span class="md-ellipsis">
     Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.lanz/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LANZ
   </span>
   
 
@@ -1058,6 +1106,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../tests.ptp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PTP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1074,10 +1143,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
         
           
-          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1088,8 +1157,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_16">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -2069,8 +2138,9 @@
   
       <p>Inventory abstraction for ANTA framework.</p>
 
-
   
+
+    
 
   <div class="doc doc-children">
 
@@ -2134,10 +2204,12 @@
   <div class="doc doc-contents ">
   
       <p>Add a device to final inventory.</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">device</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">added</span>
-</code></pre></div>
 
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code><span class="n">device</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">added</span>
+</code></pre></div>
+</details>
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
@@ -2229,13 +2301,36 @@
   <div class="doc doc-contents ">
   
       <p>Return a filtered inventory.</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">established_only</span><span class="o">:</span><span class="w"> </span><span class="n">Whether</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">established</span><span class="w"> </span><span class="n">devices</span><span class="o">.</span><span class="w"> </span><span class="n">Default</span><span class="w"> </span><span class="n">False</span><span class="o">.</span>
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code><span class="n">established_only</span><span class="o">:</span><span class="w"> </span><span class="n">Whether</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">established</span><span class="w"> </span><span class="n">devices</span><span class="o">.</span><span class="w"> </span><span class="n">Default</span><span class="w"> </span><span class="n">False</span><span class="o">.</span>
 <span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">devices</span><span class="o">.</span>
 </code></pre></div>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">AntaInventory</span><span class="o">:</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="n">AntaDevice</span><span class="w"> </span><span class="n">objects</span><span class="o">.</span>
-</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    AntaInventory: An inventory with filtered AntaDevice objects.</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
@@ -2271,7 +2366,7 @@
 <span class="sd">        established_only: Whether or not to include only established devices. Default False.</span>
 <span class="sd">        tags: List of tags to filter devices.</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        AntaInventory: An inventory with filtered AntaDevice objects.</span>
 
@@ -2315,8 +2410,10 @@
   
       <p>Create an AntaInventory instance from an inventory file.</p>
 <p>The inventory devices are AsyncEOSDevice instances.</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code>filename (str): Path to device inventory YAML file
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code>filename (str): Path to device inventory YAML file
 username (str): Username to use to connect to devices
 password (str): Password to use to connect to devices
 enable (bool): Whether or not the commands need to be run in enable mode towards the devices
@@ -2325,10 +2422,30 @@ timeout (float, optional): timeout in seconds for every API call.
 insecure (bool): Disable SSH Host Key validation
 disable_cache (bool): Disable cache globally
 </code></pre></div>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">InventoryRootKeyError</span><span class="o">:</span><span class="w"> </span><span class="n">Root</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">missing</span><span class="o">.</span>
-<span class="n">InventoryIncorrectSchemaError</span><span class="o">:</span><span class="w"> </span><span class="n">Inventory</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">AntaInventory</span><span class="w"> </span><span class="n">Schema</span><span class="o">.</span>
-</code></pre></div>
+</details>
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    InventoryRootKeyError: Root key of inventory is missing.</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/inventory/__init__.py</code></summary>
@@ -2436,7 +2553,7 @@ disable_cache (bool): Disable cache globally
 <span class="sd">        insecure (bool): Disable SSH Host Key validation</span>
 <span class="sd">        disable_cache (bool): Disable cache globally</span>
 
-<span class="sd">    Raises:</span>
+<span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">        InventoryRootKeyError: Root key of inventory is missing.</span>
 <span class="sd">        InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.</span>
@@ -2497,6 +2614,7 @@ disable_cache (bool): Disable cache globally
 
   </div>
 
+
   </div>
 
 
@@ -2545,7 +2663,9 @@ disable_cache (bool): Disable cache globally
   
       <p>Error when user data does not follow ANTA schema.</p>
 
+  
 
+  
   </div>
 
 
@@ -2569,7 +2689,9 @@ disable_cache (bool): Disable cache globally
   
       <p>Error raised when inventory root key is not found.</p>
 
+  
 
+  
   </div>
 
 
@@ -2702,7 +2824,7 @@ disable_cache (bool): Disable cache globally
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

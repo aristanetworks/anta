@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.10ba22f1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -398,7 +398,7 @@
             
   
   <span class="md-ellipsis">
-    Anta CLI
+    ANTA CLI
   </span>
   
 
@@ -408,7 +408,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Anta CLI
+            ANTA CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -772,6 +772,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -786,7 +792,7 @@
             
   
   <span class="md-ellipsis">
-    Test Catalog Documentation
+    Tests Documentation
   </span>
   
 
@@ -796,7 +802,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            Test Catalog Documentation
+            Tests Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -933,6 +939,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../tests.greent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GreenT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tests.hardware/" class="md-nav__link">
         
   
@@ -959,6 +986,27 @@
   
   <span class="md-ellipsis">
     Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.lanz/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LANZ
   </span>
   
 
@@ -1058,6 +1106,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../tests.ptp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PTP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1074,10 +1143,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
         
           
-          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1088,8 +1157,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_16">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -1963,8 +2032,9 @@
   
       <p>TableReport Generate a Table based on TestResult.</p>
 
-
   
+
+    
 
   <div class="doc doc-children">
 
@@ -1993,15 +2063,38 @@
   
       <p>Create a table report with all tests for one or all devices.</p>
 <p>Create table with full output: Host / Test / Status / Message</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
 host (str, optional): IP Address of a host to search for. Defaults to None.
 testcase (str, optional): A test name to search for. Defaults to None.
 title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
 </code></pre></div>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">Table</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">fully</span><span class="w"> </span><span class="n">populated</span><span class="w"> </span><span class="n">rich</span><span class="w"> </span><span class="n">Table</span>
-</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    Table: A fully populated rich Table</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
@@ -2057,7 +2150,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="sd">        testcase (str, optional): A test name to search for. Defaults to None.</span>
 <span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        Table: A fully populated rich Table</span>
 
@@ -2097,14 +2190,37 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
   
       <p>Create a table report with result agregated per host.</p>
 <p>Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
 host (str, optional): IP Address of a host to search for. Defaults to None.
 title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
 </code></pre></div>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">Table</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">fully</span><span class="w"> </span><span class="n">populated</span><span class="w"> </span><span class="n">rich</span><span class="w"> </span><span class="n">Table</span>
-</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    Table: A fully populated rich Table</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
@@ -2173,7 +2289,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="sd">        host (str, optional): IP Address of a host to search for. Defaults to None.</span>
 <span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        Table: A fully populated rich Table</span>
 
@@ -2230,14 +2346,37 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
   
       <p>Create a table report with result agregated per test.</p>
 <p>Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
-      <hr />
-<div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
 testcase (str, optional): A test name to search for. Defaults to None.
 title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
 </code></pre></div>
-      <hr />
-<div class="codehilite"><pre><span></span><code><span class="n">Table</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">fully</span><span class="w"> </span><span class="n">populated</span><span class="w"> </span><span class="n">rich</span><span class="w"> </span><span class="n">Table</span>
-</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    Table: A fully populated rich Table</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
@@ -2305,7 +2444,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="sd">        testcase (str, optional): A test name to search for. Defaults to None.</span>
 <span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        Table: A fully populated rich Table</span>
 
@@ -2347,6 +2486,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
 
   </div>
+
 
   </div>
 
@@ -2471,7 +2611,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

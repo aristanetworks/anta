@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.10ba22f1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -398,7 +398,7 @@
             
   
   <span class="md-ellipsis">
-    Anta CLI
+    ANTA CLI
   </span>
   
 
@@ -408,7 +408,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Anta CLI
+            ANTA CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -972,6 +972,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -986,7 +992,7 @@
             
   
   <span class="md-ellipsis">
-    Test Catalog Documentation
+    Tests Documentation
   </span>
   
 
@@ -996,7 +1002,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            Test Catalog Documentation
+            Tests Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1133,6 +1139,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/tests.greent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GreenT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/tests.hardware/" class="md-nav__link">
         
   
@@ -1159,6 +1186,27 @@
   
   <span class="md-ellipsis">
     Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tests.lanz/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LANZ
   </span>
   
 
@@ -1258,6 +1306,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../api/tests.ptp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PTP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1274,10 +1343,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
         
           
-          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1288,8 +1357,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_16">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -2250,8 +2319,9 @@
   
   
 
-
   
+
+    
 
   <div class="doc doc-children">
 
@@ -2266,6 +2336,7 @@
 
 
   </div>
+
 
   </div>
 
@@ -2293,8 +2364,9 @@
 
   
 
-
   
+
+    
 
   <div class="doc doc-children">
 
@@ -2309,6 +2381,7 @@
 
 
   </div>
+
 
   </div>
 
@@ -2326,7 +2399,35 @@
   
 
 
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="anta.models.AntaTest.Input.ResultOverwrite.description">description</span></code></td>
+          <td>
+                <code>overwrite TestResult.description</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>categories: overwrite TestResult.categories
+custom_field: a free string that will be included in the TestResult object</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
   
+
+    
 
   <div class="doc doc-children">
 
@@ -2341,6 +2442,7 @@
 
 
   </div>
+
 
   </div>
 
@@ -2414,7 +2516,14 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
 <p>If the user needs to provide inputs for your test, you need to define a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that defines the schema of the test inputs:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>  <span class="c1"># pylint: disable=missing-class-docstring</span>
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inputs for my awesome test</span>
+<span class="sd">        Examples:</span>
+<span class="sd">        --------</span>
+<span class="sd">        your.module.path:</span>
+<span class="sd">          - YourTestName:</span>
+<span class="sd">            field_name: example_field_value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="nb">type</span><span class="o">&gt;</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&lt;input field docstring&gt;&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -2534,7 +2643,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2024</span>
   </span>
 
     
@@ -2633,7 +2742,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
