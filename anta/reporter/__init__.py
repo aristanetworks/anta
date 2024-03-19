@@ -84,9 +84,7 @@ class ReportTable:
         color = RICH_COLOR_THEME.get(status, "")
         return f"[{color}]{status}" if color != "" else str(status)
 
-    def report_all(
-        self, result_manager: ResultManager, host: str | None = None, testcase: str | None = None, title: str = "All tests results", ignore_state: str | None = None
-    ) -> Table:
+    def report_all(self, result_manager: ResultManager, title: str = "All tests results", ignore_state: str | None = None) -> Table:
         """Create a table report with all tests for one or all devices.
 
         Create table with full output: Host / Test / Status / Message
@@ -94,8 +92,6 @@ class ReportTable:
         Args:
         ----
             result_manager (ResultManager): A manager with a list of tests.
-            host (str, optional): IP Address of a host to search for. Defaults to None.
-            testcase (str, optional): A test name to search for. Defaults to None.
             title (str, optional): Title for the report. Defaults to 'All tests results'.
             ignore_state (str, optional): Test status to ignore in the report. Default to None.
 
@@ -117,12 +113,7 @@ class ReportTable:
 
         for result in result_manager.get_results():
             # pylint: disable=R0916
-            if (
-                (host is None and testcase is None)
-                or ((testcase is None and host is not None and str(result.name) == host) or (host is None and testcase is not None and testcase == str(result.test)))
-                and testcase == str(result.test)
-                and str(result.name) == host
-            ) and (ignore_state is None or result.result != ignore_state):
+            if ignore_state is None or result.result != ignore_state:
                 table = add_line(table=table, result=result)
         return table
 
