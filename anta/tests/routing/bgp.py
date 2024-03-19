@@ -152,7 +152,9 @@ def _add_bgp_routes_failure(
 class VerifyBGPPeerCount(AntaTest):
     """Verifies the count of BGP peers for a given address family.
 
-    It supports multiple types of address families (AFI) and subsequent service families (SAFI).
+    It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).
+
+    For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.
 
     Please refer to the Input class attributes below for details.
 
@@ -176,7 +178,7 @@ class VerifyBGPPeerCount(AntaTest):
         """List of BGP address families (BgpAfi)."""
 
         class BgpAfi(BaseModel):
-            """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
+            """Model for a BGP address family (AFI) and subsequent address family (SAFI)."""
 
             afi: Afi
             """BGP address family (AFI)."""
@@ -218,8 +220,12 @@ class VerifyBGPPeerCount(AntaTest):
         """Render the template for each BGP address family in the input list."""
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf, num_peers=afi.num_peers))
+
+            # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
+            elif template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
+                commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
             elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
         return commands
@@ -239,6 +245,10 @@ class VerifyBGPPeerCount(AntaTest):
             safi = cast(Optional[Safi], command.params.get("safi"))
             afi_vrf = cast(str, command.params.get("vrf"))
             num_peers = cast(PositiveInt, command.params.get("num_peers"))
+
+            # Swaping AFI and SAFI in case of SR-TE
+            if afi == "sr-te":
+                afi, safi = safi, afi
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
@@ -262,7 +272,9 @@ class VerifyBGPPeersHealth(AntaTest):
 
     It will validate that all BGP sessions are established and all message queues for these BGP sessions are empty for a given address family.
 
-    It supports multiple types of address families (AFI) and subsequent service families (SAFI).
+    It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).
+
+    For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.
 
     Please refer to the Input class attributes below for details.
 
@@ -286,7 +298,7 @@ class VerifyBGPPeersHealth(AntaTest):
         """List of BGP address families (BgpAfi)."""
 
         class BgpAfi(BaseModel):
-            """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
+            """Model for a BGP address family (AFI) and subsequent address family (SAFI)."""
 
             afi: Afi
             """BGP address family (AFI)."""
@@ -326,8 +338,12 @@ class VerifyBGPPeersHealth(AntaTest):
         """Render the template for each BGP address family in the input list."""
         commands = []
         for afi in self.inputs.address_families:
-            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf))
+
+            # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
+            elif template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
+                commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
             elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf))
         return commands
@@ -344,6 +360,10 @@ class VerifyBGPPeersHealth(AntaTest):
 
             afi = cast(Afi, command.params.get("afi"))
             safi = cast(Optional[Safi], command.params.get("safi"))
+
+            # Swaping AFI and SAFI in case of SR-TE
+            if afi == "sr-te":
+                afi, safi = safi, afi
             afi_vrf = cast(str, command.params.get("vrf"))
 
             if not (vrfs := command_output.get("vrfs")):
@@ -374,7 +394,9 @@ class VerifyBGPSpecificPeers(AntaTest):
 
     It will validate that the BGP session is established and all message queues for this BGP session are empty for the given peer(s).
 
-    It supports multiple types of address families (AFI) and subsequent service families (SAFI).
+    It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).
+
+    For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.
 
     Please refer to the Input class attributes below for details.
 
@@ -398,7 +420,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         """List of BGP address families (BgpAfi)."""
 
         class BgpAfi(BaseModel):
-            """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
+            """Model for a BGP address family (AFI) and subsequent address family (SAFI)."""
 
             afi: Afi
             """BGP address family (AFI)."""
@@ -444,9 +466,14 @@ class VerifyBGPSpecificPeers(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP address family in the input list."""
         commands = []
+
         for afi in self.inputs.address_families:
-            if template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"]:
+            if template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
                 commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf, peers=afi.peers))
+
+            # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
+            elif template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
+                commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf, peers=afi.peers))
             elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, peers=afi.peers))
         return commands
@@ -463,6 +490,10 @@ class VerifyBGPSpecificPeers(AntaTest):
 
             afi = cast(Afi, command.params.get("afi"))
             safi = cast(Optional[Safi], command.params.get("safi"))
+
+            # Swaping AFI and SAFI in case of SR-TE
+            if afi == "sr-te":
+                afi, safi = safi, afi
             afi_vrf = cast(str, command.params.get("vrf"))
             afi_peers = cast(List[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
 
