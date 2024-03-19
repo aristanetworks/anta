@@ -1,20 +1,20 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-generic test funciton used to generate unit tests for each AntaTest
-"""
+"""generic test funciton used to generate unit tests for each AntaTest."""
+
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from anta.device import AntaDevice
+if TYPE_CHECKING:
+    from anta.device import AntaDevice
 
 
 def test(device: AntaDevice, data: dict[str, Any]) -> None:
-    """
-    Generic test function for AntaTest subclass.
+    """Generic test function for AntaTest subclass.
+
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
     # Instantiate the AntaTest subclass

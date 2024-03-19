@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.mlag.py
-"""
+"""Tests for anta.tests.mlag.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -25,7 +24,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "state": "disabled",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
@@ -47,7 +46,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "state": "active",
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 0, "Active-full": 1},
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -58,7 +57,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "state": "disabled",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
@@ -70,7 +69,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "state": "active",
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 1, "Active-full": 1},
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -85,7 +84,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "state": "active",
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 1, "Active-partial": 1, "Active-full": 1},
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -106,7 +105,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "mlagActive": False,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
@@ -117,7 +116,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "dummy": False,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "error", "messages": ["Incorrect JSON response - 'mlagActive' state was not found"]},
@@ -131,7 +130,7 @@ DATA: list[dict[str, Any]] = [
                 "interfaceConfiguration": {},
                 "mlagActive": True,
                 "mlagConnected": True,
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -140,7 +139,7 @@ DATA: list[dict[str, Any]] = [
                 "MLAG config-sanity returned inconsistencies: "
                 "{'globalConfiguration': {'mlag': {'globalParameters': "
                 "{'dual-primary-detection-delay': {'localValue': '0', 'peerValue': '200'}}}}, "
-                "'interfaceConfiguration': {}}"
+                "'interfaceConfiguration': {}}",
             ],
         },
     },
@@ -153,7 +152,7 @@ DATA: list[dict[str, Any]] = [
                 "interfaceConfiguration": {"trunk-native-vlan mlag30": {"interface": {"Port-Channel30": {"localValue": "123", "peerValue": "3700"}}}},
                 "mlagActive": True,
                 "mlagConnected": True,
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -162,7 +161,7 @@ DATA: list[dict[str, Any]] = [
                 "MLAG config-sanity returned inconsistencies: "
                 "{'globalConfiguration': {}, "
                 "'interfaceConfiguration': {'trunk-native-vlan mlag30': "
-                "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}}"
+                "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}}",
             ],
         },
     },
@@ -179,7 +178,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "state": "disabled",
-            }
+            },
         ],
         "inputs": {"reload_delay": 300, "reload_delay_non_mlag": 330},
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
@@ -202,7 +201,7 @@ DATA: list[dict[str, Any]] = [
                 "dualPrimaryMlagRecoveryDelay": 60,
                 "dualPrimaryNonMlagRecoveryDelay": 0,
                 "detail": {"dualPrimaryDetectionDelay": 200, "dualPrimaryAction": "none"},
-            }
+            },
         ],
         "inputs": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {"result": "success"},
@@ -213,7 +212,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "state": "disabled",
-            }
+            },
         ],
         "inputs": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
@@ -226,7 +225,7 @@ DATA: list[dict[str, Any]] = [
                 "state": "active",
                 "dualPrimaryDetectionState": "disabled",
                 "dualPrimaryPortsErrdisabled": False,
-            }
+            },
         ],
         "inputs": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {"result": "failure", "messages": ["Dual-primary detection is disabled"]},
@@ -242,7 +241,7 @@ DATA: list[dict[str, Any]] = [
                 "dualPrimaryMlagRecoveryDelay": 160,
                 "dualPrimaryNonMlagRecoveryDelay": 0,
                 "detail": {"dualPrimaryDetectionDelay": 300, "dualPrimaryAction": "none"},
-            }
+            },
         ],
         "inputs": {"detection_delay": 200, "errdisabled": False, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {
@@ -254,7 +253,7 @@ DATA: list[dict[str, Any]] = [
                     "'detail.dualPrimaryAction': 'none', "
                     "'dualPrimaryMlagRecoveryDelay': 160, "
                     "'dualPrimaryNonMlagRecoveryDelay': 0}"
-                )
+                ),
             ],
         },
     },
@@ -269,7 +268,7 @@ DATA: list[dict[str, Any]] = [
                 "dualPrimaryMlagRecoveryDelay": 60,
                 "dualPrimaryNonMlagRecoveryDelay": 0,
                 "detail": {"dualPrimaryDetectionDelay": 200, "dualPrimaryAction": "none"},
-            }
+            },
         ],
         "inputs": {"detection_delay": 200, "errdisabled": True, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {
@@ -281,7 +280,7 @@ DATA: list[dict[str, Any]] = [
                     "'detail.dualPrimaryAction': 'none', "
                     "'dualPrimaryMlagRecoveryDelay': 60, "
                     "'dualPrimaryNonMlagRecoveryDelay': 0}"
-                )
+                ),
             ],
         },
     },

@@ -1,11 +1,10 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-
 """Tests for `anta.tools.utils`."""
+
 from __future__ import annotations
 
-from contextlib import nullcontext as does_not_raise
 from typing import Any
 
 import pytest
@@ -30,15 +29,19 @@ ACTUAL_OUTPUTS = [
 
 
 @pytest.mark.parametrize(
-    "expected_output, actual_output, expected_result, expected_raise",
+    ("expected_output", "actual_output", "expected_result"),
     [
-        pytest.param(EXPECTED_OUTPUTS[0], ACTUAL_OUTPUTS[0], "", does_not_raise(), id="no difference"),
+        pytest.param(
+            EXPECTED_OUTPUTS[0],
+            ACTUAL_OUTPUTS[0],
+            "",
+            id="no difference",
+        ),
         pytest.param(
             EXPECTED_OUTPUTS[0],
             ACTUAL_OUTPUTS[1],
             "\nExpected `1` as the id, but found `2` instead.\nExpected `Alice` as the name, but found `Bob` instead.\n"
             "Expected `30` as the age, but found `35` instead.\nExpected `alice@example.com` as the email, but found `bob@example.com` instead.",
-            does_not_raise(),
             id="different data",
         ),
         pytest.param(
@@ -47,48 +50,51 @@ ACTUAL_OUTPUTS = [
             "\nExpected `1` as the id, but it was not found in the actual output.\nExpected `Alice` as the name, but it was not found in the actual output.\n"
             "Expected `30` as the age, but it was not found in the actual output.\nExpected `alice@example.com` as the email, but it was not found in "
             "the actual output.",
-            does_not_raise(),
             id="empty actual output",
         ),
-        pytest.param(EXPECTED_OUTPUTS[3], ACTUAL_OUTPUTS[3], "\nExpected `Jon` as the name, but found `Rob` instead.", does_not_raise(), id="different name"),
         pytest.param(
-            EXPECTED_OUTPUTS[4], ACTUAL_OUTPUTS[4], "\nExpected `45` as the age, but it was not found in the actual output.", does_not_raise(), id="missing age"
+            EXPECTED_OUTPUTS[3],
+            ACTUAL_OUTPUTS[3],
+            "\nExpected `Jon` as the name, but found `Rob` instead.",
+            id="different name",
         ),
+        pytest.param(EXPECTED_OUTPUTS[4], ACTUAL_OUTPUTS[4], "\nExpected `45` as the age, but it was not found in the actual output.", id="missing age"),
     ],
 )
-def test_get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any], expected_result: str, expected_raise: Any) -> None:
+def test_get_failed_logs(
+    expected_output: dict[Any, Any],
+    actual_output: dict[Any, Any],
+    expected_result: str,
+) -> None:
     """Test get_failed_logs."""
-    with expected_raise:
-        assert get_failed_logs(expected_output, actual_output) == expected_result
+    assert get_failed_logs(expected_output, actual_output) == expected_result
 
 
 @pytest.mark.parametrize(
-    "numerator, denominator, expected_result, expected_raise",
+    ("numerator", "denominator", "expected_result"),
     [
-        pytest.param(4.0, 2.0, 2, does_not_raise(), id="int return for float input"),
-        pytest.param(4, 2, 2, does_not_raise(), id="int return for int input"),
-        pytest.param(5.0, 2.0, 2.5, does_not_raise(), id="float return for float input"),
-        pytest.param(5, 2, 2.5, does_not_raise(), id="float return for int input"),
+        pytest.param(4.0, 2.0, 2, id="int return for float input"),
+        pytest.param(4, 2, 2, id="int return for int input"),
+        pytest.param(5.0, 2.0, 2.5, id="float return for float input"),
+        pytest.param(5, 2, 2.5, id="float return for int input"),
     ],
 )
-def test_custom_division(numerator: int | float, denominator: int | float, expected_result: str, expected_raise: Any) -> None:
+def test_custom_division(numerator: float, denominator: float, expected_result: str) -> None:
     """Test custom_division."""
-    with expected_raise:
-        assert custom_division(numerator, denominator) == expected_result
+    assert custom_division(numerator, denominator) == expected_result
 
 
 @pytest.mark.parametrize(
-    "speed, expected_result, expected_raise",
+    ("speed", "expected_result"),
     [
-        pytest.param("100g-4", ("100", 4), does_not_raise(), id="Speed with lane `100g-4`"),
-        pytest.param("100g", ("100", None), does_not_raise(), id="Speed without lane `100g-4`"),
-        pytest.param("auto 100g-8", ("100", 8), does_not_raise(), id="Auto speed with lane `auto 100g-8`"),
-        pytest.param("auto 10g", ("10", None), does_not_raise(), id="Auto speed without lane `auto 10g`"),
-        pytest.param("auto", (None, None), does_not_raise(), id="Only auto speed `auto`"),
-        pytest.param("forced 2.5g", ("2.5", None), does_not_raise(), id="Forced speed without lane `forced 2.5g`"),
+        pytest.param("100g-4", ("100", 4), id="Speed with lane `100g-4`"),
+        pytest.param("100g", ("100", None), id="Speed without lane `100g-4`"),
+        pytest.param("auto 100g-8", ("100", 8), id="Auto speed with lane `auto 100g-8`"),
+        pytest.param("auto 10g", ("10", None), id="Auto speed without lane `auto 10g`"),
+        pytest.param("auto", (None, None), id="Only auto speed `auto`"),
+        pytest.param("forced 2.5g", ("2.5", None), id="Forced speed without lane `forced 2.5g`"),
     ],
 )
-def test_extract_speed_and_lane(speed: str, expected_result: str, expected_raise: Any) -> None:
+def test_extract_speed_and_lane(speed: str, expected_result: str) -> None:
     """Test extract_speed_and_lane."""
-    with expected_raise:
-        assert extract_speed_and_lane(speed) == expected_result
+    assert extract_speed_and_lane(speed) == expected_result

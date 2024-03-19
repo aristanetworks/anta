@@ -1,13 +1,16 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-A script to generate svg files from anta command
+"""A script to generate svg files from anta command.
 
 usage:
 
 python generate_svg.py anta ...
 """
+# This script is not a package
+# ruff: noqa: INP001
+# This script contains print statements
+# ruff: noqa: T201
 
 import io
 import os
@@ -27,8 +30,7 @@ OUTPUT_DIR = pathlib.Path(__file__).parent.parent / "imgs"
 
 
 def custom_progress_bar() -> None:
-    """
-    Set the console of progress_bar to main anta console
+    """Set the console of progress_bar to main anta console.
 
     Caveat: this capture all steps of the progress bar..
     Disabling refresh to only capture beginning and end
@@ -76,17 +78,15 @@ if __name__ == "__main__":
 
     # Redirect stdout of the program towards another StringIO to capture help
     # that is not part or anta rich console
-    with redirect_stdout(io.StringIO()) as f:
-        # redirect potential progress bar output to console by patching
-        with patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar):
-            with suppress(SystemExit):
-                function()
+    # redirect potential progress bar output to console by patching
+    with redirect_stdout(io.StringIO()) as f, patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
+        function()
     # print to our new console the output of anta console
     new_console.print(console.export_text())
     # print the content of the stdout to our new_console
     new_console.print(f.getvalue())
 
-    filename = f"{'_'.join(map(lambda x: x.replace('/', '_').replace('-', '_').replace('.', '_'), args))}.svg"
+    filename = f"{'_'.join(x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args)}.svg"
     filename = f"{OUTPUT_DIR}/{filename}"
     print(f"File saved at {filename}")
     new_console.save_svg(filename, title=" ".join(args))

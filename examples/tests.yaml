@@ -98,6 +98,10 @@ anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:
 
+anta.tests.greent:
+  - VerifyGreenT:
+  - VerifyGreenTCounters:
+
 anta.tests.hardware:
   - VerifyTransceiversManufacturers:
       manufacturers:
@@ -117,18 +121,19 @@ anta.tests.hardware:
 
 anta.tests.interfaces:
   - VerifyInterfaceUtilization:
+      threshold: 70.0
   - VerifyInterfaceErrors:
   - VerifyInterfaceDiscards:
   - VerifyInterfaceErrDisabled:
   - VerifyInterfacesStatus:
       interfaces:
-        - interface: Ethernet1
-          state: up
-        - interface: Port-Channel100
-          state: down
+        - name: Ethernet1
+          status: up
+        - name: Port-Channel100
+          status: down
           line_protocol_status: lowerLayerDown
-        - interface: Ethernet49/1
-          state: adminDown
+        - name: Ethernet49/1
+          status: adminDown
           line_protocol_status: notPresent
   - VerifyStormControlDrops:
   - VerifyPortChannels:
@@ -175,6 +180,9 @@ anta.tests.interfaces:
         - name: Et3
           speed: forced 1g
 
+anta.tests.lanz:
+  - VerifyLANZ:
+
 anta.tests.logging:
   - VerifyLoggingPersistent:
   - VerifyLoggingSourceIntf:
@@ -219,6 +227,14 @@ anta.tests.profiles:
       mode: 3
   - VerifyTcamProfile:
       profile: vxlan-routing
+
+anta.tests.ptp:
+  - VerifyPtpModeStatus:
+  - VerifyPtpPortModeStatus:
+  - VerifyPtpLockStatus:
+  - VerifyPtpGMStatus:
+      gmid: 0xec:46:70:ff:fe:00:ff:a9
+  - VerifyPtpOffset:
 
 anta.tests.security:
   - VerifySSHStatus:

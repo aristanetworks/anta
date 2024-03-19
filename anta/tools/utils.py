@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Toolkit for ANTA.
-"""
+"""Toolkit for ANTA."""
+
 from __future__ import annotations
 
 import re
@@ -11,16 +10,19 @@ from typing import Any
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
-    """
-    Get the failed log for a test.
+    """Get the failed log for a test.
+
     Returns the failed log or an empty string if there is no difference between the expected and actual output.
 
-    Parameters:
+    Args:
+    ----
     expected_output (dict): Expected output of a test.
     actual_output (dict): Actual output of a test
 
     Returns:
+    -------
     str: Failed log of a test.
+
     """
     failed_logs = []
 
@@ -37,41 +39,49 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
     return "".join(failed_logs)
 
 
-def custom_division(numerator: int | float, denominator: int | float) -> int | float:
-    """
+def custom_division(numerator: float, denominator: float) -> int | float:
+    """Get the custom division of numbers.
+
     Custom division that returns an integer if the result is an integer, otherwise a float.
 
-    Parameters:
+    Args:
+    ----
     numerator (float): The numerator.
     denominator (float): The denominator.
 
     Returns:
+    -------
     Union[int, float]: The result of the division.
+
     """
     result = numerator / denominator
     return int(result) if result.is_integer() else result
 
 
 def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
-    """
-    This function extracts the speed and lane information from the input string.
+    """Get the speed and lane infromation.
 
-    Parameters:
-        input_speed (str): The input string which contains the speed and lane information.
+    Extracts the speed and lane information from the input string.
+
+    Args:
+    ----
+    input_speed (str): The input string which contains the speed and lane information.
 
     Returns:
-        tuple[str|None, int|None]: The extracted speed from the input string, and the extracted lane from the input string.
+    -------
+    tuple[str|None, int|None]: The extracted speed from the input string, and the extracted lane from the input string.
                                    If no lane information is found, it returns None.
 
     Examples:
+    --------
         100g-8: (100, 8)
         100g: (100, None)
         auto: (None, None)
         forced 100g: (100, None)
         auto 100g: (100, None)
         auto 100g-4: (100, 4)
-    """
 
+    """
     # Regular expression pattern
     # auto or forced: optional prefixes
     # speed: a number (integer or float) followed by a mandatory 'g'

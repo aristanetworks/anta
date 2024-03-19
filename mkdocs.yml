@@ -84,7 +84,6 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [anta]
           import:
             - https://docs.python.org/3/objects.inv
             - https://mkdocstrings.github.io/objects.inv
@@ -115,8 +114,8 @@ plugins:
 markdown_extensions:
   - attr_list
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - smarty
   - pymdownx.arithmatex
   - pymdownx.betterem:
@@ -207,8 +206,6 @@ nav:
     - Result Manager:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
-    - Report Manager:
-      - Report Manager module: api/report_manager.md
-      - Report Manager models: api/report_manager_models.md
+    - Report Manager: api/report_manager.md
   - Contributions: contribution.md
   - FAQ: faq.md

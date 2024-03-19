@@ -1,13 +1,14 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various services settings
-"""
+"""Module related to the EOS various services tests."""
+
 from __future__ import annotations
 
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from ipaddress import IPv4Address, IPv6Address
-from typing import List, Union
+from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -17,32 +18,29 @@ from anta.tools.get_dict_superset import get_dict_superset
 from anta.tools.get_item import get_item
 from anta.tools.utils import get_failed_logs
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
-
 
 class VerifyHostname(AntaTest):
-    """
-    Verifies the hostname of a device.
+    """Verifies the hostname of a device.
 
     Expected results:
-        * success: The test will pass if the hostname matches the provided input.
-        * failure: The test will fail if the hostname does not match the provided input.
+        * Success: The test will pass if the hostname matches the provided input.
+        * Failure: The test will fail if the hostname does not match the provided input.
     """
 
     name = "VerifyHostname"
     description = "Verifies the hostname of a device."
-    categories = ["services"]
-    commands = [AntaCommand(command="show hostname")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname")]
 
     class Input(AntaTest.Input):
-        """Defines the input parameters for this test case."""
+        """Input model for the VerifyHostname test."""
 
         hostname: str
         """Expected hostname of the device."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyHostname."""
         hostname = self.instance_commands[0].json_output["hostname"]
 
         if hostname != self.inputs.hostname:
@@ -52,31 +50,32 @@ class VerifyHostname(AntaTest):
 
 
 class VerifyDNSLookup(AntaTest):
-    """
-    This class verifies the DNS (Domain name service) name to IP address resolution.
+    """Verifies the DNS (Domain Name Service) name to IP address resolution.
 
     Expected Results:
-        * success: The test will pass if a domain name is resolved to an IP address.
-        * failure: The test will fail if a domain name does not resolve to an IP address.
-        * error: This test will error out if a domain name is invalid.
+        * Success: The test will pass if a domain name is resolved to an IP address.
+        * Failure: The test will fail if a domain name does not resolve to an IP address.
+        * Error: This test will error out if a domain name is invalid.
     """
 
     name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
-    categories = ["services"]
-    commands = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyDNSLookup test."""
+        """Input model for the VerifyDNSLookup test."""
 
-        domain_names: List[str]
-        """List of domain names"""
+        domain_names: list[str]
+        """List of domain names."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each domain name in the input list."""
         return [template.render(domain=domain_name) for domain_name in self.inputs.domain_names]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyDNSLookup."""
         self.result.is_success()
         failed_domains = []
         for command in self.instance_commands:
@@ -89,29 +88,28 @@ class VerifyDNSLookup(AntaTest):
 
 
 class VerifyDNSServers(AntaTest):
-    """
-    Verifies if the DNS (Domain Name Service) servers are correctly configured.
+    """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
     Expected Results:
-        * success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-        * failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+        * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
+        * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
     """
 
     name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
-    categories = ["services"]
-    commands = [AntaCommand(command="show ip name-server")]
+    categories: ClassVar[list[str]] = ["services"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyDNSServers test."""
+        """Input model for the VerifyDNSServers test."""
 
-        dns_servers: List[DnsServers]
+        dns_servers: list[DnsServer]
         """List of DNS servers to verify."""
 
-        class DnsServers(BaseModel):
-            """DNS server details"""
+        class DnsServer(BaseModel):
+            """Model for a DNS server."""
 
-            server_address: Union[IPv4Address, IPv6Address]
+            server_address: IPv4Address | IPv6Address
             """The IPv4/IPv6 address of the DNS server."""
             vrf: str = "default"
             """The VRF for the DNS server. Defaults to 'default' if not provided."""
@@ -120,6 +118,7 @@ class VerifyDNSServers(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyDNSServers."""
         command_output = self.instance_commands[0].json_output["nameServerConfigs"]
         self.result.is_success()
         for server in self.inputs.dns_servers:
@@ -141,8 +140,7 @@ class VerifyDNSServers(AntaTest):
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """
-    Verifies the errdisable recovery reason, status, and interval.
+    """Verifies the errdisable recovery reason, status, and interval.
 
     Expected Results:
         * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
@@ -151,25 +149,27 @@ class VerifyErrdisableRecovery(AntaTest):
 
     name = "VerifyErrdisableRecovery"
     description = "Verifies the errdisable recovery reason, status, and interval."
-    categories = ["services"]
-    commands = [AntaCommand(command="show errdisable recovery", ofmt="text")]  # Command does not support JSON output hence using text output
+    categories: ClassVar[list[str]] = ["services"]
+    # NOTE: Only `text` output format is supported for this command
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show errdisable recovery", ofmt="text")]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyErrdisableRecovery test."""
+        """Input model for the VerifyErrdisableRecovery test."""
 
-        reasons: List[ErrDisableReason]
-        """List of errdisable reasons"""
+        reasons: list[ErrDisableReason]
+        """List of errdisable reasons."""
 
         class ErrDisableReason(BaseModel):
-            """Details of an errdisable reason"""
+            """Model for an errdisable reason."""
 
             reason: ErrDisableReasons
-            """Type or name of the errdisable reason"""
+            """Type or name of the errdisable reason."""
             interval: ErrDisableInterval
-            """Interval of the reason in seconds"""
+            """Interval of the reason in seconds."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyErrdisableRecovery."""
         command_output = self.instance_commands[0].text_output
         self.result.is_success()
         for error_reason in self.inputs.reasons:

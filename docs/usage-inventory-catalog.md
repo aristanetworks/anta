@@ -12,7 +12,7 @@ Both inputs can be defined in a file or programmatically.
 
 ## Device Inventory
 
-A device inventory is an instance of the [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class.
+A device inventory is an instance of the [AntaInventory](./api/inventory.md#anta.inventory.AntaInventory) class.
 
 ### Device Inventory File
 
@@ -72,7 +72,7 @@ anta_inventory:
 
 ## Test Catalog
 
-A test catalog is an instance of the [AntaCatalog](../api/catalog.md#anta.catalog.AntaCatalog) class.
+A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog.AntaCatalog) class.
 
 ### Test Catalog File
 
