@@ -269,17 +269,6 @@ class AntaTest(ABC):
 
         """
 
-        model_config = ConfigDict(extra="forbid")
-        result_overwrite: ResultOverwrite | None = None
-        filters: Filters | None = None
-
-        def __hash__(self) -> int:
-            """Implement generic hashing for AntaTest.Input.
-
-            This will work in most cases but this does not consider 2 lists with different ordering as equal.
-            """
-            return hash(self.model_dump_json())
-
         class ResultOverwrite(BaseModel):
             """Test inputs model to overwrite result fields.
 
@@ -307,6 +296,17 @@ class AntaTest(ABC):
 
             model_config = ConfigDict(extra="forbid")
             tags: list[str] | None = None
+
+        model_config = ConfigDict(extra="forbid")
+        result_overwrite: ResultOverwrite | None = None
+        filters: Filters | None = None
+
+        def __hash__(self) -> int:
+            """Implement generic hashing for AntaTest.Input.
+
+            This will work in most cases but this does not consider 2 lists with different ordering as equal.
+            """
+            return hash(self.model_dump_json())
 
     def __init__(
         self,

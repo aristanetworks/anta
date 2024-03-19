@@ -300,9 +300,6 @@ class VerifyAPISSLCertificate(AntaTest):
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPISSLCertificate test."""
 
-        certificates: list[APISSLCertificate]
-        """List of API SSL certificates."""
-
         class APISSLCertificate(BaseModel):
             """Model for an API SSL certificate."""
 
@@ -334,6 +331,9 @@ class VerifyAPISSLCertificate(AntaTest):
                     raise ValueError(msg)
 
                 return self
+
+        certificates: list[APISSLCertificate]
+        """List of API SSL certificates."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -459,17 +459,8 @@ class VerifyIPv4ACL(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIPv4ACL test."""
 
-        ipv4_access_lists: list[IPv4ACL]
-        """List of IPv4 ACLs to verify."""
-
         class IPv4ACL(BaseModel):
             """Model for an IPv4 ACL."""
-
-            name: str
-            """Name of IPv4 ACL."""
-
-            entries: list[IPv4ACLEntry]
-            """List of IPv4 ACL entries."""
 
             class IPv4ACLEntry(BaseModel):
                 """Model for an IPv4 ACL entry."""
@@ -478,6 +469,15 @@ class VerifyIPv4ACL(AntaTest):
                 """Sequence number of an ACL entry."""
                 action: str
                 """Action of an ACL entry."""
+
+            name: str
+            """Name of IPv4 ACL."""
+
+            entries: list[IPv4ACLEntry]
+            """List of IPv4 ACL entries."""
+
+        ipv4_access_lists: list[IPv4ACL]
+        """List of IPv4 ACLs to verify."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input ACL."""

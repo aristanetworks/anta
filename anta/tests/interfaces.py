@@ -173,9 +173,6 @@ class VerifyInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesStatus test."""
 
-        interfaces: list[InterfaceState]
-        """List of interfaces with their expected state."""
-
         class InterfaceState(BaseModel):
             """Model for an interface state."""
 
@@ -183,8 +180,22 @@ class VerifyInterfacesStatus(AntaTest):
             """Interface to validate."""
             status: Literal["up", "down", "adminDown"]
             """Expected status of the interface."""
-            line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
+            line_protocol_status: (
+                Literal[
+                    "up",
+                    "down",
+                    "testing",
+                    "unknown",
+                    "dormant",
+                    "notPresent",
+                    "lowerLayerDown",
+                ]
+                | None
+            ) = None
             """Expected line protocol status of the interface."""
+
+        interfaces: list[InterfaceState]
+        """List of interfaces with their expected state."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -532,9 +543,6 @@ class VerifyInterfaceIPv4(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceIPv4 test."""
 
-        interfaces: list[InterfaceDetail]
-        """List of interfaces with their details."""
-
         class InterfaceDetail(BaseModel):
             """Model for an interface detail."""
 
@@ -544,6 +552,9 @@ class VerifyInterfaceIPv4(AntaTest):
             """Primary IPv4 address in CIDR notation."""
             secondary_ips: list[IPv4Network] | None = None
             """Optional list of secondary IPv4 addresses in CIDR notation."""
+
+        interfaces: list[InterfaceDetail]
+        """List of interfaces with their details."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each interface in the input list."""

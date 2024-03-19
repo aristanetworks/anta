@@ -37,9 +37,6 @@ class VerifyBFDSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDSpecificPeers test."""
 
-        bfd_peers: list[BFDPeer]
-        """List of IPv4 BFD peers."""
-
         class BFDPeer(BaseModel):
             """Model for an IPv4 BFD peer."""
 
@@ -47,6 +44,9 @@ class VerifyBFDSpecificPeers(AntaTest):
             """IPv4 address of a BFD peer."""
             vrf: str = "default"
             """Optional VRF for BFD peer. If not provided, it defaults to `default`."""
+
+        bfd_peers: list[BFDPeer]
+        """List of IPv4 BFD peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -90,9 +90,6 @@ class VerifyBFDPeersIntervals(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersIntervals test."""
 
-        bfd_peers: list[BFDPeer]
-        """List of BFD peers."""
-
         class BFDPeer(BaseModel):
             """Model for an IPv4 BFD peer."""
 
@@ -106,6 +103,9 @@ class VerifyBFDPeersIntervals(AntaTest):
             """Rx interval of BFD peer in milliseconds."""
             multiplier: BfdMultiplier
             """Multiplier of BFD peer."""
+
+        bfd_peers: list[BFDPeer]
+        """List of BFD peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:

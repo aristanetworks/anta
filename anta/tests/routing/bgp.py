@@ -172,9 +172,6 @@ class VerifyBGPPeerCount(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerCount test."""
 
-        address_families: list[BgpAfi]
-        """List of BGP address families (BgpAfi)."""
-
         class BgpAfi(BaseModel):
             """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
 
@@ -213,6 +210,9 @@ class VerifyBGPPeerCount(AntaTest):
                     msg = "'vrf' must be default when afi is not ipv4 or ipv6"
                     raise ValueError(msg)
                 return self
+
+        address_families: list[BgpAfi]
+        """List of BGP address families (BgpAfi)."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP address family in the input list."""
@@ -282,9 +282,6 @@ class VerifyBGPPeersHealth(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeersHealth test."""
 
-        address_families: list[BgpAfi]
-        """List of BGP address families (BgpAfi)."""
-
         class BgpAfi(BaseModel):
             """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
 
@@ -321,6 +318,9 @@ class VerifyBGPPeersHealth(AntaTest):
                     msg = "'vrf' must be default when afi is not ipv4 or ipv6"
                     raise ValueError(msg)
                 return self
+
+        address_families: list[BgpAfi]
+        """List of BGP address families (BgpAfi)."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP address family in the input list."""
@@ -394,9 +394,6 @@ class VerifyBGPSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPSpecificPeers test."""
 
-        address_families: list[BgpAfi]
-        """List of BGP address families (BgpAfi)."""
-
         class BgpAfi(BaseModel):
             """Model for a BGP address family (AFI) and subsequent service family (SAFI)."""
 
@@ -440,6 +437,9 @@ class VerifyBGPSpecificPeers(AntaTest):
                     msg = "'vrf' must be default when afi is not ipv4 or ipv6"
                     raise ValueError(msg)
                 return self
+
+        address_families: list[BgpAfi]
+        """List of BGP address families (BgpAfi)."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP address family in the input list."""
@@ -506,9 +506,6 @@ class VerifyBGPExchangedRoutes(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
-        bgp_peers: list[BgpNeighbor]
-        """List of BGP neighbors."""
-
         class BgpNeighbor(BaseModel):
             """Model for a BGP neighbor."""
 
@@ -520,6 +517,9 @@ class VerifyBGPExchangedRoutes(AntaTest):
             """List of advertised routes in CIDR format."""
             received_routes: list[IPv4Network]
             """List of received routes in CIDR format."""
+
+        bgp_peers: list[BgpNeighbor]
+        """List of BGP neighbors."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP neighbor in the input list."""
@@ -578,9 +578,6 @@ class VerifyBGPPeerMPCaps(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMPCaps test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of BGP peers"""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -590,6 +587,9 @@ class VerifyBGPPeerMPCaps(AntaTest):
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
             capabilities: list[MultiProtocolCaps]
             """List of multiprotocol capabilities to be verified."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -650,9 +650,6 @@ class VerifyBGPPeerASNCap(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerASNCap test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of BGP peers."""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -660,6 +657,9 @@ class VerifyBGPPeerASNCap(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -716,9 +716,6 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteRefreshCap test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of BGP peers"""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -726,6 +723,9 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -782,9 +782,6 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMD5Auth test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of IPv4 BGP peers."""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -792,6 +789,9 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             """IPv4 address of BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+        bgp_peers: list[BgpPeer]
+        """List of IPv4 BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -843,9 +843,6 @@ class VerifyEVPNType2Route(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEVPNType2Route test."""
 
-        vxlan_endpoints: list[VxlanEndpoint]
-        """List of VXLAN endpoints to verify."""
-
         class VxlanEndpoint(BaseModel):
             """Model for a VXLAN endpoint."""
 
@@ -853,6 +850,9 @@ class VerifyEVPNType2Route(AntaTest):
             """IPv4 or MAC address of the VXLAN endpoint."""
             vni: Vni
             """VNI of the VXLAN endpoint."""
+
+        vxlan_endpoints: list[VxlanEndpoint]
+        """List of VXLAN endpoints to verify."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each VXLAN endpoint in the input list."""
@@ -906,9 +906,6 @@ class VerifyBGPAdvCommunities(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPAdvCommunities test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of BGP peers."""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -916,6 +913,9 @@ class VerifyBGPAdvCommunities(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -965,9 +965,6 @@ class VerifyBGPTimers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPTimers test."""
 
-        bgp_peers: list[BgpPeer]
-        """List of BGP peers"""
-
         class BgpPeer(BaseModel):
             """Model for a BGP peer."""
 
@@ -979,6 +976,9 @@ class VerifyBGPTimers(AntaTest):
             """BGP hold time in seconds."""
             keep_alive_time: int = Field(ge=0, le=3600)
             """BGP keep-alive time in seconds."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
 
     @AntaTest.anta_test
     def test(self) -> None:

@@ -103,9 +103,6 @@ class VerifyDNSServers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSServers test."""
 
-        dns_servers: list[DnsServer]
-        """List of DNS servers to verify."""
-
         class DnsServer(BaseModel):
             """Model for a DNS server."""
 
@@ -115,6 +112,9 @@ class VerifyDNSServers(AntaTest):
             """The VRF for the DNS server. Defaults to 'default' if not provided."""
             priority: int = Field(ge=0, le=4)
             """The priority of the DNS server from 0 to 4, lower is first."""
+
+        dns_servers: list[DnsServer]
+        """List of DNS servers to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -156,9 +156,6 @@ class VerifyErrdisableRecovery(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyErrdisableRecovery test."""
 
-        reasons: list[ErrDisableReason]
-        """List of errdisable reasons."""
-
         class ErrDisableReason(BaseModel):
             """Model for an errdisable reason."""
 
@@ -166,6 +163,9 @@ class VerifyErrdisableRecovery(AntaTest):
             """Type or name of the errdisable reason."""
             interval: ErrDisableInterval
             """Interval of the reason in seconds."""
+
+        reasons: list[ErrDisableReason]
+        """List of errdisable reasons."""
 
     @AntaTest.anta_test
     def test(self) -> None:

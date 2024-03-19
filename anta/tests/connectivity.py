@@ -32,9 +32,6 @@ class VerifyReachability(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
 
-        hosts: list[Host]
-        """List of host to ping."""
-
         class Host(BaseModel):
             """Model for a remote host to ping."""
 
@@ -46,6 +43,9 @@ class VerifyReachability(AntaTest):
             """VRF context. Defaults to `default`."""
             repeat: int = 2
             """Number of ping repetition. Defaults to 2."""
+
+        hosts: list[Host]
+        """List of host to ping."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
@@ -91,9 +91,6 @@ class VerifyLLDPNeighbors(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""
 
-        neighbors: list[Neighbor]
-        """List of LLDP neighbors."""
-
         class Neighbor(BaseModel):
             """Model for an LLDP neighbor."""
 
@@ -103,6 +100,9 @@ class VerifyLLDPNeighbors(AntaTest):
             """LLDP neighbor device."""
             neighbor_port: Interface
             """LLDP neighbor port."""
+
+        neighbors: list[Neighbor]
+        """List of LLDP neighbors."""
 
     @AntaTest.anta_test
     def test(self) -> None:
