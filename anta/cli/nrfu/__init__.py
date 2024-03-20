@@ -73,12 +73,18 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @click.option(
     "--device",
     "-d",
-    help="Show a summary for this device",
+    help="Run tests on a specific device",
     type=str,
     required=False,
     default=None,
 )
-@click.option("--test", help="Show a summary for this test", type=str, required=False, default=None)
+@click.option(
+    "--test",
+    help="Run a specific test",
+    type=str,
+    required=False,
+    default=None,
+)
 # pylint: disable=too-many-arguments
 def nrfu(
     ctx: click.Context,
