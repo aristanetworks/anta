@@ -89,7 +89,14 @@ async def main(
         logger.info("The inventory is empty, exiting")
         return
     await inventory.connect_inventory()
-    devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags, filter_devices=search_device).values())
+    filtered_devices: list[str] | None = [search_device] if search_device is not None else None
+    devices: list[AntaDevice] = list(
+        inventory.get_inventory(
+            established_only=established_only,
+            tags=tags,
+            filter_devices=filtered_devices,
+        ).values()
+    )
 
     if not devices:
         msg = (
