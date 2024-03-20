@@ -112,7 +112,7 @@ class AntaTestDefinition(BaseModel):
         """
         if not isinstance(self.inputs, self.test.Input):
             msg = f"Test input has type {self.inputs.__class__.__qualname__} but expected type {self.test.Input.__qualname__}"
-            raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+            raise ValueError(msg)  # pydantic catches ValueError or AssertionError, no TypeError
         return self
 
 
@@ -168,7 +168,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             else:
                 if not isinstance(tests, list):
                     msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
-                    raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+                    raise ValueError(msg)  # pydantic catches ValueError or AssertionError, no TypeError
                 # This is a list of AntaTestDefinition
                 modules[module] = tests
         return modules
@@ -191,7 +191,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                 for test_definition in tests:
                     if not isinstance(test_definition, dict):
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
-                        raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+                        raise ValueError(msg)  # pydantic catches ValueError or AssertionError, no TypeError
                     if len(test_definition) != 1:
                         msg = (
                             f"Syntax error when parsing: {test_definition}\n"
@@ -350,4 +350,12 @@ class AntaCatalog:
                         result.append(test)
                 elif any(t in tags for t in f):
                     result.append(test)
+        return result
+
+    def get_tests(self, test_names: list[str] | None = None) -> list[AntaTestDefinition]:
+        """Return all the tests that have matching a list of testsnames.
+
+        testnames: List of tests to get.
+        """
+        result: list[AntaTestDefinition] = [test for test in self.tests if test_names is None or test.test.name in test_names]
         return result

@@ -318,6 +318,8 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
+  "TRY004",  # Because of magics for nice exception message
+  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
