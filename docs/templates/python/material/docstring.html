@@ -2,8 +2,8 @@
   {{ log.debug("Rendering docstring") }}
   {% for section in docstring_sections %}
     {% if config.show_docstring_description and section.kind.value == "text" %}
-		{% if not (config.anta_hide_test_module_description and module == obj) %}
-				{{ section.value|convert_markdown(heading_level, html_id) }}
+      {% if not (config.anta_hide_test_module_description and module == obj) %}
+        {{ section.value|convert_markdown(heading_level, html_id) }}
       {% endif %}
     {% elif config.show_docstring_attributes and section.kind.value == "attributes" %}
       {% include "docstring/attributes.html" with context %}
