@@ -19,7 +19,7 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
     expected_output (dict): Expected output of a test.
     actual_output (dict): Actual output of a test
 
-    Returns:
+    Returns
     -------
     str: Failed log of a test.
 

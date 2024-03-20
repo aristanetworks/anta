@@ -24,9 +24,22 @@ if TYPE_CHECKING:
 class VerifyBFDSpecificPeers(AntaTest):
     """Verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
 
-    Expected results:
-        * Success: The test will pass if IPv4 BFD peers are up and remote disc is non-zero in the specified VRF.
-        * Failure: The test will fail if IPv4 BFD peers are not found, the status is not UP or remote disc is zero in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if IPv4 BFD peers are up and remote disc is non-zero in the specified VRF.
+    * Failure: The test will fail if IPv4 BFD peers are not found, the status is not UP or remote disc is zero in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.bfd:
+      - VerifyBFDSpecificPeers:
+          bfd_peers:
+            - peer_address: 192.0.255.8
+              vrf: default
+            - peer_address: 192.0.255.7
+              vrf: default
+    ```
     """
 
     name = "VerifyBFDSpecificPeers"
@@ -57,7 +70,11 @@ class VerifyBFDSpecificPeers(AntaTest):
         for bfd_peer in self.inputs.bfd_peers:
             peer = str(bfd_peer.peer_address)
             vrf = bfd_peer.vrf
-            bfd_output = get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..", separator="..")
+            bfd_output = get_value(
+                self.instance_commands[0].json_output,
+                f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..",
+                separator="..",
+            )
 
             # Check if BFD peer configured
             if not bfd_output:
@@ -66,7 +83,12 @@ class VerifyBFDSpecificPeers(AntaTest):
 
             # Check BFD peer status and remote disc
             if not (bfd_output.get("status") == "up" and bfd_output.get("remoteDisc") != 0):
-                failures[peer] = {vrf: {"status": bfd_output.get("status"), "remote_disc": bfd_output.get("remoteDisc")}}
+                failures[peer] = {
+                    vrf: {
+                        "status": bfd_output.get("status"),
+                        "remote_disc": bfd_output.get("remoteDisc"),
+                    }
+                }
 
         if not failures:
             self.result.is_success()
@@ -77,9 +99,28 @@ class VerifyBFDSpecificPeers(AntaTest):
 class VerifyBFDPeersIntervals(AntaTest):
     """Verifies the timers of the IPv4 BFD peers in the specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the timers of the IPv4 BFD peers are correct in the specified VRF.
-        * Failure: The test will fail if the IPv4 BFD peers are not found or their timers are incorrect in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the timers of the IPv4 BFD peers are correct in the specified VRF.
+    * Failure: The test will fail if the IPv4 BFD peers are not found or their timers are incorrect in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.bfd:
+      - VerifyBFDPeersIntervals:
+          bfd_peers:
+            - peer_address: 192.0.255.8
+              vrf: default
+              tx_interval: 1200
+              rx_interval: 1200
+              multiplier: 3
+            - peer_address: 192.0.255.7
+              vrf: default
+              tx_interval: 1200
+              rx_interval: 1200
+              multiplier: 3
+    ```
     """
 
     name = "VerifyBFDPeersIntervals"
@@ -121,7 +162,11 @@ class VerifyBFDPeersIntervals(AntaTest):
             tx_interval = bfd_peers.tx_interval * 1000
             rx_interval = bfd_peers.rx_interval * 1000
             multiplier = bfd_peers.multiplier
-            bfd_output = get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..", separator="..")
+            bfd_output = get_value(
+                self.instance_commands[0].json_output,
+                f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..",
+                separator="..",
+            )
 
             # Check if BFD peer configured
             if not bfd_output:
@@ -157,18 +202,30 @@ class VerifyBFDPeersHealth(AntaTest):
 
     Optionally, it can also verify that BFD peers have not been down before a specified threshold of hours.
 
-    Expected results:
-        * Success: The test will pass if all IPv4 BFD peers are up, the discriminator value of each remote system is non-zero,
-                   and the last downtime of each peer is above the defined threshold.
-        * Failure: The test will fail if any IPv4 BFD peer is down, the discriminator value of any remote system is zero,
-                   or the last downtime of any peer is below the defined threshold.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all IPv4 BFD peers are up, the discriminator value of each remote system is non-zero,
+               and the last downtime of each peer is above the defined threshold.
+    * Failure: The test will fail if any IPv4 BFD peer is down, the discriminator value of any remote system is zero,
+               or the last downtime of any peer is below the defined threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.bfd:
+      - VerifyBFDPeersHealth:
+          down_threshold: 2
+    ```
     """
 
     name = "VerifyBFDPeersHealth"
     description = "Verifies the health of all IPv4 BFD peers."
     categories: ClassVar[list[str]] = ["bfd"]
     # revision 1 as later revision introduces additional nesting for type
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1), AntaCommand(command="show clock")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show bfd peers", revision=1),
+        AntaCommand(command="show clock"),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersHealth test."""

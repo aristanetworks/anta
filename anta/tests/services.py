@@ -22,9 +22,18 @@ from anta.tools.utils import get_failed_logs
 class VerifyHostname(AntaTest):
     """Verifies the hostname of a device.
 
-    Expected results:
-        * Success: The test will pass if the hostname matches the provided input.
-        * Failure: The test will fail if the hostname does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the hostname matches the provided input.
+    * Failure: The test will fail if the hostname does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.services:
+      - VerifyHostname:
+          hostname: s1-spine1
+    ```
     """
 
     name = "VerifyHostname"
@@ -52,10 +61,22 @@ class VerifyHostname(AntaTest):
 class VerifyDNSLookup(AntaTest):
     """Verifies the DNS (Domain Name Service) name to IP address resolution.
 
-    Expected Results:
-        * Success: The test will pass if a domain name is resolved to an IP address.
-        * Failure: The test will fail if a domain name does not resolve to an IP address.
-        * Error: This test will error out if a domain name is invalid.
+    Expected Results
+    ----------------
+    * Success: The test will pass if a domain name is resolved to an IP address.
+    * Failure: The test will fail if a domain name does not resolve to an IP address.
+    * Error: This test will error out if a domain name is invalid.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.services:
+      - VerifyDNSLookup:
+          domain_names:
+            - arista.com
+            - www.google.com
+            - arista.ca
+    ```
     """
 
     name = "VerifyDNSLookup"
@@ -90,9 +111,24 @@ class VerifyDNSLookup(AntaTest):
 class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
-    Expected Results:
-        * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-        * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
+    * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.services:
+      - VerifyDNSServers:
+          dns_servers:
+            - server_address: 10.14.0.1
+              vrf: default
+              priority: 1
+            - server_address: 10.14.0.11
+              vrf: MGMT
+              priority: 0
+    ```
     """
 
     name = "VerifyDNSServers"
@@ -142,9 +178,22 @@ class VerifyDNSServers(AntaTest):
 class VerifyErrdisableRecovery(AntaTest):
     """Verifies the errdisable recovery reason, status, and interval.
 
-    Expected Results:
-        * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
-        * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
+    * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.services:
+      - VerifyErrdisableRecovery:
+          reasons:
+            - reason: acl
+              interval: 30
+            - reason: bpduguard
+              interval: 30
+    ```
     """
 
     name = "VerifyErrdisableRecovery"

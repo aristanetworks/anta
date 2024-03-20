@@ -95,7 +95,7 @@ management api http-commands
 end
 ```
 
-Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
+Now the switch accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
 
 Run these EOS commands to verify:
 

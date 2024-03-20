@@ -20,12 +20,20 @@ if TYPE_CHECKING:
 class VerifyMlagStatus(AntaTest):
     """Verifies the health status of the MLAG configuration.
 
-    Expected Results:
-        * Success: The test will pass if the MLAG state is 'active', negotiation status is 'connected',
+    Expected Results
+    ----------------
+    * Success: The test will pass if the MLAG state is 'active', negotiation status is 'connected',
                    peer-link status and local interface status are 'up'.
-        * Failure: The test will fail if the MLAG state is not 'active', negotiation status is not 'connected',
+    * Failure: The test will fail if the MLAG state is not 'active', negotiation status is not 'connected',
                    peer-link status or local interface status are not 'up'.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagStatus:
+    ```
     """
 
     name = "VerifyMlagStatus"
@@ -56,10 +64,18 @@ class VerifyMlagStatus(AntaTest):
 class VerifyMlagInterfaces(AntaTest):
     """Verifies there are no inactive or active-partial MLAG ports.
 
-    Expected Results:
-        * Success: The test will pass if there are NO inactive or active-partial MLAG ports.
-        * Failure: The test will fail if there are inactive or active-partial MLAG ports.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are NO inactive or active-partial MLAG ports.
+    * Failure: The test will fail if there are inactive or active-partial MLAG ports.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagInterfaces:
+    ```
     """
 
     name = "VerifyMlagInterfaces"
@@ -83,11 +99,19 @@ class VerifyMlagInterfaces(AntaTest):
 class VerifyMlagConfigSanity(AntaTest):
     """Verifies there are no MLAG config-sanity inconsistencies.
 
-    Expected Results:
-        * Success: The test will pass if there are NO MLAG config-sanity inconsistencies.
-        * Failure: The test will fail if there are MLAG config-sanity inconsistencies.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
-        * Error: The test will give an error if 'mlagActive' is not found in the JSON response.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are NO MLAG config-sanity inconsistencies.
+    * Failure: The test will fail if there are MLAG config-sanity inconsistencies.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+    * Error: The test will give an error if 'mlagActive' is not found in the JSON response.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagConfigSanity:
+    ```
     """
 
     name = "VerifyMlagConfigSanity"
@@ -116,10 +140,20 @@ class VerifyMlagConfigSanity(AntaTest):
 class VerifyMlagReloadDelay(AntaTest):
     """Verifies the reload-delay parameters of the MLAG configuration.
 
-    Expected Results:
-        * Success: The test will pass if the reload-delay parameters are configured properly.
-        * Failure: The test will fail if the reload-delay parameters are NOT configured properly.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the reload-delay parameters are configured properly.
+    * Failure: The test will fail if the reload-delay parameters are NOT configured properly.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagReloadDelay:
+          reload_delay: 300
+          reload_delay_non_mlag: 330
+    ```
     """
 
     name = "VerifyMlagReloadDelay"
@@ -154,10 +188,22 @@ class VerifyMlagReloadDelay(AntaTest):
 class VerifyMlagDualPrimary(AntaTest):
     """Verifies the dual-primary detection and its parameters of the MLAG configuration.
 
-    Expected Results:
-        * Success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.
-        * Failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the dual-primary detection is enabled and its parameters are configured properly.
+    * Failure: The test will fail if the dual-primary detection is NOT enabled or its parameters are NOT configured properly.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagDualPrimary:
+          detection_delay: 200
+          errdisabled: True
+          recovery_delay: 60
+          recovery_delay_non_mlag: 0
+    ```
     """
 
     name = "VerifyMlagDualPrimary"
@@ -204,10 +250,19 @@ class VerifyMlagDualPrimary(AntaTest):
 class VerifyMlagPrimaryPriority(AntaTest):
     """Verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
 
-    Expected Results:
-        * Success: The test will pass if the MLAG state is set as 'primary' and the priority matches the input.
-        * Failure: The test will fail if the MLAG state is not 'primary' or the priority doesn't match the input.
-        * Skipped: The test will be skipped if MLAG is 'disabled'.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the MLAG state is set as 'primary' and the priority matches the input.
+    * Failure: The test will fail if the MLAG state is not 'primary' or the priority doesn't match the input.
+    * Skipped: The test will be skipped if MLAG is 'disabled'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.mlag:
+      - VerifyMlagPrimaryPriority:
+          primary_priority: 3276
+    ```
     """
 
     name = "VerifyMlagPrimaryPriority"

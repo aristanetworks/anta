@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for connectivity tests
+anta_title: ANTA catalog for PTP tests
 ---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -7,7 +7,7 @@ anta_title: ANTA catalog for connectivity tests
   ~ that can be found in the LICENSE file.
   -->
 
-::: anta.tests.connectivity
+::: anta.tests.ptp
     options:
       show_root_heading: false
       show_root_toc_entry: false

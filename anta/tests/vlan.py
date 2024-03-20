@@ -21,11 +21,22 @@ if TYPE_CHECKING:
 class VerifyVlanInternalPolicy(AntaTest):
     """Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.
 
-    Expected Results:
-      * Success: The test will pass if the VLAN internal allocation policy is either ascending or descending
+    Expected Results
+    ----------------
+    * Success: The test will pass if the VLAN internal allocation policy is either ascending or descending
                  and the VLANs are within the specified range.
-      * Failure: The test will fail if the VLAN internal allocation policy is neither ascending nor descending
+    * Failure: The test will fail if the VLAN internal allocation policy is neither ascending nor descending
                  or the VLANs are outside the specified range.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vlan:
+      - VerifyVlanInternalPolicy:
+          policy: ascending
+          start_vlan_id: 1006
+          end_vlan_id: 4094
+    ```
     """
 
     name = "VerifyVlanInternalPolicy"

@@ -19,9 +19,18 @@ if TYPE_CHECKING:
 class VerifySnmpStatus(AntaTest):
     """Verifies whether the SNMP agent is enabled in a specified VRF.
 
-    Expected Results:
-        * Success: The test will pass if the SNMP agent is enabled in the specified VRF.
-        * Failure: The test will fail if the SNMP agent is disabled in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP agent is enabled in the specified VRF.
+    * Failure: The test will fail if the SNMP agent is disabled in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpStatus:
+          vrf: default
+    ```
     """
 
     name = "VerifySnmpStatus"
@@ -48,9 +57,19 @@ class VerifySnmpStatus(AntaTest):
 class VerifySnmpIPv4Acl(AntaTest):
     """Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        * Failure: The test will fail if the SNMP agent has not the right number of IPv4 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP agent has the provided number of IPv4 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SNMP agent has not the right number of IPv4 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpIPv4Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySnmpIPv4Acl"
@@ -87,9 +106,19 @@ class VerifySnmpIPv4Acl(AntaTest):
 class VerifySnmpIPv6Acl(AntaTest):
     """Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * Success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        * Failure: The test will fail if the SNMP agent has not the right number of IPv6 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP agent has the provided number of IPv6 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SNMP agent has not the right number of IPv6 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpIPv6Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySnmpIPv6Acl"
@@ -126,9 +155,18 @@ class VerifySnmpIPv6Acl(AntaTest):
 class VerifySnmpLocation(AntaTest):
     """Verifies the SNMP location of a device.
 
-    Expected results:
-        * Success: The test will pass if the SNMP location matches the provided input.
-        * Failure: The test will fail if the SNMP location does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP location matches the provided input.
+    * Failure: The test will fail if the SNMP location does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpLocation:
+          location: New York
+    ```
     """
 
     name = "VerifySnmpLocation"
@@ -156,9 +194,18 @@ class VerifySnmpLocation(AntaTest):
 class VerifySnmpContact(AntaTest):
     """Verifies the SNMP contact of a device.
 
-    Expected results:
-        * Success: The test will pass if the SNMP contact matches the provided input.
-        * Failure: The test will fail if the SNMP contact does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP contact matches the provided input.
+    * Failure: The test will fail if the SNMP contact does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpContact:
+          contact: Jon@example.com
+    ```
     """
 
     name = "VerifySnmpContact"

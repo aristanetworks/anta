@@ -19,10 +19,18 @@ if TYPE_CHECKING:
 class VerifyPtpModeStatus(AntaTest):
     """Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
 
-    Expected Results:
-        * Success: The test will pass if the device is a BC.
-        * Failure: The test will fail if the device is not a BC.
-        * Error: The test will error if the 'ptpMode' variable is not present in the command output.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is a BC.
+    * Failure: The test will fail if the device is not a BC.
+    * Error: The test will error if the 'ptpMode' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpModeStatus:
+    ```
     """
 
     name = "VerifyPtpModeStatus"
@@ -51,10 +59,19 @@ class VerifyPtpGMStatus(AntaTest):
 
     To test PTP failover, re-run the test with a secondary GMID configured.
 
-    Expected Results:
-        * Success: The test will pass if the device is locked to the provided Grandmaster.
-        * Failure: The test will fail if the device is not locked to the provided Grandmaster.
-        * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is locked to the provided Grandmaster.
+    * Failure: The test will fail if the device is not locked to the provided Grandmaster.
+    * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpGMStatus:
+          gmid: 0xec:46:70:ff:fe:00:ff:a9
+    ```
     """
 
     class Input(AntaTest.Input):
@@ -89,10 +106,18 @@ class VerifyPtpGMStatus(AntaTest):
 class VerifyPtpLockStatus(AntaTest):
     """Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
 
-    Expected Results:
-        * Success: The test will pass if the device was locked to the upstream GM in the last minute.
-        * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.
-        * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device was locked to the upstream GM in the last minute.
+    * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.
+    * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpLockStatus:
+    ```
     """
 
     name = "VerifyPtpLockStatus"
@@ -122,10 +147,18 @@ class VerifyPtpLockStatus(AntaTest):
 class VerifyPtpOffset(AntaTest):
     """Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
 
-    Expected Results:
-        * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.
-        * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.
-        * Skipped: The test will be skipped if PTP is not configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.
+    * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.
+    * Skipped: The test will be skipped if PTP is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpOffset:
+    ```
     """
 
     name = "VerifyPtpOffset"
@@ -160,9 +193,17 @@ class VerifyPtpPortModeStatus(AntaTest):
 
     The interfaces can be in one of the following state: Master, Slave, Passive, or Disabled.
 
-    Expected Results:
-        * Success: The test will pass if all PTP enabled interfaces are in a valid state.
-        * Failure: The test will fail if there are no PTP enabled interfaces or if some interfaces are not in a valid state.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all PTP enabled interfaces are in a valid state.
+    * Failure: The test will fail if there are no PTP enabled interfaces or if some interfaces are not in a valid state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.ptp:
+      - VerifyPtpPortModeStatus:
+    ```
     """
 
     name = "VerifyPtpPortModeStatus"

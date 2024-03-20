@@ -192,7 +192,14 @@ If the user needs to provide inputs for your test, you need to define a [pydanti
 ```python
 class <YourTestName>(AntaTest):
     ...
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Inputs for my awesome test
+        Examples:
+        --------
+        your.module.path:
+          - YourTestName:
+            field_name: example_field_value
+        """
         <input field name>: <input field type>
         """<input field docstring>"""
 ```
