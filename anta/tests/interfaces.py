@@ -789,10 +789,29 @@ class VerifyInterfacesSpeed(AntaTest):
     - If speed is forced with a value (forced 10g) then verify mode as full duplex and speed as per input.
     - If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
 
-    Expected Results:
-        * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
-        * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
-                   auto-negotiation is not correct or mode is not full duplex.
+    Expected Results
+    ----------------
+    * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
+    * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
+               auto-negotiation is not correct or mode is not full duplex.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesSpeed:
+          interfaces:
+            - name: Ethernet2
+              speed: 100g
+            - name: Eth3
+              speed: 1-0
+            - name: Eth3
+              speed: auto 100-1
+            - name: Eth2
+              speed: auto 2.5g
+            - name: Et3
+              speed: forced 1
+    ```
     """
 
     name = "VerifyInterfacesSpeed"

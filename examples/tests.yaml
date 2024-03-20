@@ -169,7 +169,7 @@ anta.tests.interfaces:
       mac_address: 00:1c:73:00:dc:01
   - VerifyInterfacesSpeed:
       interfaces:
-        - name: eth2
+        - name: Ethernet2
           speed: 100g
         - name: Eth3
           speed: 1g-0

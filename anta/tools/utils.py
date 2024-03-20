@@ -49,7 +49,7 @@ def custom_division(numerator: float, denominator: float) -> int | float:
     numerator (float): The numerator.
     denominator (float): The denominator.
 
-    Returns:
+    Returns
     -------
     Union[int, float]: The result of the division.
 
@@ -67,12 +67,12 @@ def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
     ----
     input_speed (str): The input string which contains the speed and lane information.
 
-    Returns:
+    Returns
     -------
     tuple[str|None, int|None]: The extracted speed from the input string, and the extracted lane from the input string.
                                    If no lane information is found, it returns None.
 
-    Examples:
+    Examples
     --------
         100g-8: (100, 8)
         100g: (100, None)
