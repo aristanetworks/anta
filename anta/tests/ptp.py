@@ -38,7 +38,7 @@ class VerifyPtpModeStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpModeStatus."""
@@ -85,7 +85,7 @@ class VerifyPtpGMStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpGMStatus."""
@@ -125,7 +125,7 @@ class VerifyPtpLockStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpLockStatus."""
@@ -166,7 +166,7 @@ class VerifyPtpOffset(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp monitor", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpOffset."""
@@ -211,7 +211,7 @@ class VerifyPtpPortModeStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpPortModeStatus."""
