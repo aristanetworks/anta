@@ -2192,7 +2192,9 @@
   
 
 
-  <h1>Test Catalog</h1>
+  
+    <h1>Test Catalog</h1>
+  
 
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -2217,7 +2219,7 @@
   <div class="doc doc-contents first">
 
   
-      <p>Class representing an ANTA Catalog.</p>
+        <p>Class representing an ANTA Catalog.</p>
 <p>It can be instantiated using its contructor or one of the static methods: <code>parse()</code>, <code>from_list()</code> or <code>from_dict()</code></p>
   
 
@@ -2304,7 +2306,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Path of the file used to create this AntaCatalog instance.</p>
+        <p>Path of the file used to create this AntaCatalog instance.</p>
   </div>
 
 </div>
@@ -2328,7 +2330,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>List of AntaTestDefinition in this catalog.</p>
+        <p>List of AntaTestDefinition in this catalog.</p>
   </div>
 
 </div>
@@ -2354,7 +2356,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Create an AntaCatalog instance from a dictionary data structure.</p>
+        <p>Create an AntaCatalog instance from a dictionary data structure.</p>
 <p>See RawCatalogInput type alias for details.
 It is the data structure returned by <code>yaml.load()</code> function of a valid
 YAML Test Catalog file.</p>
@@ -2461,7 +2463,7 @@ YAML Test Catalog file.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Create an AntaCatalog instance from a list data structure.</p>
+        <p>Create an AntaCatalog instance from a list data structure.</p>
 <p>See ListAntaTestTuples type alias for details.</p>
 
 <details class="args:" open>
@@ -2527,7 +2529,7 @@ YAML Test Catalog file.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Return all the tests that have matching tags in their input filters.</p>
+        <p>Return all the tests that have matching tags in their input filters.</p>
 <p>If strict=True, returns only tests that match all the tags provided as input.
 If strict=False, return all the tests that match at least one tag provided as input.</p>
 
@@ -2587,7 +2589,7 @@ If strict=False, return all the tests that match at least one tag provided as in
 
   <div class="doc doc-contents ">
   
-      <p>Create an AntaCatalog instance from a test catalog file.</p>
+        <p>Create an AntaCatalog instance from a test catalog file.</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2666,11 +2668,11 @@ If strict=False, return all the tests that match at least one tag provided as in
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Define a test with its associated inputs.</p>
+        <p>Define a test with its associated inputs.</p>
 <p>test: An AntaTest concrete subclass
 inputs: The associated AntaTest.Input subclass instance</p>
   
-      <p><a href="https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization">https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization</a>.</p>
+        <p><a href="https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization">https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization</a>.</p>
 
                   <details class="quote">
                   <summary>Source code in <code>anta/catalog.py</code></summary>
@@ -2726,7 +2728,7 @@ inputs: The associated AntaTest.Input subclass instance</p>
 
   <div class="doc doc-contents ">
   
-      <p>Check the <code>inputs</code> field typing.</p>
+        <p>Check the <code>inputs</code> field typing.</p>
 <p>The <code>inputs</code> class attribute needs to be an instance of the AntaTest.Input subclass defined in the class <code>test</code>.</p>
 
           <details class="quote">
@@ -2775,7 +2777,7 @@ inputs: The associated AntaTest.Input subclass instance</p>
 
   <div class="doc doc-contents ">
   
-      <p>Ensure the test inputs can be instantiated and thus are valid.</p>
+        <p>Ensure the test inputs can be instantiated and thus are valid.</p>
 <p>If the test has no inputs, allow the user to omit providing the <code>inputs</code> field.
 If the test has inputs, allow the user to provide a valid dictionary of the input fields.
 This model validator will instantiate an Input class from the <code>test</code> class field.</p>
@@ -2893,7 +2895,7 @@ This model validator will instantiate an Input class from the <code>test</code> 
             Bases: <code><span title="pydantic.RootModel">RootModel</span>[<a class="autorefs autorefs-external" title="typing.Dict" href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<span title="pydantic.types.ImportString">ImportString</span>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>], <a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]]]</code></p>
 
   
-      <p>Represents an ANTA Test Catalog File.</p>
+        <p>Represents an ANTA Test Catalog File.</p>
 
 <details class="example:" open>
   <summary>Example:</summary>
@@ -2938,7 +2940,7 @@ This model validator will instantiate an Input class from the <code>test</code> 
 
   <div class="doc doc-contents ">
   
-      <p>Allow the user to provide a Python data structure that only has string values.</p>
+        <p>Allow the user to provide a Python data structure that only has string values.</p>
 <p>This validator will try to flatten and import Python modules, check if the tests classes
 are actually defined in their respective Python module and instantiate Input instances
 with provided value to validate test inputs.</p>
@@ -3037,7 +3039,7 @@ with provided value to validate test inputs.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Allow the user to provide a data structure with nested Python modules.</p>
+        <p>Allow the user to provide a data structure with nested Python modules.</p>
 
 <details class="example:" open>
   <summary>Example:</summary>

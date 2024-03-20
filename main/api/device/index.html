@@ -2240,7 +2240,9 @@
   
 
 
-  <h1>Device</h1>
+  
+    <h1>Device</h1>
+  
 
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -2270,7 +2272,7 @@
             Bases: <code><a class="autorefs autorefs-external" title="abc.ABC" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
 
   
-      <p>Abstract class representing a device in ANTA.</p>
+        <p>Abstract class representing a device in ANTA.</p>
 <p>An implementation of this class must override the abstract coroutines <code>_collect()</code> and
 <code>refresh()</code>.</p>
 
@@ -2392,7 +2394,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 
   <div class="doc doc-contents ">
   
-      <p>Returns the device cache statistics for logging purposes.</p>
+        <p>Returns the device cache statistics for logging purposes.</p>
   </div>
 
 </div>
@@ -2414,7 +2416,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 
   <div class="doc doc-contents ">
   
-      <p>Implement hashing for AntaDevice objects.</p>
+        <p>Implement hashing for AntaDevice objects.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/device.py</code></summary>
@@ -2448,7 +2450,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 
   <div class="doc doc-contents ">
   
-      <p>Collect the output for a specified command.</p>
+        <p>Collect the output for a specified command.</p>
 <p>When caching is activated on both the device and the command,
 this method prioritizes retrieving the output from the cache. In cases where the output isn&rsquo;t cached yet,
 it will be freshly collected and then stored in the cache for future access.
@@ -2547,7 +2549,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
   <div class="doc doc-contents ">
   
-      <p>Collect multiple commands.</p>
+        <p>Collect multiple commands.</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2598,7 +2600,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
   <div class="doc doc-contents ">
   
-      <p>Copy files to and from the device, usually through SCP.</p>
+        <p>Copy files to and from the device, usually through SCP.</p>
 <p>It is not mandatory to implement this for a valid AntaDevice subclass.</p>
 
 <details class="args:" open>
@@ -2665,7 +2667,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
   <div class="doc doc-contents ">
   
-      <p>Update attributes of an AntaDevice instance.</p>
+        <p>Update attributes of an AntaDevice instance.</p>
 <p>This coroutine must update the following attributes of AntaDevice:
     - <code>is_online</code>: When the device IP is reachable and a port can be open
     - <code>established</code>: When a command execution succeeds
@@ -2711,7 +2713,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
   <div class="doc doc-contents ">
   
-      <p>Return True if the command is supported on the device hardware platform, False otherwise.</p>
+        <p>Return True if the command is supported on the device hardware platform, False otherwise.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/device.py</code></summary>
@@ -2764,7 +2766,7 @@ via the private <code>_collect</code> method without interacting with the cache.
             Bases: <code><a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="#anta.device.AntaDevice">AntaDevice</a></code></p>
 
   
-      <p>Implementation of AntaDevice for EOS using aio-eapi.</p>
+        <p>Implementation of AntaDevice for EOS using aio-eapi.</p>
 
 
 
@@ -2965,7 +2967,7 @@ tags: List of tags for this device</p>
 
   <div class="doc doc-contents ">
   
-      <p>Copy files to and from the device using asyncssh.scp().</p>
+        <p>Copy files to and from the device using asyncssh.scp().</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -3078,7 +3080,7 @@ tags: List of tags for this device</p>
 
   <div class="doc doc-contents ">
   
-      <p>Update attributes of an AsyncEOSDevice instance.</p>
+        <p>Update attributes of an AsyncEOSDevice instance.</p>
 <p>This coroutine must update the following attributes of AsyncEOSDevice:
 - is_online: When a device IP is reachable and a port can be open
 - established: When a command execution succeeds

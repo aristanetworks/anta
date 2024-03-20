@@ -2476,7 +2476,9 @@
   
 
 
-  <h1>Test models</h1>
+  
+    <h1>Test models</h1>
+  
 
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -2506,7 +2508,7 @@
             Bases: <code><a class="autorefs autorefs-external" title="abc.ABC" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
 
   
-      <p>Abstract class defining a test in ANTA.</p>
+        <p>Abstract class defining a test in ANTA.</p>
 <p>The goal of this class is to handle the heavy lifting and make
 writing a test as simple as possible.</p>
 
@@ -2651,7 +2653,7 @@ Attributes:
 
   <div class="doc doc-contents ">
   
-      <p>Check if CLI commands contain a blocked keyword.</p>
+        <p>Check if CLI commands contain a blocked keyword.</p>
   </div>
 
 </div>
@@ -2674,7 +2676,7 @@ Attributes:
 
   <div class="doc doc-contents ">
   
-      <p>Returns True if all commands for this test have been collected.</p>
+        <p>Returns True if all commands for this test have been collected.</p>
   </div>
 
 </div>
@@ -2697,7 +2699,7 @@ Attributes:
 
   <div class="doc doc-contents ">
   
-      <p>Returns a list of all the commands that have failed.</p>
+        <p>Returns a list of all the commands that have failed.</p>
   </div>
 
 </div>
@@ -2719,7 +2721,7 @@ Attributes:
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Class defining inputs for a test in ANTA.</p>
+        <p>Class defining inputs for a test in ANTA.</p>
 
 
 
@@ -2766,7 +2768,7 @@ Attributes:
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Runtime filters to map tests with list of tags or devices.</p>
+        <p>Runtime filters to map tests with list of tags or devices.</p>
 
 
 
@@ -2834,7 +2836,7 @@ Attributes:
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Test inputs model to overwrite result fields.</p>
+        <p>Test inputs model to overwrite result fields.</p>
 
 
 
@@ -2903,7 +2905,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 
   <div class="doc doc-contents ">
   
-      <p>Implement generic hashing for AntaTest.Input.</p>
+        <p>Implement generic hashing for AntaTest.Input.</p>
 <p>This will work in most cases but this does not consider 2 lists with different ordering as equal.</p>
 
           <details class="quote">
@@ -2955,7 +2957,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 
   <div class="doc doc-contents ">
   
-      <p>Decorate the <code>test()</code> method in child classes.</p>
+        <p>Decorate the <code>test()</code> method in child classes.</p>
 <p>This decorator implements (in this order):</p>
 <ol>
 <li>Instantiate the command outputs if <code>eos_data</code> is provided to the <code>test()</code> method</li>
@@ -3154,7 +3156,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 
   <div class="doc doc-contents ">
   
-      <p>Collect outputs of all commands of this test class from the device of this test instance.</p>
+        <p>Collect outputs of all commands of this test class from the device of this test instance.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
@@ -3202,7 +3204,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 
   <div class="doc doc-contents ">
   
-      <p>Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.</p>
+        <p>Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.</p>
 <p>This is not an abstract method because it does not need to be implemented if there is
 no AntaTemplate for this test.</p>
 
@@ -3244,7 +3246,7 @@ no AntaTemplate for this test.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Populate output of all AntaCommand instances in <code>instance_commands</code>.</p>
+        <p>Populate output of all AntaCommand instances in <code>instance_commands</code>.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
@@ -3292,7 +3294,7 @@ no AntaTemplate for this test.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Core of the test logic.</p>
+        <p>Core of the test logic.</p>
 <p>This is an abstractmethod that must be implemented by child classes.
 It must set the correct status of the <code>result</code> instance attribute with the appropriate outcome of the test.</p>
 
@@ -3386,7 +3388,7 @@ It must set the correct status of the <code>result</code> instance attribute wit
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Class to define a command.</p>
+        <p>Class to define a command.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
@@ -3461,7 +3463,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
   <div class="doc doc-contents ">
   
-      <p>Return True if the command has been collected.</p>
+        <p>Return True if the command has been collected.</p>
   </div>
 
 </div>
@@ -3484,7 +3486,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
   <div class="doc doc-contents ">
   
-      <p>Get the command output as JSON.</p>
+        <p>Get the command output as JSON.</p>
   </div>
 
 </div>
@@ -3507,7 +3509,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
   <div class="doc doc-contents ">
   
-      <p>Get the command output as a string.</p>
+        <p>Get the command output as a string.</p>
   </div>
 
 </div>
@@ -3530,7 +3532,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
   <div class="doc doc-contents ">
   
-      <p>Generate a unique identifier for this command.</p>
+        <p>Generate a unique identifier for this command.</p>
   </div>
 
 </div>
@@ -3575,7 +3577,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-      <p>Class to define a command template as Python f-string.</p>
+        <p>Class to define a command template as Python f-string.</p>
 <p>Can render a command from parameters.</p>
 
 
@@ -3636,7 +3638,7 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 
   <div class="doc doc-contents ">
   
-      <p>Render an AntaCommand from an AntaTemplate instance.</p>
+        <p>Render an AntaCommand from an AntaTemplate instance.</p>
 <p>Keep the parameters used in the AntaTemplate instance.</p>
 
 <details class="args:" open>
