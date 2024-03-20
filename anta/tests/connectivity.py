@@ -140,15 +140,15 @@ class VerifyLLDPNeighbors(AntaTest):
         }
         failures: dict[str, list[str]] = {}
 
-        command_output = self.instance_commands[0].json_output
+        output = self.instance_commands[0].json_output["lldpNeighbors"]
 
         for neighbor in self.inputs.neighbors:
             neighbor_found = False
-            if neighbor.port not in command_output["lldpNeighbors"]:
+            if neighbor.port not in output:
                 failures.setdefault("port_not_configured", []).append(neighbor.port)
                 continue
 
-            if len(lldp_neighbor_info := command_output["lldpNeighbors"][neighbor.port]["lldpNeighborInfo"]) == 0:
+            if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
                 failures.setdefault("no_lldp_neighbor", []).append(neighbor.port)
                 continue
 
