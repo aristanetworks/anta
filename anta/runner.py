@@ -62,6 +62,7 @@ async def main(
     *,
     established_only: bool = True,
 ) -> None:
+    # sourcery skip: merge-duplicate-blocks, remove-redundant-if, split-or-ifs
     """Run ANTA.
 
     Use this as an entrypoint to the test framwork in your script.
@@ -88,7 +89,7 @@ async def main(
         logger.info("The inventory is empty, exiting")
         return
     await inventory.connect_inventory()
-    devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags).values())
+    devices: list[AntaDevice] = list(inventory.get_inventory(established_only=established_only, tags=tags, filter_devices=search_device).values())
 
     if not devices:
         msg = (
@@ -102,20 +103,19 @@ async def main(
     tests_set: set[AntaTestRunner] = set()
 
     for device in devices:
-        if search_device is None or search_device == device.name:
-            if tags:
-                # If there are CLI tags, only execute tests with matching tags
-                tests_set.update((t, device) for t in catalog.get_tests_by_tags(tags) if search_device is None or t.test.name == search_device)
-            else:
-                # If there is no CLI tags, execute all tests without filters
-                tests_set.update(
-                    (t, device)
-                    for t in catalog.tests
-                    if (t.inputs.filters is None or t.inputs.filters.tags is None) and (search_test is None or t.test.name == search_test)
-                )
+        if tags:
+            # If there are CLI tags, only execute tests with matching tags
+            tests_set.update((t, device) for t in catalog.get_tests_by_tags(tags) if search_device is None or t.test.name == search_device)
+        else:
+            # If there is no CLI tags, execute all tests without filters
+            tests_set.update(
+                (t, device)
+                for t in catalog.tests
+                if (t.inputs.filters is None or t.inputs.filters.tags is None) and (search_test is None or t.test.name == search_test)
+            )
 
-                # Then add the tests with matching tags from device tags
-                tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags) if search_test is None or t.test.name == search_test)
+            # Then add the tests with matching tags from device tags
+            tests_set.update((t, device) for t in catalog.get_tests_by_tags(device.tags) if search_test is None or t.test.name == search_test)
 
     tests: list[AntaTestRunner] = list(tests_set)
 

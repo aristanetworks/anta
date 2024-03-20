@@ -246,13 +246,14 @@ class AntaInventory(dict[str, AntaDevice]):
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None) -> AntaInventory:
+    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None, filter_devices: str | None = None) -> AntaInventory:
         """Return a filtered inventory.
 
         Args:
         ----
             established_only: Whether or not to include only established devices. Default False.
             tags: List of tags to filter devices.
+            filter_devices: List of device name to filter. Default to None
 
         Returns
         -------
@@ -264,7 +265,9 @@ class AntaInventory(dict[str, AntaDevice]):
             """Select the devices based on the input tags and the requirement for an established connection."""
             if tags is not None and all(tag not in tags for tag in device.tags):
                 return False
-            return bool(not established_only or device.established)
+            if filter_devices is None or device.name == filter_devices:
+                return bool(not established_only or device.established)
+            return False
 
         devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
         result = AntaInventory()
