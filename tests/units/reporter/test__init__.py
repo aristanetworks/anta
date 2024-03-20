@@ -77,19 +77,17 @@ class TestReportTable:
         assert report._color_result(status) == expected_status
 
     @pytest.mark.parametrize(
-        ("host", "testcase", "title", "number_of_tests", "expected_length"),
+        ("title", "number_of_tests", "expected_length"),
         [
-            pytest.param(None, None, None, 5, 5, id="all results"),
-            pytest.param("host1", None, None, 5, 0, id="result for host1 when no host1 test"),
-            pytest.param(None, "VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
-            pytest.param(None, None, "Custom title", 5, 5, id="Change table title"),
+            pytest.param(None, 5, 5, id="all results"),
+            pytest.param(None, 0, 0, id="result for host1 when no host1 test"),
+            pytest.param(None, 5, 5, id="result for test VerifyTest3"),
+            pytest.param("Custom title", 5, 5, id="Change table title"),
         ],
     )
     def test_report_all(
         self,
         result_manager_factory: Callable[[int], ResultManager],
-        host: str | None,
-        testcase: str | None,
         title: str | None,
         number_of_tests: int,
         expected_length: int,
@@ -99,7 +97,7 @@ class TestReportTable:
         rm = result_manager_factory(number_of_tests)
 
         report = ReportTable()
-        kwargs = {"host": host, "testcase": testcase, "title": title}
+        kwargs = {"title": title}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         res = report.report_all(rm, **kwargs)  # type: ignore[arg-type]
 
