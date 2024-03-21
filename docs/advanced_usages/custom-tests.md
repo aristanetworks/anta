@@ -21,24 +21,32 @@ from anta.decorators import skip_on_platforms
 
 
 class VerifyTemperature(AntaTest):
-    """
-    This test verifies if the device temperature is within acceptable limits.
+    """Verifies if the device temperature is within acceptable limits.
 
-    Expected Results:
-      * success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-      * failure: The test will fail if the device temperature is NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
+    * Failure: The test will fail if the device temperature is NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTemperature:
+    ```
     """
 
     name = "VerifyTemperature"
-    description = "Verifies if the device temperature is within the acceptable range."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
+    description = "Verifies the device temperature."
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", ofmt="json")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTemperature."""
         command_output = self.instance_commands[0].json_output
-        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        temperature_status = command_output.get("systemStatus", "")
         if temperature_status == "temperatureOk":
             self.result.is_success()
         else:
@@ -54,7 +62,7 @@ class VerifyTemperature(AntaTest):
 - `name` (`str`): Name of the test. Used during reporting.
 - `description` (`str`): A human readable description of your test.
 - `categories` (`list[str]`): A list of categories in which the test belongs.
-- `commands` (`list[Union[AntaTemplate, AntaCommand]]`): A list of command to collect from devices. This list __must__ be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
+- `commands` (`[list[AntaCommand | AntaTemplate]]`): A list of command to collect from devices. This list __must__ be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
 
 !!! info
     All these class attributes are mandatory. If any attribute is missing, a `NotImplementedError` exception will be raised during class instantiation.
@@ -193,7 +201,8 @@ If the user needs to provide inputs for your test, you need to define a [pydanti
 class <YourTestName>(AntaTest):
     ...
     class Input(AntaTest.Input):
-        """Inputs for my awesome test
+        """Inputs for my awesome test.
+
         Examples:
         --------
         your.module.path:
