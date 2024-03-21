@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
@@ -17,6 +15,9 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_dict_superset import get_dict_superset
 from anta.tools.get_item import get_item
 from anta.tools.utils import get_failed_logs
+
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 
 
 class VerifyHostname(AntaTest):
@@ -100,7 +101,7 @@ class VerifyDNSLookup(AntaTest):
         self.result.is_success()
         failed_domains = []
         for command in self.instance_commands:
-            domain = command.params["domain"]
+            domain: str = command.params.get("domain")  # type: ignore[assignment]
             output = command.json_output["messages"][0]
             if f"Can't find {domain}: No answer" in output:
                 failed_domains.append(domain)
@@ -238,7 +239,10 @@ class VerifyErrdisableRecovery(AntaTest):
                     continue
                 reason_found = True
                 actual_reason_data = {"interval": interval, "status": status}
-                expected_reason_data = {"interval": str(input_interval), "status": "Enabled"}
+                expected_reason_data = {
+                    "interval": str(input_interval),
+                    "status": "Enabled",
+                }
                 if actual_reason_data != expected_reason_data:
                     failed_log = get_failed_logs(expected_reason_data, actual_reason_data)
                     self.result.is_failure(f"`{input_reason}`:{failed_log}\n")

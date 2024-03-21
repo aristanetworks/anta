@@ -40,18 +40,6 @@ BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\
 logger = logging.getLogger(__name__)
 
 
-class AntaMissingParamError(Exception):
-    """An expected key in an AntaCommand.params dictionary was not found.
-
-    This Exception should in general never be raised in normal usage of ANTA.
-    """
-
-    def __init__(self, message: str) -> None:
-        """Append Github suggestion to message."""
-        self.message = f"{message}\n{GITHUB_SUGGESTION}"
-        super().__init__(self.message)
-
-
 class AntaTemplate(BaseModel):
     """Class to define a command template as Python f-string.
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.models.py."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
@@ -40,9 +41,7 @@ class FakeTestWithFailedCommand(AntaTest):
     name = "FakeTestWithFailedCommand"
     description = "ANTA test with a command that failed"
     categories: ClassVar[list[str]] = []
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show version", errors=["failed command"])
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", errors=["failed command"])]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -59,9 +58,7 @@ class FakeTestWithUnsupportedCommand(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(
             command="show hardware counter drop",
-            errors=[
-                "Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"
-            ],
+            errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
         )
     ]
 
@@ -96,9 +93,7 @@ class FakeTestWithTemplate(AntaTest):
     name = "FakeTestWithTemplate"
     description = "ANTA test with template that always succeed"
     categories: ClassVar[list[str]] = []
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show interface {interface}")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplate test."""
@@ -121,9 +116,7 @@ class FakeTestWithTemplateNoRender(AntaTest):
     name = "FakeTestWithTemplateNoRender"
     description = "ANTA test with template that miss the render() method"
     categories: ClassVar[list[str]] = []
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show interface {interface}")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateNoRender test."""
@@ -140,13 +133,9 @@ class FakeTestWithTemplateBadRender1(AntaTest):
     """ANTA test with template that raises a AntaTemplateRenderError exception."""
 
     name = "FakeTestWithTemplateBadRender"
-    description = (
-        "ANTA test with template that raises a AntaTemplateRenderError exception"
-    )
+    description = "ANTA test with template that raises a AntaTemplateRenderError exception"
     categories: ClassVar[list[str]] = []
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show interface {interface}")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateBadRender1 test."""
@@ -169,9 +158,7 @@ class FakeTestWithTemplateBadRender2(AntaTest):
     name = "FakeTestWithTemplateBadRender2"
     description = "ANTA test with template that raises an arbitrary exception"
     categories: ClassVar[list[str]] = []
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show interface {interface}")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
     class Input(AntaTest.Input):
         """Inputs for FakeTestWithTemplateBadRender2 test."""
@@ -348,9 +335,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender"
-                ],
+                "messages": ["AntaTemplate are provided but render() method has not been implemented for tests.units.test_models.FakeTestWithTemplateNoRender"],
             },
             "test": {"result": "error"},
         },
@@ -362,9 +347,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"
-                ],
+                "messages": ["Cannot render template {template='show interface {interface}' version='latest' revision=None ofmt='json' use_cache=True}"],
             },
             "test": {"result": "error"},
         },
@@ -376,9 +359,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
         "expected": {
             "__init__": {
                 "result": "error",
-                "messages": [
-                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"
-                ],
+                "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"],
             },
             "test": {"result": "error"},
         },
@@ -448,9 +429,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {"result": "unset"},
             "test": {
                 "result": "skipped",
-                "messages": [
-                    "Skipped because show hardware counter drop is not supported on pytest"
-                ],
+                "messages": ["Skipped because show hardware counter drop is not supported on pytest"],
             },
         },
     },
@@ -477,10 +456,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoName is missing required class attribute name"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoName is missing required class attribute name"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -495,10 +471,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoDescription is missing required class attribute description"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoDescription is missing required class attribute description"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -513,10 +486,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoCategories is missing required class attribute categories"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCategories is missing required class attribute categories"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -531,31 +501,22 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert (
-            exec_info.value.args[0]
-            == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
-        )
+        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
 
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]
         if "messages" in expected:
-            for result_msg, expected_msg in zip(
-                test.result.messages, expected["messages"]
-            ):  # NOTE: zip(strict=True) has been added in Python 3.10
+            for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
-    @pytest.mark.parametrize(
-        "data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA)
-    )
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest constructor."""
         expected = data["expected"]["__init__"]
         test = data["test"](device, inputs=data["inputs"])
         self._assert_test(test, expected)
 
-    @pytest.mark.parametrize(
-        "data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA)
-    )
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
     def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest.test method."""
         expected = data["expected"]["test"]
@@ -577,9 +538,7 @@ def test_blacklist(device: AntaDevice, data: str) -> None:
         name = "FakeTestWithBlacklist"
         description = "ANTA test that has blacklisted command"
         categories: ClassVar[list[str]] = []
-        commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-            AntaCommand(command=data)
-        ]
+        commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=data)]
 
         @AntaTest.anta_test
         def test(self) -> None:
@@ -613,9 +572,7 @@ class TestAntaComamnd:
         json_cmd = AntaCommand(command="show dummy", output={})
         json_cmd_2 = AntaCommand(command="show dummy", output="not_json")
         text_cmd = AntaCommand(command="show dummy", ofmt="text", output="blah")
-        text_cmd_2 = AntaCommand(
-            command="show dummy", ofmt="text", output={"not_a": "string"}
-        )
+        text_cmd_2 = AntaCommand(command="show dummy", ofmt="text", output={"not_a": "string"})
         msg = "Output of command show dummy is invalid"
         msg = "Output of command show dummy is invalid"
         with pytest.raises(RuntimeError, match=msg):

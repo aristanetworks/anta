@@ -59,8 +59,7 @@ class VerifySTPMode(AntaTest):
         not_configured = []
         wrong_stp_mode = []
         for command in self.instance_commands:
-            if "vlan" in command.params:
-                vlan_id = command.params["vlan"]
+            vlan_id = command.params.get("vlan")
             if not (
                 stp_mode := get_value(
                     command.json_output,
@@ -185,13 +184,12 @@ class VerifySTPForwardingPorts(AntaTest):
         not_configured = []
         not_forwarding = []
         for command in self.instance_commands:
-            if "vlan" in command.params:
-                vlan_id = command.params["vlan"]
+            vlan_id = command.params.get("vlan")
             if not (topologies := get_value(command.json_output, "topologies")):
                 not_configured.append(vlan_id)
             else:
                 for value in topologies.values():
-                    if int(vlan_id) in value["vlans"]:
+                    if vlan_id and int(vlan_id) in value["vlans"]:
                         interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]
                 if interfaces_not_forwarding:
                     not_forwarding.append({f"VLAN {vlan_id}": interfaces_not_forwarding})

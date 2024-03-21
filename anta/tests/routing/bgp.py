@@ -651,10 +651,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
         # Iterating over command output for different peers
         for command in self.instance_commands:
-            peer = str(command.params["peer"])
-            vrf = command.params["vrf"]
-            advertised_routes = command.params["advertised_routes"]
-            received_routes = command.params["received_routes"]
+            peer: str = command.params.get("peer")  # type: ignore[assignment]
+            vrf: str = command.params.get("vrf")  # type: ignore[assignment]
+            advertised_routes: list[str] = command.params.get("advertised_routes")  # type: ignore[assignment]
+            received_routes: list[str] = command.params.get("received_routes")  # type: ignore[assignment]
             failure = {vrf: ""}
 
             # Verify if a BGP peer is configured with the provided vrf
@@ -1048,8 +1048,8 @@ class VerifyEVPNType2Route(AntaTest):
         bad_evpn_routes = []
 
         for command in self.instance_commands:
-            address = str(command.params["address"])
-            vni = command.params["vni"]
+            address: str = command.params.get("address")  # type: ignore[assignment]
+            vni = command.params.get("vni")
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:
