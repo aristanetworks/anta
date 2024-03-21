@@ -8,7 +8,16 @@ toc_depth: 4
   -->
 <style>
   h4 {
-    display: none;
+    visibility: hidden;
+    font-size: 0em;
+    height: 0em;
+    line-height: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .md-typeset details {
+    margin-top: 0em;
+    margin-bottom: 0.8em;
   }
 </style>
 
@@ -16,7 +25,7 @@ toc_depth: 4
 
 
 ## `ImportError` related to `urllib3`
-??? faq "`ImportError` related to `urllib3` when running ANTA"
+???+ faq "`ImportError` related to `urllib3` when running ANTA"
 
     When running the `anta --help` command, some users might encounter the following error:
 
@@ -43,7 +52,7 @@ toc_depth: 4
             As per the [urllib3 v2 migration guide](https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html), the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.
 
 ##`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'`
-??? faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
+???+ faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
 
     When running the `anta` commands after installation, some users might encounter the following error:
 
@@ -62,7 +71,7 @@ toc_depth: 4
         ```
 
 ## `__NSCFConstantString initialize` error on OSX
-??? faq "`__NSCFConstantString initialize` error on OSX"
+???+ faq "`__NSCFConstantString initialize` error on OSX"
 
     This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. https://www.wefearchange.org/2018/11/forkmacos.rst.html
 
