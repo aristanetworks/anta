@@ -27,6 +27,7 @@ toc_depth: 4
 ## `ImportError` related to `urllib3`
 ???+ faq "`ImportError` related to `urllib3` when running ANTA"
 
+
     When running the `anta --help` command, some users might encounter the following error:
 
     ```bash
@@ -54,6 +55,7 @@ toc_depth: 4
 ##`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'`
 ???+ faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
 
+
     When running the `anta` commands after installation, some users might encounter the following error:
 
     ```bash
@@ -72,6 +74,7 @@ toc_depth: 4
 
 ## `__NSCFConstantString initialize` error on OSX
 ???+ faq "`__NSCFConstantString initialize` error on OSX"
+
 
     This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. https://www.wefearchange.org/2018/11/forkmacos.rst.html
 
