@@ -199,16 +199,24 @@ If the user needs to provide inputs for your test, you need to define a [pydanti
 
 ```python
 class <YourTestName>(AntaTest):
+    """Verifies ...
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if ...
+    * Failure: The test will fail if ...
+
+    Examples
+    --------
+    ```yaml
+    your.module.path:
+      - YourTestName:
+        field_name: example_field_value
+    ```
+    """
     ...
     class Input(AntaTest.Input):
-        """Inputs for my awesome test.
-
-        Examples:
-        --------
-        your.module.path:
-          - YourTestName:
-            field_name: example_field_value
-        """
+        """Inputs for my awesome test."""
         <input field name>: <input field type>
         """<input field docstring>"""
 ```
