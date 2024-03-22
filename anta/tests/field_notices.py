@@ -39,7 +39,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFieldNotice44Resolution."""
@@ -143,7 +143,7 @@ class VerifyFieldNotice72Resolution(AntaTest):
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyFieldNotice72Resolution."""

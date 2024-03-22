@@ -44,7 +44,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
         """Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or "flexible"."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyUnifiedForwardingTableMode."""
@@ -83,7 +83,7 @@ class VerifyTcamProfile(AntaTest):
         profile: str
         """Expected TCAM profile."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTcamProfile."""
