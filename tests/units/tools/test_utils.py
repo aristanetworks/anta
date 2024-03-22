@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from anta.tools.utils import custom_division, extract_speed_and_lane, get_failed_logs
+from anta.tools.utils import custom_division, get_failed_logs
 
 EXPECTED_OUTPUTS = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -82,19 +82,3 @@ def test_get_failed_logs(
 def test_custom_division(numerator: float, denominator: float, expected_result: str) -> None:
     """Test custom_division."""
     assert custom_division(numerator, denominator) == expected_result
-
-
-@pytest.mark.parametrize(
-    ("speed", "expected_result"),
-    [
-        pytest.param("100g-4", ("100", 4), id="Speed with lane `100g-4`"),
-        pytest.param("100g", ("100", None), id="Speed without lane `100g-4`"),
-        pytest.param("auto 100g-8", ("100", 8), id="Auto speed with lane `auto 100g-8`"),
-        pytest.param("auto 10g", ("10", None), id="Auto speed without lane `auto 10g`"),
-        pytest.param("auto", (None, None), id="Only auto speed `auto`"),
-        pytest.param("forced 2.5g", ("2.5", None), id="Forced speed without lane `forced 2.5g`"),
-    ],
-)
-def test_extract_speed_and_lane(speed: str, expected_result: str) -> None:
-    """Test extract_speed_and_lane."""
-    assert extract_speed_and_lane(speed) == expected_result

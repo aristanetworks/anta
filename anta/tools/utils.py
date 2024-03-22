@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 
@@ -56,45 +55,3 @@ def custom_division(numerator: float, denominator: float) -> int | float:
     """
     result = numerator / denominator
     return int(result) if result.is_integer() else result
-
-
-def extract_speed_and_lane(input_speed: str) -> tuple[str | None, int | None]:
-    """Get the speed and lane infromation.
-
-    Extracts the speed and lane information from the input string.
-
-    Args:
-    ----
-    input_speed (str): The input string which contains the speed and lane information.
-
-    Returns
-    -------
-    tuple[str|None, int|None]: The extracted speed from the input string, and the extracted lane from the input string.
-                                   If no lane information is found, it returns None.
-
-    Examples
-    --------
-        100g-8: (100, 8)
-        100g: (100, None)
-        auto: (None, None)
-        forced 100g: (100, None)
-        auto 100g: (100, None)
-        auto 100g-4: (100, 4)
-
-    """
-    # Regular expression pattern
-    # auto or forced: optional prefixes
-    # speed: a number (integer or float) followed by a mandatory 'g'
-    # lane: a number after a dash
-    pattern = r"(auto |forced )?(?P<speed>\d+(\.\d+)?)(g)(-(?P<lane>\d+))?"
-
-    # Find matches
-    match = re.match(pattern, input_speed)
-
-    if match:
-        # If a match is found, extract the speed and lane information
-        speed = match.group("speed")
-        lane = int(match.group("lane")) if match.group("lane") else None
-        return speed, lane
-
-    return None, None

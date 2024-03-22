@@ -1691,12 +1691,6 @@ DATA: list[dict[str, Any]] = [
                         "duplex": "duplexFull",
                         "lanes": 2,
                     },
-                    "Ethernet2": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 4,
-                    },
                     "Ethernet3": {
                         "bandwidth": 100000000000,
                         "autoNegotiate": "success",
@@ -1714,14 +1708,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "speed": "1g"},
-                {"name": "Ethernet1", "speed": "1g-2"},
-                {"name": "Ethernet1/1/2", "speed": "1g"},
-                {"name": "Ethernet2", "speed": "forced 10g"},
-                {"name": "Ethernet3", "speed": "auto"},
-                {"name": "Ethernet3", "speed": "auto 100g-8"},
-                {"name": "Ethernet3", "speed": "auto 100g"},
-                {"name": "Ethernet4", "speed": "2.5g"},
+                {"name": "Ethernet1", "auto": False, "speed": 1},
+                {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
+                {"name": "Ethernet1/1/2", "auto": False, "speed": 1},
+                {"name": "Ethernet3", "auto": True, "speed": 100},
+                {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
+                {"name": "Ethernet3", "auto": True, "speed": 100},
+                {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {"result": "success"},
@@ -1744,12 +1737,6 @@ DATA: list[dict[str, Any]] = [
                         "duplex": "duplexFull",
                         "lanes": 2,
                     },
-                    "Ethernet2": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 4,
-                    },
                     "Ethernet3": {
                         "bandwidth": 10000000000,
                         "autoNegotiate": "success",
@@ -1767,11 +1754,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "speed": "1g"},
-                {"name": "Ethernet1/1/1", "speed": "1g"},
-                {"name": "Ethernet2", "speed": "forced 10g"},
-                {"name": "Ethernet3", "speed": "auto 100g"},
-                {"name": "Ethernet4", "speed": "2.5g"},
+                {"name": "Ethernet1", "auto": False, "speed": 1},
+                {"name": "Ethernet1/1/1", "auto": False, "speed": 1},
+                {"name": "Ethernet3", "auto": True, "speed": 100},
+                {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
@@ -1779,7 +1765,6 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
                 "For interface Ethernet1/1/1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet2:\nExpected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
                 "For interface Ethernet4:\nExpected `2.5Gbps` as the speed, but found `25Gbps` instead.",
             ],
@@ -1803,12 +1788,6 @@ DATA: list[dict[str, Any]] = [
                         "duplex": "duplexHalf",
                         "lanes": 2,
                     },
-                    "Ethernet2": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 4,
-                    },
                     "Ethernet3": {
                         "bandwidth": 100000000000,
                         "autoNegotiate": "success",
@@ -1826,12 +1805,11 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "speed": "1g"},
-                {"name": "Ethernet1/2/2", "speed": "1g"},
-                {"name": "Ethernet2", "speed": "forced 10g"},
-                {"name": "Ethernet3", "speed": "auto"},
-                {"name": "Ethernet3", "speed": "auto 100g-8"},
-                {"name": "Ethernet4", "speed": "2.5g"},
+                {"name": "Ethernet1", "auto": False, "speed": 1},
+                {"name": "Ethernet1/2/2", "auto": False, "speed": 1},
+                {"name": "Ethernet3", "auto": True, "speed": 100},
+                {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
+                {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
@@ -1839,7 +1817,6 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet1/2/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
                 "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
@@ -1887,10 +1864,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "speed": "1g-2"},
-                {"name": "Ethernet3", "speed": "auto 100g-8"},
-                {"name": "Ethernet4", "speed": "2.5g-4"},
-                {"name": "Ethernet4/1/1", "speed": "2.5g-4"},
+                {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
+                {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
+                {"name": "Ethernet4", "auto": False, "speed": 2.5, "lanes": 4},
+                {"name": "Ethernet4/1/1", "auto": False, "speed": 2.5, "lanes": 4},
             ]
         },
         "expected": {
@@ -1915,12 +1892,6 @@ DATA: list[dict[str, Any]] = [
                         "duplex": "duplexHalf",
                         "lanes": 4,
                     },
-                    "Ethernet2": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 2,
-                    },
                     "Ethernet2/1/2": {
                         "bandwidth": 1000000000,
                         "autoNegotiate": "unknown",
@@ -1944,14 +1915,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "speed": "1g"},
-                {"name": "Ethernet1", "speed": "1g-2"},
-                {"name": "Ethernet2", "speed": "forced 10g"},
-                {"name": "Ethernet2/1/2", "speed": "forced 10g"},
-                {"name": "Ethernet3", "speed": "auto"},
-                {"name": "Ethernet3", "speed": "auto 100g-8"},
-                {"name": "Ethernet3", "speed": "auto 100g"},
-                {"name": "Ethernet4", "speed": "2.5g"},
+                {"name": "Ethernet1", "auto": False, "speed": 1},
+                {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
+                {"name": "Ethernet2/1/2", "auto": False, "speed": 10},
+                {"name": "Ethernet3", "auto": True, "speed": 1},
+                {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
+                {"name": "Ethernet3", "auto": True, "speed": 100},
+                {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
@@ -1962,8 +1932,6 @@ DATA: list[dict[str, Any]] = [
                 "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
                 "Expected `1Gbps` as the speed, but found `10Gbps` instead.\n"
                 "Expected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet2/1/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
                 "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
                 "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
