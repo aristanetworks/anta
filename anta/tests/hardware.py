@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.decorators import skip_on_platforms
+from anta.decorators import run_on_platform_series, skip_on_platforms
 from anta.models import AntaCommand, AntaTest
+from anta.platform_utils import SUPPORT_HARDWARE_COUNTERS_SERIES
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -279,7 +280,7 @@ class VerifyAdverseDrops(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @run_on_platform_series(SUPPORT_HARDWARE_COUNTERS_SERIES)
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAdverseDrops."""

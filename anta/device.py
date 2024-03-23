@@ -17,7 +17,7 @@ from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError
 
-from anta import __DEBUG__, aioeapi
+from anta import __DEBUG__, GITHUB_SUGGESTION, aioeapi
 from anta.logger import exc_to_str
 
 if TYPE_CHECKING:
@@ -172,12 +172,13 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
-    def supports(self, command: AntaCommand) -> bool:
+    def supports(self, command: AntaCommand, *, log: bool = True) -> bool:
         """Return True if the command is supported on the device hardware platform, False otherwise."""
         unsupported = any("not supported on this hardware platform" in e for e in command.errors)
-        logger.debug(command)
-        if unsupported:
-            logger.debug("%s is not supported on %s", command.command, self.hw_model)
+        if log:
+            logger.debug(command)
+            if unsupported:
+                logger.warning("Command '%s' is not supported on %s. %s", command.command, self.hw_model, GITHUB_SUGGESTION)
         return not unsupported
 
     @abstractmethod

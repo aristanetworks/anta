@@ -45,4 +45,4 @@ RICH_COLOR_THEME = {
     "unset": RICH_COLOR_PALETTE.UNSET,
 }
 
-GITHUB_SUGGESTION = "Please reach out to the maintainer team or open an issue on Github: https://github.com/arista-netdevops-community/anta."
+GITHUB_SUGGESTION = "Please reach out to the maintainer team or open an issue on GitHub: https://github.com/arista-netdevops-community/anta."
