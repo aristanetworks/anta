@@ -38,9 +38,13 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
             commands.append(AntaCommand(command="clear hardware counter drop"))
         await dev.collect_commands(commands=commands)
         for command in commands:
+            if not dev.supports(command):
+                logger.debug("Clearing hardware counters has been skipped on device %s", dev.name)
+                continue
             if not command.collected:
                 logger.error("Could not clear counters on device %s: %s", dev.name, command.errors)
-        logger.info("Cleared counters on %s (%s)", dev.name, dev.hw_model)
+                continue
+            logger.info("Cleared counters on %s (%s)", dev.name, dev.hw_model)
 
     logger.info("Connecting to devices...")
     await anta_inventory.connect_inventory()
