@@ -260,7 +260,9 @@ class VerifyEnvironmentPower(AntaTest):
 
 
 class VerifyAdverseDrops(AntaTest):
-    """Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches (Arad/Jericho chips).
+    """Verifies there are no adverse drops on the Arad/Jericho chips switches.
+
+    The following series will be tested: DCS-7800R3, DCS-7500R3, DCS-7500R, DCS-7280R3, DCS-7280R2, DCS-7280R.
 
     Expected Results
     ----------------
@@ -276,7 +278,7 @@ class VerifyAdverseDrops(AntaTest):
     """
 
     name = "VerifyAdverseDrops"
-    description = "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches."
+    description = "Verifies there are no adverse drops on the Arad/Jericho chips switches."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 

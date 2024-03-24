@@ -9,7 +9,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 from anta.models import AntaTest, logger
-from anta.platform_utils import get_model_series
+from anta.platform_utils import find_series_by_model
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
@@ -58,17 +58,59 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
     return decorator
 
+
 def run_on_platform_series(series: list[str]) -> Callable[[F], F]:
+    """Return a decorator to run a test based on the device's hardware model.
+
+    This decorator factory generates a decorator that will check the hardware model of the device
+    the test is run on. If the model is part of the provided platform series, the test will be run.
+
+    Args:
+    ----
+        series (list[str]): List of platform series on which the test should be run.
+
+    Returns
+    -------
+        Callable[[F], F]: A decorator that can be used to wrap test functions.
+
+    Examples
+    --------
+    The following test will only run if the device's hardware model is part of the 7800R3, 7500R3, 7500R, or 7280R3 series, e.g. DCS-7280SR3-48YC8.
+
+    ```python
+    @run_on_platform_series([["7800R3", "7500R3", "7500R", "7280R3"])
+    @AntaTest.anta_test
+    def test(self) -> None:
+        pass
+    """
+
     def decorator(function: F) -> F:
+        """Actual decorator that either runs the test or skips it based on the device's hardware model.
+
+        Args:
+        ----
+            function (F): The test function to be decorated.
+
+        Returns
+        -------
+            F: The decorated function.
+
+        """
+
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            """Check the device's hardware model and conditionally run or skip the test.
+
+            This wrapper inspects the hardware model of the device the test is run on.
+            If the model is NOT in the list of specified platform series, the test is skipped.
+            """
             anta_test = args[0]
 
             if anta_test.result.result != "unset":
                 AntaTest.update_progress()
                 return anta_test.result
 
-            if get_model_series(anta_test.device.hw_model) not in series:
+            if find_series_by_model(anta_test.device.hw_model) not in series:
                 anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
                 AntaTest.update_progress()
                 return anta_test.result
@@ -78,7 +120,6 @@ def run_on_platform_series(series: list[str]) -> Callable[[F], F]:
         return cast(F, wrapper)
 
     return decorator
-
 
 
 def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
@@ -115,7 +156,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
             """Check the device's hardware model and conditionally run or skip the test.
 
             This wrapper inspects the hardware model of the device the test is run on.
-            If the model is in the list of specified platforms, the test is either skipped.
+            If the model is in the list of specified platforms, the test is skipped.
             """
             anta_test = args[0]
 

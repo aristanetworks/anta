@@ -12,7 +12,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from aioeapi import EapiCommandError
 from click.exceptions import UsageError
@@ -20,7 +20,7 @@ from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
-from anta.platform_utils import SUPPORT_HARDWARE_COUNTERS_SERIES, SUPPORT_VNI_COUNTERS_SERIES, SUPPORT_VXLAN_COUNTERS_SERIES, get_model_series
+from anta.platform_utils import SUPPORT_HARDWARE_COUNTERS_SERIES, find_series_by_model
 from anta.tools.get_item import get_item
 
 if TYPE_CHECKING:
@@ -32,8 +32,18 @@ logger = logging.getLogger(__name__)
 
 
 async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | None = None) -> None:
-    """Clear counters."""
-    clear_counters_commands = [
+    """Clear counters on the devices in the inventory.
+
+    If the device is part of a series that supports hardware counters, the hardware counters are also cleared.
+
+    Arguments:
+    ----------
+      anta_inventory (AntaInventory): The ANTA inventory object containing the devices to connect to.
+      tags (list[str] | None): A list of tags to filter the devices to connect to.
+
+    """
+    # Commands to clear counters. Can be used later to add more commands if needed.
+    clear_counters_commands: list[dict[str, Any]] = [
         {
             "command": "clear counters",
             "is_cleared": False,
@@ -44,22 +54,17 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
             "is_cleared": False,
             "restricted_series": SUPPORT_HARDWARE_COUNTERS_SERIES,
         },
-        {
-            "command": "clear vxlan counters vtep",
-            "is_cleared": False,
-            "restricted_series": SUPPORT_VXLAN_COUNTERS_SERIES,
-        },
-        {
-            "command": "clear vxlan counters vni",
-            "is_cleared": False,
-            "restricted_series": SUPPORT_VNI_COUNTERS_SERIES,
-        },
     ]
 
     async def clear(device: AntaDevice) -> None:
-        model_series = get_model_series(device.hw_model)
+        if not isinstance(device.hw_model, str):
+            logger.error("Could not clear counters on device %s because its hardware model is not set or invalid.", device.name)
+            return
+
+        model_series = find_series_by_model(device.hw_model)
         commands = [
-            AntaCommand(command=command["command"]) for command in clear_counters_commands
+            AntaCommand(command=command["command"])
+            for command in clear_counters_commands
             if not command["restricted_series"] or model_series in command["restricted_series"]
         ]
 

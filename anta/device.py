@@ -343,7 +343,7 @@ class AsyncEOSDevice(AntaDevice):
             )
         except aioeapi.EapiCommandError as e:
             command.errors = e.errors
-            if self.supports(command):
+            if self.supports(command, log=True):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
         except (HTTPError, ConnectError) as e:
             command.errors = [str(e)]
