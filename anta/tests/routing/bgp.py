@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import Any, ClassVar, Optional, cast
+from typing import Any, ClassVar, Optional, Union, cast
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -557,7 +557,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             if afi == "sr-te":
                 afi, safi = safi, afi
             afi_vrf = cast(str, command.params.get("vrf"))
-            afi_peers = cast(list[IPv4Address | IPv6Address], command.params.get("peers", []))
+            afi_peers = cast(list[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
