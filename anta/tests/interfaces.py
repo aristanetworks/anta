@@ -292,7 +292,7 @@ class VerifyStormControlDrops(AntaTest):
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStormControlDrops."""
@@ -330,7 +330,6 @@ class VerifyPortChannels(AntaTest):
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
