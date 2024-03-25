@@ -90,10 +90,13 @@ async def test_clear_counters_utils(
         command.output = per_device_command_output.get(self.name, "")
 
     # Need to patch the child device class
-    with patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect, patch(
-        "anta.inventory.AntaInventory.connect_inventory",
-        side_effect=mock_connect_inventory,
-    ) as mocked_connect_inventory:
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect,
+        patch(
+            "anta.inventory.AntaInventory.connect_inventory",
+            side_effect=mock_connect_inventory,
+        ) as mocked_connect_inventory,
+    ):
         mocked_collect.side_effect = dummy_collect
         await clear_counters_utils(test_inventory, tags=tags)
 

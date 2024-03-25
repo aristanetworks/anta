@@ -6,8 +6,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
-from anta.cli import anta
+import pytest
+
+from anta.cli import anta, cli
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
@@ -47,3 +50,15 @@ def test_anta_get_help(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["get", "--help"])
     assert result.exit_code == ExitCode.OK
     assert "Usage: anta get" in result.output
+
+
+def test_uncaught_failure_anta(caplog: pytest.LogCaptureFixture) -> None:
+    """Test uncaught failure when running ANTA cli."""
+    with (
+        pytest.raises(SystemExit) as e_info,
+        patch("anta.cli.anta", side_effect=ZeroDivisionError()),
+    ):
+        cli()
+    assert "CRITICAL" in caplog.text
+    assert "Uncaught Exception when running ANTA CLI" in caplog.text
+    assert e_info.value.code == 1
