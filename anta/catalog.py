@@ -9,7 +9,7 @@ import importlib
 import logging
 from inspect import isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from pydantic import (
     BaseModel,
@@ -33,10 +33,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, dict[str, Any] | None]]]
+RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
+ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
 
 
 class AntaTestDefinition(BaseModel):
