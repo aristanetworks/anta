@@ -41,7 +41,6 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -51,7 +50,7 @@ classifiers = [
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Networking",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [project.optional-dependencies]
 dev = [
@@ -60,7 +59,7 @@ dev = [
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",
   "pylint>=2.17.5",
-  "ruff~=0.3.2",
+  "ruff~=0.3.4",
   "pytest>=7.4.0",
   "pytest-asyncio>=0.21.1",
   "pytest-cov>=4.1.0",
@@ -218,12 +217,11 @@ envlist =
   clean,
   lint,
   type,
-  py{38,39,310,311,312},
+  py{39,310,311,312},
   report
 
 [gh-actions]
 python =
-  3.8: py38
   3.9: py39
   3.10: py310
   3.11: erase, py311, report
@@ -304,8 +302,8 @@ exclude = [
 
 line-length = 165
 
-# Assume Python 3.8 as this is the lowest supported version for ANTA
-target-version = "py38"
+# Assume Python 3.9 as this is the lowest supported version for ANTA
+target-version = "py39"
 
 [tool.ruff.lint]
 # select all cause we like being suffering
@@ -319,7 +317,6 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
-  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 

@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Coroutine, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -23,6 +23,8 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
+    from collections.abc import Coroutine
+
     from rich.progress import Progress, TaskID
 
     from anta.device import AntaDevice

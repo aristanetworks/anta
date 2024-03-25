@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-AntaTestRunner = Tuple[AntaTestDefinition, AntaDevice]
+AntaTestRunner = tuple[AntaTestDefinition, AntaDevice]
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:

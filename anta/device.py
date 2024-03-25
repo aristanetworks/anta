@@ -9,7 +9,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Iterator, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import asyncssh
 from aiocache import Cache
@@ -21,6 +21,7 @@ from anta import __DEBUG__, aioeapi
 from anta.logger import exc_to_str
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     from anta.models import AntaCommand

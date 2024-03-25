@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import shutil
-from typing import TYPE_CHECKING, Any, Callable, Iterator
+from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
@@ -22,6 +22,7 @@ from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     from anta.models import AntaCommand
@@ -231,8 +232,13 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
         return res
 
     # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
-    with patch("aioeapi.device.Device.check_connection", return_value=True), patch("aioeapi.device.Device.cli", side_effect=cli), patch("asyncssh.connect"), patch(
-        "asyncssh.scp",
+    with (
+        patch("aioeapi.device.Device.check_connection", return_value=True),
+        patch("aioeapi.device.Device.cli", side_effect=cli),
+        patch("asyncssh.connect"),
+        patch(
+            "asyncssh.scp",
+        ),
     ):
         console._color_system = None  # pylint: disable=protected-access
         yield AntaCliRunner()
