@@ -596,6 +596,7 @@ class TestAntaComamnd:
     """Test for anta.models.AntaCommand."""
 
     # ruff: noqa: B018
+    # pylint: disable=pointless-statement
 
     def test_empty_output_access(self) -> None:
         """Test for both json and text ofmt."""
