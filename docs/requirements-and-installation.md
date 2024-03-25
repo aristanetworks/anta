@@ -8,11 +8,11 @@
 
 ## Python version
 
-Python 3 (`>=3.8`) is required:
+Python 3 (`>=3.9`) is required:
 
 ```bash
 python --version
-Python 3.9.9
+Python 3.11.8
 ```
 
 ## Install ANTA package

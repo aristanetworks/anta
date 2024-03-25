@@ -9,7 +9,7 @@ import asyncio
 import logging
 from ipaddress import ip_address, ip_network
 from pathlib import Path
-from typing import Any, ClassVar, Dict
+from typing import Any, ClassVar
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -22,8 +22,7 @@ from anta.logger import anta_log_exception
 logger = logging.getLogger(__name__)
 
 
-# TODO: Replace to `dict[str, AntaDevice]` when we drop Python 3.8
-class AntaInventory(Dict[str, AntaDevice]):
+class AntaInventory(dict[str, AntaDevice]):
     """Inventory abstraction for ANTA framework."""
 
     # Root key of inventory part of the inventory file
