@@ -491,3 +491,4 @@ anta.tests.routing:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
         number: 3
+    - VerifyOSPFMaxLSA:
