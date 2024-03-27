@@ -131,7 +131,7 @@ class VerifyRoutingTableEntry(AntaTest):
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
     categories: ClassVar[list[str]] = ["routing"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableEntry test."""

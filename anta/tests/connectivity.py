@@ -42,7 +42,7 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
@@ -116,7 +116,7 @@ class VerifyLLDPNeighbors(AntaTest):
     name = "VerifyLLDPNeighbors"
     description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""

@@ -41,7 +41,7 @@ class VerifyUptime(AntaTest):
     name = "VerifyUptime"
     description = "Verifies the device uptime."
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyUptime test."""
@@ -79,7 +79,7 @@ class VerifyReloadCause(AntaTest):
     name = "VerifyReloadCause"
     description = "Verifies the last reload cause of the device."
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -126,7 +126,7 @@ class VerifyCoredump(AntaTest):
     name = "VerifyCoredump"
     description = "Verifies there are no core dump files."
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -193,7 +193,7 @@ class VerifyCPUUtilization(AntaTest):
     name = "VerifyCPUUtilization"
     description = "Verifies whether the CPU utilization is below 75%."
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -225,7 +225,7 @@ class VerifyMemoryUtilization(AntaTest):
     name = "VerifyMemoryUtilization"
     description = "Verifies whether the memory utilization is below 75%."
     categories: ClassVar[list[str]] = ["system"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
