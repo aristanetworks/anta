@@ -120,7 +120,7 @@ ARISTA_PLATFORMS = {
             "7280QRA",
             "7280SE",
             "7280SRA",
-            "7280SRAM"
+            "7280SRAM",
             "7280TR",
             "7280TR3",
             "7280TRA",
