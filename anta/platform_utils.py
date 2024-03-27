@@ -7,12 +7,15 @@
 from __future__ import annotations
 
 import logging
+import re
 
 from anta import GITHUB_SUGGESTION
 
 logger = logging.getLogger(__name__)
 
 SUPPORT_HARDWARE_COUNTERS_SERIES = ["7800R3", "7500R3", "7500R", "7280R3", "7280R2", "7280R"]
+
+VIRTUAL_PLATFORMS = ["cEOSLab", "vEOS-lab", "cEOSCloudLab"]
 
 # TODO: For chassis, check if the hardware commands return the linecard model. If so, we can remove the chassis families from the list.
 ARISTA_PLATFORMS = {
@@ -103,10 +106,24 @@ ARISTA_PLATFORMS = {
         "chipsets": ["Jericho", "Qumran-MX", "Arad+"],
         "families": [
             "7280CR",
+            "7280CR2",
+            "7280CR2A",
+            "7280CR2K",
+            "7280CR2M",
+            "7280CR3",
+            "7280CR3A",
+            "7280CR3AK",
+            "7280CR3AM",
+            "7280CR3K",
+            "7280CR3MK",
             "7280QR",
+            "7280QRA",
             "7280SE",
-            "7280SR",
+            "7280SRA",
+            "7280SRAM"
             "7280TR",
+            "7280TR3",
+            "7280TRA",
         ],
     },
     "7170": {
@@ -226,13 +243,22 @@ ARISTA_PLATFORMS = {
 }
 
 
-def find_series_by_model(model: str) -> str | None:
-    """Get the series of a model based on the ARISTA_PLATFORMS dictionary."""
+def find_series_by_platform(platform: str) -> str | None:
+    """Get the series of a platform based on the ARISTA_PLATFORMS dictionary."""
+    regex_pattern = r"(?:DCS|CCS)-(.+?)-"
+    match = re.search(regex_pattern, platform)
+
+    if match:
+        platform_family = match.group(1)
+    else:
+        logger.warning("Platform %s does not match the expected Arista product name pattern. %s", platform, GITHUB_SUGGESTION)
+        return None
+
     for series, data in ARISTA_PLATFORMS.items():
         for family in data["families"]:
-            if family in model:
+            if family == platform_family:
                 return series
 
     # If no match is found, we need to add a new family to the ARISTA_PLATFORMS dictionary
-    logger.warning("Model %s series was not found in the ANTA Arista platforms database. %s", model, GITHUB_SUGGESTION)
+    logger.warning("Platform %s series was not found in the ANTA Arista platforms database. %s", platform, GITHUB_SUGGESTION)
     return None

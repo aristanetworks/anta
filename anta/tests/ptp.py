@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.decorators import skip_on_platforms
+from anta.decorators import platform_filter
 from anta.models import AntaCommand, AntaTest
+from anta.platform_utils import VIRTUAL_PLATFORMS
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -38,7 +39,7 @@ class VerifyPtpModeStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpModeStatus."""
@@ -85,7 +86,7 @@ class VerifyPtpGMStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpGMStatus."""
@@ -125,7 +126,7 @@ class VerifyPtpLockStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpLockStatus."""
@@ -166,7 +167,7 @@ class VerifyPtpOffset(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp monitor", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpOffset."""
@@ -211,7 +212,7 @@ class VerifyPtpPortModeStatus(AntaTest):
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpPortModeStatus."""

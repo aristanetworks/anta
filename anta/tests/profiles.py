@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.decorators import skip_on_platforms
+from anta.decorators import platform_filter
 from anta.models import AntaCommand, AntaTest
+from anta.platform_utils import VIRTUAL_PLATFORMS
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -44,7 +45,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
         """Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or "flexible"."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyUnifiedForwardingTableMode."""
@@ -83,7 +84,7 @@ class VerifyTcamProfile(AntaTest):
         profile: str
         """Expected TCAM profile."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTcamProfile."""

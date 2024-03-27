@@ -17,7 +17,8 @@ ANTA provides an abstract class [AntaTest](../api/models.md#anta.models.AntaTest
 
 ```python
 from anta.models import AntaTest, AntaCommand
-from anta.decorators import skip_on_platforms
+from anta.decorators import platform_filters
+from anta.platform_utils import VIRTUAL_PLATFORMS
 
 
 class VerifyTemperature(AntaTest):
@@ -41,7 +42,7 @@ class VerifyTemperature(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTemperature."""

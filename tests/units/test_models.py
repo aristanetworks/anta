@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
-from anta.decorators import deprecated_test, skip_on_platforms
+from anta.decorators import deprecated_test, platform_filter
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from tests.lib.fixture import DEVICE_HW_MODEL
 from tests.lib.utils import generate_test_ids
@@ -196,7 +196,7 @@ class SkipOnPlatformTest(AntaTest):
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
-    @skip_on_platforms([DEVICE_HW_MODEL])
+    @platform_filter([DEVICE_HW_MODEL], action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Test function."""
@@ -211,7 +211,7 @@ class UnSkipOnPlatformTest(AntaTest):
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
-    @skip_on_platforms(["dummy"])
+    @platform_filter(["dummy"], action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Test function."""
@@ -231,7 +231,7 @@ class SkipOnPlatformTestWithInput(AntaTest):
 
         string: str
 
-    @skip_on_platforms([DEVICE_HW_MODEL])
+    @platform_filter([DEVICE_HW_MODEL], action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Test function."""

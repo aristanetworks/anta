@@ -20,7 +20,7 @@ from httpx import ConnectError, HTTPError
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
-from anta.platform_utils import SUPPORT_HARDWARE_COUNTERS_SERIES, find_series_by_model
+from anta.platform_utils import SUPPORT_HARDWARE_COUNTERS_SERIES, find_series_by_platform
 from anta.tools.get_item import get_item
 
 if TYPE_CHECKING:
@@ -61,11 +61,11 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
             logger.error("Could not clear counters on device %s because its hardware model is not set or invalid.", device.name)
             return
 
-        model_series = find_series_by_model(device.hw_model)
+        platform_series = find_series_by_platform(device.hw_model)
         commands = [
             AntaCommand(command=command["command"])
             for command in clear_counters_commands
-            if not command["restricted_series"] or model_series in command["restricted_series"]
+            if not command["restricted_series"] or platform_series in command["restricted_series"]
         ]
 
         await device.collect_commands(commands=commands)

@@ -15,8 +15,9 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Interface, Percent, PositiveInteger
-from anta.decorators import skip_on_platforms
+from anta.decorators import platform_filter
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.platform_utils import VIRTUAL_PLATFORMS
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
@@ -295,7 +296,7 @@ class VerifyStormControlDrops(AntaTest):
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStormControlDrops."""

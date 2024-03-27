@@ -7,8 +7,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.decorators import skip_on_platforms
+from anta.decorators import platform_filter
 from anta.models import AntaCommand, AntaTest
+from anta.platform_utils import VIRTUAL_PLATFORMS
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -35,7 +36,7 @@ class VerifyLANZ(AntaTest):
     categories: ClassVar[list[str]] = ["lanz"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show queue-monitor length status", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLANZ."""
