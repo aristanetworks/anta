@@ -190,7 +190,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
     description = "Verifies if logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 
@@ -227,8 +227,8 @@ class VerifyLoggingHostname(AntaTest):
     description = "Verifies if logs are generated with the device FQDN."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="show hostname"),
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation"),
+        AntaCommand(command="show hostname", revision=1),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation", ofmt="text"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 
@@ -271,7 +271,7 @@ class VerifyLoggingTimestamp(AntaTest):
     description = "Verifies if logs are generated with the appropriate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation"),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
         AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 

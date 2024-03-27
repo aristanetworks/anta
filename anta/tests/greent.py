@@ -32,7 +32,7 @@ class VerifyGreenTCounters(AntaTest):
     name = "VerifyGreenTCounters"
     description = "Verifies if the GreenT counters are incremented."
     categories: ClassVar[list[str]] = ["greent"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard counters")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard counters", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -64,7 +64,7 @@ class VerifyGreenT(AntaTest):
     name = "VerifyGreenT"
     description = "Verifies if a GreenT policy is created."
     categories: ClassVar[list[str]] = ["greent"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard policy profile")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard policy profile", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:

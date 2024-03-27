@@ -106,7 +106,7 @@ class VerifyOSPFNeighborState(AntaTest):
     name = "VerifyOSPFNeighborState"
     description = "Verifies all OSPF neighbors are in FULL state."
     categories: ClassVar[list[str]] = ["ospf"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -143,7 +143,7 @@ class VerifyOSPFNeighborCount(AntaTest):
     name = "VerifyOSPFNeighborCount"
     description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
     categories: ClassVar[list[str]] = ["ospf"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyOSPFNeighborCount test."""
@@ -187,7 +187,7 @@ class VerifyOSPFMaxLSA(AntaTest):
     name = "VerifyOSPFMaxLSA"
     description = "Verifies all OSPF instances did not cross the maximum LSA threshold."
     categories: ClassVar[list[str]] = ["ospf"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:

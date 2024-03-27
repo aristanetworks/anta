@@ -191,8 +191,8 @@ class VerifyBGPPeerCount(AntaTest):
     description = "Verifies the count of BGP peers."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
-        AntaTemplate(template="show bgp {afi} summary"),
+        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp {afi} summary", revision=3),
     ]
 
     class Input(AntaTest.Input):
@@ -328,8 +328,8 @@ class VerifyBGPPeersHealth(AntaTest):
     description = "Verifies the health of BGP peers"
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
-        AntaTemplate(template="show bgp {afi} summary"),
+        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp {afi} summary", revision=3),
     ]
 
     class Input(AntaTest.Input):
@@ -471,8 +471,8 @@ class VerifyBGPSpecificPeers(AntaTest):
     description = "Verifies the health of specific BGP peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}"),
-        AntaTemplate(template="show bgp {afi} summary"),
+        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp {afi} summary", revision=3),
     ]
 
     class Input(AntaTest.Input):
@@ -615,8 +615,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
     description = "Verifies the advertised and received routes of BGP peers."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}"),
-        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}"),
+        AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp neighbors {peer} routes vrf {vrf}", revision=3),
     ]
 
     class Input(AntaTest.Input):
@@ -703,7 +703,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
     name = "VerifyBGPPeerMPCaps"
     description = "Verifies the multiprotocol capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMPCaps test."""
@@ -787,7 +787,7 @@ class VerifyBGPPeerASNCap(AntaTest):
     name = "VerifyBGPPeerASNCap"
     description = "Verifies the four octet asn capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerASNCap test."""
@@ -865,7 +865,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     name = "VerifyBGPPeerRouteRefreshCap"
     description = "Verifies the route refresh capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteRefreshCap test."""
@@ -945,7 +945,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     name = "VerifyBGPPeerMD5Auth"
     description = "Verifies the MD5 authentication and state of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMD5Auth test."""
@@ -1020,7 +1020,7 @@ class VerifyEVPNType2Route(AntaTest):
     name = "VerifyEVPNType2Route"
     description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEVPNType2Route test."""
@@ -1097,7 +1097,7 @@ class VerifyBGPAdvCommunities(AntaTest):
     name = "VerifyBGPAdvCommunities"
     description = "Verifies the advertised communities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPAdvCommunities test."""
@@ -1174,7 +1174,7 @@ class VerifyBGPTimers(AntaTest):
     name = "VerifyBGPTimers"
     description = "Verifies the timers of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPTimers test."""

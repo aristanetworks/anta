@@ -39,7 +39,7 @@ class VerifyTransceiversManufacturers(AntaTest):
     name = "VerifyTransceiversManufacturers"
     description = "Verifies if all transceivers come from approved manufacturers."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyTransceiversManufacturers test."""
@@ -80,7 +80,7 @@ class VerifyTemperature(AntaTest):
     name = "VerifyTemperature"
     description = "Verifies the device temperature."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
@@ -113,7 +113,7 @@ class VerifyTransceiversTemperature(AntaTest):
     name = "VerifyTransceiversTemperature"
     description = "Verifies the transceivers temperature."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", revision=1)]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
@@ -154,7 +154,7 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     name = "VerifyEnvironmentSystemCooling"
     description = "Verifies the system cooling status."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
@@ -188,7 +188,7 @@ class VerifyEnvironmentCooling(AntaTest):
     name = "VerifyEnvironmentCooling"
     description = "Verifies the status of power supply fans and all fan trays."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentCooling test."""
@@ -235,7 +235,7 @@ class VerifyEnvironmentPower(AntaTest):
     name = "VerifyEnvironmentPower"
     description = "Verifies the power supplies status."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentPower test."""
@@ -277,7 +277,7 @@ class VerifyAdverseDrops(AntaTest):
     name = "VerifyAdverseDrops"
     description = "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches."
     categories: ClassVar[list[str]] = ["hardware"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test

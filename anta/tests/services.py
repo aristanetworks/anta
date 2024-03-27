@@ -39,7 +39,7 @@ class VerifyHostname(AntaTest):
     name = "VerifyHostname"
     description = "Verifies the hostname of a device."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyHostname test."""
@@ -82,7 +82,7 @@ class VerifyDNSLookup(AntaTest):
     name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSLookup test."""
@@ -134,7 +134,7 @@ class VerifyDNSServers(AntaTest):
     name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSServers test."""

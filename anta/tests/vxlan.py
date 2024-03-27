@@ -44,7 +44,7 @@ class VerifyVxlan1Interface(AntaTest):
     name = "VerifyVxlan1Interface"
     description = "Verifies the Vxlan1 interface status."
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -84,7 +84,7 @@ class VerifyVxlanConfigSanity(AntaTest):
     name = "VerifyVxlanConfigSanity"
     description = "Verifies there are no VXLAN config-sanity inconsistencies."
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan config-sanity", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan config-sanity", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -127,7 +127,7 @@ class VerifyVxlanVniBinding(AntaTest):
     name = "VerifyVxlanVniBinding"
     description = "Verifies the VNI-VLAN bindings of the Vxlan1 interface."
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vni", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vni", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlanVniBinding test."""
@@ -190,7 +190,7 @@ class VerifyVxlanVtep(AntaTest):
     name = "VerifyVxlanVtep"
     description = "Verifies the VTEP peers of the Vxlan1 interface"
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vtep", ofmt="json")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan vtep", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlanVtep test."""
@@ -241,7 +241,7 @@ class VerifyVxlan1ConnSettings(AntaTest):
     name = "VerifyVxlan1ConnSettings"
     description = "Verifies the interface vxlan1 source interface and UDP port."
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlan1ConnSettings test."""
