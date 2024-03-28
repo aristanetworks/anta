@@ -16,7 +16,6 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 ### NRFU Command overview
 
 ```bash
-anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
   Run ANTA tests on devices.
@@ -51,8 +50,9 @@ Options:
                           ANTA_NRFU_IGNORE_STATUS]
   --ignore-error          Only report failures and not errors  [env var:
                           ANTA_NRFU_IGNORE_ERROR]
-  -d, --device TEXT       Show a summary for this device
-  --test TEXT             Show a summary for this test
+  -d, --device TEXT       Run tests on a specific device. Can be provided
+                          multiple times.
+  --test TEXT             Run a specific test. Can be provided multiple times.
   --help                  Show this message and exit.
 
 Commands:
@@ -84,7 +84,7 @@ The `--tags` option can be used to target specific devices in your inventory and
 
 ## Device and test filtering
 
-Options `--device` and `--test` can be used to target a specific device and/or test to run in your environment. These 2 options are not compatible with the `--tags` option.
+Options `--device` and `--test` can be used to target one or multiple devices and/or tests to run in your environment.
 
 ## Performing NRFU with text rendering
 

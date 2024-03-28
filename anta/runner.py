@@ -66,10 +66,10 @@ async def main(  # noqa: PLR0913
         manager: ResultManager object to populate with the test results.
         inventory: AntaInventory object that includes the device(s).
         catalog: AntaCatalog object that includes the list of tests.
-        tags: List of tags to filter devices from the inventory. Defaults to None.
-        established_only: Include only established device(s). Defaults to True.
         devices: devices on which to run tests. None means all devices.
         tests: tests to run against devices. None means all tests.
+        tags: List of tags to filter devices from the inventory. Defaults to None.
+        established_only: Include only established device(s). Defaults to True.
     """
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
@@ -89,11 +89,8 @@ async def main(  # noqa: PLR0913
     inventory = inventory.get_inventory(established_only=established_only)
 
     if not inventory.devices:
-        msg = (
-            f"No device in the established state '{established_only}' {f'matching the tags {tags} ' if tags else ''}was found. "
-            "There is no device to run tests against, exiting"
-        )
-        logger.info(msg)
+        msg = f"No device reachable device {f'matching the tags {tags} ' if tags else ''}was found."
+        logger.warning(msg)
         return
     coros = []
 
@@ -117,8 +114,8 @@ async def main(  # noqa: PLR0913
             selected_tests.update((t, device) for t in catalog.get_tests_by_tag(device.tags))
 
     if not selected_tests:
-        msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run on current inventory, exiting"
-        logger.info(msg)
+        msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog, please verify your inputs."
+        logger.warning(msg)
         return
 
     for test_definition, device in selected_tests:

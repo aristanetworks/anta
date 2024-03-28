@@ -332,6 +332,9 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
+# These settings are used to configure pylint rules run in ruff. In order to keep sane and while
+# we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
+# https://github.com/astral-sh/ruff/issues/970
 max-branches = 13
 
 [tool.ruff.lint.mccabe]
