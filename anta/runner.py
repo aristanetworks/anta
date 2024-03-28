@@ -49,10 +49,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
-# pylint: disable=too-many-arguments
-
-
-async def main(
+async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
@@ -62,6 +59,7 @@ async def main(
     *,
     established_only: bool = True,
 ) -> None:
+    # pylint: disable=too-many-arguments
     # sourcery skip: merge-duplicate-blocks, remove-redundant-if, split-or-ifs
     """Run ANTA.
 

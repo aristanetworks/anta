@@ -333,7 +333,6 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-max-args = 7
 max-branches = 13
 
 [tool.ruff.lint.mccabe]

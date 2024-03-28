@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 
+# pylint: disable=too-many-arguments
 def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],

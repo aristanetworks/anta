@@ -11,8 +11,6 @@ good-names=runCmds, i, y, t, c, x, e, fd, ip, v
 max-statements=61
 max-returns=8
 max-locals=23
-max-args=6
-
 
 [FORMAT]
 max-line-length=165

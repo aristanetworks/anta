@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
+    # pylint: disable=too-many-arguments
     """Build ANTA inventory from Cloudvision.
 
     TODO - handle get_inventory and get_devices_in_container failure
