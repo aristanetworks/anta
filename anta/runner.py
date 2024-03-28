@@ -89,7 +89,7 @@ async def main(  # noqa: PLR0913
     inventory = inventory.get_inventory(established_only=established_only)
 
     if not inventory.devices:
-        msg = f"No device reachable device {f'matching the tags {tags} ' if tags else ''}was found."
+        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found."
         logger.warning(msg)
         return
     coros = []
