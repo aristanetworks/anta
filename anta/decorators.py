@@ -60,14 +60,15 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
 
 def platform_series_filter(series: list[str], action: Literal["run", "skip"]) -> Callable[[F], F]:
-    """Return a decorator to run a test based on the device's hardware model.
+    """Return a decorator to run or skip a test based on the device's hardware model.
 
     This decorator factory generates a decorator that will check the hardware model of the device
-    the test is run on. If the model is part of the provided platform series, the test will be run.
+    the test is run on. If the model is part of the provided platform series, the test will either be run or skip depending on the action.
 
     Args:
     ----
         series (list[str]): List of platform series on which the test should be run.
+        action (Literal["run", "skip"]): The action to take if the device's hardware model is part of the provided series. It can be either "run" or "skip".
 
     Returns
     -------
@@ -78,7 +79,7 @@ def platform_series_filter(series: list[str], action: Literal["run", "skip"]) ->
     The following test will only run if the device's hardware model is part of the 7800R3, 7500R3, 7500R, or 7280R3 series, e.g. DCS-7280SR3-48YC8.
 
     ```python
-    @run_on_platform_series([["7800R3", "7500R3", "7500R", "7280R3"])
+    @platform_series_filter(series=["7800R3", "7500R3", "7500R", "7280R3"], action="run")
     @AntaTest.anta_test
     def test(self) -> None:
         pass
@@ -104,8 +105,8 @@ def platform_series_filter(series: list[str], action: Literal["run", "skip"]) ->
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             """Check the device's hardware model and conditionally run or skip the test.
 
-            This wrapper inspects the hardware model of the device the test is run on.
-            If the model is NOT in the list of specified platform series, the test is skipped.
+            This wrapper finds the series of the device the test is run on, checks if it is part of the specified series
+            and either runs or skips the test based on the action.
             """
             anta_test = args[0]
 
@@ -131,11 +132,12 @@ def platform_filter(platforms: list[str], action: Literal["run", "skip"]) -> Cal
     """Return a decorator to skip a test based on the device's hardware model.
 
     This decorator factory generates a decorator that will check the hardware model of the device
-    the test is run on. If the model is in the list of platforms specified, the test will be skipped.
+    the test is run on. If the model is in the list of platforms specified, the test will either be run or skip depending on the action.
 
     Args:
     ----
         platforms (list[str]): List of hardware models on which the test should be skipped.
+        action (Literal["run", "skip"]): The action to take if the device's hardware model is part of the provided platforms. It can be either "run" or "skip".
 
     Returns
     -------
@@ -163,8 +165,8 @@ def platform_filter(platforms: list[str], action: Literal["run", "skip"]) -> Cal
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
             """Check the device's hardware model and conditionally run or skip the test.
 
-            This wrapper inspects the hardware model of the device the test is run on.
-            If the model is in the list of specified platforms, the test is skipped.
+            This wrapper checks if the hardware model of the device the test is run on is part of the specified platforms
+            and either runs or skips the test based on the action.
             """
             anta_test = args[0]
 

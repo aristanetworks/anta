@@ -172,13 +172,12 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
-    def supports(self, command: AntaCommand, *, log: bool = True) -> bool:
+    def supports(self, command: AntaCommand) -> bool:
         """Return True if the command is supported on the device hardware platform, False otherwise."""
         unsupported = any("not supported on this hardware platform" in e for e in command.errors)
-        if log:
-            logger.debug(command)
-            if unsupported:
-                logger.warning("Command '%s' is not supported on %s. %s", command.command, self.hw_model, GITHUB_SUGGESTION)
+        logger.debug(command)
+        if unsupported:
+            logger.warning("Command '%s' is not supported on %s. %s", command.command, self.hw_model, GITHUB_SUGGESTION)
         return not unsupported
 
     @abstractmethod
@@ -343,7 +342,7 @@ class AsyncEOSDevice(AntaDevice):
             )
         except aioeapi.EapiCommandError as e:
             command.errors = e.errors
-            if self.supports(command, log=True):
+            if self.supports(command):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
         except (HTTPError, ConnectError) as e:
             command.errors = [str(e)]

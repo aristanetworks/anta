@@ -17,124 +17,143 @@ SUPPORT_HARDWARE_COUNTERS_SERIES = ["7800R3", "7500R3", "7500R", "7280R3", "7280
 
 VIRTUAL_PLATFORMS = ["cEOSLab", "vEOS-lab", "cEOSCloudLab"]
 
-# TODO: For chassis, check if the hardware commands return the linecard model. If so, we can remove the chassis families from the list.
-ARISTA_PLATFORMS = {
-    "7800R3": {
-        "chipsets": ["Ramon"],
+HARDWARE_PLATFORMS = [
+    # Data center chassis families. These series can have the same families but support different modules; linecards, supervisors, fabrics, etc.
+    # The components of the system determine the series it belongs too. Chassis can also support linecards from different families.
+    {
+        "series": "7800R3",
         "families": [
-            "7800R3",  # This is a linecard. The chipset is Jericho2
-            "7800R3A",  # This is a linecard. The chipset is Jericho2C
-            "7800R3K",  # This is a linecard. The chipset is Jericho2C
-            "7816LR3",
-            "7816R3",
-            "7812R3",
-            "7808R3",
-            "7804R3",
+            "7816",
+            "7816B",
+            "7812",
+            "7808",
+            "7804",
         ],
     },
-    "7500R3": {
-        "chipsets": ["Ramon"],
+    {
+        "series": "7500R3",
         "families": [
-            "7500R3",  # This is a linecard. The chipset is Jericho
-            "7500R3K",  # This is a linecard. The chipset is Jericho2C
-            "7512R3",
-            "7508R3",
-            "7504R3",
+            "7512N",
+            "7508",
+            "7508N",
+            "7504",
+            "7504N",
         ],
     },
-    "7500R": {
-        "chipsets": ["FE3600"],
+    {
+        "series": "7500R",
         "families": [
-            "7500R2"  # This is a linecard. The chipset is Jericho+
-            "7516R",
-            "7512R",
-            "7508R",
-            "7504R",
+            "7516N",
+            "7512N",
+            "7508",
+            "7508N",
+            "7504",
+            "7504N",
         ],
     },
-    "7300X3": {
-        "chipsets": ["Tomahawk"],
+    {
+        "series": "7300X3",
         "families": [
-            "7300X3",  # This is a linecard. The chipset is Trident3X7
-            "7308X3",
-            "7304X3",
+            "7308",
+            "7304",
         ],
     },
-    "7300X": {
-        "chipsets": ["Trident2"],
+    {
+        "series": "7300X",
         "families": [
-            "7300X"  # This is a linecard. The chipset is Trident2
-            "7316X"
-            "7308X",
-            "7304X",
+            "7316",
+            "7308",
+            "7304",
         ],
     },
-    "7388X5": {
-        "chipsets": ["Tomahawk4"],
+    {
+        "series": "7388X5",
         "families": [
-            "7388X5",
+            "7388",
         ],
     },
-    "7368X4": {
-        "chipsets": ["Tomahawk3"],
+    {
+        "series": "7368X4",
         "families": [
-            "7368X4",
+            "7368",
         ],
     },
-    "7280R3": {
-        "chipsets": ["Jericho2", "Jericho2c", "Jericho2c+", "Qumran2C"],
+    {
+        "series": "7358X4",
+        "families": [
+            "7358",
+        ],
+    },
+    {
+        "series": "7280R3",
+        "families": [
+            "7289",
+        ],
+    },
+    # Data center fixed families.
+    {
+        "series": "7280R3",
         "families": [
             "7280DR3A",
-            "7280R3A",
+            "7280DR3AM",
+            "7280DR3AK",
             "7280CR3A",
+            "7280CR3AM",
+            "7280CR3AK",
             "7280PR3",
+            "7280PR3K",
             "7280DR3",
+            "7280DR3K"
             "7280CR3MK",
             "7280CR3",
+            "7280CR3K",
             "7280SR3A",
+            "7280SR3AM",
+            "7280SR3AK",
+            "7280SR3M"
+            "7280SR3MK",
             "7280SR3",
+            "7280SR3K",
+            "7280SR3E",
+            "7280TR3",
         ],
     },
-    "7280R2": {
-        "chipsets": ["Jericho+", "Jericho2"],
+    {
+        "series": "7280R2",
         "families": [
-            "7280CR2",
-            "7280SR2",
-        ],
-    },
-    "7280R": {
-        "chipsets": ["Jericho", "Qumran-MX", "Arad+"],
-        "families": [
-            "7280CR",
             "7280CR2",
             "7280CR2A",
             "7280CR2K",
             "7280CR2M",
-            "7280CR3",
-            "7280CR3A",
-            "7280CR3AK",
-            "7280CR3AM",
-            "7280CR3K",
-            "7280CR3MK",
+            "7280SR2",
+            "7280SR2A",
+            "7280SR2K",
+        ],
+    },
+    {
+        "series": "7280R",
+        "families": [
+            "7280CR",
             "7280QR",
             "7280QRA",
             "7280SE",
+            "7280SR",
             "7280SRA",
             "7280SRAM",
+            "7280SRM",
             "7280TR",
-            "7280TR3",
             "7280TRA",
         ],
     },
-    "7170": {
-        "chipsets": ["Tofino", "Tofino2"],
+    {
+        "series": "7170",
         "families": [
             "7170",
             "7170B",
         ],
     },
-    "7130": {
-        "chipsets": ["Jericho2"],
+    {
+        "series": "7130",
         "families": [
             "7130LBR",
             "7130B",
@@ -143,8 +162,8 @@ ARISTA_PLATFORMS = {
             "7130",
         ],
     },
-    "7060X": {
-        "chipsets": ["Tomahawk", "Tomahawk+", "Tomahawk3", "Tomahawk4"],
+    {
+        "series": "7060X",
         "families": [
             "7060DX5",
             "7060PX5",
@@ -155,22 +174,16 @@ ARISTA_PLATFORMS = {
             "7060CX",
         ],
     },
-    "7260X": {
-        "chipsets": ["Tomahawk", "Tomahawk2"],
+    {
+        "series": "7260X",
         "families": [
             "7260QX",
             "7260CX3",
             "7260CX",
         ],
     },
-    "7358X4": {
-        "chipsets": ["Trident4X11"],
-        "families": [
-            "7358X4",
-        ],
-    },
-    "7050X4": {
-        "chipsets": ["Trident4X9", "Trident4X11"],
+    {
+        "series": "7050X4",
         "families": [
             "7050PX4",
             "7050DX4",
@@ -180,72 +193,124 @@ ARISTA_PLATFORMS = {
             "7050CX4M",
         ],
     },
-    "7050X3": {
-        "chipsets": ["Trident3X5", "Trident3X7"],
+    {
+        "series": "7050X3",
         "families": [
             "7050TX3",
             "7050SX3",
+            "7050CX3",
             "7050CX3M",
         ],
     },
-    "7050X": {
-        "chipsets": ["Trident2", "Trident2+"],
+    {
+        "series": "7050X",
         "families": [
             "7050QX",
         ],
     },
-    "7020TR": {
-        "chipsets": ["Qumran-AX"],
+    {
+        "series": "7020TR",
         "families": [
             "7020SR",
             "7020TR",
             "7020TRA",
         ],
     },
-    "7010TX": {
-        "chipsets": ["Trident3X2"],
+    {
+        "series": "7010TX",
         "families": [
             "7010TX",
         ],
     },
-    "750": {
-        "chipsets": ["Firelight"],
+    # Campus chassis families.
+    {
+        "series": "750",
         "families": [
-            "750X",  # This is a linecard. The chipset is Firelight
+            "755",
+            "758",
         ],
     },
-    "720X": {
-        "chipsets": ["Trident3X3"],
+    # Campus fixed families.
+    {
+        "series": "720X",
         "families": [
             "720XP",
         ],
     },
-    "720D": {
-        "chipsets": ["Trident3X1, Trident3X2, Trident3X3"],
+    {
+        "series": "720D",
         "families": [
             "720DP",
             "720DT",
             "720DF",
         ],
     },
-    "722XPM": {
-        "chipsets": ["Trident3X2"],
+    {
+        "series": "722XPM",
         "families": [
             "722XPM",
         ],
     },
-    "710P": {
-        "chipsets": ["Trident3X1"],
+    {
+        "series": "710P",
         "families": [
             "710P",
         ],
     },
-}
+]
 
+def check_if_virtual_platform(platform: str) -> bool:
+    """Check if the platform is a virtual platform.
+
+    Arguments:
+    ----------
+        platform (str): The platform model to check.
+
+    Returns
+    -------
+        bool: True if the platform is a virtual platform, otherwise False.
+
+    Examples
+    --------
+    ```python
+    >>> from anta.platform_utils import check_if_virtual_platform
+    >>> check_if_virtual_platform(platform="vEOS-lab")
+    True
+    >>> check_if_virtual_platform(platform="DCS-7280CR3A-72-F")
+    False
+    ```
+    """
+    return platform in VIRTUAL_PLATFORMS
 
 def find_series_by_platform(platform: str) -> str | None:
-    """Get the series of a platform based on the ARISTA_PLATFORMS dictionary."""
-    regex_pattern = r"(?:DCS|CCS)-(.+?)-"
+    """Get the series of a platform based on the HARDWARE_PLATFORMS dictionary.
+
+    The function extract the family from the platform name. Some chassis and modular systems do not have the DCS/CCS prefix, so we need to handle this case.
+
+    !!! warning
+        The virtual platforms are not supported by this function. You should use the `check_if_virtual_platform` function to check if the platform is virtual.
+
+    Arguments:
+    ----------
+        platform (str): The platform model to find the series for.
+
+    Returns
+    -------
+        str | None: The series of the platform if found, otherwise None.
+
+    Examples
+    --------
+    ```python
+    >>> from anta.platform_utils import find_series_by_platform
+    >>> find_series_by_platform(platform="7368-F")
+    '7368X4'
+    >>> find_series_by_platform(platform="CCS-755-CH")
+    '750'
+    >>> find_series_by_platform(platform="DCS-7280CR3A-72-F")
+    '7280R3'
+    ```
+    """
+    regex_pattern = r"(?:DCS|CCS)-(.+?)-" if platform.startswith(("DCS-", "CCS-")) else r"(.+?)(?=-)"
     match = re.search(regex_pattern, platform)
 
     if match:
@@ -254,11 +319,12 @@ def find_series_by_platform(platform: str) -> str | None:
         logger.warning("Platform %s does not match the expected Arista product name pattern. %s", platform, GITHUB_SUGGESTION)
         return None
 
-    for series, data in ARISTA_PLATFORMS.items():
-        for family in data["families"]:
-            if family == platform_family:
-                return series
+    for series in HARDWARE_PLATFORMS:
+        interesting_list = series.get("families", series.get("families"))
+        for item in interesting_list:
+            if item == platform_family:
+                return series["series"]
 
-    # If no match is found, we need to add a new family to the ARISTA_PLATFORMS dictionary
+    # If no match is found, we need to add a new family to the HARDWARE_PLATFORMS dictionary
     logger.warning("Platform %s series was not found in the ANTA Arista platforms database. %s", platform, GITHUB_SUGGESTION)
     return None
