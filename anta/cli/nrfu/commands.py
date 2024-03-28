@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import pathlib
+from typing import Literal
 
 import click
 
@@ -23,52 +24,15 @@ logger = logging.getLogger(__name__)
     "--group-by",
     default=None,
     type=click.Choice(["device", "test"], case_sensitive=False),
-    help="Group result by test or host. default none",
-    required=False,
-)
-@click.option(
-    "--skip-error",
-    help="Hide tests in errors due to connectivity issue",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--skip-failure",
-    help="Hide tests in failure",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--skip-success",
-    help="Hide tests in success to focus on error or failure",
-    default=False,
-    is_flag=True,
-    show_default=True,
+    help="Group result by test or device.",
     required=False,
 )
 def table(
     ctx: click.Context,
-    group_by: str,
-    *,
-    skip_error: bool,
-    skip_failure: bool,
-    skip_success: bool,
+    group_by: Literal["device", "test"] | None,
 ) -> None:
     """ANTA command to check network states with table result."""
-    if skip_error:
-        ignore_state = "error"
-    elif skip_failure:
-        ignore_state = "failure"
-    elif skip_success:
-        ignore_state = "success"
-    else:
-        ignore_state = None
-
-    print_table(results=ctx.obj["result_manager"], group_by=group_by, ignore_state=ignore_state)
+    print_table(ctx, group_by=group_by)
     exit_with_code(ctx)
 
 
@@ -84,44 +48,15 @@ def table(
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with JSON result."""
-    print_json(results=ctx.obj["result_manager"], output=output)
+    print_json(ctx, output=output)
     exit_with_code(ctx)
 
 
 @click.command()
 @click.pass_context
-@click.option(
-    "--skip-error",
-    help="Hide tests in errors due to connectivity issue",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--skip-failure",
-    help="Hide tests in failure",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--skip-success",
-    help="Hide tests in success to focus on error or failure",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-def text(ctx: click.Context, *, skip_error: bool, skip_failure: bool, skip_success: bool) -> None:
+def text(ctx: click.Context) -> None:
     """ANTA command to check network states with text result."""
-    print_text(
-        results=ctx.obj["result_manager"],
-        skip_error=skip_error,
-        skip_failure=skip_failure,
-        skip_success=skip_success,
-    )
+    print_text(ctx)
     exit_with_code(ctx)
 
 

@@ -7,11 +7,10 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import rich
 from rich.panel import Panel
-from rich.pretty import pprint
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
@@ -20,11 +19,22 @@ from anta.reporter import ReportJinja, ReportTable
 if TYPE_CHECKING:
     import pathlib
 
+    import click
+
     from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
     from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
+
+
+def _get_result_manager(ctx: click.Context) -> ResultManager:
+    """Get a filtered ResultManager instance based on Click context."""
+    return ctx.obj["result_manager"].filter(
+        hide_success=ctx.obj.get("hide")["success"],
+        hide_failure=ctx.obj.get("hide")["failure"],
+        hide_error=ctx.obj.get("hide")["error"],
+    )
 
 
 def print_settings(
@@ -37,53 +47,44 @@ def print_settings(
     console.print()
 
 
-def print_table(results: ResultManager, group_by: str | None = None, ignore_state: str | None = None) -> None:
+def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
+    results = _get_result_manager(ctx)
 
     if group_by == "device":
-        console.print(reporter.report_summary_hosts(result_manager=results, host=None))
+        console.print(reporter.report_summary_devices(results, devices=None))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(result_manager=results, testcase=None))
+        console.print(reporter.report_summary_tests(results, tests=None))
     else:
-        console.print(reporter.report_all(result_manager=results, ignore_state=ignore_state))
+        console.print(reporter.report_all(results))
 
 
-def print_json(results: ResultManager, output: pathlib.Path | None = None) -> None:
+def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
     """Print result in a json format."""
+    results = _get_result_manager(ctx)
     console.print()
-    console.print(Panel("JSON results of all tests", style="cyan"))
-    rich.print_json(results.get_json_results())
+    console.print(Panel("JSON results", style="cyan"))
+    rich.print_json(results.json)
     if output is not None:
         with output.open(mode="w", encoding="utf-8") as fout:
-            fout.write(results.get_json_results())
+            fout.write(results.json)
 
 
-def print_list(results: ResultManager, output: pathlib.Path | None = None) -> None:
-    """Print result in a list."""
-    console.print()
-    console.print(Panel.fit("List results of all tests", style="cyan"))
-    pprint(results.get_results())
-    if output is not None:
-        with output.open(mode="w", encoding="utf-8") as fout:
-            fout.write(str(results.get_results()))
-
-
-def print_text(results: ResultManager, *, skip_error: bool = False, skip_failure: bool = False, skip_success: bool = False) -> None:
+def print_text(ctx: click.Context) -> None:
     """Print results as simple text."""
     console.print()
-    for line in results.get_results():
-        if not (skip_error and "error" in line.result) and not (skip_failure and "failure" in line.result) and not (skip_success and "success" in line.result):
-            message = f" ({line.messages[0]!s})" if len(line.messages) > 0 else ""
-            console.print(f"{line.name} :: {line.test} :: [{line.result}]{line.result.upper()}[/{line.result}]{message}", highlight=False)
+    for test in _get_result_manager(ctx).results:
+        message = f" ({test.messages[0]!s})" if len(test.messages) > 0 else ""
+        console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]{message}", highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:
     """Print result based on template."""
     console.print()
     reporter = ReportJinja(template_path=template)
-    json_data = json.loads(results.get_json_results())
+    json_data = json.loads(results.json)
     report = reporter.render(json_data)
     console.print(report)
     if output is not None:

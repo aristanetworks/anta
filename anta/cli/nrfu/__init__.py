@@ -57,20 +57,6 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @inventory_options
 @catalog_options
 @click.option(
-    "--ignore-status",
-    help="Always exit with success",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
-    "--ignore-error",
-    help="Only report failures and not errors",
-    show_envvar=True,
-    is_flag=True,
-    default=False,
-)
-@click.option(
     "--device",
     "-d",
     help="Run tests on a specific device. Can be provided multiple times.",
@@ -87,6 +73,44 @@ class IgnoreRequiredWithHelp(AliasedGroup):
     required=False,
     default=None,
 )
+@click.option(
+    "--ignore-status",
+    help="Exit code will always be 0.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--ignore-error",
+    help="Exit code will be 0 if all tests succeeded or 1 if any test failed.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--hide-success",
+    help="Hide tests that succeeded. Useful to focus on error or failure.",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--hide-failure",
+    help="Hide tests that failed.",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
+@click.option(
+    "--hide-error",
+    help="Hide tests that raised errors.",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    required=False,
+)
 # pylint: disable=too-many-arguments
 def nrfu(
     ctx: click.Context,
@@ -98,6 +122,9 @@ def nrfu(
     *,
     ignore_status: bool,
     ignore_error: bool,
+    hide_success: bool,
+    hide_failure: bool,
+    hide_error: bool,
 ) -> None:
     """Run ANTA tests on devices."""
     # If help is invoke somewhere, skip the command
@@ -108,6 +135,7 @@ def nrfu(
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
+    ctx.obj["hide"] = {"success": hide_success, "failure": hide_failure, "error": hide_error}
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=device, tests=test))
