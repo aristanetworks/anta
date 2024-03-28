@@ -40,10 +40,10 @@ class ResultManager:
         Run tests for all connected devices:
 
             for device in inventory_anta.get_inventory().devices:
-                manager.add_test_result(
+                manager.add(
                     VerifyNTP(device=device).test()
                 )
-                manager.add_test_result(
+                manager.add(
                     VerifyEOSVersion(device=device).test(version='4.28.3M')
                 )
 
@@ -104,7 +104,7 @@ class ResultManager:
     @results.setter
     def results(self, value: list[TestResult]) -> None:
         for e in value:
-            self.add_test_result(e)
+            self.add(e)
 
     @property
     def json(self) -> str:
@@ -123,7 +123,7 @@ class ResultManager:
         elif self.status == "success" and test_status == "failure":
             self.status = "failure"
 
-    def add_test_result(self, result: TestResult) -> None:
+    def add(self, result: TestResult) -> None:
         """Add a result to the report.
 
         Args:
@@ -203,8 +203,8 @@ class ResultManager:
             names.add(str(result.test))
         return names
 
-    def get_hosts(self) -> set[str]:
-        """Get lthe list of all the device names.
+    def get_devices(self) -> set[str]:
+        """Get the list of all the device names.
 
         Returns
         -------

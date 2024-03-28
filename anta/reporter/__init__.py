@@ -193,7 +193,7 @@ class ReportTable:
             "List of failed or error test cases",
         ]
         table = self._build_headers(headers=headers, table=table)
-        for device in manager.get_hosts():
+        for device in manager.get_devices():
             if devices is None or device in devices:
                 results = manager.filter_by_device([device]).results
                 nb_failure = len([result for result in results if result.result == "failure"])

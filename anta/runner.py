@@ -141,6 +141,6 @@ async def main(  # noqa: PLR0913
     logger.info("Running ANTA tests...")
     test_results = await asyncio.gather(*coros)
     for r in test_results:
-        manager.add_test_result(r)
+        manager.add(r)
 
     log_cache_statistics(inventory.devices)

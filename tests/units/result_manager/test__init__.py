@@ -29,7 +29,7 @@ class TestResultManager:
         result_manager = ResultManager()
         assert len(result_manager) == 0
         for i in range(3):
-            result_manager.add_test_result(list_result[i])
+            result_manager.add(list_result[i])
             assert len(result_manager) == i + 1
 
     @pytest.mark.parametrize(
@@ -104,8 +104,8 @@ class TestResultManager:
             else:
                 assert result_manager.status == expected_status
 
-    def test_add_test_result(self, test_result_factory: Callable[[int], TestResult]) -> None:
-        """Test ResultManager.add_test_result."""
+    def test_add(self, test_result_factory: Callable[[int], TestResult]) -> None:
+        """Test ResultManager.add."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
         assert result_manager.error_status is False
@@ -114,7 +114,7 @@ class TestResultManager:
         # Add one unset test
         unset_test = test_result_factory(0)
         unset_test.result = "unset"
-        result_manager.add_test_result(unset_test)
+        result_manager.add(unset_test)
         assert result_manager.status == "unset"
         assert result_manager.error_status is False
         assert len(result_manager) == 1
@@ -122,7 +122,7 @@ class TestResultManager:
         # Add one success test
         success_test = test_result_factory(1)
         success_test.result = "success"
-        result_manager.add_test_result(success_test)
+        result_manager.add(success_test)
         assert result_manager.status == "success"
         assert result_manager.error_status is False
         assert len(result_manager) == 2
@@ -130,7 +130,7 @@ class TestResultManager:
         # Add one error test
         error_test = test_result_factory(1)
         error_test.result = "error"
-        result_manager.add_test_result(error_test)
+        result_manager.add(error_test)
         assert result_manager.status == "success"
         assert result_manager.error_status is True
         assert len(result_manager) == 3
@@ -138,7 +138,7 @@ class TestResultManager:
         # Add one failure test
         failure_test = test_result_factory(1)
         failure_test.result = "failure"
-        result_manager.add_test_result(failure_test)
+        result_manager.add(failure_test)
         assert result_manager.status == "failure"
         assert result_manager.error_status is True
         assert len(result_manager) == 4
@@ -225,7 +225,8 @@ class TestResultManager:
             assert test.get("result") == "success"
 
     # TODO: implement missing functions
-    # get_result_by_test
-    # get_result_by_host
-    # get_testcases
-    # get_hosts
+    # filter
+    # filter_by_test
+    # filter_by_device
+    # get_tests
+    # get_devices
