@@ -9,7 +9,6 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar, cast
 
 from anta.models import AntaTest, logger
-from anta.platform_utils import find_series_by_platform
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
@@ -114,9 +113,11 @@ def platform_series_filter(series: list[str], action: Literal["run", "skip"]) ->
                 AntaTest.update_progress()
                 return anta_test.result
 
-            platform_series = find_series_by_platform(anta_test.device.hw_model)
+            if anta_test.device.hw_series is None:
+                msg = f"Platform series filter is ignored for test {anta_test.__class__.__name__} since the device's platform series is not set."
+                logger.warning(msg)
 
-            if (action == "run" and platform_series not in series) or (action == "skip" and platform_series in series):
+            elif (action == "run" and anta_test.device.hw_series not in series) or (action == "skip" and anta_test.device.hw_series in series):
                 anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
                 AntaTest.update_progress()
                 return anta_test.result

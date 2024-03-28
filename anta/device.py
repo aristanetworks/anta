@@ -19,6 +19,7 @@ from httpx import ConnectError, HTTPError
 
 from anta import __DEBUG__, GITHUB_SUGGESTION, aioeapi
 from anta.logger import exc_to_str
+from anta.platform_utils import find_series_by_modules, find_series_by_platform
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -29,7 +30,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class AntaDevice(ABC):
+class AntaDevice(ABC):  # pylint: disable=R0902
     """Abstract class representing a device in ANTA.
 
     An implementation of this class must override the abstract coroutines `_collect()` and
@@ -41,6 +42,7 @@ class AntaDevice(ABC):
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
+        hw_series: Hardware series of the device
         tags: List of tags for this device
         cache: In-memory cache from aiocache library for this device (None if cache is disabled)
         cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled
@@ -59,6 +61,7 @@ class AntaDevice(ABC):
         """
         self.name: str = name
         self.hw_model: str | None = None
+        self.hw_series: str | None = None
         self.tags: list[str] = tags if tags is not None else []
         # A device always has its own name as tag
         self.tags.append(self.name)
@@ -177,7 +180,7 @@ class AntaDevice(ABC):
         unsupported = any("not supported on this hardware platform" in e for e in command.errors)
         logger.debug(command)
         if unsupported:
-            logger.warning("Command '%s' is not supported on %s. %s", command.command, self.hw_model, GITHUB_SUGGESTION)
+            logger.debug("%s is not supported on %s", command.command, self.hw_model)
         return not unsupported
 
     @abstractmethod
@@ -207,7 +210,7 @@ class AntaDevice(ABC):
         raise NotImplementedError(msg)
 
 
-class AsyncEOSDevice(AntaDevice):
+class AsyncEOSDevice(AntaDevice):  # pylint: disable=R0902
     """Implementation of AntaDevice for EOS using aio-eapi.
 
     Attributes
@@ -344,6 +347,8 @@ class AsyncEOSDevice(AntaDevice):
             command.errors = e.errors
             if self.supports(command):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
+            else:
+                logger.warning("Command '%s' is not supported on %s. %s", command.command, self.hw_model, GITHUB_SUGGESTION)
         except (HTTPError, ConnectError) as e:
             command.errors = [str(e)]
             logger.error("Cannot connect to device %s", self.name)
@@ -359,25 +364,31 @@ class AsyncEOSDevice(AntaDevice):
         - is_online: When a device IP is reachable and a port can be open
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
+        - hw_series: The hardware series of the device
         """
         logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
-            show_version = "show version"
-            hw_model_key = "modelName"
             try:
-                response = await self._session.cli(command=show_version)
-            except aioeapi.EapiCommandError as e:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, e.errmsg)
+                show_version = await self._session.cli(command="show version")
+                if (series := find_series_by_platform(show_version["modelName"])) is None:
+                    logger.debug("Device %s is potentially a chassis, trying to get the platform series from the modules", self.name)
+                    show_module = await self._session.cli(command="show module")
+                    series = find_series_by_modules(show_module["modules"])
 
+            except (aioeapi.EapiCommandError, KeyError) as e:
+                error_msg = "Cannot parse 'show version' or 'show module'" if isinstance(e, KeyError) else e.errmsg
+                logger.warning("Cannot get hardware information from device %s: %s", self.name, error_msg)
             except (HTTPError, ConnectError) as e:
                 logger.warning("Cannot get hardware information from device %s: %s", self.name, exc_to_str(e))
 
             else:
-                if hw_model_key in response:
-                    self.hw_model = response[hw_model_key]
+                self.hw_model = show_version["modelName"]
+                if series is None:
+                    logger.warning("Cannot find the platform series of device %s (%s). %s", self.name, self.hw_model, GITHUB_SUGGESTION)
                 else:
-                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, show_version)
+                    self.hw_series = series
+                    logger.debug("Device platform series %s found for device %s", self.hw_series, self.name)
 
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)

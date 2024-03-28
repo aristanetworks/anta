@@ -8,89 +8,98 @@ from __future__ import annotations
 
 import logging
 import re
+from typing import Any
 
 from anta import GITHUB_SUGGESTION
 
 logger = logging.getLogger(__name__)
 
-SUPPORT_HARDWARE_COUNTERS_SERIES = ["7800R3", "7500R3", "7500R", "7280R3", "7280R2", "7280R"]
+SUPPORT_HARDWARE_COUNTERS_SERIES: list[str] = ["7800R3", "7500R3", "7500R", "7280R3", "7280R2", "7280R"]
 
-VIRTUAL_PLATFORMS = ["cEOSLab", "vEOS-lab", "cEOSCloudLab"]
+TRIDENT_SERIES: list[str] = ["7300X3", "7300X", "7358X4", "7050X4", "7050X3", "7050X", "7010TX", "720X", "720D", "722XPM", "710P"]
 
-HARDWARE_PLATFORMS = [
-    # Data center chassis families. These series can have the same families but support different modules; linecards, supervisors, fabrics, etc.
-    # The components of the system determine the series it belongs too. Chassis can also support linecards from different families.
+VIRTUAL_PLATFORMS: list[str] = ["cEOSLab", "vEOS-lab", "cEOSCloudLab"]
+
+HARDWARE_PLATFORMS: list[dict[str, Any]] = [
+    # Data center chassis/modular series. These series support different modules; linecards, supervisors, fabrics, etc.
+    # The modules of the system determine the series it belongs too, e.g. the 7800R3-36P-LC linecard belongs to the 7800R3 series.
     {
         "series": "7800R3",
         "families": [
-            "7816",
-            "7816B",
-            "7812",
-            "7808",
-            "7804",
+            "7800R3",
+            "7800R3K",
+            "7800R3A",
+            "7800R3AK",
         ],
     },
     {
         "series": "7500R3",
         "families": [
-            "7512N",
-            "7508",
-            "7508N",
-            "7504",
-            "7504N",
+            "7500R3",
+            "7500R3K",
         ],
     },
     {
         "series": "7500R",
         "families": [
-            "7516N",
-            "7512N",
-            "7508",
-            "7508N",
-            "7504",
-            "7504N",
+            "7500R",
+            "7500R2",
+            "7500R2A",
+            "7500R2AK",
+            "7500R2AM",
+            "7500R2M",
+            "7500RM",
+        ],
+    },
+    {
+        "series": "7500E",
+        "families": [
+            "7500E",
         ],
     },
     {
         "series": "7300X3",
         "families": [
-            "7308",
-            "7304",
+            "7300X3",
         ],
     },
     {
         "series": "7300X",
         "families": [
-            "7316",
-            "7308",
-            "7304",
+            "7300X",
         ],
     },
     {
         "series": "7388X5",
         "families": [
             "7388",
+            "7388X5",
         ],
     },
     {
         "series": "7368X4",
         "families": [
             "7368",
+            "7368X4",
         ],
     },
     {
         "series": "7358X4",
         "families": [
             "7358",
+            "7358X4",
         ],
     },
     {
         "series": "7280R3",
         "families": [
             "7289",
+            "7289R3A",
+            "7289R3AK",
+            "7289R3AM",
         ],
     },
-    # Data center fixed families.
+    # Data center fixed series.
     {
         "series": "7280R3",
         "families": [
@@ -103,14 +112,14 @@ HARDWARE_PLATFORMS = [
             "7280PR3",
             "7280PR3K",
             "7280DR3",
-            "7280DR3K"
+            "7280DR3K",
             "7280CR3MK",
             "7280CR3",
             "7280CR3K",
             "7280SR3A",
             "7280SR3AM",
             "7280SR3AK",
-            "7280SR3M"
+            "7280SR3M",
             "7280SR3MK",
             "7280SR3",
             "7280SR3K",
@@ -222,15 +231,15 @@ HARDWARE_PLATFORMS = [
             "7010TX",
         ],
     },
-    # Campus chassis families.
+    # Campus chassis/modular series.
     {
         "series": "750",
         "families": [
-            "755",
-            "758",
+            "750",
+            "750X",
         ],
     },
-    # Campus fixed families.
+    # Campus fixed series.
     {
         "series": "720X",
         "families": [
@@ -259,6 +268,7 @@ HARDWARE_PLATFORMS = [
     },
 ]
 
+
 def check_if_virtual_platform(platform: str) -> bool:
     """Check if the platform is a virtual platform.
 
@@ -282,13 +292,38 @@ def check_if_virtual_platform(platform: str) -> bool:
     """
     return platform in VIRTUAL_PLATFORMS
 
+
+def find_series_by_modules(modules: dict[str, dict[str, Any]]) -> str | None:
+    """TODO: Document this function."""
+    regex_pattern = r"\b(\d{3,}\w*)\b"
+    for module_data in modules.values():
+        module_name = str(module_data.get("modelName"))
+
+        # We extract the family from the module name, e.g. CCS-750X-48THP-LC -> 750X
+        match = re.search(regex_pattern, module_name)
+        if match:
+            platform_family = match.group(1)
+        else:
+            logger.warning("Module %s does not match the expected Arista product name pattern. %s", module_name, GITHUB_SUGGESTION)
+            continue
+
+        for series in HARDWARE_PLATFORMS:
+            for family in series["families"]:
+                if family == platform_family:
+                    return series["series"]
+
+        # If no series is found, we need to add a new family to the HARDWARE_PLATFORMS dictionary
+        logger.warning("Module %s series was not found in the ANTA hardware platforms database. %s", module_name, GITHUB_SUGGESTION)
+
+    return None
+
+
 def find_series_by_platform(platform: str) -> str | None:
-    """Get the series of a platform based on the HARDWARE_PLATFORMS dictionary.
+    """Get the series of a platform based on the HARDWARE_PLATFORMS dictionary of this module.
 
-    The function extract the family from the platform name. Some chassis and modular systems do not have the DCS/CCS prefix, so we need to handle this case.
+    The function extract the family from the platform name and then searches for the series.
 
-    !!! warning
-        The virtual platforms are not supported by this function. You should use the `check_if_virtual_platform` function to check if the platform is virtual.
+    If the platform is a virtual platform, the function will return the platform name as is.
 
     Arguments:
     ----------
@@ -302,15 +337,18 @@ def find_series_by_platform(platform: str) -> str | None:
     --------
     ```python
     >>> from anta.platform_utils import find_series_by_platform
-    >>> find_series_by_platform(platform="7368-F")
-    '7368X4'
-    >>> find_series_by_platform(platform="CCS-755-CH")
-    '750'
     >>> find_series_by_platform(platform="DCS-7280CR3A-72-F")
     '7280R3'
+    >>> find_series_by_platform(platform="cEOSLab")
+    'cEOSLab'
     ```
     """
-    regex_pattern = r"(?:DCS|CCS)-(.+?)-" if platform.startswith(("DCS-", "CCS-")) else r"(.+?)(?=-)"
+    # If the platform is a virtual platform, we return the platform name as is.
+    if check_if_virtual_platform(platform):
+        return platform
+
+    # We extract the family from the platform name, e.g. DCS-7280CR3A-72-F -> 7280CR3A
+    regex_pattern = r"\b(\d{3,}\w*)\b"
     match = re.search(regex_pattern, platform)
 
     if match:
@@ -320,11 +358,10 @@ def find_series_by_platform(platform: str) -> str | None:
         return None
 
     for series in HARDWARE_PLATFORMS:
-        interesting_list = series.get("families", series.get("families"))
-        for item in interesting_list:
-            if item == platform_family:
+        for family in series["families"]:
+            if family == platform_family:
                 return series["series"]
 
-    # If no match is found, we need to add a new family to the HARDWARE_PLATFORMS dictionary
-    logger.warning("Platform %s series was not found in the ANTA Arista platforms database. %s", platform, GITHUB_SUGGESTION)
+    # If no series is found, we need to add a new family to the HARDWARE_PLATFORMS dictionary
+    logger.warning("Platform %s series was not found in the ANTA hardware platforms database. %s", platform, GITHUB_SUGGESTION)
     return None

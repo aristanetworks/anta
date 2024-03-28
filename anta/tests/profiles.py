@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.decorators import platform_filter
+from anta.decorators import platform_filter, platform_series_filter
 from anta.models import AntaCommand, AntaTest
-from anta.platform_utils import VIRTUAL_PLATFORMS
+from anta.platform_utils import TRIDENT_SERIES, VIRTUAL_PLATFORMS
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
     """Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
+
+    The test will run on Trident platform series only.
 
     Expected Results
     ----------------
@@ -45,7 +47,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
         mode: Literal[0, 1, 2, 3, 4, "flexible"]
         """Expected UFT mode. Valid values are 0, 1, 2, 3, 4, or "flexible"."""
 
-    @platform_filter(platforms=VIRTUAL_PLATFORMS, action="skip")
+    @platform_series_filter(series=TRIDENT_SERIES, action="run")
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyUnifiedForwardingTableMode."""
