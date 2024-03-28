@@ -277,8 +277,8 @@ class TestAntaCatalog:
             catalog.tests = catalog_data["tests"]
         assert catalog_data["error"] in str(exec_info)
 
-    def test_get_tests_by_tags(self) -> None:
-        """Test AntaCatalog.get_tests_by_tags()."""
+    def test_get_tests_by_tag(self) -> None:
+        """Test AntaCatalog.get_tests_by_tag()."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
+        tests: list[AntaTestDefinition] = catalog.get_tests_by_tag(tags=["leaf"])
         assert len(tests) == 2

@@ -238,6 +238,11 @@ class AntaInventory(dict[str, AntaDevice]):
 
         return inventory
 
+    @property
+    def devices(self) -> list[AntaDevice]:
+        """List of AntaDevice in this inventory."""
+        return list(self.values())
+
     ###########################################################################
     # Public methods
     ###########################################################################
@@ -246,32 +251,31 @@ class AntaInventory(dict[str, AntaDevice]):
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None, filter_devices: list[str] | None = None) -> AntaInventory:
+    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None, devices: list[str] | None = None) -> AntaInventory:
         """Return a filtered inventory.
 
         Args:
         ----
-            established_only: Whether or not to include only established devices. Default False.
+            established_only: Whether or not to include only established devices.
             tags: List of tags to filter devices.
-            filter_devices: List of device name to filter. Default to None
+            devices: List of names to filer devices.
 
         Returns
         -------
-            AntaInventory: An inventory with filtered AntaDevice objects.
-
+            An inventory with filtered AntaDevice objects.
         """
 
         def _filter_devices(device: AntaDevice) -> bool:
-            """Select the devices based on the input tags and the requirement for an established connection."""
+            """Select the devices based on the inputs `tags`, `devices` and `established_only`."""
             if tags is not None and all(tag not in tags for tag in device.tags):
                 return False
-            if filter_devices is None or device.name in filter_devices:
+            if devices is None or len(devices) == 0 or device.name in devices:
                 return bool(not established_only or device.established)
             return False
 
-        devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
+        filtered_devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
         result = AntaInventory()
-        for device in devices:
+        for device in filtered_devices:
             result.add_device(device)
         return result
 

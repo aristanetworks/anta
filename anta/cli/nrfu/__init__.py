@@ -73,15 +73,17 @@ class IgnoreRequiredWithHelp(AliasedGroup):
 @click.option(
     "--device",
     "-d",
-    help="Run tests on a specific device",
+    help="Run tests on a specific device. Can be provided multiple times.",
     type=str,
+    multiple=True,
     required=False,
     default=None,
 )
 @click.option(
     "--test",
-    help="Run a specific test",
+    help="Run a specific test. Can be provided multiple times.",
     type=str,
+    multiple=True,
     required=False,
     default=None,
 )
@@ -91,8 +93,8 @@ def nrfu(
     inventory: AntaInventory,
     tags: list[str] | None,
     catalog: AntaCatalog,
-    device: str | None,
-    test: str | None,
+    device: list[str] | None,
+    test: list[str] | None,
     *,
     ignore_status: bool,
     ignore_error: bool,
@@ -106,11 +108,9 @@ def nrfu(
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
-    ctx.obj["device"] = device
-    ctx.obj["test"] = test
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, device_name=device, test_name=test))
+        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=device, tests=test))
     # Invoke `anta nrfu table` if no command is passed
     if ctx.invoked_subcommand is None:
         ctx.invoke(commands.table)

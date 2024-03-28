@@ -101,7 +101,7 @@ async def test_clear_counters_utils(
         await clear_counters_utils(test_inventory, tags=tags)
 
     mocked_connect_inventory.assert_awaited_once()
-    devices_established = list(test_inventory.get_inventory(established_only=True, tags=tags).values())
+    devices_established = test_inventory.get_inventory(established_only=True, tags=tags).devices
     if devices_established:
         # Building the list of calls
         calls = []

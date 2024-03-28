@@ -31,11 +31,6 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
     Args:
     ----
         devices: List of devices in the inventory.
-
-    Returns
-    -------
-        None: Log the cache statistics for each device in the inventory.
-
     """
     for device in devices:
         if device.cache_statistics is not None:
@@ -53,8 +48,8 @@ async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
-    device_name: str | None = None,
-    test_name: str | None = None,
+    devices: list[str] | None = None,
+    tests: list[str] | None = None,
     tags: list[str] | None = None,
     *,
     established_only: bool = True,
@@ -64,6 +59,7 @@ async def main(  # noqa: PLR0913
     """Run ANTA.
 
     Use this as an entrypoint to the test framwork in your script.
+    ResultManager object gets updated with the test results.
 
     Args:
     ----
@@ -72,13 +68,8 @@ async def main(  # noqa: PLR0913
         catalog: AntaCatalog object that includes the list of tests.
         tags: List of tags to filter devices from the inventory. Defaults to None.
         established_only: Include only established device(s). Defaults to True.
-        device_name: device to run tests. Default to None
-        test_name: test to run against devices. Default to None
-
-    Returns
-    -------
-        any: ResultManager object gets updated with the test results.
-
+        devices: devices on which to run tests. None means all devices.
+        tests: tests to run against devices. None means all tests.
     """
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
@@ -86,19 +77,18 @@ async def main(  # noqa: PLR0913
     if len(inventory) == 0:
         logger.info("The inventory is empty, exiting")
         return
-    await inventory.connect_inventory()
-    targeted_devices: list[str] | None = [device_name] if device_name is not None else None
-    targeted_tests: list[str] | None = [test_name] if test_name is not None else None
 
-    devices: list[AntaDevice] = list(
-        inventory.get_inventory(
-            established_only=established_only,
-            tags=tags,
-            filter_devices=targeted_devices,
-        ).values()
+    # Filter the inventory based on tags and devices parameters
+    inventory = inventory.get_inventory(
+        tags=tags,
+        devices=devices,
     )
+    await inventory.connect_inventory()
 
-    if not devices:
+    # Remove devices that are unreachable
+    inventory = inventory.get_inventory(established_only=established_only)
+
+    if not inventory.devices:
         msg = (
             f"No device in the established state '{established_only}' {f'matching the tags {tags} ' if tags else ''}was found. "
             "There is no device to run tests against, exiting"
@@ -106,30 +96,32 @@ async def main(  # noqa: PLR0913
         logger.info(msg)
         return
     coros = []
-    # Using a set to avoid inserting duplicate tests
-    tests_set: set[AntaTestRunner] = set()
 
-    for device in devices:
+    # Select the tests from the catalog
+    if tests:
+        catalog = AntaCatalog(catalog.get_tests_by_name(tests))
+
+    # Using a set to avoid inserting duplicate tests
+    selected_tests: set[AntaTestRunner] = set()
+
+    # Create AntaTestRunner tuples from the tags
+    for device in inventory.devices:
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            tests_set.update((t, device) for t in catalog.get_tests_by_tags(tags) if device_name is None or t.test.name == device_name)
+            selected_tests.update((test, device) for test in catalog.get_tests_by_tag(tags))
         else:
-            # If there is no CLI tags, execute all tests without filters
-            tests_set.update(
-                (t, device) for t in catalog.tests if (t.inputs.filters is None or t.inputs.filters.tags is None) and (test_name is None or t.test.name == test_name)
-            )
+            # If there is no CLI tags, execute all tests that do not have any filters
+            selected_tests.update((t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None)
 
             # Then add the tests with matching tags from device tags
-            tests_set.update((t, device) for t in catalog.get_tests(test_names=targeted_tests))
+            selected_tests.update((t, device) for t in catalog.get_tests_by_tag(device.tags))
 
-    tests: list[AntaTestRunner] = list(tests_set)
-
-    if not tests:
+    if not selected_tests:
         msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run on current inventory, exiting"
         logger.info(msg)
         return
 
-    for test_definition, device in tests:
+    for test_definition, device in selected_tests:
         try:
             test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
 
@@ -154,4 +146,4 @@ async def main(  # noqa: PLR0913
     for r in test_results:
         manager.add_test_result(r)
 
-    log_cache_statistics(devices)
+    log_cache_statistics(inventory.devices)

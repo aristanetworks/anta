@@ -336,11 +336,20 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    def get_tests_by_tags(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
+    def get_tests_by_tag(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
         """Return all the tests that have matching tags in their input filters.
 
-        If strict=True, returns only tests that match all the tags provided as input.
+        If strict=True, return only tests that match all the tags provided as input.
         If strict=False, return all the tests that match at least one tag provided as input.
+
+        Args:
+        ----
+            tags: Names of the tests to get.
+            strict: Specify if the returned tests must match all the tags provided
+
+        Returns
+        -------
+            List of AntaTestDefinition that match the tags
         """
         result: list[AntaTestDefinition] = []
         for test in self.tests:
@@ -352,10 +361,15 @@ class AntaCatalog:
                     result.append(test)
         return result
 
-    def get_tests(self, test_names: list[str] | None = None) -> list[AntaTestDefinition]:
+    def get_tests_by_name(self, names: list[str]) -> list[AntaTestDefinition]:
         """Return all the tests that have matching a list of testsnames.
 
-        testnames: List of tests to get.
+        Args:
+        ----
+            names: Names of the tests to get.
+
+        Returns
+        -------
+            List of AntaTestDefinition that match the names
         """
-        result: list[AntaTestDefinition] = [test for test in self.tests if test_names is None or test.test.name in test_names]
-        return result
+        return [test for test in self.tests if test.test.name in names]

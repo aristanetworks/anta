@@ -39,7 +39,7 @@ class ResultManager:
 
         Run tests for all connected devices:
 
-            for device in inventory_anta.get_inventory():
+            for device in inventory_anta.get_inventory().devices:
                 manager.add_test_result(
                     VerifyNTP(device=device).test()
                 )
