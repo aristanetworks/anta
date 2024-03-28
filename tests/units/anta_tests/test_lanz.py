@@ -1,7 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Data for testing anta.tests.configuration"""
+"""Data for testing anta.tests.lanz."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -15,7 +16,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyLANZ,
         "eos_data": [{"lanzEnabled": True}],
         "inputs": None,
-        "expected": {"result": "success", "messages": ["LANZ is enabled"]},
+        "expected": {"result": "success"},
     },
     {
         "name": "failure",

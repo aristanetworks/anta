@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.profiles.py
-"""
+"""Tests for anta.tests.profiles.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -30,7 +29,7 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyTcamProfile,
         "eos_data": [
-            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "test", "mode": "tcam"}}, "lastProgrammingStatus": {}}
+            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "test", "mode": "tcam"}}, "lastProgrammingStatus": {}},
         ],
         "inputs": {"profile": "test"},
         "expected": {"result": "success"},
@@ -39,7 +38,7 @@ DATA: list[dict[str, Any]] = [
         "name": "failure",
         "test": VerifyTcamProfile,
         "eos_data": [
-            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}}
+            {"pmfProfiles": {"FixedSystem": {"config": "test", "configType": "System Profile", "status": "default", "mode": "tcam"}}, "lastProgrammingStatus": {}},
         ],
         "inputs": {"profile": "test"},
         "expected": {"result": "failure", "messages": ["Incorrect profile running on device: default"]},

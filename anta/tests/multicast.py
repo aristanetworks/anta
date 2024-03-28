@@ -1,36 +1,54 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to multicast
-"""
+"""Module related to multicast and IGMP tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep Dict for pydantic in python 3.8
-from typing import Dict
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyIGMPSnoopingVlans(AntaTest):
-    """
-    Verifies the IGMP snooping configuration for some VLANs.
+    """Verifies the IGMP snooping status for the provided VLANs.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the IGMP snooping status matches the expected status for the provided VLANs.
+    * Failure: The test will fail if the IGMP snooping status does not match the expected status for the provided VLANs.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.multicast:
+      - VerifyIGMPSnoopingVlans:
+          vlans:
+            10: False
+            12: False
+    ```
     """
 
     name = "VerifyIGMPSnoopingVlans"
-    description = "Verifies the IGMP snooping configuration for some VLANs."
-    categories = ["multicast", "igmp"]
-    commands = [AntaCommand(command="show ip igmp snooping")]
+    description = "Verifies the IGMP snooping status for the provided VLANs."
+    categories: ClassVar[list[str]] = ["multicast"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        vlans: Dict[Vlan, bool]
-        """Dictionary of VLANs with associated IGMP configuration status (True=enabled, False=disabled)"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIGMPSnoopingVlans test."""
+
+        vlans: dict[Vlan, bool]
+        """Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIGMPSnoopingVlans."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         for vlan, enabled in self.inputs.vlans.items():
@@ -44,21 +62,36 @@ class VerifyIGMPSnoopingVlans(AntaTest):
 
 
 class VerifyIGMPSnoopingGlobal(AntaTest):
-    """
-    Verifies the IGMP snooping global configuration.
+    """Verifies the IGMP snooping global status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the IGMP snooping global status matches the expected status.
+    * Failure: The test will fail if the IGMP snooping global status does not match the expected status.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.multicast:
+      - VerifyIGMPSnoopingGlobal:
+          enabled: True
+    ```
     """
 
     name = "VerifyIGMPSnoopingGlobal"
     description = "Verifies the IGMP snooping global configuration."
-    categories = ["multicast", "igmp"]
-    commands = [AntaCommand(command="show ip igmp snooping")]
+    categories: ClassVar[list[str]] = ["multicast"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIGMPSnoopingGlobal test."""
+
         enabled: bool
-        """Expected global IGMP snooping configuration (True=enabled, False=disabled)"""
+        """Whether global IGMP snopping must be enabled (True) or disabled (False)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIGMPSnoopingGlobal."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         igmp_state = command_output["igmpSnoopingState"]

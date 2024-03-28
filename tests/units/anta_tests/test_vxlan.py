@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.vxlan.py
-"""
+"""Tests for anta.tests.vxlan.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -107,7 +106,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "warnings": [],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -172,7 +171,7 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "warnings": ["Your configuration contains warnings. This does not mean misconfigurations. But you may wish to re-check your configurations."],
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -184,7 +183,7 @@ DATA: list[dict[str, Any]] = [
                 "'No VLAN-VNI mapping in Vxlan1'}, {'name': 'Flood List', 'checkPass': False, 'hasWarning': True, 'detail': "
                 "'No VXLAN VLANs in Vxlan1'}, {'name': 'Routing', 'checkPass': True, 'hasWarning': False, 'detail': ''}, {'name': "
                 "'VNI VRF ACL', 'checkPass': True, 'hasWarning': False, 'detail': ''}, {'name': 'VRF-VNI Dynamic VLAN', 'checkPass': True, "
-                "'hasWarning': False, 'detail': ''}, {'name': 'Decap VRF-VNI Map', 'checkPass': True, 'hasWarning': False, 'detail': ''}]}}"
+                "'hasWarning': False, 'detail': ''}, {'name': 'Decap VRF-VNI Map', 'checkPass': True, 'hasWarning': False, 'detail': ''}]}}",
             ],
         },
     },
@@ -203,12 +202,12 @@ DATA: list[dict[str, Any]] = [
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
         "expected": {"result": "success"},
@@ -221,12 +220,12 @@ DATA: list[dict[str, Any]] = [
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {"result": "failure", "messages": ["The following VNI(s) have no binding: ['10010']"]},
@@ -239,12 +238,12 @@ DATA: list[dict[str, Any]] = [
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
         "expected": {"result": "failure", "messages": ["The following VNI(s) have the wrong VLAN binding: [{'10020': 30}]"]},
@@ -257,12 +256,12 @@ DATA: list[dict[str, Any]] = [
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {

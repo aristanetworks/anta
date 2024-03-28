@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.security.py
-"""
+"""Tests for anta.tests.security.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -109,7 +108,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -126,7 +125,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["eAPI HTTP server is enabled globally"]},
@@ -143,7 +142,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "API_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "success"},
@@ -159,7 +158,7 @@ DATA: list[dict[str, Any]] = [
                 "httpsServer": {"configured": True, "running": True, "port": 443},
                 "unixSocketServer": {"configured": False, "running": False},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is not configured"]},
@@ -176,7 +175,7 @@ DATA: list[dict[str, Any]] = [
                 "unixSocketServer": {"configured": False, "running": False},
                 "sslProfile": {"name": "Wrong_SSL_Profile", "configured": True, "state": "valid"},
                 "tlsProtocol": ["1.2"],
-            }
+            },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
         "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is misconfigured or invalid"]},
@@ -922,7 +921,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyIPSecConnHealth,
         "eos_data": [{"connections": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["IP security connection are not configured."]},
+        "expected": {"result": "failure", "messages": ["IPv4 security connection are not configured."]},
     },
     {
         "name": "failure-not-established",
@@ -943,7 +942,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following IP security connections are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0."
+                "Following IPv4 security connections are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0."
             ],
         },
     },
@@ -963,7 +962,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "ip_sec_conn": [
+            "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
                     "vrf": "default",
@@ -992,7 +991,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "ip_sec_conn": [
+            "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
                     "vrf": "default",
@@ -1018,7 +1017,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ip_sec_conn": [
+            "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
                     "vrf": "default",
@@ -1033,7 +1032,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["IP security connections are not configured for peer `10.255.0.1`."]},
+        "expected": {"result": "failure", "messages": ["IPv4 security connections are not configured for peer `10.255.0.1`."]},
     },
     {
         "name": "failure-not-established",
@@ -1069,7 +1068,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ip_sec_conn": [
+            "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
                     "vrf": "default",
@@ -1087,12 +1086,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IP security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
+                "Expected state of IPv4 security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
                 "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IP security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
+                "Expected state of IPv4 security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
                 "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IP security connection `100.64.2.2-100.64.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
-                "Expected state of IP security connection `172.18.2.2-172.18.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `100.64.2.2-100.64.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `172.18.2.2-172.18.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
             ],
         },
     },
@@ -1130,7 +1129,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "ip_sec_conn": [
+            "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
                     "vrf": "default",
@@ -1148,12 +1147,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IP security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
+                "Expected state of IPv4 security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
                 "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IP security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
+                "Expected state of IPv4 security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
                 "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "IP security connection `100.64.4.2-100.64.1.2` for peer `10.255.0.2` is not found.",
-                "IP security connection `172.18.4.2-172.18.1.2` for peer `10.255.0.2` is not found.",
+                "IPv4 security connection `100.64.4.2-100.64.1.2` for peer `10.255.0.2` is not found.",
+                "IPv4 security connection `172.18.4.2-172.18.1.2` for peer `10.255.0.2` is not found.",
             ],
         },
     },

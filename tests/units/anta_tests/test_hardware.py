@@ -1,7 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.hardware"""
+"""Test inputs for anta.tests.hardware."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -26,8 +27,8 @@ DATA: list[dict[str, Any]] = [
                 "xcvrSlots": {
                     "1": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501340", "hardwareRev": "21"},
                     "2": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501337", "hardwareRev": "21"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"manufacturers": ["Arista Networks"]},
         "expected": {"result": "success"},
@@ -40,8 +41,8 @@ DATA: list[dict[str, Any]] = [
                 "xcvrSlots": {
                     "1": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501340", "hardwareRev": "21"},
                     "2": {"mfgName": "Arista Networks", "modelName": "QSFP-100G-DR", "serialNum": "XKT203501337", "hardwareRev": "21"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"manufacturers": ["Arista"]},
         "expected": {"result": "failure", "messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"]},
@@ -57,7 +58,7 @@ DATA: list[dict[str, Any]] = [
                 "shutdownOnOverheat": "True",
                 "systemStatus": "temperatureOk",
                 "recoveryModeOnOverheat": "recoveryModeNA",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -73,7 +74,7 @@ DATA: list[dict[str, Any]] = [
                 "shutdownOnOverheat": "True",
                 "systemStatus": "temperatureKO",
                 "recoveryModeOnOverheat": "recoveryModeNA",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"]},
@@ -100,10 +101,10 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    }
+                    },
                 ],
                 "cardSlots": [],
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -130,10 +131,10 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    }
+                    },
                 ],
                 "cardSlots": [],
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -141,7 +142,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
                 "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ko', 'alertCount': 0}}"
+                "{'hwStatus': 'ko', 'alertCount': 0}}",
             ],
         },
     },
@@ -167,10 +168,10 @@ DATA: list[dict[str, Any]] = [
                         "pidDriverCount": 0,
                         "isPidDriver": False,
                         "name": "DomTemperatureSensor54",
-                    }
+                    },
                 ],
                 "cardSlots": [],
-            }
+            },
         ],
         "inputs": None,
         "expected": {
@@ -178,7 +179,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
                 "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ok', 'alertCount': 1}}"
+                "{'hwStatus': 'ok', 'alertCount': 1}}",
             ],
         },
     },
@@ -200,7 +201,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -223,7 +224,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingKo",
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device system cooling is not OK: 'coolingKo'"]},
@@ -254,7 +255,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -272,7 +273,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -292,7 +293,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "1",
@@ -310,7 +311,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "2",
@@ -328,7 +329,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "3",
@@ -346,7 +347,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "4",
@@ -356,7 +357,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            }
+            },
         ],
         "inputs": {"states": ["ok"]},
         "expected": {"result": "success"},
@@ -387,7 +388,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -405,7 +406,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -425,7 +426,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "1",
@@ -443,7 +444,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "2",
@@ -461,7 +462,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "3",
@@ -479,7 +480,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "4",
@@ -489,7 +490,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "coolingOk",
-            }
+            },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
         "expected": {"result": "success"},
@@ -520,7 +521,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -538,7 +539,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -558,7 +559,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "1",
@@ -576,7 +577,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "2",
@@ -594,7 +595,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "3",
@@ -612,7 +613,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "4",
@@ -622,7 +623,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "CoolingKo",
-            }
+            },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
         "expected": {"result": "failure", "messages": ["Fan 1/1 on Fan Tray 1 is: 'down'"]},
@@ -653,7 +654,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply1",
@@ -671,7 +672,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": True,
                                 "speedStable": True,
                                 "label": "PowerSupply2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "PowerSupply2",
@@ -691,7 +692,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "1/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "1",
@@ -709,7 +710,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "2/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "2",
@@ -727,7 +728,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "3/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "3",
@@ -745,7 +746,7 @@ DATA: list[dict[str, Any]] = [
                                 "speedHwOverride": False,
                                 "speedStable": True,
                                 "label": "4/1",
-                            }
+                            },
                         ],
                         "speed": 30,
                         "label": "4",
@@ -755,7 +756,7 @@ DATA: list[dict[str, Any]] = [
                 "currentZones": 1,
                 "configuredZones": 0,
                 "systemStatus": "CoolingKo",
-            }
+            },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
         "expected": {"result": "failure", "messages": ["Fan PowerSupply1/1 on PowerSupply PowerSupply1 is: 'down'"]},
@@ -801,8 +802,8 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"states": ["ok"]},
         "expected": {"result": "success"},
@@ -848,8 +849,8 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
         "expected": {"result": "success"},
@@ -895,8 +896,8 @@ DATA: list[dict[str, Any]] = [
                         "outputCurrent": 9.828125,
                         "managed": True,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"states": ["ok"]},
         "expected": {"result": "failure", "messages": ["The following power supplies status are not in the accepted states list: {'1': {'state': 'powerLoss'}}"]},

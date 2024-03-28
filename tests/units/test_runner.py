@@ -1,13 +1,11 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-test anta.runner.py
-"""
+"""test anta.runner.py."""
+
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -19,16 +17,12 @@ from anta.runner import main
 
 from .test_models import FakeTest
 
-if TYPE_CHECKING:
-    from pytest import LogCaptureFixture
-
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
-@pytest.mark.asyncio
-async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """
-    Test that when the list of tests is empty, a log is raised
+@pytest.mark.asyncio()
+async def test_runner_empty_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test that when the list of tests is empty, a log is raised.
 
     caplog is the pytest fixture to capture logs
     test_inventory is a fixture that gives a default inventory for tests
@@ -42,10 +36,9 @@ async def test_runner_empty_tests(caplog: LogCaptureFixture, test_inventory: Ant
     assert "The list of tests is empty, exiting" in caplog.records[0].message
 
 
-@pytest.mark.asyncio
-async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
-    """
-    Test that when the Inventory is empty, a log is raised
+@pytest.mark.asyncio()
+async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
+    """Test that when the Inventory is empty, a log is raised.
 
     caplog is the pytest fixture to capture logs
     """
@@ -58,10 +51,9 @@ async def test_runner_empty_inventory(caplog: LogCaptureFixture) -> None:
     assert "The inventory is empty, exiting" in caplog.records[0].message
 
 
-@pytest.mark.asyncio
-async def test_runner_no_selected_device(caplog: LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """
-    Test that when the list of established device
+@pytest.mark.asyncio()
+async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test that when the list of established device.
 
     caplog is the pytest fixture to capture logs
     test_inventory is a fixture that gives a default inventory for tests

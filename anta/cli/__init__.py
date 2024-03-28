@@ -1,10 +1,8 @@
-#!/usr/bin/env python
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-ANTA CLI
-"""
+"""ANTA CLI."""
+
 from __future__ import annotations
 
 import logging
@@ -16,7 +14,7 @@ import click
 from anta import GITHUB_SUGGESTION, __version__
 from anta.cli.check import check as check_command
 from anta.cli.debug import debug as debug_command
-from anta.cli.exec import exec as exec_command
+from anta.cli.exec import _exec as exec_command
 from anta.cli.get import get as get_command
 from anta.cli.nrfu import nrfu as nrfu_command
 from anta.cli.utils import AliasedGroup, ExitCode
@@ -47,7 +45,7 @@ logger = logging.getLogger(__name__)
     ),
 )
 def anta(ctx: click.Context, log_level: LogLevel, log_file: pathlib.Path) -> None:
-    """Arista Network Test Automation (ANTA) CLI"""
+    """Arista Network Test Automation (ANTA) CLI."""
     ctx.ensure_object(dict)
     setup_logging(log_level, log_file)
 
@@ -60,7 +58,7 @@ anta.add_command(debug_command)
 
 
 def cli() -> None:
-    """Entrypoint for pyproject.toml"""
+    """Entrypoint for pyproject.toml."""
     try:
         anta(obj={}, auto_envvar_prefix="ANTA")
     except Exception as e:  # pylint: disable=broad-exception-caught

@@ -3,9 +3,10 @@
 # that can be found in the LICENSE file.
 
 """Get one dictionary from a list of dictionaries by matching the given key and value."""
+
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 # pylint: disable=too-many-arguments
@@ -13,11 +14,12 @@ def get_item(
     list_of_dicts: list[dict[Any, Any]],
     key: Any,
     value: Any,
-    default: Optional[Any] = None,
+    default: Any | None = None,
+    var_name: str | None = None,
+    custom_error_msg: str | None = None,
+    *,
     required: bool = False,
     case_sensitive: bool = False,
-    var_name: Optional[str] = None,
-    custom_error_msg: Optional[str] = None,
 ) -> Any:
     """Get one dictionary from a list of dictionaries by matching the given key and value.
 
@@ -53,6 +55,7 @@ def get_item(
     ------
     ValueError
         If the key and value is not found and "required" == True
+
     """
     if var_name is None:
         var_name = key

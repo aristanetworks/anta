@@ -1,20 +1,24 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the EOS various security settings
-"""
+"""Module related to the EOS various security tests."""
+
 from __future__ import annotations
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from datetime import datetime
+from datetime import datetime, timezone
 from ipaddress import IPv4Address
-from typing import List, Optional, Union
+from typing import ClassVar
 
-from pydantic import BaseModel, Field, conint, model_validator
+from pydantic import BaseModel, Field, model_validator
 
-from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, RsaKeySize
+from anta.custom_types import (
+    EcdsaKeySize,
+    EncryptionAlgorithm,
+    PositiveInteger,
+    RsaKeySize,
+)
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
@@ -22,24 +26,32 @@ from anta.tools.utils import get_failed_logs
 
 
 class VerifySSHStatus(AntaTest):
-    """
-    Verifies if the SSHD agent is disabled in the default VRF.
+    """Verifies if the SSHD agent is disabled in the default VRF.
 
-    Expected Results:
-        * success: The test will pass if the SSHD agent is disabled in the default VRF.
-        * failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent is disabled in the default VRF.
+    * Failure: The test will fail if the SSHD agent is NOT disabled in the default VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHStatus:
+    ```
     """
 
     name = "VerifySSHStatus"
     description = "Verifies if the SSHD agent is disabled in the default VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh", ofmt="text")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh", ofmt="text")]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySSHStatus."""
         command_output = self.instance_commands[0].text_output
 
-        line = [line for line in command_output.split("\n") if line.startswith("SSHD status")][0]
+        line = next(line for line in command_output.split("\n") if line.startswith("SSHD status"))
         status = line.split("is ")[1]
 
         if status == "disabled":
@@ -49,97 +61,127 @@ class VerifySSHStatus(AntaTest):
 
 
 class VerifySSHIPv4Acl(AntaTest):
-    """
-    Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
-        * failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent has the provided number of IPv4 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SSHD agent has not the right number of IPv4 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHIPv4Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh ip access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ip access-list summary", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
-        """The number of expected IPv4 ACL(s)"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifySSHIPv4Acl test."""
+
+        number: PositiveInteger
+        """The number of expected IPv4 ACL(s)."""
         vrf: str = "default"
-        """The name of the VRF in which to check for the SSHD agent"""
+        """The name of the VRF in which to check for the SSHD agent. Defaults to `default` VRF."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySSHIPv4Acl."""
         command_output = self.instance_commands[0].json_output
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
-        not_configured_acl_list = []
         if ipv4_acl_number != self.inputs.number:
             self.result.is_failure(f"Expected {self.inputs.number} SSH IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
             return
-        for ipv4_acl in ipv4_acl_list:
-            if self.inputs.vrf not in ipv4_acl["configuredVrfs"] or self.inputs.vrf not in ipv4_acl["activeVrfs"]:
-                not_configured_acl_list.append(ipv4_acl["name"])
-        if not_configured_acl_list:
-            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
+
+        not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
+
+        if not_configured_acl:
+            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
         else:
             self.result.is_success()
 
 
 class VerifySSHIPv6Acl(AntaTest):
-    """
-    Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
-        * failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SSHD agent has the provided number of IPv6 ACL(s) in the specified VRF.
+    * Failure: The test will fail if the SSHD agent has not the right number of IPv6 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySSHIPv6Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management ssh ipv6 access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ipv6 access-list summary", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
-        """The number of expected IPv6 ACL(s)"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifySSHIPv6Acl test."""
+
+        number: PositiveInteger
+        """The number of expected IPv6 ACL(s)."""
         vrf: str = "default"
-        """The name of the VRF in which to check for the SSHD agent"""
+        """The name of the VRF in which to check for the SSHD agent. Defaults to `default` VRF."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySSHIPv6Acl."""
         command_output = self.instance_commands[0].json_output
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
-        not_configured_acl_list = []
         if ipv6_acl_number != self.inputs.number:
             self.result.is_failure(f"Expected {self.inputs.number} SSH IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
             return
-        for ipv6_acl in ipv6_acl_list:
-            if self.inputs.vrf not in ipv6_acl["configuredVrfs"] or self.inputs.vrf not in ipv6_acl["activeVrfs"]:
-                not_configured_acl_list.append(ipv6_acl["name"])
-        if not_configured_acl_list:
-            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
+
+        not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
+
+        if not_configured_acl:
+            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
         else:
             self.result.is_success()
 
 
 class VerifyTelnetStatus(AntaTest):
-    """
-    Verifies if Telnet is disabled in the default VRF.
+    """Verifies if Telnet is disabled in the default VRF.
 
-    Expected Results:
-        * success: The test will pass if Telnet is disabled in the default VRF.
-        * failure: The test will fail if Telnet is NOT disabled in the default VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if Telnet is disabled in the default VRF.
+    * Failure: The test will fail if Telnet is NOT disabled in the default VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyTelnetStatus:
+    ```
     """
 
     name = "VerifyTelnetStatus"
     description = "Verifies if Telnet is disabled in the default VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management telnet")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management telnet", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTelnetStatus."""
         command_output = self.instance_commands[0].json_output
         if command_output["serverState"] == "disabled":
             self.result.is_success()
@@ -148,21 +190,29 @@ class VerifyTelnetStatus(AntaTest):
 
 
 class VerifyAPIHttpStatus(AntaTest):
-    """
-    Verifies if eAPI HTTP server is disabled globally.
+    """Verifies if eAPI HTTP server is disabled globally.
 
-    Expected Results:
-        * success: The test will pass if eAPI HTTP server is disabled globally.
-        * failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI HTTP server is disabled globally.
+    * Failure: The test will fail if eAPI HTTP server is NOT disabled globally.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIHttpStatus:
+    ```
     """
 
     name = "VerifyAPIHttpStatus"
     description = "Verifies if eAPI HTTP server is disabled globally."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAPIHttpStatus."""
         command_output = self.instance_commands[0].json_output
         if command_output["enabled"] and not command_output["httpServer"]["running"]:
             self.result.is_success()
@@ -171,25 +221,36 @@ class VerifyAPIHttpStatus(AntaTest):
 
 
 class VerifyAPIHttpsSSL(AntaTest):
-    """
-    Verifies if eAPI HTTPS server SSL profile is configured and valid.
+    """Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
-    Expected results:
-        * success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
-        * failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the eAPI HTTPS server SSL profile is configured and valid.
+    * Failure: The test will fail if the eAPI HTTPS server SSL profile is NOT configured, misconfigured or invalid.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIHttpsSSL:
+          profile: default
+    ```
     """
 
     name = "VerifyAPIHttpsSSL"
     description = "Verifies if the eAPI has a valid SSL profile."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAPIHttpsSSL test."""
+
         profile: str
-        """SSL profile to verify"""
+        """SSL profile to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAPIHttpsSSL."""
         command_output = self.instance_commands[0].json_output
         try:
             if command_output["sslProfile"]["name"] == self.inputs.profile and command_output["sslProfile"]["state"] == "valid":
@@ -202,110 +263,159 @@ class VerifyAPIHttpsSSL(AntaTest):
 
 
 class VerifyAPIIPv4Acl(AntaTest):
-    """
-    Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
+    """Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
-        * failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI has the provided number of IPv4 ACL(s) in the specified VRF.
+    * Failure: The test will fail if eAPI has not the right number of IPv4 ACL(s) in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIIPv4Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands ip access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(
+            command="show management api http-commands ip access-list summary",
+            revision=1,
+        )
+    ]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
-        """The number of expected IPv4 ACL(s)"""
+    class Input(AntaTest.Input):
+        """Input parameters for the VerifyAPIIPv4Acl test."""
+
+        number: PositiveInteger
+        """The number of expected IPv4 ACL(s)."""
         vrf: str = "default"
-        """The name of the VRF in which to check for eAPI"""
+        """The name of the VRF in which to check for eAPI. Defaults to `default` VRF."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAPIIPv4Acl."""
         command_output = self.instance_commands[0].json_output
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
-        not_configured_acl_list = []
         if ipv4_acl_number != self.inputs.number:
             self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
             return
-        for ipv4_acl in ipv4_acl_list:
-            if self.inputs.vrf not in ipv4_acl["configuredVrfs"] or self.inputs.vrf not in ipv4_acl["activeVrfs"]:
-                not_configured_acl_list.append(ipv4_acl["name"])
-        if not_configured_acl_list:
-            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
+
+        not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
+
+        if not_configured_acl:
+            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
         else:
             self.result.is_success()
 
 
 class VerifyAPIIPv6Acl(AntaTest):
-    """
-    Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
+    """Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
-    Expected results:
-        * success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
-        * failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
-        * skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+    Expected Results
+    ----------------
+    * Success: The test will pass if eAPI has the provided number of IPv6 ACL(s) in the specified VRF.
+    * Failure: The test will fail if eAPI has not the right number of IPv6 ACL(s) in the specified VRF.
+    * Skipped: The test will be skipped if the number of IPv6 ACL(s) or VRF parameter is not provided.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPIIPv6Acl:
+          number: 3
+          vrf: default
+    ```
     """
 
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management api http-commands ipv6 access-list summary")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(
+            command="show management api http-commands ipv6 access-list summary",
+            revision=1,
+        )
+    ]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type:ignore
-        """The number of expected IPv6 ACL(s)"""
+    class Input(AntaTest.Input):
+        """Input parameters for the VerifyAPIIPv6Acl test."""
+
+        number: PositiveInteger
+        """The number of expected IPv6 ACL(s)."""
         vrf: str = "default"
-        """The name of the VRF in which to check for eAPI"""
+        """The name of the VRF in which to check for eAPI. Defaults to `default` VRF."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAPIIPv6Acl."""
         command_output = self.instance_commands[0].json_output
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
-        not_configured_acl_list = []
         if ipv6_acl_number != self.inputs.number:
             self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
             return
-        for ipv6_acl in ipv6_acl_list:
-            if self.inputs.vrf not in ipv6_acl["configuredVrfs"] or self.inputs.vrf not in ipv6_acl["activeVrfs"]:
-                not_configured_acl_list.append(ipv6_acl["name"])
-        if not_configured_acl_list:
-            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl_list}")
+
+        not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
+
+        if not_configured_acl:
+            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
         else:
             self.result.is_success()
 
 
 class VerifyAPISSLCertificate(AntaTest):
-    """
-    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+    """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
-    Expected Results:
-        * success: The test will pass if the certificate's expiry date is greater than the threshold,
+    Expected Results
+    ----------------
+    * Success: The test will pass if the certificate's expiry date is greater than the threshold,
                    and the certificate has the correct name, encryption algorithm, and key size.
-        * failure: The test will fail if the certificate is expired or is going to expire,
+    * Failure: The test will fail if the certificate is expired or is going to expire,
                    or if the certificate has an incorrect name, encryption algorithm, or key size.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyAPISSLCertificate:
+          certificates:
+            - certificate_name: ARISTA_SIGNING_CA.crt
+              expiry_threshold: 30
+              common_name: AristaIT-ICA ECDSA Issuing Cert Authority
+              encryption_algorithm: ECDSA
+              key_size: 256
+            - certificate_name: ARISTA_ROOT_CA.crt
+              expiry_threshold: 30
+              common_name: Arista Networks Internal IT Root Cert Authority
+              encryption_algorithm: RSA
+              key_size: 4096
+    ```
     """
 
     name = "VerifyAPISSLCertificate"
     description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
-    categories = ["security"]
-    commands = [AntaCommand(command="show management security ssl certificate"), AntaCommand(command="show clock")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show management security ssl certificate", revision=1),
+        AntaCommand(command="show clock", revision=1),
+    ]
 
     class Input(AntaTest.Input):
-        """
-        Input parameters for the VerifyAPISSLCertificate test.
-        """
+        """Input parameters for the VerifyAPISSLCertificate test."""
 
-        certificates: List[APISSLCertificates]
-        """List of API SSL certificates"""
+        certificates: list[APISSLCertificate]
+        """List of API SSL certificates."""
 
-        class APISSLCertificates(BaseModel):
-            """
-            This class defines the details of an API SSL certificate.
-            """
+        class APISSLCertificate(BaseModel):
+            """Model for an API SSL certificate."""
 
             certificate_name: str
             """The name of the certificate to be verified."""
@@ -315,31 +425,30 @@ class VerifyAPISSLCertificate(AntaTest):
             """The common subject name of the certificate."""
             encryption_algorithm: EncryptionAlgorithm
             """The encryption algorithm of the certificate."""
-            key_size: Union[RsaKeySize, EcdsaKeySize]
+            key_size: RsaKeySize | EcdsaKeySize
             """The encryption algorithm key size of the certificate."""
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
-                """
-                Validate the key size provided to the APISSLCertificates class.
+                """Validate the key size provided to the APISSLCertificates class.
 
                 If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
 
                 If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
                 """
-
                 if self.encryption_algorithm == "RSA" and self.key_size not in RsaKeySize.__args__:
-                    raise ValueError(f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}.")
+                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}."
+                    raise ValueError(msg)
 
                 if self.encryption_algorithm == "ECDSA" and self.key_size not in EcdsaKeySize.__args__:
-                    raise ValueError(
-                        f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {EcdsaKeySize.__args__}."
-                    )
+                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {EcdsaKeySize.__args__}."
+                    raise ValueError(msg)
 
                 return self
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAPISSLCertificate."""
         # Mark the result as success by default
         self.result.is_success()
 
@@ -352,12 +461,18 @@ class VerifyAPISSLCertificate(AntaTest):
         for certificate in self.inputs.certificates:
             # Collecting certificate expiry time and current EOS time.
             # These times are used to calculate the number of days until the certificate expires.
-            if not (certificate_data := get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")):
+            if not (
+                certificate_data := get_value(
+                    certificate_output,
+                    f"certificates..{certificate.certificate_name}",
+                    separator="..",
+                )
+            ):
                 self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
                 continue
 
             expiry_time = certificate_data["notAfter"]
-            day_difference = (datetime.fromtimestamp(expiry_time) - datetime.fromtimestamp(current_timestamp)).days
+            day_difference = (datetime.fromtimestamp(expiry_time, tz=timezone.utc) - datetime.fromtimestamp(current_timestamp, tz=timezone.utc)).days
 
             # Verify certificate expiry
             if 0 < day_difference < certificate.expiry_threshold:
@@ -366,7 +481,11 @@ class VerifyAPISSLCertificate(AntaTest):
                 self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is expired.\n")
 
             # Verify certificate common subject name, encryption algorithm and key size
-            keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
+            keys_to_verify = [
+                "subject.commonName",
+                "publicKey.encryptionAlgorithm",
+                "publicKey.size",
+            ]
             actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
 
             expected_certificate_details = {
@@ -382,27 +501,39 @@ class VerifyAPISSLCertificate(AntaTest):
 
 
 class VerifyBannerLogin(AntaTest):
-    """
-    Verifies the login banner of a device.
+    """Verifies the login banner of a device.
 
-    Expected results:
-        * success: The test will pass if the login banner matches the provided input.
-        * failure: The test will fail if the login banner does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the login banner matches the provided input.
+    * Failure: The test will fail if the login banner does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyBannerLogin:
+            login_banner: |
+                # Copyright (c) 2023-2024 Arista Networks, Inc.
+                # Use of this source code is governed by the Apache License 2.0
+                # that can be found in the LICENSE file.
+    ```
     """
 
     name = "VerifyBannerLogin"
     description = "Verifies the login banner of a device."
-    categories = ["security"]
-    commands = [AntaCommand(command="show banner login")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner login", revision=1)]
 
     class Input(AntaTest.Input):
-        """Defines the input parameters for this test case."""
+        """Input model for the VerifyBannerLogin test."""
 
         login_banner: str
         """Expected login banner of the device."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyBannerLogin."""
         login_banner = self.instance_commands[0].json_output["loginBanner"]
 
         # Remove leading and trailing whitespaces from each line
@@ -414,27 +545,39 @@ class VerifyBannerLogin(AntaTest):
 
 
 class VerifyBannerMotd(AntaTest):
-    """
-    Verifies the motd banner of a device.
+    """Verifies the motd banner of a device.
 
-    Expected results:
-        * success: The test will pass if the motd banner matches the provided input.
-        * failure: The test will fail if the motd banner does not match the provided input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the motd banner matches the provided input.
+    * Failure: The test will fail if the motd banner does not match the provided input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyBannerMotd:
+            motd_banner: |
+                # Copyright (c) 2023-2024 Arista Networks, Inc.
+                # Use of this source code is governed by the Apache License 2.0
+                # that can be found in the LICENSE file.
+    ```
     """
 
     name = "VerifyBannerMotd"
     description = "Verifies the motd banner of a device."
-    categories = ["security"]
-    commands = [AntaCommand(command="show banner motd")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner motd", revision=1)]
 
     class Input(AntaTest.Input):
-        """Defines the input parameters for this test case."""
+        """Input model for the VerifyBannerMotd test."""
 
         motd_banner: str
         """Expected motd banner of the device."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyBannerMotd."""
         motd_banner = self.instance_commands[0].json_output["motd"]
 
         # Remove leading and trailing whitespaces from each line
@@ -446,47 +589,71 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """
-    Verifies the configuration of IPv4 ACLs.
+    """Verifies the configuration of IPv4 ACLs.
 
-    Expected results:
-        * success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
-        * failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+    Expected Results
+    ----------------
+    * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
+    * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyIPv4ACL:
+          ipv4_access_lists:
+            - name: default-control-plane-acl
+              entries:
+                - sequence: 10
+                  action: permit icmp any any
+                - sequence: 20
+                  action: permit ip any any tracked
+                - sequence: 30
+                  action: permit udp any any eq bfd ttl eq 255
+            - name: LabTest
+              entries:
+                - sequence: 10
+                  action: permit icmp any any
+                - sequence: 20
+                  action: permit tcp any any range 5900 5910
+    ```
     """
 
     name = "VerifyIPv4ACL"
     description = "Verifies the configuration of IPv4 ACLs."
-    categories = ["security"]
-    commands = [AntaTemplate(template="show ip access-lists {acl}")]
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip access-lists {acl}", revision=1)]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyIPv4ACL test."""
+        """Input model for the VerifyIPv4ACL test."""
 
-        ipv4_access_lists: List[IPv4ACL]
-        """List of IPv4 ACLs to verify"""
+        ipv4_access_lists: list[IPv4ACL]
+        """List of IPv4 ACLs to verify."""
 
         class IPv4ACL(BaseModel):
-            """Detail of IPv4 ACL"""
+            """Model for an IPv4 ACL."""
 
             name: str
-            """Name of IPv4 ACL"""
+            """Name of IPv4 ACL."""
 
-            entries: List[IPv4ACLEntries]
-            """List of IPv4 ACL entries"""
+            entries: list[IPv4ACLEntry]
+            """List of IPv4 ACL entries."""
 
-            class IPv4ACLEntries(BaseModel):
-                """IPv4 ACL entries details"""
+            class IPv4ACLEntry(BaseModel):
+                """Model for an IPv4 ACL entry."""
 
                 sequence: int = Field(ge=1, le=4294967295)
-                """Sequence number of an ACL entry"""
+                """Sequence number of an ACL entry."""
                 action: str
-                """Action of an ACL entry"""
+                """Action of an ACL entry."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each input ACL."""
         return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIPv4ACL."""
         self.result.is_success()
         for command_output in self.instance_commands:
             # Collecting input ACL details
@@ -517,65 +684,87 @@ class VerifyIPv4ACL(AntaTest):
 
 class VerifyIPSecConnHealth(AntaTest):
     """
-    Verifies all IP security connections
+    Verifies all IPv4 security connections.
 
-    Expected results:
-        * success: The test will pass if all the IP security connections are established in all vrf.
-        * failure: The test will fail if IP security is not configured or any of ip security connections are not established in any vrf.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all the IPv4 security connections are established in all vrf.
+    * Failure: The test will fail if IPv4 security is not configured or any of IPv4 security connections are not established in any vrf.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyIPSecConnHealth:
+    ```
     """
 
     name = "VerifyIPSecConnHealth"
-    description = "Verifies all IP security connections."
-    categories = ["security"]
-    commands = [AntaCommand(command="show ip security connection vrf all")]
+    description = "Verifies all IPv4 security connections."
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIPSecConnHealth."""
         self.result.is_success()
         failure_conn = []
         command_output = self.instance_commands[0].json_output["connections"]
 
         # Check if IP security connection is configured
         if not command_output:
-            self.result.is_failure("IP security connection are not configured.")
+            self.result.is_failure("IPv4 security connection are not configured.")
             return
 
         # Iterate over all ip sec connection
         for connection, conn_data in command_output.items():
-            state = list(conn_data["pathDict"].values())[0]
+            state = next(iter(conn_data["pathDict"].values()))
             if state != "Established":
                 failure_conn.append(connection)
         if failure_conn:
             failure_msg = "\n".join(failure_conn)
-            self.result.is_failure(f"Following IP security connections are not establised:\n{failure_msg}.")
+            self.result.is_failure(f"Following IPv4 security connections are not establised:\n{failure_msg}.")
 
 
 class VerifySpecificIPSecConn(AntaTest):
     """
-    Verifies IP security connections for a peer.
+    Verifies IPv4 security connections state for a peer.
 
-    Expected results:
-        * success: The test passes if the IP security connection for a peer is established in the specified VRF.
-        * failure: The test fails if IP security is not configured, a connection is not found for a peer, or the connection is not established in the specified VRF.
+    Expected Results
+    ----------------
+    * Success: The test passes if the IPv4 security connection for a peer is established in the specified VRF.
+    * Failure: The test fails if IPv4 security is not configured, a connection is not found for a peer, or the connection is not established in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySpecificIPSecConn:
+          ip_security_connections:
+            - peer: 10.255.0.1
+            - peer: 10.255.0.2
+            vrf: default
+            connection:
+              - source_address: 100.64.3.2
+                estination_address: 100.64.1.2
+              - source_address: 172.18.3.2
+                destination_address: 172.18.2.2
+    ```
     """
 
     name = "VerifySpecificIPSecConn"
-    description = "Verifies IP security connections for a peer."
-    categories = ["security"]
-    commands = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
+    description = "Verifies IPv4 security connections for a peer."
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
 
     class Input(AntaTest.Input):
-        """
-        This class defines the inputs for the VerifySpecificIPSecConn test.
-        """
+        """Input model for the VerifySpecificIPSecConn test."""
 
-        ip_sec_conn: List[IPSecPeer]
-        """List of IP security peers."""
+        ip_security_connections: list[IPSecPeers]
+        """List of IP4v security peers."""
 
-        class IPSecPeer(BaseModel):
-            """
-            Details of IP security peers.
-            """
+        class IPSecPeers(BaseModel):
+            """Details of IPv4 security peers."""
 
             peer: IPv4Address
             """IPv4 address of the peer."""
@@ -583,13 +772,11 @@ class VerifySpecificIPSecConn(AntaTest):
             vrf: str = "default"
             """This is the optional VRF for the IP security peer. It defaults to `default` if not provided."""
 
-            connection: Optional[List[IPSecConn]] = None
-            """Optional list of IP security connections of a peer."""
+            connection: list[IPSecConn] | None = None
+            """Optional list of IPv4 security connections of a peer."""
 
             class IPSecConn(BaseModel):
-                """
-                Details of IP security connections for a peer.
-                """
+                """Details of IPv4 security connections for a peer."""
 
                 source_address: IPv4Address
                 """Source address of the connection."""
@@ -597,36 +784,37 @@ class VerifySpecificIPSecConn(AntaTest):
                 """Destination address of the connection."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """
-        This method renders the template with the provided inputs.
-        """
-        return [template.render(peer=conn.peer, vrf=conn.vrf, connections=conn.connection) for conn in self.inputs.ip_sec_conn]
+        """Render the template for each input IP Sec connection."""
+        return [template.render(peer=conn.peer, vrf=conn.vrf, connections=conn.connection) for conn in self.inputs.ip_security_connections]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySpecificIPSecConn."""
         self.result.is_success()
         for command_output in self.instance_commands:
             conn_output = command_output.json_output["connections"]
             peer = command_output.params["peer"]
             connections = command_output.params["connections"]
 
-            # Check if IP security connection is configured
+            # Check if IPv4 security connection is configured
             if not conn_output:
-                self.result.is_failure(f"IP security connections are not configured for peer `{peer}`.")
+                self.result.is_failure(f"IPv4 security connections are not configured for peer `{peer}`.")
                 return
 
-            # If connection details are not provided then check all connection of a peer
+            # If connection details are not provided then check all connections of a peer
             if connections is None:
                 for connection, conn_data in conn_output.items():
-                    state = list(conn_data["pathDict"].values())[0]
+                    state = next(iter(conn_data["pathDict"].values()))
                     if state != "Established":
                         self.result.is_failure(
-                            f"Expected state of IP security connection `{connection}` for peer `{peer}` is `Established` " f"but found `{state}` instead."
+                            f"Expected state of IPv4 security connection `{connection}` for peer `{peer}` is `Established` " f"but found `{state}` instead."
                         )
                 continue
 
             # Create a dictionary of existing connections for faster lookup
-            existing_connections = {(conn_data.get("saddr"), conn_data.get("daddr")): list(conn_data["pathDict"].values())[0] for conn_data in conn_output.values()}
+            existing_connections = {
+                (conn_data.get("saddr"), conn_data.get("daddr")): next(iter(conn_data["pathDict"].values())) for conn_data in conn_output.values()
+            }
             for connection in connections:
                 source = str(connection.source_address)
                 destination = str(connection.destination_address)
@@ -635,8 +823,8 @@ class VerifySpecificIPSecConn(AntaTest):
                     existing_state = existing_connections[(source, destination)]
                     if existing_state != "Established":
                         self.result.is_failure(
-                            f"Expected state of IP security connection `{source}-{destination}` for peer `{peer}` is `Established` "
+                            f"Expected state of IPv4 security connection `{source}-{destination}` for peer `{peer}` is `Established` "
                             f"but found `{existing_state}` instead."
                         )
                 else:
-                    self.result.is_failure(f"IP security connection `{source}-{destination}` for peer `{peer}` is not found.")
+                    self.result.is_failure(f"IPv4 security connection `{source}-{destination}` for peer `{peer}` is not found.")
