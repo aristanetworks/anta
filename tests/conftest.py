@@ -1,18 +1,14 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-conftest.py - used to store anta specific fixtures used for tests
-"""
+"""conftest.py - used to store anta specific fixtures used for tests."""
+
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pytest
-
-if TYPE_CHECKING:
-    from pytest import Metafunc
 
 # Load fixtures from dedicated file tests/lib/fixture.py
 # As well as pytest_asyncio plugin to test co-routines
@@ -31,8 +27,7 @@ for _ in ("asyncio", "httpx"):
 
 
 def build_test_id(val: dict[str, Any]) -> str:
-    """
-    build id for a unit test of an AntaTest subclass
+    """Build id for a unit test of an AntaTest subclass.
 
     {
         "name": "meaniful test name",
@@ -43,9 +38,9 @@ def build_test_id(val: dict[str, Any]) -> str:
     return f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}"
 
 
-def pytest_generate_tests(metafunc: Metafunc) -> None:
-    """
-    This function is called during test collection.
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    """Generate ANTA testts unit tests dynamically during test collection.
+
     It will parametrize test cases based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     Test IDs are generated using the `build_test_id` function above.

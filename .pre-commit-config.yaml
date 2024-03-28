@@ -40,33 +40,21 @@ repos:
           - --comment-style
           - '<!--|  ~|  -->'
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.2
     hooks:
-      - id: isort
-        name: Check for changes when running isort on all python files
-
-  - repo: https://github.com/psf/black
-    rev: 24.1.1
-    hooks:
-      - id: black
-        name: Check for changes when running Black on all python files
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        name: Check for PEP8 error on Python files
-        args:
-          - --config=/dev/null
-          - --max-line-length=165
+    - id: ruff
+      name: Run Ruff linter
+      args: [ --fix ]
+    - id: ruff-format
+      name: Run Ruff formatter
 
   - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
     hooks:
       - id: pylint
         entry: pylint
         language: python
-        name: Check for Linting error on Python files
+        name: Check code style with pylint
         description: This hook runs pylint.
         types: [python]
         args:
@@ -74,17 +62,11 @@ repos:
           - -sn                # Don't display the score
           - --rcfile=pylintrc  # Link to config file
 
-  # Prepare to turn on ruff
-  # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   # Ruff version.
-  #   rev: v0.0.280
-  #   hooks:
-  #     - id: ruff
-
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0
     hooks:
       - id: mypy
+        name: Check typing with mypy
         args:
           - --config-file=pyproject.toml
         additional_dependencies:

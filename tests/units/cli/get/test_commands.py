@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.cli.get.commands
-"""
+"""Tests for anta.cli.get.commands."""
+
 from __future__ import annotations
 
 import filecmp
@@ -12,7 +11,6 @@ from typing import TYPE_CHECKING
 from unittest.mock import ANY, patch
 
 import pytest
-from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli import anta
@@ -20,12 +18,13 @@ from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
+    from cvprac.cvp_client import CvpClient
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 @pytest.mark.parametrize(
-    "cvp_container, cvp_connect_failure",
+    ("cvp_container", "cvp_connect_failure"),
     [
         pytest.param(None, False, id="all devices"),
         pytest.param("custom_container", False, id="custom container"),
@@ -38,28 +37,46 @@ def test_from_cvp(
     cvp_container: str | None,
     cvp_connect_failure: bool,
 ) -> None:
-    """
-    Test `anta get from-cvp`
+    """Test `anta get from-cvp`.
 
     This test verifies that username and password are NOT mandatory to run this command
     """
     output: Path = tmp_path / "output.yml"
-    cli_args = ["get", "from-cvp", "--output", str(output), "--host", "42.42.42.42", "--username", "anta", "--password", "anta"]
+    cli_args = [
+        "get",
+        "from-cvp",
+        "--output",
+        str(output),
+        "--host",
+        "42.42.42.42",
+        "--username",
+        "anta",
+        "--password",
+        "anta",
+    ]
 
     if cvp_container is not None:
         cli_args.extend(["--container", cvp_container])
 
-    def mock_cvp_connect(self: CvpClient, *args: str, **kwargs: str) -> None:
-        # pylint: disable=unused-argument
+    def mock_cvp_connect(_self: CvpClient, *_args: str, **_kwargs: str) -> None:
         if cvp_connect_failure:
             raise CvpApiError(msg="mocked CvpApiError")
 
     # always get a token
-    with patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"), patch(
-        "cvprac.cvp_client.CvpClient.connect", autospec=True, side_effect=mock_cvp_connect
-    ) as mocked_cvp_connect, patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory, patch(
-        "cvprac.cvp_client.CvpApi.get_devices_in_container", autospec=True, return_value=[]
-    ) as mocked_get_devices_in_container:
+    with (
+        patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"),
+        patch(
+            "cvprac.cvp_client.CvpClient.connect",
+            autospec=True,
+            side_effect=mock_cvp_connect,
+        ) as mocked_cvp_connect,
+        patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory,
+        patch(
+            "cvprac.cvp_client.CvpApi.get_devices_in_container",
+            autospec=True,
+            return_value=[],
+        ) as mocked_get_devices_in_container,
+    ):
         result = click_runner.invoke(anta, cli_args)
 
     if not cvp_connect_failure:
@@ -79,12 +96,24 @@ def test_from_cvp(
 
 
 @pytest.mark.parametrize(
-    "ansible_inventory, ansible_group, expected_exit, expected_log",
+    ("ansible_inventory", "ansible_group", "expected_exit", "expected_log"),
     [
         pytest.param("ansible_inventory.yml", None, ExitCode.OK, None, id="no group"),
         pytest.param("ansible_inventory.yml", "ATD_LEAFS", ExitCode.OK, None, id="group found"),
-        pytest.param("ansible_inventory.yml", "DUMMY", ExitCode.USAGE_ERROR, "Group DUMMY not found in Ansible inventory", id="group not found"),
-        pytest.param("empty_ansible_inventory.yml", None, ExitCode.USAGE_ERROR, "is empty", id="empty inventory"),
+        pytest.param(
+            "ansible_inventory.yml",
+            "DUMMY",
+            ExitCode.USAGE_ERROR,
+            "Group DUMMY not found in Ansible inventory",
+            id="group not found",
+        ),
+        pytest.param(
+            "empty_ansible_inventory.yml",
+            None,
+            ExitCode.USAGE_ERROR,
+            "is empty",
+            id="empty inventory",
+        ),
     ],
 )
 def test_from_ansible(
@@ -95,8 +124,7 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    """
-    Test `anta get from-ansible`
+    """Test `anta get from-ansible`.
 
     This test verifies:
     * the parsing of an ansible-inventory
@@ -107,7 +135,14 @@ def test_from_ansible(
     output: Path = tmp_path / "output.yml"
     ansible_inventory_path = DATA_DIR / ansible_inventory
     # Init cli_args
-    cli_args = ["get", "from-ansible", "--output", str(output), "--ansible-inventory", str(ansible_inventory_path)]
+    cli_args = [
+        "get",
+        "from-ansible",
+        "--output",
+        str(output),
+        "--ansible-inventory",
+        str(ansible_inventory_path),
+    ]
 
     # Set --ansible-group
     if ansible_group is not None:
@@ -122,14 +157,30 @@ def test_from_ansible(
         assert expected_log in result.output
     else:
         assert output.exists()
-        # TODO check size of generated inventory to validate the group functionality!
+        # TODO: check size of generated inventory to validate the group functionality!
 
 
 @pytest.mark.parametrize(
-    "env_set, overwrite, is_tty, prompt, expected_exit, expected_log",
+    ("env_set", "overwrite", "is_tty", "prompt", "expected_exit", "expected_log"),
     [
-        pytest.param(True, False, True, "y", ExitCode.OK, "", id="no-overwrite-tty-init-prompt-yes"),
-        pytest.param(True, False, True, "N", ExitCode.INTERNAL_ERROR, "Aborted", id="no-overwrite-tty-init-prompt-no"),
+        pytest.param(
+            True,
+            False,
+            True,
+            "y",
+            ExitCode.OK,
+            "",
+            id="no-overwrite-tty-init-prompt-yes",
+        ),
+        pytest.param(
+            True,
+            False,
+            True,
+            "N",
+            ExitCode.INTERNAL_ERROR,
+            "Aborted",
+            id="no-overwrite-tty-init-prompt-no",
+        ),
         pytest.param(
             True,
             False,
@@ -159,8 +210,7 @@ def test_from_ansible_overwrite(
     expected_log: str | None,
 ) -> None:
     # pylint: disable=too-many-arguments
-    """
-    Test `anta get from-ansible` overwrite mechanism
+    """Test `anta get from-ansible` overwrite mechanism.
 
     The test uses a static ansible-inventory and output as these are tested in other functions
 
@@ -177,7 +227,12 @@ def test_from_ansible_overwrite(
     ansible_inventory_path = DATA_DIR / "ansible_inventory.yml"
     expected_anta_inventory_path = DATA_DIR / "expected_anta_inventory.yml"
     tmp_output = tmp_path / "output.yml"
-    cli_args = ["get", "from-ansible", "--ansible-inventory", str(ansible_inventory_path)]
+    cli_args = [
+        "get",
+        "from-ansible",
+        "--ansible-inventory",
+        str(ansible_inventory_path),
+    ]
 
     if env_set:
         tmp_inv = Path(str(temp_env["ANTA_INVENTORY"]))

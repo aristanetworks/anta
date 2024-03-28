@@ -1,22 +1,29 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Get a value from a dictionary or nested dictionaries.
-"""
+"""Get a value from a dictionary or nested dictionaries."""
+
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 # pylint: disable=too-many-arguments
 def get_value(
-    dictionary: dict[Any, Any], key: str, default: Optional[Any] = None, required: bool = False, org_key: Optional[str] = None, separator: str = "."
+    dictionary: dict[Any, Any],
+    key: str,
+    default: Any | None = None,
+    org_key: str | None = None,
+    separator: str = ".",
+    *,
+    required: bool = False,
 ) -> Any:
-    """
-    Get a value from a dictionary or nested dictionaries.
+    """Get a value from a dictionary or nested dictionaries.
+
     Key supports dot-notation like "foo.bar" to do deeper lookups.
+
     Returns the supplied default value or None if the key is not found and required is False.
+
     Parameters
     ----------
     dictionary : dict
@@ -32,16 +39,18 @@ def get_value(
     separator: str
         String to use as the separator parameter in the split function. Useful in cases when the key
         can contain variables with "." inside (e.g. hostnames)
+
     Returns
     -------
     any
         Value or default value
+
     Raises
     ------
     ValueError
-        If the key is not found and required == True
-    """
+        If the key is not found and required == True.
 
+    """
     if org_key is None:
         org_key = key
     keys = key.split(separator)

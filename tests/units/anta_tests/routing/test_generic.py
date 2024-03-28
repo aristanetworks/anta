@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.routing.generic.py
-"""
+"""Tests for anta.tests.routing.generic.py."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -43,9 +42,9 @@ DATA: list[dict[str, Any]] = [
                         # Output truncated
                         "maskLen": {"8": 2},
                         "totalRoutes": 123,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {"result": "success"},
@@ -60,9 +59,9 @@ DATA: list[dict[str, Any]] = [
                         # Output truncated
                         "maskLen": {"8": 2},
                         "totalRoutes": 1000,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"]},
@@ -99,10 +98,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
-                            }
+                            },
                         },
-                    }
-                }
+                    },
+                },
             },
             {
                 "vrfs": {
@@ -122,10 +121,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            }
+                            },
                         },
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
@@ -143,8 +142,8 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {},
-                    }
-                }
+                    },
+                },
             },
             {
                 "vrfs": {
@@ -164,10 +163,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            }
+                            },
                         },
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
@@ -195,10 +194,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
-                            }
+                            },
                         },
-                    }
-                }
+                    },
+                },
             },
             {
                 "vrfs": {
@@ -218,10 +217,10 @@ DATA: list[dict[str, Any]] = [
                                 "preference": 20,
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
-                            }
+                            },
                         },
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},

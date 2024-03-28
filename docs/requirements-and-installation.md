@@ -8,11 +8,11 @@
 
 ## Python version
 
-Python 3 (`>=3.8`) is required:
+Python 3 (`>=3.9`) is required:
 
 ```bash
 python --version
-Python 3.9.9
+Python 3.11.8
 ```
 
 ## Install ANTA package
@@ -95,7 +95,7 @@ management api http-commands
 end
 ```
 
-Now the swicth accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
+Now the switch accepts on port 443 in the MGMT VRF HTTPS requests containing a list of CLI commands.
 
 Run these EOS commands to verify:
 

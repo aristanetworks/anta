@@ -7,9 +7,9 @@ on:
       - main
     paths:
       # Run only if any of the following paths are changed when pushing to main
-      # May need to update this
       - "docs/**"
       - "mkdocs.yml"
+      - "anta/**"
   workflow_dispatch:
 
 jobs:

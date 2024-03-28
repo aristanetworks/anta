@@ -1,9 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.bfd.py
-"""
+"""Tests for anta.tests.bfd.py."""
+
 # pylint: disable=C0302
 from __future__ import annotations
 
@@ -11,7 +10,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDSpecificPeers  # noqa: E402
+from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDSpecificPeers
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [

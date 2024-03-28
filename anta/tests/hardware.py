@@ -1,41 +1,56 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the hardware or environment
-"""
+"""Module related to the hardware or environment tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-# Need to keep List for pydantic in python 3.8
-from typing import List
+from typing import TYPE_CHECKING, ClassVar
 
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
+if TYPE_CHECKING:
+    from anta.models import AntaTemplate
+
 
 class VerifyTransceiversManufacturers(AntaTest):
-    """
-    This test verifies if all the transceivers come from approved manufacturers.
+    """Verifies if all the transceivers come from approved manufacturers.
 
-    Expected Results:
-      * success: The test will pass if all transceivers are from approved manufacturers.
-      * failure: The test will fail if some transceivers are from unapproved manufacturers.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all transceivers are from approved manufacturers.
+    * Failure: The test will fail if some transceivers are from unapproved manufacturers.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTransceiversManufacturers:
+          manufacturers:
+            - Not Present
+            - Arista Networks
+            - Arastra, Inc.
+    ```
     """
 
     name = "VerifyTransceiversManufacturers"
     description = "Verifies if all transceivers come from approved manufacturers."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show inventory", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        manufacturers: List[str]
-        """List of approved transceivers manufacturers"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyTransceiversManufacturers test."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+        manufacturers: list[str]
+        """List of approved transceivers manufacturers."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTransceiversManufacturers."""
         command_output = self.instance_commands[0].json_output
         wrong_manufacturers = {
             interface: value["mfgName"] for interface, value in command_output["xcvrSlots"].items() if value["mfgName"] not in self.inputs.manufacturers
@@ -47,24 +62,32 @@ class VerifyTransceiversManufacturers(AntaTest):
 
 
 class VerifyTemperature(AntaTest):
-    """
-    This test verifies if the device temperature is within acceptable limits.
+    """Verifies if the device temperature is within acceptable limits.
 
-    Expected Results:
-      * success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
-      * failure: The test will fail if the device temperature is NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device temperature is currently OK: 'temperatureOk'.
+    * Failure: The test will fail if the device temperature is NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTemperature:
+    ```
     """
 
     name = "VerifyTemperature"
     description = "Verifies the device temperature."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment temperature", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTemperature."""
         command_output = self.instance_commands[0].json_output
-        temperature_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        temperature_status = command_output.get("systemStatus", "")
         if temperature_status == "temperatureOk":
             self.result.is_success()
         else:
@@ -72,24 +95,32 @@ class VerifyTemperature(AntaTest):
 
 
 class VerifyTransceiversTemperature(AntaTest):
-    """
-    This test verifies if all the transceivers are operating at an acceptable temperature.
+    """Verifies if all the transceivers are operating at an acceptable temperature.
 
-    Expected Results:
-          * success: The test will pass if all transceivers status are OK: 'ok'.
-          * failure: The test will fail if some transceivers are NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all transceivers status are OK: 'ok'.
+    * Failure: The test will fail if some transceivers are NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyTransceiversTemperature:
+    ```
     """
 
     name = "VerifyTransceiversTemperature"
     description = "Verifies the transceivers temperature."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment temperature transceiver", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyTransceiversTemperature."""
         command_output = self.instance_commands[0].json_output
-        sensors = command_output["tempSensors"] if "tempSensors" in command_output.keys() else ""
+        sensors = command_output.get("tempSensors", "")
         wrong_sensors = {
             sensor["name"]: {
                 "hwStatus": sensor["hwStatus"],
@@ -105,50 +136,70 @@ class VerifyTransceiversTemperature(AntaTest):
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):
-    """
-    This test verifies the device's system cooling.
+    """Verifies the device's system cooling status.
 
-    Expected Results:
-      * success: The test will pass if the system cooling status is OK: 'coolingOk'.
-      * failure: The test will fail if the system cooling status is NOT OK.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the system cooling status is OK: 'coolingOk'.
+    * Failure: The test will fail if the system cooling status is NOT OK.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentSystemCooling:
+    ```
     """
 
     name = "VerifyEnvironmentSystemCooling"
     description = "Verifies the system cooling status."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyEnvironmentSystemCooling."""
         command_output = self.instance_commands[0].json_output
-        sys_status = command_output["systemStatus"] if "systemStatus" in command_output.keys() else ""
+        sys_status = command_output.get("systemStatus", "")
         self.result.is_success()
         if sys_status != "coolingOk":
             self.result.is_failure(f"Device system cooling is not OK: '{sys_status}'")
 
 
 class VerifyEnvironmentCooling(AntaTest):
-    """
-    This test verifies the fans status.
+    """Verifies the status of power supply fans and all fan trays.
 
-    Expected Results:
-      * success: The test will pass if the fans status are within the accepted states list.
-      * failure: The test will fail if some fans status is not within the accepted states list.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the fans status are within the accepted states list.
+    * Failure: The test will fail if some fans status is not within the accepted states list.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentCooling:
+          states:
+            - ok
+    ```
     """
 
     name = "VerifyEnvironmentCooling"
     description = "Verifies the status of power supply fans and all fan trays."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment cooling", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: List[str]
-        """Accepted states list for fan status"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyEnvironmentCooling test."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+        states: list[str]
+        """List of accepted states of fan status."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyEnvironmentCooling."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         # First go through power supplies fans
@@ -164,28 +215,40 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """
-    This test verifies the power supplies status.
+    """Verifies the power supplies status.
 
-    Expected Results:
-      * success: The test will pass if the power supplies status are within the accepted states list.
-      * failure: The test will fail if some power supplies status is not within the accepted states list.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the power supplies status are within the accepted states list.
+    * Failure: The test will fail if some power supplies status is not within the accepted states list.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyEnvironmentPower:
+          states:
+            - ok
+    ```
     """
 
     name = "VerifyEnvironmentPower"
     description = "Verifies the power supplies status."
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show system environment power", ofmt="json")]
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        states: List[str]
-        """Accepted states list for power supplies status"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyEnvironmentPower test."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+        states: list[str]
+        """List of accepted states list of power supplies status."""
+
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyEnvironmentPower."""
         command_output = self.instance_commands[0].json_output
-        power_supplies = command_output["powerSupplies"] if "powerSupplies" in command_output.keys() else "{}"
+        power_supplies = command_output.get("powerSupplies", "{}")
         wrong_power_supplies = {
             powersupply: {"state": value["state"]} for powersupply, value in dict(power_supplies).items() if value["state"] not in self.inputs.states
         }
@@ -196,24 +259,32 @@ class VerifyEnvironmentPower(AntaTest):
 
 
 class VerifyAdverseDrops(AntaTest):
-    """
-    This test verifies if there are no adverse drops on DCS7280E and DCS7500E.
+    """Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches (Arad/Jericho chips).
 
-    Expected Results:
-      * success: The test will pass if there are no adverse drops.
-      * failure: The test will fail if there are adverse drops.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no adverse drops.
+    * Failure: The test will fail if there are adverse drops.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.hardware:
+      - VerifyAdverseDrops:
+    ```
     """
 
     name = "VerifyAdverseDrops"
-    description = "Verifies there are no adverse drops on DCS7280E and DCS7500E"
-    categories = ["hardware"]
-    commands = [AntaCommand(command="show hardware counter drop", ofmt="json")]
+    description = "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches."
+    categories: ClassVar[list[str]] = ["hardware"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyAdverseDrops."""
         command_output = self.instance_commands[0].json_output
-        total_adverse_drop = command_output["totalAdverseDrops"] if "totalAdverseDrops" in command_output.keys() else ""
+        total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop == 0:
             self.result.is_success()
         else:

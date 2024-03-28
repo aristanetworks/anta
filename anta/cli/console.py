@@ -1,9 +1,9 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-ANTA Top-level Console
-https://rich.readthedocs.io/en/stable/console.html#console-api
+"""ANTA Top-level Console.
+
+https://rich.readthedocs.io/en/stable/console.html#console-api.
 """
 
 from rich.console import Console

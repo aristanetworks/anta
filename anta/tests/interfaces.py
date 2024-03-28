@@ -1,23 +1,20 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to the device interfaces
-"""
+"""Module related to the device interfaces tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 import re
 from ipaddress import IPv4Network
+from typing import Any, ClassVar, Literal
 
-# Need to keep Dict and List for pydantic in python 3.8
-from typing import Any, Dict, List, Literal, Optional
-
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface
+from anta.custom_types import Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
@@ -25,54 +22,96 @@ from anta.tools.get_value import get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):
-    """
-    Verifies interfaces utilization is below 75%.
+    """Verifies that the utilization of interfaces is below a certain threshold.
 
-    Expected Results:
-        * success: The test will pass if all interfaces have a usage below 75%.
-        * failure: The test will fail if one or more interfaces have a usage above 75%.
+    Load interval (default to 5 minutes) is defined in device configuration.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have a usage below the threshold.
+    * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceUtilization:
+          threshold: 70.0
+    ```
     """
 
     name = "VerifyInterfaceUtilization"
-    description = "Verifies that all interfaces have a usage below 75%."
-    categories = ["interfaces"]
-    # TODO - move from text to json if possible
-    commands = [AntaCommand(command="show interfaces counters rates", ofmt="text")]
+    description = "Verifies that the utilization of interfaces is below a certain threshold."
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces counters rates", revision=1),
+        AntaCommand(command="show interfaces", revision=1),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceUtilization test."""
+
+        threshold: Percent = 75.0
+        """Interface utilization threshold above which the test will fail. Defaults to 75%."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        command_output = self.instance_commands[0].text_output
-        wrong_interfaces = {}
-        for line in command_output.split("\n")[1:]:
-            if len(line) > 0:
-                if line.split()[-5] == "-" or line.split()[-2] == "-":
-                    pass
-                elif float(line.split()[-5].replace("%", "")) > 75.0:
-                    wrong_interfaces[line.split()[0]] = line.split()[-5]
-                elif float(line.split()[-2].replace("%", "")) > 75.0:
-                    wrong_interfaces[line.split()[0]] = line.split()[-2]
-        if not wrong_interfaces:
+        """Main test function for VerifyInterfaceUtilization."""
+        duplex_full = "duplexFull"
+        failed_interfaces: dict[str, dict[str, float]] = {}
+        rates = self.instance_commands[0].json_output
+        interfaces = self.instance_commands[1].json_output
+
+        for intf, rate in rates["interfaces"].items():
+            # Assuming the interface is full-duplex in the logic below
+            if "duplex" in interfaces["interfaces"][intf]:
+                if interfaces["interfaces"][intf]["duplex"] != duplex_full:
+                    self.result.is_error(f"Interface {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
+                    return
+            elif "memberInterfaces" in interfaces["interfaces"][intf]:
+                # This is a Port-Channel
+                for member, stats in interfaces["interfaces"][intf]["memberInterfaces"].items():
+                    if stats["duplex"] != duplex_full:
+                        self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
+                        return
+
+            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+
+            for bps_rate in ("inBpsRate", "outBpsRate"):
+                usage = rate[bps_rate] / bandwidth * 100
+                if usage > self.inputs.threshold:
+                    failed_interfaces.setdefault(intf, {})[bps_rate] = usage
+
+        if not failed_interfaces:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following interfaces have a usage > 75%: {wrong_interfaces}")
+            self.result.is_failure(f"The following interfaces have a usage > {self.inputs.threshold}%: {failed_interfaces}")
 
 
 class VerifyInterfaceErrors(AntaTest):
-    """
-    This test verifies that interfaces error counters are equal to zero.
+    """Verifies that the interfaces error counters are equal to zero.
 
-    Expected Results:
-        * success: The test will pass if all interfaces have error counters equal to zero.
-        * failure: The test will fail if one or more interfaces have non-zero error counters.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have error counters equal to zero.
+    * Failure: The test will fail if one or more interfaces have non-zero error counters.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceErrors:
+    ```
     """
 
     name = "VerifyInterfaceErrors"
     description = "Verifies there are no interface error counters."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces counters errors")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyInterfaceErrors."""
         command_output = self.instance_commands[0].json_output
         wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, counters in command_output["interfaceErrorCounters"].items():
@@ -85,25 +124,33 @@ class VerifyInterfaceErrors(AntaTest):
 
 
 class VerifyInterfaceDiscards(AntaTest):
-    """
-    Verifies interfaces packet discard counters are equal to zero.
+    """Verifies that the interfaces packet discard counters are equal to zero.
 
-    Expected Results:
-        * success: The test will pass if all interfaces have discard counters equal to zero.
-        * failure: The test will fail if one or more interfaces have non-zero discard counters.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all interfaces have discard counters equal to zero.
+    * Failure: The test will fail if one or more interfaces have non-zero discard counters.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceDiscards:
+    ```
     """
 
     name = "VerifyInterfaceDiscards"
     description = "Verifies there are no interface discard counters."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces counters discards")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyInterfaceDiscards."""
         command_output = self.instance_commands[0].json_output
         wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, outer_v in command_output["interfaces"].items():
-            wrong_interfaces.extend({interface: outer_v} for counter, value in outer_v.items() if value > 0)
+            wrong_interfaces.extend({interface: outer_v} for value in outer_v.values() if value > 0)
         if not wrong_interfaces:
             self.result.is_success()
         else:
@@ -111,21 +158,29 @@ class VerifyInterfaceDiscards(AntaTest):
 
 
 class VerifyInterfaceErrDisabled(AntaTest):
-    """
-    Verifies there are no interfaces in errdisabled state.
+    """Verifies there are no interfaces in the errdisabled state.
 
-    Expected Results:
-        * success: The test will pass if there are no interfaces in errdisabled state.
-        * failure: The test will fail if there is at least one interface in errdisabled state.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no interfaces in the errdisabled state.
+    * Failure: The test will fail if there is at least one interface in the errdisabled state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceErrDisabled:
+    ```
     """
 
     name = "VerifyInterfaceErrDisabled"
     description = "Verifies there are no interfaces in the errdisabled state."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces status")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyInterfaceErrDisabled."""
         command_output = self.instance_commands[0].json_output
         errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
         if errdisabled_interfaces:
@@ -135,41 +190,58 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """
-    This test verifies if the provided list of interfaces are all in the expected state.
+    """Verifies if the provided list of interfaces are all in the expected state.
 
     - If line protocol status is provided, prioritize checking against both status and line protocol status
     - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
     - If interface status is not "up", check only the interface status without considering line protocol status
 
-    Expected Results:
-        * success: The test will pass if the provided interfaces are all in the expected state.
-        * failure: The test will fail if any interface is not in the expected state.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided interfaces are all in the expected state.
+    * Failure: The test will fail if any interface is not in the expected state.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesStatus:
+          interfaces:
+            - name: Ethernet1
+              status: up
+            - name: Port-Channel100
+              status: down
+              line_protocol_status: lowerLayerDown
+            - name: Ethernet49/1
+              status: adminDown
+              line_protocol_status: notPresent
+    ```
     """
 
     name = "VerifyInterfacesStatus"
     description = "Verifies the status of the provided interfaces."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces description")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input for the VerifyInterfacesStatus test."""
+        """Input model for the VerifyInterfacesStatus test."""
 
-        interfaces: List[InterfaceState]
-        """List of interfaces to validate with the expected state."""
+        interfaces: list[InterfaceState]
+        """List of interfaces with their expected state."""
 
         class InterfaceState(BaseModel):
-            """Model for the interface state input."""
+            """Model for an interface state."""
 
             name: Interface
             """Interface to validate."""
             status: Literal["up", "down", "adminDown"]
             """Expected status of the interface."""
-            line_protocol_status: Optional[Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"]] = None
+            line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
             """Expected line protocol status of the interface."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyInterfacesStatus."""
         command_output = self.instance_commands[0].json_output
 
         self.result.is_success()
@@ -203,22 +275,30 @@ class VerifyInterfacesStatus(AntaTest):
 
 
 class VerifyStormControlDrops(AntaTest):
-    """
-    Verifies the device did not drop packets due its to storm-control configuration.
+    """Verifies there are no interface storm-control drop counters.
 
-    Expected Results:
-        * success: The test will pass if there are no storm-control drop counters.
-        * failure: The test will fail if there is at least one storm-control drop counter.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no storm-control drop counters.
+    * Failure: The test will fail if there is at least one storm-control drop counter.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyStormControlDrops:
+    ```
     """
 
     name = "VerifyStormControlDrops"
     description = "Verifies there are no interface storm-control drop counters."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show storm-control")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyStormControlDrops."""
         command_output = self.instance_commands[0].json_output
         storm_controlled_interfaces: dict[str, dict[str, Any]] = {}
         for interface, interface_dict in command_output["interfaces"].items():
@@ -233,49 +313,64 @@ class VerifyStormControlDrops(AntaTest):
 
 
 class VerifyPortChannels(AntaTest):
-    """
-    Verifies there are no inactive ports in all port channels.
+    """Verifies there are no inactive ports in all port channels.
 
-    Expected Results:
-        * success: The test will pass if there are no inactive ports in all port channels.
-        * failure: The test will fail if there is at least one inactive port in a port channel.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no inactive ports in all port channels.
+    * Failure: The test will fail if there is at least one inactive port in a port channel.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyPortChannels:
+    ```
     """
 
     name = "VerifyPortChannels"
     description = "Verifies there are no inactive ports in all port channels."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show port-channel")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyPortChannels."""
         command_output = self.instance_commands[0].json_output
-        po_with_invactive_ports: list[dict[str, str]] = []
+        po_with_inactive_ports: list[dict[str, str]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
             if len(portchannel_dict["inactivePorts"]) != 0:
-                po_with_invactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
-        if not po_with_invactive_ports:
+                po_with_inactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
+        if not po_with_inactive_ports:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following port-channels have inactive port(s): {po_with_invactive_ports}")
+            self.result.is_failure(f"The following port-channels have inactive port(s): {po_with_inactive_ports}")
 
 
 class VerifyIllegalLACP(AntaTest):
-    """
-    Verifies there are no illegal LACP packets received.
+    """Verifies there are no illegal LACP packets in all port channels.
 
-    Expected Results:
-        * success: The test will pass if there are no illegal LACP packets received.
-        * failure: The test will fail if there is at least one illegal LACP packet received.
+    Expected Results
+    ----------------
+    * Success: The test will pass if there are no illegal LACP packets received.
+    * Failure: The test will fail if there is at least one illegal LACP packet received.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIllegalLACP:
+    ```
     """
 
     name = "VerifyIllegalLACP"
     description = "Verifies there are no illegal LACP packets in all port channels."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show lacp counters all-ports")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIllegalLACP."""
         command_output = self.instance_commands[0].json_output
         po_with_illegal_lacp: list[dict[str, dict[str, int]]] = []
         for portchannel, portchannel_dict in command_output["portChannels"].items():
@@ -285,29 +380,40 @@ class VerifyIllegalLACP(AntaTest):
         if not po_with_illegal_lacp:
             self.result.is_success()
         else:
-            self.result.is_failure("The following port-channels have recieved illegal lacp packets on the " f"following ports: {po_with_illegal_lacp}")
+            self.result.is_failure(f"The following port-channels have received illegal LACP packets on the following ports: {po_with_illegal_lacp}")
 
 
 class VerifyLoopbackCount(AntaTest):
-    """
-    Verifies that the device has the expected number of loopback interfaces and all are operational.
+    """Verifies that the device has the expected number of loopback interfaces and all are operational.
 
-    Expected Results:
-        * success: The test will pass if the device has the correct number of loopback interfaces and none are down.
-        * failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device has the correct number of loopback interfaces and none are down.
+    * Failure: The test will fail if the loopback interface count is incorrect or any are non-operational.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyLoopbackCount:
+          number: 3
+    ```
     """
 
     name = "VerifyLoopbackCount"
     description = "Verifies the number of loopback interfaces and their status."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show ip interface brief")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        number: conint(ge=0)  # type: ignore
-        """Number of loopback interfaces expected to be present"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoopbackCount test."""
+
+        number: PositiveInteger
+        """Number of loopback interfaces expected to be present."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyLoopbackCount."""
         command_output = self.instance_commands[0].json_output
         loopback_count = 0
         down_loopback_interfaces = []
@@ -328,28 +434,35 @@ class VerifyLoopbackCount(AntaTest):
 
 
 class VerifySVI(AntaTest):
-    """
-    Verifies the status of all SVIs.
+    """Verifies the status of all SVIs.
 
-    Expected Results:
-        * success: The test will pass if all SVIs are up.
-        * failure: The test will fail if one or many SVIs are not up.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all SVIs are up.
+    * Failure: The test will fail if one or many SVIs are not up.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifySVI:
+    ```
     """
 
     name = "VerifySVI"
     description = "Verifies the status of all SVIs."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show ip interface brief")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifySVI."""
         command_output = self.instance_commands[0].json_output
         down_svis = []
         for interface in command_output["interfaces"]:
             interface_dict = command_output["interfaces"][interface]
-            if "Vlan" in interface:
-                if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                    down_svis.append(interface)
+            if "Vlan" in interface and not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
+                down_svis.append(interface)
         if len(down_svis) == 0:
             self.result.is_success()
         else:
@@ -357,32 +470,48 @@ class VerifySVI(AntaTest):
 
 
 class VerifyL3MTU(AntaTest):
-    """
-    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
+    """Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
     Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
-    You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-    Expected Results:
-        * success: The test will pass if all layer 3 interfaces have the proper MTU configured.
-        * failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+    You can define a global MTU to check, or an MTU per interface and you can also ignored some interfaces.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all layer 3 interfaces have the proper MTU configured.
+    * Failure: The test will fail if one or many layer 3 interfaces have the wrong MTU configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyL3MTU:
+          mtu: 1500
+          ignored_interfaces:
+              - Vxlan1
+          specific_mtu:
+              - Ethernet1: 2500
+    ```
     """
 
     name = "VerifyL3MTU"
     description = "Verifies the global L3 MTU of all L3 interfaces."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyL3MTU test."""
+
         mtu: int = 1500
-        """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
+        """Default MTU we should have configured on all non-excluded interfaces. Defaults to 1500."""
+        ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
         """A list of L3 interfaces to ignore"""
-        specific_mtu: List[Dict[str, int]] = []
+        specific_mtu: list[dict[str, int]] = Field(default=[])
         """A list of dictionary of L3 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyL3MTU."""
         # Parameter to save incorrect interface settings
         wrong_l3mtu_intf: list[dict[str, int]] = []
         command_output = self.instance_commands[0].json_output
@@ -405,28 +534,42 @@ class VerifyL3MTU(AntaTest):
 
 
 class VerifyIPProxyARP(AntaTest):
-    """
-    Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+    """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
 
-    Expected Results:
-        * success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
-        * failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
+    Expected Results
+    ----------------
+    * Success: The test will pass if Proxy-ARP is enabled on the specified interface(s).
+    * Failure: The test will fail if Proxy-ARP is disabled on the specified interface(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIPProxyARP:
+          interfaces:
+            - Ethernet1
+            - Ethernet2
+    ```
     """
 
     name = "VerifyIPProxyARP"
     description = "Verifies if Proxy ARP is enabled."
-    categories = ["interfaces"]
-    commands = [AntaTemplate(template="show ip interface {intf}")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        interfaces: List[str]
-        """list of interfaces to be tested"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIPProxyARP test."""
+
+        interfaces: list[str]
+        """List of interfaces to be tested."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each interface in the input list."""
         return [template.render(intf=intf) for intf in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIPProxyARP."""
         disabled_intf = []
         for command in self.instance_commands:
             if "intf" in command.params:
@@ -440,32 +583,48 @@ class VerifyIPProxyARP(AntaTest):
 
 
 class VerifyL2MTU(AntaTest):
-    """
-    Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
+    """Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
 
     Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
 
-    Expected Results:
-        * success: The test will pass if all layer 2 interfaces have the proper MTU configured.
-        * failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all layer 2 interfaces have the proper MTU configured.
+    * Failure: The test will fail if one or many layer 2 interfaces have the wrong MTU configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyL2MTU:
+          mtu: 1500
+          ignored_interfaces:
+            - Management1
+            - Vxlan1
+          specific_mtu:
+            - Ethernet1/1: 1500
+    ```
     """
 
     name = "VerifyL2MTU"
     description = "Verifies the global L2 MTU of all L2 interfaces."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show interfaces")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
+    class Input(AntaTest.Input):
+        """Input model for the VerifyL2MTU test."""
+
         mtu: int = 9214
-        """Default MTU we should have configured on all non-excluded interfaces"""
-        ignored_interfaces: List[str] = ["Management", "Loopback", "Vxlan", "Tunnel"]
-        """A list of L2 interfaces to ignore"""
-        specific_mtu: List[Dict[str, int]] = []
+        """Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214."""
+        ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
+        """A list of L2 interfaces to ignore. Defaults to ["Management", "Loopback", "Vxlan", "Tunnel"]"""
+        specific_mtu: list[dict[str, int]] = Field(default=[])
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyL2MTU."""
         # Parameter to save incorrect interface settings
         wrong_l2mtu_intf: list[dict[str, int]] = []
         command_output = self.instance_commands[0].json_output
@@ -475,7 +634,8 @@ class VerifyL2MTU(AntaTest):
             for d in self.inputs.specific_mtu:
                 specific_interfaces.extend(d)
         for interface, values in command_output["interfaces"].items():
-            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "bridged":
+            catch_interface = re.findall(r"^[e,p][a-zA-Z]+[-,a-zA-Z]*\d+\/*\d*", interface, re.IGNORECASE)
+            if len(catch_interface) and catch_interface[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "bridged":
                 if interface in specific_interfaces:
                     wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
                 # Comparison with generic setting
@@ -488,43 +648,57 @@ class VerifyL2MTU(AntaTest):
 
 
 class VerifyInterfaceIPv4(AntaTest):
-    """
-    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+    """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
 
-    Expected Results:
-        * success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
-        * failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if an interface is configured with a correct primary and secondary IPv4 address.
+    * Failure: The test will fail if an interface is not found or the primary and secondary IPv4 addresses do not match with the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfaceIPv4:
+          interfaces:
+            - name: Ethernet2
+              primary_ip: 172.30.11.0/31
+              secondary_ips:
+                - 10.10.10.0/31
+                - 10.10.10.10/31
+    ```
     """
 
     name = "VerifyInterfaceIPv4"
     description = "Verifies the interface IPv4 addresses."
-    categories = ["interfaces"]
-    commands = [AntaTemplate(template="show ip interface {interface}")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyInterfaceIPv4 test."""
+        """Input model for the VerifyInterfaceIPv4 test."""
 
-        interfaces: List[InterfaceDetail]
-        """list of interfaces to be tested"""
+        interfaces: list[InterfaceDetail]
+        """List of interfaces with their details."""
 
         class InterfaceDetail(BaseModel):
-            """Detail of an interface"""
+            """Model for an interface detail."""
 
             name: Interface
-            """Name of the interface"""
+            """Name of the interface."""
             primary_ip: IPv4Network
-            """Primary IPv4 address with subnet on interface"""
-            secondary_ips: Optional[List[IPv4Network]] = None
-            """Optional list of secondary IPv4 addresses with subnet on interface"""
+            """Primary IPv4 address in CIDR notation."""
+            secondary_ips: list[IPv4Network] | None = None
+            """Optional list of secondary IPv4 addresses in CIDR notation."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        # Render the template for each interface
+        """Render the template for each interface in the input list."""
         return [
             template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
         ]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
         for command in self.instance_commands:
             intf = command.params["interface"]
@@ -569,27 +743,36 @@ class VerifyInterfaceIPv4(AntaTest):
 
 
 class VerifyIpVirtualRouterMac(AntaTest):
-    """
-    Verifies the IP virtual router MAC address.
+    """Verifies the IP virtual router MAC address.
 
-    Expected Results:
-        * success: The test will pass if the IP virtual router MAC address matches the input.
-        * failure: The test will fail if the IP virtual router MAC address does not match the input.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the IP virtual router MAC address matches the input.
+    * Failure: The test will fail if the IP virtual router MAC address does not match the input.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyIpVirtualRouterMac:
+          mac_address: 00:1c:73:00:dc:01
+    ```
     """
 
     name = "VerifyIpVirtualRouterMac"
     description = "Verifies the IP virtual router MAC address."
-    categories = ["interfaces"]
-    commands = [AntaCommand(command="show ip virtual-router")]
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip virtual-router", revision=2)]
 
     class Input(AntaTest.Input):
-        """Inputs for the VerifyIpVirtualRouterMac test."""
+        """Input model for the VerifyIpVirtualRouterMac test."""
 
         mac_address: MacAddress
-        """IP virtual router MAC address"""
+        """IP virtual router MAC address."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyIpVirtualRouterMac."""
         command_output = self.instance_commands[0].json_output["virtualMacs"]
         mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
 

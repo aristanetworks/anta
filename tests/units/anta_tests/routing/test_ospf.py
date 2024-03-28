@@ -1,14 +1,13 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Tests for anta.tests.routing.ospf.py
-"""
+"""Tests for anta.tests.routing.ospf.py."""
+
 from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.ospf import VerifyOSPFNeighborCount, VerifyOSPFNeighborState
+from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -40,9 +39,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -56,13 +55,13 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -95,9 +94,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -111,20 +110,20 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
             ],
         },
     },
@@ -134,7 +133,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
@@ -167,9 +166,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -183,13 +182,13 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "success"},
@@ -213,12 +212,12 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "failure", "messages": ["device has 1 neighbors (expected 3)"]},
@@ -251,9 +250,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ]
-                            }
-                        }
+                                ],
+                            },
+                        },
                     },
                     "BLAH": {
                         "instList": {
@@ -267,20 +266,20 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    }
-                                ]
-                            }
-                        }
+                                    },
+                                ],
+                            },
+                        },
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 3},
         "expected": {
             "result": "failure",
             "messages": [
                 "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}]."
+                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
             ],
         },
     },
@@ -290,9 +289,123 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {},
-            }
+            },
         ],
         "inputs": {"number": 3},
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {
+                                    "maxLsa": 12000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "1.1.1.1",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 9,
+                                },
+                            },
+                        },
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "instanceId": 10,
+                                "maxLsaInformation": {
+                                    "maxLsa": 1000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "20.20.20.20",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 5,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {
+                                    "maxLsa": 12000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "1.1.1.1",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 11500,
+                                },
+                            },
+                        },
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "instanceId": 10,
+                                "maxLsaInformation": {
+                                    "maxLsa": 1000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "20.20.20.20",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 1500,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["OSPF Instances ['1', '10'] crossed the maximum LSA threshold."],
+        },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["No OSPF instance found."]},
     },
 ]

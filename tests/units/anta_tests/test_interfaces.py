@@ -1,7 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.hardware"""
+"""Test inputs for anta.tests.hardware."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -30,25 +31,288 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyInterfaceUtilization,
         "eos_data": [
-            """Port      Name        Intvl   In Mbps      %  In Kpps  Out Mbps      % Out Kpps
-Et1                    5:00       0.0   0.0%        0       0.0   0.0%        0
-Et4                    5:00       0.0   0.0%        0       0.0   0.0%        0
-"""
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "interval": 300,
+                        "inBpsRate": 2242.2497205060313,
+                        "inPktsRate": 0.00028663359326985426,
+                        "inPpsRate": 3.9005388262031966,
+                        "outBpsRate": 0.0,
+                        "outPktsRate": 0.0,
+                        "outPpsRate": 0.0,
+                        "lastUpdateTimestamp": 1710253727.138605,
+                    },
+                    "Port-Channel31": {
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "interval": 300,
+                        "inBpsRate": 1862.4876594267096,
+                        "inPktsRate": 0.00011473185873493155,
+                        "inPpsRate": 2.7009344704495084,
+                        "outBpsRate": 1758.0044570479704,
+                        "outPktsRate": 0.00010844978034772172,
+                        "outPpsRate": 2.5686946869154013,
+                        "lastUpdateTimestamp": 1710253726.4029949,
+                    },
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "name": "Ethernet1/1",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "interfaceAddress": [
+                            {
+                                "primaryIp": {"address": "10.255.255.1", "maskLen": 31},
+                                "secondaryIps": {},
+                                "secondaryIpsOrderedList": [],
+                                "virtualIp": {"address": "0.0.0.0", "maskLen": 0},
+                                "virtualSecondaryIps": {},
+                                "virtualSecondaryIpsOrderedList": [],
+                                "broadcastAddress": "255.255.255.255",
+                                "dhcp": False,
+                            }
+                        ],
+                        "physicalAddress": "aa:c1:ab:7e:76:36",
+                        "burnedInAddress": "aa:c1:ab:7e:76:36",
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "bandwidth": 1000000000,
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234511.3085763,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 2240.0023281094,
+                            "inPktsRate": 3.8978070399448654,
+                            "outBitsRate": 0.0,
+                            "outPktsRate": 0.0,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 5413008,
+                            "inUcastPkts": 74693,
+                            "inMulticastPkts": 643,
+                            "inBroadcastPkts": 1,
+                            "inDiscards": 0,
+                            "inTotalPkts": 75337,
+                            "outOctets": 0,
+                            "outUcastPkts": 0,
+                            "outMulticastPkts": 0,
+                            "outBroadcastPkts": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                            "counterRefreshTime": 1710253760.6489396,
+                        },
+                        "duplex": "duplexFull",
+                        "autoNegotiate": "unknown",
+                        "loopbackMode": "loopbackNone",
+                        "lanes": 0,
+                    },
+                    "Port-Channel31": {
+                        "name": "Port-Channel31",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "portChannel",
+                        "interfaceAddress": [],
+                        "physicalAddress": "aa:c1:ab:72:58:40",
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "bandwidth": 2000000000,
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234510.1133935,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 1854.287898883752,
+                            "inPktsRate": 2.6902775246495665,
+                            "outBitsRate": 1749.1141130864632,
+                            "outPktsRate": 2.5565618978302362,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 4475556,
+                            "inUcastPkts": 48949,
+                            "inMulticastPkts": 2579,
+                            "inBroadcastPkts": 2,
+                            "inDiscards": 0,
+                            "inTotalPkts": 51530,
+                            "outOctets": 4230011,
+                            "outUcastPkts": 48982,
+                            "outMulticastPkts": 6,
+                            "outBroadcastPkts": 2,
+                            "outDiscards": 0,
+                            "outTotalPkts": 48990,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                            "counterRefreshTime": 1710253760.6500373,
+                        },
+                        "memberInterfaces": {
+                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                        },
+                        "fallbackEnabled": False,
+                        "fallbackEnabledType": "fallbackNone",
+                    },
+                }
+            },
         ],
-        "inputs": None,
+        "inputs": {"threshold": 70.0},
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyInterfaceUtilization,
         "eos_data": [
-            """Port      Name        Intvl   In Mbps      %  In Kpps  Out Mbps      % Out Kpps
-Et1                    5:00       0.0   0.0%        0       0.0  80.0%        0
-Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
-"""
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "interval": 300,
+                        "inBpsRate": 100000000.0,
+                        "inPktsRate": 0.00028663359326985426,
+                        "inPpsRate": 3.9005388262031966,
+                        "outBpsRate": 0.0,
+                        "outPktsRate": 0.0,
+                        "outPpsRate": 0.0,
+                        "lastUpdateTimestamp": 1710253727.138605,
+                    },
+                    "Port-Channel31": {
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "interval": 300,
+                        "inBpsRate": 1862.4876594267096,
+                        "inPktsRate": 0.00011473185873493155,
+                        "inPpsRate": 2.7009344704495084,
+                        "outBpsRate": 100000000.0,
+                        "outPktsRate": 0.00010844978034772172,
+                        "outPpsRate": 2.5686946869154013,
+                        "lastUpdateTimestamp": 1710253726.4029949,
+                    },
+                }
+            },
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "name": "Ethernet1/1",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "interfaceAddress": [
+                            {
+                                "primaryIp": {"address": "10.255.255.1", "maskLen": 31},
+                                "secondaryIps": {},
+                                "secondaryIpsOrderedList": [],
+                                "virtualIp": {"address": "0.0.0.0", "maskLen": 0},
+                                "virtualSecondaryIps": {},
+                                "virtualSecondaryIpsOrderedList": [],
+                                "broadcastAddress": "255.255.255.255",
+                                "dhcp": False,
+                            }
+                        ],
+                        "physicalAddress": "aa:c1:ab:7e:76:36",
+                        "burnedInAddress": "aa:c1:ab:7e:76:36",
+                        "description": "P2P_LINK_TO_DC1-SPINE1_Ethernet1/1",
+                        "bandwidth": 1000000000,
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234511.3085763,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 2240.0023281094,
+                            "inPktsRate": 3.8978070399448654,
+                            "outBitsRate": 0.0,
+                            "outPktsRate": 0.0,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 5413008,
+                            "inUcastPkts": 74693,
+                            "inMulticastPkts": 643,
+                            "inBroadcastPkts": 1,
+                            "inDiscards": 0,
+                            "inTotalPkts": 75337,
+                            "outOctets": 0,
+                            "outUcastPkts": 0,
+                            "outMulticastPkts": 0,
+                            "outBroadcastPkts": 0,
+                            "outDiscards": 0,
+                            "outTotalPkts": 0,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                            "counterRefreshTime": 1710253760.6489396,
+                        },
+                        "duplex": "duplexFull",
+                        "autoNegotiate": "unknown",
+                        "loopbackMode": "loopbackNone",
+                        "lanes": 0,
+                    },
+                    "Port-Channel31": {
+                        "name": "Port-Channel31",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "portChannel",
+                        "interfaceAddress": [],
+                        "physicalAddress": "aa:c1:ab:72:58:40",
+                        "description": "MLAG_PEER_dc1-leaf1b_Po31",
+                        "bandwidth": 2000000000,
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                        "lastStatusChangeTimestamp": 1710234510.1133935,
+                        "interfaceStatistics": {
+                            "updateInterval": 300.0,
+                            "inBitsRate": 1854.287898883752,
+                            "inPktsRate": 2.6902775246495665,
+                            "outBitsRate": 1749.1141130864632,
+                            "outPktsRate": 2.5565618978302362,
+                        },
+                        "interfaceCounters": {
+                            "inOctets": 4475556,
+                            "inUcastPkts": 48949,
+                            "inMulticastPkts": 2579,
+                            "inBroadcastPkts": 2,
+                            "inDiscards": 0,
+                            "inTotalPkts": 51530,
+                            "outOctets": 4230011,
+                            "outUcastPkts": 48982,
+                            "outMulticastPkts": 6,
+                            "outBroadcastPkts": 2,
+                            "outDiscards": 0,
+                            "outTotalPkts": 48990,
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                            "counterRefreshTime": 1710253760.6500373,
+                        },
+                        "memberInterfaces": {
+                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                        },
+                        "fallbackEnabled": False,
+                        "fallbackEnabledType": "fallbackNone",
+                    },
+                }
+            },
         ],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have a usage > 75%: {'Et1': '80.0%', 'Et4': '99.9%'}"]},
+        "inputs": {"threshold": 3.0},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following interfaces have a usage > 3.0%: {'Ethernet1/1': {'inBpsRate': 10.0}, 'Port-Channel31': {'outBpsRate': 5.0}}"],
+        },
     },
     {
         "name": "success",
@@ -58,8 +322,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -72,8 +336,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 666, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
@@ -81,7 +345,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
                 " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]",
             ],
         },
     },
@@ -93,8 +357,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 10, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 6, "symbolErrors": 10},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
@@ -102,7 +366,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
                 " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]"
+                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]",
             ],
         },
     },
@@ -113,15 +377,15 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]"
+                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]",
             ],
         },
     },
@@ -136,7 +400,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet1": {"outDiscards": 0, "inDiscards": 0},
                 },
                 "outDiscardsTotal": 0,
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -152,14 +416,14 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
                 },
                 "outDiscardsTotal": 0,
-            }
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
                 "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]"
+                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]",
             ],
         },
     },
@@ -175,8 +439,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {
                         "linkStatus": "connected",
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -193,8 +457,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {
                         "linkStatus": "errdisabled",
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
@@ -208,8 +472,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -257,8 +521,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -272,8 +536,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
         "expected": {"result": "success"},
@@ -285,8 +549,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
         "expected": {"result": "success"},
@@ -298,8 +562,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
             {
                 "interfaceDescriptions": {
                     "Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
         "expected": {"result": "success"},
@@ -351,8 +615,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                 "interfaceDescriptions": {
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
@@ -369,8 +633,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
@@ -387,8 +651,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                }
-            }
+                },
+            },
         ],
         "inputs": {
             "interfaces": [
@@ -454,9 +718,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -473,9 +737,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    }
+                    },
                 },
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
@@ -496,9 +760,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "inactivePorts": {},
                         "activePorts": {},
                         "inactiveLag": False,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -519,9 +783,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
                         "activePorts": {},
                         "inactiveLag": False,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
@@ -543,12 +807,12 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 "orphanPorts": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -570,17 +834,17 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 "orphanPorts": {},
-            }
+            },
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["The following port-channels have recieved illegal lacp packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+            "messages": ["The following port-channels have received illegal LACP packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
         },
     },
     {
@@ -605,8 +869,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "success"},
@@ -633,8 +897,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "down",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
@@ -653,8 +917,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
-                }
-            }
+                },
+            },
         ],
         "inputs": {"number": 2},
         "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
@@ -672,9 +936,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "up",
                         "mtu": 1500,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -692,9 +956,9 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "lowerLayerDown",
                         "mtu": 1500,
-                    }
-                }
-            }
+                    },
+                },
+            },
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
@@ -766,7 +1030,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "success"},
@@ -838,7 +1102,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "success"},
@@ -910,7 +1174,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
@@ -921,8 +1185,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "name": "Ethernet2",
+                    "Ethernet2/1": {
+                        "name": "Ethernet2/1",
                         "forwardingModel": "routed",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
@@ -982,7 +1246,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 9214},
         "expected": {"result": "success"},
@@ -1054,7 +1318,7 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "l2Mru": 0,
                     },
                 },
-            }
+            },
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
@@ -1084,8 +1348,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
             {
                 "interfaces": {
@@ -1108,8 +1372,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
@@ -1140,8 +1404,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
             {
                 "interfaces": {
@@ -1164,8 +1428,8 @@ Et4                    5:00       0.0  99.9%        0       0.0   0.0%        0
                         "directedBroadcastEnabled": False,
                         "maxMssIngress": 0,
                         "maxMssEgress": 0,
-                    }
-                }
+                    },
+                },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
