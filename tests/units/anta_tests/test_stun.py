@@ -1,7 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test inputs for anta.tests.system"""
+"""Test inputs for anta.tests.stun.py."""
+
 from __future__ import annotations
 
 from typing import Any

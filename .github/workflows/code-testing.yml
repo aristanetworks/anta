@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     needs: file-changes
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
           config_file: .yamllint.yml
           file_or_dir: .
   lint-python:
-    name: Run isort, black, flake8 and pylint
+    name: Check the code style
     runs-on: ubuntu-20.04
     needs: file-changes
     if: needs.file-changes.outputs.code == 'true'
@@ -97,7 +97,7 @@ jobs:
       - name: "Run tox linting environment"
         run: tox -e lint
   type-python:
-    name: Run mypy
+    name: Check typing
     runs-on: ubuntu-20.04
     needs: file-changes
     if: needs.file-changes.outputs.code == 'true'
@@ -117,7 +117,7 @@ jobs:
     needs: [lint-python, type-python]
     strategy:
       matrix:
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python

@@ -1,0 +1,35 @@
+{% extends "_base/class.html" %}
+{% set anta_test = namespace(found=false) %}
+{% for base in class.bases %}
+{%   set basestr = base | string %}
+{%   if "AntaTest" == basestr %}
+{%     set anta_test.found = True %}
+{%   endif %}
+{% endfor %}
+{% block children %}
+{%   if anta_test.found %}
+  {% set root = False %}
+  {% set heading_level = heading_level + 1 %}
+  {% include "anta_test.html" with context %}
+  {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
+	<details class="quote">
+	<summary>Source code in <code>
+		{%- if class.relative_filepath.is_absolute() -%}
+			{{ class.relative_package_filepath }}
+		{%- else -%}
+			{{ class.relative_filepath }}
+		{%- endif -%}
+	</code></summary>
+	{{ class.source|highlight(language="python", linestart=class.lineno, linenums=True) }}
+  </details>
+{%   else %}
+  {{ super() }}
+{%   endif %}
+{% endblock children %}
+
+{# Do not render source before children for AntaTest #}
+{% block source %}
+{%   if not anta_test.found %}
+  {{ super() }}
+{%   endif %}
+{% endblock source %}

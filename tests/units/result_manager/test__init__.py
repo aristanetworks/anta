@@ -1,35 +1,30 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test anta.result_manager.__init__.py
-"""
+"""Test anta.result_manager.__init__.py."""
+
 from __future__ import annotations
 
 import json
-from contextlib import nullcontext
-from typing import TYPE_CHECKING, Any, Callable
+from contextlib import AbstractContextManager, nullcontext
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
 
 if TYPE_CHECKING:
+    from anta.custom_types import TestStatus
     from anta.result_manager.models import TestResult
 
 
-class Test_ResultManager:
-    """
-    Test ResultManager class
-    """
+class TestResultManager:
+    """Test ResultManager class."""
 
     # not testing __init__ as nothing is going on there
 
     def test__len__(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """
-        test __len__
-        """
+        """Test __len__."""
         list_result = list_result_factory(3)
         result_manager = ResultManager()
         assert len(result_manager) == 0
@@ -38,30 +33,66 @@ class Test_ResultManager:
             assert len(result_manager) == i + 1
 
     @pytest.mark.parametrize(
-        "starting_status, test_status, expected_status, expected_raise",
+        ("starting_status", "test_status", "expected_status", "expected_raise"),
         [
             pytest.param("unset", "unset", "unset", nullcontext(), id="unset->unset"),
             pytest.param("unset", "success", "success", nullcontext(), id="unset->success"),
             pytest.param("unset", "error", "unset", nullcontext(), id="set error"),
             pytest.param("skipped", "skipped", "skipped", nullcontext(), id="skipped->skipped"),
             pytest.param("skipped", "unset", "skipped", nullcontext(), id="skipped, add unset"),
-            pytest.param("skipped", "success", "success", nullcontext(), id="skipped, add success"),
-            pytest.param("skipped", "failure", "failure", nullcontext(), id="skipped, add failure"),
+            pytest.param(
+                "skipped",
+                "success",
+                "success",
+                nullcontext(),
+                id="skipped, add success",
+            ),
+            pytest.param(
+                "skipped",
+                "failure",
+                "failure",
+                nullcontext(),
+                id="skipped, add failure",
+            ),
             pytest.param("success", "unset", "success", nullcontext(), id="success, add unset"),
-            pytest.param("success", "skipped", "success", nullcontext(), id="success, add skipped"),
+            pytest.param(
+                "success",
+                "skipped",
+                "success",
+                nullcontext(),
+                id="success, add skipped",
+            ),
             pytest.param("success", "success", "success", nullcontext(), id="success->success"),
             pytest.param("success", "failure", "failure", nullcontext(), id="success->failure"),
             pytest.param("failure", "unset", "failure", nullcontext(), id="failure->failure"),
             pytest.param("failure", "skipped", "failure", nullcontext(), id="failure, add unset"),
-            pytest.param("failure", "success", "failure", nullcontext(), id="failure, add skipped"),
-            pytest.param("failure", "failure", "failure", nullcontext(), id="failure, add success"),
-            pytest.param("unset", "unknown", None, pytest.raises(ValueError), id="wrong status"),
+            pytest.param(
+                "failure",
+                "success",
+                "failure",
+                nullcontext(),
+                id="failure, add skipped",
+            ),
+            pytest.param(
+                "failure",
+                "failure",
+                "failure",
+                nullcontext(),
+                id="failure, add success",
+            ),
+            pytest.param(
+                "unset", "unknown", None, pytest.raises(ValueError, match="Input should be 'unset', 'success', 'failure', 'error' or 'skipped'"), id="wrong status"
+            ),
         ],
     )
-    def test__update_status(self, starting_status: TestStatus, test_status: TestStatus, expected_status: str, expected_raise: Any) -> None:
-        """
-        Test ResultManager._update_status
-        """
+    def test__update_status(
+        self,
+        starting_status: TestStatus,
+        test_status: TestStatus,
+        expected_status: str,
+        expected_raise: AbstractContextManager[Exception],
+    ) -> None:
+        """Test ResultManager._update_status."""
         result_manager = ResultManager()
         result_manager.status = starting_status
         assert result_manager.error_status is False
@@ -74,9 +105,7 @@ class Test_ResultManager:
                 assert result_manager.status == expected_status
 
     def test_add_test_result(self, test_result_factory: Callable[[int], TestResult]) -> None:
-        """
-        Test ResultManager.add_test_result
-        """
+        """Test ResultManager.add_test_result."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
         assert result_manager.error_status is False
@@ -115,9 +144,7 @@ class Test_ResultManager:
         assert len(result_manager) == 4
 
     def test_add_test_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """
-        Test ResultManager.add_test_results
-        """
+        """Test ResultManager.add_test_results."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
         assert result_manager.error_status is False
@@ -142,17 +169,21 @@ class Test_ResultManager:
         assert len(result_manager) == 5
 
     @pytest.mark.parametrize(
-        "status, error_status, ignore_error, expected_status",
+        ("status", "error_status", "ignore_error", "expected_status"),
         [
             pytest.param("success", False, True, "success", id="no error"),
             pytest.param("success", True, True, "success", id="error, ignore error"),
             pytest.param("success", True, False, "error", id="error, do not ignore error"),
         ],
     )
-    def test_get_status(self, status: TestStatus, error_status: bool, ignore_error: bool, expected_status: str) -> None:
-        """
-        test ResultManager.get_status
-        """
+    def test_get_status(
+        self,
+        status: TestStatus,
+        error_status: bool,
+        ignore_error: bool,
+        expected_status: str,
+    ) -> None:
+        """Test ResultManager.get_status."""
         result_manager = ResultManager()
         result_manager.status = status
         result_manager.error_status = error_status
@@ -160,9 +191,7 @@ class Test_ResultManager:
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
     def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """
-        test ResultManager.get_results
-        """
+        """Test ResultManager.get_results."""
         result_manager = ResultManager()
 
         success_list = list_result_factory(3)
@@ -174,9 +203,7 @@ class Test_ResultManager:
         assert isinstance(res, list)
 
     def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """
-        test ResultManager.get_json_results
-        """
+        """Test ResultManager.get_json_results."""
         result_manager = ResultManager()
 
         success_list = list_result_factory(3)
@@ -197,7 +224,7 @@ class Test_ResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
-    # TODO
+    # TODO: implement missing functions
     # get_result_by_test
     # get_result_by_host
     # get_testcases

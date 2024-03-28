@@ -2,15 +2,15 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
-"""
-Click commands to get information from or generate inventories
-"""
+"""Click commands to get information from or generate inventories."""
+
 from __future__ import annotations
 
 import asyncio
 import json
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 from cvprac.cvp_client import CvpClient
@@ -20,9 +20,11 @@ from rich.pretty import pretty_repr
 from anta.cli.console import console
 from anta.cli.get.utils import inventory_output_options
 from anta.cli.utils import ExitCode, inventory_options
-from anta.inventory import AntaInventory
 
 from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
 
 logger = logging.getLogger(__name__)
 
@@ -35,30 +37,29 @@ logger = logging.getLogger(__name__)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
-    """
-    Build ANTA inventory from Cloudvision
+    """Build ANTA inventory from Cloudvision.
 
     TODO - handle get_inventory and get_devices_in_container failure
     """
-    logger.info(f"Getting authentication token for user '{username}' from CloudVision instance '{host}'")
+    logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
     token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password)
 
     clnt = CvpClient()
     try:
         clnt.connect(nodes=[host], username="", password="", api_token=token)
     except CvpApiError as error:
-        logger.error(f"Error connecting to CloudVision: {error}")
+        logger.error("Error connecting to CloudVision: %s", error)
         ctx.exit(ExitCode.USAGE_ERROR)
-    logger.info(f"Connected to CloudVision instance '{host}'")
+    logger.info("Connected to CloudVision instance '%s'", host)
 
     cvp_inventory = None
     if container is None:
         # Get a list of all devices
-        logger.info(f"Getting full inventory from CloudVision instance '{host}'")
+        logger.info("Getting full inventory from CloudVision instance '%s'", host)
         cvp_inventory = clnt.api.get_inventory()
     else:
         # Get devices under a container
-        logger.info(f"Getting inventory for container {container} from CloudVision instance '{host}'")
+        logger.info("Getting inventory for container %s from CloudVision instance '%s'", container, host)
         cvp_inventory = clnt.api.get_devices_in_container(container)
     create_inventory_from_cvp(cvp_inventory, output)
 
@@ -74,8 +75,8 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
-    """Build ANTA inventory from an ansible inventory YAML file"""
-    logger.info(f"Building inventory from ansible file '{ansible_inventory}'")
+    """Build ANTA inventory from an ansible inventory YAML file."""
+    logger.info("Building inventory from ansible file '%s'", ansible_inventory)
     try:
         create_inventory_from_ansible(
             inventory=ansible_inventory,
@@ -90,10 +91,11 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.command
 @inventory_options
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(inventory: AntaInventory, tags: list[str] | None, connected: bool) -> None:
+def inventory(inventory: AntaInventory, tags: list[str] | None, *, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
-
-    logger.debug(f"Requesting devices for tags: {tags}")
+    # TODO: @gmuloc - tags come from context - we cannot have everything..
+    # ruff: noqa: ARG001
+    logger.debug("Requesting devices for tags: %s", tags)
     console.print("Current inventory content is:", style="white on blue")
 
     if connected:

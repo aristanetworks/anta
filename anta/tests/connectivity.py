@@ -1,59 +1,74 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-Test functions related to various connectivity checks
-"""
+"""Module related to various connectivity tests."""
+
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-
-# Need to keep List for pydantic in python 3.8
-from typing import List, Union
+from typing import ClassVar
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-from anta.models import AntaCommand, AntaMissingParamException, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaMissingParamError, AntaTemplate, AntaTest
 
 
 class VerifyReachability(AntaTest):
-    """
-    Test network reachability to one or many destination IP(s).
+    """Test network reachability to one or many destination IP(s).
 
-    Expected Results:
-        * success: The test will pass if all destination IP(s) are reachable.
-        * failure: The test will fail if one or many destination IP(s) are unreachable.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all destination IP(s) are reachable.
+    * Failure: The test will fail if one or many destination IP(s) are unreachable.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.connectivity:
+      - VerifyReachability:
+          hosts:
+            - source: Management0
+              destination: 1.1.1.1
+              vrf: MGMT
+            - source: Management0
+              destination: 8.8.8.8
+              vrf: MGMT
+    ```
     """
 
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
-    categories = ["connectivity"]
-    commands = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}")]
+    categories: ClassVar[list[str]] = ["connectivity"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        hosts: List[Host]
-        """List of hosts to ping"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyReachability test."""
+
+        hosts: list[Host]
+        """List of host to ping."""
 
         class Host(BaseModel):
-            """Remote host to ping"""
+            """Model for a remote host to ping."""
 
             destination: IPv4Address
-            """IPv4 address to ping"""
-            source: Union[IPv4Address, Interface]
-            """IPv4 address source IP or Egress interface to use"""
+            """IPv4 address to ping."""
+            source: IPv4Address | Interface
+            """IPv4 address source IP or egress interface to use."""
             vrf: str = "default"
-            """VRF context"""
+            """VRF context. Defaults to `default`."""
             repeat: int = 2
-            """Number of ping repetition (default=2)"""
+            """Number of ping repetition. Defaults to 2."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each host in the input list."""
         return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyReachability."""
         failures = []
         for command in self.instance_commands:
             src = command.params.get("source")
@@ -61,7 +76,8 @@ class VerifyReachability(AntaTest):
             repeat = command.params.get("repeat")
 
             if any(elem is None for elem in (src, dst, repeat)):
-                raise AntaMissingParamException(f"A parameter is missing to execute the test for command {command}")
+                msg = f"A parameter is missing to execute the test for command {command}"
+                raise AntaMissingParamError(msg)
 
             if f"{repeat} received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))
@@ -73,37 +89,54 @@ class VerifyReachability(AntaTest):
 
 
 class VerifyLLDPNeighbors(AntaTest):
-    """
-    This test verifies that the provided LLDP neighbors are present and connected with the correct configuration.
+    """Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
-    Expected Results:
-        * success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
-        * failure: The test will fail if any of the following conditions are met:
-            - The provided LLDP neighbor is not found.
-            - The system name or port of the LLDP neighbor does not match the provided information.
+    Expected Results
+    ----------------
+    * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
+    * Failure: The test will fail if any of the following conditions are met:
+        - The provided LLDP neighbor is not found.
+        - The system name or port of the LLDP neighbor does not match the provided information.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.connectivity:
+      - VerifyLLDPNeighbors:
+          neighbors:
+            - port: Ethernet1
+              neighbor_device: DC1-SPINE1
+              neighbor_port: Ethernet1
+            - port: Ethernet2
+              neighbor_device: DC1-SPINE2
+              neighbor_port: Ethernet1
+    ```
     """
 
     name = "VerifyLLDPNeighbors"
     description = "Verifies that the provided LLDP neighbors are connected properly."
-    categories = ["connectivity"]
-    commands = [AntaCommand(command="show lldp neighbors detail")]
+    categories: ClassVar[list[str]] = ["connectivity"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
 
-    class Input(AntaTest.Input):  # pylint: disable=missing-class-docstring
-        neighbors: List[Neighbor]
-        """List of LLDP neighbors"""
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLLDPNeighbors test."""
+
+        neighbors: list[Neighbor]
+        """List of LLDP neighbors."""
 
         class Neighbor(BaseModel):
-            """LLDP neighbor"""
+            """Model for an LLDP neighbor."""
 
             port: Interface
-            """LLDP port"""
+            """LLDP port."""
             neighbor_device: str
-            """LLDP neighbor device"""
+            """LLDP neighbor device."""
             neighbor_port: Interface
-            """LLDP neighbor port"""
+            """LLDP neighbor port."""
 
     @AntaTest.anta_test
     def test(self) -> None:
+        """Main test function for VerifyLLDPNeighbors."""
         command_output = self.instance_commands[0].json_output
 
         failures: dict[str, list[str]] = {}
