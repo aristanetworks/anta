@@ -13,12 +13,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field, model_validator
 
-from anta.custom_types import (
-    EcdsaKeySize,
-    EncryptionAlgorithm,
-    PositiveInteger,
-    RsaKeySize,
-)
+from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
@@ -283,12 +278,7 @@ class VerifyAPIIPv4Acl(AntaTest):
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(
-            command="show management api http-commands ip access-list summary",
-            revision=1,
-        )
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ip access-list summary", revision=1)]
 
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPIIPv4Acl test."""
@@ -338,12 +328,7 @@ class VerifyAPIIPv6Acl(AntaTest):
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(
-            command="show management api http-commands ipv6 access-list summary",
-            revision=1,
-        )
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ipv6 access-list summary", revision=1)]
 
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPIIPv6Acl test."""
@@ -461,13 +446,7 @@ class VerifyAPISSLCertificate(AntaTest):
         for certificate in self.inputs.certificates:
             # Collecting certificate expiry time and current EOS time.
             # These times are used to calculate the number of days until the certificate expires.
-            if not (
-                certificate_data := get_value(
-                    certificate_output,
-                    f"certificates..{certificate.certificate_name}",
-                    separator="..",
-                )
-            ):
+            if not (certificate_data := get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")):
                 self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
                 continue
 
@@ -481,11 +460,7 @@ class VerifyAPISSLCertificate(AntaTest):
                 self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is expired.\n")
 
             # Verify certificate common subject name, encryption algorithm and key size
-            keys_to_verify = [
-                "subject.commonName",
-                "publicKey.encryptionAlgorithm",
-                "publicKey.size",
-            ]
+            keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
             actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
 
             expected_certificate_details = {
