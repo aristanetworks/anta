@@ -143,8 +143,20 @@ class TestResultManager:
         assert result_manager.error_status is True
         assert len(result_manager) == 4
 
-    def test_add_test_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.add_test_results."""
+    def test_results_getter(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.results property getter."""
+        result_manager = ResultManager()
+
+        success_list = list_result_factory(3)
+        for test in success_list:
+            test.result = "success"
+        result_manager.results = success_list
+
+        res = result_manager.results
+        assert isinstance(res, list)
+
+    def test_results_setter(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.results property setter."""
         result_manager = ResultManager()
         assert result_manager.status == "unset"
         assert result_manager.error_status is False
@@ -154,7 +166,7 @@ class TestResultManager:
         success_list = list_result_factory(3)
         for test in success_list:
             test.result = "success"
-        result_manager.add_test_results(success_list)
+        result_manager.results = success_list
         assert result_manager.status == "success"
         assert result_manager.error_status is False
         assert len(result_manager) == 3
@@ -163,7 +175,7 @@ class TestResultManager:
         error_failure_list = list_result_factory(2)
         error_failure_list[0].result = "error"
         error_failure_list[1].result = "failure"
-        result_manager.add_test_results(error_failure_list)
+        result_manager.results = error_failure_list
         assert result_manager.status == "failure"
         assert result_manager.error_status is True
         assert len(result_manager) == 5
@@ -190,28 +202,16 @@ class TestResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.get_results."""
+    def test_json(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.json property."""
         result_manager = ResultManager()
 
         success_list = list_result_factory(3)
         for test in success_list:
             test.result = "success"
-        result_manager.add_test_results(success_list)
+        result_manager.results = success_list
 
-        res = result_manager.get_results()
-        assert isinstance(res, list)
-
-    def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.get_json_results."""
-        result_manager = ResultManager()
-
-        success_list = list_result_factory(3)
-        for test in success_list:
-            test.result = "success"
-        result_manager.add_test_results(success_list)
-
-        json_res = result_manager.get_json_results()
+        json_res = result_manager.json
         assert isinstance(json_res, str)
 
         # Verifies it can be deserialized back to a list of dict with the correct values types

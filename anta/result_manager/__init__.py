@@ -49,7 +49,7 @@ class ResultManager:
 
         Print result in native format:
 
-            manager.get_results()
+            manager.results
             [
                 TestResult(
                     host=IPv4Address('192.168.0.10'),
@@ -89,13 +89,27 @@ class ResultManager:
         error_status is set to True.
         """
         self._result_entries: list[TestResult] = []
-        # Initialize status
         self.status: TestStatus = "unset"
         self.error_status = False
 
     def __len__(self) -> int:
         """Implement __len__ method to count number of results."""
         return len(self._result_entries)
+
+    @property
+    def results(self) -> list[TestResult]:
+        """Get the list of TestResult."""
+        return self._result_entries
+
+    @results.setter
+    def results(self, value: list[TestResult]) -> None:
+        for e in value:
+            self.add_test_result(e)
+
+    @property
+    def json(self) -> str:
+        """Get a JSON representation of the results."""
+        return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
 
     def _update_status(self, test_status: TestStatus) -> None:
         """Update ResultManager status based on the table above."""
@@ -109,106 +123,95 @@ class ResultManager:
         elif self.status == "success" and test_status == "failure":
             self.status = "failure"
 
-    def add_test_result(self, entry: TestResult) -> None:
-        """Add a result to the list.
+    def add_test_result(self, result: TestResult) -> None:
+        """Add a result to the report.
 
         Args:
         ----
-            entry (TestResult): TestResult data to add to the report
+            test: TestResult data to add to the report.
 
         """
-        logger.debug(entry)
-        self._result_entries.append(entry)
-        self._update_status(entry.result)
-
-    def add_test_results(self, entries: list[TestResult]) -> None:
-        """Add a list of results to the list.
-
-        Args:
-        ----
-            entries (list[TestResult]): List of TestResult data to add to the report
-
-        """
-        for e in entries:
-            self.add_test_result(e)
+        logger.debug(result)
+        self._result_entries.append(result)
+        self._update_status(result.result)
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
-    def get_results(self) -> list[TestResult]:
-        """Expose list of all test results in different format.
-
-        Returns
-        -------
-            any: List of results.
-
-        """
-        return self._result_entries
-
-    def get_json_results(self) -> str:
-        """Expose list of all test results in JSON.
-
-        Returns
-        -------
-            str: JSON dumps of the list of results
-
-        """
-        result = [result.model_dump() for result in self._result_entries]
-        return json.dumps(result, indent=4)
-
-    def get_result_by_test(self, test_name: str) -> list[TestResult]:
-        """Get list of test result for a given test.
+    def filter(self, *, hide_success: bool = False, hide_failure: bool = False, hide_error: bool = False) -> ResultManager:
+        """Get a filtered ResultManager based on test status.
 
         Args:
         ----
-            test_name (str): Test name to use to filter results
+            hide_success: Hide tests with status `success` if True.
+            hide_failure: Hide tests with status `failure` if True.
+            hide_error: Hide tests with status `error` if True.
 
         Returns
         -------
-            list[TestResult]: List of results related to the test.
-
+            A filtered `ResultManager`.
         """
-        return [result for result in self._result_entries if str(result.test) == test_name]
+        manager = ResultManager()
+        manager.results = [
+            test
+            for test in self._result_entries
+            if (not (hide_success and test.result == "success") and not (hide_failure and test.result == "failure") and not (hide_error and test.result == "error"))
+        ]
+        return manager
 
-    def get_result_by_host(self, host_ip: str) -> list[TestResult]:
-        """Get list of test result for a given host.
+    def filter_by_test(self, tests: list[str]) -> ResultManager:
+        """Get a filtered ResultManager that only contains specific tests.
 
         Args:
         ----
-            host_ip (str): IP Address of the host to use to filter results.
+            tests: List of test names to filter the results.
 
         Returns
         -------
-            list[TestResult]: List of results related to the host.
-
+            A filtered `ResultManager`.
         """
-        return [result for result in self._result_entries if str(result.name) == host_ip]
+        manager = ResultManager()
+        manager.results = [result for result in self._result_entries if result.test in tests]
+        return manager
 
-    def get_testcases(self) -> list[str]:
-        """Get list of name of all test cases in current manager.
+    def filter_by_device(self, devices: list[str]) -> ResultManager:
+        """Get a filtered ResultManager that only contains specific devices.
+
+        Args:
+        ----
+            devices: List of device names to filter the results.
 
         Returns
         -------
-            list[str]: List of names for all tests.
-
+            A filtered `ResultManager`.
         """
-        result_list = []
-        for testcase in self._result_entries:
-            if str(testcase.test) not in result_list:
-                result_list.append(str(testcase.test))
-        return result_list
+        manager = ResultManager()
+        manager.results = [result for result in self._result_entries if result.name in devices]
+        return manager
 
-    def get_hosts(self) -> list[str]:
-        """Get list of IP addresses in current manager.
+    def get_tests(self) -> set[str]:
+        """Get the list of all the test names.
 
         Returns
         -------
-            list[str]: List of IP addresses.
+            List of test names.
 
         """
-        result_list = []
-        for testcase in self._result_entries:
-            if str(testcase.name) not in result_list:
-                result_list.append(str(testcase.name))
-        return result_list
+        names = set()
+        for result in self._result_entries:
+            names.add(str(result.test))
+        return names
+
+    def get_hosts(self) -> set[str]:
+        """Get lthe list of all the device names.
+
+        Returns
+        -------
+            List of device names.
+
+        """
+        names = set()
+        for result in self._result_entries:
+            names.add(str(result.name))
+        return names
