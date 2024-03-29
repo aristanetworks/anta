@@ -65,7 +65,7 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "json"])
     assert result.exit_code == ExitCode.OK
-    assert "JSON results of all tests" in result.output
+    assert "JSON results" in result.output
     match = re.search(r"\[\n  {[\s\S]+  }\n\]", result.output)
     assert match is not None
     result_list = json.loads(match.group())

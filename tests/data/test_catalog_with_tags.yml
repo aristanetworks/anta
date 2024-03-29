@@ -4,6 +4,10 @@ anta.tests.system:
       minimum: 10
       filters:
         tags: ['fabric']
+  - VerifyUptime:
+      minimum: 9
+      filters:
+        tags: ['leaf']
   - VerifyReloadCause:
       filters:
         tags: ['leaf', 'spine']

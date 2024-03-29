@@ -44,7 +44,7 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         ctx: click.Context,
         *args: tuple[Any],
         inventory: AntaInventory,
-        tags: list[str] | None,
+        tags: set[str] | None,
         device: str,
         **kwargs: Any,
     ) -> Any:

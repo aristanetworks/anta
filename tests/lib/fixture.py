@@ -148,7 +148,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     def _factory(number: int = 0) -> ResultManager:
         """Create a factory for list[TestResult] entry of size entries."""
         result_manager = ResultManager()
-        result_manager.add_test_results(list_result_factory(number))
+        result_manager.results = list_result_factory(number)
         return result_manager
 
     return _factory

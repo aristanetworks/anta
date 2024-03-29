@@ -108,7 +108,7 @@ def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
             AntaInventoryHost(
                 name=dev["hostname"],
                 host=dev["ipAddress"],
-                tags=[dev["containerName"].lower()],
+                tags={dev["containerName"].lower()},
             )
         )
     write_inventory_to_file(hosts, output)

@@ -29,7 +29,7 @@ INVALID_CHAR = "`~!@#$/"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | None = None) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, tags: set[str] | None = None) -> None:
     """Clear counters."""
 
     async def clear(dev: AntaDevice) -> None:
@@ -44,7 +44,7 @@ async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | 
 
     logger.info("Connecting to devices...")
     await anta_inventory.connect_inventory()
-    devices = anta_inventory.get_inventory(established_only=True, tags=tags).values()
+    devices = anta_inventory.get_inventory(established_only=True, tags=tags).devices
     logger.info("Clearing counters on remote devices...")
     await asyncio.gather(*(clear(device) for device in devices))
 
@@ -53,7 +53,7 @@ async def collect_commands(
     inv: AntaInventory,
     commands: dict[str, str],
     root_dir: Path,
-    tags: list[str] | None = None,
+    tags: set[str] | None = None,
 ) -> None:
     """Collect EOS commands."""
 
@@ -78,7 +78,7 @@ async def collect_commands(
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
-    devices = inv.get_inventory(established_only=True, tags=tags).values()
+    devices = inv.get_inventory(established_only=True, tags=tags).devices
     logger.info("Collecting commands from remote devices")
     coros = []
     if "json_format" in commands:
@@ -91,7 +91,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:
@@ -154,5 +154,5 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, con
 
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
-    devices = inv.get_inventory(established_only=True, tags=tags).values()
+    devices = inv.get_inventory(established_only=True, tags=tags).devices
     await asyncio.gather(*(collect(device) for device in devices))
