@@ -217,10 +217,10 @@ class TestResultManager:
         result_manager.add(test)
 
         assert len(result_manager) == 6
-        assert len(result_manager.filter_by_tests(["Test1"])) == 1
-        rm = result_manager.filter_by_tests(["Test1", "Test2"])
+        assert len(result_manager.filter_by_tests({"Test1"})) == 1
+        rm = result_manager.filter_by_tests({"Test1", "Test2"})
         assert len(rm) == 3
-        assert len(rm.filter_by_tests(["Test1"])) == 1
+        assert len(rm.filter_by_tests({"Test1"})) == 1
 
     def test_get_by_devices(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.get_by_devices."""
@@ -239,10 +239,10 @@ class TestResultManager:
         result_manager.add(test)
 
         assert len(result_manager) == 6
-        assert len(result_manager.filter_by_devices(["Device1"])) == 1
-        rm = result_manager.filter_by_devices(["Device1", "Device2"])
+        assert len(result_manager.filter_by_devices({"Device1"})) == 1
+        rm = result_manager.filter_by_devices({"Device1", "Device2"})
         assert len(rm) == 3
-        assert len(rm.filter_by_devices(["Device1"])) == 1
+        assert len(rm.filter_by_devices({"Device1"})) == 1
 
     def test_get_tests(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
         """Test ResultManager.get_tests."""
