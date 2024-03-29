@@ -112,12 +112,11 @@ class ResultManager:
         return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
 
     def add(self, result: TestResult) -> None:
-        """Add a result to the report.
+        """Add a result to the ResultManager instance.
 
         Args:
         ----
-            test: TestResult data to add to the report.
-
+            result: TestResult to add to the ResultManager instance.
         """
 
         def _update_status(test_status: TestStatus) -> None:
@@ -184,27 +183,19 @@ class ResultManager:
         return manager
 
     def get_tests(self) -> set[str]:
-        """Get the list of all the test names.
+        """Get the set of all the test names.
 
         Returns
         -------
-            List of test names.
-
+            Set of test names.
         """
-        names = set()
-        for result in self._result_entries:
-            names.add(str(result.test))
-        return names
+        return {str(result.test) for result in self._result_entries}
 
     def get_devices(self) -> set[str]:
-        """Get the list of all the device names.
+        """Get the set of all the device names.
 
         Returns
         -------
-            List of device names.
-
+            Set of device names.
         """
-        names = set()
-        for result in self._result_entries:
-            names.add(str(result.name))
-        return names
+        return {str(result.name) for result in self._result_entries}

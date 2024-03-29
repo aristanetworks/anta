@@ -103,15 +103,14 @@ class ReportTable:
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
         table = self._build_headers(headers=headers, table=table)
 
-        def add_line(table: Table, result: TestResult) -> Table:
+        def add_line(result: TestResult) -> None:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(result.categories)
             table.add_row(str(result.name), result.test, state, message, result.description, categories)
-            return table
 
         for result in manager.results:
-            table = add_line(table=table, result=result)
+            add_line(result)
         return table
 
     def report_summary_tests(
@@ -134,7 +133,6 @@ class ReportTable:
         -------
             A fully populated rich `Table`.
         """
-        # sourcery skip: class-extract-method
         table = Table(title=title, show_lines=True)
         headers = [
             "Test Case",

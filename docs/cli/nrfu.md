@@ -18,7 +18,7 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 ```bash
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
-  Run ANTA tests on devices.
+  Run ANTA tests on selected inventory devices.
 
 Options:
   -u, --username TEXT             Username to connect to EOS  [env var:

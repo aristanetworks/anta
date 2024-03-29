@@ -55,7 +55,6 @@ async def main(  # noqa: PLR0913
     established_only: bool = True,
 ) -> None:
     # pylint: disable=too-many-arguments
-    # sourcery skip: merge-duplicate-blocks, remove-redundant-if, split-or-ifs
     """Run ANTA.
 
     Use this as an entrypoint to the test framwork in your script.
@@ -114,7 +113,7 @@ async def main(  # noqa: PLR0913
             selected_tests.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
 
     if not selected_tests:
-        msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog, please verify your inputs."
+        msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         logger.warning(msg)
         return
 

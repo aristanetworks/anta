@@ -113,7 +113,7 @@ def nrfu(
     ignore_error: bool,
     hide: list[str] | None,
 ) -> None:
-    """Run ANTA tests on devices."""
+    """Run ANTA tests on selected inventory devices."""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
         return

@@ -258,7 +258,7 @@ class AntaInventory(dict[str, AntaDevice]):
         ----
             established_only: Whether or not to include only established devices.
             tags: List of tags to filter devices.
-            devices: List of names to filer devices.
+            devices: List of names to filter devices.
 
         Returns
         -------
@@ -269,7 +269,7 @@ class AntaInventory(dict[str, AntaDevice]):
             """Select the devices based on the inputs `tags`, `devices` and `established_only`."""
             if tags is not None and all(tag not in tags for tag in device.tags):
                 return False
-            if devices is None or len(devices) == 0 or device.name in devices:
+            if devices is None or device.name in devices:
                 return bool(not established_only or device.established)
             return False
 
