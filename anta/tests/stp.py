@@ -13,7 +13,7 @@ from pydantic import Field
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 
 class VerifySTPMode(AntaTest):

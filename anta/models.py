@@ -303,12 +303,12 @@ class AntaTest(ABC):
 
             Attributes
             ----------
-                tags: List of device's tags for the test.
+                tags: Tag of devices on which to run the test.
 
             """
 
             model_config = ConfigDict(extra="forbid")
-            tags: list[str] | None = None
+            tags: set[str] | None = None
 
     def __init__(
         self,

@@ -16,8 +16,7 @@ from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_item import get_item
-from anta.tools.get_value import get_value
+from anta.tools import get_item, get_value
 
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:

@@ -58,6 +58,7 @@ def test_anta_log_exception(
     debug_value: bool,
     expected_message: str,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """Test anta_log_exception."""
     if calling_logger is not None:
         # https://github.com/pytest-dev/pytest/issues/3697

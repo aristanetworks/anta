@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import pathlib
+from typing import Literal
 
 import click
 
@@ -19,18 +20,19 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.pass_context
-@click.option("--device", "-d", help="Show a summary for this device", type=str, required=False)
-@click.option("--test", "-t", help="Show a summary for this test", type=str, required=False)
 @click.option(
     "--group-by",
     default=None,
     type=click.Choice(["device", "test"], case_sensitive=False),
-    help="Group result by test or host. default none",
+    help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, device: str | None, test: str | None, group_by: str) -> None:
+def table(
+    ctx: click.Context,
+    group_by: Literal["device", "test"] | None,
+) -> None:
     """ANTA command to check network states with table result."""
-    print_table(results=ctx.obj["result_manager"], device=device, group_by=group_by, test=test)
+    print_table(ctx, group_by=group_by)
     exit_with_code(ctx)
 
 
@@ -46,17 +48,15 @@ def table(ctx: click.Context, device: str | None, test: str | None, group_by: st
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with JSON result."""
-    print_json(results=ctx.obj["result_manager"], output=output)
+    print_json(ctx, output=output)
     exit_with_code(ctx)
 
 
 @click.command()
 @click.pass_context
-@click.option("--search", "-s", help="Regular expression to search in both name and test", type=str, required=False)
-@click.option("--skip-error", help="Hide tests in errors due to connectivity issue", default=False, is_flag=True, show_default=True, required=False)
-def text(ctx: click.Context, search: str | None, *, skip_error: bool) -> None:
+def text(ctx: click.Context) -> None:
     """ANTA command to check network states with text result."""
-    print_text(results=ctx.obj["result_manager"], search=search, skip_error=skip_error)
+    print_text(ctx)
     exit_with_code(ctx)
 
 

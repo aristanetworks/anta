@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import json
-import logging
 from typing import TYPE_CHECKING
 
 from pydantic import TypeAdapter
@@ -15,8 +14,6 @@ from anta.custom_types import TestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
-
-logger = logging.getLogger(__name__)
 
 
 class ResultManager:
@@ -39,17 +36,17 @@ class ResultManager:
 
         Run tests for all connected devices:
 
-            for device in inventory_anta.get_inventory():
-                manager.add_test_result(
+            for device in inventory_anta.get_inventory().devices:
+                manager.add(
                     VerifyNTP(device=device).test()
                 )
-                manager.add_test_result(
+                manager.add(
                     VerifyEOSVersion(device=device).test(version='4.28.3M')
                 )
 
         Print result in native format:
 
-            manager.get_results()
+            manager.results
             [
                 TestResult(
                     host=IPv4Address('192.168.0.10'),
@@ -89,7 +86,6 @@ class ResultManager:
         error_status is set to True.
         """
         self._result_entries: list[TestResult] = []
-        # Initialize status
         self.status: TestStatus = "unset"
         self.error_status = False
 
@@ -97,118 +93,109 @@ class ResultManager:
         """Implement __len__ method to count number of results."""
         return len(self._result_entries)
 
-    def _update_status(self, test_status: TestStatus) -> None:
-        """Update ResultManager status based on the table above."""
-        result_validator = TypeAdapter(TestStatus)
-        result_validator.validate_python(test_status)
-        if test_status == "error":
-            self.error_status = True
-            return
-        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
-            self.status = test_status
-        elif self.status == "success" and test_status == "failure":
-            self.status = "failure"
+    @property
+    def results(self) -> list[TestResult]:
+        """Get the list of TestResult."""
+        return self._result_entries
 
-    def add_test_result(self, entry: TestResult) -> None:
-        """Add a result to the list.
+    @results.setter
+    def results(self, value: list[TestResult]) -> None:
+        self._result_entries = []
+        self.status = "unset"
+        self.error_status = False
+        for e in value:
+            self.add(e)
 
-        Args:
-        ----
-            entry (TestResult): TestResult data to add to the report
+    @property
+    def json(self) -> str:
+        """Get a JSON representation of the results."""
+        return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
 
-        """
-        logger.debug(entry)
-        self._result_entries.append(entry)
-        self._update_status(entry.result)
-
-    def add_test_results(self, entries: list[TestResult]) -> None:
-        """Add a list of results to the list.
+    def add(self, result: TestResult) -> None:
+        """Add a result to the ResultManager instance.
 
         Args:
         ----
-            entries (list[TestResult]): List of TestResult data to add to the report
-
+            result: TestResult to add to the ResultManager instance.
         """
-        for e in entries:
-            self.add_test_result(e)
+
+        def _update_status(test_status: TestStatus) -> None:
+            result_validator = TypeAdapter(TestStatus)
+            result_validator.validate_python(test_status)
+            if test_status == "error":
+                self.error_status = True
+                return
+            if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
+                self.status = test_status
+            elif self.status == "success" and test_status == "failure":
+                self.status = "failure"
+
+        self._result_entries.append(result)
+        _update_status(result.result)
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
-    def get_results(self) -> list[TestResult]:
-        """Expose list of all test results in different format.
-
-        Returns
-        -------
-            any: List of results.
-
-        """
-        return self._result_entries
-
-    def get_json_results(self) -> str:
-        """Expose list of all test results in JSON.
-
-        Returns
-        -------
-            str: JSON dumps of the list of results
-
-        """
-        result = [result.model_dump() for result in self._result_entries]
-        return json.dumps(result, indent=4)
-
-    def get_result_by_test(self, test_name: str) -> list[TestResult]:
-        """Get list of test result for a given test.
+    def filter(self, hide: set[TestStatus]) -> ResultManager:
+        """Get a filtered ResultManager based on test status.
 
         Args:
         ----
-            test_name (str): Test name to use to filter results
+            hide: set of TestStatus literals to select tests to hide based on their status.
 
         Returns
         -------
-            list[TestResult]: List of results related to the test.
-
+            A filtered `ResultManager`.
         """
-        return [result for result in self._result_entries if str(result.test) == test_name]
+        manager = ResultManager()
+        manager.results = [test for test in self._result_entries if test.result not in hide]
+        return manager
 
-    def get_result_by_host(self, host_ip: str) -> list[TestResult]:
-        """Get list of test result for a given host.
+    def filter_by_tests(self, tests: set[str]) -> ResultManager:
+        """Get a filtered ResultManager that only contains specific tests.
 
         Args:
         ----
-            host_ip (str): IP Address of the host to use to filter results.
+            tests: Set of test names to filter the results.
 
         Returns
         -------
-            list[TestResult]: List of results related to the host.
-
+            A filtered `ResultManager`.
         """
-        return [result for result in self._result_entries if str(result.name) == host_ip]
+        manager = ResultManager()
+        manager.results = [result for result in self._result_entries if result.test in tests]
+        return manager
 
-    def get_testcases(self) -> list[str]:
-        """Get list of name of all test cases in current manager.
+    def filter_by_devices(self, devices: set[str]) -> ResultManager:
+        """Get a filtered ResultManager that only contains specific devices.
+
+        Args:
+        ----
+            devices: Set of device names to filter the results.
 
         Returns
         -------
-            list[str]: List of names for all tests.
-
+            A filtered `ResultManager`.
         """
-        result_list = []
-        for testcase in self._result_entries:
-            if str(testcase.test) not in result_list:
-                result_list.append(str(testcase.test))
-        return result_list
+        manager = ResultManager()
+        manager.results = [result for result in self._result_entries if result.name in devices]
+        return manager
 
-    def get_hosts(self) -> list[str]:
-        """Get list of IP addresses in current manager.
+    def get_tests(self) -> set[str]:
+        """Get the set of all the test names.
 
         Returns
         -------
-            list[str]: List of IP addresses.
-
+            Set of test names.
         """
-        result_list = []
-        for testcase in self._result_entries:
-            if str(testcase.name) not in result_list:
-                result_list.append(str(testcase.name))
-        return result_list
+        return {str(result.test) for result in self._result_entries}
+
+    def get_devices(self) -> set[str]:
+        """Get the set of all the device names.
+
+        Returns
+        -------
+            Set of device names.
+        """
+        return {str(result.name) for result in self._result_entries}

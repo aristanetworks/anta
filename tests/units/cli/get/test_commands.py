@@ -124,6 +124,7 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """Test `anta get from-ansible`.
 
     This test verifies:
