@@ -2048,34 +2048,7 @@
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-        <p>User&rsquo;s inventory model.</p>
-
-
-
-  <p><strong>Attributes:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code><span title="anta.inventory.models.AntaInventoryInput.networks (list[AntaInventoryNetwork],Optional)">networks (list[AntaInventoryNetwork],Optional)</span></code></td>
-          <td>
-                <code>List of AntaInventoryNetwork objects for networks.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>hosts (list[AntaInventoryHost],Optional): List of AntaInventoryHost objects for hosts.
-range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects for ranges.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+        <p>Device inventory input model.</p>
 
   
 
@@ -2117,7 +2090,7 @@ range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects fo
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-        <p>Host definition for user&rsquo;s inventory.</p>
+        <p>Host entry of AntaInventoryInput.</p>
 
 
 
@@ -2132,16 +2105,16 @@ range (list[AntaInventoryRange],Optional): List of AntaInventoryRange objects fo
     </thead>
     <tbody>
         <tr>
-          <td><code><span title="anta.inventory.models.AntaInventoryHost.host (IPvAnyAddress)">host (IPvAnyAddress)</span></code></td>
+          <td><code><span title="anta.inventory.models.AntaInventoryHost.host">host</span></code></td>
           <td>
-                <code>IPv4 or IPv6 address of the device</code>
+                <code>IP Address or FQDN of the device.</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>port (int): (Optional) eAPI port to use Default is 443.
-name (str): (Optional) Name to display during tests report. Default is hostname:port
-tags (list[str]): List of attached tags read from inventory file.
-disable_cache (bool): Disable cache per host. Defaults to False.</p>
+              <p>port: Custom eAPI port to use.
+name: Custom name of the device.
+tags: Tags of the device.
+disable_cache: Disable cache for this device.</p>
             </div>
           </td>
         </tr>
@@ -2188,7 +2161,7 @@ disable_cache (bool): Disable cache per host. Defaults to False.</p>
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-        <p>Network definition for user&rsquo;s inventory.</p>
+        <p>Network entry of AntaInventoryInput.</p>
 
 
 
@@ -2203,14 +2176,14 @@ disable_cache (bool): Disable cache per host. Defaults to False.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code><span title="anta.inventory.models.AntaInventoryNetwork.network (IPvAnyNetwork)">network (IPvAnyNetwork)</span></code></td>
+          <td><code><span title="anta.inventory.models.AntaInventoryNetwork.network">network</span></code></td>
           <td>
-                <code>Subnet to use for testing.</code>
+                <code>Subnet to use for scanning.</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>tags (list[str]): List of attached tags read from inventory file.
-disable_cache (bool): Disable cache per network. Defaults to False.</p>
+              <p>tags: Tags of the devices in this network.
+disable_cache: Disable cache for all devices in this network.</p>
             </div>
           </td>
         </tr>
@@ -2257,7 +2230,7 @@ disable_cache (bool): Disable cache per network. Defaults to False.</p>
             Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
-        <p>IP Range definition for user&rsquo;s inventory.</p>
+        <p>IP Range entry of AntaInventoryInput.</p>
 
 
 
@@ -2272,15 +2245,15 @@ disable_cache (bool): Disable cache per network. Defaults to False.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code><span title="anta.inventory.models.AntaInventoryRange.start (IPvAnyAddress)">start (IPvAnyAddress)</span></code></td>
+          <td><code><span title="anta.inventory.models.AntaInventoryRange.start">start</span></code></td>
           <td>
                 <code>IPv4 or IPv6 address for the begining of the range.</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>stop (IPvAnyAddress): IPv4 or IPv6 address for the end of the range.
-tags (list[str]): List of attached tags read from inventory file.
-disable_cache (bool): Disable cache per range of hosts. Defaults to False.</p>
+              <p>stop: IPv4 or IPv6 address for the end of the range.
+tags: Tags of the devices in this IP range.
+disable_cache: Disable cache for all devices in this IP range.</p>
             </div>
           </td>
         </tr>

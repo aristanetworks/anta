@@ -507,8 +507,8 @@
 
     <!-- Table of contents list -->
     
-  </li>
-          
+      <nav class="md-nav" aria-label="NRFU Command overview">
+        <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
@@ -520,6 +520,40 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#device-and-test-filtering" class="md-nav__link">
+      <span class="md-ellipsis">
+        Device and test filtering
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#hide-results" class="md-nav__link">
+      <span class="md-ellipsis">
+        Hide results
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2166,8 +2200,8 @@
 
     <!-- Table of contents list -->
     
-  </li>
-          
+      <nav class="md-nav" aria-label="NRFU Command overview">
+        <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
@@ -2179,6 +2213,40 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#device-and-test-filtering" class="md-nav__link">
+      <span class="md-ellipsis">
+        Device and test filtering
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#hide-results" class="md-nav__link">
+      <span class="md-ellipsis">
+        Hide results
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2416,49 +2484,57 @@
 <li><a href="#performing-nrfu-with-json-rendering">JSON view</a></li>
 <li><a href="#performing-nrfu-with-custom-reports">Custom template view</a></li>
 </ul>
-<h5 id="nrfu-command-overview">NRFU Command overview<a class="headerlink" href="#nrfu-command-overview" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--help
-Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+<h4 id="nrfu-command-overview">NRFU Command overview<a class="headerlink" href="#nrfu-command-overview" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
-<span class="w">  </span>Run<span class="w"> </span>NRFU<span class="w"> </span>against<span class="w"> </span>inventory<span class="w"> </span>devices
+<span class="w">  </span>Run<span class="w"> </span>ANTA<span class="w"> </span>tests<span class="w"> </span>on<span class="w"> </span>selected<span class="w"> </span>inventory<span class="w"> </span>devices.
 
 Options:
-<span class="w">  </span>-u,<span class="w"> </span>--username<span class="w"> </span>TEXT<span class="w">     </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_USERNAME<span class="p">;</span>
-<span class="w">                          </span>required<span class="o">]</span>
-<span class="w">  </span>-p,<span class="w"> </span>--password<span class="w"> </span>TEXT<span class="w">     </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w"> </span>that<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>provided.<span class="w"> </span>It
-<span class="w">                          </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_PASSWORD<span class="o">]</span>
-<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">  </span>Password<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.<span class="w"> </span>It<span class="w"> </span>can
-<span class="w">                          </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.<span class="w"> </span>Requires<span class="w"> </span><span class="s1">&#39;--</span>
-<span class="s1">                          enable&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
-<span class="w">  </span>--enable<span class="w">                </span>Some<span class="w"> </span>commands<span class="w"> </span>may<span class="w"> </span>require<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.
-<span class="w">                          </span>This<span class="w"> </span>option<span class="w"> </span>tries<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>this<span class="w"> </span>mode<span class="w"> </span>before<span class="w"> </span>sending
-<span class="w">                          </span>a<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>device.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE<span class="o">]</span>
-<span class="w">  </span>-P,<span class="w"> </span>--prompt<span class="w">            </span>Prompt<span class="w"> </span><span class="k">for</span><span class="w"> </span>passwords<span class="w"> </span><span class="k">if</span><span class="w"> </span>they<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>provided.<span class="w">  </span><span class="o">[</span>env
-<span class="w">                          </span>var:<span class="w"> </span>ANTA_PROMPT<span class="o">]</span>
-<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">       </span>Global<span class="w"> </span>connection<span class="w"> </span>timeout<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="p">;</span>
-<span class="w">                          </span>default:<span class="w"> </span><span class="m">30</span><span class="o">]</span>
-<span class="w">  </span>--insecure<span class="w">              </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_INSECURE<span class="o">]</span>
-<span class="w">  </span>--disable-cache<span class="w">         </span>Disable<span class="w"> </span>cache<span class="w"> </span>globally<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_DISABLE_CACHE<span class="o">]</span>
-<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">    </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
-<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">         </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
-<span class="w">                          </span>tag1,tag2,tag3<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
-<span class="w">  </span>-c,<span class="w"> </span>--catalog<span class="w"> </span>FILE<span class="w">      </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span><span class="w"> </span>catalog<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_CATALOG<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
-<span class="w">  </span>--ignore-status<span class="w">         </span>Always<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>with<span class="w"> </span>success<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_NRFU_IGNORE_STATUS<span class="o">]</span>
-<span class="w">  </span>--ignore-error<span class="w">          </span>Only<span class="w"> </span>report<span class="w"> </span>failures<span class="w"> </span>and<span class="w"> </span>not<span class="w"> </span>errors<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                          </span>ANTA_NRFU_IGNORE_ERROR<span class="o">]</span>
-<span class="w">  </span>--help<span class="w">                  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>-u,<span class="w"> </span>--username<span class="w"> </span>TEXT<span class="w">             </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_USERNAME<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>-p,<span class="w"> </span>--password<span class="w"> </span>TEXT<span class="w">             </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w"> </span>that<span class="w"> </span>must<span class="w"> </span>be
+<span class="w">                                  </span>provided.<span class="w"> </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--</span>
+<span class="s1">                                  prompt&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">          </span>Password<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.
+<span class="w">                                  </span>It<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.
+<span class="w">                                  </span>Requires<span class="w"> </span><span class="s1">&#39;--enable&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--enable<span class="w">                        </span>Some<span class="w"> </span>commands<span class="w"> </span>may<span class="w"> </span>require<span class="w"> </span>EOS<span class="w"> </span>Privileged
+<span class="w">                                  </span>EXEC<span class="w"> </span>mode.<span class="w"> </span>This<span class="w"> </span>option<span class="w"> </span>tries<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>this
+<span class="w">                                  </span>mode<span class="w"> </span>before<span class="w"> </span>sending<span class="w"> </span>a<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>device.
+<span class="w">                                  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE<span class="o">]</span>
+<span class="w">  </span>-P,<span class="w"> </span>--prompt<span class="w">                    </span>Prompt<span class="w"> </span><span class="k">for</span><span class="w"> </span>passwords<span class="w"> </span><span class="k">if</span><span class="w"> </span>they<span class="w"> </span>are<span class="w"> </span>not
+<span class="w">                                  </span>provided.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_PROMPT<span class="o">]</span>
+<span class="w">  </span>--timeout<span class="w"> </span>INTEGER<span class="w">               </span>Global<span class="w"> </span>connection<span class="w"> </span>timeout<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_TIMEOUT<span class="p">;</span><span class="w"> </span>default:<span class="w"> </span><span class="m">30</span><span class="o">]</span>
+<span class="w">  </span>--insecure<span class="w">                      </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_INSECURE<span class="o">]</span>
+<span class="w">  </span>--disable-cache<span class="w">                 </span>Disable<span class="w"> </span>cache<span class="w"> </span>globally<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_DISABLE_CACHE<span class="o">]</span>
+<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">            </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>-t,<span class="w"> </span>--tags<span class="w"> </span>TEXT<span class="w">                 </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
+<span class="w">                                  </span>tag1,tag2,tag3<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
+<span class="w">  </span>-c,<span class="w"> </span>--catalog<span class="w"> </span>FILE<span class="w">              </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span><span class="w"> </span>catalog<span class="w"> </span>YAML<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env
+<span class="w">                                  </span>var:<span class="w"> </span>ANTA_CATALOG<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>-d,<span class="w"> </span>--device<span class="w"> </span>TEXT<span class="w">               </span>Run<span class="w"> </span>tests<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>device.<span class="w"> </span>Can<span class="w"> </span>be
+<span class="w">                                  </span>provided<span class="w"> </span>multiple<span class="w"> </span>times.
+<span class="w">  </span>--test<span class="w"> </span>TEXT<span class="w">                     </span>Run<span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>test.<span class="w"> </span>Can<span class="w"> </span>be<span class="w"> </span>provided
+<span class="w">                                  </span>multiple<span class="w"> </span>times.
+<span class="w">  </span>--ignore-status<span class="w">                 </span>Exit<span class="w"> </span>code<span class="w"> </span>will<span class="w"> </span>always<span class="w"> </span>be<span class="w"> </span><span class="m">0</span>.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_NRFU_IGNORE_STATUS<span class="o">]</span>
+<span class="w">  </span>--ignore-error<span class="w">                  </span>Exit<span class="w"> </span>code<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>all<span class="w"> </span>tests<span class="w"> </span>succeeded
+<span class="w">                                  </span>or<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>any<span class="w"> </span><span class="nb">test</span><span class="w"> </span>failed.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                                  </span>ANTA_NRFU_IGNORE_ERROR<span class="o">]</span>
+<span class="w">  </span>--hide<span class="w"> </span><span class="o">[</span>success<span class="p">|</span>failure<span class="p">|</span>error<span class="p">|</span>skipped<span class="o">]</span>
+<span class="w">                                  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>device.
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 
 Commands:
-<span class="w">  </span>json<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result
-<span class="w">  </span>table<span class="w">       </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
-<span class="w">  </span>text<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
-<span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report
+<span class="w">  </span>json<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result.
+<span class="w">  </span>table<span class="w">       </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result.
+<span class="w">  </span>text<span class="w">        </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result.
+<span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report.
 </code></pre></div>
 <blockquote>
 <p><code>username</code>, <code>password</code>, <code>enable-password</code>, <code>enable</code>, <code>timeout</code> and <code>insecure</code> values are the same for all devices</p>
@@ -2468,7 +2544,7 @@ Commands:
 <p class="admonition-title">Info</p>
 <p>Issuing the command <code>anta nrfu</code> will run <code>anta nrfu table</code> without any option.</p>
 </div>
-<h4 id="tag-management">Tag management<a class="headerlink" href="#tag-management" title="Permanent link">&para;</a></h4>
+<h5 id="tag-management">Tag management<a class="headerlink" href="#tag-management" title="Permanent link">&para;</a></h5>
 <p>The <code>--tags</code> option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to <code>all</code> and is implicit. Expected behaviour is provided below:</p>
 <table>
 <thead>
@@ -2496,40 +2572,35 @@ Commands:
 <p class="admonition-title">Info</p>
 <p><a href="../tag-management/">More examples</a> available on this dedicated page.</p>
 </div>
+<h5 id="device-and-test-filtering">Device and test filtering<a class="headerlink" href="#device-and-test-filtering" title="Permanent link">&para;</a></h5>
+<p>Options <code>--device</code> and <code>--test</code> can be used to target one or multiple devices and/or tests to run in your environment. The options can be repeated. Example: <code>anta nrfu --device leaf1a --device leaf1b --test VerifyUptime --test VerifyReloadCause</code>.</p>
+<h5 id="hide-results">Hide results<a class="headerlink" href="#hide-results" title="Permanent link">&para;</a></h5>
+<p>Option <code>--hide</code> can be used to hide test results in the output based on their status. The option can be repeated. Example: <code>anta nrfu --hide error --hide skipped</code>.</p>
 <h4 id="performing-nrfu-with-text-rendering">Performing NRFU with text rendering<a class="headerlink" href="#performing-nrfu-with-text-rendering" title="Permanent link">&para;</a></h4>
 <p>The <code>text</code> subcommand provides a straightforward text report for each test executed on all devices in your inventory.</p>
 <h5 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--help
-Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result.
 
 Options:
-<span class="w">  </span>-s,<span class="w"> </span>--search<span class="w"> </span>TEXT<span class="w">  </span>Regular<span class="w"> </span>expression<span class="w"> </span>to<span class="w"> </span>search<span class="w"> </span><span class="k">in</span><span class="w"> </span>both<span class="w"> </span>name<span class="w"> </span>and<span class="w"> </span><span class="nb">test</span>
-<span class="w">  </span>--skip-error<span class="w">       </span>Hide<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>errors<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>connectivity<span class="w"> </span>issue
-<span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--help<span class="w">  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>The <code>--search</code> option permits filtering based on a regular expression pattern in both the hostname and the test name.</p>
-<p>The <code>--skip-error</code> option can be used to exclude tests that failed due to connectivity issues or unsupported commands.</p>
 <h5 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h5>
-<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>--search<span class="w"> </span>DC1-LEAF1A
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>DC1-LEAF1A<span class="w"> </span>text
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-text-output.png"><img alt="anta nrfu text results" loading="lazy" src="../../imgs/anta-nrfu-text-output.png" width="1600" /></a></p>
 <h4 id="performing-nrfu-with-table-rendering">Performing NRFU with table rendering<a class="headerlink" href="#performing-nrfu-with-table-rendering" title="Permanent link">&para;</a></h4>
 <p>The <code>table</code> command under the <code>anta nrfu</code> namespace offers a clear and organized table view of the test results, suitable for filtering. It also has its own set of options for better control over the output.</p>
 <h5 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--help
-Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result.
 
 Options:
-<span class="w">  </span>-d,<span class="w"> </span>--device<span class="w"> </span>TEXT<span class="w">         </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>device
-<span class="w">  </span>-t,<span class="w"> </span>--test<span class="w"> </span>TEXT<span class="w">           </span>Show<span class="w"> </span>a<span class="w"> </span>summary<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span><span class="nb">test</span>
-<span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>host.<span class="w"> </span>default<span class="w"> </span>none
+<span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>device.
 <span class="w">  </span>--help<span class="w">                    </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<p>The <code>--device</code> and <code>--test</code> options show a summarized view of the test results for a specific host or test case, respectively.</p>
 <p>The <code>--group-by</code> option show a summarized view of the test results per host or per test.</p>
 <h5 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h5>
 <p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>LEAF<span class="w"> </span>table
@@ -2543,10 +2614,10 @@ Options:
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-table-group-by-test-output.png"><img alt="anta nrfu table group_by_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-group-by-test-output.png" width="1600" /></a></p>
 <p>To get more specific information, it is possible to filter on a single device or a single test:</p>
-<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--device<span class="w"> </span>spine1
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>spine1<span class="w"> </span>table
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-table-filter-host-output.png"><img alt="anta nrfu table filter_host_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-host-output.png" width="1600" /></a></p>
-<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--test<span class="w"> </span>VerifyZeroTouch
+<p><div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--test<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>table
 </code></pre></div>
 <a href="../../imgs/anta-nrfu-table-filter-test-output.png"><img alt="anta nrfu table filter_test_output" loading="lazy" src="../../imgs/anta-nrfu-table-filter-test-output.png" width="1600" /></a></p>
 <h4 id="performing-nrfu-with-json-rendering">Performing NRFU with JSON rendering<a class="headerlink" href="#performing-nrfu-with-json-rendering" title="Permanent link">&para;</a></h4>
@@ -2555,7 +2626,7 @@ Options:
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result.
 
 Options:
 <span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>FILE<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>report<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
@@ -2624,7 +2695,7 @@ The <code>--template</code> option is used to specify the Jinja2 template file f
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 29, 2024</span>
   </span>
 
     

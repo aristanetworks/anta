@@ -1672,6 +1672,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.catalog.AntaCatalog.get_tests_by_names" class="md-nav__link">
+      <span class="md-ellipsis">
+        get_tests_by_names
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.catalog.AntaCatalog.get_tests_by_tags" class="md-nav__link">
       <span class="md-ellipsis">
         get_tests_by_tags
@@ -2170,6 +2184,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.catalog.AntaCatalog.get_tests_by_names" class="md-nav__link">
+      <span class="md-ellipsis">
+        get_tests_by_names
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.catalog.AntaCatalog.get_tests_by_tags" class="md-nav__link">
       <span class="md-ellipsis">
         get_tests_by_tags
@@ -2637,19 +2665,126 @@ YAML Test Catalog file.</p>
 
 
 
+<h3 id="anta.catalog.AntaCatalog.get_tests_by_names" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">get_tests_by_names</span>
+
+
+<a href="#anta.catalog.AntaCatalog.get_tests_by_names" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">get_tests_by_names</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+        <p>Return all the tests that have matching a list of tests names.</p>
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code><span class="n">names</span><span class="o">:</span><span class="w"> </span><span class="n">Names</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="kd">get</span><span class="o">.</span>
+</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    List of AntaTestDefinition that match the names</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/catalog.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_tests_by_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all the tests that have matching a list of tests names.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        names: Names of the tests to get.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        List of AntaTestDefinition that match the names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">test</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="anta.catalog.AntaCatalog.get_tests_by_tags" class="doc doc-heading">
           <span class="doc doc-object-name doc-function-name">get_tests_by_tags</span>
 
 
 <a href="#anta.catalog.AntaCatalog.get_tests_by_tags" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">get_tests_by_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">get_tests_by_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
         <p>Return all the tests that have matching tags in their input filters.</p>
-<p>If strict=True, returns only tests that match all the tags provided as input.
+<p>If strict=True, return only tests that match all the tags provided as input.
 If strict=False, return all the tests that match at least one tag provided as input.</p>
+
+<details class="args:" open>
+  <summary>Args:</summary>
+  <div class="codehilite"><pre><span></span><code><span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">Tags</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="kd">get</span><span class="o">.</span>
+<span class="n">strict</span><span class="o">:</span><span class="w"> </span><span class="n">Specify</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">returned</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="n">provided</span><span class="o">.</span>
+</code></pre></div>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>    List of AntaTestDefinition that match the tags</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
           <details class="quote">
             <summary>Source code in <code>anta/catalog.py</code></summary>
@@ -2667,11 +2802,29 @@ If strict=False, return all the tests that match at least one tag provided as in
 <span class="normal">350</span>
 <span class="normal">351</span>
 <span class="normal">352</span>
-<span class="normal">353</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all the tests that have matching tags in their input filters.</span>
 
-<span class="sd">    If strict=True, returns only tests that match all the tags provided as input.</span>
+<span class="sd">    If strict=True, return only tests that match all the tags provided as input.</span>
 <span class="sd">    If strict=False, return all the tests that match at least one tag provided as input.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        tags: Tags of the tests to get.</span>
+<span class="sd">        strict: Specify if the returned tests must match all the tags provided.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        List of AntaTestDefinition that match the tags</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>

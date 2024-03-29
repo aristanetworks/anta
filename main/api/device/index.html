@@ -2406,7 +2406,7 @@
 
 
 <a href="#anta.device.AntaDevice" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AntaDevice</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">AntaDevice</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
   <div class="doc doc-contents first">
@@ -2437,12 +2437,12 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>is_online: True if the device IP is reachable and a port can be open
-established: True if remote command execution succeeds
-hw_model: Hardware model of the device
-tags: List of tags for this device
-cache: In-memory cache from aiocache library for this device (None if cache is disabled)
-cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled</p>
+              <p>is_online: True if the device IP is reachable and a port can be open.
+established: True if remote command execution succeeds.
+hw_model: Hardware model of the device.
+tags: Tags for this device.
+cache: In-memory cache from aiocache library for this device (None if cache is disabled).
+cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.</p>
             </div>
           </td>
         </tr>
@@ -2452,9 +2452,9 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span>
-<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span>
-<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">False</span><span class="o">.</span>
+  <div class="codehilite"><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
+<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">Tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
+<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
 </code></pre></div>
 </details>
                   <details class="quote">
@@ -2481,21 +2481,21 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize an AntaDevice.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        name: Device name</span>
-<span class="sd">        tags: List of tags for this device</span>
-<span class="sd">        disable_cache: Disable caching for all commands for this device. Defaults to False.</span>
+<span class="sd">        name: Device name.</span>
+<span class="sd">        tags: Tags for this device.</span>
+<span class="sd">        disable_cache: Disable caching for all commands for this device.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
     <span class="c1"># A device always has its own name as tag</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">is_online</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">established</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span> <span class="n">Cache</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2900,7 +2900,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 
 
 <a href="#anta.device.AsyncEOSDevice" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
   <div class="doc doc-contents first">
@@ -2932,7 +2932,7 @@ via the private <code>_collect</code> method without interacting with the cache.
               <p>is_online: True if the device IP is reachable and a port can be open
 established: True if remote command execution succeeds
 hw_model: Hardware model of the device
-tags: List of tags for this device</p>
+tags: Tags for this device</p>
             </div>
           </td>
         </tr>
@@ -2942,19 +2942,19 @@ tags: List of tags for this device</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">host</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">FQDN</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">IP</span>
-<span class="n">username</span><span class="o">:</span><span class="w"> </span><span class="n">Username</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span>
-<span class="n">password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span>
-<span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span>
-<span class="n">enable</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">access</span>
-<span class="n">enable_password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">gain</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">EOS</span>
+  <div class="codehilite"><pre><span></span><code><span class="n">host</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">FQDN</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">IP</span><span class="o">.</span>
+<span class="n">username</span><span class="o">:</span><span class="w"> </span><span class="n">Username</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span><span class="o">.</span>
+<span class="n">password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span><span class="o">.</span>
+<span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
+<span class="n">enable</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">access</span><span class="o">.</span>
+<span class="n">enable_password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">gain</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">EOS</span><span class="o">.</span>
 <span class="n">port</span><span class="o">:</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">port</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">proto</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;http&#39;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">proto</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="o">.</span>
-<span class="n">ssh_port</span><span class="o">:</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">port</span>
-<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span>
+<span class="n">ssh_port</span><span class="o">:</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">port</span><span class="o">.</span>
+<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">Tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
 <span class="n">timeout</span><span class="o">:</span><span class="w"> </span><span class="n">Timeout</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">outgoing</span><span class="w"> </span><span class="n">connections</span><span class="o">.</span><span class="w"> </span><span class="n">Default</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="n">secs</span><span class="o">.</span>
-<span class="n">insecure</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">validation</span>
-<span class="n">proto</span><span class="o">:</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">protocol</span><span class="o">.</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="s1">&#39;http&#39;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="s1">&#39;https&#39;</span>
-<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">False</span><span class="o">.</span>
+<span class="n">insecure</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">validation</span><span class="o">.</span>
+<span class="n">proto</span><span class="o">:</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">protocol</span><span class="o">.</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="s1">&#39;http&#39;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="o">.</span>
+<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
 </code></pre></div>
 </details>
                   <details class="quote">
@@ -3025,7 +3025,7 @@ tags: List of tags for this device</p>
     <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span>
-    <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">proto</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -3037,19 +3037,19 @@ tags: List of tags for this device</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        host: Device FQDN or IP</span>
-<span class="sd">        username: Username to connect to eAPI and SSH</span>
-<span class="sd">        password: Password to connect to eAPI and SSH</span>
-<span class="sd">        name: Device name</span>
-<span class="sd">        enable: Device needs privileged access</span>
-<span class="sd">        enable_password: Password used to gain privileged access on EOS</span>
+<span class="sd">        host: Device FQDN or IP.</span>
+<span class="sd">        username: Username to connect to eAPI and SSH.</span>
+<span class="sd">        password: Password to connect to eAPI and SSH.</span>
+<span class="sd">        name: Device name.</span>
+<span class="sd">        enable: Device needs privileged access.</span>
+<span class="sd">        enable_password: Password used to gain privileged access on EOS.</span>
 <span class="sd">        port: eAPI port. Defaults to 80 is proto is &#39;http&#39; or 443 if proto is &#39;https&#39;.</span>
-<span class="sd">        ssh_port: SSH port</span>
-<span class="sd">        tags: List of tags for this device</span>
+<span class="sd">        ssh_port: SSH port.</span>
+<span class="sd">        tags: Tags for this device.</span>
 <span class="sd">        timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.</span>
-<span class="sd">        insecure: Disable SSH Host Key validation</span>
-<span class="sd">        proto: eAPI protocol. Value can be &#39;http&#39; or &#39;https&#39;</span>
-<span class="sd">        disable_cache: Disable caching for all commands for this device. Defaults to False.</span>
+<span class="sd">        insecure: Disable SSH Host Key validation.</span>
+<span class="sd">        proto: eAPI protocol. Value can be &#39;http&#39; or &#39;https&#39;.</span>
+<span class="sd">        disable_cache: Disable caching for all commands for this device.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

@@ -1854,9 +1854,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.reporter.ReportTable.report_summary_hosts" class="md-nav__link">
+    <a href="#anta.reporter.ReportTable.report_summary_devices" class="md-nav__link">
       <span class="md-ellipsis">
-        report_summary_hosts
+        report_summary_devices
       </span>
     </a>
 
@@ -1994,9 +1994,9 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.reporter.ReportTable.report_summary_hosts" class="md-nav__link">
+    <a href="#anta.reporter.ReportTable.report_summary_devices" class="md-nav__link">
       <span class="md-ellipsis">
-        report_summary_hosts
+        report_summary_devices
       </span>
     </a>
 
@@ -2094,7 +2094,7 @@
 
 
 <a href="#anta.reporter.ReportTable.report_all" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_all</span><span class="p">(</span><span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">testcase</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;All tests results&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_all</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;All tests results&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -2104,10 +2104,8 @@
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
-host (str, optional): IP Address of a host to search for. Defaults to None.
-testcase (str, optional): A test name to search for. Defaults to None.
-title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
+  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
+<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s1">&#39;All tests results&#39;</span><span class="o">.</span>
 </code></pre></div>
 </details>
 
@@ -2123,7 +2121,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
     <tbody>
         <tr>
           <td>
-                <code>    Table: A fully populated rich Table</code>
+                <code>    A fully populated rich `Table`</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2136,8 +2134,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
-<span class="normal"> 87</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
 <span class="normal"> 90</span>
@@ -2164,46 +2161,33 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_all</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
-    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">testcase</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;All tests results&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;All tests results&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with all tests for one or all devices.</span>
 
 <span class="sd">    Create table with full output: Host / Test / Status / Message</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        result_manager (ResultManager): A manager with a list of tests.</span>
-<span class="sd">        host (str, optional): IP Address of a host to search for. Defaults to None.</span>
-<span class="sd">        testcase (str, optional): A test name to search for. Defaults to None.</span>
-<span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
+<span class="sd">        manager: A ResultManager instance.</span>
+<span class="sd">        title: Title for the report. Defaults to &#39;All tests results&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        Table: A fully populated rich Table</span>
+<span class="sd">        A fully populated rich `Table`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Device&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Test Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Message(s)&quot;</span><span class="p">,</span> <span class="s2">&quot;Test description&quot;</span><span class="p">,</span> <span class="s2">&quot;Test category&quot;</span><span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_results</span><span class="p">():</span>
-        <span class="c1"># pylint: disable=R0916</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">host</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="n">host</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">testcase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">)):</span>
-            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_result</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_list_to_txt_list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">categories</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_line</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_result</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_list_to_txt_list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+        <span class="n">add_line</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">table</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -2216,24 +2200,24 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
 
 
-<h3 id="anta.reporter.ReportTable.report_summary_hosts" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">report_summary_hosts</span>
+<h3 id="anta.reporter.ReportTable.report_summary_devices" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">report_summary_devices</span>
 
 
-<a href="#anta.reporter.ReportTable.report_summary_hosts" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_summary_hosts</span><span class="p">(</span><span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Summary per host&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
+<a href="#anta.reporter.ReportTable.report_summary_devices" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_summary_devices</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Summary per device&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-        <p>Create a table report with result agregated per host.</p>
-<p>Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
+        <p>Create a table report with result aggregated per device.</p>
+<p>Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
-host (str, optional): IP Address of a host to search for. Defaults to None.
-title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
+  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
+<span class="n">devices</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="o">.</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">select</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">devices</span><span class="o">.</span>
+<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span>
 </code></pre></div>
 </details>
 
@@ -2249,7 +2233,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
     <tbody>
         <tr>
           <td>
-                <code>    Table: A fully populated rich Table</code>
+                <code>    A fully populated rich `Table`.</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2262,7 +2246,15 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -2300,37 +2292,25 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_hosts</span><span class="p">(</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_devices</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
-    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Summary per host&quot;</span><span class="p">,</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
+    <span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Summary per device&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with result agregated per host.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with result aggregated per device.</span>
 
-<span class="sd">    Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure</span>
+<span class="sd">    Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        result_manager (ResultManager): A manager with a list of tests.</span>
-<span class="sd">        host (str, optional): IP Address of a host to search for. Defaults to None.</span>
-<span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
+<span class="sd">        manager: A ResultManager instance.</span>
+<span class="sd">        devices: List of device names to include. None to select all devices.</span>
+<span class="sd">        title: Title of the report.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        Table: A fully populated rich Table</span>
-
+<span class="sd">        A fully populated rich `Table`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
@@ -2342,18 +2322,16 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
         <span class="s2">&quot;List of failed or error test cases&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">host_read</span> <span class="ow">in</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_hosts</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">host_read</span><span class="p">)</span> <span class="o">==</span> <span class="n">host</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_result_by_host</span><span class="p">(</span><span class="n">host_read</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;data to use for computation&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_devices</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">devices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">filter_by_devices</span><span class="p">({</span><span class="n">device</span><span class="p">})</span><span class="o">.</span><span class="n">results</span>
             <span class="n">nb_failure</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span><span class="p">])</span>
             <span class="n">nb_error</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">])</span>
-            <span class="n">list_failure</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]]</span>
+            <span class="n">list_failure</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">test</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]]</span>
             <span class="n">nb_success</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">])</span>
             <span class="n">nb_skipped</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;skipped&quot;</span><span class="p">])</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">host_read</span><span class="p">),</span>
+                <span class="n">device</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_success</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_skipped</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_failure</span><span class="p">),</span>
@@ -2377,19 +2355,19 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
 
 <a href="#anta.reporter.ReportTable.report_summary_tests" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_summary_tests</span><span class="p">(</span><span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">testcase</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Summary per test case&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">report_summary_tests</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Summary per test&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
   
-        <p>Create a table report with result agregated per test.</p>
-<p>Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure</p>
+        <p>Create a table report with result aggregated per test.</p>
+<p>Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure</p>
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code>result_manager (ResultManager): A manager with a list of tests.
-testcase (str, optional): A test name to search for. Defaults to None.
-title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.
+  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
+<span class="n">tests</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="o">.</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">select</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span>
 </code></pre></div>
 </details>
 
@@ -2405,7 +2383,7 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
     <tbody>
         <tr>
           <td>
-                <code>    Table: A fully populated rich Table</code>
+                <code>    A fully populated rich `Table`.</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2418,7 +2396,13 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 
           <details class="quote">
             <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
@@ -2458,36 +2442,26 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_tests</span><span class="p">(</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_tests</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">result_manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
-    <span class="n">testcase</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Summary per test case&quot;</span><span class="p">,</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Summary per test&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with result agregated per test.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with result aggregated per test.</span>
 
-<span class="sd">    Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure</span>
+<span class="sd">    Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        result_manager (ResultManager): A manager with a list of tests.</span>
-<span class="sd">        testcase (str, optional): A test name to search for. Defaults to None.</span>
-<span class="sd">        title (str, optional): Title for the report. Defaults to &#39;All tests results&#39;.</span>
+<span class="sd">        manager: A ResultManager instance.</span>
+<span class="sd">        tests: List of test names to include. None to select all tests.</span>
+<span class="sd">        title: Title of the report.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        Table: A fully populated rich Table</span>
-
+<span class="sd">        A fully populated rich `Table`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># sourcery skip: class-extract-method</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;Test Case&quot;</span><span class="p">,</span>
@@ -2498,16 +2472,16 @@ title (str, optional): Title for the report. Defaults to &#39;All tests results&
         <span class="s2">&quot;List of failed or error nodes&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">testcase_read</span> <span class="ow">in</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_testcases</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">testcase</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">testcase_read</span><span class="p">)</span> <span class="o">==</span> <span class="n">testcase</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">result_manager</span><span class="o">.</span><span class="n">get_result_by_test</span><span class="p">(</span><span class="n">testcase_read</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_tests</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">tests</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">filter_by_tests</span><span class="p">({</span><span class="n">test</span><span class="p">})</span><span class="o">.</span><span class="n">results</span>
             <span class="n">nb_failure</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span><span class="p">])</span>
             <span class="n">nb_error</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">])</span>
-            <span class="n">list_failure</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]]</span>
+            <span class="n">list_failure</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]]</span>
             <span class="n">nb_success</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">])</span>
             <span class="n">nb_skipped</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;skipped&quot;</span><span class="p">])</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="n">testcase_read</span><span class="p">,</span>
+                <span class="n">test</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_success</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_skipped</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">nb_failure</span><span class="p">),</span>
