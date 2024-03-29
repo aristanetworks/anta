@@ -21,16 +21,12 @@ DATA: list[dict[str, Any]] = [
                         "dpsGroups": {
                             "internet": {
                                 "dpsPaths": {
-                                    "path3": {
-                                        "state": "ipsecEstablished",
-                                    },
+                                    "path3": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}},
                                 },
                             },
                             "mpls": {
                                 "dpsPaths": {
-                                    "path4": {
-                                        "state": "ipsecEstablished",
-                                    },
+                                    "path4": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}},
                                 },
                             },
                         },
@@ -39,16 +35,12 @@ DATA: list[dict[str, Any]] = [
                         "dpsGroups": {
                             "internet": {
                                 "dpsPaths": {
-                                    "path1": {
-                                        "state": "ipsecEstablished",
-                                    },
+                                    "path1": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}},
                                 },
                             },
                             "mpls": {
                                 "dpsPaths": {
-                                    "path2": {
-                                        "state": "ipsecEstablished",
-                                    },
+                                    "path2": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}},
                                 },
                             },
                         },
@@ -78,16 +70,12 @@ DATA: list[dict[str, Any]] = [
                         "dpsGroups": {
                             "internet": {
                                 "dpsPaths": {
-                                    "path3": {
-                                        "state": "ipsecPending",
-                                    },
+                                    "path3": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}},
                                 },
                             },
                             "mpls": {
                                 "dpsPaths": {
-                                    "path4": {
-                                        "state": "ipsecPending",
-                                    },
+                                    "path4": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}},
                                 },
                             },
                         },
@@ -96,16 +84,12 @@ DATA: list[dict[str, Any]] = [
                         "dpsGroups": {
                             "internet": {
                                 "dpsPaths": {
-                                    "path1": {
-                                        "state": "ipsecEstablished",
-                                    },
+                                    "path1": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}},
                                 },
                             },
                             "mpls": {
                                 "dpsPaths": {
-                                    "path2": {
-                                        "state": "ipsecPending",
-                                    },
+                                    "path2": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}},
                                 },
                             },
                         },
@@ -117,10 +101,56 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "State of following peers is not `ipsecEstablished`:\n"
-                "Peer 10.255.0.1 in group internet is `ipsecPending`.\n"
-                "Peer 10.255.0.1 in group mpls is `ipsecPending`.\n"
-                "Peer 10.255.0.2 in group mpls is `ipsecPending`."
+                "Route state for peer 10.255.0.1 in group internet is `ipsecPending`.",
+                "Route state for peer 10.255.0.1 in group mpls is `ipsecPending`.",
+                "Route state for peer 10.255.0.2 in group mpls is `ipsecPending`.",
+            ],
+        },
+    },
+    {
+        "name": "failure-inactive",
+        "test": VerifyRouterPathsHealth,
+        "eos_data": [
+            {
+                "dpsPeers": {
+                    "10.255.0.1": {
+                        "dpsGroups": {
+                            "internet": {
+                                "dpsPaths": {
+                                    "path3": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}},
+                                },
+                            },
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path4": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}},
+                                },
+                            },
+                        },
+                    },
+                    "10.255.0.2": {
+                        "dpsGroups": {
+                            "internet": {
+                                "dpsPaths": {
+                                    "path1": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}},
+                                },
+                            },
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path2": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}},
+                                },
+                            },
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Telemetry state for peer 10.255.0.1 in group internet is `inactive`.",
+                "Telemetry state for peer 10.255.0.1 in group mpls is `inactive`.",
+                "Telemetry state for peer 10.255.0.2 in group mpls is `inactive`.",
             ],
         },
     },
@@ -130,64 +160,16 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "dpsPeers": {
-                    "10.255.0.1": {
-                        "dpsGroups": {
-                            "internet": {
-                                "dpsPaths": {
-                                    "path3": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    "10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
                 }
             },
+            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
             {
                 "dpsPeers": {
-                    "10.255.0.1": {
-                        "dpsGroups": {
-                            "mpls": {
-                                "dpsPaths": {
-                                    "path4": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
                 }
             },
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {
-                        "dpsGroups": {
-                            "internet": {
-                                "dpsPaths": {
-                                    "path2": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {
-                        "dpsGroups": {
-                            "mpls": {
-                                "dpsPaths": {
-                                    "path1": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
         ],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
         "expected": {"result": "success"},
@@ -197,34 +179,10 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySpecificRouterPath,
         "eos_data": [
             {"dpsPeers": {}},
+            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}}},
             {
                 "dpsPeers": {
-                    "10.255.0.1": {
-                        "dpsGroups": {
-                            "mpls": {
-                                "dpsPaths": {
-                                    "path4": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {
-                        "dpsGroups": {
-                            "internet": {
-                                "dpsPaths": {
-                                    "path2": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
                 }
             },
             {"dpsPeers": {}},
@@ -241,69 +199,40 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "dpsPeers": {
-                    "10.255.0.1": {
-                        "dpsGroups": {
-                            "internet": {
-                                "dpsPaths": {
-                                    "path3": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    "10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
                 }
             },
+            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}}}}}}}},
             {
                 "dpsPeers": {
-                    "10.255.0.1": {
-                        "dpsGroups": {
-                            "mpls": {
-                                "dpsPaths": {
-                                    "path4": {
-                                        "state": "ipsecPending",
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
                 }
             },
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {
-                        "dpsGroups": {
-                            "internet": {
-                                "dpsPaths": {
-                                    "path2": {
-                                        "state": "ipsecEstablished",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {
-                        "dpsGroups": {
-                            "mpls": {
-                                "dpsPaths": {
-                                    "path1": {
-                                        "state": "ipsecPending",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}}}}}}}},
         ],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
         "expected": {
             "result": "failure",
-            "messages": ["Peer 10.255.0.1 in group mpls is `ipsecPending`.", "Peer 10.255.0.2 in group mpls is `ipsecPending`."],
+            "messages": ["Route state for peer 10.255.0.1 in group mpls is `ipsecPending`.", "Route state for peer 10.255.0.2 in group mpls is `ipsecPending`."],
+        },
+    },
+    {
+        "name": "failure-inactive",
+        "test": VerifySpecificRouterPath,
+        "eos_data": [
+            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
+            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
+            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
+            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
+        ],
+        "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Telemetry state for peer 10.255.0.1 in group internet is `inactive`.",
+                "Telemetry state for peer 10.255.0.1 in group mpls is `inactive`.",
+                "Telemetry state for peer 10.255.0.2 in group mpls is `inactive`.",
+            ],
         },
     },
 ]

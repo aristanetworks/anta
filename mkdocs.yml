@@ -185,9 +185,9 @@ nav:
     - Logging: api/tests.logging.md
     - MLAG: api/tests.mlag.md
     - Multicast: api/tests.multicast.md
-    - Router Path Selection: api/tests.path_selection.md
     - Profiles: api/tests.profiles.md
     - PTP: api/tests.ptp.md
+    - Router Path Selection: api/tests.path_selection.md
     - Routing:
       - Generic: api/tests.routing.generic.md
       - BGP: api/tests.routing.bgp.md

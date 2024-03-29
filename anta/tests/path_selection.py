@@ -18,12 +18,16 @@ from anta.tools.get_value import get_value
 
 class VerifyRouterPathsHealth(AntaTest):
     """
-    Verifies the state of all paths under router path-selection as ipsecEstablished.
+    Verifies the route and telemetry state of all paths under router path-selection.
+
+    The expected states are 'IPsec established', 'Resolved' for route and 'active' for telemetry.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all the paths under router path-selection are ipsecEstablished.
-    * Failure: The test will fail if router path-selection is not configured or any path's state is not ipsecEstablished.
+    * Success: The test will pass if all paths under router path-selection have their route state as either 'IPsec established' or 'Resolved'
+               and their telemetry state as 'active'.
+    * Failure: The test will fail if router path-selection is not configured, any path's route state is not 'IPsec established' or 'Resolved',
+               or the telemetry state is 'inactive'.
 
     Examples
     --------
@@ -34,7 +38,7 @@ class VerifyRouterPathsHealth(AntaTest):
     """
 
     name = "VerifyRouterPathsHealth"
-    description = "Verifies the state of all paths under router path-selection as ipsecEstablished."
+    description = "Verifies the route and telemetry state of all paths under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths")]
 
@@ -51,27 +55,33 @@ class VerifyRouterPathsHealth(AntaTest):
             return
 
         # Check the state of each path
-        failed_log = ""
         for peer, peer_data in command_output.items():
             for group, group_data in peer_data["dpsGroups"].items():
                 for path_data in group_data["dpsPaths"].values():
-                    state = path_data["state"]
+                    route_state = path_data["state"]
+                    session = path_data["dpsSessions"]["0"]["active"]
 
-                    # If the state of any path is not 'ipsecEstablished', the test fails
-                    if state != "ipsecEstablished":
-                        failed_log += f"\nPeer {peer} in group {group} is `{state}`."
-        if failed_log:
-            self.result.is_failure(f"State of following peers is not `ipsecEstablished`:{failed_log}")
+                    # If the route state of any path is not 'ipsecEstablished' or 'routeResolved', the test fails
+                    if route_state not in ["ipsecEstablished", "routeResolved"]:
+                        self.result.is_failure(f"Route state for peer {peer} in group {group} is `{route_state}`.")
+
+                    # If the telemetry state of any path is inactive, the test fails
+                    elif not session:
+                        self.result.is_failure(f"Telemetry state for peer {peer} in group {group} is `inactive`.")
 
 
 class VerifySpecificRouterPath(AntaTest):
     """
-    Verifies the state of a specific path under router path-selection for an IPv4 peer as ipsecEstablished.
+    Verifies the route and telemetry state of a specific path for an IPv4 peer under router path-selection.
+
+    The expected states are 'IPsec established', 'Resolved' for route and 'active' for telemetry.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the input path under router path-selection is ipsecEstablished.
-    * Failure: The test will fail if the input path is not found or its state is not ipsecEstablished.
+    * Success: The test will pass if the path under router path-selection has its route state as either 'IPsec established' or 'Resolved'
+               and telemetry state as 'active'.
+    * Failure: The test will fail if router path-selection is not configured, the path's route state is not 'IPsec established' or 'Resolved',
+               or the telemetry state is 'inactive'.
 
     Examples
     --------
@@ -87,7 +97,7 @@ class VerifySpecificRouterPath(AntaTest):
     """
 
     name = "VerifySpecificRouterPath"
-    description = "Verifies the state of a specific path under router path-selection for an IPv4 peer as ipsecEstablished."
+    description = "Verifies the route and telemetry state of a specific path under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show path-selection paths peer {peer} path-group {group}")]
 
@@ -119,7 +129,7 @@ class VerifySpecificRouterPath(AntaTest):
         for command in self.instance_commands:
             peer = str(command.params["peer"])
             path_group = command.params["group"]
-            command_output = command.json_output["dpsPeers"]
+            command_output = command.json_output.get("dpsPeers", [])
 
             # If the peer is not configured for the path group, the test fails
             if not command_output:
@@ -129,7 +139,10 @@ class VerifySpecificRouterPath(AntaTest):
             # Extract the state of the path
             path_output = get_value(command_output, f"{peer}..dpsGroups..{path_group}..dpsPaths", separator="..")
             state = next(iter(path_output.values())).get("state")
+            session = get_value(next(iter(path_output.values())), "dpsSessions.0.active")
 
-            # If the state of the path is not 'ipsecEstablished', the test fails
-            if state != "ipsecEstablished":
-                self.result.is_failure(f"Peer {peer} in group {path_group} is `{state}`.")
+            # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
+            if state not in ["ipsecEstablished", "routeResolved"]:
+                self.result.is_failure(f"Route state for peer {peer} in group {path_group} is `{state}`.")
+            elif not session:
+                self.result.is_failure(f"Telemetry state for peer {peer} in group {path_group} is `inactive`.")
