@@ -29,12 +29,8 @@ logger = logging.getLogger(__name__)
 
 
 def _get_result_manager(ctx: click.Context) -> ResultManager:
-    """Get a filtered ResultManager instance based on Click context."""
-    return ctx.obj["result_manager"].filter(
-        hide_success=ctx.obj.get("hide")["success"],
-        hide_failure=ctx.obj.get("hide")["failure"],
-        hide_error=ctx.obj.get("hide")["error"],
-    )
+    """Get a ResultManager instance based on Click context."""
+    return ctx.obj["result_manager"].filter(ctx.obj.get("hide")) if ctx.obj.get("hide") is not None else ctx.obj["result_manager"]
 
 
 def print_settings(

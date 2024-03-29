@@ -6,12 +6,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
 import click
 
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
+from anta.custom_types import TestStatus
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.runner import main
@@ -52,6 +53,10 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             return super().parse_args(ctx, args)
 
 
+HIDE_STATUS: list[str] = list(get_args(TestStatus))
+HIDE_STATUS.remove("unset")
+
+
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @inventory_options
@@ -88,27 +93,11 @@ class IgnoreRequiredWithHelp(AliasedGroup):
     default=False,
 )
 @click.option(
-    "--hide-success",
-    help="Hide tests that succeeded. Useful to focus on error or failure.",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--hide-failure",
-    help="Hide tests that failed.",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    required=False,
-)
-@click.option(
-    "--hide-error",
-    help="Hide tests that raised errors.",
-    default=False,
-    is_flag=True,
-    show_default=True,
+    "--hide",
+    default=None,
+    type=click.Choice(HIDE_STATUS, case_sensitive=False),
+    multiple=True,
+    help="Group result by test or device.",
     required=False,
 )
 # pylint: disable=too-many-arguments
@@ -122,9 +111,7 @@ def nrfu(
     *,
     ignore_status: bool,
     ignore_error: bool,
-    hide_success: bool,
-    hide_failure: bool,
-    hide_error: bool,
+    hide: list[str] | None,
 ) -> None:
     """Run ANTA tests on devices."""
     # If help is invoke somewhere, skip the command
@@ -135,7 +122,7 @@ def nrfu(
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
-    ctx.obj["hide"] = {"success": hide_success, "failure": hide_failure, "error": hide_error}
+    ctx.obj["hide"] = set(hide) if hide else None
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=device, tests=test))

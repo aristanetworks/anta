@@ -139,25 +139,19 @@ class ResultManager:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
-    def filter(self, *, hide_success: bool = False, hide_failure: bool = False, hide_error: bool = False) -> ResultManager:
+    def filter(self, hide: set[TestStatus]) -> ResultManager:
         """Get a filtered ResultManager based on test status.
 
         Args:
         ----
-            hide_success: Hide tests with status `success` if True.
-            hide_failure: Hide tests with status `failure` if True.
-            hide_error: Hide tests with status `error` if True.
+            hide: set of TestStatus literals to select tests to hide based on their status.
 
         Returns
         -------
             A filtered `ResultManager`.
         """
         manager = ResultManager()
-        manager.results = [
-            test
-            for test in self._result_entries
-            if (not (hide_success and test.result == "success") and not (hide_failure and test.result == "failure") and not (hide_error and test.result == "error"))
-        ]
+        manager.results = [test for test in self._result_entries if test.result not in hide]
         return manager
 
     def filter_by_test(self, tests: list[str]) -> ResultManager:
