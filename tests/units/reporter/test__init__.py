@@ -144,9 +144,9 @@ class TestReportTable:
     @pytest.mark.parametrize(
         ("dev", "title", "number_of_tests", "expected_length"),
         [
-            pytest.param(None, None, 5, 2, id="all results"),
+            pytest.param(None, None, 5, 1, id="all results"),
             pytest.param("device1", None, 5, 1, id="result for host host1"),
-            pytest.param(None, "Custom title", 5, 2, id="Change table title"),
+            pytest.param(None, "Custom title", 5, 1, id="Change table title"),
         ],
     )
     def test_report_summary_devices(

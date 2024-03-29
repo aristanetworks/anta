@@ -51,12 +51,12 @@ class ReportTable:
 
         Args:
         ----
-            headers (list[str]): List of headers
-            table (Table): A rich Table instance
+            headers: List of headers.
+            table: A rich Table instance.
 
         Returns
         -------
-            Table: A rich Table instance with headers
+            A rich `Table` instance with headers.
 
         """
         for idx, header in enumerate(headers):
@@ -74,7 +74,7 @@ class ReportTable:
 
         Args:
         ----
-            status (TestStatus): status value to color
+            status (TestStatus): status value to color.
 
         Returns
         -------
@@ -120,9 +120,9 @@ class ReportTable:
         tests: list[str] | None = None,
         title: str = "Summary per test",
     ) -> Table:
-        """Create a table report with result agregated per test.
+        """Create a table report with result aggregated per test.
 
-        Create table with full output: Test / Number of success / Number of failure / Number of error / List of nodes in error or failure
+        Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure
 
         Args:
         ----
@@ -132,7 +132,7 @@ class ReportTable:
 
         Returns
         -------
-            A fully populated rich `Table`
+            A fully populated rich `Table`.
         """
         # sourcery skip: class-extract-method
         table = Table(title=title, show_lines=True)
@@ -169,9 +169,9 @@ class ReportTable:
         devices: list[str] | None = None,
         title: str = "Summary per device",
     ) -> Table:
-        """Create a table report with result agregated per device.
+        """Create a table report with result aggregated per device.
 
-        Create table with full output: Host / Number of success / Number of failure / Number of error / List of nodes in error or failure
+        Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure
 
         Args:
         ----
@@ -181,7 +181,7 @@ class ReportTable:
 
         Returns
         -------
-            A fully populated rich `Table`
+            A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
         headers = [
