@@ -53,6 +53,13 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
                     filters=VerifyUptime.Input.Filters(tags=["fabric"]),
                 ),
             ),
+            (
+                VerifyUptime,
+                VerifyUptime.Input(
+                    minimum=9,
+                    filters=VerifyUptime.Input.Filters(tags=["leaf"]),
+                ),
+            ),
             (VerifyReloadCause, {"filters": {"tags": ["leaf", "spine"]}}),
             (VerifyCoredump, VerifyCoredump.Input()),
             (VerifyAgentLogs, AntaTest.Input()),
@@ -277,8 +284,16 @@ class TestAntaCatalog:
             catalog.tests = catalog_data["tests"]
         assert catalog_data["error"] in str(exec_info)
 
-    def test_get_tests_by_tag(self) -> None:
-        """Test AntaCatalog.get_tests_by_tag()."""
+    def test_get_tests_by_tags(self) -> None:
+        """Test AntaCatalog.get_tests_by_tags()."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_tag(tags=["leaf"])
+        tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
+        assert len(tests) == 3
+        tests = catalog.get_tests_by_tags(tags=["leaf"], strict=True)
         assert len(tests) == 2
+
+    def test_get_tests_by_names(self) -> None:
+        """Test AntaCatalog.get_tests_by_tags()."""
+        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        tests: list[AntaTestDefinition] = catalog.get_tests_by_names(names=["VerifyUptime", "VerifyCoredump"])
+        assert len(tests) == 3

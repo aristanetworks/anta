@@ -50,9 +50,9 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
     results = _get_result_manager(ctx)
 
     if group_by == "device":
-        console.print(reporter.report_summary_devices(results, devices=None))
+        console.print(reporter.report_summary_devices(results))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(results, tests=None))
+        console.print(reporter.report_summary_tests(results))
     else:
         console.print(reporter.report_all(results))
 

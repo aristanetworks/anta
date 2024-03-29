@@ -336,7 +336,7 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    def get_tests_by_tag(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
+    def get_tests_by_tags(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
         """Return all the tests that have matching tags in their input filters.
 
         If strict=True, return only tests that match all the tags provided as input.
@@ -361,8 +361,8 @@ class AntaCatalog:
                     result.append(test)
         return result
 
-    def get_tests_by_name(self, names: list[str]) -> list[AntaTestDefinition]:
-        """Return all the tests that have matching a list of testsnames.
+    def get_tests_by_names(self, names: list[str]) -> list[AntaTestDefinition]:
+        """Return all the tests that have matching a list of tests names.
 
         Args:
         ----

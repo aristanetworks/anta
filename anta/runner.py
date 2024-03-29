@@ -96,7 +96,7 @@ async def main(  # noqa: PLR0913
 
     # Select the tests from the catalog
     if tests:
-        catalog = AntaCatalog(catalog.get_tests_by_name(tests))
+        catalog = AntaCatalog(catalog.get_tests_by_names(tests))
 
     # Using a set to avoid inserting duplicate tests
     selected_tests: set[AntaTestRunner] = set()
@@ -105,13 +105,13 @@ async def main(  # noqa: PLR0913
     for device in inventory.devices:
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            selected_tests.update((test, device) for test in catalog.get_tests_by_tag(tags))
+            selected_tests.update((test, device) for test in catalog.get_tests_by_tags(tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any filters
             selected_tests.update((t, device) for t in catalog.tests if t.inputs.filters is None or t.inputs.filters.tags is None)
 
             # Then add the tests with matching tags from device tags
-            selected_tests.update((t, device) for t in catalog.get_tests_by_tag(device.tags))
+            selected_tests.update((t, device) for t in catalog.get_tests_by_tags(device.tags))
 
     if not selected_tests:
         msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog, please verify your inputs."
