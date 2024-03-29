@@ -66,13 +66,13 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "json"])
     assert result.exit_code == ExitCode.OK
     assert "JSON results of all tests" in result.output
-    m = re.search(r"\[\n  {[\s\S]+  }\n\]", result.output)
-    assert m is not None
-    result_list = json.loads(m.group())
-    for r in result_list:
-        if r["name"] == "dummy":
-            assert r["test"] == "VerifyEOSVersion"
-            assert r["result"] == "success"
+    match = re.search(r"\[\n  {[\s\S]+  }\n\]", result.output)
+    assert match is not None
+    result_list = json.loads(match.group())
+    for res in result_list:
+        if res["name"] == "dummy":
+            assert res["test"] == "VerifyEOSVersion"
+            assert res["result"] == "success"
 
 
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
