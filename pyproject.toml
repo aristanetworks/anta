@@ -240,8 +240,8 @@ description = Check the code style
 commands =
   ruff check .
   ruff format . --check
-  pylint --rcfile=pylintrc anta
-  pylint --rcfile=pylintrc tests
+  pylint anta
+  pylint tests
 
 [testenv:type]
 description = Check typing
@@ -267,6 +267,9 @@ commands =
 depends = py311
 """
 
+################################
+# Ruff
+################################
 [tool.ruff]
 
 # Exclude a variety of commonly ignored directories.
@@ -400,4 +403,38 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
+]
+
+################################
+# Pylint
+################################
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+    "invalid-name",
+    "fixme"
+]
+
+[tool.pylint.DESIGN]
+max-statements=61
+max-returns=8
+max-locals=23
+
+[tool.pylint.FORMAT]
+max-line-length=165
+max-module-lines=1700
+
+[tool.pylint.SIMILARITIES]
+# making similarity lines limit a bit higher than default 4
+min-similarity-lines=10
+
+[tool.pylint.TYPECHECK]
+# https://stackoverflow.com/questions/49680191/click-and-pylint
+signature-mutators="click.decorators.option"
+
+[tool.pylint.MAIN]
+load-plugins="pylint_pydantic"
+extension-pkg-whitelist="pydantic"
+ignore-paths = [
+  "^tests/units/anta_tests/.*/data.py$",
+  "^tests/units/anta_tests/routing/.*/data.py$",
 ]

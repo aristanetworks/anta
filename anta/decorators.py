@@ -48,9 +48,9 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
             anta_test = args[0]
             if new_tests:
                 new_test_names = ", ".join(new_tests)
-                logger.warning(f"{anta_test.name} test is deprecated. Consider using the following new tests: {new_test_names}.")
+                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", anta_test.name, new_test_names)
             else:
-                logger.warning(f"{anta_test.name} test is deprecated.")
+                logger.warning("%s test is deprecated.", anta_test.name)
             return await function(*args, **kwargs)
 
         return cast(F, wrapper)

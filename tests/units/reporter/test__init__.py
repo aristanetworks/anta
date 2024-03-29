@@ -30,8 +30,18 @@ class TestReportTable:
             pytest.param([], "*", "", id="empty list with delimiter"),
             pytest.param(["elem1"], None, "elem1", id="one elem list no delimiter"),
             pytest.param(["elem1"], "*", "* elem1", id="one elem list with delimiter"),
-            pytest.param(["elem1", "elem2"], None, "elem1\nelem2", id="two elems list no delimiter"),
-            pytest.param(["elem1", "elem2"], "&", "& elem1\n& elem2", id="two elems list with delimiter"),
+            pytest.param(
+                ["elem1", "elem2"],
+                None,
+                "elem1\nelem2",
+                id="two elems list no delimiter",
+            ),
+            pytest.param(
+                ["elem1", "elem2"],
+                "&",
+                "& elem1\n& elem2",
+                id="two elems list with delimiter",
+            ),
         ],
     )
     def test__split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None, expected_output: str) -> None:
@@ -94,12 +104,12 @@ class TestReportTable:
     ) -> None:
         """Test report_all."""
         # pylint: disable=too-many-arguments
-        rm = result_manager_factory(number_of_tests)
+        manager = result_manager_factory(number_of_tests)
 
         report = ReportTable()
         kwargs = {"title": title}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_all(rm, **kwargs)  # type: ignore[arg-type]
+        res = report.report_all(manager, **kwargs)  # type: ignore[arg-type]
 
         assert isinstance(res, Table)
         assert res.title == (title or "All tests results")
@@ -125,17 +135,16 @@ class TestReportTable:
         # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
-        rm = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy() for result in rm.results]
+        manager = result_manager_factory(number_of_tests)
+        new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = "test_device"
             result.result = "failure"
-        rm.results = new_results
 
         report = ReportTable()
         kwargs = {"tests": [test] if test is not None else None, "title": title}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_summary_tests(rm, **kwargs)  # type: ignore[arg-type]
+        res = report.report_summary_tests(manager, **kwargs)  # type: ignore[arg-type]
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per test")
@@ -161,17 +170,17 @@ class TestReportTable:
         # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
-        rm = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy() for result in rm.results]
+        manager = result_manager_factory(number_of_tests)
+        new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
             result.result = "failure"
-        rm.results = new_results
+        manager.results = new_results
 
         report = ReportTable()
         kwargs = {"devices": [dev] if dev is not None else None, "title": title}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_summary_devices(rm, **kwargs)  # type: ignore[arg-type]
+        res = report.report_summary_devices(manager, **kwargs)  # type: ignore[arg-type]
 
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per device")

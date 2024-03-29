@@ -206,8 +206,8 @@ class TestAntaCatalog:
     def test_from_dict(self, catalog_data: dict[str, Any]) -> None:
         """Instantiate AntaCatalog from a dict."""
         file = DATA_DIR / catalog_data["filename"]
-        with file.open(encoding="UTF-8") as f:
-            data = safe_load(f)
+        with file.open(encoding="UTF-8") as file:
+            data = safe_load(file)
             catalog: AntaCatalog = AntaCatalog.from_dict(data)
 
         assert len(catalog.tests) == len(catalog_data["tests"])
@@ -248,8 +248,8 @@ class TestAntaCatalog:
     def test_from_dict_fail(self, catalog_data: dict[str, Any]) -> None:
         """Errors when instantiating AntaCatalog from a list of tuples."""
         file = DATA_DIR / catalog_data["filename"]
-        with file.open(encoding="UTF-8") as f:
-            data = safe_load(f)
+        with file.open(encoding="UTF-8") as file:
+            data = safe_load(file)
         with pytest.raises((ValidationError, TypeError)) as exec_info:
             AntaCatalog.from_dict(data)
         if isinstance(exec_info.value, ValidationError):
