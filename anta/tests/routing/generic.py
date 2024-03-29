@@ -151,7 +151,7 @@ class VerifyRoutingTableEntry(AntaTest):
         missing_routes = []
 
         for command in self.instance_commands:
-            vrf, route = command.params.get("vrf"), command.params.get("route")
+            vrf, route = command.params.vrf, command.params.route
             if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(next(iter(routes))).ip:
                 missing_routes.append(str(route))
 

@@ -652,7 +652,7 @@ class VerifyIPv4ACL(AntaTest):
         self.result.is_success()
         for command_output in self.instance_commands:
             # Collecting input ACL details
-            acl_name = command_output.params["acl"]
+            acl_name = command_output.params.acl
             # Retrieve the expected entries from the inputs
             acl_entries = []
             for acl in self.inputs.ipv4_access_lists:

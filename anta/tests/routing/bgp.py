@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import Any, ClassVar, Optional, Union, cast
+from typing import Any, ClassVar, Union, cast
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -20,7 +20,13 @@ from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 
 
-def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
+def _add_bgp_failures(
+    failures: dict[tuple[str, str | None], dict[str, Any]],
+    afi: Afi,
+    safi: Safi | None,
+    vrf: str,
+    issue: str | dict[str, Any],
+) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
 
     Note: This function modifies `failures` in-place.
@@ -91,7 +97,11 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
         raise ValueError(msg)
 
     if peer_data["peerState"] != "Established" or peer_data["inMsgQueue"] != 0 or peer_data["outMsgQueue"] != 0:
-        return {"peerState": peer_data["peerState"], "inMsgQueue": peer_data["inMsgQueue"], "outMsgQueue": peer_data["outMsgQueue"]}
+        return {
+            "peerState": peer_data["peerState"],
+            "inMsgQueue": peer_data["inMsgQueue"],
+            "outMsgQueue": peer_data["outMsgQueue"],
+        }
 
     return {}
 
@@ -143,7 +153,10 @@ def _add_bgp_routes_failure(
 
         # If the route is either inactive or invalid, add it to the failure routes dictionary
         if not is_active or not is_valid:
-            failure["bgp_peers"][peer][vrf][route_type][str_route] = {"valid": is_valid, "active": is_active}
+            failure["bgp_peers"][peer][vrf][route_type][str_route] = {
+                "valid": is_valid,
+                "active": is_active,
+            }
             failure_routes = deep_update(failure_routes, failure)
 
     return failure_routes
@@ -250,7 +263,10 @@ class VerifyBGPPeerCount(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
-            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in [
+                "ipv4",
+                "ipv6",
+            ]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, num_peers=afi.num_peers))
         return commands
 
@@ -265,17 +281,23 @@ class VerifyBGPPeerCount(AntaTest):
             peer_count = 0
             command_output = command.json_output
 
-            afi = cast(Afi, command.params.get("afi"))
-            safi = cast(Optional[Safi], command.params.get("safi"))
-            afi_vrf = cast(str, command.params.get("vrf"))
-            num_peers = cast(PositiveInt, command.params.get("num_peers"))
+            afi = command.params.afi
+            safi = command.params.safi
+            afi_vrf = command.params.vrf
+            num_peers = command.params.num_peers
 
             # Swaping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                _add_bgp_failures(
+                    failures=failures,
+                    afi=afi,
+                    safi=safi,
+                    vrf=afi_vrf,
+                    issue="Not Configured",
+                )
                 continue
 
             if afi_vrf == "all":
@@ -285,7 +307,13 @@ class VerifyBGPPeerCount(AntaTest):
                 peer_count += len(command_output["vrfs"][afi_vrf]["peers"])
 
             if peer_count != num_peers:
-                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=f"Expected: {num_peers}, Actual: {peer_count}")
+                _add_bgp_failures(
+                    failures=failures,
+                    afi=afi,
+                    safi=safi,
+                    vrf=afi_vrf,
+                    issue=f"Expected: {num_peers}, Actual: {peer_count}",
+                )
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -385,7 +413,10 @@ class VerifyBGPPeersHealth(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
-            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in [
+                "ipv4",
+                "ipv6",
+            ]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf))
         return commands
 
@@ -399,21 +430,33 @@ class VerifyBGPPeersHealth(AntaTest):
         for command in self.instance_commands:
             command_output = command.json_output
 
-            afi = cast(Afi, command.params.get("afi"))
-            safi = cast(Optional[Safi], command.params.get("safi"))
+            afi = command.params.afi
+            safi = command.params.safi
 
             # Swaping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-            afi_vrf = cast(str, command.params.get("vrf"))
+            afi_vrf = command.params.vrf
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                _add_bgp_failures(
+                    failures=failures,
+                    afi=afi,
+                    safi=safi,
+                    vrf=afi_vrf,
+                    issue="Not Configured",
+                )
                 continue
 
             for vrf, vrf_data in vrfs.items():
                 if not (peers := vrf_data.get("peers")):
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="No Peers")
+                    _add_bgp_failures(
+                        failures=failures,
+                        afi=afi,
+                        safi=safi,
+                        vrf=afi_vrf,
+                        issue="No Peers",
+                    )
                     continue
 
                 peer_issues = {}
@@ -424,7 +467,13 @@ class VerifyBGPPeersHealth(AntaTest):
                         peer_issues[peer] = issues
 
                 if peer_issues:
-                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=vrf, issue=peer_issues)
+                    _add_bgp_failures(
+                        failures=failures,
+                        afi=afi,
+                        safi=safi,
+                        vrf=vrf,
+                        issue=peer_issues,
+                    )
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -536,7 +585,10 @@ class VerifyBGPSpecificPeers(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf, peers=afi.peers))
-            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in [
+                "ipv4",
+                "ipv6",
+            ]:
                 commands.append(template.render(afi=afi.afi, vrf=afi.vrf, peers=afi.peers))
         return commands
 
@@ -550,17 +602,23 @@ class VerifyBGPSpecificPeers(AntaTest):
         for command in self.instance_commands:
             command_output = command.json_output
 
-            afi = cast(Afi, command.params.get("afi"))
-            safi = cast(Optional[Safi], command.params.get("safi"))
+            afi = command.params.afi
+            safi = command.params.safi
 
             # Swaping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-            afi_vrf = cast(str, command.params.get("vrf"))
-            afi_peers = cast(list[Union[IPv4Address, IPv6Address]], command.params.get("peers", []))
+            afi_vrf = command.params.vrf
+            afi_peers = cast(list[Union[IPv4Address, IPv6Address]], command.params.peers)
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
+                _add_bgp_failures(
+                    failures=failures,
+                    afi=afi,
+                    safi=safi,
+                    vrf=afi_vrf,
+                    issue="Not Configured",
+                )
                 continue
 
             peer_issues = {}
@@ -572,7 +630,13 @@ class VerifyBGPSpecificPeers(AntaTest):
                     peer_issues[peer_ip] = issues
 
             if peer_issues:
-                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=peer_issues)
+                _add_bgp_failures(
+                    failures=failures,
+                    afi=afi,
+                    safi=safi,
+                    vrf=afi_vrf,
+                    issue=peer_issues,
+                )
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -640,7 +704,12 @@ class VerifyBGPExchangedRoutes(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP neighbor in the input list."""
         return [
-            template.render(peer=bgp_peer.peer_address, vrf=bgp_peer.vrf, advertised_routes=bgp_peer.advertised_routes, received_routes=bgp_peer.received_routes)
+            template.render(
+                peer=str(bgp_peer.peer_address),
+                vrf=bgp_peer.vrf,
+                advertised_routes=bgp_peer.advertised_routes,
+                received_routes=bgp_peer.received_routes,
+            )
             for bgp_peer in self.inputs.bgp_peers
         ]
 
@@ -651,10 +720,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
         # Iterating over command output for different peers
         for command in self.instance_commands:
-            peer: str = command.params.get("peer")  # type: ignore[assignment]
-            vrf: str = command.params.get("vrf")  # type: ignore[assignment]
-            advertised_routes: list[str] = command.params.get("advertised_routes")  # type: ignore[assignment]
-            received_routes: list[str] = command.params.get("received_routes")  # type: ignore[assignment]
+            peer = command.params.peer
+            vrf = command.params.vrf
+            advertised_routes = command.params.advertised_routes
+            received_routes = command.params.received_routes
             failure = {vrf: ""}
 
             # Verify if a BGP peer is configured with the provided vrf
@@ -985,7 +1054,10 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             state = bgp_output.get("state")
             md5_auth_enabled = bgp_output.get("md5AuthEnabled")
             if state != "Established" or not md5_auth_enabled:
-                failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
+                failure["bgp_peers"][peer][vrf] = {
+                    "state": state,
+                    "md5_auth_enabled": md5_auth_enabled,
+                }
                 failures = deep_update(failures, failure)
 
         # Check if there are any failures
@@ -1038,7 +1110,7 @@ class VerifyEVPNType2Route(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each VXLAN endpoint in the input list."""
-        return [template.render(address=endpoint.address, vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
+        return [template.render(address=str(endpoint.address), vni=endpoint.vni) for endpoint in self.inputs.vxlan_endpoints]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -1048,8 +1120,8 @@ class VerifyEVPNType2Route(AntaTest):
         bad_evpn_routes = []
 
         for command in self.instance_commands:
-            address: str = command.params.get("address")  # type: ignore[assignment]
-            vni = command.params.get("vni")
+            address = command.params.address
+            vni = command.params.vni
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:
@@ -1216,7 +1288,12 @@ class VerifyBGPTimers(AntaTest):
 
             # Verify BGP peer's hold and keep alive timers
             if bgp_output.get("holdTime") != hold_time or bgp_output.get("keepaliveTime") != keep_alive_time:
-                failures[peer_address] = {vrf: {"hold_time": bgp_output.get("holdTime"), "keep_alive_time": bgp_output.get("keepaliveTime")}}
+                failures[peer_address] = {
+                    vrf: {
+                        "hold_time": bgp_output.get("holdTime"),
+                        "keep_alive_time": bgp_output.get("keepaliveTime"),
+                    }
+                }
 
         if not failures:
             self.result.is_success()

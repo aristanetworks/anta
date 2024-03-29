@@ -42,7 +42,12 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(
+            template="ping vrf {vrf} {destination} source {source} repeat {repeat}",
+            revision=1,
+        )
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
@@ -64,16 +69,24 @@ class VerifyReachability(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
-        return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
+        return [
+            template.render(
+                destination=host.destination,
+                source=host.source,
+                vrf=host.vrf,
+                repeat=host.repeat,
+            )
+            for host in self.inputs.hosts
+        ]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
         failures = []
         for command in self.instance_commands:
-            src = command.params.get("source")
-            dst = command.params.get("destination")
-            repeat = command.params.get("repeat")
+            src = command.params.source
+            dst = command.params.destination
+            repeat = command.params.repeat
 
             if f"{repeat} received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))

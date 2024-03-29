@@ -15,7 +15,7 @@ from datetime import timedelta
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
@@ -38,6 +38,23 @@ F = TypeVar("F", bound=Callable[..., Any])
 BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
 
 logger = logging.getLogger(__name__)
+
+
+class AntaParamsBaseModel(BaseModel):
+    """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    if not TYPE_CHECKING:
+        # They put __getattr__ in not TYPE_CHEKCING in the lib
+        # Disabling 1 Dynamically typed expressions (typing.Any) are disallowed in `__getattr__
+        # ruff: noqa: ANN401
+        def __getattr__(self, item: str) -> Any:
+            """For AntaParams if we try to access an attribute that is not present We want it to be None."""
+            try:
+                return super().__getattr__(item)
+            except AttributeError:
+                return None
 
 
 class AntaTemplate(BaseModel):
@@ -77,6 +94,15 @@ class AntaTemplate(BaseModel):
                      AntaTemplate instance.
 
         """
+        # Create params schema on the fly
+        fields: dict[str, Any] = {key: (type(value), ...) for key, value in params.items()}
+        # Accepting ParamsSchema as non lowercase variable
+        ParamsSchema = create_model(  # noqa: N806
+            "ParamsSchema",
+            __base__=AntaParamsBaseModel,
+            **fields,
+        )
+
         try:
             return AntaCommand(
                 command=self.template.format(**params),
@@ -84,7 +110,7 @@ class AntaTemplate(BaseModel):
                 version=self.version,
                 revision=self.revision,
                 template=self,
-                params=params,
+                params=ParamsSchema(**params),
                 use_cache=self.use_cache,
             )
         except KeyError as e:
@@ -113,7 +139,7 @@ class AntaCommand(BaseModel):
         ofmt: eAPI output - json or text - default is json
         output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
-        params: Dictionary of variables with string values to render the template
+        params: Pydantic Model containing the variables tring values used to render the template
         errors: If the command execution fails, eAPI returns a list of strings detailing the error
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
 
@@ -126,7 +152,7 @@ class AntaCommand(BaseModel):
     output: dict[str, Any] | str | None = None
     template: AntaTemplate | None = None
     errors: list[str] = []
-    params: dict[str, str | int | bool] = {}
+    params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
 
     @property
