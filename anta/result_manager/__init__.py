@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import json
-import logging
 from typing import TYPE_CHECKING
 
 from pydantic import TypeAdapter
@@ -15,8 +14,6 @@ from anta.custom_types import TestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
-
-logger = logging.getLogger(__name__)
 
 
 class ResultManager:
@@ -103,6 +100,9 @@ class ResultManager:
 
     @results.setter
     def results(self, value: list[TestResult]) -> None:
+        self._result_entries = []
+        self.status = "unset"
+        self.error_status = False
         for e in value:
             self.add(e)
 
@@ -110,18 +110,6 @@ class ResultManager:
     def json(self) -> str:
         """Get a JSON representation of the results."""
         return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
-
-    def _update_status(self, test_status: TestStatus) -> None:
-        """Update ResultManager status based on the table above."""
-        result_validator = TypeAdapter(TestStatus)
-        result_validator.validate_python(test_status)
-        if test_status == "error":
-            self.error_status = True
-            return
-        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
-            self.status = test_status
-        elif self.status == "success" and test_status == "failure":
-            self.status = "failure"
 
     def add(self, result: TestResult) -> None:
         """Add a result to the report.
@@ -131,9 +119,20 @@ class ResultManager:
             test: TestResult data to add to the report.
 
         """
-        logger.debug(result)
+
+        def _update_status(test_status: TestStatus) -> None:
+            result_validator = TypeAdapter(TestStatus)
+            result_validator.validate_python(test_status)
+            if test_status == "error":
+                self.error_status = True
+                return
+            if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
+                self.status = test_status
+            elif self.status == "success" and test_status == "failure":
+                self.status = "failure"
+
         self._result_entries.append(result)
-        self._update_status(result.result)
+        _update_status(result.result)
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
@@ -154,7 +153,7 @@ class ResultManager:
         manager.results = [test for test in self._result_entries if test.result not in hide]
         return manager
 
-    def filter_by_test(self, tests: list[str]) -> ResultManager:
+    def filter_by_tests(self, tests: list[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
 
         Args:
@@ -169,7 +168,7 @@ class ResultManager:
         manager.results = [result for result in self._result_entries if result.test in tests]
         return manager
 
-    def filter_by_device(self, devices: list[str]) -> ResultManager:
+    def filter_by_devices(self, devices: list[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific devices.
 
         Args:
