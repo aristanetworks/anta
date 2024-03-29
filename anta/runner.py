@@ -48,9 +48,9 @@ async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
-    devices: list[str] | None = None,
-    tests: list[str] | None = None,
-    tags: list[str] | None = None,
+    devices: set[str] | None = None,
+    tests: set[str] | None = None,
+    tags: set[str] | None = None,
     *,
     established_only: bool = True,
 ) -> None:
@@ -67,8 +67,8 @@ async def main(  # noqa: PLR0913
         catalog: AntaCatalog object that includes the list of tests.
         devices: devices on which to run tests. None means all devices.
         tests: tests to run against devices. None means all tests.
-        tags: List of tags to filter devices from the inventory. Defaults to None.
-        established_only: Include only established device(s). Defaults to True.
+        tags: Tags to filter devices from the inventory.
+        established_only: Include only established device(s).
     """
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
@@ -88,7 +88,7 @@ async def main(  # noqa: PLR0913
     inventory = inventory.get_inventory(established_only=established_only)
 
     if not inventory.devices:
-        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found."
+        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
         logger.warning(msg)
         return
     coros = []

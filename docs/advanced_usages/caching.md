@@ -82,6 +82,6 @@ class AnsibleEOSDevice(AntaDevice):
   """
   Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.
   """
-  def __init__(self, name: str, connection: ConnectionBase, tags: list = None) -> None:
+  def __init__(self, name: str, connection: ConnectionBase, tags: set = None) -> None:
       super().__init__(name, tags, disable_cache=True)
 ```

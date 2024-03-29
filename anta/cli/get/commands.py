@@ -10,7 +10,7 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import click
 from cvprac.cvp_client import CvpClient
@@ -92,7 +92,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @click.command
 @inventory_options
 @click.option("--connected/--not-connected", help="Display inventory after connection has been created", default=False, required=False)
-def inventory(inventory: AntaInventory, tags: list[str] | None, *, connected: bool) -> None:
+def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: bool) -> None:
     """Show inventory loaded in ANTA."""
     # TODO: @gmuloc - tags come from context - we cannot have everything..
     # ruff: noqa: ARG001
@@ -108,11 +108,11 @@ def inventory(inventory: AntaInventory, tags: list[str] | None, *, connected: bo
 
 @click.command
 @inventory_options
-def tags(inventory: AntaInventory, tags: list[str] | None) -> None:  # pylint: disable=unused-argument
+def tags(inventory: AntaInventory, **kwargs: Any) -> None:
+    # pylint: disable=unused-argument
     """Get list of configured tags in user inventory."""
-    tags_found = []
+    tags: set[str] = set()
     for device in inventory.values():
-        tags_found += device.tags
-    tags_found = sorted(set(tags_found))
+        tags.update(device.tags)
     console.print("Tags found:")
-    console.print_json(json.dumps(tags_found, indent=2))
+    console.print_json(json.dumps(sorted(tags), indent=2))

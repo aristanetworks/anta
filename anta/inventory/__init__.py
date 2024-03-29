@@ -251,14 +251,14 @@ class AntaInventory(dict[str, AntaDevice]):
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None, devices: list[str] | None = None) -> AntaInventory:
+    def get_inventory(self, *, established_only: bool = False, tags: set[str] | None = None, devices: set[str] | None = None) -> AntaInventory:
         """Return a filtered inventory.
 
         Args:
         ----
             established_only: Whether or not to include only established devices.
-            tags: List of tags to filter devices.
-            devices: List of names to filter devices.
+            tags: Tags to filter devices.
+            devices: Names to filter devices.
 
         Returns
         -------

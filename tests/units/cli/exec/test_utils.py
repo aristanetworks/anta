@@ -74,7 +74,7 @@ async def test_clear_counters_utils(
     test_inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],
-    tags: list[str] | None,
+    tags: set[str] | None,
 ) -> None:
     """Test anta.cli.exec.utils.clear_counters_utils."""
 

@@ -152,12 +152,12 @@ class ResultManager:
         manager.results = [test for test in self._result_entries if test.result not in hide]
         return manager
 
-    def filter_by_tests(self, tests: list[str]) -> ResultManager:
+    def filter_by_tests(self, tests: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
 
         Args:
         ----
-            tests: List of test names to filter the results.
+            tests: Set of test names to filter the results.
 
         Returns
         -------
@@ -167,12 +167,12 @@ class ResultManager:
         manager.results = [result for result in self._result_entries if result.test in tests]
         return manager
 
-    def filter_by_devices(self, devices: list[str]) -> ResultManager:
+    def filter_by_devices(self, devices: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific devices.
 
         Args:
         ----
-            devices: List of device names to filter the results.
+            devices: Set of device names to filter the results.
 
         Returns
         -------

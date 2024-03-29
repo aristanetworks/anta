@@ -145,7 +145,7 @@ class ReportTable:
         table = self._build_headers(headers=headers, table=table)
         for test in manager.get_tests():
             if tests is None or test in tests:
-                results = manager.filter_by_tests([test]).results
+                results = manager.filter_by_tests({test}).results
                 nb_failure = len([result for result in results if result.result == "failure"])
                 nb_error = len([result for result in results if result.result == "error"])
                 list_failure = [result.name for result in results if result.result in ["failure", "error"]]
@@ -193,7 +193,7 @@ class ReportTable:
         table = self._build_headers(headers=headers, table=table)
         for device in manager.get_devices():
             if devices is None or device in devices:
-                results = manager.filter_by_devices([device]).results
+                results = manager.filter_by_devices({device}).results
                 nb_failure = len([result for result in results if result.result == "failure"])
                 nb_error = len([result for result in results if result.result == "error"])
                 list_failure = [result.test for result in results if result.result in ["failure", "error"]]

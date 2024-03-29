@@ -29,7 +29,7 @@ INVALID_CHAR = "`~!@#$/"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: list[str] | None = None) -> None:
+async def clear_counters_utils(anta_inventory: AntaInventory, tags: set[str] | None = None) -> None:
     """Clear counters."""
 
     async def clear(dev: AntaDevice) -> None:
@@ -53,7 +53,7 @@ async def collect_commands(
     inv: AntaInventory,
     commands: dict[str, str],
     root_dir: Path,
-    tags: list[str] | None = None,
+    tags: set[str] | None = None,
 ) -> None:
     """Collect EOS commands."""
 
@@ -91,7 +91,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: list[str] | None = None, latest: int | None = None) -> None:
+async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:

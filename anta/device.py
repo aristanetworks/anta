@@ -38,30 +38,30 @@ class AntaDevice(ABC):
     Attributes
     ----------
         name: Device name
-        is_online: True if the device IP is reachable and a port can be open
-        established: True if remote command execution succeeds
-        hw_model: Hardware model of the device
-        tags: List of tags for this device
-        cache: In-memory cache from aiocache library for this device (None if cache is disabled)
-        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled
+        is_online: True if the device IP is reachable and a port can be open.
+        established: True if remote command execution succeeds.
+        hw_model: Hardware model of the device.
+        tags: Tags for this device.
+        cache: In-memory cache from aiocache library for this device (None if cache is disabled).
+        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
 
     """
 
-    def __init__(self, name: str, tags: list[str] | None = None, *, disable_cache: bool = False) -> None:
+    def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
         """Initialize an AntaDevice.
 
         Args:
         ----
-            name: Device name
-            tags: List of tags for this device
-            disable_cache: Disable caching for all commands for this device. Defaults to False.
+            name: Device name.
+            tags: Tags for this device.
+            disable_cache: Disable caching for all commands for this device.
 
         """
         self.name: str = name
         self.hw_model: str | None = None
-        self.tags: list[str] = tags if tags is not None else []
+        self.tags: set[str] = tags if tags is not None else set()
         # A device always has its own name as tag
-        self.tags.append(self.name)
+        self.tags.add(self.name)
         self.is_online: bool = False
         self.established: bool = False
         self.cache: Cache | None = None
@@ -216,7 +216,7 @@ class AsyncEOSDevice(AntaDevice):
         is_online: True if the device IP is reachable and a port can be open
         established: True if remote command execution succeeds
         hw_model: Hardware model of the device
-        tags: List of tags for this device
+        tags: Tags for this device
 
     """
 
@@ -230,7 +230,7 @@ class AsyncEOSDevice(AntaDevice):
         enable_password: str | None = None,
         port: int | None = None,
         ssh_port: int | None = 22,
-        tags: list[str] | None = None,
+        tags: set[str] | None = None,
         timeout: float | None = None,
         proto: Literal["http", "https"] = "https",
         *,
@@ -242,19 +242,19 @@ class AsyncEOSDevice(AntaDevice):
 
         Args:
         ----
-            host: Device FQDN or IP
-            username: Username to connect to eAPI and SSH
-            password: Password to connect to eAPI and SSH
-            name: Device name
-            enable: Device needs privileged access
-            enable_password: Password used to gain privileged access on EOS
+            host: Device FQDN or IP.
+            username: Username to connect to eAPI and SSH.
+            password: Password to connect to eAPI and SSH.
+            name: Device name.
+            enable: Device needs privileged access.
+            enable_password: Password used to gain privileged access on EOS.
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
-            ssh_port: SSH port
-            tags: List of tags for this device
+            ssh_port: SSH port.
+            tags: Tags for this device.
             timeout: Timeout value in seconds for outgoing connections. Default to 10 secs.
-            insecure: Disable SSH Host Key validation
-            proto: eAPI protocol. Value can be 'http' or 'https'
-            disable_cache: Disable caching for all commands for this device. Defaults to False.
+            insecure: Disable SSH Host Key validation.
+            proto: eAPI protocol. Value can be 'http' or 'https'.
+            disable_cache: Disable caching for all commands for this device.
 
         """
         if host is None:

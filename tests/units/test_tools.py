@@ -17,6 +17,7 @@ TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
     {"id": 2, "name": "Bob", "age": 35, "email": "bob@example.com"},
     {"id": 3, "name": "Charlie", "age": 40, "email": "charlie@example.com"},
+    {"id": 4, "name": "Jon", "age": 25, "email": "Jon@example.com"},
     {"id": 4, "name": "Rob", "age": 25, "email": "Jon@example.com"},
 ]
 TEST_GET_DICT_SUPERSET_DATA = [
@@ -90,7 +91,7 @@ TEST_GET_ITEM_DATA = [
         ),
         pytest.param(
             TEST_GET_FAILED_LOGS_DATA[3],
-            TEST_GET_FAILED_LOGS_DATA[3],
+            TEST_GET_FAILED_LOGS_DATA[4],
             "\nExpected `Jon` as the name, but found `Rob` instead.",
             id="different name",
         ),

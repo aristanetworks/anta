@@ -17,8 +17,7 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_item import get_item
-from anta.tools.get_value import get_value
+from anta.tools import get_item, get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):

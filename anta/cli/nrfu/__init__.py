@@ -68,7 +68,6 @@ HIDE_STATUS.remove("unset")
     type=str,
     multiple=True,
     required=False,
-    default=None,
 )
 @click.option(
     "--test",
@@ -76,7 +75,6 @@ HIDE_STATUS.remove("unset")
     type=str,
     multiple=True,
     required=False,
-    default=None,
 )
 @click.option(
     "--ignore-status",
@@ -104,14 +102,14 @@ HIDE_STATUS.remove("unset")
 def nrfu(
     ctx: click.Context,
     inventory: AntaInventory,
-    tags: list[str] | None,
+    tags: set[str] | None,
     catalog: AntaCatalog,
-    device: list[str] | None,
-    test: list[str] | None,
+    device: tuple[str],
+    test: tuple[str],
+    hide: tuple[str],
     *,
     ignore_status: bool,
     ignore_error: bool,
-    hide: list[str] | None,
 ) -> None:
     """Run ANTA tests on selected inventory devices."""
     # If help is invoke somewhere, skip the command
@@ -125,7 +123,7 @@ def nrfu(
     ctx.obj["hide"] = set(hide) if hide else None
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=device, tests=test))
+        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=set(device) if device else None, tests=set(test) if test else None))
     # Invoke `anta nrfu table` if no command is passed
     if ctx.invoked_subcommand is None:
         ctx.invoke(commands.table)
