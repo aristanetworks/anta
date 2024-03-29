@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 from datetime import datetime, timezone
 from typing import ClassVar
 
@@ -17,6 +15,9 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools.get_item import get_item
 from anta.tools.get_value import get_value
 from anta.tools.utils import get_failed_logs
+
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 
 
 class VerifySSHStatus(AntaTest):
@@ -277,7 +278,12 @@ class VerifyAPIIPv4Acl(AntaTest):
     name = "VerifyAPIIPv4Acl"
     description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ip access-list summary", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(
+            command="show management api http-commands ip access-list summary",
+            revision=1,
+        )
+    ]
 
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPIIPv4Acl test."""
@@ -327,7 +333,12 @@ class VerifyAPIIPv6Acl(AntaTest):
     name = "VerifyAPIIPv6Acl"
     description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ipv6 access-list summary", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(
+            command="show management api http-commands ipv6 access-list summary",
+            revision=1,
+        )
+    ]
 
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPIIPv6Acl test."""
@@ -445,7 +456,13 @@ class VerifyAPISSLCertificate(AntaTest):
         for certificate in self.inputs.certificates:
             # Collecting certificate expiry time and current EOS time.
             # These times are used to calculate the number of days until the certificate expires.
-            if not (certificate_data := get_value(certificate_output, f"certificates..{certificate.certificate_name}", separator="..")):
+            if not (
+                certificate_data := get_value(
+                    certificate_output,
+                    f"certificates..{certificate.certificate_name}",
+                    separator="..",
+                )
+            ):
                 self.result.is_failure(f"SSL certificate '{certificate.certificate_name}', is not configured.\n")
                 continue
 
@@ -459,7 +476,11 @@ class VerifyAPISSLCertificate(AntaTest):
                 self.result.is_failure(f"SSL certificate `{certificate.certificate_name}` is expired.\n")
 
             # Verify certificate common subject name, encryption algorithm and key size
-            keys_to_verify = ["subject.commonName", "publicKey.encryptionAlgorithm", "publicKey.size"]
+            keys_to_verify = [
+                "subject.commonName",
+                "publicKey.encryptionAlgorithm",
+                "publicKey.size",
+            ]
             actual_certificate_details = {key: get_value(certificate_data, key) for key in keys_to_verify}
 
             expected_certificate_details = {
@@ -623,7 +644,7 @@ class VerifyIPv4ACL(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input ACL."""
-        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
+        return [template.render(acl=acl.name) for acl in self.inputs.ipv4_access_lists]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -632,7 +653,12 @@ class VerifyIPv4ACL(AntaTest):
         for command_output in self.instance_commands:
             # Collecting input ACL details
             acl_name = command_output.params["acl"]
-            acl_entries = command_output.params["entries"]
+            # Retrieve the expected entries from the inputs
+            acl_entries = []
+            for acl in self.inputs.ipv4_access_lists:
+                if acl.name == acl_name:
+                    acl_entries = acl.entries
+                    break
 
             # Check if ACL is configured
             ipv4_acl_list = command_output.json_output["aclList"]

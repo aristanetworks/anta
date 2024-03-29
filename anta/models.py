@@ -61,7 +61,7 @@ class AntaTemplate(BaseModel):
     ofmt: Literal["json", "text"] = "json"
     use_cache: bool = True
 
-    def render(self, **params: dict[str, Any]) -> AntaCommand:
+    def render(self, **params: str | int | bool) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
 
         Keep the parameters used in the AntaTemplate instance.
@@ -126,7 +126,7 @@ class AntaCommand(BaseModel):
     output: dict[str, Any] | str | None = None
     template: AntaTemplate | None = None
     errors: list[str] = []
-    params: dict[str, Any] = {}
+    params: dict[str, str | int | bool] = {}
     use_cache: bool = True
 
     @property
@@ -418,13 +418,15 @@ class AntaTest(ABC):
         """Returns a list of all the commands that have failed."""
         return [command for command in self.instance_commands if command.errors]
 
-    # Disabling unused argument
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:  # pylint: disable=W0613  # noqa: ARG002
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
 
         This is not an abstract method because it does not need to be implemented if there is
         no AntaTemplate for this test.
         """
+        # Disabling unused argument
+        # ruff: noqa: ARG002
+        # pylint: disable=W0613
         msg = f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}"
         raise NotImplementedError(msg)
 
