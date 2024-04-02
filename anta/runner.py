@@ -57,7 +57,7 @@ async def main(  # noqa: PLR0913
     # pylint: disable=too-many-arguments
     """Run ANTA.
 
-    Use this as an entrypoint to the test framwork in your script.
+    Use this as an entrypoint to the test framework in your script.
     ResultManager object gets updated with the test results.
 
     Args:

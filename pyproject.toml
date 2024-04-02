@@ -55,6 +55,7 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 dev = [
   "bumpver==2023.1129",
+  "codespell~=2.2.6",
   "mypy~=1.9",
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",

@@ -10,13 +10,13 @@ This section shows how to use ANTA with basic configuration. All examples are ba
 
 ## Installation
 
-The easiest way to intall ANTA package is to run Python (`>=3.9`) and its pip package to install:
+The easiest way to install ANTA package is to run Python (`>=3.9`) and its pip package to install:
 
 ```bash
 pip install anta
 ```
 
-For more details about how to install package, please see the [requirements and intallation](./requirements-and-installation.md) section.
+For more details about how to install package, please see the [requirements and installation](./requirements-and-installation.md) section.
 
 ## Configure Arista EOS devices
 

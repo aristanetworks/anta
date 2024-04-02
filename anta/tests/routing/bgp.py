@@ -34,7 +34,7 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
     Example:
     -------
-    The `failures` dictionnary will have the following structure:
+    The `failures` dictionary will have the following structure:
         {
             ('afi1', 'safi1'): {
                 'afi': 'afi1',
@@ -269,7 +269,7 @@ class VerifyBGPPeerCount(AntaTest):
             afi_vrf = cast(str, command.params.get("vrf"))
             num_peers = cast(PositiveInt, command.params.get("num_peers"))
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
 
@@ -401,7 +401,7 @@ class VerifyBGPPeersHealth(AntaTest):
             afi = cast(Afi, command.params.get("afi"))
             safi = cast(Optional[Safi], command.params.get("safi"))
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
             afi_vrf = cast(str, command.params.get("vrf"))
@@ -552,7 +552,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             afi = cast(Afi, command.params.get("afi"))
             safi = cast(Optional[Safi], command.params.get("safi"))
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
             afi_vrf = cast(str, command.params.get("vrf"))

@@ -59,7 +59,7 @@ class AntaInventoryRange(BaseModel):
 
     Attributes
     ----------
-        start: IPv4 or IPv6 address for the begining of the range.
+        start: IPv4 or IPv6 address for the beginning of the range.
         stop: IPv4 or IPv6 address for the end of the range.
         tags: Tags of the devices in this IP range.
         disable_cache: Disable cache for all devices in this IP range.

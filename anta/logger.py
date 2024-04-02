@@ -56,7 +56,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     """
     # Init root logger
     root = logging.getLogger()
-    # In ANTA debug mode, level is overriden to DEBUG
+    # In ANTA debug mode, level is overridden to DEBUG
     loglevel = logging.DEBUG if __DEBUG__ else getattr(logging, level.upper())
     root.setLevel(loglevel)
     # Silence the logging of chatty Python modules when level is INFO

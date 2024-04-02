@@ -47,7 +47,7 @@ There might be scenarios where caching is not wanted. You can disable caching in
     ```bash
     anta --disable-cache --username arista --password arista nrfu table
     ```
-2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when definining the ANTA [Inventory](../usage-inventory-catalog.md#create-an-inventory-file) file:
+2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when defining the ANTA [Inventory](../usage-inventory-catalog.md#create-an-inventory-file) file:
     ```yaml
     anta_inventory:
       hosts:
@@ -71,7 +71,7 @@ There might be scenarios where caching is not wanted. You can disable caching in
     ```
     This approach effectively disables caching for **ALL** commands sent to devices targeted by the `disable_cache` key.
 
-3. For tests developpers, caching can be disabled for a specific [`AntaCommand`](../advanced_usages/as-python-lib.md#antacommand-class) or [`AntaTemplate`](../advanced_usages/as-python-lib.md#antatemplate-class) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
+3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../advanced_usages/as-python-lib.md#antacommand-class) or [`AntaTemplate`](../advanced_usages/as-python-lib.md#antatemplate-class) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 
 ### Disable caching in a child class of `AntaDevice`
 

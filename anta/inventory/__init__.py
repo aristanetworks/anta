@@ -66,7 +66,7 @@ class AntaInventory(dict[str, AntaDevice]):
         ----
             inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
             inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
 
         """
         if inventory_input.hosts is None:
@@ -95,7 +95,7 @@ class AntaInventory(dict[str, AntaDevice]):
         ----
             inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
             inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
@@ -128,7 +128,7 @@ class AntaInventory(dict[str, AntaDevice]):
         ----
             inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
             inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
 
         Raises
         ------

@@ -130,7 +130,7 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
 
 @pytest.fixture()
 def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Callable[[int], list[TestResult]]:
-    """Return a list[TestResult] with 'size' TestResult instanciated using the test_result_factory fixture."""
+    """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
     # pylint: disable=redefined-outer-name
 
     def _factory(size: int = 0) -> list[TestResult]:
@@ -159,7 +159,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 def temp_env(tmp_path: Path) -> dict[str, str | None]:
     """Fixture that create a temporary ANTA inventory.
 
-    The inventory can be overriden and returns the corresponding environment variables.
+    The inventory can be overridden and returns the corresponding environment variables.
     """
     env = default_anta_env()
     anta_inventory = str(env["ANTA_INVENTORY"])
