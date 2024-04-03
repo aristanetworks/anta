@@ -86,6 +86,21 @@ toc_depth: 4
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
 
+## `ReadTimeout` error in the logs
+???+ faq "`ReadTimeout` error in the logs"
+
+    When running the `anta`, you receive `ReadTimeout` errors in the logs.  This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...)
+
+    ### Solution
+
+    Use the `timeout` option. As an example for the `nrfu` command:
+
+    ```bash
+    anta nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml --timeout 50 text
+    ```
+
+    The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command.  The timeout from default 10s (or is it 30s) to 50s to allow device and ANTA to wait on each other a little longer.
+
 # Still facing issues?
 
-If you've tried the above solutions and continue to experience problems, please report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).
+If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](../troubleshooting) instructions and report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).
