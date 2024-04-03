@@ -204,7 +204,6 @@ class VerifyLoggingLogsGeneration(AntaTest):
             if re.search(log_pattern, line):
                 self.result.is_success()
                 return
-
         self.result.is_failure("Logs are not generated")
 
 
@@ -288,7 +287,6 @@ class VerifyLoggingTimestamp(AntaTest):
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
-
         if re.search(timestamp_pattern, last_line_with_pattern):
             self.result.is_success()
         else:
