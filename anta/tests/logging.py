@@ -252,12 +252,12 @@ class VerifyLoggingHostname(AntaTest):
 
 
 class VerifyLoggingTimestamp(AntaTest):
-    """Verifies if logs are generated with the rate timestamp.
+    """Verifies if logs are generated with the appropriate timestamp.
 
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated with the riated timestamp.
-    * Failure: The test will fail if logs are NOT generated with the riated timestamp.
+    * Success: The test will pass if logs are generated with the appropriate timestamp.
+    * Failure: The test will fail if logs are NOT generated with the appropriate timestamp.
 
     Examples
     --------
