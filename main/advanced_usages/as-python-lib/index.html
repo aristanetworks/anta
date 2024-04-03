@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bcfcd587.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2381,7 +2381,7 @@ In some cases a test would rely on some additional inputs from the user, for ins
         <span class="c1"># validate the manufactures parameter</span>
         <span class="k">pass</span>
 </code></pre></div>
-<p>The test itself does not return any value, but the result is directly availble from your AntaTest object and exposes a <code>anta.result_manager.models.TestResult</code> object with result, name of the test and optional messages:</p>
+<p>The test itself does not return any value, but the result is directly available from your AntaTest object and exposes a <code>anta.result_manager.models.TestResult</code> object with result, name of the test and optional messages:</p>
 <ul>
 <li><code>name</code> (str): Device name where the test has run.</li>
 <li><code>test</code> (str): Test name runs on the device.</li>
@@ -2403,7 +2403,7 @@ In some cases a test would rely on some additional inputs from the user, for ins
 <p>Represent a command with following information:</p>
 <ul>
 <li>Command to run</li>
-<li>Ouput format expected</li>
+<li>Output format expected</li>
 <li>eAPI version</li>
 <li>Output of the command</li>
 </ul>
@@ -2418,7 +2418,7 @@ In some cases a test would rely on some additional inputs from the user, for ins
 <ul>
 <li>Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use <code>text</code> outformat sometimes.</li>
 <li>The model can change across time (adding feature, &hellip; ) and when the model is changed in a non backward-compatible way, the <strong>revision</strong> number is bumped. The initial model starts with <strong>revision</strong> 1.</li>
-<li>A <strong>revision</strong> applies to a particular CLI command whereas a <strong>version</strong> is global to an eAPI call. The <strong>version</strong> is internally translated to a specific <strong>revision</strong> for each CLI command in the RPC call. The currently supported <strong>version</strong> vaues  are <code>1</code> and <code>latest</code>.</li>
+<li>A <strong>revision</strong> applies to a particular CLI command whereas a <strong>version</strong> is global to an eAPI call. The <strong>version</strong> is internally translated to a specific <strong>revision</strong> for each CLI command in the RPC call. The currently supported <strong>version</strong> values  are <code>1</code> and <code>latest</code>.</li>
 <li>A <strong>revision takes precedence over a version</strong> (e.g. if a command is run with version=&rdquo;latest&rdquo; and revision=1, the first revision of the model is returned)</li>
 <li>By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default <code>version=1</code> in eAPI calls.</li>
 </ul>
@@ -2471,7 +2471,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 27, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 3, 2024</span>
   </span>
 
     
@@ -2570,7 +2570,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1e8ae164.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
