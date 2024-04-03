@@ -57,7 +57,7 @@ async def main(  # noqa: PLR0913
     # pylint: disable=too-many-arguments
     """Run ANTA.
 
-    Use this as an entrypoint to the test framwork in your script.
+    Use this as an entrypoint to the test framework in your script.
     ResultManager object gets updated with the test results.
 
     Args:
@@ -88,7 +88,7 @@ async def main(  # noqa: PLR0913
     inventory = inventory.get_inventory(established_only=established_only)
 
     if not inventory.devices:
-        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
+        msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
         logger.warning(msg)
         return
     coros = []

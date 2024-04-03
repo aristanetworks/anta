@@ -11,15 +11,7 @@ from inspect import isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    RootModel,
-    ValidationError,
-    ValidationInfo,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_load
@@ -101,7 +93,7 @@ class AntaTestDefinition(BaseModel):
                 f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
                 {"errors": e.errors()},
             ) from e
-        msg = f"Coud not instantiate inputs as type {type(data).__name__} is not valid"
+        msg = f"Could not instantiate inputs as type {type(data).__name__} is not valid"
         raise ValueError(msg)
 
     @model_validator(mode="after")
@@ -214,7 +206,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 class AntaCatalog:
     """Class representing an ANTA Catalog.
 
-    It can be instantiated using its contructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
+    It can be instantiated using its constructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
     """
 
     def __init__(

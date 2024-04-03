@@ -79,7 +79,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     """Generate AUTH token from CVP using password."""
-    # TODO: need to handle requests eror
+    # TODO: need to handle requests error
 
     # use CVP REST API to generate a token
     url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"

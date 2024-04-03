@@ -574,7 +574,7 @@ class AntaTest(ABC):
                 self.result.is_success()
                 for command in self.instance_commands:
                     if not self._test_command(command): # _test_command() is an arbitrary test logic
-                        self.result.is_failure("Failure reson")
+                        self.result.is_failure("Failure reason")
             ```
 
         """
