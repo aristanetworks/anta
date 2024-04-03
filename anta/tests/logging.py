@@ -190,8 +190,15 @@ class VerifyLoggingLogsGeneration(AntaTest):
     description = "Verifies if logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaCommand(
+            command="send log level informational message ANTA VerifyLoggingLogsGeneration validation",
+            ofmt="text",
+        ),
+        AntaCommand(
+            command="show logging informational last 30 seconds | grep ANTA",
+            ofmt="text",
+            use_cache=False,
+        ),
     ]
 
     @AntaTest.anta_test
@@ -228,8 +235,15 @@ class VerifyLoggingHostname(AntaTest):
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname", revision=1),
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaCommand(
+            command="send log level informational message ANTA VerifyLoggingHostname validation",
+            ofmt="text",
+        ),
+        AntaCommand(
+            command="show logging informational last 30 seconds | grep ANTA",
+            ofmt="text",
+            use_cache=False,
+        ),
     ]
 
     @AntaTest.anta_test
@@ -252,12 +266,12 @@ class VerifyLoggingHostname(AntaTest):
 
 
 class VerifyLoggingTimestamp(AntaTest):
-    """Verifies if logs are generated with the rate timestamp.
+    """Verifies if logs are generated with the appropriate timestamp.
 
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated with the riated timestamp.
-    * Failure: The test will fail if logs are NOT generated with the riated timestamp.
+    * Success: The test will pass if logs are generated with the appropriate timestamp.
+    * Failure: The test will fail if logs are NOT generated with the appropriate timestamp.
 
     Examples
     --------
@@ -271,8 +285,15 @@ class VerifyLoggingTimestamp(AntaTest):
     description = "Verifies if logs are generated with the riate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaCommand(
+            command="send log level informational message ANTA VerifyLoggingTimestamp validation",
+            ofmt="text",
+        ),
+        AntaCommand(
+            command="show logging informational last 30 seconds | grep ANTA",
+            ofmt="text",
+            use_cache=False,
+        ),
     ]
 
     @AntaTest.anta_test
