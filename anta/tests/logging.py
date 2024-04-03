@@ -190,15 +190,8 @@ class VerifyLoggingLogsGeneration(AntaTest):
     description = "Verifies if logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(
-            command="send log level informational message ANTA VerifyLoggingLogsGeneration validation",
-            ofmt="text",
-        ),
-        AntaCommand(
-            command="show logging informational last 30 seconds | grep ANTA",
-            ofmt="text",
-            use_cache=False,
-        ),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 
     @AntaTest.anta_test
@@ -211,6 +204,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
             if re.search(log_pattern, line):
                 self.result.is_success()
                 return
+
         self.result.is_failure("Logs are not generated")
 
 
@@ -235,15 +229,8 @@ class VerifyLoggingHostname(AntaTest):
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname", revision=1),
-        AntaCommand(
-            command="send log level informational message ANTA VerifyLoggingHostname validation",
-            ofmt="text",
-        ),
-        AntaCommand(
-            command="show logging informational last 30 seconds | grep ANTA",
-            ofmt="text",
-            use_cache=False,
-        ),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 
     @AntaTest.anta_test
@@ -285,15 +272,8 @@ class VerifyLoggingTimestamp(AntaTest):
     description = "Verifies if logs are generated with the riate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(
-            command="send log level informational message ANTA VerifyLoggingTimestamp validation",
-            ofmt="text",
-        ),
-        AntaCommand(
-            command="show logging informational last 30 seconds | grep ANTA",
-            ofmt="text",
-            use_cache=False,
-        ),
+        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
+        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
 
     @AntaTest.anta_test
@@ -308,6 +288,7 @@ class VerifyLoggingTimestamp(AntaTest):
             if re.search(log_pattern, line):
                 last_line_with_pattern = line
                 break
+
         if re.search(timestamp_pattern, last_line_with_pattern):
             self.result.is_success()
         else:
