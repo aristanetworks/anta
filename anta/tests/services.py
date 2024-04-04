@@ -237,10 +237,7 @@ class VerifyErrdisableRecovery(AntaTest):
                     continue
                 reason_found = True
                 actual_reason_data = {"interval": interval, "status": status}
-                expected_reason_data = {
-                    "interval": str(input_interval),
-                    "status": "Enabled",
-                }
+                expected_reason_data = {"interval": str(input_interval), "status": "Enabled"}
                 if actual_reason_data != expected_reason_data:
                     failed_log = get_failed_logs(expected_reason_data, actual_reason_data)
                     self.result.is_failure(f"`{input_reason}`:{failed_log}\n")

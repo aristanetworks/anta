@@ -1001,10 +1001,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             state = bgp_output.get("state")
             md5_auth_enabled = bgp_output.get("md5AuthEnabled")
             if state != "Established" or not md5_auth_enabled:
-                failure["bgp_peers"][peer][vrf] = {
-                    "state": state,
-                    "md5_auth_enabled": md5_auth_enabled,
-                }
+                failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
                 failures = deep_update(failures, failure)
 
         # Check if there are any failures
@@ -1235,12 +1232,7 @@ class VerifyBGPTimers(AntaTest):
 
             # Verify BGP peer's hold and keep alive timers
             if bgp_output.get("holdTime") != hold_time or bgp_output.get("keepaliveTime") != keep_alive_time:
-                failures[peer_address] = {
-                    vrf: {
-                        "hold_time": bgp_output.get("holdTime"),
-                        "keep_alive_time": bgp_output.get("keepaliveTime"),
-                    }
-                }
+                failures[peer_address] = {vrf: {"hold_time": bgp_output.get("holdTime"), "keep_alive_time": bgp_output.get("keepaliveTime")}}
 
         if not failures:
             self.result.is_success()
