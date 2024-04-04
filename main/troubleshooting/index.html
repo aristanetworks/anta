@@ -13,25 +13,25 @@
       
       
       
-        <link rel="prev" href="../../advanced_usages/as-python-lib/">
+        <link rel="prev" href="../api/report_manager/">
       
       
-        <link rel="next" href="../tests.aaa/">
+        <link rel="next" href="../contribution/">
       
       
-      <link rel="icon" href="../../imgs/favicon.ico">
+      <link rel="icon" href="../imgs/favicon.ico">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
     
     
       
-        <title>Overview - Arista Network Test Automation - ANTA</title>
+        <title>Troubleshooting - Arista Network Test Automation - ANTA</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.bcfcd587.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,11 +50,11 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../stylesheets/extra.material.css">
+      <link rel="stylesheet" href="../stylesheets/extra.material.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta-tests-landing-page" class="md-skip">
+        <a href="#troubleshooting-anta" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
           if (current == "main") {
                 message = "This is the documentation from the 'main' branch which is not a stable release."
           }
-          message = message + '<a href="../../.."> <strong>Click here to go to latest stable release.</strong> </a>'
+          message = message + '<a href="../.."> <strong>Click here to go to latest stable release.</strong> </a>'
           document.getElementById("current-version").innerHTML = message;
    </script>
   
@@ -121,7 +121,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href=".." title="Arista Network Test Automation - ANTA" class="md-header__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -141,7 +141,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Troubleshooting
             
           </span>
         </div>
@@ -254,7 +254,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
+    <a href=".." title="Arista Network Test Automation - ANTA" class="md-nav__button md-logo" aria-label="Arista Network Test Automation - ANTA" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 64h128v64H256V64zM240 0c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h48v32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96v32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h256v32h-48c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h160c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48h-48v-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352v-32h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H240zM96 448v-64h128v64H96zm320-64h128v64H416v-64z"/></svg>
@@ -284,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -304,7 +304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -324,7 +324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../requirements-and-installation/" class="md-nav__link">
+      <a href="../requirements-and-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -344,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage-inventory-catalog/" class="md-nav__link">
+      <a href="../usage-inventory-catalog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -419,7 +419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/overview/" class="md-nav__link">
+      <a href="../cli/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -440,7 +440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/nrfu/" class="md-nav__link">
+      <a href="../cli/nrfu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -461,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/exec/" class="md-nav__link">
+      <a href="../cli/exec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -482,7 +482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/inv-from-cvp/" class="md-nav__link">
+      <a href="../cli/inv-from-cvp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -503,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/inv-from-ansible/" class="md-nav__link">
+      <a href="../cli/inv-from-ansible/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -524,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/get-inventory-information/" class="md-nav__link">
+      <a href="../cli/get-inventory-information/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -545,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/check/" class="md-nav__link">
+      <a href="../cli/check/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -566,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/debug/" class="md-nav__link">
+      <a href="../cli/debug/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -587,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/tag-management/" class="md-nav__link">
+      <a href="../cli/tag-management/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -658,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/caching/" class="md-nav__link">
+      <a href="../advanced_usages/caching/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -679,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/custom-tests/" class="md-nav__link">
+      <a href="../advanced_usages/custom-tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -700,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced_usages/as-python-lib/" class="md-nav__link">
+      <a href="../advanced_usages/as-python-lib/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -725,10 +725,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -783,11 +781,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -801,7 +799,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Tests Documentation
@@ -812,28 +810,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Overview
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../api/tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -842,70 +822,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta-tests-landing-page" class="md-nav__link">
-      <span class="md-ellipsis">
-        ANTA Tests Landing Page
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="ANTA Tests Landing Page">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#available-tests" class="md-nav__link">
-      <span class="md-ellipsis">
-        Available Tests
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#using-the-tests" class="md-nav__link">
-      <span class="md-ellipsis">
-        Using the Tests
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -918,7 +834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.aaa/" class="md-nav__link">
+      <a href="../api/tests.aaa/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -939,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.bfd/" class="md-nav__link">
+      <a href="../api/tests.bfd/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -960,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.configuration/" class="md-nav__link">
+      <a href="../api/tests.configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -981,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.connectivity/" class="md-nav__link">
+      <a href="../api/tests.connectivity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1002,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.field_notices/" class="md-nav__link">
+      <a href="../api/tests.field_notices/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1023,7 +939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.greent/" class="md-nav__link">
+      <a href="../api/tests.greent/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1044,7 +960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.hardware/" class="md-nav__link">
+      <a href="../api/tests.hardware/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1065,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.interfaces/" class="md-nav__link">
+      <a href="../api/tests.interfaces/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1086,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.lanz/" class="md-nav__link">
+      <a href="../api/tests.lanz/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1107,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.logging/" class="md-nav__link">
+      <a href="../api/tests.logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1128,7 +1044,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.mlag/" class="md-nav__link">
+      <a href="../api/tests.mlag/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1149,7 +1065,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.multicast/" class="md-nav__link">
+      <a href="../api/tests.multicast/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1170,7 +1086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.profiles/" class="md-nav__link">
+      <a href="../api/tests.profiles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1191,7 +1107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.ptp/" class="md-nav__link">
+      <a href="../api/tests.ptp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1255,7 +1171,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.generic/" class="md-nav__link">
+      <a href="../api/tests.routing.generic/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1276,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.bgp/" class="md-nav__link">
+      <a href="../api/tests.routing.bgp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1297,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.routing.ospf/" class="md-nav__link">
+      <a href="../api/tests.routing.ospf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1326,7 +1242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.security/" class="md-nav__link">
+      <a href="../api/tests.security/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1347,7 +1263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.services/" class="md-nav__link">
+      <a href="../api/tests.services/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1368,7 +1284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.snmp/" class="md-nav__link">
+      <a href="../api/tests.snmp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1389,7 +1305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.stp/" class="md-nav__link">
+      <a href="../api/tests.stp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1410,7 +1326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.software/" class="md-nav__link">
+      <a href="../api/tests.software/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1431,7 +1347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.system/" class="md-nav__link">
+      <a href="../api/tests.system/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1452,7 +1368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.vxlan/" class="md-nav__link">
+      <a href="../api/tests.vxlan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1473,7 +1389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tests.vlan/" class="md-nav__link">
+      <a href="../api/tests.vlan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1591,7 +1507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory/" class="md-nav__link">
+      <a href="../api/inventory/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1612,7 +1528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inventory.models.input/" class="md-nav__link">
+      <a href="../api/inventory.models.input/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1641,7 +1557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../catalog/" class="md-nav__link">
+      <a href="../api/catalog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1662,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../device/" class="md-nav__link">
+      <a href="../api/device/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1724,7 +1640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../models/" class="md-nav__link">
+      <a href="../api/models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1745,7 +1661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
+      <a href="../api/types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1815,7 +1731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager/" class="md-nav__link">
+      <a href="../api/result_manager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1836,7 +1752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result_manager_models/" class="md-nav__link">
+      <a href="../api/result_manager_models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1865,7 +1781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../api/report_manager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1890,10 +1806,28 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../troubleshooting/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1902,6 +1836,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#troubleshooting-anta" class="md-nav__link">
+      <span class="md-ellipsis">
+        Troubleshooting ANTA
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Troubleshooting ANTA">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#capturing-logs" class="md-nav__link">
+      <span class="md-ellipsis">
+        Capturing logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Capturing logs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta_debug-environment-variable" class="md-nav__link">
+      <span class="md-ellipsis">
+        ANTA_DEBUG environment variable
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1913,7 +1917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contribution/" class="md-nav__link">
+      <a href="../contribution/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1933,7 +1937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../faq/" class="md-nav__link">
+      <a href="../faq/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1972,23 +1976,37 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta-tests-landing-page" class="md-nav__link">
+    <a href="#troubleshooting-anta" class="md-nav__link">
       <span class="md-ellipsis">
-        ANTA Tests Landing Page
+        Troubleshooting ANTA
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="ANTA Tests Landing Page">
+      <nav class="md-nav" aria-label="Troubleshooting ANTA">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#available-tests" class="md-nav__link">
+    <a href="#capturing-logs" class="md-nav__link">
       <span class="md-ellipsis">
-        Available Tests
+        Capturing logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Capturing logs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta_debug-environment-variable" class="md-nav__link">
+      <span class="md-ellipsis">
+        ANTA_DEBUG environment variable
       </span>
     </a>
 
@@ -1997,16 +2015,8 @@
   </li>
           
           
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#using-the-tests" class="md-nav__link">
-      <span class="md-ellipsis">
-        Using the Tests
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
+        </ul>
+      </nav>
     
   </li>
           
@@ -2035,48 +2045,66 @@
 
 
   
-    <h1>Overview</h1>
+    <h1>Troubleshooting</h1>
   
 
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h3 id="anta-tests-landing-page">ANTA Tests Landing Page<a class="headerlink" href="#anta-tests-landing-page" title="Permanent link">&para;</a></h3>
-<p>This section describes all the available tests provided by the ANTA package.</p>
-<h4 id="available-tests">Available Tests<a class="headerlink" href="#available-tests" title="Permanent link">&para;</a></h4>
-<p>Here are the tests that we currently provide:</p>
-<ul>
-<li><a href="../tests.aaa/">AAA</a></li>
-<li><a href="../tests.bfd/">BFD</a></li>
-<li><a href="../tests.configuration/">Configuration</a></li>
-<li><a href="../tests.connectivity/">Connectivity</a></li>
-<li><a href="../tests.field_notices/">Field Notice</a></li>
-<li><a href="../tests.greent/">GreenT</a></li>
-<li><a href="../tests.hardware/">Hardware</a></li>
-<li><a href="../tests.interfaces/">Interfaces</a></li>
-<li><a href="../tests.lanz/">LANZ</a></li>
-<li><a href="../tests.logging/">Logging</a></li>
-<li><a href="../tests.mlag/">MLAG</a></li>
-<li><a href="../tests.multicast/">Multicast</a></li>
-<li><a href="../tests.profiles/">Profiles</a></li>
-<li><a href="../tests.ptp/">PTP</a></li>
-<li><a href="../tests.routing.generic/">Routing Generic</a></li>
-<li><a href="../tests.routing.bgp/">Routing BGP</a></li>
-<li><a href="../tests.routing.ospf/">Routing OSPF</a></li>
-<li><a href="../tests.security/">Security</a></li>
-<li><a href="../tests.services/">Services</a></li>
-<li><a href="../tests.snmp/">SNMP</a></li>
-<li><a href="../tests.software/">Software</a></li>
-<li><a href="../tests.stp/">STP</a></li>
-<li><a href="../tests.system/">System</a></li>
-<li><a href="../tests.vlan/">VLAN</a></li>
-<li><a href="../tests.vxlan/">VXLAN</a></li>
-</ul>
-<h4 id="using-the-tests">Using the Tests<a class="headerlink" href="#using-the-tests" title="Permanent link">&para;</a></h4>
-<p>All these tests can be imported in a <a href="../../usage-inventory-catalog/">catalog</a> to be used by <a href="../../cli/nrfu/">the ANTA CLI</a> or in your <a href="../../advanced_usages/as-python-lib/">own framework</a>.</p>
+<h3 id="troubleshooting-anta">Troubleshooting ANTA<a class="headerlink" href="#troubleshooting-anta" title="Permanent link">&para;</a></h3>
+<p>A couple of things to check when hitting an issue with ANTA:</p>
+<pre class="mermaid"><code>flowchart LR
+    A&gt;Hitting an issue with ANTA] --&gt; B{Is my issue &lt;br &gt;listed in the FAQ?}
+    B -- Yes --&gt; C{Does the FAQ solution&lt;&lt;br /&gt;works for me?}
+    C -- Yes --&gt; V(((Victory)))
+    B --&gt;|No| E{Is my problem&lt;br /&gt;mentioned in one&lt;&lt;br /&gt;of the open issues?}
+    C --&gt;|No| E
+    E -- Yes --&gt; F{Has the issue been&lt;br /&gt;fixed in a newer&lt;br /&gt;release or in main?}
+    F -- Yes --&gt; U[Upgrade]
+    E -- No ---&gt; H((Follow the steps below&lt;br /&gt;and open a Github issue))
+    U --&gt; I{Did it fix&lt;br /&gt; your problem}
+    I -- Yes --&gt; V
+    I -- No --&gt; H
+    F -- No ----&gt; G((Add a comment on the &lt;br /&gt;issue indicating you&lt;br &gt;are hitting this and&lt;br /&gt;describing your setup&lt;br /&gt; and adding your logs.))
+
+    click B "../faq" "FAQ"
+    click E "https://github.com/arista-netdevops-community/anta/issues"
+    click H "https://github.com/arista-netdevops-community/anta/issues"
+    style A stroke:#f00,stroke-width:2px</code></pre>
+<h4 id="capturing-logs">Capturing logs<a class="headerlink" href="#capturing-logs" title="Permanent link">&para;</a></h4>
+<p>To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be <em>&ldquo;Can you share some logs please?&rdquo;</em>.</p>
+<p>ANTA provides very verbose logs when using the <code>DEBUG</code> level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>On real deployments, do not use DEBUG logging level without setting a log file at the same time.</p>
+</div>
+<p>To save the logs to a file called <code>anta.log</code>, use the following flags:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Where ANTA_COMMAND is one of nrfu, debug, get, exec, check</span>
+anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>–log-file<span class="w"> </span>anta.log<span class="w"> </span>&lt;ANTA_COMMAND&gt;
+</code></pre></div>
+<p>See <code>anta --help</code> for more information.  These have to precede the <code>nrfu</code> cmd.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Remember that in ANTA, each level of command has its own options and they can only be set at this level.
+so the <code>-l</code> and <code>--log-file</code> MUST be between <code>anta</code> and the <code>ANTA_COMMAND</code>.
+similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu</code> and the <code>ANTA_NRFU_SUBCOMMAND</code> (<code>json</code>, <code>text</code>, <code>table</code> or <code>tpl-report</code>).</p>
+</div>
+<p>As an example, for the <code>nrfu</code> command, it would look like:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
+</code></pre></div>
+<h5 id="anta_debug-environment-variable"><code>ANTA_DEBUG</code> environment variable<a class="headerlink" href="#anta_debug-environment-variable" title="Permanent link">&para;</a></h5>
+<details class="warning">
+<summary>Warning</summary>
+<p>Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.</p>
+</details>
+<p>The environment variable <code>ANTA_DEBUG=true</code> enable ANTA Debug Mode.</p>
+<p>This flag is used by various functions in ANTA: when set to true, the function will display or log more information. In particular, when an Exception occurs in the code and this variable is set, the logging function used by ANTA is different to also produce the Python traceback for debugging. This typically needs to be done when opening a GitHub issue and an Exception is seen at runtime.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">ANTA_DEBUG</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
+</code></pre></div>
 
 
 
@@ -2097,7 +2125,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 4, 2024</span>
   </span>
 
     
@@ -2193,10 +2221,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

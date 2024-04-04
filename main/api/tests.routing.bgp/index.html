@@ -2457,6 +2457,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../contribution/" class="md-nav__link">
         
   
@@ -7000,11 +7020,11 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="nx">failures</span><span class="w"> </span><span class="p">(</span><span class="nx">dict</span><span class="p">):</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">dictionary</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">which</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">failure</span><span class="w"> </span><span class="nx">will</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">added</span><span class="p">.</span>
-<span class="nx">afi</span><span class="w"> </span><span class="p">(</span><span class="nx">Afi</span><span class="p">):</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">address</span><span class="w"> </span><span class="nx">family</span><span class="w"> </span><span class="nx">identifier</span><span class="p">.</span>
-<span class="nx">vrf</span><span class="w"> </span><span class="p">(</span><span class="nx">str</span><span class="p">):</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">VRF</span><span class="w"> </span><span class="nx">name</span><span class="p">.</span>
-<span class="nx">safi</span><span class="w"> </span><span class="p">(</span><span class="nx">Safi</span><span class="p">,</span><span class="w"> </span><span class="nx">optional</span><span class="p">):</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">subsequent</span><span class="w"> </span><span class="nx">address</span><span class="w"> </span><span class="nx">family</span><span class="w"> </span><span class="nx">identifier</span><span class="p">.</span>
-<span class="nx">issue</span><span class="w"> </span><span class="p">(</span><span class="nx">Any</span><span class="p">):</span><span class="w"> </span><span class="nx">A</span><span class="w"> </span><span class="nx">description</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">issue</span><span class="p">.</span><span class="w"> </span><span class="nx">Can</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">any</span><span class="w"> </span><span class="k">type</span><span class="p">.</span>
+  <div class="codehilite"><pre><span></span><code><span class="n">failures</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">added</span><span class="o">.</span>
+<span class="n">afi</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="n">identifier</span><span class="o">.</span>
+<span class="n">vrf</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">VRF</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
+<span class="n">safi</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">subsequent</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="n">identifier</span><span class="o">.</span>
+<span class="n">issue</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">issue</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">type</span><span class="o">.</span>
 </code></pre></div>
 </details>
 <details class="example:" open>
@@ -7074,11 +7094,11 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        failures (dict): The dictionary to which the failure will be added.</span>
-<span class="sd">        afi (Afi): The address family identifier.</span>
-<span class="sd">        vrf (str): The VRF name.</span>
-<span class="sd">        safi (Safi, optional): The subsequent address family identifier.</span>
-<span class="sd">        issue (Any): A description of the issue. Can be of any type.</span>
+<span class="sd">        failures: The dictionary to which the failure will be added.</span>
+<span class="sd">        afi: The address family identifier.</span>
+<span class="sd">        vrf: The VRF name.</span>
+<span class="sd">        safi: The subsequent address family identifier.</span>
+<span class="sd">        issue: A description of the issue. Can be of any type.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">    -------</span>
@@ -7133,11 +7153,11 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">bgp_routes</span><span class="w"> </span><span class="p">(</span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="n">routes</span><span class="p">.</span>
-<span class="n">bgp_output</span><span class="w"> </span><span class="p">(</span><span class="n">dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="p">.</span>
-<span class="n">peer</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">IP</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">peer</span><span class="p">.</span>
-<span class="n">vrf</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">VRF</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">routes</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">verified</span><span class="p">.</span>
-<span class="n">route_type</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="n">optional</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">routes</span><span class="p">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="s1">&#39;advertised_routes&#39;</span><span class="p">.</span>
+  <div class="codehilite"><pre><span></span><code><span class="n">bgp_routes</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="n">routes</span><span class="o">.</span>
+<span class="n">bgp_output</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
+<span class="n">peer</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">IP</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">peer</span><span class="o">.</span>
+<span class="n">vrf</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">VRF</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">routes</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">verified</span><span class="o">.</span>
+<span class="n">route_type</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">routes</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s1">&#39;advertised_routes&#39;</span><span class="o">.</span>
 </code></pre></div>
 </details>
 
@@ -7231,11 +7251,11 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        bgp_routes (list[str]): The list of expected routes.</span>
-<span class="sd">        bgp_output (dict[str, Any]): The BGP output from the device.</span>
-<span class="sd">        peer (str): The IP address of the BGP peer.</span>
-<span class="sd">        vrf (str): The name of the VRF for which the routes need to be verified.</span>
-<span class="sd">        route_type (str, optional): The type of BGP routes. Defaults to &#39;advertised_routes&#39;.</span>
+<span class="sd">        bgp_routes: The list of expected routes.</span>
+<span class="sd">        bgp_output: The BGP output from the device.</span>
+<span class="sd">        peer: The IP address of the BGP peer.</span>
+<span class="sd">        vrf: The name of the VRF for which the routes need to be verified.</span>
+<span class="sd">        route_type: The type of BGP routes. Defaults to &#39;advertised_routes&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -7292,7 +7312,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <details class="args:" open>
   <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code>peer_data (dict, optional): The BGP peer data dictionary nested in the <span class="sb">`show bgp &lt;afi&gt; &lt;safi&gt; summary`</span> command.
+  <div class="codehilite"><pre><span></span><code><span class="n">peer_data</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">peer</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">nested</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="err">`</span><span class="n">show</span><span class="w"> </span><span class="n">bgp</span><span class="w"> </span><span class="o">&lt;</span><span class="n">afi</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="n">safi</span><span class="o">&gt;</span><span class="w"> </span><span class="n">summary</span><span class="err">`</span><span class="w"> </span><span class="n">command</span><span class="o">.</span>
 </code></pre></div>
 </details>
 
@@ -7389,7 +7409,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <span class="sd">    Args:</span>
 <span class="sd">    ----</span>
-<span class="sd">        peer_data (dict, optional): The BGP peer data dictionary nested in the `show bgp &lt;afi&gt; &lt;safi&gt; summary` command.</span>
+<span class="sd">        peer_data: The BGP peer data dictionary nested in the `show bgp &lt;afi&gt; &lt;safi&gt; summary` command.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

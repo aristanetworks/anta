@@ -1807,6 +1807,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../contribution/" class="md-nav__link">
         
   
@@ -1880,6 +1900,28 @@
     
       <nav class="md-nav" aria-label="Frequently Asked Questions (FAQ)">
         <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#footimeout-error-in-the-logs" class="md-nav__link">
+      <span class="md-ellipsis">
+        &lt;Foo&gt;Timeout error in the logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="<Foo>Timeout error in the logs">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
@@ -2012,6 +2054,28 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#footimeout-error-in-the-logs" class="md-nav__link">
+      <span class="md-ellipsis">
+        &lt;Foo&gt;Timeout error in the logs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="<Foo>Timeout error in the logs">
+        <ul class="md-nav__list">
+          
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#importerror-related-to-urllib3" class="md-nav__link">
       <span class="md-ellipsis">
         ImportError related to urllib3
@@ -2135,6 +2199,18 @@
 </style>
 
 <h3 id="frequently-asked-questions-faq">Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permanent link">&para;</a></h3>
+<h4 id="footimeout-error-in-the-logs"><code>&lt;Foo&gt;Timeout</code> error in the logs<a class="headerlink" href="#footimeout-error-in-the-logs" title="Permanent link">&para;</a></h4>
+<details class="faq" open="open">
+<summary><code>Timeout</code> error in the logs</summary>
+<p>When running ANTA, you can receive <code>&lt;Foo&gt;Timeout</code> errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout, PoolTimeout). More details on the timeouts of the underlying library are available here: <a href="https://www.python-httpx.org/advanced/timeouts/">https://www.python-httpx.org/advanced/timeouts/</a></p>
+<p>This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, &hellip;) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).</p>
+<h5 id="solution">Solution<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h5>
+<p>Use the <code>timeout</code> option. As an example for the <code>nrfu</code> command:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>--timeout<span class="w"> </span><span class="m">50</span><span class="w"> </span>text
+</code></pre></div>
+<p>The previous command set a couple of options for ANTA NRFU, one them being the <code>timeout</code> command, by default, when running ANTA from CLI, it is set to 30s.
+The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.</p>
+</details>
 <h4 id="importerror-related-to-urllib3"><code>ImportError</code> related to <code>urllib3</code><a class="headerlink" href="#importerror-related-to-urllib3" title="Permanent link">&para;</a></h4>
 <details class="faq" open="open">
 <summary><code>ImportError</code> related to <code>urllib3</code> when running ANTA</summary>
@@ -2142,7 +2218,7 @@
 <div class="highlight"><pre><span></span><code>ImportError:<span class="w"> </span>urllib3<span class="w"> </span>v2.0<span class="w"> </span>only<span class="w"> </span>supports<span class="w"> </span>OpenSSL<span class="w"> </span><span class="m">1</span>.1.1+,<span class="w"> </span>currently<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;ssl&#39;</span><span class="w"> </span>module<span class="w"> </span>is<span class="w"> </span>compiled<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;OpenSSL 1.0.2k-fips  26 Jan 2017&#39;</span>.<span class="w"> </span>See:<span class="w"> </span>https://github.com/urllib3/urllib3/issues/2168
 </code></pre></div>
 <p>This error arises due to a compatibility issue between <code>urllib3</code> v2.0 and older versions of OpenSSL.</p>
-<h5 id="solution">Solution<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h5>
+<h5 id="solution_1">Solution<a class="headerlink" href="#solution_1" title="Permanent link">&para;</a></h5>
 <ol>
 <li>
 <p><em>Workaround</em>: Downgrade <code>urllib3</code></p>
@@ -2167,7 +2243,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <div class="highlight"><pre><span></span><code>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;lib&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;OpenSSL_add_all_algorithms&#39;</span>
 </code></pre></div>
 <p>The error is a result of incompatibility between <code>cryptography</code> and <code>pyopenssl</code> when installing <code>asyncssh</code> which is a requirement of ANTA.</p>
-<h5 id="solution_1">Solution<a class="headerlink" href="#solution_1" title="Permanent link">&para;</a></h5>
+<h5 id="solution_2">Solution<a class="headerlink" href="#solution_2" title="Permanent link">&para;</a></h5>
 <ol>
 <li>
 <p>Upgrade <code>pyopenssl</code></p>
@@ -2180,7 +2256,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 <details class="faq" open="open">
 <summary><code>__NSCFConstantString initialize</code> error on OSX</summary>
 <p>This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. <a href="https://www.wefearchange.org/2018/11/forkmacos.rst.html">https://www.wefearchange.org/2018/11/forkmacos.rst.html</a></p>
-<h5 id="solution_2">Solution<a class="headerlink" href="#solution_2" title="Permanent link">&para;</a></h5>
+<h5 id="solution_3">Solution<a class="headerlink" href="#solution_3" title="Permanent link">&para;</a></h5>
 <ol>
 <li>
 <p>Set the following environment variable</p>
@@ -2190,7 +2266,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 </ol>
 </details>
 <h3 id="still-facing-issues">Still facing issues?<a class="headerlink" href="#still-facing-issues" title="Permanent link">&para;</a></h3>
-<p>If you&rsquo;ve tried the above solutions and continue to experience problems, please report the issue in our <a href="https://github.com/arista-netdevops-community/anta">GitHub repository</a>.</p>
+<p>If you&rsquo;ve tried the above solutions and continue to experience problems, please follow the <a href="../troubleshooting">troubleshooting</a> instructions and report the issue in our <a href="https://github.com/arista-netdevops-community/anta">GitHub repository</a>.</p>
 
 
 
@@ -2211,7 +2287,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 21, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 4, 2024</span>
   </span>
 
     
