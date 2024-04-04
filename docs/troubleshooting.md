@@ -33,14 +33,20 @@ flowchart LR
 
 To help document the issue in Github, it is importan to capture some [logs](https://nologsnohelp.com).
 
+ANTA provides very verbose logs when using the `DEBUG` level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.
 
-ANTA provides very verbose logs when using the `DEBUG` level. To save the logs to a file called `anta.log`, use the following flags:
+!!! danger
 
+	On real deployments, do not use DEBUG logging level without setting a log file at the same time.
+
+To save the logs to a file called `anta.log`, use the following flags:
 
 ```bash
 # Where ANTA_COMMAND is one of nrfu, debug, get, exec, check
 anta -l DEBUG –log-file anta.log <ANTA_COMMAND>
 ```
+
+See `anta --help` for more information.  These have to precede the `nrfu` cmd.
 
 !!! tip
 
@@ -55,12 +61,19 @@ As an example, for the `nrfu` command, it would look like:
 anta -l DEBUG --log-file anta.log nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml text
 ```
 
-!!! info "Get stack trace for debugging"
 
-    If you want to access to the full exception stack, you can run ANTA in debug mode by setting the `ANTA_DEBUG` environment variable to `true`.
+### `ANTA_DEBUG` environement variable
 
-    Example:
+??? warning
 
-	```bash
-	ANTA_DEBUG=true anta -l DEBUG --log-file anta.log nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml text
-	```
+	Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
+
+The environment variable `ANTA_DEBUG=true` enable ANTA Debug Mode.
+
+This flag is used by various functions in ANTA: when set to true, the function will display or log more information. In particular, when an Exception occurs in the code and this variable is set, the logging function used by ANTA is different to also produce the Python traceback for debugging. This typically needs to be done when opening a GitHub issue and an Exception is seen at runtime.
+
+Example:
+
+```bash
+ANTA_DEBUG=true anta -l DEBUG --log-file anta.log nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml text
+```

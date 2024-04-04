@@ -89,7 +89,7 @@ toc_depth: 4
 ## `ReadTimeout` error in the logs
 ???+ faq "`ReadTimeout` error in the logs"
 
-    When running the `anta`, you receive `ReadTimeout` errors in the logs.  This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...)
+    When running the `anta`, you receive `ReadTimeout` errors in the logs.  This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).
 
     ### Solution
 
@@ -101,6 +101,7 @@ toc_depth: 4
 
     The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
     The timeout is increased to 50s to allow device and ANTA to wait on each other a little longer.
+
 
 # Still facing issues?
 
