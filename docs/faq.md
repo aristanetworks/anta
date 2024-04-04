@@ -39,7 +39,7 @@ toc_depth: 4
     ```
 
     The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
-    The timeout is increased to 50s to allow device and ANTA to wait on each other a little longer.
+    The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.
 
 ## `ImportError` related to `urllib3`
 ???+ faq "`ImportError` related to `urllib3` when running ANTA"
