@@ -13,6 +13,7 @@ This section describes all the available tests provided by the ANTA package.
 Here are the tests that we currently provide:
 
 - [AAA](tests.aaa.md)
+- [AVT](tests.avt.md)
 - [BFD](tests.bfd.md)
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)

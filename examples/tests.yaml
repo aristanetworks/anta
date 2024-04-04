@@ -50,6 +50,22 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.avt:
+  - VerifyAVTPathHealth:
+  - VerifyAVTSpecificPath:
+      avt_paths:
+        - avt_name: MGMT-AVT-POLICY-CONTROL-PLANE
+          destination: 10.101.255.2
+          next_hop: 10.101.255.11
+          direct_path: False
+  - VerifyAVTRole:
+      role: edge
+  - VerifyAVTPathReachability:
+      avt_paths:
+        - avt_name: DEFAULT-AVT-POLICY-DEFAULT
+          dst_ip: 10.255.0.1
+          vrf: guest
+
 anta.tests.bfd:
   - VerifyBFDSpecificPeers:
       bfd_peers:
