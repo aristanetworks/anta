@@ -13,7 +13,7 @@ from pydantic import Field
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 
 class VerifySTPMode(AntaTest):
@@ -196,7 +196,7 @@ class VerifySTPForwardingPorts(AntaTest):
         if not_configured:
             self.result.is_failure(f"STP instance is not configured for the following VLAN(s): {not_configured}")
         if not_forwarding:
-            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a fowarding state: {not_forwarding}")
+            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a forwarding state: {not_forwarding}")
         if not not_configured and not interfaces_not_forwarding:
             self.result.is_success()
 

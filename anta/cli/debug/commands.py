@@ -35,6 +35,7 @@ def run_cmd(
     version: Literal["1", "latest"],
     revision: int,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """Run arbitrary command to an ANTA device."""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it

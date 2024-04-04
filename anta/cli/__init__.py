@@ -61,8 +61,12 @@ def cli() -> None:
     """Entrypoint for pyproject.toml."""
     try:
         anta(obj={}, auto_envvar_prefix="ANTA")
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        anta_log_exception(e, f"Uncaught Exception when running ANTA CLI\n{GITHUB_SUGGESTION}", logger)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        anta_log_exception(
+            exc,
+            f"Uncaught Exception when running ANTA CLI\n{GITHUB_SUGGESTION}",
+            logger,
+        )
         sys.exit(ExitCode.INTERNAL_ERROR)
 
 

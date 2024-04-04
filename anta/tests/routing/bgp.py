@@ -16,8 +16,7 @@ from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_item import get_item
-from anta.tools.get_value import get_value
+from anta.tools import get_item, get_value
 
 
 def _add_bgp_failures(
@@ -33,15 +32,15 @@ def _add_bgp_failures(
 
     Args:
     ----
-        failures (dict): The dictionary to which the failure will be added.
-        afi (Afi): The address family identifier.
-        vrf (str): The VRF name.
-        safi (Safi, optional): The subsequent address family identifier.
-        issue (Any): A description of the issue. Can be of any type.
+        failures: The dictionary to which the failure will be added.
+        afi: The address family identifier.
+        vrf: The VRF name.
+        safi: The subsequent address family identifier.
+        issue: A description of the issue. Can be of any type.
 
     Example:
     -------
-    The `failures` dictionnary will have the following structure:
+    The `failures` dictionary will have the following structure:
         {
             ('afi1', 'safi1'): {
                 'afi': 'afi1',
@@ -72,7 +71,7 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
 
     Args:
     ----
-        peer_data (dict, optional): The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
+        peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
     Returns
     -------
@@ -121,11 +120,11 @@ def _add_bgp_routes_failure(
 
     Args:
     ----
-        bgp_routes (list[str]): The list of expected routes.
-        bgp_output (dict[str, Any]): The BGP output from the device.
-        peer (str): The IP address of the BGP peer.
-        vrf (str): The name of the VRF for which the routes need to be verified.
-        route_type (str, optional): The type of BGP routes. Defaults to 'advertised_routes'.
+        bgp_routes: The list of expected routes.
+        bgp_output: The BGP output from the device.
+        peer: The IP address of the BGP peer.
+        vrf: The name of the VRF for which the routes need to be verified.
+        route_type: The type of BGP routes. Defaults to 'advertised_routes'.
 
     Returns
     -------
@@ -286,7 +285,7 @@ class VerifyBGPPeerCount(AntaTest):
             afi_vrf = command.params.vrf
             num_peers = command.params.num_peers
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
 
@@ -433,7 +432,7 @@ class VerifyBGPPeersHealth(AntaTest):
             afi = command.params.afi
             safi = command.params.safi
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
             afi_vrf = command.params.vrf
@@ -605,7 +604,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             afi = command.params.afi
             safi = command.params.safi
 
-            # Swaping AFI and SAFI in case of SR-TE
+            # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
             afi_vrf = command.params.vrf

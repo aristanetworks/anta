@@ -22,7 +22,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
     Args:
     ----
-        new_tests (Optional[list[str]]): A list of new test classes that should replace the deprecated test.
+        new_tests: A list of new test classes that should replace the deprecated test.
 
     Returns
     -------
@@ -35,7 +35,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
         Args:
         ----
-            function (F): The test function to be decorated.
+            function: The test function to be decorated.
 
         Returns
         -------
@@ -48,9 +48,9 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
             anta_test = args[0]
             if new_tests:
                 new_test_names = ", ".join(new_tests)
-                logger.warning(f"{anta_test.name} test is deprecated. Consider using the following new tests: {new_test_names}.")
+                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", anta_test.name, new_test_names)
             else:
-                logger.warning(f"{anta_test.name} test is deprecated.")
+                logger.warning("%s test is deprecated.", anta_test.name)
             return await function(*args, **kwargs)
 
         return cast(F, wrapper)
@@ -66,7 +66,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
     Args:
     ----
-        platforms (list[str]): List of hardware models on which the test should be skipped.
+        platforms: List of hardware models on which the test should be skipped.
 
     Returns
     -------
@@ -79,7 +79,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
         Args:
         ----
-            function (F): The test function to be decorated.
+            function: The test function to be decorated.
 
         Returns
         -------

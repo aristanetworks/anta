@@ -12,9 +12,7 @@ from pydantic import BaseModel, Field
 
 from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_dict_superset import get_dict_superset
-from anta.tools.get_item import get_item
-from anta.tools.utils import get_failed_logs
+from anta.tools import get_dict_superset, get_failed_logs, get_item
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined

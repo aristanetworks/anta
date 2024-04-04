@@ -40,12 +40,12 @@ class ExitCode(enum.IntEnum):
     TESTS_FAILED = 4
 
 
-def parse_tags(ctx: click.Context, param: Option, value: str) -> list[str] | None:
+def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str] | None:
     # pylint: disable=unused-argument
     # ruff: noqa: ARG001
     """Click option callback to parse an ANTA inventory tags."""
     if value is not None:
-        return value.split(",") if "," in value else [value]
+        return set(value.split(",")) if "," in value else {value}
     return None
 
 
@@ -208,7 +208,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         ctx: click.Context,
         *args: tuple[Any],
         inventory: Path,
-        tags: list[str] | None,
+        tags: set[str] | None,
         username: str,
         password: str | None,
         enable_password: str | None,

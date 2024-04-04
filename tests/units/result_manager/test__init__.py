@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from anta.result_manager import ResultManager
+from anta.result_manager import ResultManager, models
 
 if TYPE_CHECKING:
     from anta.custom_types import TestStatus
@@ -29,8 +29,47 @@ class TestResultManager:
         result_manager = ResultManager()
         assert len(result_manager) == 0
         for i in range(3):
-            result_manager.add_test_result(list_result[i])
+            result_manager.add(list_result[i])
             assert len(result_manager) == i + 1
+
+    def test_results_getter(self, result_manager_factory: Callable[[int], ResultManager]) -> None:
+        """Test ResultManager.results property getter."""
+        result_manager = result_manager_factory(3)
+        res = result_manager.results
+        assert len(res) == 3
+        assert isinstance(res, list)
+        for e in res:
+            assert isinstance(e, models.TestResult)
+
+    def test_results_setter(self, list_result_factory: Callable[[int], list[TestResult]], result_manager_factory: Callable[[int], ResultManager]) -> None:
+        """Test ResultManager.results property setter."""
+        result_manager = result_manager_factory(3)
+        assert len(result_manager) == 3
+        tests = list_result_factory(5)
+        result_manager.results = tests
+        assert len(result_manager) == 5
+
+    def test_json(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.json property."""
+        result_manager = ResultManager()
+
+        success_list = list_result_factory(3)
+        for test in success_list:
+            test.result = "success"
+        result_manager.results = success_list
+
+        json_res = result_manager.json
+        assert isinstance(json_res, str)
+
+        # Verifies it can be deserialized back to a list of dict with the correct values types
+        res = json.loads(json_res)
+        for test in res:
+            assert isinstance(test, dict)
+            assert isinstance(test.get("test"), str)
+            assert isinstance(test.get("categories"), list)
+            assert isinstance(test.get("description"), str)
+            assert test.get("custom_field") is None
+            assert test.get("result") == "success"
 
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
@@ -85,88 +124,30 @@ class TestResultManager:
             ),
         ],
     )
-    def test__update_status(
+    def test_add(
         self,
+        test_result_factory: Callable[[], TestResult],
         starting_status: TestStatus,
         test_status: TestStatus,
         expected_status: str,
         expected_raise: AbstractContextManager[Exception],
     ) -> None:
-        """Test ResultManager._update_status."""
+        # pylint: disable=too-many-arguments
+        """Test ResultManager_update_status."""
         result_manager = ResultManager()
         result_manager.status = starting_status
         assert result_manager.error_status is False
+        assert len(result_manager) == 0
 
+        test = test_result_factory()
+        test.result = test_status
         with expected_raise:
-            result_manager._update_status(test_status)  # pylint: disable=protected-access
+            result_manager.add(test)
             if test_status == "error":
                 assert result_manager.error_status is True
             else:
                 assert result_manager.status == expected_status
-
-    def test_add_test_result(self, test_result_factory: Callable[[int], TestResult]) -> None:
-        """Test ResultManager.add_test_result."""
-        result_manager = ResultManager()
-        assert result_manager.status == "unset"
-        assert result_manager.error_status is False
-        assert len(result_manager) == 0
-
-        # Add one unset test
-        unset_test = test_result_factory(0)
-        unset_test.result = "unset"
-        result_manager.add_test_result(unset_test)
-        assert result_manager.status == "unset"
-        assert result_manager.error_status is False
-        assert len(result_manager) == 1
-
-        # Add one success test
-        success_test = test_result_factory(1)
-        success_test.result = "success"
-        result_manager.add_test_result(success_test)
-        assert result_manager.status == "success"
-        assert result_manager.error_status is False
-        assert len(result_manager) == 2
-
-        # Add one error test
-        error_test = test_result_factory(1)
-        error_test.result = "error"
-        result_manager.add_test_result(error_test)
-        assert result_manager.status == "success"
-        assert result_manager.error_status is True
-        assert len(result_manager) == 3
-
-        # Add one failure test
-        failure_test = test_result_factory(1)
-        failure_test.result = "failure"
-        result_manager.add_test_result(failure_test)
-        assert result_manager.status == "failure"
-        assert result_manager.error_status is True
-        assert len(result_manager) == 4
-
-    def test_add_test_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.add_test_results."""
-        result_manager = ResultManager()
-        assert result_manager.status == "unset"
-        assert result_manager.error_status is False
-        assert len(result_manager) == 0
-
-        # Add three success tests
-        success_list = list_result_factory(3)
-        for test in success_list:
-            test.result = "success"
-        result_manager.add_test_results(success_list)
-        assert result_manager.status == "success"
-        assert result_manager.error_status is False
-        assert len(result_manager) == 3
-
-        # Add one error test and one failure
-        error_failure_list = list_result_factory(2)
-        error_failure_list[0].result = "error"
-        error_failure_list[1].result = "failure"
-        result_manager.add_test_results(error_failure_list)
-        assert result_manager.status == "failure"
-        assert result_manager.error_status is True
-        assert len(result_manager) == 5
+            assert len(result_manager) == 1
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),
@@ -190,42 +171,107 @@ class TestResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    def test_get_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.get_results."""
+    def test_filter(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.filter."""
         result_manager = ResultManager()
 
         success_list = list_result_factory(3)
         for test in success_list:
             test.result = "success"
-        result_manager.add_test_results(success_list)
+        result_manager.results = success_list
 
-        res = result_manager.get_results()
-        assert isinstance(res, list)
+        test = test_result_factory()
+        test.result = "failure"
+        result_manager.add(test)
 
-    def test_get_json_results(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.get_json_results."""
+        test = test_result_factory()
+        test.result = "error"
+        result_manager.add(test)
+
+        test = test_result_factory()
+        test.result = "skipped"
+        result_manager.add(test)
+
+        assert len(result_manager) == 6
+        assert len(result_manager.filter({"failure"})) == 5
+        assert len(result_manager.filter({"error"})) == 5
+        assert len(result_manager.filter({"skipped"})) == 5
+        assert len(result_manager.filter({"failure", "error"})) == 4
+        assert len(result_manager.filter({"failure", "error", "skipped"})) == 3
+        assert len(result_manager.filter({"success", "failure", "error", "skipped"})) == 0
+
+    def test_get_by_tests(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
+        """Test ResultManager.get_by_tests."""
+        result_manager = result_manager_factory(3)
+
+        test = test_result_factory()
+        test.test = "Test1"
+        result_manager.add(test)
+
+        test = test_result_factory()
+        test.test = "Test2"
+        result_manager.add(test)
+
+        test = test_result_factory()
+        test.test = "Test2"
+        result_manager.add(test)
+
+        assert len(result_manager) == 6
+        assert len(result_manager.filter_by_tests({"Test1"})) == 1
+        rm = result_manager.filter_by_tests({"Test1", "Test2"})
+        assert len(rm) == 3
+        assert len(rm.filter_by_tests({"Test1"})) == 1
+
+    def test_get_by_devices(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
+        """Test ResultManager.get_by_devices."""
+        result_manager = result_manager_factory(3)
+
+        test = test_result_factory()
+        test.name = "Device1"
+        result_manager.add(test)
+
+        test = test_result_factory()
+        test.name = "Device2"
+        result_manager.add(test)
+
+        test = test_result_factory()
+        test.name = "Device2"
+        result_manager.add(test)
+
+        assert len(result_manager) == 6
+        assert len(result_manager.filter_by_devices({"Device1"})) == 1
+        rm = result_manager.filter_by_devices({"Device1", "Device2"})
+        assert len(rm) == 3
+        assert len(rm.filter_by_devices({"Device1"})) == 1
+
+    def test_get_tests(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.get_tests."""
         result_manager = ResultManager()
 
-        success_list = list_result_factory(3)
-        for test in success_list:
-            test.result = "success"
-        result_manager.add_test_results(success_list)
+        tests = list_result_factory(3)
+        for test in tests:
+            test.test = "Test1"
+        result_manager.results = tests
 
-        json_res = result_manager.get_json_results()
-        assert isinstance(json_res, str)
+        test = test_result_factory()
+        test.test = "Test2"
+        result_manager.add(test)
 
-        # Verifies it can be deserialized back to a list of dict with the correct values types
-        res = json.loads(json_res)
-        for test in res:
-            assert isinstance(test, dict)
-            assert isinstance(test.get("test"), str)
-            assert isinstance(test.get("categories"), list)
-            assert isinstance(test.get("description"), str)
-            assert test.get("custom_field") is None
-            assert test.get("result") == "success"
+        assert len(result_manager.get_tests()) == 2
+        assert all(t in result_manager.get_tests() for t in ["Test1", "Test2"])
 
-    # TODO: implement missing functions
-    # get_result_by_test
-    # get_result_by_host
-    # get_testcases
-    # get_hosts
+    def test_get_devices(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.get_tests."""
+        result_manager = ResultManager()
+
+        tests = list_result_factory(3)
+        for test in tests:
+            test.name = "Device1"
+        result_manager.results = tests
+
+        test = test_result_factory()
+        test.name = "Device2"
+        result_manager.add(test)
+
+        assert len(result_manager.get_devices()) == 2
+        assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])

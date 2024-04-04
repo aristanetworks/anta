@@ -65,10 +65,10 @@ class AntaTemplate(BaseModel):
     Attributes
     ----------
         template: Python f-string. Example: 'show vlan {vlan_id}'
-        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest".
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text - default is json
-        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it - default is True
+        ofmt: eAPI output - json or text.
+        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
 
     """
 
@@ -134,14 +134,14 @@ class AntaCommand(BaseModel):
     Attributes
     ----------
         command: Device command
-        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest".
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text - default is json
+        ofmt: eAPI output - json or text.
         output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
         params: Pydantic Model containing the variables tring values used to render the template
         errors: If the command execution fails, eAPI returns a list of strings detailing the error
-        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
+        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
     """
 
@@ -317,12 +317,12 @@ class AntaTest(ABC):
 
             Attributes
             ----------
-                tags: List of device's tags for the test.
+                tags: Tag of devices on which to run the test.
 
             """
 
             model_config = ConfigDict(extra="forbid")
-            tags: list[str] | None = None
+            tags: set[str] | None = None
 
     def __init__(
         self,
@@ -590,7 +590,7 @@ class AntaTest(ABC):
                 self.result.is_success()
                 for command in self.instance_commands:
                     if not self._test_command(command): # _test_command() is an arbitrary test logic
-                        self.result.is_failure("Failure reson")
+                        self.result.is_failure("Failure reason")
             ```
 
         """
