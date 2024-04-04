@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
@@ -13,9 +15,6 @@ from pydantic import BaseModel, Field
 from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_dict_superset, get_failed_logs, get_item
-
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 
 
 class VerifyHostname(AntaTest):
