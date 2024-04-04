@@ -159,15 +159,15 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     )
     @click.option(
         "--timeout",
-        help="Global connection timeout",
-        default=30,
+        help="Global API timeout. This value will be used for all devices.",
+        default=30.0,
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
         show_default=True,
     )
     @click.option(
         "--insecure",
-        help="Disable SSH Host Key validation",
+        help="Disable SSH Host Key validation.",
         default=False,
         show_envvar=True,
         envvar="ANTA_INSECURE",
@@ -176,7 +176,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     )
     @click.option(
         "--disable-cache",
-        help="Disable cache globally",
+        help="Disable cache globally.",
         show_envvar=True,
         envvar="ANTA_DISABLE_CACHE",
         show_default=True,
@@ -186,7 +186,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @click.option(
         "--inventory",
         "-i",
-        help="Path to the inventory YAML file",
+        help="Path to the inventory YAML file.",
         envvar="ANTA_INVENTORY",
         show_envvar=True,
         required=True,
@@ -195,7 +195,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @click.option(
         "--tags",
         "-t",
-        help="List of tags using comma as separator: tag1,tag2,tag3",
+        help="List of tags using comma as separator: tag1,tag2,tag3.",
         show_envvar=True,
         envvar="ANTA_TAGS",
         type=str,
@@ -214,7 +214,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         enable_password: str | None,
         enable: bool,
         prompt: bool,
-        timeout: int,
+        timeout: float,
         insecure: bool,
         disable_cache: bool,
         **kwargs: dict[str, Any],

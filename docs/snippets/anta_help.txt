@@ -1,6 +1,6 @@
 Usage: anta [OPTIONS] COMMAND [ARGS]...
 
-  Arista Network Test Automation (ANTA) CLI
+  Arista Network Test Automation (ANTA) CLI.
 
 Options:
   --version                       Show the version and exit.
@@ -13,8 +13,8 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
-  check  Commands to validate configuration files
-  debug  Commands to execute EOS commands on remote devices
-  exec   Commands to execute various scripts on EOS devices
-  get    Commands to get information from or generate inventories
-  nrfu   Run ANTA tests on devices
+  check  Commands to validate configuration files.
+  debug  Commands to execute EOS commands on remote devices.
+  exec   Commands to execute various scripts on EOS devices.
+  get    Commands to get information from or generate inventories.
+  nrfu   Run ANTA tests on selected inventory devices.

@@ -23,10 +23,9 @@ You can use the `run-cmd` entrypoint to run a command, which includes the follow
 ### Command overview
 
 ```bash
-$ anta debug run-cmd --help
 Usage: anta debug run-cmd [OPTIONS]
 
-  Run arbitrary command to an ANTA device
+  Run arbitrary command to an ANTA device.
 
 Options:
   -u, --username TEXT       Username to connect to EOS  [env var:
@@ -44,16 +43,17 @@ Options:
                             ANTA_ENABLE]
   -P, --prompt              Prompt for passwords if they are not provided.
                             [env var: ANTA_PROMPT]
-  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
-                            default: 30]
-  --insecure                Disable SSH Host Key validation  [env var:
+  --timeout FLOAT           Global API timeout. This value will be used for
+                            all devices.  [env var: ANTA_TIMEOUT; default:
+                            30.0]
+  --insecure                Disable SSH Host Key validation.  [env var:
                             ANTA_INSECURE]
-  --disable-cache           Disable cache globally  [env var:
+  --disable-cache           Disable cache globally.  [env var:
                             ANTA_DISABLE_CACHE]
-  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+  -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
   -t, --tags TEXT           List of tags using comma as separator:
-                            tag1,tag2,tag3  [env var: ANTA_TAGS]
+                            tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision
@@ -90,15 +90,15 @@ The `run-template` entrypoint allows the user to provide an [`f-string`](https:/
 ### Command overview
 
 ```bash
-$ anta debug run-template --help
 Usage: anta debug run-template [OPTIONS] PARAMS...
 
   Run arbitrary templated command to an ANTA device.
 
   Takes a list of arguments (keys followed by a value) to build a dictionary
-  used as template parameters. Example:
+  used as template parameters.
 
-  anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
+  Example: ------- anta debug run-template -d leaf1a -t 'show vlan {vlan_id}'
+  vlan_id 1
 
 Options:
   -u, --username TEXT       Username to connect to EOS  [env var:
@@ -116,16 +116,17 @@ Options:
                             ANTA_ENABLE]
   -P, --prompt              Prompt for passwords if they are not provided.
                             [env var: ANTA_PROMPT]
-  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
-                            default: 30]
-  --insecure                Disable SSH Host Key validation  [env var:
+  --timeout FLOAT           Global API timeout. This value will be used for
+                            all devices.  [env var: ANTA_TIMEOUT; default:
+                            30.0]
+  --insecure                Disable SSH Host Key validation.  [env var:
                             ANTA_INSECURE]
-  --disable-cache           Disable cache globally  [env var:
+  --disable-cache           Disable cache globally.  [env var:
                             ANTA_DISABLE_CACHE]
-  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+  -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
   -t, --tags TEXT           List of tags using comma as separator:
-                            tag1,tag2,tag3  [env var: ANTA_TAGS]
+                            tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision

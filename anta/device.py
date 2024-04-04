@@ -251,7 +251,7 @@ class AsyncEOSDevice(AntaDevice):
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port.
             tags: Tags for this device.
-            timeout: Timeout value in seconds for outgoing connections.
+            timeout: Timeout value in seconds for outgoing API calls.
             insecure: Disable SSH Host Key validation.
             proto: eAPI protocol. Value can be 'http' or 'https'.
             disable_cache: Disable caching for all commands for this device.
