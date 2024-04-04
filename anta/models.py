@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
+from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
@@ -95,7 +96,9 @@ class AntaTemplate(BaseModel):
 
         """
         # Create params schema on the fly
-        fields: dict[str, Any] = {key: (type(value), ...) for key, value in params.items()}
+        field_names = [fname for _, fname, _, _ in Formatter().parse(self.template) if fname]
+        # Extracting the type from the params based on the expected field_names from the template
+        fields: dict[str, Any] = {key: (type(params.get(key)), ...) for key in field_names}
         # Accepting ParamsSchema as non lowercase variable
         ParamsSchema = create_model(  # noqa: N806
             "ParamsSchema",
@@ -139,7 +142,7 @@ class AntaCommand(BaseModel):
         ofmt: eAPI output - json or text.
         output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
-        params: Pydantic Model containing the variables tring values used to render the template
+        params: Pydantic Model containing the variables values used to render the template
         errors: If the command execution fails, eAPI returns a list of strings detailing the error
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
