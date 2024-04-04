@@ -99,7 +99,8 @@ toc_depth: 4
     anta nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml --timeout 50 text
     ```
 
-    The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command.  The timeout from default 10s (or is it 30s) to 50s to allow device and ANTA to wait on each other a little longer.
+    The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
+    The timeout is increased to 50s to allow device and ANTA to wait on each other a little longer.
 
 # Still facing issues?
 
