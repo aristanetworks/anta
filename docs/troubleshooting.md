@@ -31,7 +31,7 @@ flowchart LR
 
 ## Capturing logs
 
-To help document the issue in Github, it is importan to capture some [logs](https://nologsnohelp.com).
+To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be _"Can you share some logs please?"_.
 
 ANTA provides very verbose logs when using the `DEBUG` level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.
 
