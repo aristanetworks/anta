@@ -138,10 +138,7 @@ def _add_bgp_routes_failure(
 
         # If the route is either inactive or invalid, add it to the failure routes dictionary
         if not is_active or not is_valid:
-            failure["bgp_peers"][peer][vrf][route_type][str_route] = {
-                "valid": is_valid,
-                "active": is_active,
-            }
+            failure["bgp_peers"][peer][vrf][route_type][str_route] = {"valid": is_valid, "active": is_active}
             failure_routes = deep_update(failure_routes, failure)
 
     return failure_routes
@@ -248,10 +245,7 @@ class VerifyBGPPeerCount(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPPeerCount.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
-            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in [
-                "ipv4",
-                "ipv6",
-            ]:
+            elif template == VerifyBGPPeerCount.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi))
         return commands
 
@@ -391,10 +385,7 @@ class VerifyBGPPeersHealth(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPPeersHealth.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
-            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in [
-                "ipv4",
-                "ipv6",
-            ]:
+            elif template == VerifyBGPPeersHealth.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi))
         return commands
 
@@ -545,10 +536,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
             elif template == VerifyBGPSpecificPeers.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
                 commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
-            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in [
-                "ipv4",
-                "ipv6",
-            ]:
+            elif template == VerifyBGPSpecificPeers.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
                 commands.append(template.render(afi=afi.afi))
         return commands
 
