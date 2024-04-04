@@ -99,9 +99,9 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
     Args:
     ----
-        exception (BaseException): The Exception being logged
-        message (str): An optional message
-        calling_logger (logging.Logger): A logger to which the exception should be logged. If not present, the logger in this file is used.
+        exception: The Exception being logged
+        message: An optional message
+        calling_logger: A logger to which the exception should be logged. If not present, the logger in this file is used.
 
     """
     if calling_logger is None:
