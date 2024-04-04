@@ -47,7 +47,7 @@ class AntaParamsBaseModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     if not TYPE_CHECKING:
-        # They put __getattr__ in not TYPE_CHEKCING in the lib
+        # Following pydantic declaration and keeping __getattr__ only when TYPE_CHECKING is false.
         # Disabling 1 Dynamically typed expressions (typing.Any) are disallowed in `__getattr__
         # ruff: noqa: ANN401
         def __getattr__(self, item: str) -> Any:
@@ -453,9 +453,7 @@ class AntaTest(ABC):
         This is not an abstract method because it does not need to be implemented if there is
         no AntaTemplate for this test.
         """
-        # Disabling unused argument
-        # ruff: noqa: ARG002
-        # pylint: disable=W0613
+        _ = template
         msg = f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}"
         raise NotImplementedError(msg)
 

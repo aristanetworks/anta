@@ -42,12 +42,7 @@ class VerifyReachability(AntaTest):
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(
-            template="ping vrf {vrf} {destination} source {source} repeat {repeat}",
-            revision=1,
-        )
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
@@ -69,15 +64,7 @@ class VerifyReachability(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
-        return [
-            template.render(
-                destination=host.destination,
-                source=host.source,
-                vrf=host.vrf,
-                repeat=host.repeat,
-            )
-            for host in self.inputs.hosts
-        ]
+        return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
 
     @AntaTest.anta_test
     def test(self) -> None:

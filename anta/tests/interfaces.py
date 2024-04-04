@@ -235,18 +235,7 @@ class VerifyInterfacesStatus(AntaTest):
             """Interface to validate."""
             status: Literal["up", "down", "adminDown"]
             """Expected status of the interface."""
-            line_protocol_status: (
-                Literal[
-                    "up",
-                    "down",
-                    "testing",
-                    "unknown",
-                    "dormant",
-                    "notPresent",
-                    "lowerLayerDown",
-                ]
-                | None
-            ) = None
+            line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
             """Expected line protocol status of the interface."""
 
     @AntaTest.anta_test
@@ -260,13 +249,7 @@ class VerifyInterfacesStatus(AntaTest):
         intf_wrong_state = []
 
         for interface in self.inputs.interfaces:
-            if (
-                intf_status := get_value(
-                    command_output["interfaceDescriptions"],
-                    interface.name,
-                    separator="..",
-                )
-            ) is None:
+            if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
                 intf_not_configured.append(interface.name)
                 continue
 

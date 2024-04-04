@@ -19,13 +19,7 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
 
-def _add_bgp_failures(
-    failures: dict[tuple[str, str | None], dict[str, Any]],
-    afi: Afi,
-    safi: Safi | None,
-    vrf: str,
-    issue: str | dict[str, Any],
-) -> None:
+def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
 
     Note: This function modifies `failures` in-place.
@@ -96,21 +90,13 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
         raise ValueError(msg)
 
     if peer_data["peerState"] != "Established" or peer_data["inMsgQueue"] != 0 or peer_data["outMsgQueue"] != 0:
-        return {
-            "peerState": peer_data["peerState"],
-            "inMsgQueue": peer_data["inMsgQueue"],
-            "outMsgQueue": peer_data["outMsgQueue"],
-        }
+        return {"peerState": peer_data["peerState"], "inMsgQueue": peer_data["inMsgQueue"], "outMsgQueue": peer_data["outMsgQueue"]}
 
     return {}
 
 
 def _add_bgp_routes_failure(
-    bgp_routes: list[str],
-    bgp_output: dict[str, Any],
-    peer: str,
-    vrf: str,
-    route_type: str = "advertised_routes",
+    bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
 ) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
     """Identify missing BGP routes and invalid or inactive route entries.
 
@@ -295,13 +281,7 @@ class VerifyBGPPeerCount(AntaTest):
                     break
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(
-                    failures=failures,
-                    afi=afi,
-                    safi=safi,
-                    vrf=afi_vrf,
-                    issue="Not Configured",
-                )
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
                 continue
 
             if afi_vrf == "all":
@@ -311,13 +291,7 @@ class VerifyBGPPeerCount(AntaTest):
                 peer_count += len(command_output["vrfs"][afi_vrf]["peers"])
 
             if peer_count != num_peers:
-                _add_bgp_failures(
-                    failures=failures,
-                    afi=afi,
-                    safi=safi,
-                    vrf=afi_vrf,
-                    issue=f"Expected: {num_peers}, Actual: {peer_count}",
-                )
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=f"Expected: {num_peers}, Actual: {peer_count}")
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -443,24 +417,12 @@ class VerifyBGPPeersHealth(AntaTest):
             afi_vrf = command.params.vrf or "default"
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(
-                    failures=failures,
-                    afi=afi,
-                    safi=safi,
-                    vrf=afi_vrf,
-                    issue="Not Configured",
-                )
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
                 continue
 
             for vrf, vrf_data in vrfs.items():
                 if not (peers := vrf_data.get("peers")):
-                    _add_bgp_failures(
-                        failures=failures,
-                        afi=afi,
-                        safi=safi,
-                        vrf=afi_vrf,
-                        issue="No Peers",
-                    )
+                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="No Peers")
                     continue
 
                 peer_issues = {}
@@ -471,13 +433,7 @@ class VerifyBGPPeersHealth(AntaTest):
                         peer_issues[peer] = issues
 
                 if peer_issues:
-                    _add_bgp_failures(
-                        failures=failures,
-                        afi=afi,
-                        safi=safi,
-                        vrf=vrf,
-                        issue=peer_issues,
-                    )
+                    _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=vrf, issue=peer_issues)
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -620,13 +576,7 @@ class VerifyBGPSpecificPeers(AntaTest):
                     break
 
             if not (vrfs := command_output.get("vrfs")):
-                _add_bgp_failures(
-                    failures=failures,
-                    afi=afi,
-                    safi=safi,
-                    vrf=afi_vrf,
-                    issue="Not Configured",
-                )
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
                 continue
 
             peer_issues = {}
@@ -638,13 +588,7 @@ class VerifyBGPSpecificPeers(AntaTest):
                     peer_issues[peer_ip] = issues
 
             if peer_issues:
-                _add_bgp_failures(
-                    failures=failures,
-                    afi=afi,
-                    safi=safi,
-                    vrf=afi_vrf,
-                    issue=peer_issues,
-                )
+                _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue=peer_issues)
 
         if failures:
             self.result.is_failure(f"Failures: {list(failures.values())}")
@@ -711,13 +655,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP neighbor in the input list."""
-        return [
-            template.render(
-                peer=str(bgp_peer.peer_address),
-                vrf=bgp_peer.vrf,
-            )
-            for bgp_peer in self.inputs.bgp_peers
-        ]
+        return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
     @AntaTest.anta_test
     def test(self) -> None:
