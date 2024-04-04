@@ -62,7 +62,7 @@ anta -l DEBUG --log-file anta.log nrfu --enable --username username --password a
 ```
 
 
-### `ANTA_DEBUG` environement variable
+### `ANTA_DEBUG` environment variable
 
 ??? warning
 
