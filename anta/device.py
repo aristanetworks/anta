@@ -15,10 +15,10 @@ import asyncssh
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError
+from httpx import ConnectError, HTTPError, TimeoutException
 
 from anta import __DEBUG__, aioeapi
-from anta.logger import exc_to_str
+from anta.logger import anta_log_exception, exc_to_str
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -344,9 +344,12 @@ class AsyncEOSDevice(AntaDevice):
             command.errors = e.errors
             if self.supports(command):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
-        except (HTTPError, ConnectError) as e:
-            command.errors = [str(e)]
-            logger.error("Cannot connect to device %s", self.name)
+        except TimeoutException as e:
+            command.errors = [exc_to_str(e)]
+            logger.warning("Timeout (%s) while sending command on %s. Consider increasing the timeout.", exc_to_str(e), self.name)
+        except HTTPError as e:
+            command.errors = [exc_to_str(e)]
+            anta_log_exception(e, f"An error occured while issuing an eAPI request to {self.name}", logger)
         else:
             # selecting only our command output
             command.output = response[-1]
