@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+# Mypy does not understand AntaTest.Input typing
+# mypy: disable-error-code=attr-defined
 from datetime import datetime, timezone
 from typing import ClassVar
 
@@ -13,9 +15,6 @@ from pydantic import BaseModel, Field, model_validator
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
-
-# Mypy does not understand AntaTest.Input typing
-# mypy: disable-error-code=attr-defined
 
 
 class VerifySSHStatus(AntaTest):
@@ -628,15 +627,11 @@ class VerifyIPv4ACL(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyIPv4ACL."""
         self.result.is_success()
-        for command_output in self.instance_commands:
+        for command_output, acl in zip(self.instance_commands, self.inputs.ipv4_access_lists):
             # Collecting input ACL details
             acl_name = command_output.params.acl
             # Retrieve the expected entries from the inputs
-            acl_entries = []
-            for acl in self.inputs.ipv4_access_lists:
-                if acl.name == acl_name:
-                    acl_entries = acl.entries
-                    break
+            acl_entries = acl.entries
 
             # Check if ACL is configured
             ipv4_acl_list = command_output.json_output["aclList"]
