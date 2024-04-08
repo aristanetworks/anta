@@ -346,10 +346,15 @@ class AsyncEOSDevice(AntaDevice):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
         except TimeoutException as e:
             command.errors = [exc_to_str(e)]
-            logger.warning("Timeout (%s) while sending command on %s. Consider increasing the timeout.", exc_to_str(e), self.name)
+            logger.error(
+                "%s occurred while sending a command to %s. Consider increasing the timeout (current timeouts in seconds: %s).",
+                exc_to_str(e),
+                self.name,
+                self._session.timeout.as_dict(),
+            )
         except HTTPError as e:
             command.errors = [exc_to_str(e)]
-            anta_log_exception(e, f"An error occured while issuing an eAPI request to {self.name}", logger)
+            anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
         else:
             # selecting only our command output
             command.output = response[-1]
