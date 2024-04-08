@@ -718,12 +718,12 @@ class VerifySpecificIPSecConn(AntaTest):
           ip_security_connections:
             - peer: 10.255.0.1
             - peer: 10.255.0.2
-            vrf: default
-            connection:
-              - source_address: 100.64.3.2
-                estination_address: 100.64.1.2
-              - source_address: 172.18.3.2
-                destination_address: 172.18.2.2
+              vrf: default
+              connections:
+                - source_address: 100.64.3.2
+                  destination_address: 100.64.2.2
+                - source_address: 172.18.3.2
+                  destination_address: 172.18.2.2
     ```
     """
 
@@ -747,7 +747,7 @@ class VerifySpecificIPSecConn(AntaTest):
             vrf: str = "default"
             """This is the optional VRF for the IP security peer. It defaults to `default` if not provided."""
 
-            connection: list[IPSecConn] | None = None
+            connections: list[IPSecConn] | None = None
             """Optional list of IPv4 security connections of a peer."""
 
             class IPSecConn(BaseModel):
@@ -760,16 +760,16 @@ class VerifySpecificIPSecConn(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input IP Sec connection."""
-        return [template.render(peer=conn.peer, vrf=conn.vrf, connections=conn.connection) for conn in self.inputs.ip_security_connections]
+        return [template.render(peer=conn.peer, vrf=conn.vrf) for conn in self.inputs.ip_security_connections]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySpecificIPSecConn."""
         self.result.is_success()
-        for command_output in self.instance_commands:
+        for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections):
             conn_output = command_output.json_output["connections"]
             peer = command_output.params["peer"]
-            connections = command_output.params["connections"]
+            connections = input_peer.connections
 
             # Check if IPv4 security connection is configured
             if not conn_output:

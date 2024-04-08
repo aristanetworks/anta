@@ -1025,7 +1025,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer": "10.255.0.2",
                     "vrf": "default",
-                    "connection": [
+                    "connections": [
                         {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
                         {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
                     ],
@@ -1076,7 +1076,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer": "10.255.0.2",
                     "vrf": "default",
-                    "connection": [
+                    "connections": [
                         {"source_address": "100.64.2.2", "destination_address": "100.64.1.2"},
                         {"source_address": "172.18.2.2", "destination_address": "172.18.1.2"},
                     ],
@@ -1137,7 +1137,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer": "10.255.0.2",
                     "vrf": "default",
-                    "connection": [
+                    "connections": [
                         {"source_address": "100.64.4.2", "destination_address": "100.64.1.2"},
                         {"source_address": "172.18.4.2", "destination_address": "172.18.1.2"},
                     ],
