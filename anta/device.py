@@ -12,6 +12,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
 
 import asyncssh
+import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
@@ -19,12 +20,11 @@ from httpx import ConnectError, HTTPError, TimeoutException
 
 from anta import __DEBUG__, aioeapi
 from anta.logger import anta_log_exception, exc_to_str
+from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-
-    from anta.models import AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -330,21 +330,23 @@ class AsyncEOSDevice(AntaDevice):
         elif self.enable:
             # No password
             commands.append({"cmd": "enable"})
-        if command.revision:
-            commands.append({"cmd": command.command, "revision": command.revision})
-        else:
-            commands.append({"cmd": command.command})
+        commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
             response: list[dict[str, Any]] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
+            # Does not keep response of 'enable' command
+            command.output = response[-1]
+            logger.debug("%s: %s", self.name, command)
         except aioeapi.EapiCommandError as e:
+            # This block catch exceptions related to EOS issuing an error
             command.errors = e.errors
             if self.supports(command):
                 logger.error("Command '%s' failed on %s", command.command, self.name)
         except TimeoutException as e:
+            # This block catch exceptions related timeouts
             command.errors = [exc_to_str(e)]
             logger.error(
                 "%s occurred while sending a command to %s. Consider increasing the timeout (current timeouts in seconds: %s).",
@@ -352,13 +354,20 @@ class AsyncEOSDevice(AntaDevice):
                 self.name,
                 self._session.timeout.as_dict(),
             )
+        except ConnectError as e:
+            # This block catch exceptions related to OSError and sockets issues
+            command.errors = [exc_to_str(e)]
+            if isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError):  # pylint: disable=no-member
+                if isinstance(os_error.__cause__, OSError):
+                    os_error = os_error.__cause__
+                logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
+            else:
+                anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
         except HTTPError as e:
+            # This block catch most of the httpx Exceptions and logs a general message
             command.errors = [exc_to_str(e)]
             anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
-        else:
-            # selecting only our command output
-            command.output = response[-1]
-            logger.debug("%s: %s", self.name, command)
+        logger.debug("%s: %s", self.name, command)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
@@ -371,22 +380,14 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
-            show_version = "show version"
-            hw_model_key = "modelName"
-            try:
-                response = await self._session.cli(command=show_version)
-            except aioeapi.EapiCommandError as e:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, e.errmsg)
-
-            except (HTTPError, ConnectError) as e:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, exc_to_str(e))
-
+            show_version = AntaCommand(command="show version")
+            await self._collect(show_version)
+            if not show_version.collected:
+                logger.warning("Cannot get hardware information from device %s: %s", self.name, show_version.errors)
             else:
-                if hw_model_key in response:
-                    self.hw_model = response[hw_model_key]
-                else:
-                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, show_version)
-
+                self.hw_model = show_version.json_output.get("modelName", None)
+                if self.hw_model is None:
+                    logger.critical("Cannot parse 'show version' returned by device %s", self.name)
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 
