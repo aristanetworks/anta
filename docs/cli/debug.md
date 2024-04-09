@@ -52,7 +52,7 @@ Options:
                             ANTA_DISABLE_CACHE]
   -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  -t, --tags TEXT           List of tags using comma as separator:
+  --tags TEXT               List of tags using comma as separator:
                             tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
@@ -125,7 +125,7 @@ Options:
                             ANTA_DISABLE_CACHE]
   -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  -t, --tags TEXT           List of tags using comma as separator:
+  --tags TEXT               List of tags using comma as separator:
                             tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version

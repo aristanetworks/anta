@@ -113,7 +113,6 @@ class AliasedGroup(click.Group):
         return cmd.name, cmd, args
 
 
-# TODO: check code of click.pass_context that raise mypy errors for types and adapt this decorator
 def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options when requiring an inventory to interact with devices."""
 
@@ -194,7 +193,6 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     )
     @click.option(
         "--tags",
-        "-t",
         help="List of tags using comma as separator: tag1,tag2,tag3.",
         show_envvar=True,
         envvar="ANTA_TAGS",

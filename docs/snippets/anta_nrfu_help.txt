@@ -27,13 +27,13 @@ Options:
                                   ANTA_DISABLE_CACHE]
   -i, --inventory FILE            Path to the inventory YAML file.  [env var:
                                   ANTA_INVENTORY; required]
-  -t, --tags TEXT                 List of tags using comma as separator:
+  --tags TEXT                     List of tags using comma as separator:
                                   tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -c, --catalog FILE              Path to the test catalog YAML file  [env
                                   var: ANTA_CATALOG; required]
   -d, --device TEXT               Run tests on a specific device. Can be
                                   provided multiple times.
-  --test TEXT                     Run a specific test. Can be provided
+  -t, --test TEXT                 Run a specific test. Can be provided
                                   multiple times.
   --ignore-status                 Exit code will always be 0.  [env var:
                                   ANTA_NRFU_IGNORE_STATUS]

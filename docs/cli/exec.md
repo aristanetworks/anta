@@ -57,7 +57,7 @@ Options:
                           ANTA_DISABLE_CACHE]
   -i, --inventory FILE    Path to the inventory YAML file.  [env var:
                           ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
+  --tags TEXT             List of tags using comma as separator:
                           tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --help                  Show this message and exit.
 ```
@@ -112,13 +112,13 @@ Options:
                             ANTA_DISABLE_CACHE]
   -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  -t, --tags TEXT           List of tags using comma as separator:
+  --tags TEXT               List of tags using comma as separator:
                             tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -c, --commands-list FILE  File with list of commands to collect  [env var:
                             ANTA_EXEC_SNAPSHOT_COMMANDS_LIST; required]
   -o, --output DIRECTORY    Directory to save commands output.  [env var:
                             ANTA_EXEC_SNAPSHOT_OUTPUT; default:
-                            anta_snapshot_2024-04-04_14_23_57]
+                            anta_snapshot_2024-04-09_15_56_19]
   --help                    Show this message and exit.
 ```
 
@@ -228,7 +228,7 @@ Options:
                           ANTA_DISABLE_CACHE]
   -i, --inventory FILE    Path to the inventory YAML file.  [env var:
                           ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
+  --tags TEXT             List of tags using comma as separator:
                           tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -o, --output PATH       Path for test catalog  [default: ./tech-support]
   --latest INTEGER        Number of scheduled show-tech to retrieve
