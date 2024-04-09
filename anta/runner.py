@@ -136,7 +136,7 @@ async def main(  # noqa: PLR0912 PLR0913
         logger.warning(
             "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
             "Errors may occur while running the tests.\n"
-            "Please consult the ANTA Troubleshooting documentation."
+            "Please consult the ANTA FAQ."
         )
 
     for test_definition, device in selected_tests:

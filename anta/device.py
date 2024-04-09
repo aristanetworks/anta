@@ -344,11 +344,15 @@ class AsyncEOSDevice(AntaDevice):
         except TimeoutException as e:
             # This block catch exceptions related timeouts
             command.errors = [exc_to_str(e)]
+            timeouts = self._session.timeout.as_dict()
             logger.error(
-                "%s occurred while sending a command to %s. Consider increasing the timeout (current timeouts in seconds: %s).",
+                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
                 exc_to_str(e),
                 self.name,
-                self._session.timeout.as_dict(),
+                timeouts["connect"],
+                timeouts["read"],
+                timeouts["write"],
+                timeouts["pool"],
             )
         except (ConnectError, OSError) as e:
             # This block catch exceptions related to OSError and sockets issues
