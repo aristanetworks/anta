@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import resource
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
@@ -44,7 +45,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
-async def main(  # noqa: PLR0913
+async def main(  # noqa: PLR0912 PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
@@ -70,6 +71,12 @@ async def main(  # noqa: PLR0913
         tags: Tags to filter devices from the inventory.
         established_only: Include only established device(s).
     """
+    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+    logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+    logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", limits[1])
+    resource.setrlimit(resource.RLIMIT_NOFILE, (limits[1], limits[1]))
+    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
@@ -78,14 +85,14 @@ async def main(  # noqa: PLR0913
         return
 
     # Filter the inventory based on tags and devices parameters
-    inventory = inventory.get_inventory(
+    selected_inventory = inventory.get_inventory(
         tags=tags,
         devices=devices,
     )
-    await inventory.connect_inventory()
+    await selected_inventory.connect_inventory()
 
     # Remove devices that are unreachable
-    inventory = inventory.get_inventory(established_only=established_only)
+    inventory = selected_inventory.get_inventory(established_only=established_only)
 
     if not inventory.devices:
         msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
@@ -116,6 +123,21 @@ async def main(  # noqa: PLR0913
         msg = f"There is no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         logger.warning(msg)
         return
+
+    run_info = (
+        "--- ANTA NRFU Run Information ---\n"
+        f"Number of devices: {len(selected_inventory)} ({len(inventory)} established)\n"
+        f"Total number of selected tests: {len(selected_tests)}\n"
+        f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
+        "---------------------------------"
+    )
+    logger.info(run_info)
+    if len(selected_tests) > limits[0]:
+        logger.warning(
+            "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
+            "Errors may occur while running the tests.\n"
+            "Please consult the ANTA Troubleshooting documentation."
+        )
 
     for test_definition, device in selected_tests:
         try:

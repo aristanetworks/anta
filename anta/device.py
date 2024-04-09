@@ -330,7 +330,6 @@ class AsyncEOSDevice(AntaDevice):
             )
             # Does not keep response of 'enable' command
             command.output = response[-1]
-            logger.debug("%s: %s", self.name, command)
         except aioeapi.EapiCommandError as e:
             # This block catch exceptions related to EOS issuing an error
             command.errors = e.errors
@@ -351,10 +350,10 @@ class AsyncEOSDevice(AntaDevice):
                 self.name,
                 self._session.timeout.as_dict(),
             )
-        except ConnectError as e:
+        except (ConnectError, OSError) as e:
             # This block catch exceptions related to OSError and sockets issues
             command.errors = [exc_to_str(e)]
-            if isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError):  # pylint: disable=no-member
+            if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):  # pylint: disable=no-member
                 if isinstance(os_error.__cause__, OSError):
                     os_error = os_error.__cause__
                 logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
@@ -380,7 +379,7 @@ class AsyncEOSDevice(AntaDevice):
             show_version = AntaCommand(command="show version")
             await self._collect(show_version)
             if not show_version.collected:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, show_version.errors)
+                logger.warning("Cannot get hardware information from device %s", self.name)
             else:
                 self.hw_model = show_version.json_output.get("modelName", None)
                 if self.hw_model is None:
