@@ -246,7 +246,7 @@ class AsyncEOSDevice(AntaDevice):
             username: Username to connect to eAPI and SSH.
             password: Password to connect to eAPI and SSH.
             name: Device name.
-            enable: Device needs privileged access.
+            enable: Collect commands using privileged mode.
             enable_password: Password used to gain privileged access on EOS.
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port.
@@ -307,7 +307,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:  # noqa: C901
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -316,8 +316,7 @@ class AsyncEOSDevice(AntaDevice):
 
         Args:
         ----
-            command: the command to collect
-
+            command: the AntaCommand to collect.
         """
         commands: list[dict[str, Any]] = []
         if self.enable and self._enable_password is not None:
@@ -343,8 +342,12 @@ class AsyncEOSDevice(AntaDevice):
         except aioeapi.EapiCommandError as e:
             # This block catch exceptions related to EOS issuing an error
             command.errors = e.errors
+            if command.requires_privileges:
+                logger.error(
+                    "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
+                )
             if self.supports(command):
-                logger.error("Command '%s' failed on %s", command.command, self.name)
+                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
         except TimeoutException as e:
             # This block catch exceptions related timeouts
             command.errors = [exc_to_str(e)]

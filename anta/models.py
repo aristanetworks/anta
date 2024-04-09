@@ -140,10 +140,10 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are 1 or "latest".
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text.
-        output: Output of the command populated by the collect() function
-        template: AntaTemplate object used to render this command
-        params: Pydantic Model containing the variables values used to render the template
-        errors: If the command execution fails, eAPI returns a list of strings detailing the error
+        output: Output of the command. Only defined if there was no errors.
+        template: AntaTemplate object used to render this command.
+        errors: If the command execution fails, eAPI returns a list of strings detailing the error.
+        params: Pydantic Model containing the variables values used to render the template.
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
     """
@@ -169,10 +169,10 @@ class AntaCommand(BaseModel):
     def json_output(self) -> dict[str, Any]:
         """Get the command output as JSON."""
         if self.output is None:
-            msg = f"There is no output for command {self.command}"
+            msg = f"There is no output for command '{self.command}'"
             raise RuntimeError(msg)
         if self.ofmt != "json" or not isinstance(self.output, dict):
-            msg = f"Output of command {self.command} is invalid"
+            msg = f"Output of command '{self.command}' is invalid"
             raise RuntimeError(msg)
         return dict(self.output)
 
@@ -180,17 +180,34 @@ class AntaCommand(BaseModel):
     def text_output(self) -> str:
         """Get the command output as a string."""
         if self.output is None:
-            msg = f"There is no output for command {self.command}"
+            msg = f"There is no output for command '{self.command}'"
             raise RuntimeError(msg)
         if self.ofmt != "text" or not isinstance(self.output, str):
-            msg = f"Output of command {self.command} is invalid"
+            msg = f"Output of command '{self.command}' is invalid"
             raise RuntimeError(msg)
         return str(self.output)
 
     @property
+    def error(self) -> bool:
+        """Return True if the command returned an error, False otherwise."""
+        return len(self.errors) > 0
+
+    @property
     def collected(self) -> bool:
-        """Return True if the command has been collected."""
-        return self.output is not None and not self.errors
+        """Return True if the command has been collected, False otherwise."""
+        if self.error:
+            return False
+        return self.output is not None
+
+    @property
+    def requires_privileges(self) -> bool:
+        """Return True if the command requires privileged mode, False otherwise."""
+        if self.collected:
+            return False
+        if not self.error:
+            msg = f"Command '{self.command}' has not been collected has not returned an error. Collect the command before calling requires_privileges."
+            raise RuntimeError(msg)
+        return any("privileged mode required" in e for e in self.errors)
 
 
 class AntaTemplateRenderError(RuntimeError):
