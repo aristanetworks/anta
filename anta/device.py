@@ -172,14 +172,6 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
-    def supports(self, command: AntaCommand) -> bool:
-        """Return True if the command is supported on the device hardware platform, False otherwise."""
-        unsupported = any("not supported on this hardware platform" in e for e in command.errors)
-        logger.debug(command)
-        if unsupported:
-            logger.debug("%s is not supported on %s", command.command, self.hw_model)
-        return not unsupported
-
     @abstractmethod
     async def refresh(self) -> None:
         """Update attributes of an AntaDevice instance.
@@ -346,8 +338,10 @@ class AsyncEOSDevice(AntaDevice):
                 logger.error(
                     "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
                 )
-            if self.supports(command):
+            if command.supported:
                 logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
+            else:
+                logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
         except TimeoutException as e:
             # This block catch exceptions related timeouts
             command.errors = [exc_to_str(e)]

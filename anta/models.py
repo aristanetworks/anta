@@ -194,20 +194,36 @@ class AntaCommand(BaseModel):
 
     @property
     def collected(self) -> bool:
-        """Return True if the command has been collected, False otherwise."""
-        if self.error:
-            return False
-        return self.output is not None
+        """Return True if the command has been collected, False otherwise.
+
+        A command that has not been collected could have returned an error.
+        See error property.
+        """
+        return not self.error and self.output is not None
 
     @property
     def requires_privileges(self) -> bool:
-        """Return True if the command requires privileged mode, False otherwise."""
-        if self.collected:
-            return False
-        if not self.error:
-            msg = f"Command '{self.command}' has not been collected has not returned an error. Collect the command before calling requires_privileges."
+        """Return True if the command requires privileged mode, False otherwise.
+
+        Will raise RuntimeError if the command has not been collected and has not returned an error.
+        AntaDevice.collect() must be called before this property.
+        """
+        if not self.collected and not self.error:
+            msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
             raise RuntimeError(msg)
         return any("privileged mode required" in e for e in self.errors)
+
+    @property
+    def supported(self) -> bool:
+        """Return True if the command is supported on the device hardware platform, False otherwise.
+
+        Will raise RuntimeError if the command has not been collected and has not returned an error.
+        AntaDevice.collect() must be called before this property.
+        """
+        if not self.collected and not self.error:
+            msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            raise RuntimeError(msg)
+        return not any("not supported on this hardware platform" in e for e in self.errors)
 
 
 class AntaTemplateRenderError(RuntimeError):
@@ -462,7 +478,7 @@ class AntaTest(ABC):
     @property
     def failed_commands(self) -> list[AntaCommand]:
         """Returns a list of all the commands that have failed."""
-        return [command for command in self.instance_commands if command.errors]
+        return [command for command in self.instance_commands if command.error]
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
@@ -556,9 +572,7 @@ class AntaTest(ABC):
                     return self.result
 
                 if cmds := self.failed_commands:
-                    self.logger.debug(self.device.supports)
-                    unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
-                    self.logger.debug(unsupported_commands)
+                    unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
                     if unsupported_commands:
                         msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
                         self.logger.warning(msg)
