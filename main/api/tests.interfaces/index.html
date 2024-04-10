@@ -2860,8 +2860,7 @@
 <span class="normal">577</span>
 <span class="normal">578</span>
 <span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIPProxyARP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">580</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyIPProxyARP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if Proxy-ARP is enabled for the provided list of interface(s).</span>
 
 <span class="sd">    Expected Results</span>
@@ -2900,8 +2899,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIPProxyARP.&quot;&quot;&quot;</span>
         <span class="n">disabled_intf</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;intf&quot;</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-                <span class="n">intf</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;intf&quot;</span><span class="p">]</span>
+            <span class="n">intf</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">intf</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">][</span><span class="n">intf</span><span class="p">][</span><span class="s2">&quot;proxyArp&quot;</span><span class="p">]:</span>
                 <span class="n">disabled_intf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intf</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">disabled_intf</span><span class="p">:</span>
@@ -3538,7 +3536,8 @@
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">649</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
+<span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
 <span class="normal">652</span>
@@ -3675,17 +3674,18 @@
 
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each interface in the input list.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">primary_ip</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">primary_ip</span><span class="p">,</span> <span class="n">secondary_ips</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">secondary_ips</span><span class="p">)</span> <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span>
-        <span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyInterfaceIPv4.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span>
-            <span class="n">intf</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;interface&quot;</span><span class="p">]</span>
-            <span class="n">input_primary_ip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;primary_ip&quot;</span><span class="p">])</span>
+            <span class="n">intf</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">interface</span>
+            <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">intf</span><span class="p">:</span>
+                    <span class="n">input_interface_detail</span> <span class="o">=</span> <span class="n">interface</span>
+            <span class="n">input_primary_ip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_interface_detail</span><span class="o">.</span><span class="n">primary_ip</span><span class="p">)</span>
             <span class="n">failed_messages</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="c1"># Check if the interface has an IP address configured</span>
@@ -3702,8 +3702,8 @@
             <span class="k">if</span> <span class="n">actual_primary_ip</span> <span class="o">!=</span> <span class="n">input_primary_ip</span><span class="p">:</span>
                 <span class="n">failed_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The expected primary IP address is `</span><span class="si">{</span><span class="n">input_primary_ip</span><span class="si">}</span><span class="s2">`, but the actual primary IP address is `</span><span class="si">{</span><span class="n">actual_primary_ip</span><span class="si">}</span><span class="s2">`.&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;secondary_ips&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">input_secondary_ips</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">network</span><span class="p">)</span> <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;secondary_ips&quot;</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">param_secondary_ips</span> <span class="o">:=</span> <span class="n">input_interface_detail</span><span class="o">.</span><span class="n">secondary_ips</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">input_secondary_ips</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">network</span><span class="p">)</span> <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">param_secondary_ips</span><span class="p">])</span>
                 <span class="n">secondary_ips</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">interface_output</span><span class="p">,</span> <span class="s2">&quot;secondaryIpsOrderedList&quot;</span><span class="p">)</span>
 
                 <span class="c1"># Combine IP address and subnet for secondary IPs</span>
@@ -4549,7 +4549,8 @@ You can define a global MTU to check and also an MTU per interface and also igno
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">584</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">583</span>
+<span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
 <span class="normal">587</span>
@@ -4610,8 +4611,7 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyL2MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyL2MTU</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.</span>
 
 <span class="sd">    Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.</span>

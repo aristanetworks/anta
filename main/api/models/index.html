@@ -2832,24 +2832,7 @@ Attributes:
 </details>
                   <details class="quote">
                   <summary>Source code in <code>anta/models.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
@@ -2860,7 +2843,24 @@ Attributes:
 <span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
-<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3178,12 +3178,12 @@ custom_field: a free string that will be included in the TestResult object</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement generic hashing for AntaTest.Input.</span>
 
 <span class="sd">    This will work in most cases but this does not consider 2 lists with different ordering as equal.</span>
@@ -3236,24 +3236,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
@@ -3317,7 +3300,24 @@ custom_field: a free string that will be included in the TestResult object</p>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
-<span class="normal">553</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorate the `test()` method in child classes.</span>
 
@@ -3428,18 +3428,18 @@ custom_field: a free string that will be included in the TestResult object</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect outputs of all commands of this test class from the device of this test instance.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -3478,19 +3478,21 @@ no AntaTemplate for this test.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>  <span class="c1"># pylint: disable=W0613  # noqa: ARG002</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.</span>
 
 <span class="sd">    This is not an abstract method because it does not need to be implemented if there is</span>
 <span class="sd">    no AntaTemplate for this test.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">template</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;AntaTemplate are provided but render() method has not been implemented for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3518,16 +3520,16 @@ no AntaTemplate for this test.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate output of all AntaCommand instances in `instance_commands`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Test initialization error: Trying to save more data than there are commands for the test&quot;</span><span class="p">)</span>
@@ -3581,26 +3583,26 @@ It must set the correct status of the <code>result</code> instance attribute wit
 </details>
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">578</span>
 <span class="normal">579</span>
-<span class="normal">580</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Core of the test logic.</span>
 
@@ -3692,7 +3694,7 @@ revision: eAPI revision of the command. Valid values are 1 to 99. Revision has p
 ofmt: eAPI output - json or text.
 output: Output of the command populated by the collect() function
 template: AntaTemplate object used to render this command
-params: Dictionary of variables with string values to render the template
+params: Pydantic Model containing the variables values used to render the template
 errors: If the command execution fails, eAPI returns a list of strings detailing the error
 use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.</p>
             </div>
@@ -3901,7 +3903,7 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 
 
 <a href="#anta.models.AntaTemplate.render" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -3941,13 +3943,7 @@ AntaTemplate instance.</p>
 
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -3968,7 +3964,24 @@ AntaTemplate instance.</p>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span><span class="p">:</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaCommand from an AntaTemplate instance.</span>
 
 <span class="sd">    Keep the parameters used in the AntaTemplate instance.</span>
@@ -3984,6 +3997,17 @@ AntaTemplate instance.</p>
 <span class="sd">                 AntaTemplate instance.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create params schema on the fly</span>
+    <span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">fname</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">Formatter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="k">if</span> <span class="n">fname</span><span class="p">]</span>
+    <span class="c1"># Extracting the type from the params based on the expected field_names from the template</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">}</span>
+    <span class="c1"># Accepting ParamsSchema as non lowercase variable</span>
+    <span class="n">ParamsSchema</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span>  <span class="c1"># noqa: N806</span>
+        <span class="s2">&quot;ParamsSchema&quot;</span><span class="p">,</span>
+        <span class="n">__base__</span><span class="o">=</span><span class="n">AntaParamsBaseModel</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">fields</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">AntaCommand</span><span class="p">(</span>
             <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">),</span>
@@ -3991,7 +4015,7 @@ AntaTemplate instance.</p>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="n">revision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">revision</span><span class="p">,</span>
             <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">ParamsSchema</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">),</span>
             <span class="n">use_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
