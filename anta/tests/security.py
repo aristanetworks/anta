@@ -621,16 +621,17 @@ class VerifyIPv4ACL(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input ACL."""
-        return [template.render(acl=acl.name, entries=acl.entries) for acl in self.inputs.ipv4_access_lists]
+        return [template.render(acl=acl.name) for acl in self.inputs.ipv4_access_lists]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIPv4ACL."""
         self.result.is_success()
-        for command_output in self.instance_commands:
+        for command_output, acl in zip(self.instance_commands, self.inputs.ipv4_access_lists):
             # Collecting input ACL details
-            acl_name = command_output.params["acl"]
-            acl_entries = command_output.params["entries"]
+            acl_name = command_output.params.acl
+            # Retrieve the expected entries from the inputs
+            acl_entries = acl.entries
 
             # Check if ACL is configured
             ipv4_acl_list = command_output.json_output["aclList"]

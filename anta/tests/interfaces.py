@@ -571,8 +571,7 @@ class VerifyIPProxyARP(AntaTest):
         """Main test function for VerifyIPProxyARP."""
         disabled_intf = []
         for command in self.instance_commands:
-            if "intf" in command.params:
-                intf = command.params["intf"]
+            intf = command.params.intf
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
         if disabled_intf:
@@ -691,17 +690,18 @@ class VerifyInterfaceIPv4(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each interface in the input list."""
-        return [
-            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
-        ]
+        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
         for command in self.instance_commands:
-            intf = command.params["interface"]
-            input_primary_ip = str(command.params["primary_ip"])
+            intf = command.params.interface
+            for interface in self.inputs.interfaces:
+                if interface.name == intf:
+                    input_interface_detail = interface
+            input_primary_ip = str(input_interface_detail.primary_ip)
             failed_messages = []
 
             # Check if the interface has an IP address configured
@@ -718,8 +718,8 @@ class VerifyInterfaceIPv4(AntaTest):
             if actual_primary_ip != input_primary_ip:
                 failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
 
-            if command.params["secondary_ips"] is not None:
-                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+            if (param_secondary_ips := input_interface_detail.secondary_ips) is not None:
+                input_secondary_ips = sorted([str(network) for network in param_secondary_ips])
                 secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
 
                 # Combine IP address and subnet for secondary IPs

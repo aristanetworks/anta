@@ -87,7 +87,7 @@ def run_template(
     # I do not assume the following line, but click make me do it
     v: Literal[1, "latest"] = version if version == "latest" else 1
     t = AntaTemplate(template=template, ofmt=ofmt, version=v, revision=revision)
-    c = t.render(**template_params)  # type: ignore[arg-type]
+    c = t.render(**template_params)
     asyncio.run(device.collect(c))
     if not c.collected:
         console.print(f"[bold red] Command '{c.command}' failed to execute!")

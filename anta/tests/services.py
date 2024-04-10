@@ -98,7 +98,7 @@ class VerifyDNSLookup(AntaTest):
         self.result.is_success()
         failed_domains = []
         for command in self.instance_commands:
-            domain = command.params["domain"]
+            domain = command.params.domain
             output = command.json_output["messages"][0]
             if f"Can't find {domain}: No answer" in output:
                 failed_domains.append(domain)
