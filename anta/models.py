@@ -13,9 +13,10 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from datetime import timedelta
 from functools import wraps
+from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
@@ -40,16 +41,21 @@ BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\
 logger = logging.getLogger(__name__)
 
 
-class AntaMissingParamError(Exception):
-    """An expected key in an AntaCommand.params dictionary was not found.
+class AntaParamsBaseModel(BaseModel):
+    """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
 
-    This Exception should in general never be raised in normal usage of ANTA.
-    """
+    model_config = ConfigDict(extra="forbid")
 
-    def __init__(self, message: str) -> None:
-        """Append Github suggestion to message."""
-        self.message = f"{message}\n{GITHUB_SUGGESTION}"
-        super().__init__(self.message)
+    if not TYPE_CHECKING:
+        # Following pydantic declaration and keeping __getattr__ only when TYPE_CHECKING is false.
+        # Disabling 1 Dynamically typed expressions (typing.Any) are disallowed in `__getattr__
+        # ruff: noqa: ANN401
+        def __getattr__(self, item: str) -> Any:
+            """For AntaParams if we try to access an attribute that is not present We want it to be None."""
+            try:
+                return super().__getattr__(item)
+            except AttributeError:
+                return None
 
 
 class AntaTemplate(BaseModel):
@@ -60,10 +66,10 @@ class AntaTemplate(BaseModel):
     Attributes
     ----------
         template: Python f-string. Example: 'show vlan {vlan_id}'
-        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest".
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text - default is json
-        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it - default is True
+        ofmt: eAPI output - json or text.
+        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
 
     """
 
@@ -73,7 +79,7 @@ class AntaTemplate(BaseModel):
     ofmt: Literal["json", "text"] = "json"
     use_cache: bool = True
 
-    def render(self, **params: dict[str, Any]) -> AntaCommand:
+    def render(self, **params: str | int | bool) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
 
         Keep the parameters used in the AntaTemplate instance.
@@ -89,6 +95,17 @@ class AntaTemplate(BaseModel):
                      AntaTemplate instance.
 
         """
+        # Create params schema on the fly
+        field_names = [fname for _, fname, _, _ in Formatter().parse(self.template) if fname]
+        # Extracting the type from the params based on the expected field_names from the template
+        fields: dict[str, Any] = {key: (type(params.get(key)), ...) for key in field_names}
+        # Accepting ParamsSchema as non lowercase variable
+        ParamsSchema = create_model(  # noqa: N806
+            "ParamsSchema",
+            __base__=AntaParamsBaseModel,
+            **fields,
+        )
+
         try:
             return AntaCommand(
                 command=self.template.format(**params),
@@ -96,7 +113,7 @@ class AntaTemplate(BaseModel):
                 version=self.version,
                 revision=self.revision,
                 template=self,
-                params=params,
+                params=ParamsSchema(**params),
                 use_cache=self.use_cache,
             )
         except KeyError as e:
@@ -120,14 +137,14 @@ class AntaCommand(BaseModel):
     Attributes
     ----------
         command: Device command
-        version: eAPI version - valid values are 1 or "latest" - default is "latest"
+        version: eAPI version - valid values are 1 or "latest".
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text - default is json
+        ofmt: eAPI output - json or text.
         output: Output of the command populated by the collect() function
         template: AntaTemplate object used to render this command
-        params: Dictionary of variables with string values to render the template
+        params: Pydantic Model containing the variables values used to render the template
         errors: If the command execution fails, eAPI returns a list of strings detailing the error
-        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it - default is True
+        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
     """
 
@@ -138,7 +155,7 @@ class AntaCommand(BaseModel):
     output: dict[str, Any] | str | None = None
     template: AntaTemplate | None = None
     errors: list[str] = []
-    params: dict[str, Any] = {}
+    params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
 
     @property
@@ -303,12 +320,12 @@ class AntaTest(ABC):
 
             Attributes
             ----------
-                tags: List of device's tags for the test.
+                tags: Tag of devices on which to run the test.
 
             """
 
             model_config = ConfigDict(extra="forbid")
-            tags: list[str] | None = None
+            tags: set[str] | None = None
 
     def __init__(
         self,
@@ -430,13 +447,13 @@ class AntaTest(ABC):
         """Returns a list of all the commands that have failed."""
         return [command for command in self.instance_commands if command.errors]
 
-    # Disabling unused argument
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:  # pylint: disable=W0613  # noqa: ARG002
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
 
         This is not an abstract method because it does not need to be implemented if there is
         no AntaTemplate for this test.
         """
+        _ = template
         msg = f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}"
         raise NotImplementedError(msg)
 
@@ -574,7 +591,7 @@ class AntaTest(ABC):
                 self.result.is_success()
                 for command in self.instance_commands:
                     if not self._test_command(command): # _test_command() is an arbitrary test logic
-                        self.result.is_failure("Failure reson")
+                        self.result.is_failure("Failure reason")
             ```
 
         """

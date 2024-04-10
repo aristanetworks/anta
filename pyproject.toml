@@ -55,11 +55,12 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 dev = [
   "bumpver==2023.1129",
+  "codespell~=2.2.6",
   "mypy~=1.9",
   "mypy-extensions~=1.0",
   "pre-commit>=3.3.3",
   "pylint>=2.17.5",
-  "ruff~=0.3.4",
+  "ruff~=0.3.5",
   "pytest>=7.4.0",
   "pytest-asyncio>=0.21.1",
   "pytest-cov>=4.1.0",
@@ -239,8 +240,9 @@ commands =
 description = Check the code style
 commands =
   ruff check .
-  pylint --rcfile=pylintrc anta
-  pylint --rcfile=pylintrc tests
+  ruff format . --check
+  pylint anta
+  pylint tests
 
 [testenv:type]
 description = Check typing
@@ -266,6 +268,9 @@ commands =
 depends = py311
 """
 
+################################
+# Ruff
+################################
 [tool.ruff]
 
 # Exclude a variety of commonly ignored directories.
@@ -317,8 +322,8 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
+  "F821",    # Disable undefined-name until resolution of #10451
 ]
-
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -329,6 +334,12 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.ruff.lint.pylint]
+# These settings are used to configure pylint rules run in ruff. In order to keep sane and while
+# we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
+# https://github.com/astral-sh/ruff/issues/970
+max-branches = 13
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -380,7 +391,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
-"anta/tools/get*.py" = [
+"anta/tools.py" = [
   "ANN401",   # Ok to use Any type hint in our custom get functions
   "PLR0913",  # Ok to have more than 5 arguments in our custom get functions
 ]
@@ -393,4 +404,38 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
+]
+
+################################
+# Pylint
+################################
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+    "invalid-name",
+    "fixme"
+]
+
+[tool.pylint.DESIGN]
+max-statements=61
+max-returns=8
+max-locals=23
+
+[tool.pylint.FORMAT]
+max-line-length=165
+max-module-lines=1700
+
+[tool.pylint.SIMILARITIES]
+# making similarity lines limit a bit higher than default 4
+min-similarity-lines=10
+
+[tool.pylint.TYPECHECK]
+# https://stackoverflow.com/questions/49680191/click-and-pylint
+signature-mutators="click.decorators.option"
+
+[tool.pylint.MAIN]
+load-plugins="pylint_pydantic"
+extension-pkg-whitelist="pydantic"
+ignore-paths = [
+  "^tests/units/anta_tests/.*/data.py$",
+  "^tests/units/anta_tests/routing/.*/data.py$",
 ]

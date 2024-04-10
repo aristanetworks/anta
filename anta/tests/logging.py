@@ -252,12 +252,12 @@ class VerifyLoggingHostname(AntaTest):
 
 
 class VerifyLoggingTimestamp(AntaTest):
-    """Verifies if logs are generated with the approprate timestamp.
+    """Verifies if logs are generated with the appropriate timestamp.
 
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated with the appropriated timestamp.
-    * Failure: The test will fail if logs are NOT generated with the appropriated timestamp.
+    * Success: The test will pass if logs are generated with the appropriate timestamp.
+    * Failure: The test will fail if logs are NOT generated with the appropriate timestamp.
 
     Examples
     --------
@@ -268,7 +268,7 @@ class VerifyLoggingTimestamp(AntaTest):
     """
 
     name = "VerifyLoggingTimestamp"
-    description = "Verifies if logs are generated with the appropriate timestamp."
+    description = "Verifies if logs are generated with the riate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),

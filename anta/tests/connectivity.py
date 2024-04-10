@@ -13,7 +13,7 @@ from typing import ClassVar
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-from anta.models import AntaCommand, AntaMissingParamError, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyReachability(AntaTest):
@@ -71,13 +71,9 @@ class VerifyReachability(AntaTest):
         """Main test function for VerifyReachability."""
         failures = []
         for command in self.instance_commands:
-            src = command.params.get("source")
-            dst = command.params.get("destination")
-            repeat = command.params.get("repeat")
-
-            if any(elem is None for elem in (src, dst, repeat)):
-                msg = f"A parameter is missing to execute the test for command {command}"
-                raise AntaMissingParamError(msg)
+            src = command.params.source
+            dst = command.params.destination
+            repeat = command.params.repeat
 
             if f"{repeat} received" not in command.json_output["messages"][0]:
                 failures.append((str(src), str(dst)))

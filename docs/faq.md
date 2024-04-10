@@ -23,6 +23,23 @@ toc_depth: 4
 
 # Frequently Asked Questions (FAQ)
 
+## `<Foo>Timeout` error in the logs
+???+ faq "`Timeout` error in the logs"
+
+    When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout, PoolTimeout). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts/
+
+    This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).
+
+    ### Solution
+
+    Use the `timeout` option. As an example for the `nrfu` command:
+
+    ```bash
+    anta nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml --timeout 50 text
+    ```
+
+    The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
+    The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.
 
 ## `ImportError` related to `urllib3`
 ???+ faq "`ImportError` related to `urllib3` when running ANTA"
@@ -88,4 +105,4 @@ toc_depth: 4
 
 # Still facing issues?
 
-If you've tried the above solutions and continue to experience problems, please report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).
+If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](../troubleshooting) instructions and report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).

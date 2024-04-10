@@ -58,6 +58,7 @@ def test_anta_log_exception(
     debug_value: bool,
     expected_message: str,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """Test anta_log_exception."""
     if calling_logger is not None:
         # https://github.com/pytest-dev/pytest/issues/3697
@@ -68,9 +69,9 @@ def test_anta_log_exception(
     # Need to raise to trigger nice stacktrace for __DEBUG__ == True
     try:
         raise exception
-    except ValueError as e:
+    except ValueError as exc:
         with patch("anta.logger.__DEBUG__", new=debug_value):
-            anta_log_exception(e, message=message, calling_logger=calling_logger)
+            anta_log_exception(exc, message=message, calling_logger=calling_logger)
 
     # Two log captured
     if debug_value:
@@ -109,7 +110,7 @@ def test_tb_to_str() -> None:
     """Test tb_to_str."""
     try:
         my_raising_function(ValueError("test"))
-    except ValueError as e:
-        output = tb_to_str(e)
+    except ValueError as exc:
+        output = tb_to_str(exc)
         assert "Traceback" in output
         assert 'my_raising_function(ValueError("test"))' in output
