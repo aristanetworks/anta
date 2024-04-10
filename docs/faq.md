@@ -30,7 +30,7 @@ toc_depth: 4
 
     This usually means that the operating system refused to open a new file descriptor (or socket) for the ANTA process. This might be due to the hard limit for open file descriptors currently set for the ANTA process.
 
-    At startup, ANTA sets the soft limit of its process to the hard limit. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the number of selected tests in ANTA, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.
+    At startup, ANTA sets the soft limit of its process to the hard limit up to 16384. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the number of selected tests in ANTA, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.
 
     ### Solution
 

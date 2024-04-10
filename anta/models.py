@@ -142,7 +142,7 @@ class AntaCommand(BaseModel):
         ofmt: eAPI output - json or text.
         output: Output of the command. Only defined if there was no errors.
         template: AntaTemplate object used to render this command.
-        errors: If the command execution fails, eAPI returns a list of strings detailing the error.
+        errors: If the command execution fails, eAPI returns a list of strings detailing the error(s).
         params: Pydantic Model containing the variables values used to render the template.
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
@@ -205,8 +205,11 @@ class AntaCommand(BaseModel):
     def requires_privileges(self) -> bool:
         """Return True if the command requires privileged mode, False otherwise.
 
-        Will raise RuntimeError if the command has not been collected and has not returned an error.
-        AntaDevice.collect() must be called before this property.
+        Raises
+        ------
+            RuntimeError
+                If the command has not been collected and has not returned an error.
+                AntaDevice.collect() must be called before this property.
         """
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
@@ -217,8 +220,11 @@ class AntaCommand(BaseModel):
     def supported(self) -> bool:
         """Return True if the command is supported on the device hardware platform, False otherwise.
 
-        Will raise RuntimeError if the command has not been collected and has not returned an error.
-        AntaDevice.collect() must be called before this property.
+        Raises
+        ------
+            RuntimeError
+                If the command has not been collected and has not returned an error.
+                AntaDevice.collect() must be called before this property.
         """
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."

@@ -56,7 +56,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
-async def main(  # noqa: PLR0912 PLR0913
+async def main(  # noqa: PLR0912 PLR0913 too-many-branches too-many-arguments - keep the main method readable
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,

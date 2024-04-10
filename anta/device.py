@@ -299,7 +299,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand) -> None:  # noqa: C901
+    async def _collect(self, command: AntaCommand) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -328,10 +328,10 @@ class AsyncEOSDevice(AntaDevice):
                 ofmt=command.ofmt,
                 version=command.version,
             )
-            # Does not keep response of 'enable' command
+            # Do not keep response of 'enable' command
             command.output = response[-1]
         except aioeapi.EapiCommandError as e:
-            # This block catch exceptions related to EOS issuing an error
+            # This block catches exceptions related to EOS issuing an error.
             command.errors = e.errors
             if command.requires_privileges:
                 logger.error(
@@ -342,7 +342,7 @@ class AsyncEOSDevice(AntaDevice):
             else:
                 logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
         except TimeoutException as e:
-            # This block catch exceptions related timeouts
+            # This block catches Timeout exceptions.
             command.errors = [exc_to_str(e)]
             timeouts = self._session.timeout.as_dict()
             logger.error(
@@ -355,7 +355,7 @@ class AsyncEOSDevice(AntaDevice):
                 timeouts["pool"],
             )
         except (ConnectError, OSError) as e:
-            # This block catch exceptions related to OSError and sockets issues
+            # This block catches OSError and socket issues related exceptions.
             command.errors = [exc_to_str(e)]
             if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):  # pylint: disable=no-member
                 if isinstance(os_error.__cause__, OSError):
@@ -364,7 +364,7 @@ class AsyncEOSDevice(AntaDevice):
             else:
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
         except HTTPError as e:
-            # This block catch most of the httpx Exceptions and logs a general message
+            # This block catches most of the httpx Exceptions and logs a general message.
             command.errors = [exc_to_str(e)]
             anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
         logger.debug("%s: %s", self.name, command)
